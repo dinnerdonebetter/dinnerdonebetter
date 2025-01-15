@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_LoginForJWT(T *testing.T) {
+func TestClient_LoginForToken(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/users/login/jwt"
@@ -33,7 +33,7 @@ func TestClient_LoginForJWT(T *testing.T) {
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.LoginForJWT(ctx, exampleInput)
+		actual, err := c.LoginForToken(ctx, exampleInput)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -48,7 +48,7 @@ func TestClient_LoginForJWT(T *testing.T) {
 		exampleInput := fakes.BuildFakeUserLoginInput()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.LoginForJWT(ctx, exampleInput)
+		actual, err := c.LoginForToken(ctx, exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -63,7 +63,7 @@ func TestClient_LoginForJWT(T *testing.T) {
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.LoginForJWT(ctx, exampleInput)
+		actual, err := c.LoginForToken(ctx, exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

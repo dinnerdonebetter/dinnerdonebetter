@@ -34,7 +34,7 @@ func (b *PageBuilder) AdminLoginSubmit(req *http.Request) (*types.TokenResponse,
 		return nil, err
 	}
 
-	jwtResponse, err := client.AdminLoginForJWT(ctx, &x)
+	jwtResponse, err := client.AdminLoginForToken(ctx, &x)
 	if err != nil {
 		return nil, err
 	}

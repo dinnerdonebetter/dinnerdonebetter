@@ -1731,12 +1731,12 @@ var routeInfoMap = map[string]routeDetails{
 		InputType:    &types.UserLoginInput{},
 	},
 	"POST /users/login/jwt": {
-		ID:           "LoginForJWT",
+		ID:           "LoginForToken",
 		ResponseType: &types.TokenResponse{},
 		InputType:    &types.UserLoginInput{},
 	},
 	"POST /users/login/jwt/admin": {
-		ID:           "AdminLoginForJWT",
+		ID:           "AdminLoginForToken",
 		ResponseType: &types.TokenResponse{},
 		InputType:    &types.UserLoginInput{},
 	},

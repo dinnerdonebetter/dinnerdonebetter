@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -47,7 +46,7 @@ func (c *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-func setupMetricsProvider(ctx context.Context, cfg *Config) (metric.MeterProvider, func(context.Context) error, error) {
+func setupMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Config) (metric.MeterProvider, func(context.Context) error, error) {
 	if cfg == nil {
 		return nil, nil, ErrNilConfig
 	}
@@ -66,7 +65,7 @@ func setupMetricsProvider(ctx context.Context, cfg *Config) (metric.MeterProvide
 		),
 	)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("setting up metrics resource: %w", err)
 	}
 
 	options := []otlpmetricgrpc.Option{
@@ -74,6 +73,7 @@ func setupMetricsProvider(ctx context.Context, cfg *Config) (metric.MeterProvide
 	}
 
 	if cfg.Insecure {
+		logger.Info("using insecure connection to metrics collector")
 		options = append(options, otlpmetricgrpc.WithInsecure())
 	}
 
@@ -82,7 +82,7 @@ func setupMetricsProvider(ctx context.Context, cfg *Config) (metric.MeterProvide
 		options...,
 	)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("setting up metrics exporter: %w", err)
 	}
 
 	meterProvider := sdkmetric.NewMeterProvider(
@@ -97,15 +97,17 @@ func setupMetricsProvider(ctx context.Context, cfg *Config) (metric.MeterProvide
 	)
 	otel.SetMeterProvider(meterProvider)
 
+	logger.WithValue("config", cfg).Info("set up meter provider")
+
 	if err = runtime.Start(runtime.WithMeterProvider(meterProvider)); err != nil {
 		return nil, nil, fmt.Errorf("starting runtime metrics: %w", err)
 	}
-	log.Println("started runtime metrics")
+	logger.Info("started runtime metrics")
 
 	if err = host.Start(host.WithMeterProvider(meterProvider)); err != nil {
 		return nil, nil, fmt.Errorf("starting host metrics: %w", err)
 	}
-	log.Println("started host metrics")
+	logger.Info("started host metrics")
 
 	return meterProvider, meterProvider.Shutdown, nil
 }
@@ -117,7 +119,7 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 
 	logger.WithValue("interval", cfg.CollectionInterval.String()).Info("setting up period metric reader")
 
-	meterProvider, shutdown, err := setupMetricsProvider(ctx, cfg)
+	meterProvider, shutdown, err := setupMetricsProvider(ctx, logger, cfg)
 	if err != nil {
 		return nil, fmt.Errorf("creating metric provider: %w", err)
 	}
@@ -126,6 +128,7 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 	otel.SetMeterProvider(meterProvider)
 
 	i := &providerImpl{
+		logger:        logger,
 		serviceName:   cfg.ServiceName,
 		meterProvider: meterProvider,
 		mp:            meterProvider.Meter(cfg.ServiceName),
@@ -142,6 +145,7 @@ var _ metrics.Provider = (*providerImpl)(nil)
 type providerImpl struct {
 	mp                metric.Meter
 	meterProvider     metric.MeterProvider
+	logger            logging.Logger
 	serviceName       string
 	shutdownFunctions []func(context.Context) error
 }
@@ -151,18 +155,21 @@ func (m *providerImpl) MeterProvider() metric.MeterProvider {
 }
 
 func (m *providerImpl) Shutdown(ctx context.Context) error {
-	multierr := &multierror.Error{}
+	errs := &multierror.Error{}
 
 	for _, fn := range m.shutdownFunctions {
 		if err := fn(ctx); err != nil {
-			multierr = multierror.Append(multierr, err)
+			errs = multierror.Append(errs, err)
 		}
 	}
 
-	return multierr.ErrorOrNil()
+	return errs.ErrorOrNil()
 }
 
 func (m *providerImpl) NewFloat64Counter(name string, options ...metric.Float64CounterOption) (metrics.Float64Counter, error) {
+	logger := m.logger.WithValue("name", name)
+	logger.Info("NewFloat64Counter invoked")
+
 	z, err := m.mp.Float64Counter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 	if err != nil {
 		return nil, err
@@ -172,6 +179,9 @@ func (m *providerImpl) NewFloat64Counter(name string, options ...metric.Float64C
 }
 
 func (m *providerImpl) NewFloat64Gauge(name string, options ...metric.Float64GaugeOption) (metrics.Float64Gauge, error) {
+	logger := m.logger.WithValue("name", name)
+	logger.Info("NewFloat64Gauge invoked")
+
 	z, err := m.mp.Float64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 	if err != nil {
 		return nil, err
@@ -181,6 +191,9 @@ func (m *providerImpl) NewFloat64Gauge(name string, options ...metric.Float64Gau
 }
 
 func (m *providerImpl) NewFloat64UpDownCounter(name string, options ...metric.Float64UpDownCounterOption) (metrics.Float64UpDownCounter, error) {
+	logger := m.logger.WithValue("name", name)
+	logger.Info("NewFloat64UpDownCounter invoked")
+
 	z, err := m.mp.Float64UpDownCounter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 	if err != nil {
 		return nil, err
@@ -190,6 +203,9 @@ func (m *providerImpl) NewFloat64UpDownCounter(name string, options ...metric.Fl
 }
 
 func (m *providerImpl) NewFloat64Histogram(name string, options ...metric.Float64HistogramOption) (metrics.Float64Histogram, error) {
+	logger := m.logger.WithValue("name", name)
+	logger.Info("NewFloat64Histogram invoked")
+
 	z, err := m.mp.Float64Histogram(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 	if err != nil {
 		return nil, err
@@ -199,6 +215,9 @@ func (m *providerImpl) NewFloat64Histogram(name string, options ...metric.Float6
 }
 
 func (m *providerImpl) NewInt64Counter(name string, options ...metric.Int64CounterOption) (metrics.Int64Counter, error) {
+	logger := m.logger.WithValue("name", name)
+	logger.Info("NewInt64Counter invoked")
+
 	z, err := m.mp.Int64Counter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 	if err != nil {
 		return nil, err
@@ -208,6 +227,9 @@ func (m *providerImpl) NewInt64Counter(name string, options ...metric.Int64Count
 }
 
 func (m *providerImpl) NewInt64Gauge(name string, options ...metric.Int64GaugeOption) (metrics.Int64Gauge, error) {
+	logger := m.logger.WithValue("name", name)
+	logger.Info("NewInt64Gauge invoked")
+
 	z, err := m.mp.Int64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 	if err != nil {
 		return nil, err
@@ -217,6 +239,9 @@ func (m *providerImpl) NewInt64Gauge(name string, options ...metric.Int64GaugeOp
 }
 
 func (m *providerImpl) NewInt64UpDownCounter(name string, options ...metric.Int64UpDownCounterOption) (metrics.Int64UpDownCounter, error) {
+	logger := m.logger.WithValue("name", name)
+	logger.Info("NewInt64UpDownCounter invoked")
+
 	z, err := m.mp.Int64UpDownCounter(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 	if err != nil {
 		return nil, err
@@ -226,6 +251,9 @@ func (m *providerImpl) NewInt64UpDownCounter(name string, options ...metric.Int6
 }
 
 func (m *providerImpl) NewInt64Histogram(name string, options ...metric.Int64HistogramOption) (metrics.Int64Histogram, error) {
+	logger := m.logger.WithValue("name", name)
+	logger.Info("NewInt64Histogram invoked")
+
 	z, err := m.mp.Int64Histogram(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
 	if err != nil {
 		return nil, err

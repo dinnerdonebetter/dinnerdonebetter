@@ -20788,7 +20788,7 @@ paths:
   /users/login/jwt:
     post:
       description: Operation for creating TokenResponse
-      operationId: LoginForJWT
+      operationId: LoginForToken
       requestBody:
         content:
           application/json:
@@ -20852,7 +20852,7 @@ paths:
   /users/login/jwt/admin:
     post:
       description: Operation for creating TokenResponse
-      operationId: AdminLoginForJWT
+      operationId: AdminLoginForToken
       requestBody:
         content:
           application/json:

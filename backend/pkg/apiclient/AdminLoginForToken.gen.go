@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-func (c *Client) LoginForJWT(
+func (c *Client) AdminLoginForToken(
 	ctx context.Context,
 	input *types.UserLoginInput,
 	reqMods ...RequestModifier,
@@ -28,7 +28,7 @@ func (c *Client) LoginForJWT(
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
-	u := c.BuildURL(ctx, nil, "/users/login/jwt")
+	u := c.BuildURL(ctx, nil, "/users/login/jwt/admin")
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a TokenResponse")

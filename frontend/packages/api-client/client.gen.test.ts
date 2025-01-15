@@ -561,7 +561,7 @@ describe('basic', () => {
     mock.onPost(`${baseURL}/users/login/jwt/admin`).reply(201, exampleResponse);
 
     client
-      .adminLoginForJWT(exampleInput)
+      .adminLoginForToken(exampleInput)
       .then((response: AxiosResponse<APIResponse<TokenResponse>>) => {
         expect(response.data).toEqual(exampleResponse);
       })
@@ -576,21 +576,21 @@ describe('basic', () => {
   it('should appropriately raise errors when they occur during Operation for creating TokenResponse', () => {
     const exampleInput = new UserLoginInput();
 
-    const expectedError = buildObligatoryError('adminLoginForJWT user error');
+    const expectedError = buildObligatoryError('adminLoginForToken user error');
     const exampleResponse = new APIResponse<TokenResponse>(expectedError);
     mock.onPost(`${baseURL}/users/login/jwt/admin`).reply(201, exampleResponse);
 
-    expect(client.adminLoginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.adminLoginForToken(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should appropriately raise service errors when they occur during Operation for creating TokenResponse', () => {
     const exampleInput = new UserLoginInput();
 
-    const expectedError = buildObligatoryError('adminLoginForJWT service error');
+    const expectedError = buildObligatoryError('adminLoginForToken service error');
     const exampleResponse = new APIResponse<TokenResponse>(expectedError);
     mock.onPost(`${baseURL}/users/login/jwt/admin`).reply(500, exampleResponse);
 
-    expect(client.adminLoginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.adminLoginForToken(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should Operation for creating TokenResponse', () => {
@@ -600,7 +600,7 @@ describe('basic', () => {
     mock.onPost(`${baseURL}/users/login/jwt`).reply(201, exampleResponse);
 
     client
-      .loginForJWT(exampleInput)
+      .loginForToken(exampleInput)
       .then((response: AxiosResponse<APIResponse<TokenResponse>>) => {
         expect(response.data).toEqual(exampleResponse);
       })
@@ -615,21 +615,21 @@ describe('basic', () => {
   it('should appropriately raise errors when they occur during Operation for creating TokenResponse', () => {
     const exampleInput = new UserLoginInput();
 
-    const expectedError = buildObligatoryError('loginForJWT user error');
+    const expectedError = buildObligatoryError('loginForToken user error');
     const exampleResponse = new APIResponse<TokenResponse>(expectedError);
     mock.onPost(`${baseURL}/users/login/jwt`).reply(201, exampleResponse);
 
-    expect(client.loginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.loginForToken(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should appropriately raise service errors when they occur during Operation for creating TokenResponse', () => {
     const exampleInput = new UserLoginInput();
 
-    const expectedError = buildObligatoryError('loginForJWT service error');
+    const expectedError = buildObligatoryError('loginForToken service error');
     const exampleResponse = new APIResponse<TokenResponse>(expectedError);
     mock.onPost(`${baseURL}/users/login/jwt`).reply(500, exampleResponse);
 
-    expect(client.loginForJWT(exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.loginForToken(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should Operation for creating User', () => {

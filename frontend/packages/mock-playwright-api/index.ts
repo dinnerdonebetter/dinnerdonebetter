@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export * from './AcceptHouseholdInvitation';
-export * from './AdminLoginForJWT';
+export * from './AdminLoginForToken';
 export * from './AdminUpdateUserStatus';
 export * from './AggregateUserDataReport';
 export * from './ArchiveHousehold';
@@ -191,7 +191,7 @@ export * from './GetValidVessel';
 export * from './GetValidVessels';
 export * from './GetWebhook';
 export * from './GetWebhooks';
-export * from './LoginForJWT';
+export * from './LoginForToken';
 export * from './PublishArbitraryQueueMessage';
 export * from './RedeemPasswordResetToken';
 export * from './RefreshTOTPSecret';

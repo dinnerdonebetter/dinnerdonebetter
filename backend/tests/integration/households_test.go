@@ -265,7 +265,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			_, err = c.SetDefaultHousehold(ctx, relevantHouseholdID)
 			require.NoError(t, err)
 
-			tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
+			tokenResponse, err := c.LoginForToken(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 			require.NoError(t, err)
 
 			require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
@@ -340,7 +340,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			_, err = c.SetDefaultHousehold(ctx, relevantHouseholdID)
 			require.NoError(t, err)
 
-			tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
+			tokenResponse, err := c.LoginForToken(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 			require.NoError(t, err)
 
 			require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
@@ -608,7 +608,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			_, err := testClients.userClient.SetDefaultHousehold(ctx, household.ID)
 			require.NoError(t, err)
 
-			tokenResponse, err := testClients.userClient.LoginForJWT(ctx, &types.UserLoginInput{Username: testClients.user.Username, Password: testClients.user.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, testClients.user)})
+			tokenResponse, err := testClients.userClient.LoginForToken(ctx, &types.UserLoginInput{Username: testClients.user.Username, Password: testClients.user.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, testClients.user)})
 			require.NoError(t, err)
 
 			require.NoError(t, testClients.userClient.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
@@ -668,7 +668,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 				_, err = clients[i].SetDefaultHousehold(ctx, household.ID)
 				require.NoError(t, err)
 
-				tokenResponse, err = clients[i].LoginForJWT(ctx, &types.UserLoginInput{Username: users[i].Username, Password: users[i].HashedPassword, TOTPToken: generateTOTPTokenForUser(t, users[i])})
+				tokenResponse, err = clients[i].LoginForToken(ctx, &types.UserLoginInput{Username: users[i].Username, Password: users[i].HashedPassword, TOTPToken: generateTOTPTokenForUser(t, users[i])})
 				require.NoError(t, err)
 
 				require.NoError(t, clients[i].SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
@@ -737,7 +737,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			_, err := testClients.userClient.SetDefaultHousehold(ctx, household.ID)
 			require.NoError(t, err)
 
-			tokenResponse, err := testClients.userClient.LoginForJWT(ctx, &types.UserLoginInput{Username: testClients.user.Username, Password: testClients.user.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, testClients.user)})
+			tokenResponse, err := testClients.userClient.LoginForToken(ctx, &types.UserLoginInput{Username: testClients.user.Username, Password: testClients.user.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, testClients.user)})
 			require.NoError(t, err)
 
 			require.NoError(t, testClients.userClient.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
@@ -773,7 +773,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			_, err = futureOwnerClient.SetDefaultHousehold(ctx, household.ID)
 			require.NoError(t, err)
 
-			tokenResponse, err = futureOwnerClient.LoginForJWT(ctx, &types.UserLoginInput{Username: futureOwner.Username, Password: futureOwner.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, futureOwner)})
+			tokenResponse, err = futureOwnerClient.LoginForToken(ctx, &types.UserLoginInput{Username: futureOwner.Username, Password: futureOwner.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, futureOwner)})
 			require.NoError(t, err)
 
 			require.NoError(t, futureOwnerClient.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
@@ -859,7 +859,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 
 			u.HashedPassword = regInput.Password
 
-			tokenResponse, err := c.LoginForJWT(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
+			tokenResponse, err := c.LoginForToken(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 			require.NoError(t, err)
 
 			require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))

@@ -335,7 +335,7 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async adminLoginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<TokenResponse>>> {
+  async adminLoginForToken(input: UserLoginInput): Promise<AxiosResponse<APIResponse<TokenResponse>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
@@ -6163,7 +6163,7 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async loginForJWT(input: UserLoginInput): Promise<AxiosResponse<APIResponse<TokenResponse>>> {
+  async loginForToken(input: UserLoginInput): Promise<AxiosResponse<APIResponse<TokenResponse>>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client

@@ -82,7 +82,7 @@ func initializeOAuth2PoweredClient(ctx context.Context, input *types.UserLoginIn
 		return nil, err
 	}
 
-	tokenResponse, err := c.LoginForJWT(ctx, input)
+	tokenResponse, err := c.LoginForToken(ctx, input)
 	if err != nil {
 		return nil, err
 	}
