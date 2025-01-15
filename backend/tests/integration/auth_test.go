@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func (s *TestSuite) TestLoginForJWT() {
+func (s *TestSuite) TestLoginForToken() {
 	s.Run("logging in and out works", func() {
 		t := s.T()
 
@@ -25,7 +25,7 @@ func (s *TestSuite) TestLoginForJWT() {
 		defer span.End()
 
 		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
-		token, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
+		token, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -36,7 +36,7 @@ func (s *TestSuite) TestLoginForJWT() {
 	})
 }
 
-func (s *TestSuite) TestAdminLoginForJWT() {
+func (s *TestSuite) TestAdminLoginForToken() {
 	s.Run("logging in and out works", func() {
 		t := s.T()
 
@@ -52,7 +52,7 @@ func (s *TestSuite) TestAdminLoginForJWT() {
 		adminClient, err := initializeOAuth2PoweredClient(ctx, loginInput)
 		require.NoError(t, err)
 
-		token, err := adminClient.AdminLoginForJWT(ctx, &types.UserLoginInput{
+		token, err := adminClient.AdminLoginForToken(ctx, &types.UserLoginInput{
 			Username:  premadeAdminUser.Username,
 			Password:  premadeAdminUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
@@ -107,7 +107,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithInvalidPassword() {
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
 		}
 
-		cookie, err := testClient.LoginForJWT(ctx, r)
+		cookie, err := testClient.LoginForToken(ctx, r)
 		assert.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -129,7 +129,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginAsANonexistentUser() {
 			TOTPToken: "123456",
 		}
 
-		cookie, err := testClient.LoginForJWT(ctx, r)
+		cookie, err := testClient.LoginForToken(ctx, r)
 		assert.Nil(t, cookie)
 		assert.Error(t, err)
 	})
@@ -156,7 +156,7 @@ func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithoutValidating2FASecret()
 			Password: exampleUserCreationInput.Password,
 		}
 
-		cookie, err := testClient.LoginForJWT(ctx, r)
+		cookie, err := testClient.LoginForToken(ctx, r)
 		assert.NotNil(t, cookie)
 		assert.NoError(t, err)
 	})
@@ -170,7 +170,7 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		defer span.End()
 
 		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
-		cookie, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
+		cookie, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -199,7 +199,7 @@ func (s *TestSuite) TestPasswordChanging() {
 		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
 
 		// login.
-		cookie, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
+		cookie, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -221,7 +221,7 @@ func (s *TestSuite) TestPasswordChanging() {
 		}))
 
 		// login again with new passwords.
-		cookie, err = testClient.LoginForJWT(ctx, &types.UserLoginInput{
+		cookie, err = testClient.LoginForToken(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  backwardsPass,
 			TOTPToken: generateTOTPTokenForUser(t, testUser),
@@ -258,7 +258,7 @@ func (s *TestSuite) TestTOTPSecretChanging() {
 		newToken, err := totp.GenerateCode(r.TwoFactorSecret, time.Now().UTC())
 		requireNotNilAndNoProblems(t, newToken, err)
 
-		secondCookie, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
+		secondCookie, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
 			Username:  testUser.Username,
 			Password:  testUser.HashedPassword,
 			TOTPToken: newToken,
@@ -350,7 +350,7 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 		})
 		require.NoError(t, err)
 
-		cookie, err := testClient.LoginForJWT(ctx, &types.UserLoginInput{
+		cookie, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
 			Username:  u.Username,
 			Password:  fakeInput.Password,
 			TOTPToken: generateTOTPTokenForUser(t, u),

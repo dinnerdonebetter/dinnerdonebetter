@@ -293,7 +293,7 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		Method:            method,
 		QueryFiltered:     containsQF,
 		DefaultStatusCode: defaultStatusCode,
-		ReturnRawResponse: slices.Contains([]string{"updatePassword", "loginForJWT", "adminLoginForJWT"}, functionName),
+		ReturnRawResponse: slices.Contains([]string{"updatePassword", "loginForToken", "adminLoginForToken"}, functionName),
 		ReturnsList:       returnsList,
 		Params:            functionParams,
 		InputType:         ip,

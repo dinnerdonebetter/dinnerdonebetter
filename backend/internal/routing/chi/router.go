@@ -43,7 +43,12 @@ type router struct {
 	metricProvider metrics.Provider
 }
 
-func buildChiMux(logger logging.Logger, tracer tracing.Tracer, metricProvider metrics.Provider, cfg *Config) chi.Router {
+func buildChiMux(
+	logger logging.Logger,
+	tracer tracing.Tracer,
+	metricProvider metrics.Provider,
+	cfg *Config,
+) chi.Router {
 	corsHandler := cors.New(cors.Options{
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
 			u, err := url.Parse(origin)
@@ -51,10 +56,10 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, metricProvider me
 				return false
 			}
 
-			cfg.ValidDomains = append(cfg.ValidDomains, "dinner-done-better.dev.svc.cluster.local:8000")
-
-			result := slices.Contains(cfg.ValidDomains, u.Hostname()) || cfg.EnableCORSForLocalhost && u.Hostname() == "localhost"
-
+			result := slices.Contains(
+				append(cfg.ValidDomains, "dinner-done-better.dev.svc.cluster.local:8000"),
+				u.Hostname(),
+			) || cfg.EnableCORSForLocalhost && u.Hostname() == "localhost"
 			logger.WithValue("result", result).Info("CORS Middleware")
 
 			return result
@@ -85,7 +90,6 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, metricProvider me
 		otelchimetric.NewResponseSizeBytes(baseCfg),
 		otelchi.Middleware(
 			cfg.ServiceName,
-			// otelchi.WithPublicEndpoint(),
 			otelchi.WithRequestMethodInSpanName(true),
 			otelchi.WithTraceResponseHeaders(otelchi.TraceHeaderConfig{
 				TraceIDHeader:      "X-Trace-ID",

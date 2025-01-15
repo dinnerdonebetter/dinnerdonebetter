@@ -288,7 +288,7 @@ func buildFunction(path, method string, op *openapi31.Operation) *APIClientFunct
 		Method:            method,
 		QueryFiltered:     containsQF,
 		DefaultStatusCode: defaultStatusCode,
-		ReturnRawResponse: slices.Contains([]string{"updatePassword", "loginForJWT", "adminLoginForJWT"}, functionName),
+		ReturnRawResponse: slices.Contains([]string{"updatePassword", "loginForToken", "adminLoginForToken"}, functionName),
 		ReturnsList:       returnsList,
 		Params:            functionParams,
 		InputType:         ip,
@@ -420,7 +420,7 @@ func (f *APIClientFunction) Render() (string, error) {
 {{ end -}}
     self.client.{{ lowercase .Method }}<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }} >(` + "`" + "{{ .PathTemplate }}" + "`" + `{{ if ne .InputType.Type "" }}, input{{ end }})
  		.then((res: AxiosResponse<{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}>) => {
-          if (res.data.error{{ if or (eq .Name "loginForJWT") (eq .Name "adminLoginForJWT") }} && res.data.error.message.toLowerCase() != "totp required" {{ end }}) {
+          if (res.data.error{{ if or (eq .Name "loginForToken") (eq .Name "adminLoginForToken") }} && res.data.error.message.toLowerCase() != "totp required" {{ end }}) {
             reject(res.data.error);
           } else {
 	    	resolve(res{{ if not .ReturnRawResponse }}.data{{ end }});

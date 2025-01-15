@@ -148,7 +148,7 @@ func init() {
 		panic(err)
 	}
 
-	jwtRes, err := simpleClient.AdminLoginForJWT(ctx, &types.UserLoginInput{
+	jwtRes, err := simpleClient.AdminLoginForToken(ctx, &types.UserLoginInput{
 		Username:  premadeAdminUser.Username,
 		Password:  premadeAdminUser.HashedPassword,
 		TOTPToken: code,

@@ -49,7 +49,7 @@ func main() {
 		panic(err)
 	}
 
-	jwtResponse, err := client.LoginForJWT(context.Background(), &types.UserLoginInput{
+	jwtResponse, err := client.LoginForToken(context.Background(), &types.UserLoginInput{
 		Username:  "username",
 		Password:  "password",
 		TOTPToken: code,

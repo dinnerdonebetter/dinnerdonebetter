@@ -5,7 +5,7 @@ Here's how authentication between the frontend webapps (both admin and app) and 
 ```mermaid
 sequenceDiagram
     User->>Webapp: { Username, Password, TOTPToken }
-    Webapp->>API Server: LoginForJWT
+    Webapp->>API Server: LoginForToken
     API Server->>Webapp: JWT
     Webapp->>API Server: { ClientID, ClientSecret, JWT }
     API Server->>Webapp: OAuth2 Token
