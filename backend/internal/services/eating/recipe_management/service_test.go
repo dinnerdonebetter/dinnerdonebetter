@@ -12,6 +12,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
@@ -78,6 +79,7 @@ func TestProvideRecipesService(T *testing.T) {
 			pp,
 			&images.MockImageUploadProcessor{},
 			tracing.NewNoopTracerProvider(),
+			metrics.NewNoopMetricsProvider(),
 			msgCfg,
 			&RecipeManagementDataManagerMock{},
 		)
@@ -116,6 +118,7 @@ func TestProvideRecipesService(T *testing.T) {
 			pp,
 			&images.MockImageUploadProcessor{},
 			tracing.NewNoopTracerProvider(),
+			metrics.NewNoopMetricsProvider(),
 			msgCfg,
 			&RecipeManagementDataManagerMock{},
 		)

@@ -13,6 +13,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/search/text"
@@ -69,6 +70,7 @@ func ProvideService(
 	publisherProvider messagequeue.PublisherProvider,
 	imageUploadProcessor images.MediaUploadProcessor,
 	tracerProvider tracing.TracerProvider,
+	metricsProvider metrics.Provider,
 	queueConfig *msgconfig.QueuesConfig,
 	recipesDataManager types.RecipeManagementDataManager,
 ) (types.RecipeManagementDataService, error) {
@@ -90,7 +92,7 @@ func ProvideService(
 		return nil, fmt.Errorf("initializing %s upload manager: %w", serviceName, err)
 	}
 
-	searchIndex, err := textsearchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeRecipes)
+	searchIndex, err := textsearchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, textsearch.IndexTypeRecipes)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing recipe index manager")
 	}

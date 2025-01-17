@@ -6,13 +6,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/observability/utils"
 
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 )
 
 type errorHandler struct {
@@ -34,26 +32,9 @@ func SetupCloudTrace(ctx context.Context, serviceName string, spanCollectionProb
 		return nil, fmt.Errorf("setting up trace exporter: %w", err)
 	}
 
-	res, err := resource.New(ctx,
-		resource.WithFromEnv(),
-		resource.WithProcess(),
-		resource.WithTelemetrySDK(),
-		resource.WithHost(),
-		resource.WithOSType(),
-		resource.WithAttributes(
-			attribute.KeyValue{
-				Key:   semconv.ServiceNameKey,
-				Value: attribute.StringValue(serviceName),
-			},
-		),
-	)
-	if err != nil {
-		return nil, err
-	}
-
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithBatcher(exporter),
-		sdktrace.WithResource(res),
+		sdktrace.WithResource(o11yutils.MustOtelResource(ctx, serviceName)),
 		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(spanCollectionProbability)),
 	)
 

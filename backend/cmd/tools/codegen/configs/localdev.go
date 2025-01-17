@@ -17,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
@@ -72,6 +73,11 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		Search: textsearchcfg.Config{
 			Algolia:  &algolia.Config{},
 			Provider: textsearchcfg.AlgoliaProvider,
+			CircuitBreakerConfig: &circuitbreaking.Config{
+				Name:                   "dev_text_searcher",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
 		},
 		Server: http.Config{
 			Debug:           true,

@@ -39,10 +39,15 @@ func doTheThing() error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
+	metricsProvider, err := cfg.Observability.Metrics.ProvideMetricsProvider(ctx, logger)
+	if err != nil {
+		logger.Error("initializing metrics provider", err)
+	}
+
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("email_prober_job")).StartSpan(ctx)
 	defer span.End()
 
-	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
+	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, otelhttp.DefaultClient)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}

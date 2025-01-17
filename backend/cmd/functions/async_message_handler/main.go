@@ -21,6 +21,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
@@ -83,6 +84,11 @@ func main() {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
+	metricsProvider, err := cfg.Observability.Metrics.ProvideMetricsProvider(ctx, logger)
+	if err != nil {
+		logger.Error("initializing metrics provider", err)
+	}
+
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(
 		signalChan,
@@ -95,7 +101,7 @@ func main() {
 	stopChan := make(chan bool)
 	errorsChan := make(chan error)
 
-	if err = doTheThing(ctx, logger, tracerProvider, cfg, stopChan, errorsChan); err != nil {
+	if err = doTheThing(ctx, logger, tracerProvider, metricsProvider, cfg, stopChan, errorsChan); err != nil {
 		log.Fatal(err)
 	}
 
@@ -113,6 +119,7 @@ func doTheThing(
 	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
+	metricsProvider metrics.Provider,
 	cfg *config.AsyncMessageHandlerConfig,
 	stopChan chan bool,
 	errorsChan chan error,
@@ -150,7 +157,7 @@ func doTheThing(
 
 	// set up myriad publishers
 
-	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
+	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider, metricsProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "setting up customer data collector")
 	}
@@ -180,7 +187,7 @@ func doTheThing(
 
 	// setup emailer
 
-	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
+	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, otelhttp.DefaultClient)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}
@@ -224,7 +231,7 @@ func doTheThing(
 		}
 
 		// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
-		return indexing.HandleIndexRequest(ctx, logger, tracerProvider, &cfg.Search, dataManager, &searchIndexRequest)
+		return indexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, &cfg.Search, dataManager, &searchIndexRequest)
 	})
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring search index requests consumer")

@@ -11,6 +11,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/search/text"
@@ -57,6 +58,7 @@ func ProvideService(
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
+	metricsProvider metrics.Provider,
 	queueConfig *msgconfig.QueuesConfig,
 	mealPlanningDataManager types.MealPlanningDataManager,
 ) (types.MealPlanningDataService, error) {
@@ -69,7 +71,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
-	searchIndex, err := textsearchcfg.ProvideIndex[types.MealSearchSubset](ctx, logger, tracerProvider, searchConfig, textsearch.IndexTypeMeals)
+	searchIndex, err := textsearchcfg.ProvideIndex[types.MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, textsearch.IndexTypeMeals)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing recipe index manager")
 	}

@@ -20,7 +20,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
+	"github.com/XSAM/otelsql"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"go.opentelemetry.io/otel/attribute"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 const (
@@ -52,7 +55,12 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	db, err := sql.Open("pgx", cfg.ConnectionDetails.String())
+	db, err := otelsql.Open("pgx", cfg.ConnectionDetails.String(), otelsql.WithAttributes(
+		attribute.KeyValue{
+			Key:   semconv.ServiceNameKey,
+			Value: attribute.StringValue("database"),
+		},
+	))
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}

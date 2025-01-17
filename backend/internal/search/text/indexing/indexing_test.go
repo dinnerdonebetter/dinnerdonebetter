@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
@@ -25,7 +26,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -38,7 +38,7 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 
 	T.Run("deleting user index type", func(t *testing.T) {
@@ -48,7 +48,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -61,7 +60,7 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    true,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 
 	T.Run("recipe index type", func(t *testing.T) {
@@ -71,7 +70,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -84,7 +82,7 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 
 	T.Run("meal index type", func(t *testing.T) {
@@ -94,7 +92,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -107,7 +104,7 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 
 	T.Run("valid vessel index type", func(t *testing.T) {
@@ -117,7 +114,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -130,7 +126,7 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 
 	T.Run("valid ingredient index type", func(t *testing.T) {
@@ -140,7 +136,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -153,7 +148,7 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 
 	T.Run("valid instrument index type", func(t *testing.T) {
@@ -163,7 +158,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -176,7 +170,7 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 
 	T.Run("valid preparation index type", func(t *testing.T) {
@@ -186,7 +180,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -199,7 +192,7 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 
 	T.Run("valid measurement unit index type", func(t *testing.T) {
@@ -209,7 +202,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -222,7 +214,7 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 
 	T.Run("valid ingredient state index type", func(t *testing.T) {
@@ -232,7 +224,6 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		tracerProvider := tracing.NewNoopTracerProvider
 		searchConfig := &textsearchcfg.Config{}
 
 		dataManager := database.NewMockDatabase()
@@ -245,6 +236,6 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracerProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
 	})
 }

@@ -5,15 +5,13 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/observability/utils"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 type errorHandler struct {
@@ -30,22 +28,7 @@ func init() {
 
 // SetupOtelGRPC creates a new trace provider instance and registers it as global trace provider.
 func SetupOtelGRPC(ctx context.Context, serviceName string, collectionProbability float64, c *Config) (tracing.TracerProvider, error) {
-	res, err := resource.New(ctx,
-		resource.WithFromEnv(),
-		resource.WithProcess(),
-		resource.WithTelemetrySDK(),
-		resource.WithHost(),
-		resource.WithOSType(),
-		resource.WithAttributes(
-			attribute.KeyValue{
-				Key:   semconv.ServiceNameKey,
-				Value: attribute.StringValue(serviceName),
-			},
-		),
-	)
-	if err != nil {
-		return nil, err
-	}
+	res := o11yutils.MustOtelResource(ctx, serviceName)
 
 	options := []otlptracegrpc.Option{
 		otlptracegrpc.WithEndpoint(c.CollectorEndpoint),

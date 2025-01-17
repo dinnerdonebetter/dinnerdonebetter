@@ -2,6 +2,7 @@ package analyticscfg
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
@@ -9,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/analytics/rudderstack"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
@@ -48,8 +50,12 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // ProvideCollector provides a collector.
-func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracing.TracerProvider) (analytics.EventReporter, error) {
-	cb := circuitbreaking.ProvideCircuitBreaker(cfg.CircuitBreakerConfig)
+func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider) (analytics.EventReporter, error) {
+	cb, err := cfg.CircuitBreakerConfig.ProvideCircuitBreaker(logger, metricsProvider)
+	if err != nil {
+		return nil, fmt.Errorf("could not create analytics circuit breaker: %w", err)
+	}
+
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSegment:
 		return segment.NewSegmentEventReporter(logger, tracerProvider, cfg.Segment.APIToken, cb)
