@@ -35,7 +35,7 @@ const (
 
 var _ database.DataManager = (*Querier)(nil)
 
-// Querier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
+// Querier is the primary database querying client.
 type Querier struct {
 	tracer                  tracing.Tracer
 	logger                  logging.Logger
