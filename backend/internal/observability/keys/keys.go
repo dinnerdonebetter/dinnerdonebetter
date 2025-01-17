@@ -65,8 +65,6 @@ const (
 	RequestURIKey = "request.uri"
 	// ResponseStatusKey is the standard key for referring to a http.Request's status.
 	ResponseStatusKey = "response.status"
-	// ResponseBytesWrittenKey is the standard key for referring to a http.Request's bytes written.
-	ResponseBytesWrittenKey = "response.bytes_written"
 	// ResponseHeadersKey is the standard key for referring to a http.Response's Headers.
 	ResponseHeadersKey = "response.headers"
 	// ReasonKey is the standard key for referring to a reason for a change.
@@ -85,6 +83,8 @@ const (
 	ValidationErrorKey = "validation_error"
 	// UserDataAggregationReportIDKey is the standard key for referring to a user data aggregation report.
 	UserDataAggregationReportIDKey = "user_data_aggregation_report.id"
+	// IndexNameKey is the standard key for referring to a given search index.
+	IndexNameKey = "index.name"
 
 	// ValidInstrumentIDKey is the standard key for referring to a valid instrument's ID.
 	ValidInstrumentIDKey = "valid_instrument.id"
