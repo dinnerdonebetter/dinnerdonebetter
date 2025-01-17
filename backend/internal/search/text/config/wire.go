@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -17,6 +18,6 @@ var (
 	)
 )
 
-func ProvideValidIngredientIndexManager(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config) (textsearch.Index[types.ValidIngredientSearchSubset], error) {
-	return ProvideIndex[types.ValidIngredientSearchSubset](ctx, logger, tracerProvider, cfg, textsearch.IndexTypeValidIngredients)
+func ProvideValidIngredientIndexManager(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, cfg *Config) (textsearch.Index[types.ValidIngredientSearchSubset], error) {
+	return ProvideIndex[types.ValidIngredientSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, textsearch.IndexTypeValidIngredients)
 }

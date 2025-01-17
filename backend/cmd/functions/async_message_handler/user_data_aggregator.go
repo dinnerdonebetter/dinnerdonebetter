@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -18,7 +18,7 @@ func handleUserDataRequest(
 	ctx context.Context,
 	logger logging.Logger,
 	tracer tracing.Tracer,
-	uploadManager *objectstorage.Uploader,
+	uploadManager uploads.UploadManager,
 	dataManager database.DataManager,
 	userDataCollectionRequest *types.UserDataAggregationRequest,
 ) error {

@@ -11,11 +11,17 @@ const (
 	// AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreakerConfig.MinimumSampleThreshold`.
 	AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
 
+	// AnalyticsCircuitBreakerNameEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreakerConfig.Name`.
+	AnalyticsCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_NAME"
+
 	// AnalyticsPosthogCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreakerConfig.ErrorRate`.
 	AnalyticsPosthogCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_POSTHOG_CIRCUIT_BREAKING_ERROR_RATE"
 
 	// AnalyticsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreakerConfig.MinimumSampleThreshold`.
 	AnalyticsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_POSTHOG_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// AnalyticsPosthogCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreakerConfig.Name`.
+	AnalyticsPosthogCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_POSTHOG_CIRCUIT_BREAKING_NAME"
 
 	// AnalyticsPosthogPersonalAPIKeyEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.PersonalAPIKey`.
 	AnalyticsPosthogPersonalAPIKeyEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_POSTHOG_PERSONAL_API_KEY"
@@ -80,6 +86,9 @@ const (
 	// EmailCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreakerConfig.MinimumSampleThreshold`.
 	EmailCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
 
+	// EmailCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreakerConfig.Name`.
+	EmailCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_NAME"
+
 	// EmailMailgunDomainEnvVarKey is the environment variable name to set in order to override `config.Email.Mailgun.Domain`.
 	EmailMailgunDomainEnvVarKey = "DINNER_DONE_BETTER_EMAIL_MAILGUN_DOMAIN"
 
@@ -143,11 +152,17 @@ const (
 	// FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreakingConfig.MinimumSampleThreshold`.
 	FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
 
+	// FeatureFlagsCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreakingConfig.Name`.
+	FeatureFlagsCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_NAME"
+
 	// FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.ErrorRate`.
 	FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_ERROR_RATE"
 
 	// FeatureFlagsLaunchDarklycircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.MinimumSampleThreshold`.
 	FeatureFlagsLaunchDarklycircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// FeatureFlagsLaunchDarklycircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.Name`.
+	FeatureFlagsLaunchDarklycircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_NAME"
 
 	// FeatureFlagsLaunchDarklyinitTimeoutEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.InitTimeout`.
 	FeatureFlagsLaunchDarklyinitTimeoutEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYINIT_TIMEOUT"
@@ -160,6 +175,9 @@ const (
 
 	// FeatureFlagsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.CircuitBreakerConfig.MinimumSampleThreshold`.
 	FeatureFlagsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// FeatureFlagsPosthogCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.CircuitBreakerConfig.Name`.
+	FeatureFlagsPosthogCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_CIRCUIT_BREAKING_NAME"
 
 	// FeatureFlagsPosthogPersonalAPIKeyEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.PersonalAPIKey`.
 	FeatureFlagsPosthogPersonalAPIKeyEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_PERSONAL_API_KEY"
@@ -265,6 +283,9 @@ const (
 
 	// SearchCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Search.CircuitBreakerConfig.MinimumSampleThreshold`.
 	SearchCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
+
+	// SearchCircuitBreakerNameEnvVarKey is the environment variable name to set in order to override `config.Search.CircuitBreakerConfig.Name`.
+	SearchCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_NAME"
 
 	// SearchElasticsearchAddressEnvVarKey is the environment variable name to set in order to override `config.Search.Elasticsearch.Address`.
 	SearchElasticsearchAddressEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_ADDRESS"

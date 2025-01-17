@@ -8,19 +8,17 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
+	"github.com/dinnerdonebetter/backend/internal/observability/utils"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 	"go.opentelemetry.io/contrib/instrumentation/host"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/exemplar"
-	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 var (
@@ -51,22 +49,7 @@ func setupMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Confi
 		return nil, nil, ErrNilConfig
 	}
 
-	res, err := resource.New(ctx,
-		resource.WithFromEnv(),
-		resource.WithProcess(),
-		resource.WithTelemetrySDK(),
-		resource.WithHost(),
-		resource.WithOSType(),
-		resource.WithAttributes(
-			attribute.KeyValue{
-				Key:   semconv.ServiceNameKey,
-				Value: attribute.StringValue(cfg.ServiceName),
-			},
-		),
-	)
-	if err != nil {
-		return nil, nil, fmt.Errorf("setting up metrics resource: %w", err)
-	}
+	res := o11yutils.MustOtelResource(ctx, cfg.ServiceName)
 
 	options := []otlpmetricgrpc.Option{
 		otlpmetricgrpc.WithEndpoint(cfg.CollectorEndpoint),
@@ -117,7 +100,9 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 		return nil, ErrNilConfig
 	}
 
-	logger.WithValue("interval", cfg.CollectionInterval.String()).Info("setting up period metric reader")
+	logger.WithValue("service.name", cfg.ServiceName).
+		WithValue("interval", cfg.CollectionInterval.String()).
+		Info("setting up metrics provider")
 
 	meterProvider, shutdown, err := setupMetricsProvider(ctx, logger, cfg)
 	if err != nil {

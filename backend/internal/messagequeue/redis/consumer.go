@@ -98,7 +98,7 @@ func ProvideRedisConsumerProvider(logger logging.Logger, cfg Config) messagequeu
 }
 
 // ProvideConsumer returns a Consumer for a given topic.
-func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (messagequeue.Consumer, error) {
+func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc messagequeue.ConsumerFunc) (messagequeue.Consumer, error) {
 	logger := logging.EnsureLogger(p.logger).WithValue("topic", topic)
 
 	if topic == "" {

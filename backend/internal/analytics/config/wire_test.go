@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/require"
@@ -19,7 +20,7 @@ func TestProvideCollector(T *testing.T) {
 		cfg := &Config{}
 		logger := logging.NewNoopLogger()
 
-		actual, err := ProvideEventReporter(cfg, logger, tracing.NewNoopTracerProvider())
+		actual, err := ProvideEventReporter(cfg, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 	})
@@ -35,7 +36,7 @@ func TestProvideCollector(T *testing.T) {
 		}
 		logger := logging.NewNoopLogger()
 
-		actual, err := ProvideEventReporter(cfg, logger, tracing.NewNoopTracerProvider())
+		actual, err := ProvideEventReporter(cfg, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 	})

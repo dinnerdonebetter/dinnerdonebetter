@@ -86,12 +86,12 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	}
 	featureflagscfgConfig := &cfg.FeatureFlags
 	client := tracing.BuildTracedHTTPClient()
-	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, client)
+	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, provider, client)
 	if err != nil {
 		return nil, err
 	}
 	analyticscfgConfig := &cfg.Analytics
-	eventReporter, err := analyticscfg.ProvideEventReporter(analyticscfgConfig, logger, tracerProvider)
+	eventReporter, err := analyticscfg.ProvideEventReporter(analyticscfgConfig, logger, tracerProvider, provider)
 	if err != nil {
 		return nil, err
 	}
@@ -178,13 +178,13 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	textsearchcfgConfig := &cfg.Search
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	recipeManagementDataManager := database.ProvideRecipeManagementDataManager(dataManager)
-	recipeManagementDataService, err := recipemanagement.ProvideService(ctx, logger, recipemanagementConfig, textsearchcfgConfig, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider, queuesConfig, recipeManagementDataManager)
+	recipeManagementDataService, err := recipemanagement.ProvideService(ctx, logger, recipemanagementConfig, textsearchcfgConfig, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider, provider, queuesConfig, recipeManagementDataManager)
 	if err != nil {
 		return nil, err
 	}
 	mealplanningConfig := &servicesConfig.MealPlanning
 	mealPlanningDataManager := database.ProvideMealPlanningDataManager(dataManager)
-	mealPlanningDataService, err := mealplanning.ProvideService(ctx, logger, mealplanningConfig, textsearchcfgConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig, mealPlanningDataManager)
+	mealPlanningDataService, err := mealplanning.ProvideService(ctx, logger, mealplanningConfig, textsearchcfgConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, provider, queuesConfig, mealPlanningDataManager)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/analytics/rudderstack"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/require"
@@ -60,7 +61,7 @@ func TestConfig_ProvideCollector(T *testing.T) {
 				Posthog:     &posthog.Config{APIKey: t.Name()},
 			}
 
-			_, err := cfg.ProvideCollector(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+			_, err := cfg.ProvideCollector(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
 			require.NoError(t, err)
 		}
 	})
@@ -76,7 +77,7 @@ func TestConfig_ProvideCollector(T *testing.T) {
 				Posthog:     &posthog.Config{},
 			}
 
-			_, err := cfg.ProvideCollector(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+			_, err := cfg.ProvideCollector(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())
 			require.Error(t, err)
 		}
 	})

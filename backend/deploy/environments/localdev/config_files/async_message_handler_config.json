@@ -34,7 +34,11 @@
 			"timeout": 0
 		},
 		"elasticsearch": null,
-		"circuitBreakerConfig": null,
+		"circuitBreakerConfig": {
+			"name": "dev_text_searcher",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		},
 		"provider": "algolia"
 	},
 	"events": {

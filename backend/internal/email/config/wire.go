@@ -1,12 +1,13 @@
 package emailcfg
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	"github.com/google/wire"
 )
@@ -19,7 +20,11 @@ var (
 )
 
 // ProvideEmailer provides an email.Emailer from a config.
-func ProvideEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (email.Emailer, error) {
-	circuitBreaker := circuitbreaking.ProvideCircuitBreaker(cfg.CircuitBreakerConfig)
+func ProvideEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, client *http.Client) (email.Emailer, error) {
+	circuitBreaker, err := cfg.CircuitBreakerConfig.ProvideCircuitBreaker(logger, metricsProvider)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize circuit breaker: %w", err)
+	}
+
 	return cfg.ProvideEmailer(logger, tracerProvider, client, circuitBreaker)
 }

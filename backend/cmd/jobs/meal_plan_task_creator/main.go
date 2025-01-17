@@ -41,10 +41,15 @@ func doTheThing() error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
+	metricsProvider, err := cfg.Observability.Metrics.ProvideMetricsProvider(ctx, logger)
+	if err != nil {
+		logger.Error("initializing metrics", err)
+	}
+
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("meal_plan_task_creator_job")).StartSpan(ctx)
 	defer span.End()
 
-	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
+	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider, metricsProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring customer data collector")
 	}

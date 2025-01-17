@@ -20,6 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
@@ -68,11 +69,21 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		Email: emailcfg.Config{
 			Provider: emailcfg.ProviderSendgrid,
+			CircuitBreakerConfig: &circuitbreaking.Config{
+				Name:                   "dev_emailer",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
 			Sendgrid: &sendgrid.Config{},
 		},
 		Analytics: analyticscfg.Config{
 			Provider: analyticscfg.ProviderSegment,
-			Segment:  &segment.Config{APIToken: ""},
+			CircuitBreakerConfig: &circuitbreaking.Config{
+				Name:                   "dev_analytics",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
+			Segment: &segment.Config{APIToken: ""},
 		},
 		Server: http.Config{
 			Debug:           true,
@@ -80,7 +91,12 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			StartupDeadline: time.Minute,
 		},
 		Search: textsearchcfg.Config{
-			Algolia:  &algolia.Config{},
+			Algolia: &algolia.Config{},
+			CircuitBreakerConfig: &circuitbreaking.Config{
+				Name:                   "dev_text_searcher",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
 			Provider: textsearchcfg.AlgoliaProvider,
 		},
 		Database: databasecfg.Config{

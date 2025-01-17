@@ -12,7 +12,11 @@
 		},
 		"posthog": null,
 		"rudderstack": null,
-		"circuitBreaker": null,
+		"circuitBreaker": {
+			"name": "dev_analytics",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		},
 		"provider": "segment"
 	},
 	"events": {

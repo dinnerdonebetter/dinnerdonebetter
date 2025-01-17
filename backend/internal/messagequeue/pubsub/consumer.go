@@ -96,7 +96,7 @@ func (p *pubsubConsumerProvider) Close() {
 }
 
 // ProvideConsumer returns a pubSubConsumer for a given topic.
-func (p *pubsubConsumerProvider) ProvideConsumer(_ context.Context, topic string, handlerFunc func(context.Context, []byte) error) (messagequeue.Consumer, error) {
+func (p *pubsubConsumerProvider) ProvideConsumer(_ context.Context, topic string, handlerFunc messagequeue.ConsumerFunc) (messagequeue.Consumer, error) {
 	if topic == "" {
 		return nil, messagequeue.ErrEmptyTopicName
 	}

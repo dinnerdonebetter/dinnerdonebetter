@@ -2,9 +2,11 @@ package textsearchcfg
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
@@ -43,8 +45,12 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // ProvideIndex validates a Config struct.
-func ProvideIndex[T textsearch.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, indexName string) (textsearch.Index[T], error) {
-	circuitBreaker := circuitbreaking.ProvideCircuitBreaker(cfg.CircuitBreakerConfig)
+func ProvideIndex[T textsearch.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, cfg *Config, indexName string) (textsearch.Index[T], error) {
+	//nolint:contextcheck // I actually want to use a whatever context here.
+	circuitBreaker, err := circuitbreaking.ProvideCircuitBreaker(cfg.CircuitBreakerConfig, logger, metricsProvider)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize circuitBreaker: %w", err)
+	}
 
 	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case ElasticsearchProvider:

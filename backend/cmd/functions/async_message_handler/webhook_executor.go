@@ -15,8 +15,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func handleWebhookExecutionRequest(
@@ -70,7 +68,7 @@ func handleWebhookExecutionRequest(
 	digest.Write(payloadBody)
 	req.Header.Set("X-Dinner-Done-Better-Signature", hex.EncodeToString(digest.Sum(nil)))
 
-	res, err := otelhttp.DefaultClient.Do(req)
+	res, err := tracing.BuildTracedHTTPClient().Do(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "executing webhook request")
 		return nil
