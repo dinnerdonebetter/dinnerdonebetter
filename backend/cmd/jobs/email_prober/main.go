@@ -12,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
@@ -47,7 +46,7 @@ func doTheThing() error {
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("email_prober_job")).StartSpan(ctx)
 	defer span.End()
 
-	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, otelhttp.DefaultClient)
+	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, tracing.BuildTracedHTTPClient())
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}

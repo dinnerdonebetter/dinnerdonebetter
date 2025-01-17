@@ -13,7 +13,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/oauth2"
 )
 
@@ -145,12 +144,12 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []st
 
 		req.Header.Set("Authorization", "Bearer "+token)
 
-		client := otelhttp.DefaultClient
+		client := tracing.BuildTracedHTTPClient()
 		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		}
 
-		res, err := otelhttp.DefaultClient.Do(req)
+		res, err := client.Do(req)
 		if err != nil {
 			return fmt.Errorf("failed to get oauth2 code: %w", err)
 		}
@@ -177,7 +176,7 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, scopes []st
 
 		c.authedClient.Transport = &oauth2.Transport{
 			Source: oauth2.ReuseTokenSource(oauth2Token, oauth2.StaticTokenSource(oauth2Token)),
-			Base:   otelhttp.DefaultClient.Transport,
+			Base:   tracing.BuildTracedHTTPClient().Transport,
 		}
 
 		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)

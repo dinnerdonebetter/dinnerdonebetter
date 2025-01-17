@@ -32,7 +32,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
@@ -193,7 +192,7 @@ func doTheThing(
 	// setup emailer
 
 	//nolint:contextcheck // I actually want to use a whatever context here.
-	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, otelhttp.DefaultClient)
+	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, tracing.BuildTracedHTTPClient())
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}
