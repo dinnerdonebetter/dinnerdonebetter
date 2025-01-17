@@ -17,7 +17,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
+	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -51,7 +51,7 @@ func buildPNGBytes(t *testing.T) *bytes.Buffer {
 	t.Helper()
 
 	b := new(bytes.Buffer)
-	exampleImage := testutils.BuildArbitraryImage(256)
+	exampleImage := testutils2.BuildArbitraryImage(256)
 	require.NoError(t, png.Encode(b, exampleImage))
 
 	expected := b.Bytes()
@@ -62,7 +62,7 @@ func buildJPEGBytes(t *testing.T) *bytes.Buffer {
 	t.Helper()
 
 	b := new(bytes.Buffer)
-	exampleImage := testutils.BuildArbitraryImage(256)
+	exampleImage := testutils2.BuildArbitraryImage(256)
 	require.NoError(t, jpeg.Encode(b, exampleImage, &jpeg.Options{Quality: jpeg.DefaultQuality}))
 
 	expected := b.Bytes()
@@ -73,7 +73,7 @@ func buildGIFBytes(t *testing.T) *bytes.Buffer {
 	t.Helper()
 
 	b := new(bytes.Buffer)
-	exampleImage := testutils.BuildArbitraryImage(256)
+	exampleImage := testutils2.BuildArbitraryImage(256)
 	require.NoError(t, gif.Encode(b, exampleImage, &gif.Options{NumColors: 256}))
 
 	expected := b.Bytes()
@@ -127,7 +127,7 @@ func TestImage_Write(T *testing.T) {
 			Size:        12345,
 		}
 
-		res := &testutils.MockHTTPResponseWriter{}
+		res := &testutils2.MockHTTPResponseWriter{}
 		res.On("Header").Return(http.Header{})
 		res.On("Write", mock.IsType([]byte(nil))).Return(0, errors.New("blah"))
 

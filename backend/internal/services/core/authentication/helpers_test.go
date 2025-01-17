@@ -6,7 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
-	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
+	"github.com/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

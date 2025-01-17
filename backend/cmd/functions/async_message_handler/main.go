@@ -29,6 +29,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
+	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -92,10 +93,24 @@ func main() {
 		logger.Error("initializing metrics provider", err)
 	}
 
-	dataManager, consumerProvider, publisherProvider := requisiteSetup(ctx, logger, tracerProvider, cfg)
-
-	defer dataManager.Close()
-	defer publisherProvider.Close()
+	dataManager,
+		consumerProvider,
+		analyticsEventReporter,
+		outboundEmailsPublisher,
+		searchDataIndexPublisher,
+		webhookExecutionRequestPublisher,
+		emailer,
+		uploadManager,
+		dataChangesExecutionTimeHistogram,
+		outboundEmailsExecutionTimeHistogram,
+		searchIndexRequestsExecutionTimeHistogram,
+		userDataAggregationExecutionTimeHistogram,
+		webhookExecutionTimestampHistogram,
+		closeFunc,
+		err := setupDependencies(ctx, logger, tracerProvider, metricsProvider, cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(
@@ -117,10 +132,21 @@ func main() {
 		cfg,
 		dataManager,
 		consumerProvider,
-		publisherProvider,
+		analyticsEventReporter,
+		outboundEmailsPublisher,
+		searchDataIndexPublisher,
+		webhookExecutionRequestPublisher,
+		emailer,
+		uploadManager,
+		dataChangesExecutionTimeHistogram,
+		outboundEmailsExecutionTimeHistogram,
+		searchIndexRequestsExecutionTimeHistogram,
+		userDataAggregationExecutionTimeHistogram,
+		webhookExecutionTimestampHistogram,
 		stopChan,
 		errorsChan,
 	); err != nil {
+		closeFunc()
 		log.Fatal(err)
 	}
 
@@ -131,55 +157,136 @@ func main() {
 		// os.Kill
 		<-signalChan
 		stopChan <- true
+		closeFunc()
 	}()
 }
 
-func requisiteSetup(
+//nolint:gocritic // I know there are too many results, I don't see the value in breaking this out.
+func setupDependencies(
 	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
+	metricsProvider metrics.Provider,
 	cfg *config.AsyncMessageHandlerConfig,
 ) (
 	dataManager database.DataManager,
 	consumerProvider messagequeue.ConsumerProvider,
-	publisherProvider messagequeue.PublisherProvider,
-// analyticsEventReporter analytics.EventReporter,
-// outboundEmailsPublisher,
-// searchDataIndexPublisher,
-// webhookExecutionRequestPublisher messagequeue.Publisher,
-// emailer email.Emailer,
-// uploadManager uploads.UploadManager,
-// dataChangesExecutionTimeHistogram,
-// outboundEmailsExecutionTimeHistogram,
-// searchIndexRequestsExecutionTimeHistogram,
-// userDataAggregationExecutionTimeHistogram,
-// webhookExecutionTimestampHistogram metrics.Float64Histogram,
+	analyticsEventReporter analytics.EventReporter,
+	outboundEmailsPublisher,
+	searchDataIndexPublisher,
+	webhookExecutionRequestPublisher messagequeue.Publisher,
+	emailer email.Emailer,
+	uploadManager uploads.UploadManager,
+	dataChangesExecutionTimeHistogram,
+	outboundEmailsExecutionTimeHistogram,
+	searchIndexRequestsExecutionTimeHistogram,
+	userDataAggregationExecutionTimeHistogram,
+	webhookExecutionTimestampHistogram metrics.Float64Histogram,
 	closeFunc func(),
+	err error,
 ) {
 	// connect to database
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
-	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
+	dataManager, err = postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
 	if err != nil {
 		cancel()
-		log.Fatalf("error connecting to database: %v", err)
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("error connecting to database: %w", err)
 	}
-
 	cancel()
 
 	consumerProvider, err = msgconfig.ProvideConsumerProvider(ctx, logger, &cfg.Events)
 	if err != nil {
-		log.Fatalf("error initializing consumer provider: %v", err)
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("error initializing consumer provider: %w", err)
 	}
 
-	publisherProvider, err = msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
 	if err != nil {
-		log.Fatalf("error initializing publisher provider: %v", err)
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("error initializing publisher provider: %w", err)
 	}
 
-	return dataManager, consumerProvider, publisherProvider, func() {
-		dataManager.Close()
-		publisherProvider.Close()
+	//nolint:contextcheck // I actually want to use a whatever context here.
+	analyticsEventReporter, err = analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider, metricsProvider)
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("setting up customer data collector: %w", err)
 	}
+
+	outboundEmailsPublisher, err = publisherProvider.ProvidePublisher(cfg.Queues.OutboundEmailsTopicName)
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("configuring outbound emails publisher: %w", err)
+	}
+
+	searchDataIndexPublisher, err = publisherProvider.ProvidePublisher(cfg.Queues.SearchIndexRequestsTopicName)
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("configuring search indexing publisher: %w", err)
+	}
+
+	webhookExecutionRequestPublisher, err = publisherProvider.ProvidePublisher(cfg.Queues.WebhookExecutionRequestsTopicName)
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("configuring webhook execution requests publisher: %w", err)
+	}
+
+	// setup emailer
+
+	//nolint:contextcheck // I actually want to use a whatever context here.
+	emailer, err = emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, tracing.BuildTracedHTTPClient())
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("configuring outbound emailer: %w", err)
+	}
+
+	// setup uploader
+	uploadManager, err = objectstorage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Storage, chi.NewRouteParamManager())
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("creating upload manager: %w", err)
+	}
+
+	// setup execution timers
+	dataChangesExecutionTimeHistogram, err = metricsProvider.NewFloat64Histogram("data_changes_execution_time")
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("setting up dataChanges execution time histogram: %w", err)
+	}
+
+	outboundEmailsExecutionTimeHistogram, err = metricsProvider.NewFloat64Histogram("outbound_emails_execution_time")
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("setting up outboundEmails execution time histogram: %w", err)
+	}
+
+	searchIndexRequestsExecutionTimeHistogram, err = metricsProvider.NewFloat64Histogram("search_index_requests_execution_time")
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("setting up searchIndexRequests execution time histogram: %w", err)
+	}
+
+	userDataAggregationExecutionTimeHistogram, err = metricsProvider.NewFloat64Histogram("user_data_aggregation_execution_time")
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("setting up userDataAggregation execution time histogram: %w", err)
+	}
+
+	webhookExecutionTimestampHistogram, err = metricsProvider.NewFloat64Histogram("webhook_requests_execution_time")
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, fmt.Errorf("setting up webhookExecutionRequests execution time histogram: %w", err)
+	}
+
+	return dataManager,
+		consumerProvider,
+		analyticsEventReporter,
+		outboundEmailsPublisher,
+		searchDataIndexPublisher,
+		webhookExecutionRequestPublisher,
+		emailer,
+		uploadManager,
+		dataChangesExecutionTimeHistogram,
+		outboundEmailsExecutionTimeHistogram,
+		searchIndexRequestsExecutionTimeHistogram,
+		userDataAggregationExecutionTimeHistogram,
+		webhookExecutionTimestampHistogram,
+		func() {
+			dataManager.Close()
+			publisherProvider.Close()
+			analyticsEventReporter.Close()
+			outboundEmailsPublisher.Stop()
+			searchDataIndexPublisher.Stop()
+			webhookExecutionRequestPublisher.Stop()
+		},
+		nil
 }
 
 func doTheThing(
@@ -190,18 +297,17 @@ func doTheThing(
 	cfg *config.AsyncMessageHandlerConfig,
 	dataManager database.DataManager,
 	consumerProvider messagequeue.ConsumerProvider,
-	publisherProvider messagequeue.PublisherProvider,
-// analyticsEventReporter analytics.EventReporter,
-// outboundEmailsPublisher,
-// searchDataIndexPublisher,
-// webhookExecutionRequestPublisher messagequeue.Publisher,
-// emailer email.Emailer,
-// uploadManager uploads.UploadManager,
-// dataChangesExecutionTimeHistogram,
-// outboundEmailsExecutionTimeHistogram,
-// searchIndexRequestsExecutionTimeHistogram,
-// userDataAggregationExecutionTimeHistogram,
-// webhookExecutionTimestampHistogram metrics.Float64Histogram,
+	analyticsEventReporter analytics.EventReporter,
+	outboundEmailsPublisher,
+	searchDataIndexPublisher,
+	webhookExecutionRequestPublisher messagequeue.Publisher,
+	emailer email.Emailer,
+	uploadManager uploads.UploadManager,
+	dataChangesExecutionTimeHistogram,
+	outboundEmailsExecutionTimeHistogram,
+	searchIndexRequestsExecutionTimeHistogram,
+	userDataAggregationExecutionTimeHistogram,
+	webhookExecutionTimestampHistogram metrics.Float64Histogram,
 	stopChan chan bool,
 	errorsChan chan error,
 ) error {
@@ -211,57 +317,6 @@ func doTheThing(
 	defer span.End()
 
 	// set up myriad publishers
-
-	//nolint:contextcheck // I actually want to use a whatever context here.
-	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider, metricsProvider)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "setting up customer data collector")
-	}
-
-	defer analyticsEventReporter.Close()
-
-	outboundEmailsPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.OutboundEmailsTopicName)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emails publisher")
-	}
-
-	defer outboundEmailsPublisher.Stop()
-
-	searchDataIndexPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.SearchIndexRequestsTopicName)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring search indexing publisher")
-	}
-
-	defer searchDataIndexPublisher.Stop()
-
-	webhookExecutionRequestPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.WebhookExecutionRequestsTopicName)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring webhook execution requests publisher")
-	}
-
-	defer webhookExecutionRequestPublisher.Stop()
-
-	// setup emailer
-
-	//nolint:contextcheck // I actually want to use a whatever context here.
-	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, tracing.BuildTracedHTTPClient())
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
-	}
-
-	// setup uploader
-
-	uploadManager, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Storage, chi.NewRouteParamManager())
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "creating upload manager")
-	}
-
-	// setup message listeners
-
-	dataChangesExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("data_changes_execution_time")
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "setting up dataChanges execution time histogram")
-	}
 
 	dataChangesConsumer, err := consumerProvider.ProvideConsumer(
 		ctx,
@@ -281,11 +336,6 @@ func doTheThing(
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes consumer")
 	}
 
-	outboundEmailsExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("outbound_emails_execution_time")
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "setting up outboundEmails execution time histogram")
-	}
-
 	outboundEmailsConsumer, err := consumerProvider.ProvideConsumer(
 		ctx,
 		cfg.Queues.OutboundEmailsTopicName,
@@ -300,11 +350,6 @@ func doTheThing(
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emails consumer")
-	}
-
-	searchIndexRequestsExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("search_index_requests_execution_time")
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "setting up searchIndexRequests execution time histogram")
 	}
 
 	searchIndexRequestsConsumer, err := consumerProvider.ProvideConsumer(
@@ -324,11 +369,6 @@ func doTheThing(
 		return observability.PrepareAndLogError(err, logger, span, "configuring search index requests consumer")
 	}
 
-	userDataAggregationExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("user_data_aggregation_execution_time")
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "setting up userDataAggregation execution time histogram")
-	}
-
 	userDataAggregationConsumer, err := consumerProvider.ProvideConsumer(
 		ctx,
 		cfg.Queues.UserDataAggregationTopicName,
@@ -342,11 +382,6 @@ func doTheThing(
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring user data aggregation consumer")
-	}
-
-	webhookExecutionTimestampHistogram, err := metricsProvider.NewFloat64Histogram("webhook_requests_execution_time")
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "setting up webhookExecutionRequests execution time histogram")
 	}
 
 	webhookExecutionRequestsConsumer, err := consumerProvider.ProvideConsumer(
@@ -465,7 +500,7 @@ func buildUserDataAggregationEventHandler(
 	logger logging.Logger,
 	tracer tracing.Tracer,
 	dataManager database.DataManager,
-	uploadManager *objectstorage.Uploader,
+	uploadManager uploads.UploadManager,
 	executionTimestampHistogram metrics.Float64Histogram,
 ) func(context.Context, []byte) error {
 	return func(ctx context.Context, rawMsg []byte) error {

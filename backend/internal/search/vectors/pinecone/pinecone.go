@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/search/vectors"
 
 	"github.com/pinecone-io/go-pinecone/v2/pinecone"

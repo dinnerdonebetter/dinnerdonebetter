@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/assert"

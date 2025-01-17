@@ -9,10 +9,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/analytics/posthog"
 	"github.com/dinnerdonebetter/backend/internal/analytics/rudderstack"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

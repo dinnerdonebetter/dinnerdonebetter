@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/internal/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/Masterminds/squirrel"

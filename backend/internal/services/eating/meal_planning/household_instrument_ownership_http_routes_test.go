@@ -13,7 +13,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
+	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -43,7 +43,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"CreateHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnershipDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
 		helper.service.mealPlanningDataManager = dbManager
@@ -51,8 +51,8 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -124,7 +124,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
@@ -152,7 +152,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"CreateHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnershipDatabaseCreationInput) bool { return true }),
 		).Return((*types.HouseholdInstrumentOwnership)(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
@@ -180,7 +180,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHouseholdInstrumentOwnershipHa
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
@@ -201,7 +201,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHouseholdInstrumentOwnershipHa
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
@@ -220,7 +220,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHouseholdInstrumentOwnershipHa
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.HouseholdInstrumentOwnership)(nil), sql.ErrNoRows)
@@ -245,7 +245,7 @@ func TestHouseholdInstrumentOwnershipsService_ReadHouseholdInstrumentOwnershipHa
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.HouseholdInstrumentOwnership)(nil), errors.New("blah"))
@@ -276,7 +276,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnerships",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleHouseholdInstrumentOwnershipList, nil)
@@ -297,7 +297,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
@@ -316,7 +316,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnerships",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), sql.ErrNoRows)
@@ -341,7 +341,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnerships",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), errors.New("blah"))
@@ -379,14 +379,14 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
 
 		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"UpdateHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnership) bool { return true }),
 		).Return(nil)
 		helper.service.mealPlanningDataManager = dbManager
@@ -394,8 +394,8 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -437,7 +437,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
@@ -485,7 +485,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.HouseholdInstrumentOwnership)(nil), sql.ErrNoRows)
@@ -519,7 +519,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.HouseholdInstrumentOwnership)(nil), errors.New("blah"))
@@ -553,14 +553,14 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"GetHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
 
 		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"UpdateHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInstrumentOwnership) bool { return true }),
 		).Return(errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
@@ -588,14 +588,14 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"HouseholdInstrumentOwnershipExists",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"ArchiveHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(nil)
@@ -604,8 +604,8 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -625,7 +625,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
 
@@ -644,7 +644,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"HouseholdInstrumentOwnershipExists",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, nil)
@@ -669,7 +669,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"HouseholdInstrumentOwnershipExists",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, errors.New("blah"))
@@ -694,14 +694,14 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"HouseholdInstrumentOwnershipExists",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
 			"ArchiveHouseholdInstrumentOwnership",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleHouseholdInstrumentOwnership.ID,
 			helper.exampleHousehold.ID,
 		).Return(errors.New("blah"))

@@ -1,10 +1,10 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	safecast "github.com/ccoveille/go-safecast"
+	"github.com/ccoveille/go-safecast"
 )
 
 // ConvertRecipeStepCompletionConditionCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput creates a RecipeStepCompletionConditionDatabaseCreationInput from a RecipeStepCompletionConditionCreationRequestInput.

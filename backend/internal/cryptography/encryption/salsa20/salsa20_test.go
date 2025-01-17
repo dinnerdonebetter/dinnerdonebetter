@@ -6,7 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random"
+	"github.com/dinnerdonebetter/backend/internal/random"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

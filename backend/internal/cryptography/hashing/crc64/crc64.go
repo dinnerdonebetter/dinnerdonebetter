@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"hash/crc64"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/hashing"
+	"github.com/dinnerdonebetter/backend/internal/cryptography/hashing"
 )
 
 var _ hashing.Hasher = (*crc64Hasher)(nil)

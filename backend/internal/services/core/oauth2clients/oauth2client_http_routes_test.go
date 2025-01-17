@@ -12,8 +12,8 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	randommock "github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
-	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
+	"github.com/dinnerdonebetter/backend/internal/random/mock"
+	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -46,26 +46,26 @@ func TestOAuth2ClientsService_CreateOAuth2ClientHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			clientIDSize,
 		).Return(helper.exampleOAuth2Client.ClientID, nil)
 		sg.On(
 			"GenerateHexEncodedString",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			clientSecretSize,
 		).Return(helper.exampleOAuth2Client.ClientSecret, nil)
 		helper.service.secretGenerator = sg
 
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
 		).Return(helper.exampleOAuth2Client, nil)
 		helper.service.oauth2ClientDataManager = mockDB
@@ -73,8 +73,8 @@ func TestOAuth2ClientsService_CreateOAuth2ClientHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -93,7 +93,7 @@ func TestOAuth2ClientsService_CreateOAuth2ClientHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		helper.service.CreateOAuth2ClientHandler(helper.res, helper.req)
@@ -164,21 +164,21 @@ func TestOAuth2ClientsService_CreateOAuth2ClientHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			clientIDSize,
 		).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
 
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
 		).Return(helper.exampleOAuth2Client, nil)
 
@@ -213,14 +213,14 @@ func TestOAuth2ClientsService_CreateOAuth2ClientHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			clientIDSize,
 		).Return(helper.exampleOAuth2Client.ClientID, nil).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
 
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
 		).Return(helper.exampleOAuth2Client, nil)
 		helper.service.oauth2ClientDataManager = mockDB
@@ -252,26 +252,26 @@ func TestOAuth2ClientsService_CreateOAuth2ClientHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			clientIDSize,
 		).Return(helper.exampleOAuth2Client.ClientID, nil)
 		sg.On(
 			"GenerateHexEncodedString",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			clientSecretSize,
 		).Return(helper.exampleOAuth2Client.ClientSecret, nil)
 		helper.service.secretGenerator = sg
 
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
 		).Return((*types.OAuth2Client)(nil), errors.New("blah"))
 
@@ -304,26 +304,26 @@ func TestOAuth2ClientsService_CreateOAuth2ClientHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			clientIDSize,
 		).Return(helper.exampleOAuth2Client.ClientID, nil)
 		sg.On(
 			"GenerateHexEncodedString",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			clientSecretSize,
 		).Return(helper.exampleOAuth2Client.ClientSecret, nil)
 		helper.service.secretGenerator = sg
 
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"CreateOAuth2Client",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			oauth2ClientCreationInputMatcher,
 		).Return(helper.exampleOAuth2Client, nil)
 		helper.service.oauth2ClientDataManager = mockDB
@@ -331,8 +331,8 @@ func TestOAuth2ClientsService_CreateOAuth2ClientHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -359,7 +359,7 @@ func TestOAuth2ClientsService_ReadOAuth2ClientHandler(T *testing.T) {
 		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"GetOAuth2ClientByDatabaseID",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleOAuth2Client.ID,
 		).Return(helper.exampleOAuth2Client, nil)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
@@ -379,7 +379,7 @@ func TestOAuth2ClientsService_ReadOAuth2ClientHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.ReadOAuth2ClientHandler(helper.res, helper.req)
 
@@ -398,7 +398,7 @@ func TestOAuth2ClientsService_ReadOAuth2ClientHandler(T *testing.T) {
 		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"GetOAuth2ClientByDatabaseID",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleOAuth2Client.ID,
 		).Return((*types.OAuth2Client)(nil), sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
@@ -422,7 +422,7 @@ func TestOAuth2ClientsService_ReadOAuth2ClientHandler(T *testing.T) {
 		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"GetOAuth2ClientByDatabaseID",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleOAuth2Client.ID,
 		).Return((*types.OAuth2Client)(nil), errors.New("blah"))
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
@@ -452,7 +452,7 @@ func TestOAuth2ClientsService_ListOAuth2ClientHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"GetOAuth2Clients",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleOAuth2ClientList, nil)
 		helper.service.oauth2ClientDataManager = mockDB
@@ -472,7 +472,7 @@ func TestOAuth2ClientsService_ListOAuth2ClientHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.ListOAuth2ClientsHandler(helper.res, helper.req)
 
@@ -491,7 +491,7 @@ func TestOAuth2ClientsService_ListOAuth2ClientHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"GetOAuth2Clients",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = mockDB
@@ -515,7 +515,7 @@ func TestOAuth2ClientsService_ListOAuth2ClientHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"GetOAuth2Clients",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), errors.New("blah"))
 		helper.service.oauth2ClientDataManager = mockDB
@@ -543,7 +543,7 @@ func TestOAuth2ClientsService_ArchiveOAuth2ClientHandler(T *testing.T) {
 		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleOAuth2Client.ID,
 		).Return(nil)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
@@ -551,8 +551,8 @@ func TestOAuth2ClientsService_ArchiveOAuth2ClientHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -570,7 +570,7 @@ func TestOAuth2ClientsService_ArchiveOAuth2ClientHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveOAuth2ClientHandler(helper.res, helper.req)
 
@@ -589,7 +589,7 @@ func TestOAuth2ClientsService_ArchiveOAuth2ClientHandler(T *testing.T) {
 		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleOAuth2Client.ID,
 		).Return(sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
@@ -613,7 +613,7 @@ func TestOAuth2ClientsService_ArchiveOAuth2ClientHandler(T *testing.T) {
 		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleOAuth2Client.ID,
 		).Return(errors.New("blah"))
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
@@ -637,7 +637,7 @@ func TestOAuth2ClientsService_ArchiveOAuth2ClientHandler(T *testing.T) {
 		oauth2ClientDataManager := &mocktypes.OAuth2ClientDataManagerMock{}
 		oauth2ClientDataManager.On(
 			"ArchiveOAuth2Client",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleOAuth2Client.ID,
 		).Return(nil)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
@@ -645,8 +645,8 @@ func TestOAuth2ClientsService_ArchiveOAuth2ClientHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

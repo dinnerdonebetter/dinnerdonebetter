@@ -1,7 +1,7 @@
 package posthog
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 )
 
 type (
