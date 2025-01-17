@@ -41,7 +41,7 @@ func HandleIndexRequest(
 	dataManager database.DataManager,
 	indexReq *IndexRequest,
 ) error {
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search-indexer"))
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer"))
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 

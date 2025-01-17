@@ -13,17 +13,21 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/analytics"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/email"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -157,6 +161,7 @@ func doTheThing(
 
 	// set up myriad publishers
 
+	//nolint:contextcheck // I actually want to use a whatever context here.
 	analyticsEventReporter, err := analyticscfg.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider, metricsProvider)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "setting up customer data collector")
@@ -187,6 +192,7 @@ func doTheThing(
 
 	// setup emailer
 
+	//nolint:contextcheck // I actually want to use a whatever context here.
 	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, otelhttp.DefaultClient)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
@@ -201,91 +207,111 @@ func doTheThing(
 
 	// setup message listeners
 
-	dataChangesConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.Queues.DataChangesTopicName, func(ctx context.Context, rawMsg []byte) error {
-		var dataChangeMessage types.DataChangeMessage
-		if err = json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&dataChangeMessage); err != nil {
-			return fmt.Errorf("decoding JSON body: %w", err)
-		}
-		return handleDataChangeMessage(ctx, logger, tracer, dataManager, analyticsEventReporter, webhookExecutionRequestPublisher, outboundEmailsPublisher, searchDataIndexPublisher, &dataChangeMessage)
-	})
+	dataChangesExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("dataChanges")
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "setting up dataChanges execution time histogram")
+	}
+
+	dataChangesConsumer, err := consumerProvider.ProvideConsumer(
+		ctx,
+		cfg.Queues.DataChangesTopicName,
+		buildDataChangesEventHandler(
+			logger,
+			tracer,
+			dataManager,
+			analyticsEventReporter,
+			webhookExecutionRequestPublisher,
+			outboundEmailsPublisher,
+			searchDataIndexPublisher,
+			dataChangesExecutionTimeHistogram,
+		),
+	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes consumer")
 	}
 
-	outboundEmailsConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.Queues.OutboundEmailsTopicName, func(ctx context.Context, rawMsg []byte) error {
-		var emailMessage email.DeliveryRequest
-		if err = json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&emailMessage); err != nil {
-			return fmt.Errorf("decoding JSON body: %w", err)
-		}
+	outboundEmailsExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("outboundEmails")
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "setting up outboundEmails execution time histogram")
+	}
 
-		return handleEmailRequest(ctx, logger, tracer, dataManager, emailer, analyticsEventReporter, &emailMessage)
-	})
+	outboundEmailsConsumer, err := consumerProvider.ProvideConsumer(
+		ctx,
+		cfg.Queues.OutboundEmailsTopicName,
+		buildOutboundEmailsEventHandler(
+			logger,
+			tracer,
+			dataManager,
+			emailer,
+			analyticsEventReporter,
+			outboundEmailsExecutionTimeHistogram,
+		),
+	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emails consumer")
 	}
 
-	searchIndexRequestsConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.Queues.SearchIndexRequestsTopicName, func(ctx context.Context, rawMsg []byte) error {
-		var searchIndexRequest indexing.IndexRequest
-		if err = json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&searchIndexRequest); err != nil {
-			return fmt.Errorf("decoding JSON body: %w", err)
-		}
+	searchIndexRequestsExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("searchIndexRequests")
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "setting up searchIndexRequests execution time histogram")
+	}
 
-		// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
-		return indexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, &cfg.Search, dataManager, &searchIndexRequest)
-	})
+	searchIndexRequestsConsumer, err := consumerProvider.ProvideConsumer(
+		ctx,
+		cfg.Queues.SearchIndexRequestsTopicName,
+		buildSearchIndexRequestsEventHandler(
+			logger,
+			tracer,
+			tracerProvider,
+			dataManager,
+			metricsProvider,
+			&cfg.Search,
+			searchIndexRequestsExecutionTimeHistogram,
+		),
+	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring search index requests consumer")
 	}
 
-	userDataAggregationConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.Queues.UserDataAggregationTopicName, func(ctx context.Context, rawMsg []byte) error {
-		var userDataAggregationRequest types.UserDataAggregationRequest
-		if err = json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&userDataAggregationRequest); err != nil {
-			return fmt.Errorf("decoding JSON body: %w", err)
-		}
+	userDataAggregationExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("userDataAggregation")
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "setting up userDataAggregation execution time histogram")
+	}
 
-		return handleUserDataRequest(ctx, logger, tracer, uploadManager, dataManager, &userDataAggregationRequest)
-	})
+	userDataAggregationConsumer, err := consumerProvider.ProvideConsumer(
+		ctx,
+		cfg.Queues.UserDataAggregationTopicName,
+		buildUserDataAggregationEventHandler(
+			logger,
+			tracer,
+			dataManager,
+			uploadManager,
+			userDataAggregationExecutionTimeHistogram,
+		),
+	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring user data aggregation consumer")
 	}
 
-	webhookExecutionRequestsConsumer, err := consumerProvider.ProvideConsumer(ctx, cfg.Queues.WebhookExecutionRequestsTopicName, func(ctx context.Context, rawMsg []byte) error {
-		var webhookExecutionRequest types.WebhookExecutionRequest
-		if err = json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&webhookExecutionRequest); err != nil {
-			return fmt.Errorf("decoding JSON body: %w", err)
-		}
+	webhookExecutionTimestampHistogram, err := metricsProvider.NewFloat64Histogram("webhookExecutionRequests")
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "setting up webhookExecutionRequests execution time histogram")
+	}
 
-		return handleWebhookExecutionRequest(ctx, logger, tracer, dataManager, &webhookExecutionRequest)
-	})
+	webhookExecutionRequestsConsumer, err := consumerProvider.ProvideConsumer(
+		ctx,
+		cfg.Queues.WebhookExecutionRequestsTopicName,
+		buildWebhookExecutionRequestsEventHandler(logger, tracer, dataManager, webhookExecutionTimestampHistogram),
+	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring webhook execution requests consumer")
 	}
 
-	go dataChangesConsumer.Consume(
-		stopChan,
-		errorsChan,
-	)
-
-	go outboundEmailsConsumer.Consume(
-		stopChan,
-		errorsChan,
-	)
-
-	go searchIndexRequestsConsumer.Consume(
-		stopChan,
-		errorsChan,
-	)
-
-	go userDataAggregationConsumer.Consume(
-		stopChan,
-		errorsChan,
-	)
-
-	go webhookExecutionRequestsConsumer.Consume(
-		stopChan,
-		errorsChan,
-	)
-
+	go dataChangesConsumer.Consume(stopChan, errorsChan)
+	go outboundEmailsConsumer.Consume(stopChan, errorsChan)
+	go searchIndexRequestsConsumer.Consume(stopChan, errorsChan)
+	go userDataAggregationConsumer.Consume(stopChan, errorsChan)
+	go webhookExecutionRequestsConsumer.Consume(stopChan, errorsChan)
 	go func() {
 		for e := range errorsChan {
 			logger.Error("consuming message", e)
@@ -293,4 +319,148 @@ func doTheThing(
 	}()
 
 	return nil
+}
+
+func buildDataChangesEventHandler(
+	logger logging.Logger,
+	tracer tracing.Tracer,
+	dataManager database.DataManager,
+	analyticsEventReporter analytics.EventReporter,
+	webhookExecutionRequestPublisher,
+	outboundEmailsPublisher,
+	searchDataIndexPublisher messagequeue.Publisher,
+	executionTimestampHistogram metrics.Float64Histogram,
+) func(context.Context, []byte) error {
+	return func(ctx context.Context, rawMsg []byte) error {
+		ctx, span := tracer.StartSpan(ctx)
+		defer span.End()
+
+		start := time.Now()
+
+		var dataChangeMessage types.DataChangeMessage
+		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&dataChangeMessage); err != nil {
+			return fmt.Errorf("decoding JSON body: %w", err)
+		}
+
+		handleDataChangeMessage(ctx, logger, tracer, dataManager, analyticsEventReporter, webhookExecutionRequestPublisher, outboundEmailsPublisher, searchDataIndexPublisher, &dataChangeMessage)
+
+		executionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
+
+		return nil
+	}
+}
+
+func buildOutboundEmailsEventHandler(
+	logger logging.Logger,
+	tracer tracing.Tracer,
+	dataManager database.DataManager,
+	emailer email.Emailer,
+	analyticsEventReporter analytics.EventReporter,
+	executionTimestampHistogram metrics.Float64Histogram,
+) func(context.Context, []byte) error {
+	return func(ctx context.Context, rawMsg []byte) error {
+		ctx, span := tracer.StartSpan(ctx)
+		defer span.End()
+
+		start := time.Now()
+
+		var emailMessage email.DeliveryRequest
+		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&emailMessage); err != nil {
+			return fmt.Errorf("decoding JSON body: %w", err)
+		}
+
+		if err := handleEmailRequest(ctx, logger, tracer, dataManager, emailer, analyticsEventReporter, &emailMessage); err != nil {
+			return fmt.Errorf("handling outbound email request: %w", err)
+		}
+
+		executionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
+
+		return nil
+	}
+}
+
+func buildSearchIndexRequestsEventHandler(
+	logger logging.Logger,
+	tracer tracing.Tracer,
+	tracerProvider tracing.TracerProvider,
+	dataManager database.DataManager,
+	metricsProvider metrics.Provider,
+	searchCfg *textsearchcfg.Config,
+	executionTimestampHistogram metrics.Float64Histogram,
+) func(context.Context, []byte) error {
+	return func(ctx context.Context, rawMsg []byte) error {
+		ctx, span := tracer.StartSpan(ctx)
+		defer span.End()
+
+		start := time.Now()
+
+		var searchIndexRequest indexing.IndexRequest
+		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&searchIndexRequest); err != nil {
+			return fmt.Errorf("decoding JSON body: %w", err)
+		}
+
+		// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
+		if err := indexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, searchCfg, dataManager, &searchIndexRequest); err != nil {
+			return fmt.Errorf("handling search indexing request: %w", err)
+		}
+
+		executionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
+
+		return nil
+	}
+}
+
+func buildUserDataAggregationEventHandler(
+	logger logging.Logger,
+	tracer tracing.Tracer,
+	dataManager database.DataManager,
+	uploadManager *objectstorage.Uploader,
+	executionTimestampHistogram metrics.Float64Histogram,
+) func(context.Context, []byte) error {
+	return func(ctx context.Context, rawMsg []byte) error {
+		ctx, span := tracer.StartSpan(ctx)
+		defer span.End()
+
+		start := time.Now()
+
+		var userDataAggregationRequest types.UserDataAggregationRequest
+		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&userDataAggregationRequest); err != nil {
+			return fmt.Errorf("decoding JSON body: %w", err)
+		}
+
+		if err := handleUserDataRequest(ctx, logger, tracer, uploadManager, dataManager, &userDataAggregationRequest); err != nil {
+			return fmt.Errorf("handling user data aggregation request: %w", err)
+		}
+
+		executionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
+
+		return nil
+	}
+}
+
+func buildWebhookExecutionRequestsEventHandler(
+	logger logging.Logger,
+	tracer tracing.Tracer,
+	dataManager database.DataManager,
+	executionTimestampHistogram metrics.Float64Histogram,
+) func(context.Context, []byte) error {
+	return func(ctx context.Context, rawMsg []byte) error {
+		ctx, span := tracer.StartSpan(ctx)
+		defer span.End()
+
+		start := time.Now()
+
+		var webhookExecutionRequest types.WebhookExecutionRequest
+		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&webhookExecutionRequest); err != nil {
+			return fmt.Errorf("decoding JSON body: %w", err)
+		}
+
+		if err := handleWebhookExecutionRequest(ctx, logger, tracer, dataManager, &webhookExecutionRequest); err != nil {
+			return fmt.Errorf("handling webhook execution request: %w", err)
+		}
+
+		executionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
+
+		return nil
+	}
 }

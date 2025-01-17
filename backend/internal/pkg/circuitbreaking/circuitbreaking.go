@@ -69,6 +69,7 @@ func handleCircuitBreakerEvents(cb *circuit.Breaker, logger logging.Logger, brok
 	}
 }
 
+// ProvideCircuitBreaker provides a CircuitBreaker.
 func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider metrics.Provider) (CircuitBreaker, error) {
 	if cfg == nil {
 		cfg = &Config{

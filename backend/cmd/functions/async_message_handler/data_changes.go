@@ -28,7 +28,7 @@ func handleDataChangeMessage(
 	outboundEmailsPublisher,
 	searchDataIndexPublisher messagequeue.Publisher,
 	changeMessage *types.DataChangeMessage,
-) error {
+) {
 	ctx, span := tracer.StartSpan(ctx)
 
 	logger = logger.WithValue("event_type", changeMessage.EventType)
@@ -79,8 +79,6 @@ func handleDataChangeMessage(
 	}()
 
 	wg.Wait()
-
-	return nil
 }
 
 func handleSearchIndexUpdates(

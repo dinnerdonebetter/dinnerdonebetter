@@ -10,9 +10,11 @@ type (
 		Consume(stopChan chan bool, errors chan error)
 	}
 
+	ConsumerFunc func(context.Context, []byte) error
+
 	// ConsumerProvider is a function that provides a Consumer for a given topic.
 	ConsumerProvider interface {
-		ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (Consumer, error)
+		ProvideConsumer(ctx context.Context, topic string, handlerFunc ConsumerFunc) (Consumer, error)
 	}
 )
 
@@ -32,7 +34,7 @@ func NewNoopConsumer() *NoopConsumer {
 type noopConsumerProvider struct{}
 
 // ProvideConsumer does nothing.
-func (n *noopConsumerProvider) ProvideConsumer(_ context.Context, _ string, _ func(context.Context, []byte) error) (Consumer, error) {
+func (n *noopConsumerProvider) ProvideConsumer(context.Context, string, ConsumerFunc) (Consumer, error) {
 	return NewNoopConsumer(), nil
 }
 

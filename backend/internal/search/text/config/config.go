@@ -46,6 +46,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 
 // ProvideIndex validates a Config struct.
 func ProvideIndex[T textsearch.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, cfg *Config, indexName string) (textsearch.Index[T], error) {
+	//nolint:contextcheck // I actually want to use a whatever context here.
 	circuitBreaker, err := circuitbreaking.ProvideCircuitBreaker(cfg.CircuitBreakerConfig, logger, metricsProvider)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize circuitBreaker: %w", err)
