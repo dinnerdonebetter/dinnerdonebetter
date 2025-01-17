@@ -92,6 +92,11 @@ func main() {
 		logger.Error("initializing metrics provider", err)
 	}
 
+	dataManager, consumerProvider, publisherProvider := requisiteSetup(ctx, logger, tracerProvider, cfg)
+
+	defer dataManager.Close()
+	defer publisherProvider.Close()
+
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(
 		signalChan,
@@ -104,7 +109,18 @@ func main() {
 	stopChan := make(chan bool)
 	errorsChan := make(chan error)
 
-	if err = doTheThing(ctx, logger, tracerProvider, metricsProvider, cfg, stopChan, errorsChan); err != nil {
+	if err = doTheThing(
+		ctx,
+		logger,
+		tracerProvider,
+		metricsProvider,
+		cfg,
+		dataManager,
+		consumerProvider,
+		publisherProvider,
+		stopChan,
+		errorsChan,
+	); err != nil {
 		log.Fatal(err)
 	}
 
@@ -118,12 +134,74 @@ func main() {
 	}()
 }
 
+func requisiteSetup(
+	ctx context.Context,
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
+	cfg *config.AsyncMessageHandlerConfig,
+) (
+	dataManager database.DataManager,
+	consumerProvider messagequeue.ConsumerProvider,
+	publisherProvider messagequeue.PublisherProvider,
+// analyticsEventReporter analytics.EventReporter,
+// outboundEmailsPublisher,
+// searchDataIndexPublisher,
+// webhookExecutionRequestPublisher messagequeue.Publisher,
+// emailer email.Emailer,
+// uploadManager uploads.UploadManager,
+// dataChangesExecutionTimeHistogram,
+// outboundEmailsExecutionTimeHistogram,
+// searchIndexRequestsExecutionTimeHistogram,
+// userDataAggregationExecutionTimeHistogram,
+// webhookExecutionTimestampHistogram metrics.Float64Histogram,
+	closeFunc func(),
+) {
+	// connect to database
+	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
+	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
+	if err != nil {
+		cancel()
+		log.Fatalf("error connecting to database: %v", err)
+	}
+
+	cancel()
+
+	consumerProvider, err = msgconfig.ProvideConsumerProvider(ctx, logger, &cfg.Events)
+	if err != nil {
+		log.Fatalf("error initializing consumer provider: %v", err)
+	}
+
+	publisherProvider, err = msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
+	if err != nil {
+		log.Fatalf("error initializing publisher provider: %v", err)
+	}
+
+	return dataManager, consumerProvider, publisherProvider, func() {
+		dataManager.Close()
+		publisherProvider.Close()
+	}
+}
+
 func doTheThing(
 	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 	cfg *config.AsyncMessageHandlerConfig,
+	dataManager database.DataManager,
+	consumerProvider messagequeue.ConsumerProvider,
+	publisherProvider messagequeue.PublisherProvider,
+// analyticsEventReporter analytics.EventReporter,
+// outboundEmailsPublisher,
+// searchDataIndexPublisher,
+// webhookExecutionRequestPublisher messagequeue.Publisher,
+// emailer email.Emailer,
+// uploadManager uploads.UploadManager,
+// dataChangesExecutionTimeHistogram,
+// outboundEmailsExecutionTimeHistogram,
+// searchIndexRequestsExecutionTimeHistogram,
+// userDataAggregationExecutionTimeHistogram,
+// webhookExecutionTimestampHistogram metrics.Float64Histogram,
 	stopChan chan bool,
 	errorsChan chan error,
 ) error {
@@ -131,32 +209,6 @@ func doTheThing(
 
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
-
-	// connect to database
-
-	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
-	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
-	if err != nil {
-		cancel()
-		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
-	}
-
-	cancel()
-	defer dataManager.Close()
-
-	// setup baseline messaging providers
-
-	consumerProvider, err := msgconfig.ProvideConsumerProvider(ctx, logger, &cfg.Events)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
-	}
-
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
-	}
-
-	defer publisherProvider.Close()
 
 	// set up myriad publishers
 
@@ -206,7 +258,7 @@ func doTheThing(
 
 	// setup message listeners
 
-	dataChangesExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("dataChanges")
+	dataChangesExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("data_changes_execution_time")
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "setting up dataChanges execution time histogram")
 	}
@@ -229,7 +281,7 @@ func doTheThing(
 		return observability.PrepareAndLogError(err, logger, span, "configuring data changes consumer")
 	}
 
-	outboundEmailsExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("outboundEmails")
+	outboundEmailsExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("outbound_emails_execution_time")
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "setting up outboundEmails execution time histogram")
 	}
@@ -250,7 +302,7 @@ func doTheThing(
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emails consumer")
 	}
 
-	searchIndexRequestsExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("searchIndexRequests")
+	searchIndexRequestsExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("search_index_requests_execution_time")
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "setting up searchIndexRequests execution time histogram")
 	}
@@ -272,7 +324,7 @@ func doTheThing(
 		return observability.PrepareAndLogError(err, logger, span, "configuring search index requests consumer")
 	}
 
-	userDataAggregationExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("userDataAggregation")
+	userDataAggregationExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("user_data_aggregation_execution_time")
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "setting up userDataAggregation execution time histogram")
 	}
@@ -292,7 +344,7 @@ func doTheThing(
 		return observability.PrepareAndLogError(err, logger, span, "configuring user data aggregation consumer")
 	}
 
-	webhookExecutionTimestampHistogram, err := metricsProvider.NewFloat64Histogram("webhookExecutionRequests")
+	webhookExecutionTimestampHistogram, err := metricsProvider.NewFloat64Histogram("webhook_requests_execution_time")
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "setting up webhookExecutionRequests execution time histogram")
 	}

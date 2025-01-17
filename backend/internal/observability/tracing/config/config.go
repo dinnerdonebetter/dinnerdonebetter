@@ -33,7 +33,7 @@ type (
 	}
 )
 
-// ProvideTracerProvider provides an instrumentation handler.
+// ProvideTracerProvider provides a TracerProvider.
 func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (tracing.TracerProvider, error) {
 	logger := l.WithValue("tracing_provider", c.Provider)
 
@@ -60,6 +60,16 @@ func (c *Config) ProvideTracerProvider(ctx context.Context, l logging.Logger) (t
 		logger.Info("invalid tracing provider")
 		return tracing.NewNoopTracerProvider(), nil
 	}
+}
+
+// ProvideTracer provides an instrumentation handler.
+func (c *Config) ProvideTracer(ctx context.Context, l logging.Logger, name string) (tracing.Tracer, error) {
+	tp, err := c.ProvideTracerProvider(ctx, l)
+	if err != nil {
+		return nil, fmt.Errorf("configuring tracing provider: %w", err)
+	}
+
+	return tracing.NewTracer(tp.Tracer(name)), nil
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
