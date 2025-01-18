@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random"
+	"github.com/dinnerdonebetter/backend/internal/random"
 
 	"golang.org/x/oauth2"
 )

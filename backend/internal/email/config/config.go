@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"strings"
 
+	circuitbreaking2 "github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/email/mailgun"
 	"github.com/dinnerdonebetter/backend/internal/email/mailjet"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -28,11 +28,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Sendgrid             *sendgrid.Config        `envPrefix:"SENDGRID_"         json:"sendgrid"`
-		Mailgun              *mailgun.Config         `envPrefix:"MAILGUN_"          json:"mailgun"`
-		Mailjet              *mailjet.Config         `envPrefix:"MAILJET_"          json:"mailjet"`
-		CircuitBreakerConfig *circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakerConfig"`
-		Provider             string                  `env:"PROVIDER"                json:"provider"`
+		Sendgrid             *sendgrid.Config         `envPrefix:"SENDGRID_"         json:"sendgrid"`
+		Mailgun              *mailgun.Config          `envPrefix:"MAILGUN_"          json:"mailgun"`
+		Mailjet              *mailjet.Config          `envPrefix:"MAILJET_"          json:"mailjet"`
+		CircuitBreakerConfig *circuitbreaking2.Config `envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakerConfig"`
+		Provider             string                   `env:"PROVIDER"                json:"provider"`
 	}
 )
 
@@ -50,7 +50,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // ProvideEmailer provides an outbound_emailer.
-func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client, circuitBreaker circuitbreaking.CircuitBreaker) (email.Emailer, error) {
+func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client, circuitBreaker circuitbreaking2.CircuitBreaker) (email.Emailer, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSendgrid:
 		return sendgrid.NewSendGridEmailer(cfg.Sendgrid, logger, tracerProvider, client, circuitBreaker)

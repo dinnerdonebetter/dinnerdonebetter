@@ -10,7 +10,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/internal/pointer"
 )
 
 const (

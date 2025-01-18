@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"hash/fnv"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/hashing"
+	"github.com/dinnerdonebetter/backend/internal/cryptography/hashing"
 )
 
 var _ hashing.Hasher = (*fnvHasher)(nil)

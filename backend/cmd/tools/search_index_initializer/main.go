@@ -16,7 +16,7 @@ import (
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/internal/pointer"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"

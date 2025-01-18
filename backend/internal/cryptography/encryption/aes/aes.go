@@ -1,9 +1,9 @@
 package aes
 
 import (
+	encryption2 "github.com/dinnerdonebetter/backend/internal/cryptography/encryption"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/encryption"
 )
 
 // aesImpl is the standard EncryptorDecryptor implementation.
@@ -13,9 +13,9 @@ type aesImpl struct {
 	key    [32]byte
 }
 
-func NewEncryptorDecryptor(tracerProvider tracing.TracerProvider, logger logging.Logger, key []byte) (encryption.EncryptorDecryptor, error) {
+func NewEncryptorDecryptor(tracerProvider tracing.TracerProvider, logger logging.Logger, key []byte) (encryption2.EncryptorDecryptor, error) {
 	if len(key) != 32 {
-		return nil, encryption.ErrIncorrectKeyLength
+		return nil, encryption2.ErrIncorrectKeyLength
 	}
 
 	return &aesImpl{

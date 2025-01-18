@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
+	circuitbreaking2 "github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/search/text"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
 	"github.com/dinnerdonebetter/backend/internal/search/text/elasticsearch"
@@ -27,10 +27,10 @@ const (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	Algolia              *algolia.Config         `envPrefix:"ALGOLIA_"         json:"algolia"`
-	Elasticsearch        *elasticsearch.Config   `envPrefix:"ELASTICSEARCH_"   json:"elasticsearch"`
-	CircuitBreakerConfig *circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreakerConfig"`
-	Provider             string                  `env:"PROVIDER"               json:"provider"`
+	Algolia              *algolia.Config          `envPrefix:"ALGOLIA_"         json:"algolia"`
+	Elasticsearch        *elasticsearch.Config    `envPrefix:"ELASTICSEARCH_"   json:"elasticsearch"`
+	CircuitBreakerConfig *circuitbreaking2.Config `envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreakerConfig"`
+	Provider             string                   `env:"PROVIDER"               json:"provider"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -47,7 +47,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 // ProvideIndex validates a Config struct.
 func ProvideIndex[T textsearch.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, cfg *Config, indexName string) (textsearch.Index[T], error) {
 	//nolint:contextcheck // I actually want to use a whatever context here.
-	circuitBreaker, err := circuitbreaking.ProvideCircuitBreaker(cfg.CircuitBreakerConfig, logger, metricsProvider)
+	circuitBreaker, err := circuitbreaking2.ProvideCircuitBreaker(cfg.CircuitBreakerConfig, logger, metricsProvider)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize circuitBreaker: %w", err)
 	}

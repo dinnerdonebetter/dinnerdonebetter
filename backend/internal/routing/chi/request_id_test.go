@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/stretchr/testify/assert"

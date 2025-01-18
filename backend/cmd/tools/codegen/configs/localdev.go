@@ -5,6 +5,7 @@ import (
 	"time"
 
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -17,8 +18,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
-	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
-	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/search/text/algolia"
@@ -28,6 +27,7 @@ import (
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
 	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
+	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 )

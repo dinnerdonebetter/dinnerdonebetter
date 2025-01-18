@@ -12,7 +12,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random"
+	"github.com/dinnerdonebetter/backend/internal/random"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"

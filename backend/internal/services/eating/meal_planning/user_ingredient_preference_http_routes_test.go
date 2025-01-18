@@ -13,7 +13,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
+	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -45,7 +45,7 @@ func TestUserIngredientPreferencesService_CreateUserIngredientPreferenceHandler(
 		dbManager := database.NewMockDatabase()
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"CreateUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.MatchedBy(func(*types.UserIngredientPreferenceDatabaseCreationInput) bool { return true }),
 		).Return(expected, nil)
 		helper.service.mealPlanningDataManager = dbManager
@@ -53,8 +53,8 @@ func TestUserIngredientPreferencesService_CreateUserIngredientPreferenceHandler(
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -126,7 +126,7 @@ func TestUserIngredientPreferencesService_CreateUserIngredientPreferenceHandler(
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.CreateUserIngredientPreferenceHandler(helper.res, helper.req)
 
@@ -154,7 +154,7 @@ func TestUserIngredientPreferencesService_CreateUserIngredientPreferenceHandler(
 		dbManager := database.NewMockDatabase()
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"CreateUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.MatchedBy(func(*types.UserIngredientPreferenceDatabaseCreationInput) bool { return true }),
 		).Return([]*types.UserIngredientPreference(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
@@ -184,7 +184,7 @@ func TestUserIngredientPreferencesService_ListUserIngredientPreferencesHandler(T
 		userIngredientPreferenceDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		userIngredientPreferenceDataManager.UserIngredientPreferenceDataManagerMock.On(
 			"GetUserIngredientPreferences",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleUserIngredientPreferenceList, nil)
@@ -205,7 +205,7 @@ func TestUserIngredientPreferencesService_ListUserIngredientPreferencesHandler(T
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.ListUserIngredientPreferencesHandler(helper.res, helper.req)
 
@@ -224,7 +224,7 @@ func TestUserIngredientPreferencesService_ListUserIngredientPreferencesHandler(T
 		userIngredientPreferenceDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		userIngredientPreferenceDataManager.UserIngredientPreferenceDataManagerMock.On(
 			"GetUserIngredientPreferences",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.UserIngredientPreference])(nil), sql.ErrNoRows)
@@ -245,7 +245,7 @@ func TestUserIngredientPreferencesService_ListUserIngredientPreferencesHandler(T
 		userIngredientPreferenceDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		userIngredientPreferenceDataManager.UserIngredientPreferenceDataManagerMock.On(
 			"GetUserIngredientPreferences",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.UserIngredientPreference])(nil), errors.New("blah"))
@@ -283,14 +283,14 @@ func TestUserIngredientPreferencesService_UpdateUserIngredientPreferenceHandler(
 		dbManager := database.NewMockDatabase()
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"GetUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUserIngredientPreference, nil)
 
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"UpdateUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.MatchedBy(func(*types.UserIngredientPreference) bool { return true }),
 		).Return(nil)
 		helper.service.mealPlanningDataManager = dbManager
@@ -298,8 +298,8 @@ func TestUserIngredientPreferencesService_UpdateUserIngredientPreferenceHandler(
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -341,7 +341,7 @@ func TestUserIngredientPreferencesService_UpdateUserIngredientPreferenceHandler(
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateUserIngredientPreferenceHandler(helper.res, helper.req)
 
@@ -389,7 +389,7 @@ func TestUserIngredientPreferencesService_UpdateUserIngredientPreferenceHandler(
 		userIngredientPreferenceDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		userIngredientPreferenceDataManager.UserIngredientPreferenceDataManagerMock.On(
 			"GetUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return((*types.UserIngredientPreference)(nil), sql.ErrNoRows)
@@ -423,7 +423,7 @@ func TestUserIngredientPreferencesService_UpdateUserIngredientPreferenceHandler(
 		userIngredientPreferenceDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		userIngredientPreferenceDataManager.UserIngredientPreferenceDataManagerMock.On(
 			"GetUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return((*types.UserIngredientPreference)(nil), errors.New("blah"))
@@ -457,14 +457,14 @@ func TestUserIngredientPreferencesService_UpdateUserIngredientPreferenceHandler(
 		dbManager := database.NewMockDatabase()
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"GetUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUserIngredientPreference, nil)
 
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"UpdateUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			mock.MatchedBy(func(*types.UserIngredientPreference) bool { return true }),
 		).Return(errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
@@ -492,14 +492,14 @@ func TestUserIngredientPreferencesService_ArchiveUserIngredientPreferenceHandler
 		dbManager := database.NewMockDatabase()
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"UserIngredientPreferenceExists",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return(true, nil)
 
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"ArchiveUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
@@ -508,8 +508,8 @@ func TestUserIngredientPreferencesService_ArchiveUserIngredientPreferenceHandler
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils2.ContextMatcher,
+			testutils2.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -527,7 +527,7 @@ func TestUserIngredientPreferencesService_ArchiveUserIngredientPreferenceHandler
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveUserIngredientPreferenceHandler(helper.res, helper.req)
 
@@ -546,7 +546,7 @@ func TestUserIngredientPreferencesService_ArchiveUserIngredientPreferenceHandler
 		userIngredientPreferenceDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		userIngredientPreferenceDataManager.UserIngredientPreferenceDataManagerMock.On(
 			"UserIngredientPreferenceExists",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return(false, nil)
@@ -571,7 +571,7 @@ func TestUserIngredientPreferencesService_ArchiveUserIngredientPreferenceHandler
 		userIngredientPreferenceDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		userIngredientPreferenceDataManager.UserIngredientPreferenceDataManagerMock.On(
 			"UserIngredientPreferenceExists",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return(false, errors.New("blah"))
@@ -596,14 +596,14 @@ func TestUserIngredientPreferencesService_ArchiveUserIngredientPreferenceHandler
 		dbManager := database.NewMockDatabase()
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"UserIngredientPreferenceExists",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return(true, nil)
 
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"ArchiveUserIngredientPreference",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUserIngredientPreference.ID,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))

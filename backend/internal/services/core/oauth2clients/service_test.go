@@ -12,8 +12,8 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random"
-	randommock "github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
+	"github.com/dinnerdonebetter/backend/internal/random"
+	"github.com/dinnerdonebetter/backend/internal/random/mock"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 

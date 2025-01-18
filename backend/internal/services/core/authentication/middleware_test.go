@@ -8,7 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	mockmetrics "github.com/dinnerdonebetter/backend/internal/observability/metrics/mock"
-	"github.com/dinnerdonebetter/backend/internal/pkg/testutils"
+	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -38,16 +38,16 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 		mockUserDataManager := &mocktypes.UserDataManagerMock{}
 		mockUserDataManager.On(
 			"GetSessionContextDataForUser",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(sessionCtxData, nil)
 		helper.service.userDataManager = mockUserDataManager
 
-		h := &testutils.MockHTTPHandler{}
+		h := &testutils2.MockHTTPHandler{}
 		h.On(
 			"ServeHTTP",
-			testutils.HTTPResponseWriterMatcher,
-			testutils.HTTPRequestMatcher,
+			testutils2.HTTPResponseWriterMatcher,
+			testutils2.HTTPRequestMatcher,
 		).Return()
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.ctx, types.SessionContextDataKey, sessionCtxData))
@@ -68,7 +68,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 		helper.setContextFetcher(t)
 
 		mp := &mockmetrics.Int64Counter{}
-		mp.On("Add", testutils.ContextMatcher, int64(1), mock.Anything).Return()
+		mp.On("Add", testutils2.ContextMatcher, int64(1), mock.Anything).Return()
 		helper.service.rejectedRequestCounter = mp
 
 		sessionCtxData := &types.SessionContextData{
@@ -85,21 +85,21 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 		mockUserDataManager := &mocktypes.UserDataManagerMock{}
 		mockUserDataManager.On(
 			"GetSessionContextDataForUser",
-			testutils.ContextMatcher,
+			testutils2.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(sessionCtxData, nil)
 		helper.service.userDataManager = mockUserDataManager
 
-		h := &testutils.MockHTTPHandler{}
+		h := &testutils2.MockHTTPHandler{}
 		h.On(
 			"ServeHTTP",
-			testutils.HTTPResponseWriterMatcher,
-			testutils.HTTPRequestMatcher,
+			testutils2.HTTPResponseWriterMatcher,
+			testutils2.HTTPRequestMatcher,
 		).Return()
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.ctx, types.SessionContextDataKey, sessionCtxData))
 
-		mh := &testutils.MockHTTPHandler{}
+		mh := &testutils2.MockHTTPHandler{}
 		helper.service.AuthorizationMiddleware(mh).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
@@ -116,7 +116,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 			return nil, nil
 		}
 
-		mh := &testutils.MockHTTPHandler{}
+		mh := &testutils2.MockHTTPHandler{}
 		helper.service.AuthorizationMiddleware(mh).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
@@ -146,12 +146,12 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 		}
 
 		mp := &mockmetrics.Int64Counter{}
-		mp.On("Add", testutils.ContextMatcher, int64(1), mock.Anything).Return()
+		mp.On("Add", testutils2.ContextMatcher, int64(1), mock.Anything).Return()
 		helper.service.rejectedRequestCounter = mp
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.ctx, types.SessionContextDataKey, sessionCtxData))
 
-		helper.service.AuthorizationMiddleware(&testutils.MockHTTPHandler{}).ServeHTTP(helper.res, helper.req)
+		helper.service.AuthorizationMiddleware(&testutils2.MockHTTPHandler{}).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		mock.AssertExpectationsForObjects(t, mp)
@@ -182,11 +182,11 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.req.Context(), types.SessionContextDataKey, sessionCtxData))
 
-		mockHandler := &testutils.MockHTTPHandler{}
+		mockHandler := &testutils2.MockHTTPHandler{}
 		mockHandler.On(
 			"ServeHTTP",
-			testutils.HTTPResponseWriterMatcher,
-			testutils.HTTPRequestMatcher,
+			testutils2.HTTPResponseWriterMatcher,
+			testutils2.HTTPRequestMatcher,
 		).Return()
 
 		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(mockHandler).ServeHTTP(helper.res, helper.req)
@@ -298,11 +298,11 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.req.Context(), types.SessionContextDataKey, sessionCtxData))
 
-		mockHandler := &testutils.MockHTTPHandler{}
+		mockHandler := &testutils2.MockHTTPHandler{}
 		mockHandler.On(
 			"ServeHTTP",
-			testutils.HTTPResponseWriterMatcher,
-			testutils.HTTPRequestMatcher,
+			testutils2.HTTPResponseWriterMatcher,
+			testutils2.HTTPRequestMatcher,
 		).Return()
 
 		helper.service.ServiceAdminMiddleware(mockHandler).ServeHTTP(helper.res, helper.req)
@@ -318,7 +318,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
 
 		sessionCtxData := &types.SessionContextData{
 			Requester: types.RequesterInfo{
@@ -333,7 +333,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.req.Context(), types.SessionContextDataKey, sessionCtxData))
 
-		mockHandler := &testutils.MockHTTPHandler{}
+		mockHandler := &testutils2.MockHTTPHandler{}
 		helper.service.ServiceAdminMiddleware(mockHandler).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
@@ -359,7 +359,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.req.Context(), types.SessionContextDataKey, sessionCtxData))
 
-		mockHandler := &testutils.MockHTTPHandler{}
+		mockHandler := &testutils2.MockHTTPHandler{}
 		helper.service.ServiceAdminMiddleware(mockHandler).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)

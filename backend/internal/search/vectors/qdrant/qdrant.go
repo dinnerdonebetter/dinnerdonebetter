@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/dinnerdonebetter/backend/internal/cryptography/hashing/fnv"
+	"github.com/dinnerdonebetter/backend/internal/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/hashing/fnv"
-	"github.com/dinnerdonebetter/backend/internal/pkg/internalerrors"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/internal/pointer"
 	"github.com/dinnerdonebetter/backend/internal/search/vectors"
 
 	"github.com/qdrant/go-client/qdrant"

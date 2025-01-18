@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
+	"github.com/dinnerdonebetter/backend/internal/pointer"
 
 	"go.opentelemetry.io/otel/trace"
 )

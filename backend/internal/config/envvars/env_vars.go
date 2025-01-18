@@ -80,15 +80,6 @@ const (
 	// DatabaseRunMigrationsEnvVarKey is the environment variable name to set in order to override `config.Database.RunMigrations`.
 	DatabaseRunMigrationsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_RUN_MIGRATIONS"
 
-	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreakerConfig.ErrorRate`.
-	EmailCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_ERROR_RATE"
-
-	// EmailCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreakerConfig.MinimumSampleThreshold`.
-	EmailCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
-
-	// EmailCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreakerConfig.Name`.
-	EmailCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_NAME"
-
 	// EmailMailgunDomainEnvVarKey is the environment variable name to set in order to override `config.Email.Mailgun.Domain`.
 	EmailMailgunDomainEnvVarKey = "DINNER_DONE_BETTER_EMAIL_MAILGUN_DOMAIN"
 
@@ -145,15 +136,6 @@ const (
 
 	// EventsPublisherSqsQueueAddressEnvVarKey is the environment variable name to set in order to override `config.Events.Publisher.SQS.QueueAddress`.
 	EventsPublisherSqsQueueAddressEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_SQS_QUEUE_ADDRESS"
-
-	// FeatureFlagsCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreakingConfig.ErrorRate`.
-	FeatureFlagsCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_ERROR_RATE"
-
-	// FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreakingConfig.MinimumSampleThreshold`.
-	FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
-
-	// FeatureFlagsCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreakingConfig.Name`.
-	FeatureFlagsCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_NAME"
 
 	// FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.ErrorRate`.
 	FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_ERROR_RATE"
@@ -277,15 +259,6 @@ const (
 
 	// SearchAlgoliaTimeoutEnvVarKey is the environment variable name to set in order to override `config.Search.Algolia.Timeout`.
 	SearchAlgoliaTimeoutEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ALGOLIA_TIMEOUT"
-
-	// SearchCircuitBreakerErrorRateEnvVarKey is the environment variable name to set in order to override `config.Search.CircuitBreakerConfig.ErrorRate`.
-	SearchCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_ERROR_RATE"
-
-	// SearchCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Search.CircuitBreakerConfig.MinimumSampleThreshold`.
-	SearchCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
-
-	// SearchCircuitBreakerNameEnvVarKey is the environment variable name to set in order to override `config.Search.CircuitBreakerConfig.Name`.
-	SearchCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_NAME"
 
 	// SearchElasticsearchAddressEnvVarKey is the environment variable name to set in order to override `config.Search.Elasticsearch.Address`.
 	SearchElasticsearchAddressEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_ADDRESS"

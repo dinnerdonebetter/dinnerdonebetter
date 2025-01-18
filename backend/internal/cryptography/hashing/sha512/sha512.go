@@ -4,7 +4,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/hashing"
+	"github.com/dinnerdonebetter/backend/internal/cryptography/hashing"
 )
 
 var _ hashing.Hasher = (*sha512Hasher)(nil)

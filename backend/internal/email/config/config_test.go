@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

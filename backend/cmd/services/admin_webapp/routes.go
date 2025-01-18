@@ -6,7 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
-	"github.com/dinnerdonebetter/backend/internal/pkg/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 
 	"maragu.dev/gomponents"

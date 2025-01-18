@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	"github.com/mailjet/mailjet-apiv3-go/v4"
 	"github.com/stretchr/testify/require"
