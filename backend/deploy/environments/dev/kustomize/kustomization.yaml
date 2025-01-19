@@ -941,7 +941,7 @@ patches:
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: SERVICE_NAME
-          value: dinner-done-better-api
+          value: dinner-done-better-job-meal-plan-finalizer
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
@@ -999,7 +999,7 @@ patches:
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: SERVICE_NAME
-          value: dinner-done-better-api
+          value: dinner-done-better-job-meal-plan-grocery-list-init
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
@@ -1057,7 +1057,7 @@ patches:
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: SERVICE_NAME
-          value: dinner-done-better-api
+          value: dinner-done-better-job-meal-plan-task-creator
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
@@ -1115,7 +1115,7 @@ patches:
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: SERVICE_NAME
-          value: dinner-done-better-api
+          value: dinner-done-better-job-search-data-index-scheduler
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
