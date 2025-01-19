@@ -705,6 +705,16 @@ patches:
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
         value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
+          value: dinner-done-better-api
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
+          value: dinner-done-better-api
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
@@ -760,6 +770,16 @@ patches:
         path: "/spec/template/spec/containers/1/env/-"
         value:
           name: SERVICE_NAME
+          value: dinner-done-better-async-message-handler
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
+          value: dinner-done-better-async-message-handler
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-async-message-handler
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -826,6 +846,16 @@ patches:
           name: SERVICE_NAME
           value: dinner-done-better-job-db-cleaner
       - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
+          value: dinner-done-better-job-db-cleaner
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
+          value: dinner-done-better-job-db-cleaner
+      - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: PROMETHEUS_USERNAME
@@ -883,6 +913,16 @@ patches:
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: SERVICE_NAME
+          value: dinner-done-better-job-email-prober
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
+          value: dinner-done-better-job-email-prober
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-job-email-prober
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -943,6 +983,16 @@ patches:
           name: SERVICE_NAME
           value: dinner-done-better-job-meal-plan-finalizer
       - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
+          value: dinner-done-better-job-meal-plan-finalizer
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
+          value: dinner-done-better-job-meal-plan-finalizer
+      - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: PROMETHEUS_USERNAME
@@ -999,6 +1049,16 @@ patches:
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: SERVICE_NAME
+          value: dinner-done-better-job-meal-plan-grocery-list-init
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
+          value: dinner-done-better-job-meal-plan-grocery-list-init
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-job-meal-plan-grocery-list-init
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1059,6 +1119,16 @@ patches:
           name: SERVICE_NAME
           value: dinner-done-better-job-meal-plan-task-creator
       - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
+          value: dinner-done-better-job-meal-plan-task-creator
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
+          value: dinner-done-better-job-meal-plan-task-creator
+      - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: PROMETHEUS_USERNAME
@@ -1115,6 +1185,16 @@ patches:
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
         value:
           name: SERVICE_NAME
+          value: dinner-done-better-job-search-data-index-scheduler
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
+          value: dinner-done-better-job-search-data-index-scheduler
+      - op: add
+        path: "/spec/template/spec/containers/1/env/-"
+        value:
+          name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-job-search-data-index-scheduler
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
