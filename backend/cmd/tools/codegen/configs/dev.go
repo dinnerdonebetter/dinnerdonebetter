@@ -17,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/otelslog"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
@@ -116,14 +117,18 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{
-				Level:          logging.DebugLevel,
-				Provider:       loggingcfg.ProviderSlog,
-				OutputFilepath: "/var/log/application/service.log",
+				Level:    logging.DebugLevel,
+				Provider: loggingcfg.ProviderOtelSlog,
+				OtelSlog: &otelslog.Config{
+					CollectorEndpoint: "localhost:4317",
+					Insecure:          true,
+					Timeout:           2 * time.Second,
+				},
 			},
 			Metrics: metricscfg.Config{
-				Provider: tracingcfg.ProviderOtel,
+				ServiceName: otelServiceName,
+				Provider:    tracingcfg.ProviderOtel,
 				Otel: &otelgrpc.Config{
-					ServiceName:        otelServiceName,
 					CollectorEndpoint:  "localhost:4317",
 					CollectionInterval: 1 * time.Second,
 				},

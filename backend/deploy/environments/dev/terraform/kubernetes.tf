@@ -77,19 +77,19 @@ resource "kubernetes_secret" "api_service_config" {
   depends_on = [data.google_container_cluster.dev_cluster]
 
   data = {
-    OAUTH2_TOKEN_ENCRYPTION_KEY       = random_string.oauth2_token_encryption_key.result
-    JWT_SIGNING_KEY                   = base64encode(random_string.jwt_signing_key.result)
-    DATABASE_HOST                     = google_sql_database_instance.dev.private_ip_address
-    DATABASE_USERNAME                 = local.api_database_username
-    DATABASE_PASSWORD                 = random_password.api_user_database_password.result
-    SENDGRID_API_TOKEN                = var.SENDGRID_API_TOKEN
-    SEGMENT_API_TOKEN                 = var.SEGMENT_API_TOKEN
-    POSTHOG_API_KEY                   = var.POSTHOG_API_KEY
-    POSTHOG_PERSONAL_API_KEY          = var.POSTHOG_PERSONAL_API_KEY
-    ALGOLIA_APPLICATION_ID            = var.ALGOLIA_APPLICATION_ID
-    ALGOLIA_API_KEY                   = var.ALGOLIA_API_KEY
-    GOOGLE_SSO_OAUTH2_CLIENT_ID       = var.GOOGLE_SSO_OAUTH2_CLIENT_ID
-    GOOGLE_SSO_OAUTH2_CLIENT_SECRET   = var.GOOGLE_SSO_OAUTH2_CLIENT_SECRET
+    OAUTH2_TOKEN_ENCRYPTION_KEY     = random_string.oauth2_token_encryption_key.result
+    JWT_SIGNING_KEY                 = base64encode(random_string.jwt_signing_key.result)
+    DATABASE_HOST                   = google_sql_database_instance.dev.private_ip_address
+    DATABASE_USERNAME               = local.api_database_username
+    DATABASE_PASSWORD               = random_password.api_user_database_password.result
+    SENDGRID_API_TOKEN              = var.SENDGRID_API_TOKEN
+    SEGMENT_API_TOKEN               = var.SEGMENT_API_TOKEN
+    POSTHOG_API_KEY                 = var.POSTHOG_API_KEY
+    POSTHOG_PERSONAL_API_KEY        = var.POSTHOG_PERSONAL_API_KEY
+    ALGOLIA_APPLICATION_ID          = var.ALGOLIA_APPLICATION_ID
+    ALGOLIA_API_KEY                 = var.ALGOLIA_API_KEY
+    GOOGLE_SSO_OAUTH2_CLIENT_ID     = var.GOOGLE_SSO_OAUTH2_CLIENT_ID
+    GOOGLE_SSO_OAUTH2_CLIENT_SECRET = var.GOOGLE_SSO_OAUTH2_CLIENT_SECRET
   }
 }
 

@@ -27,11 +27,15 @@ const (
 func main() {
 	ctx := context.Background()
 
-	tracerProvider := tracing.NewNoopTracerProvider()
-	logger := loggingcfg.ProvideLogger(&loggingcfg.Config{
+	logger, err := loggingcfg.ProvideLogger(ctx, &loggingcfg.Config{
 		Level:    logging.DebugLevel,
 		Provider: loggingcfg.ProviderSlog,
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tracerProvider := tracing.NewNoopTracerProvider()
 	metricProvider := metrics.NewNoopMetricsProvider()
 
 	router, err := routingcfg.ProvideRouter(&routingcfg.Config{

@@ -270,7 +270,6 @@ dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
 	--no-attach grafana \
 	--no-attach postgres \
 	--no-attach prometheus \
-	--no-attach otel_collector \
 	--build \
 	--quiet-pull \
 	--force-recreate \

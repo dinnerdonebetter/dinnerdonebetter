@@ -44,9 +44,9 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		FilesystemConfig  *FilesystemConfig `envPrefix:"FILESYSTEM_"   json:"filesystem,omitempty"`
-		S3Config          *S3Config         `envPrefix:"S3_"           json:"s3,omitempty"`
-		GCPConfig         *GCPConfig        `envPrefix:"GCP_"          json:"gcpConfig,omitempty"`
+		FilesystemConfig  *FilesystemConfig `env:"init"                envPrefix:"FILESYSTEM_"            json:"filesystem,omitempty"`
+		S3Config          *S3Config         `env:"init"                envPrefix:"S3_"                    json:"s3,omitempty"`
+		GCPConfig         *GCPConfig        `env:"init"                envPrefix:"GCP_"                   json:"gcpConfig,omitempty"`
 		BucketPrefix      string            `env:"BUCKET_PREFIX"       json:"bucketPrefix,omitempty"`
 		BucketName        string            `env:"BUCKET_NAME"         json:"bucketName,omitempty"`
 		UploadFilenameKey string            `env:"UPLOAD_FILENAME_KEY" json:"uploadFilenameKey,omitempty"`

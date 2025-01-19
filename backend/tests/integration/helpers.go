@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -69,7 +70,10 @@ func initializeOAuth2PoweredClient(ctx context.Context, input *types.UserLoginIn
 		panic("url not set!")
 	}
 
-	logger := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger()
+	logger, err := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("could not create logger: %v", err)
+	}
 
 	c, err := apiclient.NewClient(
 		parsedURLToUse,
@@ -138,7 +142,8 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauth
 	u := serverutils.DetermineServiceURL()
 	urlToUse = u.String()
 
-	logger := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger()
+	logger, err := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger(ctx)
+	require.NoError(t, err)
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
 
 	serverutils.EnsureServerIsUp(ctx, urlToUse)

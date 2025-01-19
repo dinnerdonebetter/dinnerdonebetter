@@ -32,10 +32,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger := loggingcfg.ProvideLogger(&loggingcfg.Config{
+	logger, err := loggingcfg.ProvideLogger(ctx, &loggingcfg.Config{
 		Level:    logging.DebugLevel,
 		Provider: loggingcfg.ProviderSlog,
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	tracerProvider := tracing.NewNoopTracerProvider()
 
 	eventConfig := &msgconfig.Config{
@@ -49,13 +53,13 @@ func main() {
 		},
 	}
 
-	if err := config.ApplyEnvironmentVariables(eventConfig); err != nil {
+	if err = config.ApplyEnvironmentVariables(eventConfig); err != nil {
 		log.Fatalln(err)
 	}
 
 	// setup baseline messaging providers
 
-	if err := doTheThing(ctx, logger, tracerProvider, eventConfig); err != nil {
+	if err = doTheThing(ctx, logger, tracerProvider, eventConfig); err != nil {
 		observability.AcknowledgeError(err, logger, nil, "doing the thing")
 	}
 }

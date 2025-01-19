@@ -14,18 +14,23 @@
 	},
 	"observability": {
 		"logging": {
+			"serviceName": "email_prober",
 			"level": "debug",
-			"provider": "slog",
-			"outputFilepath": "/var/log/application/service.log"
+			"otelslog": {
+				"endpointURL": "localhost:4317",
+				"insecure": true,
+				"timeout": 2000000000
+			},
+			"provider": "otelslog"
 		},
 		"metrics": {
 			"otelgrpc": {
-				"serviceName": "dinner_done_better_api",
 				"metricsCollectorEndpoint": "localhost:4317",
 				"collectionInterval": 1000000000,
 				"insecure": false,
 				"collectionTimeout": 0
 			},
+			"serviceName": "email_prober",
 			"provider": "otelgrpc"
 		},
 		"tracing": {
@@ -33,7 +38,7 @@
 				"collector_endpoint": "localhost:4317",
 				"insecure": true
 			},
-			"service_name": "dinner_done_better_api",
+			"service_name": "email_prober",
 			"provider": "otelgrpc",
 			"spanCollectionProbability": 1
 		}

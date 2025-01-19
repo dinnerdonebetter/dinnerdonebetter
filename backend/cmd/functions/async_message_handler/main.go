@@ -80,7 +80,10 @@ func main() {
 	}
 	cfg.Database.RunMigrations = false
 
-	logger := cfg.Observability.Logging.ProvideLogger()
+	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
+	if err != nil {
+		log.Fatalf("could not create logger: %v", err)
+	}
 
 	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if err != nil {

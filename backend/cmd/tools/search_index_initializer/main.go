@@ -37,7 +37,10 @@ func main() {
 
 	ctx := context.Background()
 
-	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
+	logger, err := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger(ctx)
+	if err != nil {
+		log.Fatalf("could not create logger: %v", err)
+	}
 
 	tracerProvider := tracing.NewNoopTracerProvider()
 	metricsProvider := metrics.NewNoopMetricsProvider()
@@ -51,7 +54,7 @@ func main() {
 	}
 
 	dbConfig := &databasecfg.Config{}
-	if err := dbConfig.LoadConnectionDetailsFromURL(os.Getenv("DATABASE_URL")); err != nil {
+	if err = dbConfig.LoadConnectionDetailsFromURL(os.Getenv("DATABASE_URL")); err != nil {
 		log.Fatal(err)
 	}
 

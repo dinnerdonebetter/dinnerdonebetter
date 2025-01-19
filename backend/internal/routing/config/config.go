@@ -22,8 +22,8 @@ const (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	ChiConfig *chi.Config `envPrefix:"CHI_" json:"chiConfig,omitempty"`
-	Provider  string      `env:"PROVIDER"   json:"provider,omitempty"`
+	ChiConfig *chi.Config `env:"init"     envPrefix:"CHI_"          json:"chiConfig,omitempty"`
+	Provider  string      `env:"PROVIDER" json:"provider,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

@@ -35,12 +35,12 @@ type (
 	ConnectionDetails struct {
 		_ struct{} `json:"-"`
 
-		Username   string `env:"USERNAME"       json:"username"`
-		Password   string `env:"PASSWORD,unset" json:"password"`
-		Database   string `env:"DATABASE"       json:"database"`
-		Host       string `env:"HOST"           json:"hostname"`
-		Port       uint16 `env:"PORT"           json:"port"`
-		DisableSSL bool   `env:"DISABLE_SSL"    json:"disableSSL"`
+		Username   string `env:"USERNAME"    json:"username"`
+		Password   string `env:"PASSWORD"    json:"password"`
+		Database   string `env:"DATABASE"    json:"database"`
+		Host       string `env:"HOST"        json:"hostname"`
+		Port       uint16 `env:"PORT"        json:"port"`
+		DisableSSL bool   `env:"DISABLE_SSL" json:"disableSSL"`
 	}
 )
 

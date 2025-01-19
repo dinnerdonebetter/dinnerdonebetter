@@ -26,7 +26,8 @@ func main() {
 
 	outputLines := []string{}
 	if mainAST, found := structs["config.APIServiceConfig"]; found {
-		for envVar, fieldPath := range extractEnvVars(mainAST, structs, "main", "", "") {
+		extractedEnvVars := extractEnvVars(mainAST, structs, "main", "", "")
+		for envVar, fieldPath := range extractedEnvVars {
 			outputLines = append(outputLines, fmt.Sprintf(`	// %sEnvVarKey is the environment variable name to set in order to override `+"`"+`config%s`+"`"+`.
 	%sEnvVarKey = "%s%s"
 
@@ -109,7 +110,7 @@ func getTagValue(tag, key string) string {
 	for _, t := range tags {
 		parts := strings.SplitN(t, ":", 2)
 		if len(parts) == 2 && parts[0] == key {
-			return strings.Trim(parts[1], "\"")
+			return strings.Trim(strings.Split(parts[1], ",")[0], "\"")
 		}
 	}
 	return ""

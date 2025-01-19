@@ -42,7 +42,10 @@ func main() {
 	// only allow initialization to take so long.
 	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
 
-	logger := cfg.Observability.Logging.ProvideLogger()
+	logger, err := cfg.Observability.Logging.ProvideLogger(rootCtx)
+	if err != nil {
+		log.Fatalf("could not create logger: %v", err)
+	}
 	logger.Info("building server")
 
 	// build our server struct.
@@ -62,7 +65,15 @@ func main() {
 		syscall.SIGTERM,
 	)
 
-	log.Println("serving")
+	slog.Info("serving")
+	logger.Info("serving")
+	go func() {
+		for range time.NewTicker(time.Second).C {
+			slog.Info("still serving")
+			logger.Info("still serving")
+		}
+	}()
+
 	// Run server
 	go srv.Serve()
 

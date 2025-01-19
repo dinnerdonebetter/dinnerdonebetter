@@ -23,8 +23,8 @@ const (
 type (
 	// Config is the configuration for the cache.
 	Config struct {
-		Redis    *redis.Config `envPrefix:"REDIS_" json:"redis"`
-		Provider string        `env:"PROVIDER"     json:"provider"`
+		Redis    *redis.Config `env:"init"     envPrefix:"REDIS_" json:"redis"`
+		Provider string        `env:"PROVIDER" json:"provider"`
 	}
 )
 

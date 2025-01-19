@@ -21,6 +21,7 @@ type EnvironmentConfigSet struct {
 	MealPlanGroceryListInitializerConfigPath string
 	MealPlanTaskCreatorConfigPath            string
 	SearchDataIndexSchedulerConfigPath       string
+	AsyncMessageHandlerConfigPath            string
 }
 
 func stringOrDefault(s, defaultStr string) string {
@@ -53,6 +54,16 @@ func writeFile(p string, content []byte) error {
 	return os.WriteFile(p, content, 0o0644)
 }
 
+const (
+	dbcConfigObservabilityServiceName   = "db_cleaner"
+	empConfigObservabilityServiceName   = "email_prober"
+	mpfConfigObservabilityServiceName   = "meal_plan_finalizer"
+	mpgliConfigObservabilityServiceName = "meal_plan_grocery_list_initializer"
+	mptcConfigObservabilityServiceName  = "meal_plan_task_creator"
+	sdisConfigObservabilityServiceName  = "search_data_index_scheduler"
+	amhConfigObservabilityServiceName   = "async_message_handler"
+)
+
 func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) error {
 	if err := os.MkdirAll(outputDir, 0o0750); err != nil {
 		return err
@@ -71,17 +82,29 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Observability: s.RootConfig.Observability,
 		Database:      s.RootConfig.Database,
 	}
+	dbcConfig.Observability.Tracing.ServiceName = dbcConfigObservabilityServiceName
+	dbcConfig.Observability.Metrics.ServiceName = dbcConfigObservabilityServiceName
+	dbcConfig.Observability.Logging.ServiceName = dbcConfigObservabilityServiceName
+
 	empConfig := &EmailProberConfig{
 		Observability: s.RootConfig.Observability,
 		Email:         s.RootConfig.Email,
 		Database:      s.RootConfig.Database,
 	}
+	empConfig.Observability.Tracing.ServiceName = empConfigObservabilityServiceName
+	empConfig.Observability.Metrics.ServiceName = empConfigObservabilityServiceName
+	empConfig.Observability.Logging.ServiceName = empConfigObservabilityServiceName
+
 	mpfConfig := &MealPlanFinalizerConfig{
 		Observability: s.RootConfig.Observability,
 		Events:        s.RootConfig.Events,
 		Database:      s.RootConfig.Database,
 		Queues:        s.RootConfig.Queues,
 	}
+	mpfConfig.Observability.Tracing.ServiceName = mpfConfigObservabilityServiceName
+	mpfConfig.Observability.Metrics.ServiceName = mpfConfigObservabilityServiceName
+	mpfConfig.Observability.Logging.ServiceName = mpfConfigObservabilityServiceName
+
 	mpgliConfig := &MealPlanGroceryListInitializerConfig{
 		Observability: s.RootConfig.Observability,
 		Analytics:     s.RootConfig.Analytics,
@@ -89,6 +112,10 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Database:      s.RootConfig.Database,
 		Queues:        s.RootConfig.Queues,
 	}
+	mpgliConfig.Observability.Tracing.ServiceName = mpgliConfigObservabilityServiceName
+	mpgliConfig.Observability.Metrics.ServiceName = mpgliConfigObservabilityServiceName
+	mpgliConfig.Observability.Logging.ServiceName = mpgliConfigObservabilityServiceName
+
 	mptcConfig := &MealPlanTaskCreatorConfig{
 		Observability: s.RootConfig.Observability,
 		Analytics:     s.RootConfig.Analytics,
@@ -96,12 +123,20 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Database:      s.RootConfig.Database,
 		Queues:        s.RootConfig.Queues,
 	}
+	mptcConfig.Observability.Tracing.ServiceName = mptcConfigObservabilityServiceName
+	mptcConfig.Observability.Metrics.ServiceName = mptcConfigObservabilityServiceName
+	mptcConfig.Observability.Logging.ServiceName = mptcConfigObservabilityServiceName
+
 	sdisConfig := &SearchDataIndexSchedulerConfig{
 		Observability: s.RootConfig.Observability,
 		Events:        s.RootConfig.Events,
 		Database:      s.RootConfig.Database,
 		Queues:        s.RootConfig.Queues,
 	}
+	sdisConfig.Observability.Tracing.ServiceName = sdisConfigObservabilityServiceName
+	sdisConfig.Observability.Metrics.ServiceName = sdisConfigObservabilityServiceName
+	sdisConfig.Observability.Logging.ServiceName = sdisConfigObservabilityServiceName
+
 	amhConfig := &AsyncMessageHandlerConfig{
 		Storage:       s.RootConfig.Services.DataPrivacy.Uploads.Storage,
 		Queues:        s.RootConfig.Queues,
@@ -112,6 +147,9 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Observability: s.RootConfig.Observability,
 		Database:      s.RootConfig.Database,
 	}
+	amhConfig.Observability.Tracing.ServiceName = amhConfigObservabilityServiceName
+	amhConfig.Observability.Metrics.ServiceName = amhConfigObservabilityServiceName
+	amhConfig.Observability.Logging.ServiceName = amhConfigObservabilityServiceName
 
 	if validate {
 		allConfigs := []validation.ValidatableWithContext{
@@ -138,13 +176,12 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 
 	pathToConfigMap := map[string][]byte{
 		path.Join(outputDir, stringOrDefault(s.DBCleanerConfigPath, "job_db_cleaner_config.json")):                                              renderJSON(dbcConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.DBCleanerConfigPath, "job_db_cleaner_config.json")):                                              renderJSON(dbcConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.EmailProberConfigPath, "job_email_prober_config.json")):                                          renderJSON(empConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.MealPlanFinalizerConfigPath, "job_meal_plan_finalizer_config.json")):                             renderJSON(mpfConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.MealPlanGroceryListInitializerConfigPath, "job_meal_plan_grocery_list_initializer_config.json")): renderJSON(mpgliConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.MealPlanTaskCreatorConfigPath, "job_meal_plan_task_creator_config.json")):                        renderJSON(mptcConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "job_search_data_index_scheduler_config.json")):              renderJSON(sdisConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "async_message_handler_config.json")):                        renderJSON(amhConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                             renderJSON(amhConfig, pretty),
 	}
 
 	for p, b := range pathToConfigMap {

@@ -49,7 +49,10 @@ var (
 
 func init() {
 	ctx := context.Background()
-	logger := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger()
+	logger, err := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger(ctx)
+	if err != nil {
+		panic("could not create logger: " + err.Error())
+	}
 
 	parsedURLToUse = serverutils.DetermineServiceURL()
 	urlToUse = parsedURLToUse.String()
@@ -68,11 +71,10 @@ func init() {
 		RunMigrations:            false,
 		MaxPingAttempts:          500,
 	}
-	if err := cfg.LoadConnectionDetailsFromURL(dbAddr); err != nil {
+	if err = cfg.LoadConnectionDetailsFromURL(dbAddr); err != nil {
 		panic(err)
 	}
 
-	var err error
 	dbManager, err = postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
 	if err != nil {
 		panic(err)

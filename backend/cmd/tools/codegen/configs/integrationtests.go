@@ -52,13 +52,13 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			Consumer: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
-					QueueAddresses: []string{workerQueueAddress},
+					QueueAddresses: []string{dockerComposeWorkerQueueAddress},
 				},
 			},
 			Publisher: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
-					QueueAddresses: []string{workerQueueAddress},
+					QueueAddresses: []string{dockerComposeWorkerQueueAddress},
 				},
 			},
 		},

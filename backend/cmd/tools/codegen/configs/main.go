@@ -4,19 +4,19 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 )
 
 const (
-	defaultPort = 8000
+	defaultPort     = 8000
+	maxAttempts     = 50
+	otelServiceName = "dinner_done_better"
+
 	/* #nosec G101 */
 	debugCookieHashKey = "HEREISA32CHARSECRETWHICHISMADEUP"
 
 	// run modes.
 	developmentEnv = "development"
 	testingEnv     = "testing"
-
-	otelServiceName = "dinner_done_better_api"
 
 	// message provider topics.
 	dataChangesTopicName              = "data_changes"
@@ -25,22 +25,7 @@ const (
 	userDataAggregationTopicName      = "user_data_aggregation_requests"
 	webhookExecutionRequestsTopicName = "webhook_execution_requests"
 
-	maxAttempts = 50
-
-	contentTypeJSON               = "application/json"
-	workerQueueAddress            = "worker_queue:6379"
-	localOAuth2TokenEncryptionKey = debugCookieHashKey
-)
-
-var (
-	localdevPostgresDBConnectionDetails = databasecfg.ConnectionDetails{
-		Username:   "dbuser",
-		Password:   "hunter2",
-		Database:   "dinner-done-better",
-		Host:       "pgdatabase",
-		Port:       5432,
-		DisableSSL: true,
-	}
+	contentTypeJSON = "application/json"
 )
 
 func main() {

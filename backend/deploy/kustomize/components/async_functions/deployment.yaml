@@ -69,5 +69,5 @@ spec:
             sizeLimit: 500Mi
         - name: opentelemetry-config
           configMap:
-            name: opentelemetry-collector-config
+            name: backend-opentelemetry-collector-config
 ---

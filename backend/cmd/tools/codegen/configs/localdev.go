@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/otelslog"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
@@ -30,6 +31,22 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
+)
+
+const (
+	dockerComposeWorkerQueueAddress = "worker_queue:6379"
+	localOAuth2TokenEncryptionKey   = debugCookieHashKey
+)
+
+var (
+	localdevPostgresDBConnectionDetails = databasecfg.ConnectionDetails{
+		Username:   "dbuser",
+		Password:   "hunter2",
+		Database:   "dinner-done-better",
+		Host:       "pgdatabase",
+		Port:       5432,
+		DisableSSL: true,
+	}
 )
 
 func buildLocalDevConfig() *config.APIServiceConfig {
@@ -60,13 +77,13 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			Consumer: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
-					QueueAddresses: []string{workerQueueAddress},
+					QueueAddresses: []string{dockerComposeWorkerQueueAddress},
 				},
 			},
 			Publisher: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
-					QueueAddresses: []string{workerQueueAddress},
+					QueueAddresses: []string{dockerComposeWorkerQueueAddress},
 				},
 			},
 		},
@@ -95,13 +112,17 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{
-				Level:          logging.DebugLevel,
-				Provider:       loggingcfg.ProviderSlog,
-				OutputFilepath: "/var/log/dinnerdonebetter/api-service.log",
+				Level:    logging.DebugLevel,
+				Provider: loggingcfg.ProviderOtelSlog,
+				OtelSlog: &otelslog.Config{
+					CollectorEndpoint: "otel_collector:4317",
+					Insecure:          true,
+					Timeout:           time.Second * 3,
+				},
 			},
 			Metrics: metricscfg.Config{
+				ServiceName: otelServiceName,
 				Otel: &otelgrpc.Config{
-					ServiceName:        otelServiceName,
 					Insecure:           true,
 					CollectorEndpoint:  "otel_collector:4317",
 					CollectionInterval: time.Second,

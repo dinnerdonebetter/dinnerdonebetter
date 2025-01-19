@@ -51,7 +51,10 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	httpConfig := cfg.Server
 	observabilityConfig := &cfg.Observability
 	loggingcfgConfig := &observabilityConfig.Logging
-	logger := loggingcfg.ProvideLogger(loggingcfgConfig)
+	logger, err := loggingcfg.ProvideLogger(ctx, loggingcfgConfig)
+	if err != nil {
+		return nil, err
+	}
 	tracingcfgConfig := &observabilityConfig.Tracing
 	tracerProvider, err := tracingcfg.ProvideTracerProvider(ctx, tracingcfgConfig, logger)
 	if err != nil {

@@ -47,15 +47,18 @@
 	},
 	"observability": {
 		"logging": {
+			"serviceName": "meal_plan_grocery_list_initializer",
 			"level": "info",
 			"provider": "slog"
 		},
-		"metrics": {},
+		"metrics": {
+			"serviceName": "meal_plan_grocery_list_initializer"
+		},
 		"tracing": {
 			"otelgrpc": {
 				"collector_endpoint": "http://tracing-server:14268/api/traces"
 			},
-			"service_name": "dinner_done_better_api",
+			"service_name": "meal_plan_grocery_list_initializer",
 			"provider": "otelgrpc",
 			"spanCollectionProbability": 1
 		}

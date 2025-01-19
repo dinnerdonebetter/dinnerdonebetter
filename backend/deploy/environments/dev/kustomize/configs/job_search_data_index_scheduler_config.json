@@ -36,18 +36,23 @@
 	},
 	"observability": {
 		"logging": {
+			"serviceName": "search_data_index_scheduler",
 			"level": "debug",
-			"provider": "slog",
-			"outputFilepath": "/var/log/application/service.log"
+			"otelslog": {
+				"endpointURL": "localhost:4317",
+				"insecure": true,
+				"timeout": 2000000000
+			},
+			"provider": "otelslog"
 		},
 		"metrics": {
 			"otelgrpc": {
-				"serviceName": "dinner_done_better_api",
 				"metricsCollectorEndpoint": "localhost:4317",
 				"collectionInterval": 1000000000,
 				"insecure": false,
 				"collectionTimeout": 0
 			},
+			"serviceName": "search_data_index_scheduler",
 			"provider": "otelgrpc"
 		},
 		"tracing": {
@@ -55,7 +60,7 @@
 				"collector_endpoint": "localhost:4317",
 				"insecure": true
 			},
-			"service_name": "dinner_done_better_api",
+			"service_name": "search_data_index_scheduler",
 			"provider": "otelgrpc",
 			"spanCollectionProbability": 1
 		}
