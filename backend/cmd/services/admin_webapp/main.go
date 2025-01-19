@@ -28,8 +28,8 @@ func main() {
 	ctx := context.Background()
 
 	logger, err := loggingcfg.ProvideLogger(ctx, &loggingcfg.Config{
-		Level:    logging.DebugLevel,
 		Provider: loggingcfg.ProviderSlog,
+		Level:    logging.InfoLevel,
 	})
 	if err != nil {
 		log.Fatal(err)

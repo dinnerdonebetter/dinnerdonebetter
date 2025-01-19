@@ -39,13 +39,13 @@ spec:
               path: "/api/_meta_/live"
               port: 7000
             initialDelaySeconds: 15
-            periodSeconds: 32
+            periodSeconds: 52
           readinessProbe:
             httpGet:
               path: "/api/_meta_/ready"
               port: 7000
             initialDelaySeconds: 15
-            periodSeconds: 3
+            periodSeconds: 5
             # This is the OpenTelemetry collector sidecar
         - name: opentelemetry-collector
           image: otel/opentelemetry-collector-contrib:0.115.1

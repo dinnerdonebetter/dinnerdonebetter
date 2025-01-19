@@ -306,4 +306,4 @@ DEV_NAMESPACE := dev
 
 .PHONY: deploy_dev
 deploy_dev:
-	skaffold run --filename=skaffold.yaml --build-concurrency 0 --profile $(DEV_NAMESPACE)
+	skaffold run --filename=skaffold.yaml --build-concurrency 2 --profile $(DEV_NAMESPACE)
