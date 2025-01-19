@@ -718,7 +718,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -726,7 +726,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -734,7 +734,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -742,7 +742,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -750,7 +750,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -758,7 +758,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       version: v1
@@ -787,7 +787,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -795,7 +795,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -803,7 +803,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -811,7 +811,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -819,7 +819,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/template/spec/containers/1/env/-"
@@ -827,7 +827,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       version: v1
@@ -861,7 +861,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -869,7 +869,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -877,7 +877,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -885,7 +885,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -893,7 +893,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -901,7 +901,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -930,7 +930,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -938,7 +938,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -946,7 +946,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -954,7 +954,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -962,7 +962,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -970,7 +970,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -998,7 +998,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1006,7 +1006,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1014,7 +1014,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1022,7 +1022,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1030,7 +1030,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1038,7 +1038,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -1066,7 +1066,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1074,7 +1074,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1082,7 +1082,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1090,7 +1090,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1098,7 +1098,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1106,7 +1106,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -1134,7 +1134,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1142,7 +1142,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1150,7 +1150,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1158,7 +1158,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1166,7 +1166,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1174,7 +1174,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
@@ -1202,7 +1202,7 @@ patches:
           name: PROMETHEUS_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1210,7 +1210,7 @@ patches:
           name: PROMETHEUS_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1218,7 +1218,7 @@ patches:
           name: LOKI_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1226,7 +1226,7 @@ patches:
           name: LOKI_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_LOKI_PASSWORD
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1234,7 +1234,7 @@ patches:
           name: TEMPO_USERNAME
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_USERNAME
       - op: add
         path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
@@ -1242,7 +1242,7 @@ patches:
           name: TEMPO_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: api-service-config
+              name: grafana-cloud-creds
               key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
