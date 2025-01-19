@@ -1,33 +1,33 @@
 # how to use these resources: https://github.com/philippe-vandermoere/terraform-provider-algolia/blob/11d9e162be54c66c92376ae5647f7f3bd675755a/examples/main.tf
 
 resource "algolia_index" "recipes_index" {
-  name = "recipes"
+  name = "dev_recipes"
 }
 
 resource "algolia_index" "meals_index" {
-  name = "meals"
+  name = "dev_meals"
 }
 
 resource "algolia_index" "valid_ingredients_index" {
-  name = "valid_ingredients"
+  name = "dev_valid_ingredients"
 }
 
 resource "algolia_index" "valid_instruments_index" {
-  name = "valid_instruments"
+  name = "dev_valid_instruments"
 }
 
 resource "algolia_index" "valid_measurement_units_index" {
-  name = "valid_measurement_units"
+  name = "dev_valid_measurement_units"
 }
 
 resource "algolia_index" "valid_preparations_index" {
-  name = "valid_preparations"
+  name = "dev_valid_preparations"
 }
 
 resource "algolia_index" "valid_ingredient_states_index" {
-  name = "valid_ingredient_states"
+  name = "dev_valid_ingredient_states"
 }
 
 resource "algolia_index" "users_index" {
-  name = "users"
+  name = "dev_users"
 }
