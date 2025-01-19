@@ -200,11 +200,11 @@ const (
 	// ObservabilityLoggingOtelSlogTimeoutEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.Timeout`.
 	ObservabilityLoggingOtelSlogTimeoutEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_TIMEOUT"
 
-	// ObservabilityLoggingOutputFilepathEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OutputFilepath`.
-	ObservabilityLoggingOutputFilepathEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OUTPUT_FILEPATH"
-
 	// ObservabilityLoggingProviderEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.Provider`.
 	ObservabilityLoggingProviderEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_PROVIDER"
+
+	// ObservabilityLoggingServiceNameEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.ServiceName`.
+	ObservabilityLoggingServiceNameEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_SERVICE_NAME"
 
 	// ObservabilityMetricsInitEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel`.
 	ObservabilityMetricsInitEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_init"

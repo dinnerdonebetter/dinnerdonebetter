@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dinner-done-better-otelcol-deployment
+  labels:
+    app: dinner-done-better-infra
+    app.kubernetes.io/name: dinner-done-better-infra
+spec:
+  selector:
+    matchLabels:
+      app: dinner-done-better-infra
+      app.kubernetes.io/name: dinner-done-better-infra
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dinner-done-better-infra
+        app.kubernetes.io/name: dinner-done-better-infra
+    spec:
+      containers:
+        - name: opentelemetry-collector
+          image: otel/opentelemetry-collector-contrib:0.115.1
+          command:
+            - "/otelcol-contrib"
+            - "--config"
+            - "/conf/config.yaml"
+          ports:
+            - containerPort: 4317
+              name: otel1
+            - containerPort: 4318
+              name: otel2
+            - containerPort: 13313
+              name: health
+          volumeMounts:
+            - name: opentelemetry-config
+              mountPath: /conf
+          env:
+            - name: "RUNNING_IN_KUBERNETES"
+              value: "true"
+      volumes:
+        # this volume contains the configuration file for the OTel collector.
+        - name: opentelemetry-config
+          configMap:
+            name: opentelemetry-collector-config
+---

@@ -21,5 +21,11 @@ generatorOptions:
     deployed_by: skaffold
     generated_by: skaffold
 
+configMapGenerator:
+  - name: opentelemetry-collector-config
+    namespace: dev
+    files:
+      - config.yaml=./configs/otel_collector_config.yaml
+
 namespace: dev
 ---

@@ -44,7 +44,6 @@ jobs:
               - frontend/packages/**
               - frontend/environments/dev/admin/**
 
-
   baseline-infra:
     needs: [changes]
     timeout-minutes: 90
@@ -365,7 +364,7 @@ jobs:
         working-directory: frontend/deploy/environments/dev/webapp/terraform
 
   applications:
-    if: ${{ success() || cancelled() }}
+    if: always() && !failure() && !cancelled()
     needs:
       - backend-infra
       - webapp-infra
