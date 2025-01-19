@@ -28,8 +28,6 @@ spec:
           ports:
             - containerPort: 4317
               name: otel1
-            - containerPort: 4318
-              name: otel2
             - containerPort: 13313
               name: health
           volumeMounts:
@@ -43,4 +41,26 @@ spec:
         - name: opentelemetry-config
           configMap:
             name: opentelemetry-collector-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-collector-svc
+  labels:
+    app: dinner-done-better-infra
+    app.kubernetes.io/name: dinner-done-better-infra
+spec:
+  selector:
+    app: dinner-done-better-infra
+    app.kubernetes.io/name: dinner-done-better-infra
+  ports:
+    - name: otlp_grpc
+      port: 4317
+      protocol: TCP
+      targetPort: otlp_grpc
+    - name: health
+      port: 13313
+      protocol: TCP
+      targetPort: health
+  type: ClusterIP
 ---

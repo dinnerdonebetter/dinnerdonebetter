@@ -120,7 +120,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				Level:    logging.DebugLevel,
 				Provider: loggingcfg.ProviderOtelSlog,
 				OtelSlog: &otelslog.Config{
-					CollectorEndpoint: "localhost:4317",
+					CollectorEndpoint: internalKubernetesEndpoint("otel-collector-svc", "dev", 4317),
 					Insecure:          true,
 					Timeout:           2 * time.Second,
 				},
@@ -129,7 +129,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				ServiceName: otelServiceName,
 				Provider:    tracingcfg.ProviderOtel,
 				Otel: &otelgrpc.Config{
-					CollectorEndpoint:  "localhost:4317",
+					CollectorEndpoint:  internalKubernetesEndpoint("otel-collector-svc", "dev", 4317),
 					CollectionInterval: 1 * time.Second,
 				},
 			},
@@ -138,7 +138,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				ServiceName:               otelServiceName,
 				SpanCollectionProbability: 1,
 				Otel: &oteltrace.Config{
-					CollectorEndpoint: "localhost:4317",
+					CollectorEndpoint: internalKubernetesEndpoint("otel-collector-svc", "dev", 4317),
 					Insecure:          true,
 				},
 			},

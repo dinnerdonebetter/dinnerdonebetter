@@ -17,7 +17,7 @@
 			"serviceName": "email_prober",
 			"level": "debug",
 			"otelslog": {
-				"endpointURL": "localhost:4317",
+				"endpointURL": "https://otel-collector-svc.dev.svc.cluster.local:4317",
 				"insecure": true,
 				"timeout": 2000000000
 			},
@@ -25,7 +25,7 @@
 		},
 		"metrics": {
 			"otelgrpc": {
-				"metricsCollectorEndpoint": "localhost:4317",
+				"metricsCollectorEndpoint": "https://otel-collector-svc.dev.svc.cluster.local:4317",
 				"collectionInterval": 1000000000,
 				"insecure": false,
 				"collectionTimeout": 0
@@ -35,7 +35,7 @@
 		},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "localhost:4317",
+				"collector_endpoint": "https://otel-collector-svc.dev.svc.cluster.local:4317",
 				"insecure": true
 			},
 			"service_name": "email_prober",

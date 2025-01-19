@@ -2,21 +2,8 @@
 receivers:
   otlp:
     protocols:
-      http:
-        endpoint: "0.0.0.0:4318"
       grpc:
         endpoint: "0.0.0.0:4317"
-
-  filelog:
-    include: [/var/log/application/*.log]
-    operators:
-      - type: json_parser
-      - type: add
-        field: resource["service.name"]
-        value: ${env:SERVICE_NAME}
-      - type: add
-        field: resource["deployment.environment"]
-        value: dev
 
 extensions:
   health_check:
@@ -75,7 +62,7 @@ service:
       processors:
         - batch
       exporters:
-        - debug
+        # - debug
         - otlp
     metrics:
       receivers:
@@ -87,10 +74,10 @@ service:
         - prometheusremotewrite
     logs:
       receivers:
-        - filelog
+        - otlp
       processors:
         - resource
         - batch
       exporters:
-        - debug
+        # - debug
         - otlphttp
