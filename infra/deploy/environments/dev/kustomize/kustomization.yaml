@@ -8,6 +8,7 @@ resources:
   - namespace.yaml
   - external_dns.yaml
   - ingress.yaml
+  - otel_collector.yaml
   - cert_issuer.yaml # the letsencrypt definition that will issue our cert
   - cert_secret.yaml # the secret where the cert will get stored
   - certificate.yaml # the certificate request itself for the issuer to fulfill

@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dinner-done-better-otelcol-deployment
+  name: opentelemetry-collector
   labels:
     app: dinner-done-better-infra
     app.kubernetes.io/name: dinner-done-better-infra
