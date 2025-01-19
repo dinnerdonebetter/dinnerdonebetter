@@ -98,3 +98,29 @@ resource "kubernetes_secret" "api_service_config" {
     GRAFANA_CLOUD_TEMPO_PASSWORD      = var.GRAFANA_CLOUD_TEMPO_PASSWORD
   }
 }
+
+resource "kubernetes_secret" "grafana_cloud_creds" {
+  metadata {
+    name      = "grafana-cloud-creds"
+    namespace = local.k8s_namespace
+
+    annotations = {
+      (local.managed_by_label) = "terraform"
+    }
+
+    labels = {
+      (local.managed_by_label) = "terraform"
+    }
+  }
+
+  depends_on = [data.google_container_cluster.dev_cluster]
+
+  data = {
+    GRAFANA_CLOUD_PROMETHEUS_USERNAME = var.GRAFANA_CLOUD_PROMETHEUS_USERNAME
+    GRAFANA_CLOUD_PROMETHEUS_PASSWORD = var.GRAFANA_CLOUD_PROMETHEUS_PASSWORD
+    GRAFANA_CLOUD_LOKI_USERNAME       = var.GRAFANA_CLOUD_LOKI_USERNAME
+    GRAFANA_CLOUD_LOKI_PASSWORD       = var.GRAFANA_CLOUD_LOKI_PASSWORD
+    GRAFANA_CLOUD_TEMPO_USERNAME      = var.GRAFANA_CLOUD_TEMPO_USERNAME
+    GRAFANA_CLOUD_TEMPO_PASSWORD      = var.GRAFANA_CLOUD_TEMPO_PASSWORD
+  }
+}
