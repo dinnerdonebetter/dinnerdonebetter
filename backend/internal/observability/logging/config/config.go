@@ -55,7 +55,7 @@ func (cfg *Config) ProvideLogger(ctx context.Context) (logger logging.Logger, er
 	case ProviderSlog:
 		logger = slog.NewSlogLogger(cfg.Level)
 	case ProviderOtelSlog:
-		logger, err = otelslog.NewOtelSlogLogger(ctx, cfg.ServiceName, cfg.OtelSlog)
+		logger, err = otelslog.NewOtelSlogLogger(ctx, cfg.Level, cfg.ServiceName, cfg.OtelSlog)
 	default:
 		logger = logging.NewNoopLogger()
 	}

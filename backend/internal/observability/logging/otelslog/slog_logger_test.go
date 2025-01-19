@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/trace"
@@ -19,7 +21,7 @@ func TestNewLogger(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		assert.NotNil(t, l)
 		assert.NoError(t, err)
 	})
@@ -32,7 +34,7 @@ func Test_zerologLogger_WithName(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		assert.NotNil(t, l.WithName(t.Name()))
@@ -46,7 +48,7 @@ func Test_zerologLogger_SetRequestIDFunc(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		l.SetRequestIDFunc(func(*http.Request) string {
@@ -62,7 +64,7 @@ func Test_zerologLogger_Info(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		l.Info(t.Name())
@@ -76,7 +78,7 @@ func Test_zerologLogger_Debug(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		l.Debug(t.Name())
@@ -90,7 +92,7 @@ func Test_zerologLogger_Error(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		l.Error(t.Name(), errors.New("blah"))
@@ -104,7 +106,7 @@ func Test_zerologLogger_Clone(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		assert.NotNil(t, l.Clone())
@@ -118,7 +120,7 @@ func Test_zerologLogger_WithValue(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		assert.NotNil(t, l.WithValue("name", t.Name()))
@@ -132,7 +134,7 @@ func Test_zerologLogger_WithValues(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		assert.NotNil(t, l.WithValues(map[string]any{"name": t.Name()}))
@@ -146,7 +148,7 @@ func Test_zerologLogger_WithError(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		assert.NotNil(t, l.WithError(errors.New("blah")))
@@ -160,7 +162,7 @@ func Test_zerologLogger_WithSpan(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		span := trace.SpanFromContext(ctx)
@@ -176,7 +178,7 @@ func Test_zerologLogger_WithRequest(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		logger, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		l, ok := logger.(*otelSlogLogger)
@@ -202,7 +204,7 @@ func Test_zerologLogger_WithResponse(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		l, err := NewOtelSlogLogger(ctx, t.Name(), &Config{})
+		l, err := NewOtelSlogLogger(ctx, logging.DebugLevel, t.Name(), &Config{})
 		require.NoError(t, err)
 
 		assert.NotNil(t, l.WithResponse(&http.Response{}))

@@ -13,6 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	o11yutils "github.com/dinnerdonebetter/backend/internal/observability/utils"
 
+	slogmulti "github.com/samber/slog-multi"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
 	"go.opentelemetry.io/otel/log/global"
@@ -31,50 +32,72 @@ type otelSlogLogger struct {
 }
 
 // NewOtelSlogLogger builds a new otelSlogLogger.
-func NewOtelSlogLogger(ctx context.Context, serviceName string, cfg *Config) (logging.Logger, error) {
+func NewOtelSlogLogger(ctx context.Context, lvl logging.Level, serviceName string, cfg *Config) (logging.Logger, error) {
 	if cfg == nil {
 		return nil, internalerrors.NilConfigError("otel slog logger")
 	}
 
-	options := []otlploggrpc.Option{
-		otlploggrpc.WithEndpoint(cfg.CollectorEndpoint),
-		otlploggrpc.WithHeaders(map[string]string{}),
-		otlploggrpc.WithTimeout(cfg.Timeout),
-		otlploggrpc.WithReconnectionPeriod(time.Second / 2),
+	var level slog.Leveler
+	switch lvl {
+	case logging.DebugLevel:
+		level = slog.LevelDebug
+	case logging.InfoLevel:
+		level = slog.LevelInfo
+	case logging.WarnLevel:
+		level = slog.LevelWarn
+	case logging.ErrorLevel:
+		level = slog.LevelError
 	}
 
-	if cfg.Insecure {
-		options = append(options, otlploggrpc.WithInsecure())
+	logHandlers := []slog.Handler{
+		slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			AddSource: lvl == logging.DebugLevel,
+			Level:     level,
+		}),
 	}
 
-	// Create the OTLP log exporter that sends logs to configured destination
-	logExporter, err := otlploggrpc.New(ctx, options...)
-	if err != nil {
-		return nil, fmt.Errorf("instantiating otlploggrpc exporter: %w", err)
+	if cfg.CollectorEndpoint != "" {
+		options := []otlploggrpc.Option{
+			otlploggrpc.WithEndpoint(cfg.CollectorEndpoint),
+			otlploggrpc.WithHeaders(map[string]string{}),
+			otlploggrpc.WithTimeout(cfg.Timeout),
+			otlploggrpc.WithReconnectionPeriod(time.Second / 2),
+		}
+
+		if cfg.Insecure {
+			options = append(options, otlploggrpc.WithInsecure())
+		}
+
+		// Create the OTLP log exporter that sends logs to configured destination
+		logExporter, err := otlploggrpc.New(ctx, options...)
+		if err != nil {
+			return nil, fmt.Errorf("instantiating otlploggrpc exporter: %w", err)
+		}
+
+		// Create the logger provider
+		lp := log.NewLoggerProvider(
+			log.WithProcessor(log.NewBatchProcessor(logExporter)),
+			log.WithResource(o11yutils.MustOtelResource(ctx, serviceName)),
+			log.WithAttributeCountLimit(128),
+			log.WithAttributeValueLengthLimit(-1),
+		)
+
+		// Set the logger provider globally
+		global.SetLoggerProvider(lp)
+
+		logHandlers = append(logHandlers, otelslog.NewHandler(
+			serviceName,
+			otelslog.WithLoggerProvider(lp),
+			otelslog.WithVersion("TODO_version"),
+			otelslog.WithSource(true),
+		))
 	}
 
-	// Create the logger provider
-	lp := log.NewLoggerProvider(
-		log.WithProcessor(log.NewBatchProcessor(logExporter)),
-		log.WithResource(o11yutils.MustOtelResource(ctx, serviceName)),
-		log.WithAttributeCountLimit(128),
-		log.WithAttributeValueLengthLimit(-1),
-	)
+	logger := &otelSlogLogger{
+		logger: slog.New(slogmulti.Fanout(logHandlers...)),
+	}
 
-	// Set the logger provider globally
-	global.SetLoggerProvider(lp)
-
-	// Instantiate a new slog logger
-	logger := slog.New(otelslog.NewHandler(
-		serviceName,
-		otelslog.WithLoggerProvider(lp),
-		otelslog.WithVersion("TODO_version"),
-		otelslog.WithSource(true),
-	))
-
-	return &otelSlogLogger{
-		logger: logger,
-	}, nil
+	return logger, nil
 }
 
 // WithName is our obligatory contract fulfillment function.

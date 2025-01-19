@@ -65,6 +65,7 @@ require (
 	github.com/rs/zerolog v1.33.0
 	github.com/rubyist/circuitbreaker v2.2.1+incompatible
 	github.com/rudderlabs/analytics-go/v4 v4.2.1
+	github.com/samber/slog-multi v1.3.3
 	github.com/segmentio/analytics-go/v3 v3.3.0
 	github.com/sendgrid/rest v2.6.9+incompatible
 	github.com/sendgrid/sendgrid-go v3.16.0+incompatible
@@ -105,7 +106,6 @@ require (
 	google.golang.org/grpc v1.69.4
 	google.golang.org/protobuf v1.36.3
 	gopkg.in/matryer/try.v1 v1.0.0-20150601225556-312d2599e12e
-	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	maragu.dev/gomponents v1.0.0
 	maragu.dev/gomponents-htmx v0.6.1
 	resenje.org/schulze v0.6.1
@@ -251,6 +251,7 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/samber/lo v1.47.0 // indirect
 	github.com/segmentio/backo-go v1.0.1 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.12 // indirect
