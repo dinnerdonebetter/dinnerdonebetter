@@ -191,14 +191,17 @@ const (
 	// ObservabilityLoggingLevelEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.Level`.
 	ObservabilityLoggingLevelEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_LEVEL"
 
-	// ObservabilityLoggingOtelSlogEndpointURLEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.CollectorEndpoint`.
-	ObservabilityLoggingOtelSlogEndpointURLEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_ENDPOINT_URL"
+	// ObservabilityLoggingOtelSlogCollectionIntervalEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.CollectionInterval`.
+	ObservabilityLoggingOtelSlogCollectionIntervalEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_COLLECTION_INTERVAL"
+
+	// ObservabilityLoggingOtelSlogCollectionTimeoutEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.CollectionTimeout`.
+	ObservabilityLoggingOtelSlogCollectionTimeoutEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_COLLECTION_TIMEOUT"
+
+	// ObservabilityLoggingOtelSlogCollectorEndpointEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.CollectorEndpoint`.
+	ObservabilityLoggingOtelSlogCollectorEndpointEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_COLLECTOR_ENDPOINT"
 
 	// ObservabilityLoggingOtelSlogInsecureEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.Insecure`.
 	ObservabilityLoggingOtelSlogInsecureEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_INSECURE"
-
-	// ObservabilityLoggingOtelSlogTimeoutEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.Timeout`.
-	ObservabilityLoggingOtelSlogTimeoutEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_TIMEOUT"
 
 	// ObservabilityLoggingProviderEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.Provider`.
 	ObservabilityLoggingProviderEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_PROVIDER"

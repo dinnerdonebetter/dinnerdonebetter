@@ -62,7 +62,7 @@
 			"otelgrpc": {
 				"metricsCollectorEndpoint": "otel-collector-svc.dev.svc.cluster.local:4317",
 				"collectionInterval": 1000000000,
-				"insecure": false,
+				"insecure": true,
 				"collectionTimeout": 0
 			},
 			"serviceName": "meal_plan_grocery_list_initializer",

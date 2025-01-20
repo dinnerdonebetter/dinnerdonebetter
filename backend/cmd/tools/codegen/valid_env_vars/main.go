@@ -22,19 +22,23 @@ func main() {
 		log.Fatal(err)
 	}
 
-	structs := parseGoFiles(dir)
-
 	outputLines := []string{}
-	if mainAST, found := structs["config.APIServiceConfig"]; found {
-		extractedEnvVars := extractEnvVars(mainAST, structs, "main", "", "")
-		for envVar, fieldPath := range extractedEnvVars {
-			outputLines = append(outputLines, fmt.Sprintf(`	// %sEnvVarKey is the environment variable name to set in order to override `+"`"+`config%s`+"`"+`.
+	structs := parseGoFiles(dir)
+	structsToEvaluate := []string{
+		"config.APIServiceConfig",
+	}
+
+	for _, structName := range structsToEvaluate {
+		if mainAST, found := structs[structName]; found {
+			extractedEnvVars := extractEnvVars(mainAST, structs, "main", "", "")
+			for envVar, fieldPath := range extractedEnvVars {
+				outputLines = append(outputLines, fmt.Sprintf(`	// %sEnvVarKey is the environment variable name to set in order to override `+"`"+`config%s`+"`"+`.
 	%sEnvVarKey = "%s%s"
 
 `, kace.Pascal(envVar), fieldPath, kace.Pascal(envVar), config.EnvVarPrefix, envVar))
+			}
 		}
 	}
-
 	slices.Sort(outputLines)
 
 	out := fmt.Sprintf(`package envvars
@@ -57,7 +61,7 @@ const (
 func parseGoFiles(dir string) map[string]*ast.TypeSpec {
 	structs := make(map[string]*ast.TypeSpec)
 
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -95,9 +99,7 @@ func parseGoFiles(dir string) map[string]*ast.TypeSpec {
 			}
 		}
 		return nil
-	})
-
-	if err != nil {
+	}); err != nil {
 		fmt.Printf("Error walking directory: %v\n", err)
 	}
 
@@ -106,13 +108,13 @@ func parseGoFiles(dir string) map[string]*ast.TypeSpec {
 
 // getTagValue extracts the value of a specific tag from a struct field tag.
 func getTagValue(tag, key string) string {
-	tags := strings.Split(tag, " ")
-	for _, t := range tags {
+	for _, t := range strings.Split(tag, " ") {
 		parts := strings.SplitN(t, ":", 2)
 		if len(parts) == 2 && parts[0] == key {
 			return strings.Trim(strings.Split(parts[1], ",")[0], "\"")
 		}
 	}
+
 	return ""
 }
 
@@ -133,11 +135,9 @@ func handleIdent(structs map[string]*ast.TypeSpec, fieldType *ast.Ident, envVars
 // handleSelectorExpr handles extracting info from an *ast.SelectorExpr node.
 func handleSelectorExpr(structs map[string]*ast.TypeSpec, fieldType *ast.SelectorExpr, envVars map[string]string, prefixValue, fieldNamePrefix, fieldName string) {
 	if pkgIdent, isIdentifier := fieldType.X.(*ast.Ident); isIdentifier {
-		pkgName := pkgIdent.Name
-
-		fullName := fmt.Sprintf("%s.%s", pkgName, fieldType.Sel.Name)
+		fullName := fmt.Sprintf("%s.%s", pkgIdent.Name, fieldType.Sel.Name)
 		if nestedStruct, found := structs[fullName]; found {
-			for k, v := range extractEnvVars(nestedStruct, structs, pkgName, prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName)) {
+			for k, v := range extractEnvVars(nestedStruct, structs, pkgIdent.Name, prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName)) {
 				envVars[k] = v
 			}
 		}
@@ -164,7 +164,6 @@ func extractEnvVars(typeSpec *ast.TypeSpec, structs map[string]*ast.TypeSpec, cu
 		}
 
 		fn := field.Names[0].Name
-
 		if envValue := getTagValue(tag, "env"); envValue != "" {
 			if envVarPrefix != "" {
 				envValue = envVarPrefix + envValue
