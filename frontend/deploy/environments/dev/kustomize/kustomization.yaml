@@ -131,7 +131,7 @@ labels:
       deployed_by: skaffold
 
 configMapGenerator:
-  - name: opentelemetry-collector-config
+  - name: frontend-opentelemetry-collector-config
     namespace: dev
     files:
       - config.yaml=configs/otel_collector_config.yaml

@@ -121,7 +121,7 @@ patches:
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
-          name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_SIGNING_KEY
           valueFrom:
             secretKeyRef:
               name: api-service-config
@@ -264,7 +264,7 @@ patches:
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
-          name: DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY
+          name: DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_SIGNING_KEY
           valueFrom:
             secretKeyRef:
               name: api-service-config
@@ -705,68 +705,15 @@ patches:
 
   - patch: |-
       - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: SERVICE_NAME
-          value: dinner-done-better-async-message-handler
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
+        path: "/spec/template/spec/containers/0/env/-"
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
           value: dinner-done-better-async-message-handler
       - op: add
-        path: "/spec/template/spec/containers/1/env/-"
+        path: "/spec/template/spec/containers/0/env/-"
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-async-message-handler
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: PROMETHEUS_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: PROMETHEUS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: LOKI_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_USERNAME
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: LOKI_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_PASSWORD
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: TEMPO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_USERNAME
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: TEMPO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       version: v1
       kind: Deployment
@@ -779,11 +726,6 @@ patches:
   # db cleaner job
   - patch: |-
       - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: SERVICE_NAME
-          value: dinner-done-better-job-db-cleaner
-      - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
@@ -793,54 +735,6 @@ patches:
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-job-db-cleaner
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
       name: dinner-done-better-job-db-cleaner
@@ -848,11 +742,6 @@ patches:
   # email prober job
   - patch: |-
       - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: SERVICE_NAME
-          value: dinner-done-better-job-email-prober
-      - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
@@ -862,65 +751,12 @@ patches:
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-job-email-prober
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
       name: dinner-done-better-job-email-prober
 
   - patch: |-
       - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: SERVICE_NAME
-          value: dinner-done-better-job-meal-plan-finalizer
-      - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
@@ -930,65 +766,12 @@ patches:
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-job-meal-plan-finalizer
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-finalizer
 
   - patch: |-
       - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: SERVICE_NAME
-          value: dinner-done-better-job-meal-plan-grocery-list-init
-      - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
@@ -998,65 +781,12 @@ patches:
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-job-meal-plan-grocery-list-init
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-grocery-list-init
 
   - patch: |-
       - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: SERVICE_NAME
-          value: dinner-done-better-job-meal-plan-task-creator
-      - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
@@ -1066,65 +796,12 @@ patches:
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-job-meal-plan-task-creator
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
       name: dinner-done-better-job-meal-plan-task-creator
 
   - patch: |-
       - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: SERVICE_NAME
-          value: dinner-done-better-job-search-data-index-scheduler
-      - op: add
         path: "/spec/jobTemplate/spec/template/spec/containers/0/env/-"
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
@@ -1134,54 +811,6 @@ patches:
         value:
           name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
           value: dinner-done-better-job-search-data-index-scheduler
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: PROMETHEUS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: LOKI_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_PASSWORD
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_USERNAME
-      - op: add
-        path: "/spec/jobTemplate/spec/template/spec/initContainers/0/env/-"
-        value:
-          name: TEMPO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_PASSWORD
     target:
       kind: CronJob
       name: dinner-done-better-job-search-data-index-scheduler

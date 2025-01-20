@@ -69,7 +69,7 @@
 	},
 	"observability": {
 		"logging": {
-			"serviceName": "",
+			"serviceName": "dinner_done_better",
 			"level": "info",
 			"provider": "slog"
 		},

@@ -30,7 +30,7 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Tokens                tokenscfg.Config `envPrefix:"TOKEN_"            json:"tokens"`
+		Tokens                tokenscfg.Config `envPrefix:"TOKENS_"           json:"tokens"`
 		SSO                   SSOConfigs       `envPrefix:"SSO_CONFIG_"       json:"sso,omitempty"`
 		JWTSigningKey         string           `env:"JWT_SIGNING_KEY"         json:"jwtSigningKey"`
 		OAuth2                OAuth2Config     `envPrefix:"OAUTH2"            json:"oauth2,omitempty"`

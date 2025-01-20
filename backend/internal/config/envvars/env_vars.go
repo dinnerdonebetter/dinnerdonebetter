@@ -368,14 +368,14 @@ const (
 	// ServiceAuthSsoConfigGoogleClientSecretEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.SSO.Google.ClientSecret`.
 	ServiceAuthSsoConfigGoogleClientSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET"
 
-	// ServiceAuthTokenAudienceEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Audience`.
-	ServiceAuthTokenAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_AUDIENCE"
+	// ServiceAuthTokensAudienceEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Audience`.
+	ServiceAuthTokensAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_AUDIENCE"
 
-	// ServiceAuthTokenProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Provider`.
-	ServiceAuthTokenProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_PROVIDER"
+	// ServiceAuthTokensProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Provider`.
+	ServiceAuthTokensProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_PROVIDER"
 
-	// ServiceAuthTokenSigningKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Base64EncodedSigningKey`.
-	ServiceAuthTokenSigningKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_SIGNING_KEY"
+	// ServiceAuthTokensSigningKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Base64EncodedSigningKey`.
+	ServiceAuthTokensSigningKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_SIGNING_KEY"
 
 	// ServiceDataPrivacyUploadsDebugEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Debug`.
 	ServiceDataPrivacyUploadsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_DEBUG"

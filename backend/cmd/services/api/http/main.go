@@ -65,14 +65,7 @@ func main() {
 		syscall.SIGTERM,
 	)
 
-	slog.Info("serving")
 	logger.Info("serving")
-	go func() {
-		for range time.NewTicker(time.Second).C {
-			slog.Info("still serving")
-			logger.Info("still serving")
-		}
-	}()
 
 	// Run server
 	go srv.Serve()

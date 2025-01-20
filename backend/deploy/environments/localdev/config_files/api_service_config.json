@@ -77,7 +77,7 @@
 	},
 	"observability": {
 		"logging": {
-			"serviceName": "",
+			"serviceName": "dinner_done_better",
 			"level": "debug",
 			"otelslog": {
 				"endpointURL": "otel_collector:4317",

@@ -51,6 +51,10 @@ func (cfg *Config) ProvideTokenIssuer(logger logging.Logger, tracerProvider trac
 		return nil, fmt.Errorf("decoding json web token signing key: %w", err)
 	}
 
+	if len(decryptedSigningKey) != 32 {
+		return nil, fmt.Errorf("decoding json web token signing key must be 32 bytes")
+	}
+
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderJWT:
 		return jwt.NewJWTSigner(logger, tracerProvider, cfg.Audience, decryptedSigningKey)
