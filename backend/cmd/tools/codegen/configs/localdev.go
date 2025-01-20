@@ -112,8 +112,9 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{
-				Level:    logging.DebugLevel,
-				Provider: loggingcfg.ProviderOtelSlog,
+				ServiceName: otelServiceName,
+				Level:       logging.DebugLevel,
+				Provider:    loggingcfg.ProviderOtelSlog,
 				OtelSlog: &otelslog.Config{
 					CollectorEndpoint: "otel_collector:4317",
 					Insecure:          true,

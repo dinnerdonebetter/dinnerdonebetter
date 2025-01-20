@@ -13,24 +13,31 @@ images:
   - name: dinner-done-better-service-api
     newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api
     newTag: latest
+
   - name: dinner-done-better-job-db-cleaner
     newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner
     newTag: latest
+
   - name: dinner-done-better-job-email-prober
     newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober
     newTag: latest
+
   - name: dinner-done-better-job-meal-plan-finalizer
     newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
     newTag: latest
+
   - name: dinner-done-better-job-meal-plan-grocery-list-init
     newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
     newTag: latest
+
   - name: dinner-done-better-job-meal-plan-task-creator
     newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
     newTag: latest
+
   - name: dinner-done-better-job-search-data-index-scheduler
     newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
     newTag: latest
+
   - name: dinner-done-better-async-message-handler
     newName: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler
     newTag: latest
@@ -695,75 +702,6 @@ patches:
   #
   # # # API service otel collector sidecar patches
   #
-
-  - patch: |-
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: SERVICE_NAME
-          value: dinner-done-better-api
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME
-          value: dinner-done-better-api
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME
-          value: dinner-done-better-api
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: PROMETHEUS_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_USERNAME
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: PROMETHEUS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_PROMETHEUS_PASSWORD
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: LOKI_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_USERNAME
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: LOKI_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_LOKI_PASSWORD
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: TEMPO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_USERNAME
-      - op: add
-        path: "/spec/template/spec/containers/1/env/-"
-        value:
-          name: TEMPO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: grafana-cloud-creds
-              key: GRAFANA_CLOUD_TEMPO_PASSWORD
-    target:
-      version: v1
-      kind: Deployment
-      name: dinner-done-better-service-api-deployment
 
   - patch: |-
       - op: add

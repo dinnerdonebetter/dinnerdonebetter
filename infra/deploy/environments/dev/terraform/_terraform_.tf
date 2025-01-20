@@ -21,5 +21,9 @@ terraform {
       source  = "Trois-Six/sendgrid"
       version = "0.2.1"
     }
+    grafana = {
+      source = "grafana/grafana"
+      version = "3.16.0"
+    }
   }
 }

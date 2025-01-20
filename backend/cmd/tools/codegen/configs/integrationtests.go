@@ -81,8 +81,9 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{
-				Level:    logging.InfoLevel,
-				Provider: loggingcfg.ProviderSlog,
+				ServiceName: otelServiceName,
+				Level:       logging.InfoLevel,
+				Provider:    loggingcfg.ProviderSlog,
 			},
 			Tracing: tracingcfg.Config{
 				Provider:                  tracingcfg.ProviderOtel,
