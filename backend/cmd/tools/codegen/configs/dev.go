@@ -120,7 +120,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				ServiceName: otelServiceName,
 				Level:       logging.DebugLevel,
 				Provider:    loggingcfg.ProviderOtelSlog,
-				OtelSlog: &otelslog.Config{
+				OtelSlog: &otelgrpc.Config{
 					CollectorEndpoint: internalKubernetesEndpoint("otel-collector-svc", "dev", 4317),
 					Insecure:          true,
 					Timeout:           2 * time.Second,

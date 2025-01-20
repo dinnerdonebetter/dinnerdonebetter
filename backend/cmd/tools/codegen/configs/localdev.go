@@ -115,7 +115,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				ServiceName: otelServiceName,
 				Level:       logging.DebugLevel,
 				Provider:    loggingcfg.ProviderOtelSlog,
-				OtelSlog: &otelslog.Config{
+				OtelSlog: &otelgrpc.Config{
 					CollectorEndpoint: "otel_collector:4317",
 					Insecure:          true,
 					Timeout:           time.Second * 3,

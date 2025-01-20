@@ -30,12 +30,6 @@ spec:
               name: otlp-grpc
             - containerPort: 13313
               name: health
-          livenessProbe:
-            httpGet:
-              path: "/_meta_/live"
-              port: 8000
-            initialDelaySeconds: 15
-            periodSeconds: 5
           volumeMounts:
             - name: opentelemetry-config
               mountPath: /conf

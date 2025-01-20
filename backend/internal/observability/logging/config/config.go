@@ -31,7 +31,7 @@ type (
 
 		ServiceName string           `env:"SERVICE_NAME" json:"serviceName"`
 		Level       logging.Level    `env:"LEVEL"        json:"level,omitempty"`
-		OtelSlog    *otelslog.Config `env:"init"         envPrefix:"OTEL_SLOG_"    json:"otelslog,omitempty"`
+		OtelSlog    *otelgrpc.Config `env:"init"         envPrefix:"OTEL_SLOG_"    json:"otelslog,omitempty"`
 		Provider    string           `env:"PROVIDER"     json:"provider,omitempty"`
 	}
 )
@@ -55,7 +55,7 @@ func (cfg *Config) ProvideLogger(ctx context.Context) (logger logging.Logger, er
 	case ProviderSlog:
 		logger = slog.NewSlogLogger(cfg.Level)
 	case ProviderOtelSlog:
-		logger, err = otelslog.NewOtelSlogLogger(ctx, cfg.Level, cfg.ServiceName, cfg.OtelSlog)
+		logger, err = otelgrpc.NewOtelSlogLogger(ctx, cfg.Level, cfg.ServiceName, cfg.OtelSlog)
 	default:
 		logger = logging.NewNoopLogger()
 	}

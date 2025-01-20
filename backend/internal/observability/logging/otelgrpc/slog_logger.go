@@ -1,4 +1,4 @@
-package otelslog
+package otelgrpc
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -57,11 +56,11 @@ func NewOtelSlogLogger(ctx context.Context, lvl logging.Level, serviceName strin
 	}
 
 	if cfg.CollectorEndpoint != "" {
+		slog.Info("configuring otelgprc collector handler", slog.String("endpoint", cfg.CollectorEndpoint))
+
 		options := []otlploggrpc.Option{
 			otlploggrpc.WithEndpoint(cfg.CollectorEndpoint),
-			otlploggrpc.WithHeaders(map[string]string{}),
 			otlploggrpc.WithTimeout(cfg.Timeout),
-			otlploggrpc.WithReconnectionPeriod(time.Second / 2),
 		}
 
 		if cfg.Insecure {
