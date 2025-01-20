@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/otelslog"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/otelgrpc"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/slog"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zap"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"

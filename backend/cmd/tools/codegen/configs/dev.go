@@ -17,7 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/otelslog"
+	logotelgrpc "github.com/dinnerdonebetter/backend/internal/observability/logging/otelgrpc"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
@@ -120,7 +120,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				ServiceName: otelServiceName,
 				Level:       logging.DebugLevel,
 				Provider:    loggingcfg.ProviderOtelSlog,
-				OtelSlog: &otelgrpc.Config{
+				OtelSlog: &logotelgrpc.Config{
 					CollectorEndpoint: internalKubernetesEndpoint("otel-collector-svc", "dev", 4317),
 					Insecure:          true,
 					Timeout:           2 * time.Second,

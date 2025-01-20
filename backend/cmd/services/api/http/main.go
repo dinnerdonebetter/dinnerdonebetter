@@ -46,7 +46,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not create logger: %v", err)
 	}
-	logger.Info("building server")
 
 	// build our server struct.
 	srv, err := api.Build(buildCtx, cfg)
@@ -65,8 +64,6 @@ func main() {
 		syscall.SIGTERM,
 	)
 
-	logger.Info("serving")
-
 	// Run server
 	go srv.Serve()
 
@@ -81,10 +78,10 @@ func main() {
 	cancelCtx, cancelShutdown := context.WithTimeout(rootCtx, 10*time.Second)
 	defer cancelShutdown()
 
-	log.Println("shutting down")
+	logger.Info("shutting down")
 
 	// Gracefully shutdown the server by waiting on existing requests (except websockets).
 	if err = srv.Shutdown(cancelCtx); err != nil {
-		panic(err)
+		logger.Error("shutting down server", err)
 	}
 }

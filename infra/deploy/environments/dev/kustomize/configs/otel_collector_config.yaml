@@ -54,7 +54,11 @@ processors:
         from_attribute: service.name
 
 service:
-  extensions: [health_check, basicauth/prometheus, basicauth/loki, basicauth/tempo]
+  extensions:
+    - health_check
+    - basicauth/prometheus
+    - basicauth/loki
+    - basicauth/tempo
   pipelines:
     traces:
       receivers:
@@ -62,7 +66,7 @@ service:
       processors:
         - batch
       exporters:
-        # - debug
+        - debug
         - otlp
     metrics:
       receivers:
@@ -79,5 +83,5 @@ service:
         - resource
         - batch
       exporters:
-        # - debug
+        - debug
         - otlphttp
