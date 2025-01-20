@@ -54,10 +54,10 @@ spec:
     app: dinner-done-better-infra
     app.kubernetes.io/name: dinner-done-better-infra
   ports:
-    - name: otlp_grpc
+    - name: otlp-grpc
       port: 4317
       protocol: TCP
-      targetPort: otlp_grpc
+      targetPort: otlp-grpc
     - name: health
       port: 13313
       protocol: TCP

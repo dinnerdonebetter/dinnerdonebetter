@@ -9,7 +9,7 @@ provider "grafana" {
   cloud_access_policy_token = var.GRAFANA_CLOUD_API_KEY
 }
 
-resource "grafana_cloud_plugin_installation" "test" {
+resource "grafana_cloud_plugin_installation" "github" {
   stack_slug = local.grafana_stack
   slug       = "grafana-github-datasource"
   version    = "2.0.1"
