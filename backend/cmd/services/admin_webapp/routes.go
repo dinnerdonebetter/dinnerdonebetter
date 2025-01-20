@@ -132,5 +132,16 @@ func setupRoutes(router routing.Router, pageBuilder *pages.PageBuilder, cookieBu
 		), nil
 	}))
 
+	router.Get("/recipes", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
+		// ctx := req.Context()
+
+		return components.PageShell(
+			"Recipes",
+			ghtml.Div(
+				ghtml.P(gomponents.Text("heyo")),
+			),
+		), nil
+	}))
+
 	return nil
 }
