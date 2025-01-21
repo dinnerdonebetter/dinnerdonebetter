@@ -138,7 +138,7 @@ func init() {
 	simpleClient, err := apiclient.NewClient(
 		parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
-		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
 		apiclient.UsingURL(urlToUse),
 	)
 	if err != nil {

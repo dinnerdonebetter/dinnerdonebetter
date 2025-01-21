@@ -55,7 +55,7 @@ func TestUsingJSON(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		c, err := NewClient(mustParseURL(exampleURI), tracing.NewNoopTracerProvider(), UsingJSON())
+		c, err := NewClient(mustParseURL(exampleURI), tracing.NewNoopTracerProvider(), UsingJSON(tracing.NewNoopTracerProvider()))
 		assert.NoError(t, err)
 		assert.NotNil(t, c)
 
@@ -69,7 +69,7 @@ func TestUsingXML(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		c, err := NewClient(mustParseURL(exampleURI), tracing.NewNoopTracerProvider(), UsingXML())
+		c, err := NewClient(mustParseURL(exampleURI), tracing.NewNoopTracerProvider(), UsingXML(tracing.NewNoopTracerProvider()))
 		assert.NoError(t, err)
 		assert.NotNil(t, c)
 

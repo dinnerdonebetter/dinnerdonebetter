@@ -79,7 +79,7 @@ func initializeOAuth2PoweredClient(ctx context.Context, input *types.UserLoginIn
 		parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
 		apiclient.UsingLogger(logger),
-		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
 		apiclient.UsingURL(urlToUse),
 	)
 	if err != nil {
@@ -110,7 +110,7 @@ func buildSimpleClient(t *testing.T) *apiclient.Client {
 	c, err := apiclient.NewClient(
 		parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
-		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
 		apiclient.UsingURL(urlToUse),
 	)
 	require.NoError(t, err)

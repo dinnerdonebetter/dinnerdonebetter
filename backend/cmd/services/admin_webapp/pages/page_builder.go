@@ -7,11 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
-type CookieBuilder interface {
-	Encode(name string, value any) (string, error)
-}
-
-type PageBuilder struct {
+type Builder struct {
 	tracerProvider tracing.TracerProvider
 	tracer         tracing.Tracer
 	logger         logging.Logger
@@ -22,8 +18,8 @@ func NewPageBuilder(
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	apiServerURL *url.URL,
-) *PageBuilder {
-	s := &PageBuilder{
+) *Builder {
+	s := &Builder{
 		tracer:         tracing.NewTracer(tracerProvider.Tracer("admin-page-builder")),
 		tracerProvider: tracerProvider,
 		logger:         logger,

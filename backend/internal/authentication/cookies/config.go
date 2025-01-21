@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	Base64EncodedHashKey  string `env:"HASH_KEY" json:"base64EncodedHashKey"`
+	Base64EncodedHashKey  string `env:"HASH_KEY"  json:"base64EncodedHashKey"`
 	Base64EncodedBlockKey string `env:"BLOCK_KEY" json:"base64EncodedBlockKey"`
 }
 

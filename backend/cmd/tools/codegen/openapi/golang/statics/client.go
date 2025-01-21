@@ -29,6 +29,7 @@ const (
 type Client struct {
 	logger                  logging.Logger
 	tracer                  tracing.Tracer
+	contentType             encoding.ContentType
 	encoder                 encoding.ClientEncoder
 	authedClient            *http.Client
 	unauthenticatedClient   *http.Client
@@ -61,6 +62,7 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...Cli
 		url:                   u,
 		logger:                logging.EnsureLogger(nil),
 		debug:                 false,
+		contentType:           encoding.ContentTypeJSON,
 		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(clientName)),
 		encoder:               encoding.ProvideClientEncoder(l, tracerProvider, encoding.ContentTypeJSON),
 		authedClient:          tracing.BuildTracedHTTPClient(),

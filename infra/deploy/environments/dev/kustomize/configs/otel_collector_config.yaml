@@ -110,7 +110,7 @@ service:
         - batch
       exporters:
         - debug
-        - prometheusremotewrite
+        # - prometheusremotewrite
     logs:
       receivers:
         - otlp

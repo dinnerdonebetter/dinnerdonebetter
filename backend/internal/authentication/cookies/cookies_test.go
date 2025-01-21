@@ -5,10 +5,10 @@ import (
 	"encoding/base64"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
 const (

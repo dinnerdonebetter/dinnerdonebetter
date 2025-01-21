@@ -10,10 +10,6 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
-	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
-	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -108,84 +104,26 @@ func setupRoutes(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	router routing.Router,
-	pageBuilder *pages.PageBuilder,
-	cookieManager cookies.Manager,
+	s *server,
 ) error {
-	if pageBuilder == nil {
-		return internalerrors.NilConfigError("pageBuilder for frontend admin service")
-	}
-
-	tracer := tracing.NewTracer(tracerProvider.Tracer("admin_webapp"))
-
-	router = router.WithMiddleware(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			ctx, span := tracer.StartSpan(req.Context())
-			defer span.End()
-
-			cookie, err := req.Cookie(cookieName)
-			if err != nil {
-				logger.Error("fetching request cookie", err)
-				next.ServeHTTP(res, req)
-				return
-			} else if cookie == nil {
-				logger.Info("cookie was nil!")
-				next.ServeHTTP(res, req)
-				return
-			}
-
-			var usd *userSessionDetails
-			if err = cookieManager.Decode(ctx, cookieName, cookie.Value, &usd); err != nil {
-				logger.Error("decoding cookie", err)
-				next.ServeHTTP(res, req)
-				return
-			}
-
-			logger.WithValue("user.id", usd.UserID).Info("user session retrieved from middleware")
-
-			var client *apiclient.Client
-			if cachedClientItem := apiClientCache.Get(usd.UserID); cachedClientItem == nil {
-				client, err = apiclient.NewClient(
-					apiServerURL,
-					tracing.NewNoopTracerProvider(),
-					apiclient.UsingOAuth2(
-						ctx,
-						oauth2ClientID,
-						oauth2ClientSecret,
-						[]string{authorization.HouseholdAdminRoleName},
-						usd.Token,
-					),
-				)
-				if err != nil {
-					logger.Error("establishing API client", err)
-					next.ServeHTTP(res, req)
-					return
-				}
-			} else {
-				client = cachedClientItem.Value()
-			}
-
-			req = req.WithContext(context.WithValue(ctx, apiClientContextKey, client))
-
-			next.ServeHTTP(res, req)
-		})
-	})
+	router = router.WithMiddleware(s.authMiddleware)
 
 	router.Get("/", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
-		ctx, span := tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
-		return pageBuilder.HomePage(ctx), nil
+		return s.pageBuilder.HomePage(ctx), nil
 	}))
 
 	router.Get("/about", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
-		ctx, span := tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
-		return pageBuilder.AboutPage(ctx), nil
+		return s.pageBuilder.AboutPage(ctx), nil
 	}))
 
 	router.Post("/login/submit", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
-		ctx, span := tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
 		var x types.UserLoginInput
@@ -220,7 +158,7 @@ func setupRoutes(
 			HouseholdID: response.HouseholdID,
 		}
 
-		encoded, err := cookieManager.Encode(ctx, cookieName, usd)
+		encoded, err := s.cookieManager.Encode(ctx, cookieName, usd)
 		if err != nil {
 			return nil, err
 		}
@@ -241,7 +179,7 @@ func setupRoutes(
 	}))
 
 	router.Get("/login", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
-		ctx, span := tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
 		return components.PageShell(
@@ -268,7 +206,7 @@ func setupRoutes(
 	}))
 
 	router.Get("/users", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
-		ctx, span := tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
 		client, ok := ctx.Value(apiClientContextKey).(*apiclient.Client)
@@ -288,7 +226,7 @@ func setupRoutes(
 	}))
 
 	router.Get("/valid_ingredients", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
-		ctx, span := tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
 		client, ok := ctx.Value(apiClientContextKey).(*apiclient.Client)
@@ -308,7 +246,7 @@ func setupRoutes(
 	}))
 
 	router.Get("/valid_ingredients/new", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
-		ctx, span := tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
 		fieldNameMap := map[string]string{
@@ -361,7 +299,7 @@ func setupRoutes(
 	}))
 
 	router.Post("/valid_ingredients/new/submit", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
-		ctx, span := tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
 		client, ok := ctx.Value(apiClientContextKey).(*apiclient.Client)

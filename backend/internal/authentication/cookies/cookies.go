@@ -5,11 +5,11 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/gorilla/securecookie"
-
 	"github.com/dinnerdonebetter/backend/internal/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+
+	"github.com/gorilla/securecookie"
 )
 
 type Manager interface {

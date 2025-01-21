@@ -6,10 +6,8 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
@@ -62,35 +60,34 @@ func main() {
 		log.Fatal(err)
 	}
 
-	parsedURL, err := url.Parse("https://api.dinnerdonebetter.dev")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	cookieManager, err := cookies.NewCookieManager(
-		&cookies.Config{
+	cfg := &config{
+		APIServerURL:           "https://api.dinnerdonebetter.dev",
+		OAuth2APIClientID:      "",
+		OAuth2APIClientSecret:  "",
+		APIClientCacheCapacity: 64,
+		APIClientCacheTTL:      12 * time.Hour,
+		Cookies: cookies.Config{
 			Base64EncodedHashKey:  tempCookieSecret1,
 			Base64EncodedBlockKey: tempCookieSecret2,
 		},
-		tracerProvider,
-	)
+	}
+
+	x, err := newServer(cfg, logger, tracerProvider)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	pageBuilder := pages.NewPageBuilder(tracerProvider, logger, parsedURL)
-
-	if err = setupRoutes(logger, tracerProvider, router, pageBuilder, cookieManager); err != nil {
+	if err = setupRoutes(logger, tracerProvider, router, x); err != nil {
 		log.Fatal(err)
 	}
 
-	server := &http.Server{
+	s := &http.Server{
 		Addr:              ":8080",
 		ReadHeaderTimeout: 5 * time.Second,
 		Handler:           router.Handler(),
 	}
 
-	if err = server.ListenAndServe(); err != nil {
+	if err = s.ListenAndServe(); err != nil {
 		slog.Info("Error serving", "error", err)
 	}
 }
