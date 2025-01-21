@@ -20,6 +20,11 @@ func GetFieldNames[T any](v T) []string {
 		if stringValue == "_" {
 			continue
 		}
+
+		if val.Field(i).Tag.Get("json") == "-" {
+			continue
+		}
+
 		fields = append(fields, stringValue)
 	}
 
@@ -54,20 +59,16 @@ func GetFieldValues[T any](v T) []string {
 	return values
 }
 
-// stringifyValue converts a value to a string.
-// If the value is a struct, map, or slice, it returns its JSON-encoded string.
+// stringifyValue converts a value to a string. If the value is a struct, map, or slice, it returns its JSON-encoded string.
 func stringifyValue[T any](value T) string {
-	// Use JSON encoding for complex types
-	if reflect.TypeOf(value).Kind() == reflect.Struct ||
-		reflect.TypeOf(value).Kind() == reflect.Map ||
-		reflect.TypeOf(value).Kind() == reflect.Slice {
+	switch reflect.TypeOf(value).Kind() {
+	case reflect.Struct, reflect.Map, reflect.Slice:
 		jsonValue, err := json.Marshal(value)
 		if err != nil {
-			return fmt.Sprintf("error encoding: %v", err)
+			panic(err)
 		}
 		return string(jsonValue)
+	default:
+		return fmt.Sprintf("%v", value)
 	}
-
-	// Default string representation for other types
-	return fmt.Sprintf("%v", value)
 }

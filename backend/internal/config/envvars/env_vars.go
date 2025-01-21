@@ -194,11 +194,14 @@ const (
 	// ObservabilityLoggingOtelSlogCollectionIntervalEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.CollectionInterval`.
 	ObservabilityLoggingOtelSlogCollectionIntervalEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_COLLECTION_INTERVAL"
 
-	// ObservabilityLoggingOtelSlogCollectionTimeoutEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.CollectionTimeout`.
-	ObservabilityLoggingOtelSlogCollectionTimeoutEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_COLLECTION_TIMEOUT"
-
 	// ObservabilityLoggingOtelSlogCollectorEndpointEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.CollectorEndpoint`.
 	ObservabilityLoggingOtelSlogCollectorEndpointEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_COLLECTOR_ENDPOINT"
+
+	// ObservabilityLoggingOtelSlogEnableHostMetricsEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.EnableHostMetrics`.
+	ObservabilityLoggingOtelSlogEnableHostMetricsEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_ENABLE_HOST_METRICS"
+
+	// ObservabilityLoggingOtelSlogEnableRuntimeMetricsEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.EnableRuntimeMetrics`.
+	ObservabilityLoggingOtelSlogEnableRuntimeMetricsEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_ENABLE_RUNTIME_METRICS"
 
 	// ObservabilityLoggingOtelSlogInsecureEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.Insecure`.
 	ObservabilityLoggingOtelSlogInsecureEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_INSECURE"
@@ -215,11 +218,14 @@ const (
 	// ObservabilityMetricsOtelCollectionIntervalEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.CollectionInterval`.
 	ObservabilityMetricsOtelCollectionIntervalEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_COLLECTION_INTERVAL"
 
-	// ObservabilityMetricsOtelCollectionTimeoutEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.CollectionTimeout`.
-	ObservabilityMetricsOtelCollectionTimeoutEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_COLLECTION_TIMEOUT"
-
 	// ObservabilityMetricsOtelCollectorEndpointEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.CollectorEndpoint`.
 	ObservabilityMetricsOtelCollectorEndpointEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_COLLECTOR_ENDPOINT"
+
+	// ObservabilityMetricsOtelEnableHostMetricsEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.EnableHostMetrics`.
+	ObservabilityMetricsOtelEnableHostMetricsEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_ENABLE_HOST_METRICS"
+
+	// ObservabilityMetricsOtelEnableRuntimeMetricsEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.EnableRuntimeMetrics`.
+	ObservabilityMetricsOtelEnableRuntimeMetricsEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_ENABLE_RUNTIME_METRICS"
 
 	// ObservabilityMetricsOtelInsecureEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.Insecure`.
 	ObservabilityMetricsOtelInsecureEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_INSECURE"

@@ -25,7 +25,7 @@ func GenerateInputs[T any](ctx context.Context, submitProps SubmissionFormProps,
 		field := t.Field(i)
 
 		// Get field name and type
-		fieldName := field.Name
+		fieldName := field.Tag.Get("json")
 		displayName := fieldName
 		if x, ok := fieldColumnNames[fieldName]; ok {
 			displayName = x

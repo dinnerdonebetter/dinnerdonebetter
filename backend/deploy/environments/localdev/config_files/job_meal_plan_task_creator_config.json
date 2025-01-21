@@ -61,7 +61,8 @@
 				"metricsCollectorEndpoint": "otel_collector:4317",
 				"collectionInterval": 1000000000,
 				"insecure": true,
-				"collectionTimeout": 0
+				"enableRuntimeMetrics": false,
+				"enableHostMetrics": false
 			},
 			"serviceName": "meal_plan_task_creator",
 			"provider": "otelgrpc"

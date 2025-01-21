@@ -26,7 +26,7 @@ func PageShell(title string, children ...gomponents.Node) gomponents.Node {
 		Body: []gomponents.Node{ghtml.Class("bg-gradient-to-b from-white to-indigo-100 bg-no-repeat"),
 			ghtml.Div(ghtml.Class("min-h-screen flex flex-col justify-between"),
 				// header
-				ghtml.Div(ghtml.Class("bg-gray-600 h-8 text-white shadow"),
+				ghtml.Div(ghtml.ID("main"), ghtml.Class("bg-gray-600 h-8 text-white shadow"),
 					container(false,
 						ghtml.Div(ghtml.Class("flex items-center space-x-4 h-8"),
 							headerLink("/", "Home"),

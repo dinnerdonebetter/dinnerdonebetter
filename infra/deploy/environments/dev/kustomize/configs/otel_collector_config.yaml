@@ -74,8 +74,8 @@ processors:
     # blocked_values is a list of regular expressions for blocking values of
     # allowed span attributes. Values that match are masked
     blocked_values: []
-      # - "4[0-9]{12}(?:[0-9]{3})?" ## Visa credit card number
-      # - "(5[1-5][0-9]{14})"       ## MasterCard number
+    # - "4[0-9]{12}(?:[0-9]{3})?" ## Visa credit card number
+    # - "(5[1-5][0-9]{14})"       ## MasterCard number
     # - `debug` includes both redacted key counts and names in the summary
     # - `info` includes just the redacted key counts in the summary
     # - `silent` omits the summary attributes

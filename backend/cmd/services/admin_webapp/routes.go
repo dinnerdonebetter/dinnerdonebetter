@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -228,6 +230,26 @@ func setupRoutes(logger logging.Logger, tracer tracing.Tracer, router routing.Ro
 		), nil
 	}))
 
+	router.Get("/users", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
+		ctx, span := tracer.StartSpan(req.Context())
+		defer span.End()
+
+		client, ok := ctx.Value(apiClientContextKey).(*apiclient.Client)
+		if !ok {
+			return nil, errors.New("missing api client")
+		}
+
+		users, err := client.GetUsers(ctx, types.ExtractQueryFilterFromRequest(req))
+		if err != nil {
+			return nil, err
+		}
+
+		return components.PageShell(
+			"Users",
+			components.TableView("/users/new", users),
+		), nil
+	}))
+
 	router.Get("/valid_ingredients", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
 		ctx, span := tracer.StartSpan(req.Context())
 		defer span.End()
@@ -288,7 +310,7 @@ func setupRoutes(logger logging.Logger, tracer tracing.Tracer, router routing.Ro
 
 		elements, err := components.GenerateInputs[types.ValidIngredientCreationRequestInput](ctx, components.SubmissionFormProps{
 			PostAddress: "/valid_ingredients/new/submit",
-			TargetID:    "TODO_formBody",
+			TargetID:    "main",
 		}, fieldNameMap)
 		if err != nil {
 			logger.Error("generating inputs", err)
@@ -299,6 +321,31 @@ func setupRoutes(logger logging.Logger, tracer tracing.Tracer, router routing.Ro
 			"New Valid Ingredient",
 			elements...,
 		), nil
+	}))
+
+	router.Post("/valid_ingredients/new/submit", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
+		ctx, span := tracer.StartSpan(req.Context())
+		defer span.End()
+
+		client, ok := ctx.Value(apiClientContextKey).(*apiclient.Client)
+		if !ok {
+			return nil, errors.New("missing api client")
+		}
+
+		var x *types.ValidIngredientCreationRequestInput
+		if err := json.NewDecoder(req.Body).Decode(&x); err != nil {
+			return nil, err
+		}
+
+		createdValidIngredient, err := client.CreateValidIngredient(ctx, x)
+		if err != nil {
+			return nil, err
+		}
+
+		res.Header().Set("HX-Redirect", fmt.Sprintf("/valid_ingredients/%s", createdValidIngredient.ID))
+
+		// I think what we put in here doesn't matter
+		return ghtml.Div(gomponents.Text(createdValidIngredient.ID)), nil
 	}))
 
 	return nil

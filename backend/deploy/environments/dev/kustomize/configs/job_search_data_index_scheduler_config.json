@@ -50,7 +50,8 @@
 				"metricsCollectorEndpoint": "otel-collector-svc.dev.svc.cluster.local:4317",
 				"collectionInterval": 30000000000,
 				"insecure": true,
-				"collectionTimeout": 0
+				"enableRuntimeMetrics": false,
+				"enableHostMetrics": false
 			},
 			"serviceName": "search_data_index_scheduler",
 			"provider": "otelgrpc"

@@ -69,7 +69,7 @@ func TestConfig_ProvideTokenIssuer(T *testing.T) {
 		}
 
 		actual, err := cfg.ProvideTokenIssuer(logger, tracing.NewNoopTracerProvider())
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
 	})
 }

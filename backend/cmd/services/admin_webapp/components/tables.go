@@ -47,7 +47,12 @@ func buildRowForType[T any](x T) gomponents.Node {
 func TableView[T any](newHref string, data *types.QueryFilteredResult[T]) gomponents.Node {
 	rowComponents := []gomponents.Node{}
 	for _, row := range data.Data {
-		rowComponents = append(rowComponents, buildRowForType(row))
+		rowComponents = append(rowComponents, buildRowForType(*row))
+	}
+
+	descriptor := "items"
+	if data.TotalCount == 1 {
+		descriptor = "item"
 	}
 
 	return html.Div(
@@ -59,7 +64,7 @@ func TableView[T any](newHref string, data *types.QueryFilteredResult[T]) gompon
 				html.Input(
 					html.Type("text"),
 					html.Class("border border-gray-300 rounded-lg p-2 w-64"),
-					html.Placeholder(fmt.Sprintf("Search from %d items...", data.TotalCount)),
+					html.Placeholder(fmt.Sprintf("Search from %d %s...", data.TotalCount, descriptor)),
 				),
 				html.Button(
 					html.Class("bg-blue-500 text-white px-4 py-2 rounded-lg"),
