@@ -61,7 +61,7 @@
 		"metrics": {
 			"otelgrpc": {
 				"metricsCollectorEndpoint": "otel-collector-svc.dev.svc.cluster.local:4317",
-				"collectionInterval": 20000000000,
+				"collectionInterval": 30000000000,
 				"insecure": true,
 				"collectionTimeout": 0
 			},
