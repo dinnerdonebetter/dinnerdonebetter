@@ -73,7 +73,6 @@ func Test_manager_Decode(T *testing.T) {
 		assert.NotEmpty(t, encoded)
 
 		var actual example
-		err = m.Decode(ctx, "test", encoded, &actual)
 		require.NoError(t, m.Decode(ctx, "test", encoded, &actual))
 		assert.Equal(t, actual.Name, t.Name())
 	})
