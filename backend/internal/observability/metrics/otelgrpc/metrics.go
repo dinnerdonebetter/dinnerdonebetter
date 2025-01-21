@@ -26,10 +26,11 @@ var (
 )
 
 type Config struct {
-	CollectorEndpoint  string        `env:"COLLECTOR_ENDPOINT"  json:"metricsCollectorEndpoint"`
-	CollectionInterval time.Duration `env:"COLLECTION_INTERVAL" json:"collectionInterval"`
-	Insecure           bool          `env:"INSECURE"            json:"insecure"`
-	CollectionTimeout  time.Duration `env:"COLLECTION_TIMEOUT"  json:"collectionTimeout"`
+	CollectorEndpoint    string        `env:"COLLECTOR_ENDPOINT"     json:"metricsCollectorEndpoint"`
+	CollectionInterval   time.Duration `env:"COLLECTION_INTERVAL"    json:"collectionInterval"`
+	Insecure             bool          `env:"INSECURE"               json:"insecure"`
+	EnableRuntimeMetrics bool          `env:"ENABLE_RUNTIME_METRICS" json:"enableRuntimeMetrics"`
+	EnableHostMetrics    bool          `env:"ENABLE_HOST_METRICS"    json:"enableHostMetrics"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -80,15 +81,19 @@ func setupMetricsProvider(ctx context.Context, logger logging.Logger, serviceNam
 
 	logger.WithValue("config", cfg).Info("set up meter provider")
 
-	if err = runtime.Start(runtime.WithMeterProvider(meterProvider)); err != nil {
-		return nil, nil, fmt.Errorf("starting runtime metrics: %w", err)
+	if cfg.EnableRuntimeMetrics {
+		if err = runtime.Start(runtime.WithMeterProvider(meterProvider)); err != nil {
+			return nil, nil, fmt.Errorf("starting runtime metrics: %w", err)
+		}
+		logger.Info("started runtime metrics")
 	}
-	logger.Info("started runtime metrics")
 
-	if err = host.Start(host.WithMeterProvider(meterProvider)); err != nil {
-		return nil, nil, fmt.Errorf("starting host metrics: %w", err)
+	if cfg.EnableHostMetrics {
+		if err = host.Start(host.WithMeterProvider(meterProvider)); err != nil {
+			return nil, nil, fmt.Errorf("starting host metrics: %w", err)
+		}
+		logger.Info("started host metrics")
 	}
-	logger.Info("started host metrics")
 
 	return meterProvider, meterProvider.Shutdown, nil
 }

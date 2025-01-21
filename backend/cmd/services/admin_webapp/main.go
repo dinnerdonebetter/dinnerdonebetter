@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"log"
 	"log/slog"
 	"net/http"
@@ -13,7 +14,6 @@ import (
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
 
@@ -22,7 +22,19 @@ import (
 
 const (
 	serverName = "admin-frontend-server"
+
+	tempCookieSecret1 = "OPAu6PFzAAvztqkBiDgF_Qw9RUP2Lnng9aADq0EQeUk"
+	tempCookieSecret2 = "5KRnutGaUGste3esRtl970KaFmR18EiUnhaeQ-6mYR4"
 )
+
+func mustBase64Decode(s string) []byte {
+	val, err := base64.RawURLEncoding.DecodeString(s)
+	if err != nil {
+		panic(err)
+	}
+
+	return val
+}
 
 func main() {
 	ctx := context.Background()
@@ -37,6 +49,7 @@ func main() {
 
 	tracerProvider := tracing.NewNoopTracerProvider()
 	metricProvider := metrics.NewNoopMetricsProvider()
+	tracer := tracing.NewTracer(tracerProvider.Tracer("admin_webapp"))
 
 	router, err := routingcfg.ProvideRouter(&routingcfg.Config{
 		Provider: routingcfg.ProviderChi,
@@ -56,10 +69,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cookieBuilder := securecookie.New(random.MustGenerateRawBytes(ctx, 32), random.MustGenerateRawBytes(ctx, 32))
+	cookieBuilder := securecookie.New(mustBase64Decode(tempCookieSecret1), mustBase64Decode(tempCookieSecret2))
 	pageBuilder := pages.NewPageBuilder(tracerProvider, logger, parsedURL)
 
-	if err = setupRoutes(router, pageBuilder, cookieBuilder); err != nil {
+	if err = setupRoutes(logger, tracer, router, pageBuilder, cookieBuilder); err != nil {
 		log.Fatal(err)
 	}
 
