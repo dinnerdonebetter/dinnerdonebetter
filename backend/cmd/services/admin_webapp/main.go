@@ -10,14 +10,13 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
+	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
-
-	"github.com/gorilla/securecookie"
 )
 
 const (
@@ -49,7 +48,6 @@ func main() {
 
 	tracerProvider := tracing.NewNoopTracerProvider()
 	metricProvider := metrics.NewNoopMetricsProvider()
-	tracer := tracing.NewTracer(tracerProvider.Tracer("admin_webapp"))
 
 	router, err := routingcfg.ProvideRouter(&routingcfg.Config{
 		Provider: routingcfg.ProviderChi,
@@ -69,10 +67,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cookieBuilder := securecookie.New(mustBase64Decode(tempCookieSecret1), mustBase64Decode(tempCookieSecret2))
+	cookieManager, err := cookies.NewCookieManager(
+		&cookies.Config{
+			Base64EncodedHashKey:  tempCookieSecret1,
+			Base64EncodedBlockKey: tempCookieSecret2,
+		},
+		tracerProvider,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	pageBuilder := pages.NewPageBuilder(tracerProvider, logger, parsedURL)
 
-	if err = setupRoutes(logger, tracer, router, pageBuilder, cookieBuilder); err != nil {
+	if err = setupRoutes(logger, tracerProvider, router, pageBuilder, cookieManager); err != nil {
 		log.Fatal(err)
 	}
 

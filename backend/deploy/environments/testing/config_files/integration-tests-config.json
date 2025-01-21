@@ -170,7 +170,6 @@
 			"sso": {
 				"google": {}
 			},
-			"jwtSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
 			"oauth2": {
 				"domain": "http://localhost:9000",
 				"accessTokenLifespan": 3600000000000,

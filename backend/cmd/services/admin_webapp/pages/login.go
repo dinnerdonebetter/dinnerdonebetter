@@ -21,15 +21,14 @@ func (b *PageBuilder) AdminLoginSubmit(req *http.Request) (*types.TokenResponse,
 
 	var x types.UserLoginInput
 	if err := json.NewDecoder(req.Body).Decode(&x); err != nil {
-		observability.AcknowledgeError(err, logger, span, "decoding json")
-		return nil, err
+		return nil, observability.PrepareAndLogError(err, logger, span, "decoding json")
 	}
 
 	if err := x.ValidateWithContext(ctx); err != nil {
 		return nil, err
 	}
 
-	client, err := b.buildAPIClient()
+	client, err := apiclient.NewClient(b.apiServerURL, b.tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +37,6 @@ func (b *PageBuilder) AdminLoginSubmit(req *http.Request) (*types.TokenResponse,
 	if err != nil {
 		return nil, err
 	}
-
-	apiclient.UsingOAuth2(ctx, "clientID", "clientSecret", []string{"*"}, jwtResponse.Token)
 
 	return jwtResponse, nil
 }

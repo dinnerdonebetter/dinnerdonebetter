@@ -210,7 +210,6 @@
 			"sso": {
 				"google": {}
 			},
-			"jwtSigningKey": "",
 			"oauth2": {
 				"domain": "https://dinnerdonebetter.dev",
 				"accessTokenLifespan": 3600000000000,

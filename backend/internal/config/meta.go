@@ -15,8 +15,8 @@ type MetaSettings struct {
 var _ validation.ValidatableWithContext = (*MetaSettings)(nil)
 
 // ValidateWithContext validates a MetaSettings struct.
-func (s MetaSettings) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(ctx, &s,
+func (s *MetaSettings) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, s,
 		validation.Field(&s.RunMode, validation.In(TestingRunMode, DevelopmentRunMode, ProductionRunMode)),
 	)
 }

@@ -5,7 +5,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 )
 
 type CookieBuilder interface {
@@ -24,18 +23,12 @@ func NewPageBuilder(
 	logger logging.Logger,
 	apiServerURL *url.URL,
 ) *PageBuilder {
-	tracer := tracing.NewTracer(tracerProvider.Tracer("admin-page-builder"))
-
 	s := &PageBuilder{
-		tracer:         tracer,
+		tracer:         tracing.NewTracer(tracerProvider.Tracer("admin-page-builder")),
 		tracerProvider: tracerProvider,
 		logger:         logger,
 		apiServerURL:   apiServerURL,
 	}
 
 	return s
-}
-
-func (b *PageBuilder) buildAPIClient() (*apiclient.Client, error) {
-	return apiclient.NewClient(b.apiServerURL, b.tracerProvider)
 }

@@ -7,17 +7,21 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
+	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
+	"github.com/jellydator/ttlcache/v3"
 	"maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 	ghttp "maragu.dev/gomponents/http"
@@ -34,7 +38,8 @@ const (
 )
 
 var (
-	apiServerURL *url.URL
+	apiServerURL   *url.URL
+	apiClientCache *ttlcache.Cache[string, *apiclient.Client]
 )
 
 func init() {
@@ -43,6 +48,11 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	apiClientCache = ttlcache.New[string, *apiclient.Client](
+		ttlcache.WithCapacity[string, *apiclient.Client](64),
+		ttlcache.WithTTL[string, *apiclient.Client](24*time.Hour),
+	)
 }
 
 func mustValidateTextProps(props *components.TextInputsProps) components.ValidatedTextInput {
@@ -94,10 +104,18 @@ type userSessionDetails struct {
 
 // end things that need to be moved or simplified elsewhere
 
-func setupRoutes(logger logging.Logger, tracer tracing.Tracer, router routing.Router, pageBuilder *pages.PageBuilder, cookieBuilder CookieManager) error {
+func setupRoutes(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
+	router routing.Router,
+	pageBuilder *pages.PageBuilder,
+	cookieManager cookies.Manager,
+) error {
 	if pageBuilder == nil {
 		return internalerrors.NilConfigError("pageBuilder for frontend admin service")
 	}
+
+	tracer := tracing.NewTracer(tracerProvider.Tracer("admin_webapp"))
 
 	router = router.WithMiddleware(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
@@ -116,7 +134,7 @@ func setupRoutes(logger logging.Logger, tracer tracing.Tracer, router routing.Ro
 			}
 
 			var usd *userSessionDetails
-			if err = cookieBuilder.Decode(cookieName, cookie.Value, &usd); err != nil {
+			if err = cookieManager.Decode(ctx, cookieName, cookie.Value, &usd); err != nil {
 				logger.Error("decoding cookie", err)
 				next.ServeHTTP(res, req)
 				return
@@ -124,21 +142,26 @@ func setupRoutes(logger logging.Logger, tracer tracing.Tracer, router routing.Ro
 
 			logger.WithValue("user.id", usd.UserID).Info("user session retrieved from middleware")
 
-			client, err := apiclient.NewClient(
-				apiServerURL,
-				tracing.NewNoopTracerProvider(),
-				apiclient.UsingOAuth2(
-					ctx,
-					oauth2ClientID,
-					oauth2ClientSecret,
-					[]string{authorization.HouseholdAdminRoleName},
-					usd.Token,
-				),
-			)
-			if err != nil {
-				logger.Error("establishing API client", err)
-				next.ServeHTTP(res, req)
-				return
+			var client *apiclient.Client
+			if cachedClientItem := apiClientCache.Get(usd.UserID); cachedClientItem == nil {
+				client, err = apiclient.NewClient(
+					apiServerURL,
+					tracing.NewNoopTracerProvider(),
+					apiclient.UsingOAuth2(
+						ctx,
+						oauth2ClientID,
+						oauth2ClientSecret,
+						[]string{authorization.HouseholdAdminRoleName},
+						usd.Token,
+					),
+				)
+				if err != nil {
+					logger.Error("establishing API client", err)
+					next.ServeHTTP(res, req)
+					return
+				}
+			} else {
+				client = cachedClientItem.Value()
 			}
 
 			req = req.WithContext(context.WithValue(ctx, apiClientContextKey, client))
@@ -162,10 +185,24 @@ func setupRoutes(logger logging.Logger, tracer tracing.Tracer, router routing.Ro
 	}))
 
 	router.Post("/login/submit", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
-		_, span := tracer.StartSpan(req.Context())
+		ctx, span := tracer.StartSpan(req.Context())
 		defer span.End()
 
-		response, err := pageBuilder.AdminLoginSubmit(req)
+		var x types.UserLoginInput
+		if err := json.NewDecoder(req.Body).Decode(&x); err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "decoding json")
+		}
+
+		if err := x.ValidateWithContext(ctx); err != nil {
+			return nil, err
+		}
+
+		client, err := apiclient.NewClient(apiServerURL, tracerProvider)
+		if err != nil {
+			return nil, err
+		}
+
+		response, err := client.AdminLoginForToken(ctx, &x)
 		if err != nil {
 			return nil, err
 		}
@@ -183,7 +220,7 @@ func setupRoutes(logger logging.Logger, tracer tracing.Tracer, router routing.Ro
 			HouseholdID: response.HouseholdID,
 		}
 
-		encoded, err := cookieBuilder.Encode(cookieName, usd)
+		encoded, err := cookieManager.Encode(ctx, cookieName, usd)
 		if err != nil {
 			return nil, err
 		}

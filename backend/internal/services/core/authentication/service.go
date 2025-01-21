@@ -82,7 +82,6 @@ func ProvideService(
 
 	signer, err := cfg.Tokens.ProvideTokenIssuer(logger, tracerProvider)
 	if err != nil {
-		metrics.NewNoopMetricsProvider()
 		return nil, fmt.Errorf("creating json web token signer: %w", err)
 	}
 
@@ -113,7 +112,11 @@ func ProvideService(
 
 	useProvidersMutex.Lock()
 	goth.UseProviders(
-		google.New(svc.config.SSO.Google.ClientID, svc.config.SSO.Google.ClientID, svc.config.SSO.Google.CallbackURL),
+		google.New(
+			svc.config.SSO.Google.ClientID,
+			svc.config.SSO.Google.ClientSecret,
+			svc.config.SSO.Google.CallbackURL,
+		),
 	)
 	useProvidersMutex.Unlock()
 

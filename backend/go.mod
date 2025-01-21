@@ -39,6 +39,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/heimdalr/dag v1.5.0
 	github.com/jackc/pgx/v5 v5.7.1
+	github.com/jellydator/ttlcache/v3 v3.3.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/keith-turner/ecoji/v2 v2.0.1
 	github.com/klauspost/compress v1.17.11

@@ -106,7 +106,6 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
-				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				TokenLifetime:         5 * time.Minute,
 				Tokens: tokenscfg.Config{
 					Provider:                tokenscfg.ProviderPASETO,

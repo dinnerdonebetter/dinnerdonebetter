@@ -7,6 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication/mock"
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
@@ -32,7 +33,11 @@ func buildTestService(t *testing.T) *service {
 	encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 	cfg := &Config{
-		JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+		Tokens: tokenscfg.Config{
+			Provider:                tokenscfg.ProviderJWT,
+			Audience:                "",
+			Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+		},
 	}
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
@@ -81,7 +86,11 @@ func TestProvideService(T *testing.T) {
 		encoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		cfg := &Config{
-			JWTSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+			Tokens: tokenscfg.Config{
+				Provider:                tokenscfg.ProviderJWT,
+				Audience:                "",
+				Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+			},
 		}
 		queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
