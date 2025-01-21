@@ -35,11 +35,9 @@ func PageShell(title string, children ...gomponents.Node) gomponents.Node {
 					),
 				),
 				// main body
-				ghtml.Div(ghtml.Class("grow flex justify-center"),
+				ghtml.Div(ghtml.Class("grow flex justify-around"),
 					container(true,
-						ghtml.Div(ghtml.Class("prose prose-lg prose-indigo"),
-							gomponents.Group(children),
-						),
+						gomponents.Group(children),
 					),
 				),
 				// footer
@@ -58,7 +56,7 @@ func headerLink(href, text string) gomponents.Node {
 func container(padY bool, children ...gomponents.Node) gomponents.Node {
 	return ghtml.Div(
 		components.Classes{
-			"max-w-7xl mx-auto":     true,
+			"w-full max-w-[90%]":    true,
 			"px-4 md:px-8 lg:px-16": true,
 			"py-4 md:py-8":          padY,
 		},

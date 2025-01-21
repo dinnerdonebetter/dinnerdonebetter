@@ -291,6 +291,7 @@ issues:
   exclude-dirs:
     - cmd/playground
     - tests/integration
+    - cmd/services/admin_webapp
 
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:

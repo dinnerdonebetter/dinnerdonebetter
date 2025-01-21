@@ -102,7 +102,6 @@ service:
       processors:
         - batch
       exporters:
-        - debug
         - otlp
     metrics:
       receivers:
@@ -120,5 +119,4 @@ service:
         - logdedup
         - batch
       exporters:
-        - debug
         - otlphttp
