@@ -131,7 +131,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				Provider:    tracingcfg.ProviderOtel,
 				Otel: &otelgrpc.Config{
 					CollectorEndpoint:  internalKubernetesEndpoint("otel-collector-svc", "dev", 4317),
-					CollectionInterval: 1 * time.Second,
+					CollectionInterval: 10 * time.Second,
 					Insecure:           true,
 				},
 			},

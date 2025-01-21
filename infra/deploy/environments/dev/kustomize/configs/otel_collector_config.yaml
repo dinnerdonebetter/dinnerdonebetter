@@ -46,6 +46,9 @@ exporters:
 
 processors:
   batch:
+    timeout: 1s
+    send_batch_size: 500
+    send_batch_max_size: 1500
 
   resource:
     attributes:
