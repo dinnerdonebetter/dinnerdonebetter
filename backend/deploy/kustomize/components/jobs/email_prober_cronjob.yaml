@@ -10,29 +10,6 @@ spec:
     spec:
       template:
         spec:
-          initContainers:
-            # This is the OpenTelemetry collector sidecar
-            - name: opentelemetry-collector
-              restartPolicy: Always
-              image: otel/opentelemetry-collector-contrib:0.115.1
-              command:
-                - "/otelcol-contrib"
-                - "--config"
-                - "/conf/config.yaml"
-              ports:
-                - containerPort: 4317
-                  name: otel1
-                - containerPort: 4318
-                  name: otel2
-              volumeMounts:
-                - name: logs
-                  mountPath: /var/log/application
-                  readOnly: true
-                - name: opentelemetry-config
-                  mountPath: /conf
-              env:
-                - name: "RUNNING_IN_KUBERNETES"
-                  value: "true"
           containers:
             - name: email-prober
               image: dinner-done-better-job-email-prober
@@ -48,19 +25,9 @@ spec:
                 - name: "config"
                   mountPath: "/etc/service-config.json"
                   subPath: "config.json"
-                - name: logs
-                  mountPath: /var/log/application
           restartPolicy: OnFailure
           volumes:
             - name: "config"
               configMap:
                 name: "dinner-done-better-job-email-prober-config"
-            # this volume is where we write logs to, and where we read logs from in the collector.
-            - name: logs
-              emptyDir:
-                sizeLimit: 500Mi
-            # this volume contains the configuration file for the OTel collector.
-            - name: opentelemetry-config
-              configMap:
-                name: opentelemetry-collector-config
 ---

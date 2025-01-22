@@ -52,20 +52,20 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			Consumer: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
-					QueueAddresses: []string{workerQueueAddress},
+					QueueAddresses: []string{dockerComposeWorkerQueueAddress},
 				},
 			},
 			Publisher: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
 				Redis: redis.Config{
-					QueueAddresses: []string{workerQueueAddress},
+					QueueAddresses: []string{dockerComposeWorkerQueueAddress},
 				},
 			},
 		},
 		Encoding: encoding.Config{
 			ContentType: contentTypeJSON,
 		},
-		Server: http.Config{
+		HTTPServer: http.Config{
 			Debug:           false,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
@@ -81,8 +81,9 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{
-				Level:    logging.InfoLevel,
-				Provider: loggingcfg.ProviderSlog,
+				ServiceName: otelServiceName,
+				Level:       logging.InfoLevel,
+				Provider:    loggingcfg.ProviderSlog,
 			},
 			Tracing: tracingcfg.Config{
 				Provider:                  tracingcfg.ProviderOtel,
@@ -105,7 +106,6 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				EnableUserSignup:      true,
 				MinimumUsernameLength: 3,
 				MinimumPasswordLength: 8,
-				JWTSigningKey:         base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				TokenLifetime:         5 * time.Minute,
 				Tokens: tokenscfg.Config{
 					Provider:                tokenscfg.ProviderPASETO,

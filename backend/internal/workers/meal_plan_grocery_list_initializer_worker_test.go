@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/business/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"

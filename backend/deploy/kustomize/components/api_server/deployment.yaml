@@ -28,16 +28,10 @@ spec:
               value: "/etc/service-config.json"
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"
-            - name: "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME"
-              value: "dinner_done_better_api"
-            - name: "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_TRACING_SERVICE_NAME"
-              value: "dinner_done_better_api"
           volumeMounts:
             - name: "config"
               mountPath: "/etc/service-config.json"
               subPath: "config.json"
-            - name: logs
-              mountPath: /var/log/application
           ports:
             - containerPort: 8000
               name: http
@@ -46,47 +40,15 @@ spec:
               path: "/_meta_/live"
               port: 8000
             initialDelaySeconds: 15
-            periodSeconds: 3
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: "/_meta_/ready"
               port: 8000
             initialDelaySeconds: 15
-            periodSeconds: 3
-        # This is the OpenTelemetry collector sidecar
-        - name: opentelemetry-collector
-          image: otel/opentelemetry-collector-contrib:0.115.1
-          command:
-            - "/otelcol-contrib"
-            - "--config"
-            - "/conf/config.yaml"
-          ports:
-            - containerPort: 4317
-              name: otel1
-            - containerPort: 4318
-              name: otel2
-            - containerPort: 13313
-              name: health
-          volumeMounts:
-            - name: logs
-              mountPath: /var/log/application
-              readOnly: true
-            - name: opentelemetry-config
-              mountPath: /conf
-          env:
-            - name: "RUNNING_IN_KUBERNETES"
-              value: "true"
+            periodSeconds: 5
       volumes:
-        # this volume contains the configuration file for the API service
         - name: "config"
           configMap:
             name: "dinner-done-better-service-api-config"
-        # this volume is where we write logs to in the API, and where we read logs from in the collector.
-        - name: logs
-          emptyDir:
-            sizeLimit: 500Mi
-        # this volume contains the configuration file for the OTel collector.
-        - name: opentelemetry-config
-          configMap:
-            name: opentelemetry-collector-config
 ---

@@ -5,67 +5,69 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/random"
-	"github.com/dinnerdonebetter/backend/internal/routing/chi"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
+	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
+	"github.com/dinnerdonebetter/backend/internal/config"
+)
 
-	"github.com/gorilla/securecookie"
+type (
+	contextKey string
 )
 
 const (
-	serverName = "admin-frontend-server"
+	serverName = "admin-frontend-Server"
+	cookieName = "dinner-done-better-admin-webapp"
+
+	apiClientContextKey contextKey = "api_client"
 )
 
 func main() {
 	ctx := context.Background()
 
-	tracerProvider := tracing.NewNoopTracerProvider()
-	logger := loggingcfg.ProvideLogger(&loggingcfg.Config{
-		Level:    logging.DebugLevel,
-		Provider: loggingcfg.ProviderSlog,
-	})
-	metricProvider := metrics.NewNoopMetricsProvider()
+	cfg, err := config.LoadConfigFromEnvironment[config.AdminWebappConfig]()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	router, err := routingcfg.ProvideRouter(&routingcfg.Config{
-		Provider: routingcfg.ProviderChi,
-		ChiConfig: &chi.Config{
-			ServiceName:            serverName,
-			ValidDomains:           nil,
-			EnableCORSForLocalhost: false,
-			SilenceRouteLogging:    false,
+	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	router, err := cfg.Routing.ProvideRouter(logger, tracerProvider, metricsProvider)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	webappCfg := &adminWebappCfg{
+		APIServerURL:           "https://api.dinnerdonebetter.dev",
+		OAuth2APIClientID:      "9819637062b9bbd3c1997cd3b6a264d4",
+		OAuth2APIClientSecret:  "0299fececf3f0be3af94adc9a98b2b0b",
+		APIClientCacheCapacity: 64,
+		APIClientCacheTTL:      12 * time.Hour,
+		Cookies: cookies.Config{
+			Base64EncodedHashKey:  "OPAu6PFzAAvztqkBiDgF_Qw9RUP2Lnng9aADq0EQeUk",
+			Base64EncodedBlockKey: "5KRnutGaUGste3esRtl970KaFmR18EiUnhaeQ-6mYR4",
 		},
-	}, logger, tracerProvider, metricProvider)
+	}
+
+	x, err := NewServer(webappCfg, logger, tracerProvider)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	parsedURL, err := url.Parse("https://api.dinnerdonebetter.dev")
-	if err != nil {
+	if err = x.setupRoutes(router); err != nil {
 		log.Fatal(err)
 	}
 
-	cookieBuilder := securecookie.New(random.MustGenerateRawBytes(ctx, 32), random.MustGenerateRawBytes(ctx, 32))
-	pageBuilder := pages.NewPageBuilder(tracerProvider, logger, parsedURL)
-
-	if err = setupRoutes(router, pageBuilder, cookieBuilder); err != nil {
-		log.Fatal(err)
-	}
-
-	server := &http.Server{
+	s := &http.Server{
 		Addr:              ":8080",
 		ReadHeaderTimeout: 5 * time.Second,
 		Handler:           router.Handler(),
 	}
 
-	if err = server.ListenAndServe(); err != nil {
+	if err = s.ListenAndServe(); err != nil {
 		slog.Info("Error serving", "error", err)
 	}
 }

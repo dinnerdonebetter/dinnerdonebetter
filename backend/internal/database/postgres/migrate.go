@@ -22,15 +22,13 @@ func fetchMigration(name string) string {
 
 // BuildMigrationFunc returns a sync.Once compatible function closure that will migrate a postgres database.
 func (q *Querier) migrationFunc() {
-	q.logger.WithValue("conn_str", q.config.ConnectionDetails.URI()).Info("migrating database")
-
 	infoChan := make(chan darwin.MigrationInfo)
 	go func() {
 		for x := range infoChan {
 			q.logger.WithValues(map[string]any{
 				"version": x.Migration.Version,
 				"status":  x.Status.String(),
-			}).Info("migrating database")
+			}).Info("database migration handledsssd")
 		}
 	}()
 

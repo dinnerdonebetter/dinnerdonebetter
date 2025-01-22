@@ -26,8 +26,6 @@ spec:
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"
           volumeMounts:
-            - name: logs
-              mountPath: /var/log/application
             - name: "config"
               mountPath: "/app/apps/web/config.json"
               subPath: "config.json"
@@ -39,47 +37,16 @@ spec:
               path: "/api/_meta_/live"
               port: 7000
             initialDelaySeconds: 15
-            periodSeconds: 32
+            periodSeconds: 52
           readinessProbe:
             httpGet:
               path: "/api/_meta_/ready"
               port: 7000
             initialDelaySeconds: 15
-            periodSeconds: 3
-            # This is the OpenTelemetry collector sidecar
-        - name: opentelemetry-collector
-          image: otel/opentelemetry-collector-contrib:0.115.1
-          command:
-            - "/otelcol-contrib"
-            - "--config"
-            - "/conf/config.yaml"
-          ports:
-            - containerPort: 4317
-              name: otel1
-            - containerPort: 4318
-              name: otel2
-            - containerPort: 13313
-              name: health
-          volumeMounts:
-            - name: logs
-              mountPath: /var/log/application
-              readOnly: true
-            - name: opentelemetry-config
-              mountPath: /conf
-          env:
-            - name: "RUNNING_IN_KUBERNETES"
-              value: "true"
+            periodSeconds: 5
       volumes:
         # this volume contains the configuration file for the API service
         - name: "config"
           configMap:
             name: "frontend-service-config"
-        # this volume is where we write logs to in the API, and where we read logs from in the collector.
-        - name: logs
-          emptyDir:
-            sizeLimit: 500Mi
-        # this volume contains the configuration file for the OTel collector.
-        - name: opentelemetry-config
-          configMap:
-            name: opentelemetry-collector-config
 ---

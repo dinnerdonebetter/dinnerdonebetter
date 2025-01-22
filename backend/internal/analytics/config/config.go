@@ -29,11 +29,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Segment              *segment.Config         `envPrefix:"SEGMENT_"         json:"segment"`
-		Posthog              *posthog.Config         `envPrefix:"POSTHOG_"         json:"posthog"`
-		Rudderstack          *rudderstack.Config     `envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
-		CircuitBreakerConfig *circuitbreaking.Config `envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
-		Provider             string                  `env:"PROVIDER"               json:"provider"`
+		Segment              *segment.Config         `env:"init"     envPrefix:"SEGMENT_"         json:"segment"`
+		Posthog              *posthog.Config         `env:"init"     envPrefix:"POSTHOG_"         json:"posthog"`
+		Rudderstack          *rudderstack.Config     `env:"init"     envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
+		CircuitBreakerConfig *circuitbreaking.Config `env:"init"     envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
+		Provider             string                  `env:"PROVIDER" json:"provider"`
 	}
 )
 

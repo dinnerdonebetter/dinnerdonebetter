@@ -53,7 +53,7 @@ func ProvideOAuth2ClientsService(
 	}
 
 	if queueConfig == nil {
-		return nil, fmt.Errorf("nil queue config provided")
+		return nil, internalerrors.NilConfigError(fmt.Sprintf("%s queues config", serviceName))
 	}
 
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)

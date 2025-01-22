@@ -7,17 +7,6 @@ receivers:
       grpc:
         endpoint: "0.0.0.0:4317"
 
-  filelog:
-    include: [/var/log/dinnerdonebetter/*.log]
-    operators:
-      - type: json_parser
-      - type: add
-        field: resource["service.name"]
-        value: dinner-done-better-api
-      - type: add
-        field: resource["deployment.environment"]
-        value: localdev
-
 exporters:
   debug:
 
@@ -55,6 +44,6 @@ service:
       processors: [batch]
       exporters: [prometheus]
     logs:
-      receivers: [filelog]
+      receivers: [otlp]
       processors: [resource, batch]
       exporters: [otlphttp]

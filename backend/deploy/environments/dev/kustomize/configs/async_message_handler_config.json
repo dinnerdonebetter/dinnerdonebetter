@@ -83,26 +83,32 @@
 	},
 	"observability": {
 		"logging": {
+			"serviceName": "async_message_handler",
 			"level": "debug",
-			"provider": "slog",
-			"outputFilepath": "/var/log/application/service.log"
+			"otelslog": {
+				"endpointURL": "otel-collector-svc.dev.svc.cluster.local:4317",
+				"insecure": true,
+				"timeout": 2000000000
+			},
+			"provider": "otelslog"
 		},
 		"metrics": {
 			"otelgrpc": {
-				"serviceName": "dinner_done_better_api",
-				"metricsCollectorEndpoint": "localhost:4317",
-				"collectionInterval": 1000000000,
-				"insecure": false,
-				"collectionTimeout": 0
+				"metricsCollectorEndpoint": "otel-collector-svc.dev.svc.cluster.local:4317",
+				"collectionInterval": 30000000000,
+				"insecure": true,
+				"enableRuntimeMetrics": false,
+				"enableHostMetrics": false
 			},
+			"serviceName": "async_message_handler",
 			"provider": "otelgrpc"
 		},
 		"tracing": {
 			"otelgrpc": {
-				"collector_endpoint": "localhost:4317",
+				"collector_endpoint": "otel-collector-svc.dev.svc.cluster.local:4317",
 				"insecure": true
 			},
-			"service_name": "dinner_done_better_api",
+			"service_name": "async_message_handler",
 			"provider": "otelgrpc",
 			"spanCollectionProbability": 1
 		}

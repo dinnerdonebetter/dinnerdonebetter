@@ -84,9 +84,6 @@ services:
       - source: 'config_files/otel_collector_config.yaml'
         target: '/conf/config.yaml'
         type: 'bind'
-      - source: '../../artifacts'
-        target: '/var/log/dinnerdonebetter'
-        type: 'bind'
 
   api_server:
     hostname: api_server
@@ -106,12 +103,9 @@ services:
     ports:
       - '8000:8000'
     build:
-      context: '../../..'
-      dockerfile: 'dockerfiles/api_server.Dockerfile'
+      context: '../../../'
+      dockerfile: 'deploy/dockerfiles/api_server.Dockerfile'
     volumes:
       - source: 'config_files/api_service_config.json'
         target: '/etc/config'
-        type: 'bind'
-      - source: '../../artifacts'
-        target: '/var/log/dinnerdonebetter'
         type: 'bind'

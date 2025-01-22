@@ -27,10 +27,10 @@ const (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	Algolia              *algolia.Config          `envPrefix:"ALGOLIA_"         json:"algolia"`
-	Elasticsearch        *elasticsearch.Config    `envPrefix:"ELASTICSEARCH_"   json:"elasticsearch"`
-	CircuitBreakerConfig *circuitbreaking2.Config `envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreakerConfig"`
-	Provider             string                   `env:"PROVIDER"               json:"provider"`
+	Algolia              *algolia.Config          `env:"init"     envPrefix:"ALGOLIA_"         json:"algolia"`
+	Elasticsearch        *elasticsearch.Config    `env:"init"     envPrefix:"ELASTICSEARCH_"   json:"elasticsearch"`
+	CircuitBreakerConfig *circuitbreaking2.Config `env:"init"     envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreakerConfig"`
+	Provider             string                   `env:"PROVIDER" json:"provider"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

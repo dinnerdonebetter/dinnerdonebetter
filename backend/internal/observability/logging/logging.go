@@ -26,6 +26,10 @@ var (
 	WarnLevel Level = pointer.To[level]("warn")
 )
 
+func AllLevels() []Level {
+	return []Level{InfoLevel, DebugLevel, ErrorLevel, WarnLevel}
+}
+
 type (
 	level string
 

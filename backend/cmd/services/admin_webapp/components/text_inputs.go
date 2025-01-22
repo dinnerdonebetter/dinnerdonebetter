@@ -59,7 +59,7 @@ type TextInputsProps struct {
 	Placeholder string
 }
 
-func (t *TextInputsProps) Validate(ctx context.Context) (*validatedInputProps, error) {
+func (t *TextInputsProps) Validate(ctx context.Context) (ValidatedTextInput, error) {
 	if err := t.ValidateWithContext(ctx); err != nil {
 		return nil, err
 	}
@@ -73,8 +73,17 @@ func (t *TextInputsProps) Validate(ctx context.Context) (*validatedInputProps, e
 	}, nil
 }
 
-func BuildValidatedTextInputPrompt(ctx context.Context, props *TextInputsProps) (*validatedInputProps, error) {
+func BuildValidatedTextInputPrompt(ctx context.Context, props *TextInputsProps) (ValidatedTextInput, error) {
 	return props.Validate(ctx)
+}
+
+func MustBuildValidatedTextInputPrompt(ctx context.Context, props *TextInputsProps) ValidatedTextInput {
+	x, err := BuildValidatedTextInputPrompt(ctx, props)
+	if err != nil {
+		panic(err)
+	}
+
+	return x
 }
 
 type validatedInputProps struct {

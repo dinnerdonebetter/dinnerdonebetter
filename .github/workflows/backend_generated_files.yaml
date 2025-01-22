@@ -205,7 +205,7 @@ jobs:
 
       - name: generate client
         working-directory: backend
-        run: make envvars
+        run: make env_vars
 
       - name: Check for changes
         run: git diff --exit-code

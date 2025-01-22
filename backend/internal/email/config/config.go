@@ -28,11 +28,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Sendgrid             *sendgrid.Config         `envPrefix:"SENDGRID_"         json:"sendgrid"`
-		Mailgun              *mailgun.Config          `envPrefix:"MAILGUN_"          json:"mailgun"`
-		Mailjet              *mailjet.Config          `envPrefix:"MAILJET_"          json:"mailjet"`
-		CircuitBreakerConfig *circuitbreaking2.Config `envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakerConfig"`
-		Provider             string                   `env:"PROVIDER"                json:"provider"`
+		Sendgrid             *sendgrid.Config         `env:"init"     envPrefix:"SENDGRID_"         json:"sendgrid"`
+		Mailgun              *mailgun.Config          `env:"init"     envPrefix:"MAILGUN_"          json:"mailgun"`
+		Mailjet              *mailjet.Config          `env:"init"     envPrefix:"MAILJET_"          json:"mailjet"`
+		CircuitBreakerConfig *circuitbreaking2.Config `env:"init"     envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakerConfig"`
+		Provider             string                   `env:"PROVIDER" json:"provider"`
 	}
 )
 

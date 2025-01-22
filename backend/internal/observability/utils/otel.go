@@ -9,19 +9,26 @@ import (
 )
 
 func MustOtelResource(ctx context.Context, serviceName string) *resource.Resource {
-	res, err := resource.New(ctx,
+	options := []resource.Option{
 		resource.WithFromEnv(),
 		resource.WithProcess(),
 		resource.WithTelemetrySDK(),
 		resource.WithHost(),
 		resource.WithOSType(),
-		resource.WithAttributes(
-			attribute.KeyValue{
-				Key:   semconv.ServiceNameKey,
-				Value: attribute.StringValue(serviceName),
-			},
-		),
-	)
+	}
+
+	if serviceName != "" {
+		options = append(options,
+			resource.WithAttributes(
+				attribute.KeyValue{
+					Key:   semconv.ServiceNameKey,
+					Value: attribute.StringValue(serviceName),
+				},
+			),
+		)
+	}
+
+	res, err := resource.New(ctx, options...)
 	if err != nil {
 		panic(err)
 	}

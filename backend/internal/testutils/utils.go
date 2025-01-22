@@ -32,7 +32,7 @@ func CreateServiceUser(ctx context.Context, address string, in *types.UserRegist
 	c, err := apiclient.NewClient(
 		parsedAddress,
 		tracing.NewNoopTracerProvider(),
-		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
 		apiclient.UsingURL(address),
 	)
 	if err != nil {

@@ -51,28 +51,31 @@ func UsingURL(u string) func(*Client) error {
 	}
 }
 
-// UsingTracingProvider sets the tracing provider on the client.
-func UsingTracingProvider(tracerProvider tracing.TracerProvider) ClientOption {
+// UsingTracerProvider sets the tracer on the client with the provided TracerProvider.
+func UsingTracerProvider(tracerProvider tracing.TracerProvider) ClientOption {
 	return func(c *Client) error {
 		c.tracer = tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(clientName))
+		c.encoder = encoding.ProvideClientEncoder(c.logger, tracerProvider, c.contentType)
 
 		return nil
 	}
 }
 
 // UsingJSON sets the content type on the client.
-func UsingJSON() func(*Client) error {
+func UsingJSON(tracerProvider tracing.TracerProvider) func(*Client) error {
 	return func(c *Client) error {
-		c.encoder = encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+		c.contentType = encoding.ContentTypeJSON
+		c.encoder = encoding.ProvideClientEncoder(c.logger, tracerProvider, c.contentType)
 
 		return nil
 	}
 }
 
 // UsingXML sets the content type on the client.
-func UsingXML() func(*Client) error {
+func UsingXML(tracerProvider tracing.TracerProvider) func(*Client) error {
 	return func(c *Client) error {
-		c.encoder = encoding.ProvideClientEncoder(c.logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeXML)
+		c.contentType = encoding.ContentTypeXML
+		c.encoder = encoding.ProvideClientEncoder(c.logger, tracerProvider, c.contentType)
 
 		return nil
 	}
@@ -82,7 +85,6 @@ func UsingXML() func(*Client) error {
 func UsingLogger(logger logging.Logger) func(*Client) error {
 	return func(c *Client) error {
 		c.logger = logging.EnsureLogger(logger)
-
 		return nil
 	}
 }

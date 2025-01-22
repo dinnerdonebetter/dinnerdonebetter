@@ -21,8 +21,9 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Otel     *otelgrpc.Config `envPrefix:"OTEL_" json:"otelgrpc,omitempty"`
-		Provider string           `env:"PROVIDER"    json:"provider,omitempty"`
+		Otel        *otelgrpc.Config `env:"init"         envPrefix:"OTEL_"         json:"otelgrpc,omitempty"`
+		ServiceName string           `env:"SERVICE_NAME" json:"serviceName"`
+		Provider    string           `env:"PROVIDER"     json:"provider,omitempty"`
 	}
 )
 
@@ -32,7 +33,7 @@ func (c *Config) ProvideMetricsProvider(ctx context.Context, logger logging.Logg
 
 	switch p {
 	case ProviderOtel:
-		return otelgrpc.ProvideMetricsProvider(ctx, logger, c.Otel)
+		return otelgrpc.ProvideMetricsProvider(ctx, logger, c.ServiceName, c.Otel)
 	default:
 		return metrics.NewNoopMetricsProvider(), nil
 	}

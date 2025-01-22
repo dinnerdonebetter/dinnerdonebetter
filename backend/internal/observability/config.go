@@ -2,9 +2,13 @@ package observability
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -30,4 +34,23 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&cfg.Metrics),
 		validation.Field(&cfg.Tracing),
 	)
+}
+
+func (cfg *Config) ProvideThreePillars(ctx context.Context) (logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, err error) {
+	logger, err = cfg.Logging.ProvideLogger(ctx)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("setting up logger: %w", err)
+	}
+
+	tracerProvider, err = cfg.Tracing.ProvideTracerProvider(ctx, logger)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("setting up tracer provider: %w", err)
+	}
+
+	metricsProvider, err = cfg.Metrics.ProvideMetricsProvider(ctx, logger)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("setting up metrics provider: %w", err)
+	}
+
+	return logger, tracerProvider, metricsProvider, nil
 }

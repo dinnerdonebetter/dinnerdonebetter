@@ -14,11 +14,11 @@ jobs:
       pull-requests: read
     runs-on: ubuntu-latest
     outputs:
+      infra: ${{ steps.filter.outputs.infra }}
       backend: ${{ steps.filter.outputs.backend }}
       frontend_webapp: ${{ steps.filter.outputs.frontend_webapp }}
       frontend_landing: ${{ steps.filter.outputs.frontend_landing }}
       frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
-      frontend: ${{ steps.filter.outputs.frontend }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,10 +28,21 @@ jobs:
         with:
           filters: |
             backend:
-              - backend/**/*.go
-            frontend:
-              - frontend/packages/**/*.ts
-              - frontend/packages/**/*.test
+              - backend/**
+            infra:
+              - infra/**
+            frontend_webapp:
+              - frontend/apps/web/**
+              - frontend/packages/**
+              - frontend/environments/dev/webapp/**
+            frontend_landing:
+              - frontend/apps/landing/**
+              - frontend/packages/**
+              - frontend/environments/dev/landing/**
+            frontend_admin:
+              - frontend/apps/admin/**
+              - frontend/packages/**
+              - frontend/environments/dev/admin/**
 
   baseline-infra:
     needs: [changes]
@@ -353,7 +364,7 @@ jobs:
         working-directory: frontend/deploy/environments/dev/webapp/terraform
 
   applications:
-    if: ${{ success() || cancelled() }}
+    if: always() && !failure() && !cancelled()
     needs:
       - backend-infra
       - webapp-infra

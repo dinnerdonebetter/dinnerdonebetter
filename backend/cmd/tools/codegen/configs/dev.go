@@ -17,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	logotelgrpc "github.com/dinnerdonebetter/backend/internal/observability/logging/otelgrpc"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/otelgrpc"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
@@ -85,7 +86,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			},
 			Segment: &segment.Config{APIToken: ""},
 		},
-		Server: http.Config{
+		HTTPServer: http.Config{
 			Debug:           true,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
@@ -116,16 +117,22 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		Observability: observability.Config{
 			Logging: loggingcfg.Config{
-				Level:          logging.DebugLevel,
-				Provider:       loggingcfg.ProviderSlog,
-				OutputFilepath: "/var/log/application/service.log",
+				ServiceName: otelServiceName,
+				Level:       logging.DebugLevel,
+				Provider:    loggingcfg.ProviderOtelSlog,
+				OtelSlog: &logotelgrpc.Config{
+					CollectorEndpoint: internalKubernetesEndpoint("otel-collector-svc", "dev", 4317),
+					Insecure:          true,
+					Timeout:           2 * time.Second,
+				},
 			},
 			Metrics: metricscfg.Config{
-				Provider: tracingcfg.ProviderOtel,
+				ServiceName: otelServiceName,
+				Provider:    tracingcfg.ProviderOtel,
 				Otel: &otelgrpc.Config{
-					ServiceName:        otelServiceName,
-					CollectorEndpoint:  "localhost:4317",
-					CollectionInterval: 1 * time.Second,
+					CollectorEndpoint:  internalKubernetesEndpoint("otel-collector-svc", "dev", 4317),
+					CollectionInterval: 30 * time.Second,
+					Insecure:           true,
 				},
 			},
 			Tracing: tracingcfg.Config{
@@ -133,7 +140,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				ServiceName:               otelServiceName,
 				SpanCollectionProbability: 1,
 				Otel: &oteltrace.Config{
-					CollectorEndpoint: "localhost:4317",
+					CollectorEndpoint: internalKubernetesEndpoint("otel-collector-svc", "dev", 4317),
 					Insecure:          true,
 				},
 			},

@@ -2,6 +2,7 @@ package paseto
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
@@ -68,7 +69,7 @@ func (s *signer) IssueToken(ctx context.Context, user *types.User, expiry time.D
 
 	tokenString, err := paseto.NewV2().Encrypt(s.signingKey, t, "footer")
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("signing token with key length %d: %w", len(s.signingKey), err)
 	}
 
 	return tokenString, nil

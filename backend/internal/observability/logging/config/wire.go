@@ -1,6 +1,8 @@
 package loggingcfg
 
 import (
+	"context"
+
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 
 	"github.com/google/wire"
@@ -12,6 +14,6 @@ var (
 	)
 )
 
-func ProvideLogger(cfg *Config) logging.Logger {
-	return cfg.ProvideLogger()
+func ProvideLogger(ctx context.Context, cfg *Config) (logging.Logger, error) {
+	return cfg.ProvideLogger(ctx)
 }

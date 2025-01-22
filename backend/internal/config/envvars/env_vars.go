@@ -14,6 +14,9 @@ const (
 	// AnalyticsCircuitBreakerNameEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreakerConfig.Name`.
 	AnalyticsCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_NAME"
 
+	// AnalyticsInitEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreakerConfig`.
+	AnalyticsInitEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_init"
+
 	// AnalyticsPosthogCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreakerConfig.ErrorRate`.
 	AnalyticsPosthogCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_POSTHOG_CIRCUIT_BREAKING_ERROR_RATE"
 
@@ -50,8 +53,8 @@ const (
 	// DatabaseConnectionDetailsHostEnvVarKey is the environment variable name to set in order to override `config.Database.ConnectionDetails.Host`.
 	DatabaseConnectionDetailsHostEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_HOST"
 
-	// DatabaseConnectionDetailsPasswordUnsetEnvVarKey is the environment variable name to set in order to override `config.Database.ConnectionDetails.Password`.
-	DatabaseConnectionDetailsPasswordUnsetEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD,unset"
+	// DatabaseConnectionDetailsPasswordEnvVarKey is the environment variable name to set in order to override `config.Database.ConnectionDetails.Password`.
+	DatabaseConnectionDetailsPasswordEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PASSWORD"
 
 	// DatabaseConnectionDetailsPortEnvVarKey is the environment variable name to set in order to override `config.Database.ConnectionDetails.Port`.
 	DatabaseConnectionDetailsPortEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_PORT"
@@ -79,6 +82,9 @@ const (
 
 	// DatabaseRunMigrationsEnvVarKey is the environment variable name to set in order to override `config.Database.RunMigrations`.
 	DatabaseRunMigrationsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_RUN_MIGRATIONS"
+
+	// EmailInitEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreakerConfig`.
+	EmailInitEnvVarKey = "DINNER_DONE_BETTER_EMAIL_init"
 
 	// EmailMailgunDomainEnvVarKey is the environment variable name to set in order to override `config.Email.Mailgun.Domain`.
 	EmailMailgunDomainEnvVarKey = "DINNER_DONE_BETTER_EMAIL_MAILGUN_DOMAIN"
@@ -137,6 +143,9 @@ const (
 	// EventsPublisherSqsQueueAddressEnvVarKey is the environment variable name to set in order to override `config.Events.Publisher.SQS.QueueAddress`.
 	EventsPublisherSqsQueueAddressEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_SQS_QUEUE_ADDRESS"
 
+	// FeatureFlagsInitEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreakingConfig`.
+	FeatureFlagsInitEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_init"
+
 	// FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.ErrorRate`.
 	FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_ERROR_RATE"
 
@@ -176,35 +185,62 @@ const (
 	// MetaRunModeEnvVarKey is the environment variable name to set in order to override `config.Meta.RunMode`.
 	MetaRunModeEnvVarKey = "DINNER_DONE_BETTER_META_RUN_MODE"
 
+	// ObservabilityLoggingInitEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog`.
+	ObservabilityLoggingInitEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_init"
+
 	// ObservabilityLoggingLevelEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.Level`.
 	ObservabilityLoggingLevelEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_LEVEL"
 
-	// ObservabilityLoggingOutputFilepathEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OutputFilepath`.
-	ObservabilityLoggingOutputFilepathEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OUTPUT_FILEPATH"
+	// ObservabilityLoggingOtelSlogCollectionIntervalEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.CollectionInterval`.
+	ObservabilityLoggingOtelSlogCollectionIntervalEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_COLLECTION_INTERVAL"
+
+	// ObservabilityLoggingOtelSlogCollectorEndpointEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.CollectorEndpoint`.
+	ObservabilityLoggingOtelSlogCollectorEndpointEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_COLLECTOR_ENDPOINT"
+
+	// ObservabilityLoggingOtelSlogEnableHostMetricsEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.EnableHostMetrics`.
+	ObservabilityLoggingOtelSlogEnableHostMetricsEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_ENABLE_HOST_METRICS"
+
+	// ObservabilityLoggingOtelSlogEnableRuntimeMetricsEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.EnableRuntimeMetrics`.
+	ObservabilityLoggingOtelSlogEnableRuntimeMetricsEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_ENABLE_RUNTIME_METRICS"
+
+	// ObservabilityLoggingOtelSlogInsecureEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog.Insecure`.
+	ObservabilityLoggingOtelSlogInsecureEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_OTEL_SLOG_INSECURE"
 
 	// ObservabilityLoggingProviderEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.Provider`.
 	ObservabilityLoggingProviderEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_PROVIDER"
 
+	// ObservabilityLoggingServiceNameEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.ServiceName`.
+	ObservabilityLoggingServiceNameEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_SERVICE_NAME"
+
+	// ObservabilityMetricsInitEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel`.
+	ObservabilityMetricsInitEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_init"
+
 	// ObservabilityMetricsOtelCollectionIntervalEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.CollectionInterval`.
 	ObservabilityMetricsOtelCollectionIntervalEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_COLLECTION_INTERVAL"
-
-	// ObservabilityMetricsOtelCollectionTimeoutEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.CollectionTimeout`.
-	ObservabilityMetricsOtelCollectionTimeoutEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_COLLECTION_TIMEOUT"
 
 	// ObservabilityMetricsOtelCollectorEndpointEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.CollectorEndpoint`.
 	ObservabilityMetricsOtelCollectorEndpointEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_COLLECTOR_ENDPOINT"
 
+	// ObservabilityMetricsOtelEnableHostMetricsEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.EnableHostMetrics`.
+	ObservabilityMetricsOtelEnableHostMetricsEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_ENABLE_HOST_METRICS"
+
+	// ObservabilityMetricsOtelEnableRuntimeMetricsEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.EnableRuntimeMetrics`.
+	ObservabilityMetricsOtelEnableRuntimeMetricsEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_ENABLE_RUNTIME_METRICS"
+
 	// ObservabilityMetricsOtelInsecureEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.Insecure`.
 	ObservabilityMetricsOtelInsecureEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_INSECURE"
-
-	// ObservabilityMetricsOtelServiceNameEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Otel.ServiceName`.
-	ObservabilityMetricsOtelServiceNameEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_OTEL_SERVICE_NAME"
 
 	// ObservabilityMetricsProviderEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.Provider`.
 	ObservabilityMetricsProviderEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_PROVIDER"
 
+	// ObservabilityMetricsServiceNameEnvVarKey is the environment variable name to set in order to override `config.Observability.Metrics.ServiceName`.
+	ObservabilityMetricsServiceNameEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_METRICS_SERVICE_NAME"
+
 	// ObservabilityTracingCloudtraceGoogleCloudTraceProjectIDEnvVarKey is the environment variable name to set in order to override `config.Observability.Tracing.CloudTrace.ProjectID`.
 	ObservabilityTracingCloudtraceGoogleCloudTraceProjectIDEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_CLOUDTRACE_GOOGLE_CLOUD_TRACE_PROJECT_ID"
+
+	// ObservabilityTracingInitEnvVarKey is the environment variable name to set in order to override `config.Observability.Tracing.Otel`.
+	ObservabilityTracingInitEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_init"
 
 	// ObservabilityTracingOtelgrpcCollectorEndpointEnvVarKey is the environment variable name to set in order to override `config.Observability.Tracing.Otel.CollectorEndpoint`.
 	ObservabilityTracingOtelgrpcCollectorEndpointEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_TRACING_OTELGRPC_COLLECTOR_ENDPOINT"
@@ -248,6 +284,9 @@ const (
 	// RoutingChiValidDomainsEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig.ValidDomains`.
 	RoutingChiValidDomainsEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_VALID_DOMAINS"
 
+	// RoutingInitEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig`.
+	RoutingInitEnvVarKey = "DINNER_DONE_BETTER_ROUTING_init"
+
 	// RoutingProviderEnvVarKey is the environment variable name to set in order to override `config.Routing.Provider`.
 	RoutingProviderEnvVarKey = "DINNER_DONE_BETTER_ROUTING_PROVIDER"
 
@@ -275,25 +314,25 @@ const (
 	// SearchElasticsearchUsernameEnvVarKey is the environment variable name to set in order to override `config.Search.Elasticsearch.Username`.
 	SearchElasticsearchUsernameEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_USERNAME"
 
+	// SearchInitEnvVarKey is the environment variable name to set in order to override `config.Search.CircuitBreakerConfig`.
+	SearchInitEnvVarKey = "DINNER_DONE_BETTER_SEARCH_init"
+
 	// SearchProviderEnvVarKey is the environment variable name to set in order to override `config.Search.Provider`.
 	SearchProviderEnvVarKey = "DINNER_DONE_BETTER_SEARCH_PROVIDER"
 
-	// ServerAutocertAddressesEnvVarKey is the environment variable name to set in order to override `config.Server.Autocert.Addresses`.
-	ServerAutocertAddressesEnvVarKey = "DINNER_DONE_BETTER_SERVER_AUTOCERT_ADDRESSES"
-
-	// ServerDebugEnvVarKey is the environment variable name to set in order to override `config.Server.Debug`.
+	// ServerDebugEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.Debug`.
 	ServerDebugEnvVarKey = "DINNER_DONE_BETTER_SERVER_DEBUG"
 
-	// ServerHTTPPortEnvVarKey is the environment variable name to set in order to override `config.Server.HTTPPort`.
+	// ServerHTTPPortEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.HTTPPort`.
 	ServerHTTPPortEnvVarKey = "DINNER_DONE_BETTER_SERVER_HTTP_PORT"
 
-	// ServerHTTPSCertificateFilepathEnvVarKey is the environment variable name to set in order to override `config.Server.HTTPSCertificateFile`.
+	// ServerHTTPSCertificateFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.HTTPSCertificateFile`.
 	ServerHTTPSCertificateFilepathEnvVarKey = "DINNER_DONE_BETTER_SERVER_HTTPS_CERTIFICATE_FILEPATH"
 
-	// ServerHTTPSCertificateKeyFilepathEnvVarKey is the environment variable name to set in order to override `config.Server.HTTPSCertificateKeyFile`.
+	// ServerHTTPSCertificateKeyFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.HTTPSCertificateKeyFile`.
 	ServerHTTPSCertificateKeyFilepathEnvVarKey = "DINNER_DONE_BETTER_SERVER_HTTPS_CERTIFICATE_KEY_FILEPATH"
 
-	// ServerStartupDeadlineEnvVarKey is the environment variable name to set in order to override `config.Server.StartupDeadline`.
+	// ServerStartupDeadlineEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.StartupDeadline`.
 	ServerStartupDeadlineEnvVarKey = "DINNER_DONE_BETTER_SERVER_STARTUP_DEADLINE"
 
 	// ServiceAuthDebugEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Debug`.
@@ -304,9 +343,6 @@ const (
 
 	// ServiceAuthJwtLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.TokenLifetime`.
 	ServiceAuthJwtLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_LIFETIME"
-
-	// ServiceAuthJwtSigningKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.JWTSigningKey`.
-	ServiceAuthJwtSigningKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_SIGNING_KEY"
 
 	// ServiceAuthMinimumPasswordLengthEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.MinimumPasswordLength`.
 	ServiceAuthMinimumPasswordLengthEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_MINIMUM_PASSWORD_LENGTH"
@@ -335,14 +371,14 @@ const (
 	// ServiceAuthSsoConfigGoogleClientSecretEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.SSO.Google.ClientSecret`.
 	ServiceAuthSsoConfigGoogleClientSecretEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_SSO_CONFIG_GOOGLE_CLIENT_SECRET"
 
-	// ServiceAuthTokenAudienceEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Audience`.
-	ServiceAuthTokenAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_AUDIENCE"
+	// ServiceAuthTokensAudienceEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Audience`.
+	ServiceAuthTokensAudienceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_AUDIENCE"
 
-	// ServiceAuthTokenProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Provider`.
-	ServiceAuthTokenProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_PROVIDER"
+	// ServiceAuthTokensProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Provider`.
+	ServiceAuthTokensProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_PROVIDER"
 
-	// ServiceAuthTokenSigningKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Base64EncodedSigningKey`.
-	ServiceAuthTokenSigningKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKEN_SIGNING_KEY"
+	// ServiceAuthTokensSigningKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.Tokens.Base64EncodedSigningKey`.
+	ServiceAuthTokensSigningKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_TOKENS_SIGNING_KEY"
 
 	// ServiceDataPrivacyUploadsDebugEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Debug`.
 	ServiceDataPrivacyUploadsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_DEBUG"
@@ -358,6 +394,9 @@ const (
 
 	// ServiceDataPrivacyUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Storage.GCPConfig.BucketName`.
 	ServiceDataPrivacyUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_GCP_BUCKET_NAME"
+
+	// ServiceDataPrivacyUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Storage.GCPConfig`.
+	ServiceDataPrivacyUploadsStorageInitEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_init"
 
 	// ServiceDataPrivacyUploadsStorageProviderEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Storage.Provider`.
 	ServiceDataPrivacyUploadsStorageProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_PROVIDER"
@@ -395,6 +434,9 @@ const (
 	// ServiceRecipesUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.GCPConfig.BucketName`.
 	ServiceRecipesUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_GCP_BUCKET_NAME"
 
+	// ServiceRecipesUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.GCPConfig`.
+	ServiceRecipesUploadsStorageInitEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_init"
+
 	// ServiceRecipesUploadsStorageProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.Provider`.
 	ServiceRecipesUploadsStorageProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_PROVIDER"
 
@@ -424,6 +466,9 @@ const (
 
 	// ServiceUsersUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.GCPConfig.BucketName`.
 	ServiceUsersUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_UPLOADS_STORAGE_GCP_BUCKET_NAME"
+
+	// ServiceUsersUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.GCPConfig`.
+	ServiceUsersUploadsStorageInitEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_UPLOADS_STORAGE_init"
 
 	// ServiceUsersUploadsStorageProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.Provider`.
 	ServiceUsersUploadsStorageProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_UPLOADS_STORAGE_PROVIDER"

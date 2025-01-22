@@ -9,7 +9,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-func (b *PageBuilder) HomePage(ctx context.Context) gomponents.Node {
+func (b *Builder) HomePage(ctx context.Context) gomponents.Node {
 	_, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 

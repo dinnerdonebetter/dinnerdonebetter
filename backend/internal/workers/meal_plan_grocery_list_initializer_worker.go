@@ -3,8 +3,8 @@ package workers
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/business/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"

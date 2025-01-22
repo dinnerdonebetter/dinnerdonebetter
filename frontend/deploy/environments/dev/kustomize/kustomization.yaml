@@ -27,7 +27,7 @@ patches:
         path: "/spec/template/spec/containers/0/env/-"
         value:
           name: NEXT_API_ENDPOINT
-          value: "http://dinner-done-better.dev.svc.cluster.local:8000"
+          value: "https://dinner-done-better-api-svc.dev.svc.cluster.local:8000"
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -75,7 +75,7 @@ patches:
         path: "/spec/template/spec/containers/0/env/-"
         value:
           name: NEXT_API_ENDPOINT
-          value: "http://dinner-done-better.dev.svc.cluster.local:8000"
+          value: "https://dinner-done-better-api-svc.dev.svc.cluster.local:8000"
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -131,7 +131,7 @@ labels:
       deployed_by: skaffold
 
 configMapGenerator:
-  - name: opentelemetry-collector-config
+  - name: frontend-opentelemetry-collector-config
     namespace: dev
     files:
       - config.yaml=configs/otel_collector_config.yaml

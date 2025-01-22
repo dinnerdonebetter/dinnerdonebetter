@@ -26,7 +26,7 @@ func PageShell(title string, children ...gomponents.Node) gomponents.Node {
 		Body: []gomponents.Node{ghtml.Class("bg-gradient-to-b from-white to-indigo-100 bg-no-repeat"),
 			ghtml.Div(ghtml.Class("min-h-screen flex flex-col justify-between"),
 				// header
-				ghtml.Div(ghtml.Class("bg-gray-600 h-8 text-white shadow"),
+				ghtml.Div(ghtml.ID("main"), ghtml.Class("bg-gray-600 h-8 text-white shadow"),
 					container(false,
 						ghtml.Div(ghtml.Class("flex items-center space-x-4 h-8"),
 							headerLink("/", "Home"),
@@ -35,11 +35,9 @@ func PageShell(title string, children ...gomponents.Node) gomponents.Node {
 					),
 				),
 				// main body
-				ghtml.Div(ghtml.Class("grow flex justify-center"),
+				ghtml.Div(ghtml.Class("grow flex justify-around"),
 					container(true,
-						ghtml.Div(ghtml.Class("prose prose-lg prose-indigo"),
-							gomponents.Group(children),
-						),
+						gomponents.Group(children),
 					),
 				),
 				// footer
@@ -58,7 +56,7 @@ func headerLink(href, text string) gomponents.Node {
 func container(padY bool, children ...gomponents.Node) gomponents.Node {
 	return ghtml.Div(
 		components.Classes{
-			"max-w-7xl mx-auto":     true,
+			"w-full max-w-[90%]":    true,
 			"px-4 md:px-8 lg:px-16": true,
 			"py-4 md:py-8":          padY,
 		},

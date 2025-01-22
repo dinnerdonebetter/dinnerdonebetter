@@ -1,18 +1,24 @@
 {
 	"observability": {
 		"logging": {
+			"serviceName": "db_cleaner",
 			"level": "debug",
-			"provider": "slog",
-			"outputFilepath": "/var/log/dinnerdonebetter/api-service.log"
+			"otelslog": {
+				"endpointURL": "otel_collector:4317",
+				"insecure": true,
+				"timeout": 3000000000
+			},
+			"provider": "otelslog"
 		},
 		"metrics": {
 			"otelgrpc": {
-				"serviceName": "dinner_done_better_api",
 				"metricsCollectorEndpoint": "otel_collector:4317",
 				"collectionInterval": 1000000000,
 				"insecure": true,
-				"collectionTimeout": 0
+				"enableRuntimeMetrics": false,
+				"enableHostMetrics": false
 			},
+			"serviceName": "db_cleaner",
 			"provider": "otelgrpc"
 		},
 		"tracing": {
@@ -20,7 +26,7 @@
 				"collector_endpoint": "otel_collector:4317",
 				"insecure": true
 			},
-			"service_name": "dinner_done_better_api",
+			"service_name": "db_cleaner",
 			"provider": "otelgrpc",
 			"spanCollectionProbability": 1
 		}

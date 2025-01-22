@@ -26,11 +26,11 @@ var (
 )
 
 type Config struct {
-	ServiceName        string        `env:"SERVICE_NAME"        json:"serviceName"`
-	CollectorEndpoint  string        `env:"COLLECTOR_ENDPOINT"  json:"metricsCollectorEndpoint"`
-	CollectionInterval time.Duration `env:"COLLECTION_INTERVAL" json:"collectionInterval"`
-	Insecure           bool          `env:"INSECURE"            json:"insecure"`
-	CollectionTimeout  time.Duration `env:"COLLECTION_TIMEOUT"  json:"collectionTimeout"`
+	CollectorEndpoint    string        `env:"COLLECTOR_ENDPOINT"     json:"metricsCollectorEndpoint"`
+	CollectionInterval   time.Duration `env:"COLLECTION_INTERVAL"    json:"collectionInterval"`
+	Insecure             bool          `env:"INSECURE"               json:"insecure"`
+	EnableRuntimeMetrics bool          `env:"ENABLE_RUNTIME_METRICS" json:"enableRuntimeMetrics"`
+	EnableHostMetrics    bool          `env:"ENABLE_HOST_METRICS"    json:"enableHostMetrics"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -38,18 +38,17 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates the config struct.
 func (c *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, c,
-		validation.Field(&c.ServiceName, validation.Required),
 		validation.Field(&c.CollectorEndpoint, validation.Required),
 		validation.Field(&c.CollectionInterval, validation.Required),
 	)
 }
 
-func setupMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Config) (metric.MeterProvider, func(context.Context) error, error) {
+func setupMetricsProvider(ctx context.Context, logger logging.Logger, serviceName string, cfg *Config) (metric.MeterProvider, func(context.Context) error, error) {
 	if cfg == nil {
 		return nil, nil, ErrNilConfig
 	}
 
-	res := o11yutils.MustOtelResource(ctx, cfg.ServiceName)
+	res := o11yutils.MustOtelResource(ctx, serviceName)
 
 	options := []otlpmetricgrpc.Option{
 		otlpmetricgrpc.WithEndpoint(cfg.CollectorEndpoint),
@@ -82,29 +81,33 @@ func setupMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Confi
 
 	logger.WithValue("config", cfg).Info("set up meter provider")
 
-	if err = runtime.Start(runtime.WithMeterProvider(meterProvider)); err != nil {
-		return nil, nil, fmt.Errorf("starting runtime metrics: %w", err)
+	if cfg.EnableRuntimeMetrics {
+		if err = runtime.Start(runtime.WithMeterProvider(meterProvider)); err != nil {
+			return nil, nil, fmt.Errorf("starting runtime metrics: %w", err)
+		}
+		logger.Info("started runtime metrics")
 	}
-	logger.Info("started runtime metrics")
 
-	if err = host.Start(host.WithMeterProvider(meterProvider)); err != nil {
-		return nil, nil, fmt.Errorf("starting host metrics: %w", err)
+	if cfg.EnableHostMetrics {
+		if err = host.Start(host.WithMeterProvider(meterProvider)); err != nil {
+			return nil, nil, fmt.Errorf("starting host metrics: %w", err)
+		}
+		logger.Info("started host metrics")
 	}
-	logger.Info("started host metrics")
 
 	return meterProvider, meterProvider.Shutdown, nil
 }
 
-func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Config) (metrics.Provider, error) {
+func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, serviceName string, cfg *Config) (metrics.Provider, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
 	}
 
-	logger.WithValue("service.name", cfg.ServiceName).
+	logger.WithValue("service.name", serviceName).
 		WithValue("interval", cfg.CollectionInterval.String()).
 		Info("setting up metrics provider")
 
-	meterProvider, shutdown, err := setupMetricsProvider(ctx, logger, cfg)
+	meterProvider, shutdown, err := setupMetricsProvider(ctx, logger, serviceName, cfg)
 	if err != nil {
 		return nil, fmt.Errorf("creating metric provider: %w", err)
 	}
@@ -114,9 +117,9 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, cfg *Con
 
 	i := &providerImpl{
 		logger:        logger,
-		serviceName:   cfg.ServiceName,
+		serviceName:   serviceName,
 		meterProvider: meterProvider,
-		mp:            meterProvider.Meter(cfg.ServiceName),
+		mp:            meterProvider.Meter(serviceName),
 		shutdownFunctions: []func(context.Context) error{
 			shutdown,
 		},

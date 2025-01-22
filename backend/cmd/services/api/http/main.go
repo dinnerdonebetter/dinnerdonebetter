@@ -40,10 +40,12 @@ func main() {
 	}
 
 	// only allow initialization to take so long.
-	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
+	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.HTTPServer.StartupDeadline)
 
-	logger := cfg.Observability.Logging.ProvideLogger()
-	logger.Info("building server")
+	logger, err := cfg.Observability.Logging.ProvideLogger(rootCtx)
+	if err != nil {
+		log.Fatalf("could not create logger: %v", err)
+	}
 
 	// build our server struct.
 	srv, err := api.Build(buildCtx, cfg)
@@ -62,7 +64,6 @@ func main() {
 		syscall.SIGTERM,
 	)
 
-	log.Println("serving")
 	// Run server
 	go srv.Serve()
 
@@ -77,10 +78,10 @@ func main() {
 	cancelCtx, cancelShutdown := context.WithTimeout(rootCtx, 10*time.Second)
 	defer cancelShutdown()
 
-	log.Println("shutting down")
+	logger.Info("shutting down")
 
 	// Gracefully shutdown the server by waiting on existing requests (except websockets).
 	if err = srv.Shutdown(cancelCtx); err != nil {
-		panic(err)
+		logger.Error("shutting down server", err)
 	}
 }

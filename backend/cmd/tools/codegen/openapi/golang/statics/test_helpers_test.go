@@ -115,7 +115,7 @@ func buildTestClient(t *testing.T, ts *httptest.Server) *Client {
 		mustParseURL(ts.URL),
 		tracing.NewNoopTracerProvider(),
 		UsingLogger(logging.NewNoopLogger()),
-		UsingJSON(),
+		UsingJSON(tracing.NewNoopTracerProvider()),
 	)
 	require.NoError(t, err)
 	require.NotNil(t, client)

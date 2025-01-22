@@ -77,18 +77,24 @@
 	},
 	"observability": {
 		"logging": {
+			"serviceName": "dinner_done_better",
 			"level": "debug",
-			"provider": "slog",
-			"outputFilepath": "/var/log/dinnerdonebetter/api-service.log"
+			"otelslog": {
+				"endpointURL": "otel_collector:4317",
+				"insecure": true,
+				"timeout": 3000000000
+			},
+			"provider": "otelslog"
 		},
 		"metrics": {
 			"otelgrpc": {
-				"serviceName": "dinner_done_better_api",
 				"metricsCollectorEndpoint": "otel_collector:4317",
 				"collectionInterval": 1000000000,
 				"insecure": true,
-				"collectionTimeout": 0
+				"enableRuntimeMetrics": false,
+				"enableHostMetrics": false
 			},
+			"serviceName": "dinner_done_better",
 			"provider": "otelgrpc"
 		},
 		"tracing": {
@@ -96,7 +102,7 @@
 				"collector_endpoint": "otel_collector:4317",
 				"insecure": true
 			},
-			"service_name": "dinner_done_better_api",
+			"service_name": "dinner_done_better",
 			"provider": "otelgrpc",
 			"spanCollectionProbability": 1
 		}
@@ -107,15 +113,12 @@
 	},
 	"routing": {
 		"chiConfig": {
-			"serviceName": "dinner_done_better_api",
+			"serviceName": "dinner_done_better",
 			"enableCORSForLocalhost": true
 		},
 		"provider": "chi"
 	},
 	"server": {
-		"autocert": {
-			"addresses": null
-		},
 		"startupDeadline": 60000000000,
 		"httpPort": 8000,
 		"debug": true
@@ -196,7 +199,6 @@
 					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
 				}
 			},
-			"jwtSigningKey": "",
 			"oauth2": {
 				"domain": "http://localhost:9000",
 				"accessTokenLifespan": 3600000000000,

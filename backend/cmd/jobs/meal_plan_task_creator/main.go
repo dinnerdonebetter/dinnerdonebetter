@@ -7,9 +7,9 @@ import (
 	"log/slog"
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/business/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -33,7 +33,10 @@ func doTheThing() error {
 	}
 	cfg.Database.RunMigrations = false
 
-	logger := cfg.Observability.Logging.ProvideLogger()
+	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
+	if err != nil {
+		return fmt.Errorf("could not create logger: %w", err)
+	}
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -25,7 +26,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 		t.Parallel()
 
 		cfg := &APIServiceConfig{
-			Server: http.Config{
+			HTTPServer: http.Config{
 				HTTPPort:        1234,
 				Debug:           false,
 				StartupDeadline: time.Minute,
@@ -114,7 +115,7 @@ func TestLoadConfigFromEnvironment(T *testing.T) {
 		require.NoError(t, os.WriteFile(configFilepath, cfgBytes, 0o0644))
 
 		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
-		t.Setenv(envvars.MetaDebugEnvVarKey, "false")
+		t.Setenv(envvars.MetaDebugEnvVarKey, strconv.FormatBool(false))
 
 		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
 		assert.NoError(t, err)

@@ -2,7 +2,6 @@ package slog
 
 import (
 	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -11,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 
 	"go.opentelemetry.io/otel/trace"
-	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func init() {
@@ -25,7 +23,7 @@ type slogLogger struct {
 }
 
 // NewSlogLogger builds a new slogLogger.
-func NewSlogLogger(lvl logging.Level, outputFilepath string) logging.Logger {
+func NewSlogLogger(lvl logging.Level) logging.Logger {
 	var level slog.Leveler
 	switch lvl {
 	case logging.DebugLevel:
@@ -39,43 +37,12 @@ func NewSlogLogger(lvl logging.Level, outputFilepath string) logging.Logger {
 	}
 
 	handlerOptions := &slog.HandlerOptions{
-		// there's no way to skip frames here, so we'll just disable it for now
 		AddSource: lvl == logging.DebugLevel,
 		Level:     level,
-		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
-			switch a.Key {
-			case slog.LevelKey:
-				return slog.Any("severity", a.Value)
-			default:
-				return a
-			}
-		},
-	}
-
-	writers := []io.Writer{os.Stdout}
-	if outputFilepath != "" {
-		// we have to create the file ahead of time with these permissions, or else lumberjack will foolishly assume 600 is fine (it isn't)
-		//nolint:gosec // it needs to be 0o0644
-		f, err := os.OpenFile(outputFilepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o0644)
-		if err == nil {
-			if err = f.Close(); err == nil {
-				writers = append(writers, &lumberjack.Logger{
-					Filename:   outputFilepath,
-					MaxSize:    500, // megabytes
-					MaxBackups: 3,
-					MaxAge:     3, // days
-					Compress:   true,
-				})
-			} else {
-				slog.Error("closing log output file", slog.Any("error", err))
-			}
-		} else {
-			slog.Error("opening log output file", slog.Any("error", err))
-		}
 	}
 
 	return &slogLogger{
-		logger: slog.New(slog.NewJSONHandler(io.MultiWriter(writers...), handlerOptions)),
+		logger: slog.New(slog.NewJSONHandler(os.Stdout, handlerOptions)),
 	}
 }
 
