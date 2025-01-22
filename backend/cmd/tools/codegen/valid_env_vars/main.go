@@ -25,7 +25,7 @@ func main() {
 	outputLines := []string{}
 	structs := parseGoFiles(dir)
 	structsToEvaluate := []string{
-		"config.APIServiceConnection",
+		"config.APIServiceConfig",
 	}
 
 	for _, structName := range structsToEvaluate {
