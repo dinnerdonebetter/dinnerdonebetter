@@ -58,3 +58,13 @@ resource "google_sql_database" "api_database" {
   name     = local.database_name
   instance = google_sql_database_instance.dev.name
 }
+
+resource "cloudflare_record" "api_media" {
+  zone_id = var.CLOUDFLARE_ZONE_ID
+  name    = "db"
+  content = google_sql_database_instance.dev.public_ip_address
+  type    = "A"
+  proxied = true
+  ttl     = 1
+  comment = "Managed by Terraform"
+}
