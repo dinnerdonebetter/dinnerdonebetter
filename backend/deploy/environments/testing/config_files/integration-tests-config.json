@@ -97,9 +97,6 @@
 		"provider": "chi"
 	},
 	"server": {
-		"autocert": {
-			"addresses": null
-		},
 		"startupDeadline": 60000000000,
 		"httpPort": 8000,
 		"debug": false

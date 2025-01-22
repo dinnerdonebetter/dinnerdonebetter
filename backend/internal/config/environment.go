@@ -7,6 +7,8 @@ import (
 	"os"
 	"path"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -22,6 +24,7 @@ type EnvironmentConfigSet struct {
 	MealPlanTaskCreatorConfigPath            string
 	SearchDataIndexSchedulerConfigPath       string
 	AsyncMessageHandlerConfigPath            string
+	AdminWebappConfigPath                    string
 }
 
 func stringOrDefault(s, defaultStr string) string {
@@ -62,6 +65,7 @@ const (
 	mptcConfigObservabilityServiceName  = "meal_plan_task_creator"
 	sdisConfigObservabilityServiceName  = "search_data_index_scheduler"
 	amhConfigObservabilityServiceName   = "async_message_handler"
+	awaConfigObservabilityServiceName   = "admin_webapp"
 )
 
 func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) error {
@@ -151,6 +155,26 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	amhConfig.Observability.Metrics.ServiceName = amhConfigObservabilityServiceName
 	amhConfig.Observability.Logging.ServiceName = amhConfigObservabilityServiceName
 
+	awaConfig := &AdminWebappConfig{
+		// No equivalent for the following configs, I'll just have to rely on env vars to set them for now:
+		//	- Cookies
+		//	- APIServiceConnection
+		//	- APIClientCache
+		Cookies: cookies.Config{
+			CookieName:            " ",
+			Base64EncodedHashKey:  " ",
+			Base64EncodedBlockKey: " ",
+		},
+		Encoding:      s.RootConfig.Encoding,
+		Observability: s.RootConfig.Observability,
+		Meta:          s.RootConfig.Meta,
+		Routing:       s.RootConfig.Routing,
+		HTTPServer:    s.RootConfig.HTTPServer,
+	}
+	awaConfig.Observability.Tracing.ServiceName = awaConfigObservabilityServiceName
+	awaConfig.Observability.Metrics.ServiceName = awaConfigObservabilityServiceName
+	awaConfig.Observability.Logging.ServiceName = awaConfigObservabilityServiceName
+
 	if validate {
 		allConfigs := []validation.ValidatableWithContext{
 			s.RootConfig,
@@ -161,6 +185,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 			mptcConfig,
 			sdisConfig,
 			amhConfig,
+			awaConfig,
 		}
 		for i, cfg := range allConfigs {
 			if err := cfg.ValidateWithContext(context.Background()); err != nil {
@@ -182,6 +207,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		path.Join(outputDir, stringOrDefault(s.MealPlanTaskCreatorConfigPath, "job_meal_plan_task_creator_config.json")):                        renderJSON(mptcConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.SearchDataIndexSchedulerConfigPath, "job_search_data_index_scheduler_config.json")):              renderJSON(sdisConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.AsyncMessageHandlerConfigPath, "async_message_handler_config.json")):                             renderJSON(amhConfig, pretty),
+		path.Join(outputDir, stringOrDefault(s.AdminWebappConfigPath, "admin_webapp_config.json")):                                              renderJSON(awaConfig, pretty),
 	}
 
 	for p, b := range pathToConfigMap {

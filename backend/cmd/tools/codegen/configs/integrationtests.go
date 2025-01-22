@@ -65,7 +65,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 		Encoding: encoding.Config{
 			ContentType: contentTypeJSON,
 		},
-		Server: http.Config{
+		HTTPServer: http.Config{
 			Debug:           false,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,

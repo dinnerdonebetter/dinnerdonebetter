@@ -11,12 +11,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/business/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags/config"
-	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
@@ -48,30 +48,26 @@ import (
 
 // Build builds a server.
 func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, error) {
-	httpConfig := cfg.Server
+	httpConfig := cfg.HTTPServer
 	observabilityConfig := &cfg.Observability
 	loggingcfgConfig := &observabilityConfig.Logging
 	logger, err := loggingcfg.ProvideLogger(ctx, loggingcfgConfig)
 	if err != nil {
 		return nil, err
 	}
+	routingcfgConfig := cfg.Routing
 	tracingcfgConfig := &observabilityConfig.Tracing
 	tracerProvider, err := tracingcfg.ProvideTracerProvider(ctx, tracingcfgConfig, logger)
 	if err != nil {
 		return nil, err
 	}
-	databasecfgConfig := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
-	if err != nil {
-		return nil, err
-	}
-	routingcfgConfig := &cfg.Routing
 	metricscfgConfig := &observabilityConfig.Metrics
 	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
 	if err != nil {
 		return nil, err
 	}
-	router, err := routingcfg.ProvideRouter(routingcfgConfig, logger, tracerProvider, provider)
+	databasecfgConfig := &cfg.Database
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +94,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	routeParamManager, err := routingcfg.ProvideRouteParamManager(routingcfgConfig, logger, tracerProvider, provider)
+	config2 := &cfg.Routing
+	routeParamManager, err := routingcfg.ProvideRouteParamManager(config2)
 	if err != nil {
 		return nil, err
 	}
@@ -107,30 +104,30 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
+	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
+	generator := random.NewGenerator(logger, tracerProvider)
+	householdDataService, err := households.ProvideService(logger, householdDataManager, householdUserMembershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
 	userDataManager := database.ProvideUserDataManager(dataManager)
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
-	generator := random.NewGenerator(logger, tracerProvider)
+	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
 	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
 	userDataService, err := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdInvitationDataManager, householdUserMembershipDataManager, authenticator, serverEncoderDecoder, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, featureFlagManager, eventReporter, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
-	householdDataService, err := households.ProvideService(logger, householdDataManager, householdUserMembershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
+	adminUserDataManager := database.ProvideAdminUserDataManager(dataManager)
+	adminDataService, err := admin.ProvideService(logger, adminUserDataManager, serverEncoderDecoder, tracerProvider, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
 	webhookDataManager := database.ProvideWebhookDataManager(dataManager)
 	webhookDataService, err := webhooks.ProvideWebhooksService(logger, webhookDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	adminUserDataManager := database.ProvideAdminUserDataManager(dataManager)
-	adminDataService, err := admin.ProvideService(logger, adminUserDataManager, serverEncoderDecoder, tracerProvider, queuesConfig, publisherProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -150,13 +147,19 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
+	userNotificationDataManager := database.ProvideUserNotificationDataManager(dataManager)
+	userNotificationDataService, err := usernotifications.ProvideService(logger, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, userNotificationDataManager, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
 	workerService, err := workers.ProvideService(logger, dataManager, serverEncoderDecoder, publisherProvider, tracerProvider, recipeAnalyzer, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	userNotificationDataManager := database.ProvideUserNotificationDataManager(dataManager)
-	userNotificationDataService, err := usernotifications.ProvideService(logger, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, userNotificationDataManager, queuesConfig)
+	validenumerationsConfig := &servicesConfig.ValidEnumerations
+	validEnumerationDataManager := database.ProvideValidEnumerationDataManager(dataManager)
+	validEnumerationDataService, err := validenumerations.ProvideService(validenumerationsConfig, logger, validEnumerationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -168,12 +171,6 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	dataprivacyConfig := &servicesConfig.DataPrivacy
 	dataPrivacyDataManager := database.ProvideDataPrivacyDataManager(dataManager)
 	dataPrivacyService, err := dataprivacy.ProvideService(ctx, logger, dataprivacyConfig, dataPrivacyDataManager, serverEncoderDecoder, publisherProvider, tracerProvider, routeParamManager, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	validenumerationsConfig := &servicesConfig.ValidEnumerations
-	validEnumerationDataManager := database.ProvideValidEnumerationDataManager(dataManager)
-	validEnumerationDataService, err := validenumerations.ProvideService(validenumerationsConfig, logger, validEnumerationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -191,7 +188,11 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, router, tracerProvider, authDataService, userDataService, householdDataService, householdInvitationDataService, webhookDataService, adminDataService, serviceSettingDataService, serviceSettingConfigurationDataService, oAuth2ClientDataService, workerService, userNotificationDataService, auditLogEntryDataService, dataPrivacyService, validEnumerationDataService, recipeManagementDataService, mealPlanningDataService, provider)
+	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, dataManager, authDataService, householdDataService, householdInvitationDataService, userDataService, adminDataService, webhookDataService, serviceSettingDataService, serviceSettingConfigurationDataService, oAuth2ClientDataService, userNotificationDataService, workerService, validEnumerationDataService, auditLogEntryDataService, dataPrivacyService, recipeManagementDataService, mealPlanningDataService)
+	if err != nil {
+		return nil, err
+	}
+	server, err := http.ProvideHTTPServer(httpConfig, logger, router, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

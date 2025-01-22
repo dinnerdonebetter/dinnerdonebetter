@@ -22,6 +22,7 @@ require (
 	github.com/ccoveille/go-safecast v1.3.0
 	github.com/codemodus/kace v0.5.1
 	github.com/cristalhq/builq v0.15.0
+	github.com/donseba/go-htmx v1.12.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/elastic/go-elasticsearch/v8 v8.16.0
 	github.com/fatih/structtag v1.2.0

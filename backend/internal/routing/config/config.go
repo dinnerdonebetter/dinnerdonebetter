@@ -45,8 +45,18 @@ func ProvideRouter(cfg *Config, logger logging.Logger, tracerProvider tracing.Tr
 	}
 }
 
+// ProvideRouter provides a Router from a routing config.
+func (cfg *Config) ProvideRouter(logger logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider) (routing.Router, error) {
+	switch cfg.Provider {
+	case ProviderChi:
+		return chi.NewRouter(logger, tracerProvider, metricProvider, cfg.ChiConfig), nil
+	default:
+		return nil, fmt.Errorf("unknown provider: %s", cfg.Provider)
+	}
+}
+
 // ProvideRouteParamManager provides a RouteParamManager from a routing config.
-func ProvideRouteParamManager(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider) (routing.RouteParamManager, error) {
+func ProvideRouteParamManager(cfg *Config) (routing.RouteParamManager, error) {
 	switch cfg.Provider {
 	case ProviderChi:
 		return chi.NewRouteParamManager(), nil

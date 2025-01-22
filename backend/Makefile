@@ -1,31 +1,34 @@
-PWD                    := $(shell pwd)
-MYSELF                 := $(shell id -u)
-MY_GROUP               := $(shell id -g)
-GOPATH                 := $(GOPATH)
+# ENVIRONMENT
+PWD      := $(shell pwd)
+MYSELF   := $(shell id -u)
+MY_GROUP := $(shell id -g)
+
+# PATHS
+THIS                   := github.com/dinnerdonebetter/backend
 ARTIFACTS_DIR          := artifacts
 COVERAGE_OUT           := $(ARTIFACTS_DIR)/coverage.out
-GO_FORMAT              := gofmt -s -w
-GO_TEST                := CGO_ENABLED=1 go test -shuffle=on -race -vet=all
-THIS                   := github.com/dinnerdonebetter/backend
-TOTAL_PACKAGE_LIST     := `go list $(THIS)/...`
-TESTABLE_PACKAGE_LIST  := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)'`
 ENVIRONMENTS_DIR       := deploy/environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-WIRE_TARGETS           := internal/build/api
-CONTAINER_RUNNER       := docker
+WIRE_TARGETS           := internal/build/api internal/build/admin_webapp
+
+# COMPUTED
+TOTAL_PACKAGE_LIST    := `go list $(THIS)/...`
+TESTABLE_PACKAGE_LIST := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)'`
+
+# CONTAINER VERSIONS
+CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
 LINTER_IMAGE           := golangci/golangci-lint:v1.61.0
-LINTER                 := $(CONTAINER_RUNNER) run --rm \
-							--volume $(PWD):$(PWD) \
-							--workdir=$(PWD) \
-							$(LINTER_IMAGE) golangci-lint
-CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
-SQL_GENERATOR          := $(CONTAINER_RUNNER) run --rm \
-							--volume $(PWD):/src \
-							--workdir /src \
-							--user $(MYSELF):$(MY_GROUP) \
-							$(SQL_GENERATOR_IMAGE)
+
+# COMMANDS
+GO_FORMAT             := gofmt -s -w
+GO_TEST               := CGO_ENABLED=1 go test -shuffle=on -race -vet=all
+CONTAINER_RUNNER      := docker
+RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD)
+RUN_CONTAINER_AS_USER := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP)
+LINTER                := $(RUN_CONTAINER) $(LINTER_IMAGE) golangci-lint
+SQL_GENERATOR         := $(RUN_CONTAINER_AS_USER) $(SQL_GENERATOR_IMAGE)
 
 ## non-PHONY folders/files
 
@@ -147,7 +150,7 @@ pre_lint:
 .PHONY: lint_containers
 lint_containers:
 	@$(CONTAINER_RUNNER) pull --quiet $(CONTAINER_LINTER_IMAGE)
-	$(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy containers.rego `find . -type f -name "*.Dockerfile"`
+	$(RUN_CONTAINER_AS_USER) $(CONTAINER_LINTER_IMAGE) test --policy containers.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:
@@ -208,7 +211,7 @@ codegen-go:
 codegen: codegen-ts codegen-go
 
 .PHONY: querier
-querier: queries queries_lint  # TODO: Why is this target broken?
+querier: queries queries_lint
 	rm --recursive --force internal/database/postgres/generated/*.go
 	$(SQL_GENERATOR) generate --no-remote
 
@@ -220,19 +223,12 @@ sqlc_struct_check:
 openapi:
 	go run $(THIS)/cmd/tools/codegen/openapi_spec
 
-.PHONY: envvars
-envvars:
+.PHONY: env_vars
+env_vars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars
 	gofmt -s -w internal/config/envvars/*.go
 
 ## Integration tests
-
-.PHONY: wipe_containers
-wipe_containers:
-	@$(CONTAINER_RUNNER) stop $(shell $(CONTAINER_RUNNER) ps -aq) && $(CONTAINER_RUNNER) rm $(shell $(CONTAINER_RUNNER) ps -aq)
-
-.PHONY: container_wipe
-container_wipe: wipe_containers
 
 .PHONY: integration-tests
 integration-tests: integration_tests
@@ -259,7 +255,7 @@ integration_tests_postgres:
 ## Running
 
 .PHONY: dev
-dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
+dev: $(ARTIFACTS_DIR)
 	$(CONTAINER_RUNNER) compose \
 	--file $(ENVIRONMENTS_DIR)/localdev/docker-compose.yaml build
 	$(CONTAINER_RUNNER) compose \
@@ -280,7 +276,7 @@ dev: $(ARTIFACTS_DIR) # TODO: this doesn't work
 
 .PHONY: run_admin_app
 run_admin_app: ensure_air_installed
-	(cd cmd/services/admin_webapp && air -c .air.toml)
+	(cd cmd/services/admin_webapp && CONFIGURATION_FILEPATH="../../../$(ENVIRONMENTS_DIR)/localdev/config_files/admin_webapp_config.json" air -c .air.toml)
 
 ## misc
 
@@ -293,17 +289,13 @@ tree:
 line_count: ensure_scc_installed
 	@scc --include-ext go --exclude-dir vendor
 
-## maintenance
+# OPERATIONS
 
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
 .PHONY: proxy_dev_db
 proxy_dev_db:
 	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
 
-#### K8S ENVIRONMENT ZONE
-
-DEV_NAMESPACE := dev
-
 .PHONY: deploy_dev
 deploy_dev:
-	skaffold run --filename=skaffold.yaml --build-concurrency 2 --profile $(DEV_NAMESPACE)
+	skaffold run --filename=skaffold.yaml --build-concurrency 2 --profile dev

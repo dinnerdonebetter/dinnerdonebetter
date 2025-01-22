@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	// ProvidersTracing is a Wire provider set that provides a tracing.TracerProvider.
-	ProvidersTracing = wire.NewSet(
+	// ProvidersTracingConfig is a Wire provider set that provides a tracing.TracerProvider.
+	ProvidersTracingConfig = wire.NewSet(
 		ProvideTracerProvider,
 	)
 )

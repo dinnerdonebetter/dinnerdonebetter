@@ -86,7 +86,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			},
 			Segment: &segment.Config{APIToken: ""},
 		},
-		Server: http.Config{
+		HTTPServer: http.Config{
 			Debug:           true,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,

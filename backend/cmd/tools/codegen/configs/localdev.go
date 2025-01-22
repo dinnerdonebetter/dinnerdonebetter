@@ -96,7 +96,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				MinimumSampleThreshold: 100,
 			},
 		},
-		Server: http.Config{
+		HTTPServer: http.Config{
 			Debug:           true,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,

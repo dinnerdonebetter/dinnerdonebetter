@@ -1,6 +1,8 @@
 package config
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/server/http"
+
 	"github.com/google/wire"
 )
 
@@ -20,8 +22,11 @@ var (
 			"Events",
 			"Queues",
 			"Search",
-			"Server",
 			"Services",
+		),
+		wire.FieldsOf(
+			new(*AdminWebappConfig),
+			"Cookies",
 		),
 		wire.FieldsOf(
 			new(*ServicesConfig),
@@ -43,5 +48,15 @@ var (
 			"MealPlanning",
 			"Recipes",
 		),
+		ProvideHTTPServerConfigFromAPIServiceConfig,
+		ProvideHTTPServerConfigFromAdminWebappConfig,
 	)
 )
+
+func ProvideHTTPServerConfigFromAPIServiceConfig(cfg *APIServiceConfig) http.Config {
+	return cfg.HTTPServer
+}
+
+func ProvideHTTPServerConfigFromAdminWebappConfig(cfg *AdminWebappConfig) http.Config {
+	return cfg.HTTPServer
+}

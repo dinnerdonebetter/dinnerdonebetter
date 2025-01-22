@@ -8,12 +8,12 @@ import (
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	graphing "github.com/dinnerdonebetter/backend/internal/business/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
-	graphing "github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
@@ -21,7 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/random"
-	"github.com/dinnerdonebetter/backend/internal/routing/config"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	adminservice "github.com/dinnerdonebetter/backend/internal/services/core/admin"
 	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/core/auditlogentries"
@@ -51,16 +51,15 @@ func Build(
 ) (http.Server, error) {
 	wire.Build(
 		authentication.AuthProviders,
-		config.ServiceConfigProviders,
+		ConfigProviders,
 		database.DBProviders,
 		encoding.EncDecProviders,
 		msgconfig.MessageQueueProviders,
-		http.ProvidersHTTP,
 		images.ProvidersImages,
 		random.ProvidersRandom,
 		featureflagscfg.ProvidersFeatureFlags,
 		tracing.ProvidersTracing,
-		tracingcfg.ProvidersTracing,
+		tracingcfg.ProvidersTracingConfig,
 		observability.ProvidersObservability,
 		postgres.ProvidersPostgres,
 		loggingcfg.ProvidersLogConfig,
@@ -82,8 +81,10 @@ func Build(
 		auditlogentriesservice.Providers,
 		dataprivacyservice.Providers,
 		metricscfg.ProvidersMetrics,
-		routingcfg.RoutingConfigProviders,
 		mealplanningservice.Providers,
+		http.ProvidersHTTP,
+		routingcfg.RoutingConfigProviders,
+		ProvideAPIRouter,
 	)
 
 	return nil, nil

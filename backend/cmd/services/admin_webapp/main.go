@@ -2,82 +2,62 @@ package main
 
 import (
 	"context"
-	"encoding/base64"
 	"log"
 	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/routing/chi"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
+	"github.com/dinnerdonebetter/backend/internal/config"
+)
+
+type (
+	contextKey string
 )
 
 const (
-	serverName = "admin-frontend-server"
+	serverName = "admin-frontend-Server"
+	cookieName = "dinner-done-better-admin-webapp"
 
-	tempCookieSecret1 = "OPAu6PFzAAvztqkBiDgF_Qw9RUP2Lnng9aADq0EQeUk"
-	tempCookieSecret2 = "5KRnutGaUGste3esRtl970KaFmR18EiUnhaeQ-6mYR4"
+	apiClientContextKey contextKey = "api_client"
 )
-
-func mustBase64Decode(s string) []byte {
-	val, err := base64.RawURLEncoding.DecodeString(s)
-	if err != nil {
-		panic(err)
-	}
-
-	return val
-}
 
 func main() {
 	ctx := context.Background()
 
-	logger, err := loggingcfg.ProvideLogger(ctx, &loggingcfg.Config{
-		Provider: loggingcfg.ProviderSlog,
-		Level:    logging.InfoLevel,
-	})
+	cfg, err := config.LoadConfigFromEnvironment[config.AdminWebappConfig]()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	tracerProvider := tracing.NewNoopTracerProvider()
-	metricProvider := metrics.NewNoopMetricsProvider()
-
-	router, err := routingcfg.ProvideRouter(&routingcfg.Config{
-		Provider: routingcfg.ProviderChi,
-		ChiConfig: &chi.Config{
-			ServiceName:            serverName,
-			ValidDomains:           nil,
-			EnableCORSForLocalhost: false,
-			SilenceRouteLogging:    false,
-		},
-	}, logger, tracerProvider, metricProvider)
+	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	cfg := &config{
+	router, err := cfg.Routing.ProvideRouter(logger, tracerProvider, metricsProvider)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	webappCfg := &adminWebappCfg{
 		APIServerURL:           "https://api.dinnerdonebetter.dev",
-		OAuth2APIClientID:      "",
-		OAuth2APIClientSecret:  "",
+		OAuth2APIClientID:      "9819637062b9bbd3c1997cd3b6a264d4",
+		OAuth2APIClientSecret:  "0299fececf3f0be3af94adc9a98b2b0b",
 		APIClientCacheCapacity: 64,
 		APIClientCacheTTL:      12 * time.Hour,
 		Cookies: cookies.Config{
-			Base64EncodedHashKey:  tempCookieSecret1,
-			Base64EncodedBlockKey: tempCookieSecret2,
+			Base64EncodedHashKey:  "OPAu6PFzAAvztqkBiDgF_Qw9RUP2Lnng9aADq0EQeUk",
+			Base64EncodedBlockKey: "5KRnutGaUGste3esRtl970KaFmR18EiUnhaeQ-6mYR4",
 		},
 	}
 
-	x, err := newServer(cfg, logger, tracerProvider)
+	x, err := NewServer(webappCfg, logger, tracerProvider)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err = setupRoutes(logger, tracerProvider, router, x); err != nil {
+	if err = x.setupRoutes(router); err != nil {
 		log.Fatal(err)
 	}
 

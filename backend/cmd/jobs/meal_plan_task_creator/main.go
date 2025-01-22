@@ -7,9 +7,9 @@ import (
 	"log/slog"
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/business/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"

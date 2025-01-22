@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/business/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"

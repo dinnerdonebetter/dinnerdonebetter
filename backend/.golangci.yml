@@ -394,7 +394,7 @@ issues:
       linters:
         - forcetypeassert
 
-    - path: internal/features/grocerylistpreparation/mocks.go
+    - path: internal/business/grocerylistpreparation/mocks.go
       linters:
         - forcetypeassert
 

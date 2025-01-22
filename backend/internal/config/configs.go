@@ -9,8 +9,10 @@ import (
 	"log/slog"
 	"os"
 	"runtime/debug"
+	"time"
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -55,27 +57,29 @@ type (
 			MealPlanGroceryListInitializerConfig |
 			MealPlanTaskCreatorConfig |
 			SearchDataIndexSchedulerConfig |
-			AsyncMessageHandlerConfig
+			AsyncMessageHandlerConfig |
+			AdminWebappConfig
 	}
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
 		_ struct{} `json:"-"`
 
-		Queues           msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
-		Email            emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
-		Analytics        analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Search           textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
-		FeatureFlags     featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
-		Encoding         encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
-		Events           msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Observability    observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Meta             MetaSettings           `envPrefix:"META_"          json:"meta"`
-		Routing          routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
-		Server           http.Config            `envPrefix:"SERVER_"        json:"server"`
-		Database         databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
-		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
-		validateServices bool                   `json:"-"`
+		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
+		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
+		Search        textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
+		FeatureFlags  featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
+		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Meta          MetaSettings           `envPrefix:"META_"          json:"meta"`
+		Routing       routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
+		HTTPServer    http.Config            `envPrefix:"SERVER_"        json:"server"`
+		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Services      ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
+
+		validateServices bool
 	}
 
 	// DBCleanerConfig configures an instance of the database cleaner job.
@@ -146,6 +150,30 @@ type (
 		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
+
+	APIServiceOAuth2ConnectionConfig struct {
+		APIServerURL          string `env:"API_SERVER_URL"           json:"apiServerURL"`
+		OAuth2APIClientID     string `env:"OAUTH2_API_CLIENT_ID"     json:"oauth2APIClientID"`
+		OAuth2APIClientSecret string `env:"OAUTH2_API_CLIENT_SECRET" json:"oauth2APIClientSecret"`
+	}
+
+	NamedCacheConfig struct {
+		CacheCapacity uint64        `env:"CACHE_CAPACITY" json:"cacheCapacity"`
+		CacheTTL      time.Duration `env:"CACHE_TTL"      json:"cacheTTL"`
+	}
+
+	// AdminWebappConfig configures an instance of the service. It is composed of all the other setting structs.
+	AdminWebappConfig struct {
+		_                    struct{}                         `json:"-"`
+		Cookies              cookies.Config                   `env:"init"                    envPrefix:"COOKIES_"    json:"cookies"`
+		APIServiceConnection APIServiceOAuth2ConnectionConfig `envPrefix:"API_SERVICE_"      json:"apiServiceConfig"`
+		Routing              routingcfg.Config                `envPrefix:"ROUTING_"          json:"routing"`
+		Encoding             encoding.Config                  `envPrefix:"ENCODING_"         json:"encoding"`
+		Observability        observability.Config             `envPrefix:"OBSERVABILITY_"    json:"observability"`
+		Meta                 MetaSettings                     `envPrefix:"META_"             json:"meta"`
+		HTTPServer           http.Config                      `envPrefix:"SERVER_"           json:"server"`
+		APIClientCache       NamedCacheConfig                 `envPrefix:"API_CLIENT_CACHE_" json:"apiClientCache"`
+	}
 )
 
 // EncodeToFile renders your config to a file given your favorite encoder.
@@ -188,11 +216,15 @@ func (cfg *APIServiceConfig) ValidateWithContext(ctx context.Context) error {
 		"Analytics":     cfg.Analytics.ValidateWithContext,
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Database":      cfg.Database.ValidateWithContext,
-		"Server":        cfg.Server.ValidateWithContext,
+		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
 		"Email":         cfg.Email.ValidateWithContext,
 		"FeatureFlags":  cfg.FeatureFlags.ValidateWithContext,
 		"Search":        cfg.Search.ValidateWithContext,
 		// no "Events" here, that's a collection of publisher/subscriber configs that can each optionally be setup
+	}
+
+	if cfg.validateServices {
+		validators["Services"] = cfg.Services.ValidateWithContext
 	}
 
 	for name, validator := range validators {
@@ -201,14 +233,10 @@ func (cfg *APIServiceConfig) ValidateWithContext(ctx context.Context) error {
 		}
 	}
 
-	if cfg.validateServices {
-		if err := cfg.Services.ValidateWithContext(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating Services config: %w", err), result)
-		}
-	}
-
 	return result.ErrorOrNil()
 }
+
+var _ validation.ValidatableWithContext = (*DBCleanerConfig)(nil)
 
 // ValidateWithContext validates a DBCleanerConfig struct.
 func (cfg *DBCleanerConfig) ValidateWithContext(ctx context.Context) error {
@@ -227,6 +255,8 @@ func (cfg *DBCleanerConfig) ValidateWithContext(ctx context.Context) error {
 
 	return result.ErrorOrNil()
 }
+
+var _ validation.ValidatableWithContext = (*EmailProberConfig)(nil)
 
 // ValidateWithContext validates a EmailProberConfig struct.
 func (cfg *EmailProberConfig) ValidateWithContext(ctx context.Context) error {
@@ -247,6 +277,8 @@ func (cfg *EmailProberConfig) ValidateWithContext(ctx context.Context) error {
 	return result.ErrorOrNil()
 }
 
+var _ validation.ValidatableWithContext = (*MealPlanFinalizerConfig)(nil)
+
 // ValidateWithContext validates a MealPlanFinalizerConfig struct.
 func (cfg *MealPlanFinalizerConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
@@ -265,6 +297,8 @@ func (cfg *MealPlanFinalizerConfig) ValidateWithContext(ctx context.Context) err
 
 	return result.ErrorOrNil()
 }
+
+var _ validation.ValidatableWithContext = (*MealPlanGroceryListInitializerConfig)(nil)
 
 // ValidateWithContext validates a MealPlanGroceryListInitializerConfig struct.
 func (cfg *MealPlanGroceryListInitializerConfig) ValidateWithContext(ctx context.Context) error {
@@ -286,6 +320,8 @@ func (cfg *MealPlanGroceryListInitializerConfig) ValidateWithContext(ctx context
 	return result.ErrorOrNil()
 }
 
+var _ validation.ValidatableWithContext = (*MealPlanTaskCreatorConfig)(nil)
+
 // ValidateWithContext validates a MealPlanTaskCreatorConfig struct.
 func (cfg *MealPlanTaskCreatorConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
@@ -306,6 +342,8 @@ func (cfg *MealPlanTaskCreatorConfig) ValidateWithContext(ctx context.Context) e
 	return result.ErrorOrNil()
 }
 
+var _ validation.ValidatableWithContext = (*SearchDataIndexSchedulerConfig)(nil)
+
 // ValidateWithContext validates a SearchDataIndexSchedulerConfig struct.
 func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
@@ -325,6 +363,8 @@ func (cfg *SearchDataIndexSchedulerConfig) ValidateWithContext(ctx context.Conte
 	return result.ErrorOrNil()
 }
 
+var _ validation.ValidatableWithContext = (*AsyncMessageHandlerConfig)(nil)
+
 // ValidateWithContext validates a AsyncMessageHandlerConfig struct.
 func (cfg *AsyncMessageHandlerConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
@@ -337,6 +377,30 @@ func (cfg *AsyncMessageHandlerConfig) ValidateWithContext(ctx context.Context) e
 		"Email":         cfg.Email.ValidateWithContext,
 		"Search":        cfg.Search.ValidateWithContext,
 		"Storage":       cfg.Storage.ValidateWithContext,
+	}
+
+	for name, validator := range validators {
+		if err := validator(ctx); err != nil {
+			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
+		}
+	}
+
+	return result.ErrorOrNil()
+}
+
+var _ validation.ValidatableWithContext = (*AdminWebappConfig)(nil)
+
+// ValidateWithContext validates a AdminWebappConfig struct.
+func (cfg *AdminWebappConfig) ValidateWithContext(ctx context.Context) error {
+	result := &multierror.Error{}
+
+	validators := map[string]func(context.Context) error{
+		"Cookies":       cfg.Cookies.ValidateWithContext,
+		"Encoding":      cfg.Encoding.ValidateWithContext,
+		"Observability": cfg.Observability.ValidateWithContext,
+		"Meta":          cfg.Meta.ValidateWithContext,
+		"Routing":       cfg.Routing.ValidateWithContext,
+		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
 	}
 
 	for name, validator := range validators {
@@ -370,26 +434,6 @@ func LoadConfigFromEnvironment[T configurations]() (*T, error) {
 	}
 
 	if err = ApplyEnvironmentVariables(cfg); err != nil {
-		return nil, fmt.Errorf("applying environment variables: %w", err)
-	}
-
-	return cfg, nil
-}
-
-func FetchForApplication[T configurations]() (*T, error) {
-	var cfg *T
-
-	if configFilepath := os.Getenv(ConfigurationFilePathEnvVarKey); configFilepath != "" {
-		var err error
-		cfg, err = LoadConfigFromEnvironment[T]()
-		if err != nil {
-			return nil, fmt.Errorf("loading config from environment variable: %w", err)
-		}
-	} else {
-		return nil, errors.New("not running in the cloud, and no config filepath provided")
-	}
-
-	if err := ApplyEnvironmentVariables(cfg); err != nil {
 		return nil, fmt.Errorf("applying environment variables: %w", err)
 	}
 

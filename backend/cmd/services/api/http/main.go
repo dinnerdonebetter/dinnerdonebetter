@@ -40,7 +40,7 @@ func main() {
 	}
 
 	// only allow initialization to take so long.
-	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.Server.StartupDeadline)
+	buildCtx, cancel := context.WithTimeout(rootCtx, cfg.HTTPServer.StartupDeadline)
 
 	logger, err := cfg.Observability.Logging.ProvideLogger(rootCtx)
 	if err != nil {

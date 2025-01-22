@@ -9,20 +9,17 @@ import (
 	"os"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/panicking"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/net/http2"
 )
 
 const (
-	serverNamespace = "dinner_done_better_service"
+	serverNamespace = "dinner_done_better_api"
 	loggerName      = "api_server"
 )
 
@@ -35,92 +32,33 @@ type (
 
 	// server is our API http server.
 	server struct {
-		authService                         types.AuthDataService
-		householdsService                   types.HouseholdDataService
-		householdInvitationsService         types.HouseholdInvitationDataService
-		usersService                        types.UserDataService
-		adminService                        types.AdminDataService
-		webhooksService                     types.WebhookDataService
-		serviceSettingsService              types.ServiceSettingDataService
-		serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService
-		oauth2ClientsService                types.OAuth2ClientDataService
-		userNotificationsService            types.UserNotificationDataService
-		workerService                       types.WorkerService
-		validEnumerationsService            types.ValidEnumerationDataService
-		auditLogEntriesService              types.AuditLogEntryDataService
-		dataPrivacyService                  types.DataPrivacyService
-		recipeManagementService             types.RecipeManagementDataService
-		mealPlanningService                 types.MealPlanningDataService
-		logger                              logging.Logger
-		router                              routing.Router
-		tracer                              tracing.Tracer
-		panicker                            panicking.Panicker
-		httpServer                          *http.Server
-		dataManager                         database.DataManager
-		tracerProvider                      tracing.TracerProvider
-		config                              Config
+		logger         logging.Logger
+		router         routing.Router
+		panicker       panicking.Panicker
+		httpServer     *http.Server
+		tracerProvider tracing.TracerProvider
+		config         Config
 	}
 )
 
 // ProvideHTTPServer builds a new server instance.
 func ProvideHTTPServer(
-	ctx context.Context,
 	serverSettings Config,
-	dataManager database.DataManager,
 	logger logging.Logger,
 	router routing.Router,
 	tracerProvider tracing.TracerProvider,
-	authService types.AuthDataService,
-	usersService types.UserDataService,
-	householdsService types.HouseholdDataService,
-	householdInvitationsService types.HouseholdInvitationDataService,
-	webhooksService types.WebhookDataService,
-	adminService types.AdminDataService,
-	serviceSettingDataService types.ServiceSettingDataService,
-	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
-	oauth2ClientDataService types.OAuth2ClientDataService,
-	workerService types.WorkerService,
-	userNotificationsService types.UserNotificationDataService,
-	auditLogService types.AuditLogEntryDataService,
-	dataPrivacyService types.DataPrivacyService,
-	validEnumerationsService types.ValidEnumerationDataService,
-	recipeManagementService types.RecipeManagementDataService,
-	mealPlanningService types.MealPlanningDataService,
-	_ metrics.Provider, // TODO: instrument later for something
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,
 
 		// infra things,
-		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(loggerName)),
+		router:         router,
 		logger:         logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:       panicking.NewProductionPanicker(),
 		httpServer:     provideStdLibHTTPServer(serverSettings.HTTPPort),
-		dataManager:    dataManager,
 		tracerProvider: tracerProvider,
-
-		// core services
-		adminService:                        adminService,
-		auditLogEntriesService:              auditLogService,
-		authService:                         authService,
-		householdsService:                   householdsService,
-		householdInvitationsService:         householdInvitationsService,
-		serviceSettingsService:              serviceSettingDataService,
-		serviceSettingConfigurationsService: serviceSettingConfigurationsService,
-		usersService:                        usersService,
-		userNotificationsService:            userNotificationsService,
-		oauth2ClientsService:                oauth2ClientDataService,
-		webhooksService:                     webhooksService,
-		workerService:                       workerService,
-		dataPrivacyService:                  dataPrivacyService,
-
-		// data services
-		mealPlanningService:      mealPlanningService,
-		validEnumerationsService: validEnumerationsService,
-		recipeManagementService:  recipeManagementService,
 	}
 
-	srv.setupRouter(ctx, router)
 	logger.Debug("HTTP server successfully constructed")
 
 	return srv, nil
@@ -133,8 +71,6 @@ func (s *server) Router() routing.Router {
 
 // Shutdown shuts down the server.
 func (s *server) Shutdown(ctx context.Context) error {
-	s.dataManager.Close()
-
 	if err := s.tracerProvider.ForceFlush(ctx); err != nil {
 		s.logger.Error("flushing traces", err)
 	}
@@ -146,11 +82,7 @@ func (s *server) Shutdown(ctx context.Context) error {
 func (s *server) Serve() {
 	s.logger.Debug("setting up server")
 
-	s.httpServer.Handler = otelhttp.NewHandler(
-		s.router.Handler(),
-		serverNamespace,
-		otelhttp.WithSpanNameFormatter(tracing.FormatSpan),
-	)
+	s.httpServer.Handler = otelhttp.NewHandler(s.router.Handler(), serverNamespace, otelhttp.WithSpanNameFormatter(tracing.FormatSpan))
 
 	http2ServerConf := &http2.Server{}
 	if err := http2.ConfigureServer(s.httpServer, http2ServerConf); err != nil {

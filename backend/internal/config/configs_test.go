@@ -25,7 +25,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 		t.Parallel()
 
 		cfg := &APIServiceConfig{
-			Server: http.Config{
+			HTTPServer: http.Config{
 				HTTPPort:        1234,
 				Debug:           false,
 				StartupDeadline: time.Minute,

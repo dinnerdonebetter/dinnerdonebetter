@@ -18,8 +18,9 @@ import (
 	"github.com/jellydator/ttlcache/v3"
 )
 
-type server struct {
+type Server struct {
 	tracer         tracing.Tracer
+	tracerProvider tracing.TracerProvider
 	logger         logging.Logger
 	apiServerURL   *url.URL
 	cookieManager  cookies.Manager
@@ -29,7 +30,7 @@ type server struct {
 	oauth2APIClientSecret string
 }
 
-type config struct {
+type adminWebappCfg struct {
 	Cookies                cookies.Config `env:"init"                      envPrefix:"COOKIES_"          json:"cookies"`
 	APIServerURL           string         `env:"API_SERVER_URL"            json:"apiServerURL"`
 	OAuth2APIClientID      string         `env:"OAUTH2_API_CLIENT_ID"      json:"oauth2APIClientID"`
@@ -38,14 +39,14 @@ type config struct {
 	APIClientCacheTTL      time.Duration  `env:"API_CLIENT_CACHE_TTL"      json:"apiClientCacheTTL"`
 }
 
-func newServer(cfg *config, logger logging.Logger, tracerProvider tracing.TracerProvider) (*server, error) {
+func NewServer(cfg *adminWebappCfg, logger logging.Logger, tracerProvider tracing.TracerProvider) (*Server, error) {
 	if cfg == nil {
 		return nil, internalerrors.NilConfigError("frontend admin service")
 	}
 
 	parsedURL, err := url.Parse(cfg.APIServerURL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse api server URL: %w", err)
+		return nil, fmt.Errorf("failed to parse api Server URL: %w", err)
 	}
 
 	cookieManager, err := cookies.NewCookieManager(&cfg.Cookies, tracerProvider)
@@ -53,12 +54,13 @@ func newServer(cfg *config, logger logging.Logger, tracerProvider tracing.Tracer
 		return nil, fmt.Errorf("setting up cookie manager: %w", err)
 	}
 
-	s := &server{
-		tracer:        tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("admin_webapp")),
-		logger:        logging.EnsureLogger(logger).WithName("admin_webapp"),
-		apiServerURL:  parsedURL,
-		cookieManager: cookieManager,
-		pageBuilder:   pages.NewPageBuilder(tracerProvider, logger, parsedURL),
+	s := &Server{
+		tracerProvider: tracing.EnsureTracerProvider(tracerProvider),
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("admin_webapp")),
+		logger:         logging.EnsureLogger(logger).WithName("admin_webapp"),
+		apiServerURL:   parsedURL,
+		cookieManager:  cookieManager,
+		pageBuilder:    pages.NewPageBuilder(tracerProvider, logger, parsedURL),
 		apiClientCache: ttlcache.New[string, *apiclient.Client](
 			ttlcache.WithCapacity[string, *apiclient.Client](cfg.APIClientCacheCapacity),
 			ttlcache.WithTTL[string, *apiclient.Client](cfg.APIClientCacheTTL),
@@ -70,7 +72,7 @@ func newServer(cfg *config, logger logging.Logger, tracerProvider tracing.Tracer
 	return s, nil
 }
 
-func (s *server) authMiddleware(next http.Handler) http.Handler {
+func (s *Server) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
@@ -98,14 +100,14 @@ func (s *server) authMiddleware(next http.Handler) http.Handler {
 		logger.WithValue("user.id", usd.UserID).Info("user session retrieved from middleware")
 
 		var client *apiclient.Client
-		if cachedClientItem := apiClientCache.Get(usd.UserID); cachedClientItem == nil {
+		if cachedClientItem := s.apiClientCache.Get(usd.UserID); cachedClientItem == nil {
 			client, err = apiclient.NewClient(
-				apiServerURL,
+				s.apiServerURL,
 				tracing.NewNoopTracerProvider(),
 				apiclient.UsingOAuth2(
 					ctx,
-					oauth2ClientID,
-					oauth2ClientSecret,
+					s.oauth2APIClientID,
+					s.oauth2APIClientSecret,
 					[]string{authorization.HouseholdAdminRoleName},
 					usd.Token,
 				),
