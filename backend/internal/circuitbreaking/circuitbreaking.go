@@ -2,7 +2,6 @@ package circuitbreaking
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -13,10 +12,6 @@ import (
 	circuit "github.com/rubyist/circuitbreaker"
 )
 
-var (
-	ErrNilConfig = errors.New("nil circuitbreaker config provided")
-)
-
 type CircuitBreaker interface {
 	Failed()
 	Succeeded()
@@ -24,23 +19,23 @@ type CircuitBreaker interface {
 	CannotProceed() bool
 }
 
-type BaseImplementation struct {
+type baseImplementation struct {
 	circuitBreaker *circuit.Breaker
 }
 
-func (b *BaseImplementation) Failed() {
+func (b *baseImplementation) Failed() {
 	b.circuitBreaker.Fail()
 }
 
-func (b *BaseImplementation) Succeeded() {
+func (b *baseImplementation) Succeeded() {
 	b.circuitBreaker.Success()
 }
 
-func (b *BaseImplementation) CanProceed() bool {
+func (b *baseImplementation) CanProceed() bool {
 	return b.circuitBreaker.Ready()
 }
 
-func (b *BaseImplementation) CannotProceed() bool {
+func (b *baseImplementation) CannotProceed() bool {
 	return !b.circuitBreaker.Ready()
 }
 
@@ -97,7 +92,7 @@ func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider 
 
 	go handleCircuitBreakerEvents(cb, logger, brokenCounter)
 
-	return &BaseImplementation{
+	return &baseImplementation{
 		circuitBreaker: cb,
 	}, nil
 }
