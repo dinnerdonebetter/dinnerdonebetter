@@ -34,13 +34,13 @@ spec:
               name: http
           livenessProbe:
             httpGet:
-              path: "/api/_meta_/live"
+              path: "/api/_ops_/live"
               port: 7000
             initialDelaySeconds: 15
             periodSeconds: 52
           readinessProbe:
             httpGet:
-              path: "/api/_meta_/ready"
+              path: "/api/_ops_/ready"
               port: 7000
             initialDelaySeconds: 15
             periodSeconds: 5

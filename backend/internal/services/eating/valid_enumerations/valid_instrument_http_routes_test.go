@@ -414,7 +414,7 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 
 		searchIndex := &mocksearch.IndexManager[types.ValidInstrumentSearchSubset]{}
 		searchIndex.On(
-			"Search",
+			"TextSearch",
 			testutils2.ContextMatcher,
 			exampleQuery,
 		).Return(validInstrumentSearchSubsets, nil)

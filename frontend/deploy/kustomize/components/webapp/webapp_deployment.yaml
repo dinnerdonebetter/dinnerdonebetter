@@ -33,13 +33,13 @@ spec:
               subPath: "config.json"
           livenessProbe:
             httpGet:
-              path: "/api/_meta_/live"
+              path: "/api/_ops_/live"
               port: 9000
             initialDelaySeconds: 15
             periodSeconds: 52
           readinessProbe:
             httpGet:
-              path: "/api/_meta_/ready"
+              path: "/api/_ops_/ready"
               port: 9000
             initialDelaySeconds: 15
             periodSeconds: 5

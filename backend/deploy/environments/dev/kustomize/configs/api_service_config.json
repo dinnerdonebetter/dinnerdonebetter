@@ -49,7 +49,11 @@
 	"featureFlags": {
 		"launchDarkly": null,
 		"posthog": null,
-		"circuitBreakingConfig": null,
+		"circuitBreakingConfig": {
+			"name": "dev_emailer",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		},
 		"provider": ""
 	},
 	"encoding": {

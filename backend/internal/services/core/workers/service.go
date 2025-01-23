@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -43,6 +44,7 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
+	metricsProvider metrics.Provider,
 	grapher recipeanalysis.RecipeAnalyzer,
 	queueConfig *msgconfig.QueuesConfig,
 ) (types.WorkerService, error) {
@@ -51,12 +53,16 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
-	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(
+	mealPlanFinalizationWorker, err := workers.ProvideMealPlanFinalizationWorker(
 		logger,
 		dataManager,
 		dataChangesPublisher,
 		tracerProvider,
+		metricsProvider,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("setting up %s meal plan finalization worker: %w", serviceName, err)
+	}
 
 	mealPlanGroceryListInitializer := workers.ProvideMealPlanGroceryListInitializer(
 		logger,

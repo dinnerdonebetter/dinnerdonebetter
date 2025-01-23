@@ -19,7 +19,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
 
 	"github.com/hashicorp/go-multierror"
-	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -37,17 +38,16 @@ func doTheThing() error {
 	}
 	cfg.Database.RunMigrations = false
 
-	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
+	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
-		return fmt.Errorf("could not create logger: %w", err)
+		return fmt.Errorf("could not establish observability pillars: %w", err)
 	}
 
-	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
+	handledRecordsCounter, err := metricsProvider.NewInt64Counter("search_data_index_scheduler.handled_records")
 	if err != nil {
-		logger.Error("initializing tracer", err)
+		return fmt.Errorf("could not create metrics counter: %w", err)
 	}
 
-	otel.SetTracerProvider(tracerProvider)
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer_cloud_function"))
 
 	ctx, span := tracer.StartSpan(ctx)
@@ -125,6 +125,7 @@ func doTheThing() error {
 		logger.WithValue("count", len(ids)).Info("publishing search index requests")
 	}
 
+	publishedIDCount := int64(0)
 	errs := &multierror.Error{}
 	for _, id := range ids {
 		indexReq := &indexing.IndexRequest{
@@ -133,8 +134,17 @@ func doTheThing() error {
 		}
 		if err = searchDataIndexPublisher.Publish(ctx, indexReq); err != nil {
 			errs = multierror.Append(errs, err)
+		} else {
+			publishedIDCount++
 		}
 	}
+
+	handledRecordsCounter.Add(ctx, publishedIDCount, metric.WithAttributes(
+		attribute.KeyValue{
+			Key:   "record.type",
+			Value: attribute.StringValue(chosenIndex),
+		},
+	))
 
 	return errs.ErrorOrNil()
 }

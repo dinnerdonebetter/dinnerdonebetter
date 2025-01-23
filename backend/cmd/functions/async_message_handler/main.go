@@ -33,7 +33,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -67,8 +66,6 @@ var (
 )
 
 func main() {
-	ctx := context.Background()
-
 	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		os.Exit(0)
@@ -80,20 +77,10 @@ func main() {
 	}
 	cfg.Database.RunMigrations = false
 
-	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
+	ctx := context.Background()
+	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
-		log.Fatalf("could not create logger: %v", err)
-	}
-
-	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
-	if err != nil {
-		logger.Error("initializing tracer", err)
-	}
-	otel.SetTracerProvider(tracerProvider)
-
-	metricsProvider, err := cfg.Observability.Metrics.ProvideMetricsProvider(ctx, logger)
-	if err != nil {
-		logger.Error("initializing metrics provider", err)
+		log.Fatalf("could not establish observability pillars: %v", err)
 	}
 
 	dataManager,

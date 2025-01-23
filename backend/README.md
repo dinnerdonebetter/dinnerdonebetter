@@ -31,12 +31,13 @@ It's a good idea to run `make quicktest lint integration_tests` before commits.
 
 ```mermaid
 flowchart LR
-    APIServer("API Server")
     PublicInternet("Public Internet")
+    APIServer("API Server")
     Sendgrid("Sendgrid")
     Segment("Segment")
     Algolia("Algolia")
-    Cron("GCP Cloud Scheduler")
+    Database("Database")
+    DataChangesQueue("Data Changes Queue")
     DataChangesWorker("Data Changes Worker")
     MealPlanFinalizerWorker("Meal Plan Finalizer")
     MealPlanGroceryListInitializerWorker("Grocery List Initializer")
@@ -51,14 +52,17 @@ flowchart LR
     Cron-->MealPlanFinalizerWorker
     DataChangesWorker-->OutboundEmailerWorker
     DataChangesWorker-->SearchDataIndexerWorker
-    MealPlanGroceryListInitializerWorker-->DataChangesWorker
-    MealPlanTaskCreatorWorker-->DataChangesWorker
-    MealPlanFinalizerWorker-->DataChangesWorker
+    MealPlanGroceryListInitializerWorker-.->DataChangesQueue
+    MealPlanTaskCreatorWorker-.->DataChangesQueue
+    MealPlanFinalizerWorker-.->DataChangesQueue
     SearchDataIndexSchedulerWorker-->SearchDataIndexerWorker
     SearchDataIndexerWorker-->Algolia
-    APIServer-->DataChangesWorker
+    DataChangesQueue-->DataChangesWorker
     DataChangesWorker-->Segment
     OutboundEmailerWorker-->Segment
     OutboundEmailerWorker-->Sendgrid
     Algolia-->APIServer
+    APIServer-->Database
+    Database-->APIServer
+    APIServer-->DataChangesQueue
 ```

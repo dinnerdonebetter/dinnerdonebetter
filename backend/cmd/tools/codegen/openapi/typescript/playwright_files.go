@@ -115,7 +115,7 @@ func (f *MockAPIFunction) Render() (string, error) {
 		  {{ range .PathParams}} {{ .Name }}: {{ .Type }};
 		{{ end }}
 
-		  constructor({{ range .PathParams}} {{ .Name }}: {{ .Type }}, {{ end }}status: number = {{ .ExpectedResponseCode }}, body{{ if not (or .Search .QueryFiltered) }}?{{ end }}: {{ .ResponseType }}{{ if or .Search .QueryFiltered }}[] = []{{ end }}) {
+		  constructor({{ range .PathParams}} {{ .Name }}: {{ .Type }}, {{ end }}status: number = {{ .ExpectedResponseCode }}, body{{ if not (or .TextSearch .QueryFiltered) }}?{{ end }}: {{ .ResponseType }}{{ if or .TextSearch .QueryFiltered }}[] = []{{ end }}) {
 		    super();
 
 		{{ range .PathParams}} this.{{ .Name }} = {{ .Name }};

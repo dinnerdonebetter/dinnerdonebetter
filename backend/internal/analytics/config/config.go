@@ -29,11 +29,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Segment              *segment.Config         `env:"init"     envPrefix:"SEGMENT_"         json:"segment"`
-		Posthog              *posthog.Config         `env:"init"     envPrefix:"POSTHOG_"         json:"posthog"`
-		Rudderstack          *rudderstack.Config     `env:"init"     envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
-		CircuitBreakerConfig *circuitbreaking.Config `env:"init"     envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
-		Provider             string                  `env:"PROVIDER" json:"provider"`
+		Segment        *segment.Config         `env:"init"     envPrefix:"SEGMENT_"         json:"segment"`
+		Posthog        *posthog.Config         `env:"init"     envPrefix:"POSTHOG_"         json:"posthog"`
+		Rudderstack    *rudderstack.Config     `env:"init"     envPrefix:"RUDDERSTACK_"     json:"rudderstack"`
+		CircuitBreaker *circuitbreaking.Config `env:"init"     envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreaker"`
+		Provider       string                  `env:"PROVIDER" json:"provider"`
 	}
 )
 
@@ -51,7 +51,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 
 // ProvideCollector provides a collector.
 func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider) (analytics.EventReporter, error) {
-	cb, err := cfg.CircuitBreakerConfig.ProvideCircuitBreaker(logger, metricsProvider)
+	cb, err := cfg.CircuitBreaker.ProvideCircuitBreaker(logger, metricsProvider)
 	if err != nil {
 		return nil, fmt.Errorf("could not create analytics circuit breaker: %w", err)
 	}

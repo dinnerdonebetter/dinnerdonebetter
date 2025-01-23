@@ -413,7 +413,7 @@ func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 
 		searchIndex := &mocksearch.IndexManager[types.ValidPreparationSearchSubset]{}
 		searchIndex.On(
-			"Search",
+			"TextSearch",
 			testutils2.ContextMatcher,
 			exampleQuery,
 		).Return(validPreparationSearchSubsets, nil)

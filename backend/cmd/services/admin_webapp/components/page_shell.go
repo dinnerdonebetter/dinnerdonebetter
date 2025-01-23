@@ -11,7 +11,11 @@ func PageShell(title string, children ...gomponents.Node) gomponents.Node {
 		Title:    title,
 		Language: "en",
 		Head: []gomponents.Node{
-			ghtml.Script(ghtml.Src("https://cdn.tailwindcss.com?plugins=typography")),
+			ghtml.Script(
+				ghtml.Src("https://unpkg.com/@tailwindcss/browser@4"),
+				ghtml.Integrity("sha384-fsXZ0Oru5QjGkveFx8DdmBAyKdwnJ7TnbRzDN5LROCKt8PAN8h7y7oqCwtk9cN68"),
+				ghtml.CrossOrigin("anonymous"),
+			),
 			ghtml.Script(
 				ghtml.Src("https://unpkg.com/htmx.org@2.0.4"),
 				ghtml.Integrity("sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"),

@@ -413,7 +413,7 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 
 		searchIndex := &mocksearch.IndexManager[types.ValidMeasurementUnitSearchSubset]{}
 		searchIndex.On(
-			"Search",
+			"TextSearch",
 			testutils2.ContextMatcher,
 			exampleQuery,
 		).Return(validMeasurementUnitSearchSubsets, nil)

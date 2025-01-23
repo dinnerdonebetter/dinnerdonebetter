@@ -420,7 +420,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 
 		searchIndex := &mocksearch.IndexManager[types.RecipeSearchSubset]{}
 		searchIndex.On(
-			"Search",
+			"TextSearch",
 			testutils2.ContextMatcher,
 			exampleQuery,
 		).Return(recipeSearchSubsets, nil)

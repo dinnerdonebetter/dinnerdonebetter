@@ -413,7 +413,7 @@ func TestValidIngredientStatesService_SearchValidIngredientStatesHandler(T *test
 
 		searchIndex := &mocksearch.IndexManager[types.ValidIngredientStateSearchSubset]{}
 		searchIndex.On(
-			"Search",
+			"TextSearch",
 			testutils2.ContextMatcher,
 			exampleQuery,
 		).Return(validIngredientStateSearchSubsets, nil)

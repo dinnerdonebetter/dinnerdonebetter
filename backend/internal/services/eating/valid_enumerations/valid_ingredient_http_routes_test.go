@@ -416,7 +416,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 
 		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
 		searchIndex.On(
-			"Search",
+			"TextSearch",
 			testutils2.ContextMatcher,
 			exampleQuery,
 		).Return(validIngredientSearchSubsets, nil)
@@ -524,7 +524,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 
 		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
 		searchIndex.On(
-			"Search",
+			"TextSearch",
 			testutils2.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ValidIngredientSearchSubset(nil), errors.New("blah"))

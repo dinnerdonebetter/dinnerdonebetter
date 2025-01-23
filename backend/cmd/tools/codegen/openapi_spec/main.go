@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	metaReadyPath   = "/_meta_/ready"
+	metaReadyPath   = "/_ops_/ready"
 	metaLivePath    = "/_meta/live"
 	jsonContentType = "application/json"
 	refKey          = "$ref"
@@ -283,10 +283,10 @@ func neutralizeConfig(cfg *config.APIServiceConfig) {
 	cfg.Services.Auth.SSO.Google.ClientSecret = "blah blah blah blah"
 	cfg.Analytics.Provider = ""
 
-	cfg.Services.Recipes.Uploads.Storage.GCPConfig = nil
+	cfg.Services.Recipes.Uploads.Storage.GCP = nil
 	cfg.Services.Recipes.Uploads.Storage.Provider = objectstorage.FilesystemProvider
 	cfg.Services.Recipes.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
-	cfg.Services.DataPrivacy.Uploads.Storage.GCPConfig = nil
+	cfg.Services.DataPrivacy.Uploads.Storage.GCP = nil
 	cfg.Services.DataPrivacy.Uploads.Storage.Provider = objectstorage.FilesystemProvider
 	cfg.Services.DataPrivacy.Uploads.Storage.FilesystemConfig = &objectstorage.FilesystemConfig{RootDirectory: "/tmp"}
 

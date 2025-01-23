@@ -413,7 +413,7 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 
 		searchIndex := &mocksearch.IndexManager[types.ValidVesselSearchSubset]{}
 		searchIndex.On(
-			"Search",
+			"TextSearch",
 			testutils2.ContextMatcher,
 			exampleQuery,
 		).Return(validVesselSearchSubsets, nil)

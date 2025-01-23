@@ -23,12 +23,12 @@ const (
 )
 
 var routeInfoMap = map[string]routeDetails{
-	"GET /_meta_/live": {
+	"GET /_ops_/live": {
 		ID:          "CheckForLiveness",
 		Description: "checks for service liveness",
 		Authless:    true,
 	},
-	"GET /_meta_/ready": {
+	"GET /_ops_/ready": {
 		ID:          "CheckForReadiness",
 		Description: "checks for service readiness",
 		Authless:    true,

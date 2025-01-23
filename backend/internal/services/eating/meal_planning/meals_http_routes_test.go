@@ -419,7 +419,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 
 		searchIndex := &mocksearch.IndexManager[types.MealSearchSubset]{}
 		searchIndex.On(
-			"Search",
+			"TextSearch",
 			testutils2.ContextMatcher,
 			exampleQuery,
 		).Return(mealSearchSubsets, nil)

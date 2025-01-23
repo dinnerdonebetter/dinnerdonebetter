@@ -12,6 +12,7 @@ import (
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/pubsub"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -45,7 +46,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 	cfg := &config.APIServiceConfig{
 		Routing: routingcfg.Config{
 			Provider: routingcfg.ProviderChi,
-			ChiConfig: &chi.Config{
+			Chi: &chi.Config{
 				ServiceName:            otelServiceName,
 				EnableCORSForLocalhost: true,
 				SilenceRouteLogging:    false,
@@ -68,9 +69,17 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 				PubSub:   pubsub.Config{ProjectID: gcpProjectID},
 			},
 		},
+		FeatureFlags: featureflagscfg.Config{
+			// we're using a noop version of this in dev right now, but it still tries to instantiate a circuit breaker.
+			CircuitBreaker: &circuitbreaking.Config{
+				Name:                   "feature_flagger",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
+		},
 		Email: emailcfg.Config{
 			Provider: emailcfg.ProviderSendgrid,
-			CircuitBreakerConfig: &circuitbreaking.Config{
+			CircuitBreaker: &circuitbreaking.Config{
 				Name:                   "dev_emailer",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -79,7 +88,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		Analytics: analyticscfg.Config{
 			Provider: analyticscfg.ProviderSegment,
-			CircuitBreakerConfig: &circuitbreaking.Config{
+			CircuitBreaker: &circuitbreaking.Config{
 				Name:                   "dev_analytics",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -91,9 +100,9 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
 		},
-		Search: textsearchcfg.Config{
+		TextSearch: textsearchcfg.Config{
 			Algolia: &algolia.Config{},
-			CircuitBreakerConfig: &circuitbreaking.Config{
+			CircuitBreaker: &circuitbreaking.Config{
 				Name:                   "dev_text_searcher",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -167,7 +176,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 			DataPrivacy: dataprivacyservice.Config{
 				Uploads: uploads.Config{
 					Storage: objectstorage.Config{
-						GCPConfig:  &objectstorage.GCPConfig{BucketName: "userdata.dinnerdonebetter.dev"},
+						GCP:        &objectstorage.GCPConfig{BucketName: "userdata.dinnerdonebetter.dev"},
 						BucketName: "userdata.dinnerdonebetter.dev",
 						Provider:   objectstorage.GCPCloudStorageProvider,
 					},
@@ -183,7 +192,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 						Provider:          objectstorage.GCPCloudStorageProvider,
 						BucketName:        "media.dinnerdonebetter.dev",
 						BucketPrefix:      "avatars/",
-						GCPConfig: &objectstorage.GCPConfig{
+						GCP: &objectstorage.GCPConfig{
 							BucketName: "media.dinnerdonebetter.dev",
 						},
 					},
@@ -200,7 +209,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 						Provider:          objectstorage.GCPCloudStorageProvider,
 						BucketName:        "media.dinnerdonebetter.dev",
 						BucketPrefix:      "recipe_media/",
-						GCPConfig: &objectstorage.GCPConfig{
+						GCP: &objectstorage.GCPConfig{
 							BucketName: "media.dinnerdonebetter.dev",
 						},
 					},

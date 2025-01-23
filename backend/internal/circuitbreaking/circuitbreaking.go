@@ -49,21 +49,6 @@ func EnsureCircuitBreaker(breaker CircuitBreaker) CircuitBreaker {
 	return breaker
 }
 
-func handleCircuitBreakerEvents(cb *circuit.Breaker, logger logging.Logger, brokenCounter metrics.Int64Counter) {
-	for be := range <-cb.Subscribe() {
-		switch be {
-		case circuit.BreakerTripped:
-			brokenCounter.Add(context.Background(), 1)
-		case circuit.BreakerReset:
-			logger.Debug("circuit breaker reset")
-		case circuit.BreakerFail:
-			logger.Debug("circuit breaker experienced an instance of failure")
-		case circuit.BreakerReady:
-			logger.Debug("circuit breaker is ready")
-		}
-	}
-}
-
 // ProvideCircuitBreaker provides a CircuitBreaker.
 func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider metrics.Provider) (CircuitBreaker, error) {
 	if cfg == nil {
@@ -72,6 +57,16 @@ func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider 
 	cfg.EnsureDefaults()
 
 	brokenCounter, err := metricsProvider.NewInt64Counter(fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name))
+	if err != nil {
+		return nil, err
+	}
+
+	failureCounter, err := metricsProvider.NewInt64Counter(fmt.Sprintf("%s_circuit_breaker_failed", cfg.Name))
+	if err != nil {
+		return nil, err
+	}
+
+	resetCounter, err := metricsProvider.NewInt64Counter(fmt.Sprintf("%s_circuit_breaker_reset", cfg.Name))
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +81,31 @@ func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider 
 		WindowBuckets: circuit.DefaultWindowBuckets,
 	})
 
-	go handleCircuitBreakerEvents(cb, logger, brokenCounter)
+	go handleCircuitBreakerEvents(logger, cb, failureCounter, resetCounter, brokenCounter)
 
 	return &baseImplementation{
 		circuitBreaker: cb,
 	}, nil
+}
+
+func handleCircuitBreakerEvents(
+	logger logging.Logger,
+	cb *circuit.Breaker,
+	failureCounter,
+	resetCounter,
+	brokenCounter metrics.Int64Counter,
+) {
+	ctx := context.Background()
+	for be := range <-cb.Subscribe() {
+		switch be {
+		case circuit.BreakerTripped:
+			brokenCounter.Add(ctx, 1)
+		case circuit.BreakerReset:
+			resetCounter.Add(ctx, 1)
+		case circuit.BreakerFail:
+			failureCounter.Add(ctx, 1)
+		case circuit.BreakerReady:
+			logger.Debug("circuit breaker is ready")
+		}
+	}
 }

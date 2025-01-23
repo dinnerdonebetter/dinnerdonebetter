@@ -31,7 +31,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
 		Routing: routingcfg.Config{
 			Provider: routingcfg.ProviderChi,
-			ChiConfig: &chi.Config{
+			Chi: &chi.Config{
 				ServiceName:            otelServiceName,
 				EnableCORSForLocalhost: true,
 				SilenceRouteLogging:    false,

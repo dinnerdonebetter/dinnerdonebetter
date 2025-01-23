@@ -63,7 +63,7 @@ func TableView[T any](newHref string, data *types.QueryFilteredResult[T]) gompon
 				html.Input(
 					html.Type("text"),
 					html.Class("border border-gray-300 rounded-lg p-2 w-64"),
-					html.Placeholder(fmt.Sprintf("Search from %d %s...", data.TotalCount, descriptor)),
+					html.Placeholder(fmt.Sprintf("TextSearch from %d %s...", data.TotalCount, descriptor)),
 				),
 				html.Button(
 					html.Class("bg-blue-500 text-white px-4 py-2 rounded-lg"),

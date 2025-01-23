@@ -10,11 +10,11 @@ servers:
   - description: dev API server
     url: https://api.dinnerdonebetter.dev
 paths:
-  /_meta_/live:
+  /_ops_/live:
     get:
       description: checks for service liveness
       operationId: CheckForLiveness
-  /_meta_/ready:
+  /_ops_/ready:
     get:
       description: checks for service readiness
       operationId: CheckForReadiness

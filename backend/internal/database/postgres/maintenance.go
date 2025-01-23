@@ -7,13 +7,14 @@ import (
 )
 
 // DeleteExpiredOAuth2ClientTokens deletes expired oauth2 client tokens.
-func (q *Querier) DeleteExpiredOAuth2ClientTokens(ctx context.Context) error {
+func (q *Querier) DeleteExpiredOAuth2ClientTokens(ctx context.Context) (int64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if _, err := q.generatedQuerier.DeleteExpiredOAuth2ClientTokens(ctx, q.db); err != nil {
-		return observability.PrepareError(err, span, "deleting expired oauth2 client tokens")
+	deleted, err := q.generatedQuerier.DeleteExpiredOAuth2ClientTokens(ctx, q.db)
+	if err != nil {
+		return 0, observability.PrepareError(err, span, "deleting expired oauth2 client tokens")
 	}
 
-	return nil
+	return deleted, nil
 }

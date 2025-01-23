@@ -167,7 +167,7 @@ func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Search For userClient.
+			// TextSearch For userClient.
 			actual, err := testClients.userClient.SearchForUsers(ctx, s.user.Username, nil)
 			assert.Nil(t, actual)
 			assert.Error(t, err)

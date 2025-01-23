@@ -53,7 +53,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
 		Routing: routingcfg.Config{
 			Provider: routingcfg.ProviderChi,
-			ChiConfig: &chi.Config{
+			Chi: &chi.Config{
 				ServiceName:            otelServiceName,
 				EnableCORSForLocalhost: true,
 				SilenceRouteLogging:    false,
@@ -87,10 +87,10 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				},
 			},
 		},
-		Search: textsearchcfg.Config{
+		TextSearch: textsearchcfg.Config{
 			Algolia:  &algolia.Config{},
 			Provider: textsearchcfg.AlgoliaProvider,
-			CircuitBreakerConfig: &circuitbreaking.Config{
+			CircuitBreaker: &circuitbreaking.Config{
 				Name:                   "dev_text_searcher",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,

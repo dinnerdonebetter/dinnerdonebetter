@@ -134,7 +134,7 @@ func (c *Client) IsUp(ctx context.Context) bool {
 
 	logger := c.logger.Clone()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.BuildURL(ctx, nil, "_meta_", "ready"), http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.BuildURL(ctx, nil, "_ops_", "ready"), http.NoBody)
 	if err != nil {
 		c.logger.Error("building steatus request", err)
 		return false

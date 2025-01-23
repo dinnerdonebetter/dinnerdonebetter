@@ -26,5 +26,7 @@ func TestQuerier_Integration_DeleteExpiredOAuth2ClientTokens(t *testing.T) {
 	}(t)
 
 	// fetch as list
-	assert.NoError(t, dbc.DeleteExpiredOAuth2ClientTokens(ctx))
+	count, err := dbc.DeleteExpiredOAuth2ClientTokens(ctx)
+	assert.Zero(t, count)
+	assert.NoError(t, err)
 }

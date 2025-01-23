@@ -755,7 +755,7 @@ func (f *APIClientFunction) RenderTest() (file string, imports []string, err err
 	var tmpl string
 	imports = []string{}
 
-	isSearchOp := strings.Contains(f.Name, "Search")
+	isSearchOp := strings.Contains(f.Name, "TextSearch")
 
 	const dummyTemplate = `
 
