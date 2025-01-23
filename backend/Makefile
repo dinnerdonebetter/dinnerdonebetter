@@ -142,11 +142,6 @@ format_yaml: ensure_yamlfmt_installed
 
 ## Linting
 
-.PHONY: pre_lint
-pre_lint:
-	@until fieldalignment -fix ./...; do true; done > /dev/null
-	@echo ""
-
 .PHONY: lint_containers
 lint_containers:
 	@$(CONTAINER_RUNNER) pull --quiet $(CONTAINER_LINTER_IMAGE)
