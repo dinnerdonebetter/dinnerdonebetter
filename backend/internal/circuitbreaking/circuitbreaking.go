@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math"
 
+	"github.com/dinnerdonebetter/backend/internal/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 
@@ -67,11 +67,7 @@ func handleCircuitBreakerEvents(cb *circuit.Breaker, logger logging.Logger, brok
 // ProvideCircuitBreaker provides a CircuitBreaker.
 func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider metrics.Provider) (CircuitBreaker, error) {
 	if cfg == nil {
-		cfg = &Config{
-			Name:                   "UNKNOWN",
-			ErrorRate:              1.0,
-			MinimumSampleThreshold: math.MaxUint64,
-		}
+		return nil, internalerrors.NilConfigError("circuit breaker")
 	}
 	cfg.EnsureDefaults()
 
