@@ -8,7 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -167,7 +167,7 @@ func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// Search For userClient.
+			// TextSearch For userClient.
 			actual, err := testClients.userClient.SearchForUsers(ctx, s.user.Username, nil)
 			assert.Nil(t, actual)
 			assert.Error(t, err)
@@ -193,7 +193,7 @@ func (s *TestSuite) TestUsers_Searching() {
 					Username:     fmt.Sprintf("%s%d", exampleUsername, i),
 					Password:     gofakeit.Password(true, true, true, true, false, 64),
 				}
-				user, err := testutils2.CreateServiceUser(ctx, urlToUse, in)
+				user, err := testutils.CreateServiceUser(ctx, urlToUse, in)
 				require.NoError(t, err)
 				createdUserIDs = append(createdUserIDs, user.ID)
 			}
@@ -261,7 +261,7 @@ func (s *TestSuite) TestUsers_AvatarManagement() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, avatar := testutils2.BuildArbitraryImagePNGBytes(256)
+			_, avatar := testutils.BuildArbitraryImagePNGBytes(256)
 
 			encoded := base64.RawStdEncoding.EncodeToString(avatar)
 

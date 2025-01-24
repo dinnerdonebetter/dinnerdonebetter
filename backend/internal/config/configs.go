@@ -68,7 +68,7 @@ type (
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
 		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
-		Search        textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
+		TextSearch    textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
 		FeatureFlags  featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
 		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
 		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
@@ -219,7 +219,7 @@ func (cfg *APIServiceConfig) ValidateWithContext(ctx context.Context) error {
 		"HTTPServer":    cfg.HTTPServer.ValidateWithContext,
 		"Email":         cfg.Email.ValidateWithContext,
 		"FeatureFlags":  cfg.FeatureFlags.ValidateWithContext,
-		"Search":        cfg.Search.ValidateWithContext,
+		"TextSearch":    cfg.TextSearch.ValidateWithContext,
 		// no "Events" here, that's a collection of publisher/subscriber configs that can each optionally be setup
 	}
 
@@ -375,7 +375,7 @@ func (cfg *AsyncMessageHandlerConfig) ValidateWithContext(ctx context.Context) e
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Database":      cfg.Database.ValidateWithContext,
 		"Email":         cfg.Email.ValidateWithContext,
-		"Search":        cfg.Search.ValidateWithContext,
+		"TextSearch":    cfg.Search.ValidateWithContext,
 		"Storage":       cfg.Storage.ValidateWithContext,
 	}
 

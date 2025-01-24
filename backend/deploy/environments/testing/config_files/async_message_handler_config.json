@@ -17,21 +17,33 @@
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
-		"circuitBreakerConfig": null,
-		"provider": ""
+		"provider": "",
+		"circuitBreakerConfig": {
+			"name": "",
+			"circuitBreakerErrorPercentage": 0,
+			"circuitBreakerMinimumOccurrenceThreshold": 0
+		}
 	},
 	"analytics": {
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
-		"circuitBreaker": null,
-		"provider": ""
+		"provider": "",
+		"circuitBreaker": {
+			"name": "feature_flagger",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
 	},
 	"search": {
 		"algolia": null,
 		"elasticsearch": null,
-		"circuitBreakerConfig": null,
-		"provider": ""
+		"provider": "",
+		"circuitBreakerConfig": {
+			"name": "feature_flagger",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
 	},
 	"events": {
 		"consumers": {

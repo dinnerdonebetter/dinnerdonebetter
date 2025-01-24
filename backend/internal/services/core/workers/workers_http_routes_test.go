@@ -73,7 +73,6 @@ func TestWorkerService_MealPlanFinalizationHandler(T *testing.T) {
 		mpfw.On(
 			"FinalizeExpiredMealPlans",
 			testutils.ContextMatcher,
-			[]byte(nil),
 		).Return(123, nil)
 		helper.service.mealPlanFinalizationWorker = mpfw
 

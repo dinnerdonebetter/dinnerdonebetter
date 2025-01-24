@@ -35,7 +35,7 @@ func EnsureServerIsUp(ctx context.Context, address string) {
 	)
 
 	for isDown {
-		if !IsUp(ctx, fmt.Sprintf("%s/_meta_/ready", address)) {
+		if !IsUp(ctx, fmt.Sprintf("%s/_ops_/ready", address)) {
 			log.Printf("waiting %s before pinging %s again", interval, address)
 			time.Sleep(interval)
 

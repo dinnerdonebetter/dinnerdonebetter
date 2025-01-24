@@ -14,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
-	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -32,16 +31,10 @@ func doTheThing() error {
 	}
 	cfg.Database.RunMigrations = false
 
-	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
+	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
-		return fmt.Errorf("could not create logger: %w", err)
+		return fmt.Errorf("could not establish observability pillars: %w", err)
 	}
-
-	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
-	if err != nil {
-		logger.Error("initializing tracer", err)
-	}
-	otel.SetTracerProvider(tracerProvider)
 
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("meal_plan_finalizer_job")).StartSpan(ctx)
 	defer span.End()
@@ -70,14 +63,18 @@ func doTheThing() error {
 
 	defer dataChangesPublisher.Stop()
 
-	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(
+	mealPlanFinalizationWorker, err := workers.ProvideMealPlanFinalizationWorker(
 		logger,
 		dataManager,
 		dataChangesPublisher,
 		tracerProvider,
+		metricsProvider,
 	)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "initializing meal plan worker")
+	}
 
-	changedCount, err := mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx, nil)
+	changedCount, err := mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "finalizing meal plans")
 	}

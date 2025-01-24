@@ -3,8 +3,12 @@
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
-		"circuitBreakerConfig": null,
-		"provider": ""
+		"provider": "",
+		"circuitBreakerConfig": {
+			"name": "",
+			"circuitBreakerErrorPercentage": 0,
+			"circuitBreakerMinimumOccurrenceThreshold": 0
+		}
 	},
 	"observability": {
 		"logging": {

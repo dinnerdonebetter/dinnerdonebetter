@@ -2,7 +2,6 @@ package circuitbreaking
 
 import (
 	"context"
-	"math"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -14,12 +13,8 @@ type Config struct {
 }
 
 func (cfg *Config) EnsureDefaults() {
-	if cfg == nil {
-		cfg = &Config{
-			Name:                   "UNKNOWN",
-			ErrorRate:              1.0,
-			MinimumSampleThreshold: math.MaxUint64,
-		}
+	if cfg.Name == "" {
+		cfg.Name = "UNKNOWN"
 	}
 
 	if cfg.ErrorRate == 0 {

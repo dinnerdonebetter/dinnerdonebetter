@@ -19,12 +19,12 @@
 		},
 		"mailgun": null,
 		"mailjet": null,
+		"provider": "sendgrid",
 		"circuitBreakerConfig": {
 			"name": "dev_emailer",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
-		},
-		"provider": "sendgrid"
+		}
 	},
 	"analytics": {
 		"segment": {
@@ -32,12 +32,12 @@
 		},
 		"posthog": null,
 		"rudderstack": null,
+		"provider": "segment",
 		"circuitBreaker": {
 			"name": "dev_analytics",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
-		},
-		"provider": "segment"
+		}
 	},
 	"search": {
 		"algolia": {
@@ -46,12 +46,12 @@
 			"timeout": 0
 		},
 		"elasticsearch": null,
+		"provider": "algolia",
 		"circuitBreakerConfig": {
 			"name": "dev_text_searcher",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
-		},
-		"provider": "algolia"
+		}
 	},
 	"events": {
 		"consumers": {

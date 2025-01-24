@@ -12,7 +12,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
-	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -30,19 +31,18 @@ func doTheThing() error {
 	}
 	cfg.Database.RunMigrations = false
 
-	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
+	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
-		return fmt.Errorf("could not create logger: %w", err)
+		return fmt.Errorf("could not establish observability pillars: %w", err)
 	}
-
-	tracerProvider, err := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
-	if err != nil {
-		logger.Error("initializing tracer", err)
-	}
-	otel.SetTracerProvider(tracerProvider)
 
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("db_cleaner_job")).StartSpan(ctx)
 	defer span.End()
+
+	handledRecordsCounter, err := metricsProvider.NewInt64Counter("db_cleaner.handled_records")
+	if err != nil {
+		return fmt.Errorf("could not create metrics counter: %w", err)
+	}
 
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
@@ -54,9 +54,17 @@ func doTheThing() error {
 	cancel()
 	defer dataManager.Close()
 
-	if err = dataManager.DeleteExpiredOAuth2ClientTokens(ctx); err != nil {
+	deleted, err := dataManager.DeleteExpiredOAuth2ClientTokens(ctx)
+	if err != nil {
 		logger.Error("deleting expired oauth2 client tokens", err)
 	}
+
+	handledRecordsCounter.Add(ctx, deleted, metric.WithAttributes(
+		attribute.KeyValue{
+			Key:   "db_table",
+			Value: attribute.StringValue("oauth2_clients"),
+		},
+	))
 
 	return nil
 }

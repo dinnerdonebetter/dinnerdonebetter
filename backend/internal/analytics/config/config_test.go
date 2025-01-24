@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/analytics/posthog"
 	"github.com/dinnerdonebetter/backend/internal/analytics/rudderstack"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -55,10 +56,11 @@ func TestConfig_ProvideCollector(T *testing.T) {
 
 		for _, provider := range allProviders {
 			cfg := &Config{
-				Provider:    provider,
-				Segment:     &segment.Config{APIToken: t.Name()},
-				Rudderstack: &rudderstack.Config{DataPlaneURL: t.Name(), APIKey: t.Name()},
-				Posthog:     &posthog.Config{APIKey: t.Name()},
+				Provider:       provider,
+				Segment:        &segment.Config{APIToken: t.Name()},
+				Rudderstack:    &rudderstack.Config{DataPlaneURL: t.Name(), APIKey: t.Name()},
+				Posthog:        &posthog.Config{APIKey: t.Name()},
+				CircuitBreaker: circuitbreaking.Config{},
 			}
 
 			_, err := cfg.ProvideCollector(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider())

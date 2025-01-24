@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	circuitbreaking2 "github.com/dinnerdonebetter/backend/internal/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -25,12 +25,11 @@ const (
 
 // Config contains settings regarding search indices.
 type Config struct {
-	_ struct{} `json:"-"`
-
-	Algolia              *algolia.Config          `env:"init"     envPrefix:"ALGOLIA_"         json:"algolia"`
-	Elasticsearch        *elasticsearch.Config    `env:"init"     envPrefix:"ELASTICSEARCH_"   json:"elasticsearch"`
-	CircuitBreakerConfig *circuitbreaking2.Config `env:"init"     envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreakerConfig"`
-	Provider             string                   `env:"PROVIDER" json:"provider"`
+	_              struct{}               `json:"-"`
+	Algolia        *algolia.Config        `env:"init"     envPrefix:"ALGOLIA_"         json:"algolia"`
+	Elasticsearch  *elasticsearch.Config  `env:"init"     envPrefix:"ELASTICSEARCH_"   json:"elasticsearch"`
+	Provider       string                 `env:"PROVIDER" json:"provider"`
+	CircuitBreaker circuitbreaking.Config `env:"init"     envPrefix:"CIRCUIT_BREAKER_" json:"circuitBreakerConfig"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -47,9 +46,9 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 // ProvideIndex validates a Config struct.
 func ProvideIndex[T textsearch.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, cfg *Config, indexName string) (textsearch.Index[T], error) {
 	//nolint:contextcheck // I actually want to use a whatever context here.
-	circuitBreaker, err := circuitbreaking2.ProvideCircuitBreaker(cfg.CircuitBreakerConfig, logger, metricsProvider)
+	circuitBreaker, err := circuitbreaking.ProvideCircuitBreaker(&cfg.CircuitBreaker, logger, metricsProvider)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize circuitBreaker: %w", err)
+		return nil, fmt.Errorf("failed to initialize text search circuit breaker: %w", err)
 	}
 
 	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {

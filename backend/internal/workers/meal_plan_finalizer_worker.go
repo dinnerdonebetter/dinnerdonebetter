@@ -2,27 +2,34 @@ package workers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+const (
+	serviceName = "meal_plan_finalizer"
+)
+
 type (
 	MealPlanFinalizationWorker interface {
-		FinalizeExpiredMealPlans(ctx context.Context, _ []byte) (int, error)
-		FinalizeExpiredMealPlansWithoutReturningCount(ctx context.Context, _ []byte) error
+		FinalizeExpiredMealPlans(ctx context.Context) (int, error)
+		FinalizeExpiredMealPlansWithoutReturningCount(ctx context.Context) error
 	}
 
 	// mealPlanFinalizationWorker finalizes meal plans.
 	mealPlanFinalizationWorker struct {
-		logger               logging.Logger
-		tracer               tracing.Tracer
-		dataManager          database.DataManager
-		postUpdatesPublisher messagequeue.Publisher
+		logger                  logging.Logger
+		tracer                  tracing.Tracer
+		dataManager             database.DataManager
+		postUpdatesPublisher    messagequeue.Publisher
+		finalizedRecordsCounter metrics.Int64Counter
 	}
 )
 
@@ -32,15 +39,20 @@ func ProvideMealPlanFinalizationWorker(
 	dataManager database.DataManager,
 	postUpdatesPublisher messagequeue.Publisher,
 	tracerProvider tracing.TracerProvider,
-) MealPlanFinalizationWorker {
-	n := "meal_plan_finalizer"
+	metricsProvider metrics.Provider,
+) (MealPlanFinalizationWorker, error) {
+	counter, err := metricsProvider.NewInt64Counter(fmt.Sprintf("%s.finalized_records", serviceName))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create counter for finalized records metrics: %w", err)
+	}
 
 	return &mealPlanFinalizationWorker{
-		logger:               logging.EnsureLogger(logger).WithName(n),
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(n)),
-		dataManager:          dataManager,
-		postUpdatesPublisher: postUpdatesPublisher,
-	}
+		logger:                  logging.EnsureLogger(logger).WithName(serviceName),
+		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		dataManager:             dataManager,
+		postUpdatesPublisher:    postUpdatesPublisher,
+		finalizedRecordsCounter: counter,
+	}, nil
 }
 
 // finalizeExpiredMealPlans handles a message ordering the finalization of expired meal plans.
@@ -80,18 +92,19 @@ func (w *mealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 		}
 	}
 
+	w.finalizedRecordsCounter.Add(ctx, int64(changedCount))
 	logger.WithValue("changed_count", changedCount).Info("finalized expired meal plans")
 
 	return changedCount, nil
 }
 
 // FinalizeExpiredMealPlans handles a message ordering the finalization of expired meal plans.
-func (w *mealPlanFinalizationWorker) FinalizeExpiredMealPlans(ctx context.Context, _ []byte) (int, error) {
+func (w *mealPlanFinalizationWorker) FinalizeExpiredMealPlans(ctx context.Context) (int, error) {
 	return w.finalizeExpiredMealPlans(ctx)
 }
 
 // FinalizeExpiredMealPlansWithoutReturningCount handles a message ordering the finalization of expired meal plans.
-func (w *mealPlanFinalizationWorker) FinalizeExpiredMealPlansWithoutReturningCount(ctx context.Context, _ []byte) error {
+func (w *mealPlanFinalizationWorker) FinalizeExpiredMealPlansWithoutReturningCount(ctx context.Context) error {
 	_, err := w.finalizeExpiredMealPlans(ctx)
 	return err
 }

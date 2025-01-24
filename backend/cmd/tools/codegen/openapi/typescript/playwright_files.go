@@ -15,7 +15,6 @@ func GenerateMockAPIFunctions(spec *openapi31.Spec) (map[string]*MockAPIFunction
 	for path, op := range spec.Paths.MapOfPathItemValues {
 		if op.Get != nil {
 			opID := *op.Get.ID
-
 			if _, ok := skipOps[opID]; ok {
 				continue
 			}
@@ -35,7 +34,6 @@ func GenerateMockAPIFunctions(spec *openapi31.Spec) (map[string]*MockAPIFunction
 
 		if op.Patch != nil {
 			opID := *op.Patch.ID
-
 			if _, ok := skipOps[opID]; ok {
 				continue
 			}
@@ -45,7 +43,6 @@ func GenerateMockAPIFunctions(spec *openapi31.Spec) (map[string]*MockAPIFunction
 
 		if op.Post != nil {
 			opID := *op.Post.ID
-
 			if _, ok := skipOps[opID]; ok {
 				continue
 			}
@@ -55,7 +52,6 @@ func GenerateMockAPIFunctions(spec *openapi31.Spec) (map[string]*MockAPIFunction
 
 		if op.Delete != nil {
 			opID := *op.Delete.ID
-
 			if _, ok := skipOps[opID]; ok {
 				continue
 			}
@@ -106,16 +102,11 @@ type MockAPIFunction struct {
 }
 
 func (f *MockAPIFunction) Render() (string, error) {
-	/*
-
-
-	 */
-
 	tmpl := `export class Mock{{ .Name }}ResponseConfig extends ResponseConfig<{{ if .QueryFiltered }}QueryFilteredResult<{{ end }}{{ .ResponseType }}{{ if .QueryFiltered }}>{{ end }}> {
 		  {{ range .PathParams}} {{ .Name }}: {{ .Type }};
 		{{ end }}
 
-		  constructor({{ range .PathParams}} {{ .Name }}: {{ .Type }}, {{ end }}status: number = {{ .ExpectedResponseCode }}, body{{ if not (or .Search .QueryFiltered) }}?{{ end }}: {{ .ResponseType }}{{ if or .Search .QueryFiltered }}[] = []{{ end }}) {
+ 		  constructor({{ range .PathParams}} {{ .Name }}: {{ .Type }}, {{ end }}status: number = {{ .ExpectedResponseCode }}, body{{ if not (or .Search .QueryFiltered) }}?{{ end }}: {{ .ResponseType }}{{ if or .Search .QueryFiltered }}[] = []{{ end }}) {
 		    super();
 
 		{{ range .PathParams}} this.{{ .Name }} = {{ .Name }};

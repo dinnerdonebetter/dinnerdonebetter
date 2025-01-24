@@ -22,8 +22,8 @@ const (
 type Config struct {
 	_ struct{} `json:"-"`
 
-	ChiConfig *chi.Config `env:"init"     envPrefix:"CHI_"          json:"chiConfig,omitempty"`
-	Provider  string      `env:"PROVIDER" json:"provider,omitempty"`
+	Chi      *chi.Config `env:"init"     envPrefix:"CHI_"          json:"chiConfig,omitempty"`
+	Provider string      `env:"PROVIDER" json:"provider,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -39,7 +39,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 func ProvideRouter(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider) (routing.Router, error) {
 	switch cfg.Provider {
 	case ProviderChi:
-		return chi.NewRouter(logger, tracerProvider, metricProvider, cfg.ChiConfig), nil
+		return chi.NewRouter(logger, tracerProvider, metricProvider, cfg.Chi), nil
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Provider)
 	}
@@ -49,7 +49,7 @@ func ProvideRouter(cfg *Config, logger logging.Logger, tracerProvider tracing.Tr
 func (cfg *Config) ProvideRouter(logger logging.Logger, tracerProvider tracing.TracerProvider, metricProvider metrics.Provider) (routing.Router, error) {
 	switch cfg.Provider {
 	case ProviderChi:
-		return chi.NewRouter(logger, tracerProvider, metricProvider, cfg.ChiConfig), nil
+		return chi.NewRouter(logger, tracerProvider, metricProvider, cfg.Chi), nil
 	default:
 		return nil, fmt.Errorf("unknown provider: %s", cfg.Provider)
 	}

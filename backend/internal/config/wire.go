@@ -21,7 +21,7 @@ var (
 			"Meta",
 			"Events",
 			"Queues",
-			"Search",
+			"TextSearch",
 			"Services",
 		),
 		wire.FieldsOf(

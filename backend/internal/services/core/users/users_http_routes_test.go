@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/random/mock"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -40,7 +40,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -48,7 +48,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			examplePassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -80,7 +80,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return((*types.User)(nil), sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
@@ -109,7 +109,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -138,7 +138,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -146,7 +146,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			examplePassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -178,7 +178,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -186,7 +186,7 @@ func TestService_validateCredentialChangeRequest(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			examplePassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -221,7 +221,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"SearchForUsersByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(exampleUserList.Data, nil)
 		helper.service.userDataManager = mockDB
@@ -252,7 +252,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"SearchForUsersByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return([]*types.User{}, errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -286,7 +286,7 @@ func TestService_ListUsersHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUsers",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleUserList, nil)
 		helper.service.userDataManager = mockDB
@@ -313,7 +313,7 @@ func TestService_ListUsersHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUsers",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.User])(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -353,7 +353,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Password,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
@@ -361,20 +361,20 @@ func TestService_CreateUserHandler(T *testing.T) {
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
 			"CreateUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 
 		db.UserDataManagerMock.On(
 			"GetEmailAddressVerificationTokenForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
 		db.HouseholdUserMembershipDataManagerMock.On(
 			"GetDefaultHouseholdIDForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdUserMembershipDataManager = db
@@ -390,8 +390,8 @@ func TestService_CreateUserHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -536,7 +536,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Password,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
@@ -544,19 +544,19 @@ func TestService_CreateUserHandler(T *testing.T) {
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
 			"CreateUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 
 		db.UserDataManagerMock.On(
 			"GetEmailAddressVerificationTokenForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(t.Name(), nil)
 
 		db.HouseholdInvitationDataManagerMock.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.InvitationToken,
 			exampleInput.InvitationID,
 		).Return(exampleHouseholdInvitation, nil)
@@ -565,7 +565,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 
 		db.HouseholdUserMembershipDataManagerMock.On(
 			"GetDefaultHouseholdIDForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdUserMembershipDataManager = db
@@ -581,8 +581,8 @@ func TestService_CreateUserHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -622,20 +622,20 @@ func TestService_CreateUserHandler(T *testing.T) {
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
 			"CreateUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 
 		db.UserDataManagerMock.On(
 			"GetEmailAddressVerificationTokenForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
 		db.HouseholdInvitationDataManagerMock.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.InvitationToken,
 			exampleInput.InvitationID,
 		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
@@ -686,19 +686,19 @@ func TestService_CreateUserHandler(T *testing.T) {
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
 			"CreateUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 
 		db.UserDataManagerMock.On(
 			"GetEmailAddressVerificationTokenForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(t.Name(), nil)
 
 		db.HouseholdInvitationDataManagerMock.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.InvitationToken,
 			exampleInput.InvitationID,
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
@@ -742,7 +742,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Password,
 		).Return(helper.exampleUser.HashedPassword, errors.New("blah"))
 		helper.service.authenticator = auth
@@ -784,7 +784,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Password,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
@@ -792,20 +792,20 @@ func TestService_CreateUserHandler(T *testing.T) {
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
 			"CreateUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 
 		db.UserDataManagerMock.On(
 			"GetEmailAddressVerificationTokenForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
 		db.HouseholdUserMembershipDataManagerMock.On(
 			"GetDefaultHouseholdIDForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdUserMembershipDataManager = db
@@ -813,7 +813,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			totpSecretSize,
 		).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
@@ -855,7 +855,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Password,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
@@ -863,7 +863,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
 			"CreateUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = db
@@ -905,7 +905,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Password,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
@@ -913,7 +913,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
 			"CreateUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return((*types.User)(nil), database.ErrUserAlreadyExists)
 		helper.service.userDataManager = db
@@ -958,7 +958,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Password,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
@@ -966,20 +966,20 @@ func TestService_CreateUserHandler(T *testing.T) {
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
 			"CreateUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 
 		db.UserDataManagerMock.On(
 			"GetEmailAddressVerificationTokenForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
 		db.HouseholdUserMembershipDataManagerMock.On(
 			"GetDefaultHouseholdIDForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdUserMembershipDataManager = db
@@ -995,8 +995,8 @@ func TestService_CreateUserHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1032,7 +1032,7 @@ func TestService_CreateUserHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Password,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
@@ -1040,20 +1040,20 @@ func TestService_CreateUserHandler(T *testing.T) {
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
 			"CreateUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.UserDatabaseCreationInput{}),
 		).Return(helper.exampleUser, nil)
 
 		db.UserDataManagerMock.On(
 			"GetEmailAddressVerificationTokenForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return("", errors.New("blah"))
 		helper.service.userDataManager = db
 
 		db.HouseholdUserMembershipDataManagerMock.On(
 			"GetDefaultHouseholdIDForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdUserMembershipDataManager = db
@@ -1105,7 +1105,7 @@ func TestService_SelfHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -1126,7 +1126,7 @@ func TestService_SelfHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.SelfHandler(helper.res, helper.req)
 
@@ -1145,7 +1145,7 @@ func TestService_SelfHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
@@ -1169,7 +1169,7 @@ func TestService_SelfHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -1215,7 +1215,7 @@ func TestService_UserPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.UserPermissionsHandler(helper.res, helper.req)
 
@@ -1238,7 +1238,7 @@ func TestService_ReadUserHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -1263,7 +1263,7 @@ func TestService_ReadUserHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
@@ -1287,7 +1287,7 @@ func TestService_ReadUserHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -1326,12 +1326,12 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManagerMock.On(
 			"MarkUserTwoFactorSecretAsVerified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.userDataManager = mockDB
@@ -1339,8 +1339,8 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1397,7 +1397,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -1432,7 +1432,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -1466,12 +1466,12 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManagerMock.On(
 			"MarkUserTwoFactorSecretAsVerified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.userDataManager = mockDB
@@ -1508,7 +1508,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -1543,7 +1543,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -1578,12 +1578,12 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManagerMock.On(
 			"MarkUserTwoFactorSecretAsVerified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -1618,12 +1618,12 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserWithUnverifiedTwoFactorSecret",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManagerMock.On(
 			"MarkUserTwoFactorSecretAsVerified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.userDataManager = mockDB
@@ -1631,8 +1631,8 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1669,7 +1669,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
@@ -1677,14 +1677,14 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			totpSecretSize,
 		).Return(fakeSecret, nil)
 		helper.service.secretGenerator = sg
 
 		mockDB.UserDataManagerMock.On(
 			"MarkUserTwoFactorSecretAsUnverified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			fakeSecret,
 		).Return(nil)
@@ -1693,7 +1693,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -1704,8 +1704,8 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1736,7 +1736,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -1744,7 +1744,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -1780,7 +1780,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -1813,7 +1813,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -1821,7 +1821,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			totpSecretSize,
 		).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
@@ -1829,7 +1829,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -1865,7 +1865,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
@@ -1873,14 +1873,14 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			totpSecretSize,
 		).Return(fakeSecret, nil)
 		helper.service.secretGenerator = sg
 
 		mockDB.UserDataManagerMock.On(
 			"MarkUserTwoFactorSecretAsUnverified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			fakeSecret,
 		).Return(errors.New("blah"))
@@ -1889,7 +1889,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -1925,7 +1925,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
@@ -1933,14 +1933,14 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			totpSecretSize,
 		).Return(fakeSecret, nil)
 		helper.service.secretGenerator = sg
 
 		mockDB.UserDataManagerMock.On(
 			"MarkUserTwoFactorSecretAsUnverified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			fakeSecret,
 		).Return(nil)
@@ -1949,7 +1949,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -1960,8 +1960,8 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1996,13 +1996,13 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType("string"),
 		).Return(nil)
@@ -2011,7 +2011,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -2019,7 +2019,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		).Return(true, nil)
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.NewPassword,
 		).Return("blah", nil)
 		helper.service.authenticator = auth
@@ -2027,8 +2027,8 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -2089,7 +2089,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakePasswordUpdateInput()
@@ -2126,12 +2126,12 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType("string"),
 		).Return(nil)
@@ -2140,7 +2140,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -2177,7 +2177,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
@@ -2185,7 +2185,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -2221,12 +2221,12 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType("string"),
 		).Return(nil)
@@ -2235,7 +2235,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -2243,7 +2243,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		).Return(true, nil)
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.NewPassword,
 		).Return("blah", errors.New("blah"))
 		helper.service.authenticator = auth
@@ -2276,12 +2276,12 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType("string"),
 		).Return(errors.New("blah"))
@@ -2290,7 +2290,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -2298,7 +2298,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		).Return(true, nil)
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.NewPassword,
 		).Return("blah", nil)
 		helper.service.authenticator = auth
@@ -2335,14 +2335,14 @@ func TestService_UpdateUserEmailAddressHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -2352,7 +2352,7 @@ func TestService_UpdateUserEmailAddressHandler(T *testing.T) {
 
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserEmailAddress",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			exampleInput.NewEmailAddress,
 		).Return(nil)
@@ -2361,8 +2361,8 @@ func TestService_UpdateUserEmailAddressHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -2397,14 +2397,14 @@ func TestService_UpdateUserUsernameHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -2414,7 +2414,7 @@ func TestService_UpdateUserUsernameHandler(T *testing.T) {
 
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			exampleInput.NewUsername,
 		).Return(nil)
@@ -2423,8 +2423,8 @@ func TestService_UpdateUserUsernameHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -2459,14 +2459,14 @@ func TestService_UpdateUserDetailsHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			exampleInput.CurrentPassword,
 			helper.exampleUser.TwoFactorSecret,
@@ -2476,7 +2476,7 @@ func TestService_UpdateUserDetailsHandler(T *testing.T) {
 
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserDetails",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			converters.ConvertUserDetailsUpdateRequestInputToUserDetailsUpdateInput(exampleInput),
 		).Return(nil)
@@ -2485,8 +2485,8 @@ func TestService_UpdateUserDetailsHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -2522,13 +2522,13 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserAvatar",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			exampleInput.Base64EncodedData,
 		).Return(nil)
@@ -2557,7 +2557,7 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
@@ -2584,7 +2584,7 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -2616,12 +2616,12 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserAvatar",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			exampleInput.Base64EncodedData,
 		).Return(errors.New("blah"))
@@ -2650,7 +2650,7 @@ func TestService_ArchiveUserHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"ArchiveUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(nil)
 		helper.service.userDataManager = mockDB
@@ -2658,8 +2658,8 @@ func TestService_ArchiveUserHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -2681,7 +2681,7 @@ func TestService_ArchiveUserHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"ArchiveUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
@@ -2705,7 +2705,7 @@ func TestService_ArchiveUserHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"ArchiveUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
 		helper.service.userDataManager = mockDB
@@ -2742,15 +2742,15 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.EmailAddress,
 		).Return(helper.exampleUser, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -2827,7 +2827,7 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.EmailAddress,
 		).Return((*types.User)(nil), sql.ErrNoRows)
 
@@ -2861,7 +2861,7 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.EmailAddress,
 		).Return((*types.User)(nil), errors.New("blah"))
 
@@ -2896,15 +2896,15 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.EmailAddress,
 		).Return(helper.exampleUser, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -2944,7 +2944,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			passwordResetTokenSize,
 		).Return(exampleToken.Token, nil)
 		helper.service.secretGenerator = sg
@@ -2952,21 +2952,21 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.EmailAddress,
 		).Return(helper.exampleUser, nil)
 
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"CreatePasswordResetToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(x *types.PasswordResetTokenDatabaseCreationInput) bool { return true }),
 		).Return(exampleToken, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -3043,7 +3043,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			passwordResetTokenSize,
 		).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
@@ -3078,7 +3078,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			passwordResetTokenSize,
 		).Return(exampleToken.Token, nil)
 		helper.service.secretGenerator = sg
@@ -3086,7 +3086,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.EmailAddress,
 		).Return((*types.User)(nil), sql.ErrNoRows)
 
@@ -3122,7 +3122,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			passwordResetTokenSize,
 		).Return(exampleToken.Token, nil)
 		helper.service.secretGenerator = sg
@@ -3130,7 +3130,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.EmailAddress,
 		).Return((*types.User)(nil), errors.New("blah"))
 
@@ -3167,7 +3167,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			passwordResetTokenSize,
 		).Return(exampleToken.Token, nil)
 		helper.service.secretGenerator = sg
@@ -3175,13 +3175,13 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.EmailAddress,
 		).Return(helper.exampleUser, nil)
 
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"CreatePasswordResetToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(x *types.PasswordResetTokenDatabaseCreationInput) bool { return true }),
 		).Return((*types.PasswordResetToken)(nil), errors.New("blah"))
 
@@ -3218,7 +3218,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			passwordResetTokenSize,
 		).Return(exampleToken.Token, nil)
 		helper.service.secretGenerator = sg
@@ -3226,21 +3226,21 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.EmailAddress,
 		).Return(helper.exampleUser, nil)
 
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"CreatePasswordResetToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(x *types.PasswordResetTokenDatabaseCreationInput) bool { return true }),
 		).Return(exampleToken, nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -3281,42 +3281,42 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"GetPasswordResetTokenByToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(exampleToken, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.NewPassword,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
 
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType("string"),
 		).Return(nil)
 
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"RedeemPasswordResetToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleToken.ID,
 		).Return(nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -3395,7 +3395,7 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"GetPasswordResetTokenByToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return((*types.PasswordResetToken)(nil), sql.ErrNoRows)
 
@@ -3433,7 +3433,7 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"GetPasswordResetTokenByToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return((*types.PasswordResetToken)(nil), errors.New("blah"))
 
@@ -3471,13 +3471,13 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"GetPasswordResetTokenByToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(exampleToken, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return((*types.User)(nil), errors.New("blah"))
 
@@ -3516,13 +3516,13 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"GetPasswordResetTokenByToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(exampleToken, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
@@ -3560,20 +3560,20 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"GetPasswordResetTokenByToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(exampleToken, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.NewPassword,
 		).Return("", errors.New("blah"))
 		helper.service.authenticator = auth
@@ -3612,27 +3612,27 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"GetPasswordResetTokenByToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(exampleToken, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.NewPassword,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
 
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType("string"),
 		).Return(errors.New("blah"))
@@ -3671,34 +3671,34 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"GetPasswordResetTokenByToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(exampleToken, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.NewPassword,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
 
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType("string"),
 		).Return(nil)
 
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"RedeemPasswordResetToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleToken.ID,
 		).Return(errors.New("blah"))
 
@@ -3736,42 +3736,42 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"GetPasswordResetTokenByToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(exampleToken, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"GetUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
 			"HashPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.NewPassword,
 		).Return(helper.exampleUser.HashedPassword, nil)
 		helper.service.authenticator = auth
 
 		mockDB.UserDataManagerMock.On(
 			"UpdateUserPassword",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType("string"),
 		).Return(nil)
 
 		mockDB.PasswordResetTokenDataManagerMock.On(
 			"RedeemPasswordResetToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleToken.ID,
 		).Return(nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -3809,13 +3809,13 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmailAddressVerificationToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(helper.exampleUser, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"MarkUserEmailAddressAsVerified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			exampleInput.Token,
 		).Return(nil)
@@ -3823,8 +3823,8 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -3895,7 +3895,7 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmailAddressVerificationToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return((*types.User)(nil), errors.New("blah"))
 
@@ -3930,7 +3930,7 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmailAddressVerificationToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return((*types.User)(nil), sql.ErrNoRows)
 
@@ -3965,13 +3965,13 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmailAddressVerificationToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(helper.exampleUser, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"MarkUserEmailAddressAsVerified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			exampleInput.Token,
 		).Return(errors.New("blah"))
@@ -4007,13 +4007,13 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetUserByEmailAddressVerificationToken",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleInput.Token,
 		).Return(helper.exampleUser, nil)
 
 		mockDB.UserDataManagerMock.On(
 			"MarkUserEmailAddressAsVerified",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			exampleInput.Token,
 		).Return(nil)
@@ -4021,8 +4021,8 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -4052,15 +4052,15 @@ func TestService_RequestEmailVerificationEmailHandler(T *testing.T) {
 		mockDB := database.NewMockDatabase()
 		mockDB.UserDataManagerMock.On(
 			"GetEmailAddressVerificationTokenForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(t.Name(), nil)
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

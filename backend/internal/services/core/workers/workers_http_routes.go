@@ -48,18 +48,14 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 
 	response := &types.FinalizeMealPlansResponse{}
 	if request.ReturnCount {
-		var count int
-		count, err = s.mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx, nil)
-		if err != nil {
+		if response.Count, err = s.mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx); err != nil {
 			observability.AcknowledgeError(err, logger, span, "finalizing expired meal plans")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
-
-		response.Count = count
 	} else {
-		if err = s.mealPlanFinalizationWorker.FinalizeExpiredMealPlansWithoutReturningCount(ctx, nil); err != nil {
+		if err = s.mealPlanFinalizationWorker.FinalizeExpiredMealPlansWithoutReturningCount(ctx); err != nil {
 			observability.AcknowledgeError(err, logger, span, "finalizing expired meal plans")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)

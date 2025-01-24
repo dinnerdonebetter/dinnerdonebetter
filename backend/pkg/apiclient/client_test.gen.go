@@ -153,7 +153,7 @@ func TestClient_CloseRequestBody(T *testing.T) {
 func TestClient_IsUp(T *testing.T) {
 	T.Parallel()
 
-	spec := newRequestSpec(true, http.MethodGet, "", "/_meta_/ready")
+	spec := newRequestSpec(true, http.MethodGet, "", "/_ops_/ready")
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

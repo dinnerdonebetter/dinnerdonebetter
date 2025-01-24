@@ -5,16 +5,16 @@ This file contains a reference of all valid service environment variables.
 */
 
 const (
-	// AnalyticsCircuitBreakerErrorRateEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreakerConfig.ErrorRate`.
+	// AnalyticsCircuitBreakerErrorRateEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreaker.ErrorRate`.
 	AnalyticsCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_ERROR_RATE"
 
-	// AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreakerConfig.MinimumSampleThreshold`.
+	// AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreaker.MinimumSampleThreshold`.
 	AnalyticsCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
 
-	// AnalyticsCircuitBreakerNameEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreakerConfig.Name`.
+	// AnalyticsCircuitBreakerNameEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreaker.Name`.
 	AnalyticsCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_CIRCUIT_BREAKER_NAME"
 
-	// AnalyticsInitEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreakerConfig`.
+	// AnalyticsInitEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreaker`.
 	AnalyticsInitEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_init"
 
 	// AnalyticsPosthogCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreakerConfig.ErrorRate`.
@@ -83,7 +83,16 @@ const (
 	// DatabaseRunMigrationsEnvVarKey is the environment variable name to set in order to override `config.Database.RunMigrations`.
 	DatabaseRunMigrationsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_RUN_MIGRATIONS"
 
-	// EmailInitEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreakerConfig`.
+	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreaker.ErrorRate`.
+	EmailCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_ERROR_RATE"
+
+	// EmailCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreaker.MinimumSampleThreshold`.
+	EmailCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// EmailCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreaker.Name`.
+	EmailCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_NAME"
+
+	// EmailInitEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreaker`.
 	EmailInitEnvVarKey = "DINNER_DONE_BETTER_EMAIL_init"
 
 	// EmailMailgunDomainEnvVarKey is the environment variable name to set in order to override `config.Email.Mailgun.Domain`.
@@ -143,7 +152,16 @@ const (
 	// EventsPublisherSqsQueueAddressEnvVarKey is the environment variable name to set in order to override `config.Events.Publisher.SQS.QueueAddress`.
 	EventsPublisherSqsQueueAddressEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_SQS_QUEUE_ADDRESS"
 
-	// FeatureFlagsInitEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreakingConfig`.
+	// FeatureFlagsCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreaker.ErrorRate`.
+	FeatureFlagsCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_ERROR_RATE"
+
+	// FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreaker.MinimumSampleThreshold`.
+	FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// FeatureFlagsCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreaker.Name`.
+	FeatureFlagsCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_NAME"
+
+	// FeatureFlagsInitEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreaker`.
 	FeatureFlagsInitEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_init"
 
 	// FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.ErrorRate`.
@@ -272,52 +290,61 @@ const (
 	// QueuesWebhookExecutionRequestsTopicNameEnvVarKey is the environment variable name to set in order to override `config.Queues.WebhookExecutionRequestsTopicName`.
 	QueuesWebhookExecutionRequestsTopicNameEnvVarKey = "DINNER_DONE_BETTER_QUEUES_WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME"
 
-	// RoutingChiEnableCorsForLocalhostEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig.EnableCORSForLocalhost`.
+	// RoutingChiEnableCorsForLocalhostEnvVarKey is the environment variable name to set in order to override `config.Routing.Chi.EnableCORSForLocalhost`.
 	RoutingChiEnableCorsForLocalhostEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_ENABLE_CORS_FOR_LOCALHOST"
 
-	// RoutingChiServiceNameEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig.ServiceName`.
+	// RoutingChiServiceNameEnvVarKey is the environment variable name to set in order to override `config.Routing.Chi.ServiceName`.
 	RoutingChiServiceNameEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_SERVICE_NAME"
 
-	// RoutingChiSilenceRouteLoggingEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig.SilenceRouteLogging`.
+	// RoutingChiSilenceRouteLoggingEnvVarKey is the environment variable name to set in order to override `config.Routing.Chi.SilenceRouteLogging`.
 	RoutingChiSilenceRouteLoggingEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_SILENCE_ROUTE_LOGGING"
 
-	// RoutingChiValidDomainsEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig.ValidDomains`.
+	// RoutingChiValidDomainsEnvVarKey is the environment variable name to set in order to override `config.Routing.Chi.ValidDomains`.
 	RoutingChiValidDomainsEnvVarKey = "DINNER_DONE_BETTER_ROUTING_CHI_VALID_DOMAINS"
 
-	// RoutingInitEnvVarKey is the environment variable name to set in order to override `config.Routing.ChiConfig`.
+	// RoutingInitEnvVarKey is the environment variable name to set in order to override `config.Routing.Chi`.
 	RoutingInitEnvVarKey = "DINNER_DONE_BETTER_ROUTING_init"
 
 	// RoutingProviderEnvVarKey is the environment variable name to set in order to override `config.Routing.Provider`.
 	RoutingProviderEnvVarKey = "DINNER_DONE_BETTER_ROUTING_PROVIDER"
 
-	// SearchAlgoliaAPIKeyEnvVarKey is the environment variable name to set in order to override `config.Search.Algolia.APIKey`.
+	// SearchAlgoliaAPIKeyEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Algolia.APIKey`.
 	SearchAlgoliaAPIKeyEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY"
 
-	// SearchAlgoliaAppIDEnvVarKey is the environment variable name to set in order to override `config.Search.Algolia.AppID`.
+	// SearchAlgoliaAppIDEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Algolia.AppID`.
 	SearchAlgoliaAppIDEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ALGOLIA_APP_ID"
 
-	// SearchAlgoliaTimeoutEnvVarKey is the environment variable name to set in order to override `config.Search.Algolia.Timeout`.
+	// SearchAlgoliaTimeoutEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Algolia.Timeout`.
 	SearchAlgoliaTimeoutEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ALGOLIA_TIMEOUT"
 
-	// SearchElasticsearchAddressEnvVarKey is the environment variable name to set in order to override `config.Search.Elasticsearch.Address`.
+	// SearchCircuitBreakerErrorRateEnvVarKey is the environment variable name to set in order to override `config.TextSearch.CircuitBreaker.ErrorRate`.
+	SearchCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_ERROR_RATE"
+
+	// SearchCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.TextSearch.CircuitBreaker.MinimumSampleThreshold`.
+	SearchCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
+
+	// SearchCircuitBreakerNameEnvVarKey is the environment variable name to set in order to override `config.TextSearch.CircuitBreaker.Name`.
+	SearchCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_NAME"
+
+	// SearchElasticsearchAddressEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Elasticsearch.Address`.
 	SearchElasticsearchAddressEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_ADDRESS"
 
-	// SearchElasticsearchCaCertEnvVarKey is the environment variable name to set in order to override `config.Search.Elasticsearch.CACert`.
+	// SearchElasticsearchCaCertEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Elasticsearch.CACert`.
 	SearchElasticsearchCaCertEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_CA_CERT"
 
-	// SearchElasticsearchIndexOperationTimeoutEnvVarKey is the environment variable name to set in order to override `config.Search.Elasticsearch.IndexOperationTimeout`.
+	// SearchElasticsearchIndexOperationTimeoutEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Elasticsearch.IndexOperationTimeout`.
 	SearchElasticsearchIndexOperationTimeoutEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_INDEX_OPERATION_TIMEOUT"
 
-	// SearchElasticsearchPasswordEnvVarKey is the environment variable name to set in order to override `config.Search.Elasticsearch.Password`.
+	// SearchElasticsearchPasswordEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Elasticsearch.Password`.
 	SearchElasticsearchPasswordEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_PASSWORD"
 
-	// SearchElasticsearchUsernameEnvVarKey is the environment variable name to set in order to override `config.Search.Elasticsearch.Username`.
+	// SearchElasticsearchUsernameEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Elasticsearch.Username`.
 	SearchElasticsearchUsernameEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_USERNAME"
 
-	// SearchInitEnvVarKey is the environment variable name to set in order to override `config.Search.CircuitBreakerConfig`.
+	// SearchInitEnvVarKey is the environment variable name to set in order to override `config.TextSearch.CircuitBreaker`.
 	SearchInitEnvVarKey = "DINNER_DONE_BETTER_SEARCH_init"
 
-	// SearchProviderEnvVarKey is the environment variable name to set in order to override `config.Search.Provider`.
+	// SearchProviderEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Provider`.
 	SearchProviderEnvVarKey = "DINNER_DONE_BETTER_SEARCH_PROVIDER"
 
 	// ServerDebugEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.Debug`.
@@ -392,10 +419,10 @@ const (
 	// ServiceDataPrivacyUploadsStorageFilesystemRootDirectoryEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Storage.FilesystemConfig.RootDirectory`.
 	ServiceDataPrivacyUploadsStorageFilesystemRootDirectoryEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_FILESYSTEM_ROOT_DIRECTORY"
 
-	// ServiceDataPrivacyUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Storage.GCPConfig.BucketName`.
+	// ServiceDataPrivacyUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Storage.GCP.BucketName`.
 	ServiceDataPrivacyUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_GCP_BUCKET_NAME"
 
-	// ServiceDataPrivacyUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Storage.GCPConfig`.
+	// ServiceDataPrivacyUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Storage.GCP`.
 	ServiceDataPrivacyUploadsStorageInitEnvVarKey = "DINNER_DONE_BETTER_SERVICE_DATA_PRIVACY_UPLOADS_STORAGE_init"
 
 	// ServiceDataPrivacyUploadsStorageProviderEnvVarKey is the environment variable name to set in order to override `config.Services.DataPrivacy.Uploads.Storage.Provider`.
@@ -431,10 +458,10 @@ const (
 	// ServiceRecipesUploadsStorageFilesystemRootDirectoryEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.FilesystemConfig.RootDirectory`.
 	ServiceRecipesUploadsStorageFilesystemRootDirectoryEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_FILESYSTEM_ROOT_DIRECTORY"
 
-	// ServiceRecipesUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.GCPConfig.BucketName`.
+	// ServiceRecipesUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.GCP.BucketName`.
 	ServiceRecipesUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_GCP_BUCKET_NAME"
 
-	// ServiceRecipesUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.GCPConfig`.
+	// ServiceRecipesUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.GCP`.
 	ServiceRecipesUploadsStorageInitEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_init"
 
 	// ServiceRecipesUploadsStorageProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.Provider`.
@@ -464,10 +491,10 @@ const (
 	// ServiceUsersUploadsStorageFilesystemRootDirectoryEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.FilesystemConfig.RootDirectory`.
 	ServiceUsersUploadsStorageFilesystemRootDirectoryEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_UPLOADS_STORAGE_FILESYSTEM_ROOT_DIRECTORY"
 
-	// ServiceUsersUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.GCPConfig.BucketName`.
+	// ServiceUsersUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.GCP.BucketName`.
 	ServiceUsersUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_UPLOADS_STORAGE_GCP_BUCKET_NAME"
 
-	// ServiceUsersUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.GCPConfig`.
+	// ServiceUsersUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.GCP`.
 	ServiceUsersUploadsStorageInitEnvVarKey = "DINNER_DONE_BETTER_SERVICE_USERS_UPLOADS_STORAGE_init"
 
 	// ServiceUsersUploadsStorageProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Users.Uploads.Storage.Provider`.

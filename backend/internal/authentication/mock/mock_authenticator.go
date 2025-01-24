@@ -15,7 +15,7 @@ type Authenticator struct {
 	mock.Mock
 }
 
-// ValidateLogin satisfies our authenticator interface.
+// CredentialsAreValid satisfies our authenticator interface.
 func (m *Authenticator) CredentialsAreValid(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error) {
 	args := m.Called(ctx, hash, password, totpSecret, totpCode)
 

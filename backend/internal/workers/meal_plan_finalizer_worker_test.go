@@ -2,31 +2,32 @@ package workers
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func newTestChoresWorker(t *testing.T) *mealPlanFinalizationWorker {
 	t.Helper()
 
-	worker := ProvideMealPlanFinalizationWorker(
+	worker, err := ProvideMealPlanFinalizationWorker(
 		logging.NewNoopLogger(),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
 		tracing.NewNoopTracerProvider(),
+		metrics.NewNoopMetricsProvider(),
 	)
 	assert.NotNil(t, worker)
+	assert.NoError(t, err)
 
 	return worker.(*mealPlanFinalizationWorker)
 }
@@ -37,13 +38,15 @@ func TestProvideChoresWorker(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := ProvideMealPlanFinalizationWorker(
+		actual, err := ProvideMealPlanFinalizationWorker(
 			logging.NewNoopLogger(),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
 			tracing.NewNoopTracerProvider(),
+			metrics.NewNoopMetricsProvider(),
 		)
 		assert.NotNil(t, actual)
+		assert.NoError(t, err)
 	})
 }
 
@@ -54,10 +57,6 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleInput := map[string]string{}
-		body, err := json.Marshal(exampleInput)
-		require.NoError(t, err)
-
 		exampleMealPlans := fakes.BuildFakeMealPlansList().Data
 
 		dbm := database.NewMockDatabase()
@@ -83,7 +82,7 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 		worker.dataManager = dbm
 		worker.postUpdatesPublisher = pup
 
-		assert.NoError(t, worker.FinalizeExpiredMealPlansWithoutReturningCount(ctx, body))
+		assert.NoError(t, worker.FinalizeExpiredMealPlansWithoutReturningCount(ctx))
 
 		mock.AssertExpectationsForObjects(t, dbm, pup)
 	})

@@ -63,10 +63,14 @@ profiles:
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-webapp
           docker:
             dockerfile: ./apps/web/Dockerfile
+            buildArgs:
+              NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-app
           docker:
             dockerfile: ./apps/admin/Dockerfile
+            buildArgs:
+              NEXT_PUBLIC_API_ENDPOINT: "https://api.dinnerdonebetter.dev"
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-landing
           docker:

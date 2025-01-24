@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/pointer"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -16,9 +18,9 @@ const (
 
 var (
 	// SortAscending is the pre-determined Ascending string for external use.
-	SortAscending = func(x string) *string { return &x }(sortAscendingString)
+	SortAscending = pointer.To(sortAscendingString)
 	// SortDescending is the pre-determined Descending string for external use.
-	SortDescending = func(x string) *string { return &x }(sortDescendingString)
+	SortDescending = pointer.To(sortDescendingString)
 )
 
 type (

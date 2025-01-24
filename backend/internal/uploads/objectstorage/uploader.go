@@ -46,7 +46,7 @@ type (
 
 		FilesystemConfig  *FilesystemConfig `env:"init"                envPrefix:"FILESYSTEM_"            json:"filesystem,omitempty"`
 		S3Config          *S3Config         `env:"init"                envPrefix:"S3_"                    json:"s3,omitempty"`
-		GCPConfig         *GCPConfig        `env:"init"                envPrefix:"GCP_"                   json:"gcpConfig,omitempty"`
+		GCP               *GCPConfig        `env:"init"                envPrefix:"GCP_"                   json:"gcpConfig,omitempty"`
 		BucketPrefix      string            `env:"BUCKET_PREFIX"       json:"bucketPrefix,omitempty"`
 		BucketName        string            `env:"BUCKET_NAME"         json:"bucketName,omitempty"`
 		UploadFilenameKey string            `env:"UPLOAD_FILENAME_KEY" json:"uploadFilenameKey,omitempty"`
@@ -62,7 +62,7 @@ func (c *Config) ValidateWithContext(ctx context.Context) error {
 		validation.Field(&c.BucketName, validation.Required),
 		validation.Field(&c.Provider, validation.In(S3Provider, FilesystemProvider, MemoryProvider, GCPCloudStorageProvider)),
 		validation.Field(&c.S3Config, validation.When(c.Provider == S3Provider, validation.Required).Else(validation.Nil)),
-		validation.Field(&c.GCPConfig, validation.When(c.Provider == GCPCloudStorageProvider, validation.Required).Else(validation.Nil)),
+		validation.Field(&c.GCP, validation.When(c.Provider == GCPCloudStorageProvider, validation.Required).Else(validation.Nil)),
 		validation.Field(&c.FilesystemConfig, validation.When(c.Provider == FilesystemProvider, validation.Required).Else(validation.Nil)),
 	)
 }
@@ -114,7 +114,7 @@ func (u *Uploader) selectBucket(ctx context.Context, cfg *Config) (err error) {
 			return fmt.Errorf("initializing GCP objectstorage: %w", clientErr)
 		}
 
-		u.bucket, err = gcsblob.OpenBucket(ctx, client, cfg.GCPConfig.BucketName, nil)
+		u.bucket, err = gcsblob.OpenBucket(ctx, client, cfg.GCP.BucketName, nil)
 		if err != nil {
 			return fmt.Errorf("initializing GCP objectstorage: %w", err)
 		}

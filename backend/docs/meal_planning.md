@@ -26,7 +26,6 @@ TODO: validate the above stuff
 - meal plan finalizer is the only thing that runs on a cron, it triggers the other two things to run on the back of the meal plan it finalizes
 - etc...
 
-
 ```mermaid
 flowchart TD
     VoteSubmitted(Vote is submitted)

@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mocksearch "github.com/dinnerdonebetter/backend/internal/search/text/mock"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -47,7 +47,7 @@ func TestValidVesselsService_CreateValidVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidVesselDataManagerMock.On(
 			"CreateValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidVesselDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleValidVessel, nil)
 		helper.service.validEnumerationDataManager = dbManager
@@ -55,8 +55,8 @@ func TestValidVesselsService_CreateValidVesselHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -128,7 +128,7 @@ func TestValidVesselsService_CreateValidVesselHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CreateValidVesselHandler(helper.res, helper.req)
 
@@ -156,7 +156,7 @@ func TestValidVesselsService_CreateValidVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidVesselDataManagerMock.On(
 			"CreateValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidVesselDatabaseCreationInput) bool { return true }),
 		).Return((*types.ValidVessel)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = dbManager
@@ -184,7 +184,7 @@ func TestValidVesselsService_ReadValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return(helper.exampleValidVessel, nil)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -204,7 +204,7 @@ func TestValidVesselsService_ReadValidVesselHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadValidVesselHandler(helper.res, helper.req)
 
@@ -223,7 +223,7 @@ func TestValidVesselsService_ReadValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return((*types.ValidVessel)(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -247,7 +247,7 @@ func TestValidVesselsService_ReadValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return((*types.ValidVessel)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -277,7 +277,7 @@ func TestValidVesselsService_ListValidVesselsHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessels",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleValidVesselList, nil)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -298,7 +298,7 @@ func TestValidVesselsService_ListValidVesselsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListValidVesselsHandler(helper.res, helper.req)
 
@@ -317,7 +317,7 @@ func TestValidVesselsService_ListValidVesselsHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessels",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.ValidVessel])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -340,7 +340,7 @@ func TestValidVesselsService_ListValidVesselsHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessels",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.ValidVessel])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -377,7 +377,7 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"SearchForValidVessels",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(exampleValidVesselList.Data, nil)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -414,7 +414,7 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		searchIndex := &mocksearch.IndexManager[types.ValidVesselSearchSubset]{}
 		searchIndex.On(
 			"Search",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(validVesselSearchSubsets, nil)
 		helper.service.validVesselsSearchIndex = searchIndex
@@ -422,7 +422,7 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVesselsWithIDs",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			expectedIDs,
 		).Return(exampleValidVesselList.Data, nil)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -442,7 +442,7 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.SearchValidVesselsHandler(helper.res, helper.req)
 
@@ -466,7 +466,7 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"SearchForValidVessels",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ValidVessel{}, sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -493,7 +493,7 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"SearchForValidVessels",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ValidVessel{}, errors.New("blah"))
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -530,13 +530,13 @@ func TestValidVesselsService_UpdateValidVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidVesselDataManagerMock.On(
 			"GetValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return(helper.exampleValidVessel, nil)
 
 		dbManager.ValidVesselDataManagerMock.On(
 			"UpdateValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidVessel) bool { return true }),
 		).Return(nil)
 		helper.service.validEnumerationDataManager = dbManager
@@ -544,8 +544,8 @@ func TestValidVesselsService_UpdateValidVesselHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -589,7 +589,7 @@ func TestValidVesselsService_UpdateValidVesselHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateValidVesselHandler(helper.res, helper.req)
 
@@ -637,7 +637,7 @@ func TestValidVesselsService_UpdateValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return((*types.ValidVessel)(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -670,7 +670,7 @@ func TestValidVesselsService_UpdateValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return((*types.ValidVessel)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -703,13 +703,13 @@ func TestValidVesselsService_UpdateValidVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidVesselDataManagerMock.On(
 			"GetValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return(helper.exampleValidVessel, nil)
 
 		dbManager.ValidVesselDataManagerMock.On(
 			"UpdateValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidVessel) bool { return true }),
 		).Return(errors.New("blah"))
 		helper.service.validEnumerationDataManager = dbManager
@@ -737,13 +737,13 @@ func TestValidVesselsService_ArchiveValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"ValidVesselExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return(true, nil)
 
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"ArchiveValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return(nil)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -751,8 +751,8 @@ func TestValidVesselsService_ArchiveValidVesselHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -772,7 +772,7 @@ func TestValidVesselsService_ArchiveValidVesselHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveValidVesselHandler(helper.res, helper.req)
 
@@ -791,7 +791,7 @@ func TestValidVesselsService_ArchiveValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"ValidVesselExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return(false, nil)
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -815,7 +815,7 @@ func TestValidVesselsService_ArchiveValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"ValidVesselExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -839,13 +839,13 @@ func TestValidVesselsService_ArchiveValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"ValidVesselExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return(true, nil)
 
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"ArchiveValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 		).Return(errors.New("blah"))
 		helper.service.validEnumerationDataManager = validVesselDataManager
@@ -873,7 +873,7 @@ func TestValidVesselsService_RandomValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetRandomValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 		).Return(helper.exampleValidVessel, nil)
 		helper.service.validEnumerationDataManager = validVesselDataManager
 
@@ -892,7 +892,7 @@ func TestValidVesselsService_RandomValidVesselHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.RandomValidVesselHandler(helper.res, helper.req)
 
@@ -911,7 +911,7 @@ func TestValidVesselsService_RandomValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetRandomValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 		).Return((*types.ValidVessel)(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validVesselDataManager
 
@@ -934,7 +934,7 @@ func TestValidVesselsService_RandomValidVesselHandler(T *testing.T) {
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetRandomValidVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 		).Return((*types.ValidVessel)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validVesselDataManager
 

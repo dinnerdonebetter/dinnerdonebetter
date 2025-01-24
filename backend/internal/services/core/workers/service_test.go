@@ -11,6 +11,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
@@ -46,6 +47,7 @@ func TestProvideService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			pp,
 			tracing.NewNoopTracerProvider(),
+			metrics.NewNoopMetricsProvider(),
 			&recipeanalysis.MockRecipeAnalyzer{},
 			cfg,
 		)
@@ -74,6 +76,7 @@ func TestProvideService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			pp,
 			tracing.NewNoopTracerProvider(),
+			metrics.NewNoopMetricsProvider(),
 			&recipeanalysis.MockRecipeAnalyzer{},
 			cfg,
 		)

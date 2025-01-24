@@ -12,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
-	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -30,20 +29,9 @@ func doTheThing() error {
 	}
 	cfg.Database.RunMigrations = false
 
-	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
+	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
-		return fmt.Errorf("could not create logger: %w", err)
-	}
-
-	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
-	if initializeTracerErr != nil {
-		logger.Error("initializing tracer", initializeTracerErr)
-	}
-	otel.SetTracerProvider(tracerProvider)
-
-	metricsProvider, err := cfg.Observability.Metrics.ProvideMetricsProvider(ctx, logger)
-	if err != nil {
-		logger.Error("initializing metrics provider", err)
+		return fmt.Errorf("could not establish observability pillars: %w", err)
 	}
 
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("email_prober_job")).StartSpan(ctx)

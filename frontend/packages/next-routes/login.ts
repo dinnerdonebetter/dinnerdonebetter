@@ -6,7 +6,10 @@ import { AccessToken, AuthorizationCode } from 'simple-oauth2';
 import { IAPIError, UserLoginInput, TokenResponse, APIResponse } from '@dinnerdonebetter/models';
 import { buildCookielessServerSideClient } from '@dinnerdonebetter/api-client';
 import { TracerType } from '@dinnerdonebetter/tracing';
+import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
+
 import { parseUserSessionDetailsFromCookie } from './api_proxy';
+import { UserSessionDetails } from './utils';
 
 type cookieFunction = (_token: AccessToken, _userID: string, _householdID: string) => string;
 
@@ -40,7 +43,7 @@ async function getOAuth2Token(input: {
     state,
   });
 
-  var token = '';
+  let token = '';
   await axios
     .get(authorizationUri, {
       maxRedirects: 0,
@@ -69,9 +72,7 @@ async function getOAuth2Token(input: {
     scope: 'service_admin',
   };
 
-  const accessToken = await client.getToken(tokenParams);
-
-  return accessToken;
+  return await client.getToken(tokenParams);
 }
 
 export function buildLoginRoute(config: {
@@ -81,10 +82,18 @@ export function buildLoginRoute(config: {
   oauth2ClientSecret: string;
   serverSideTracer: TracerType;
   cookieName: string;
-  encryptorDecryptor: any;
+  encryptorDecryptor: EncryptorDecryptor<UserSessionDetails>;
   cookieFunc: cookieFunction;
   admin: boolean;
-}) {
+}): (_req: NextApiRequest, _res: NextApiResponse) => Promise<void> {
+  console.log(
+    `building login route: envVar: '${process.env.NEXT_PUBLIC_API_ENDPOINT}' config: ${JSON.stringify({
+      baseURL: config.baseURL,
+      oauth2ClientID: config.oauth2ClientID,
+      oauth2ClientSecret: config.oauth2ClientSecret,
+    })}`,
+  );
+
   return async function LoginRoute(req: NextApiRequest, res: NextApiResponse) {
     if (config.oauth2ClientID === '' || config.oauth2ClientSecret === '') {
       throw new Error('oauth2 client id and secret must be provided');
@@ -125,7 +134,6 @@ export function buildLoginRoute(config: {
             return;
           }
 
-          // TODO: exchange the cookie here for an OAuth2 token
           let token = await getOAuth2Token({
             baseURL: config.baseURL,
             scope: config.scope,
@@ -136,9 +144,20 @@ export function buildLoginRoute(config: {
             householdID: result.data.data.householdID,
           });
 
-          res.setHeader('Set-Cookie', config.cookieFunc(token, result.data.data.userID, result.data.data.householdID));
+          let written = false;
+          try {
+            res.setHeader(
+              'Set-Cookie',
+              config.cookieFunc(token, result.data.data.userID, result.data.data.householdID),
+            );
+          } catch (e) {
+            res.status(401).send('');
+            written = true;
+          }
 
-          res.status(202).send('');
+          if (!written) {
+            res.status(202).send('');
+          }
         })
         .catch((err: AxiosError<IAPIError>) => {
           span.addEvent('error received');

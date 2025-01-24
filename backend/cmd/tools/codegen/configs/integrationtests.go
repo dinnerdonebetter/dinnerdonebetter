@@ -4,10 +4,13 @@ import (
 	"encoding/base64"
 	"time"
 
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -17,6 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltrace"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
@@ -31,7 +35,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
 		Routing: routingcfg.Config{
 			Provider: routingcfg.ProviderChi,
-			ChiConfig: &chi.Config{
+			Chi: &chi.Config{
 				ServiceName:            otelServiceName,
 				EnableCORSForLocalhost: true,
 				SilenceRouteLogging:    false,
@@ -92,6 +96,30 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				Otel: &oteltrace.Config{
 					CollectorEndpoint: "http://tracing-server:14268/api/traces",
 				},
+			},
+		},
+		TextSearch: textsearchcfg.Config{
+			// we're using a noop version of this in dev right now, but it still tries to instantiate a circuit breaker.
+			CircuitBreaker: circuitbreaking.Config{
+				Name:                   "feature_flagger",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
+		},
+		FeatureFlags: featureflagscfg.Config{
+			// we're using a noop version of this in dev right now, but it still tries to instantiate a circuit breaker.
+			CircuitBreaker: circuitbreaking.Config{
+				Name:                   "feature_flagger",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
+		},
+		Analytics: analyticscfg.Config{
+			// we're using a noop version of this in dev right now, but it still tries to instantiate a circuit breaker.
+			CircuitBreaker: circuitbreaking.Config{
+				Name:                   "feature_flagger",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
 			},
 		},
 		Services: config.ServicesConfig{

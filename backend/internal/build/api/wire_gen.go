@@ -153,7 +153,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
-	workerService, err := workers.ProvideService(logger, dataManager, serverEncoderDecoder, publisherProvider, tracerProvider, recipeAnalyzer, queuesConfig)
+	workerService, err := workers.ProvideService(logger, dataManager, serverEncoderDecoder, publisherProvider, tracerProvider, provider, recipeAnalyzer, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +175,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	recipemanagementConfig := &servicesConfig.Recipes
-	textsearchcfgConfig := &cfg.Search
+	textsearchcfgConfig := &cfg.TextSearch
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	recipeManagementDataManager := database.ProvideRecipeManagementDataManager(dataManager)
 	recipeManagementDataService, err := recipemanagement.ProvideService(ctx, logger, recipemanagementConfig, textsearchcfgConfig, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider, provider, queuesConfig, recipeManagementDataManager)

@@ -21,6 +21,7 @@
     "@dinnerdonebetter/logger": "*",
     "@dinnerdonebetter/models": "*",
     "@dinnerdonebetter/tracing": "*",
+    "@dinnerdonebetter/encryption": "*",
     "tsconfig": "*"
   }
 }

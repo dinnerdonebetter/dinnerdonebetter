@@ -3,20 +3,20 @@
 # Working directory
 # . or absolute path, please note that the directories following must be under root.
 root = "."
-tmp_dir = "/tmp"
+tmp_dir = "/tmp/air"
 
 [build]
 # Array of commands to run before each build
 pre_cmd = []
 # Just plain old shell command. You could use `make` as well.
-cmd = "go build -o /tmp/air_main ."
+cmd = "go build -o /tmp/air/air_main ."
 # Array of commands to run after ^C
 post_cmd = []
 # Binary file yields from `cmd`.
-bin = "/tmp/air_main"
+bin = "/tmp/air/air_main"
 # Customize binary, can setup environment variables when run your app.
-full_bin = "/tmp/air_main"
-# Add additional arguments when running binary (bin/full_bin). Will run '/tmp/main hello world'.
+full_bin = "/tmp/air/air_main"
+# Add additional arguments when running binary (bin/full_bin). Will run '/tmp/air/main hello world'.
 args_bin = []
 # Watch these filename extensions.
 include_ext = ["go", "tpl", "tmpl", "html"]

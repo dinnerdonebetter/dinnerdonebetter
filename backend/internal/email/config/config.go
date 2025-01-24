@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	circuitbreaking2 "github.com/dinnerdonebetter/backend/internal/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/email/mailgun"
 	"github.com/dinnerdonebetter/backend/internal/email/mailjet"
@@ -28,11 +28,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Sendgrid             *sendgrid.Config         `env:"init"     envPrefix:"SENDGRID_"         json:"sendgrid"`
-		Mailgun              *mailgun.Config          `env:"init"     envPrefix:"MAILGUN_"          json:"mailgun"`
-		Mailjet              *mailjet.Config          `env:"init"     envPrefix:"MAILJET_"          json:"mailjet"`
-		CircuitBreakerConfig *circuitbreaking2.Config `env:"init"     envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakerConfig"`
-		Provider             string                   `env:"PROVIDER" json:"provider"`
+		Sendgrid       *sendgrid.Config       `env:"init"     envPrefix:"SENDGRID_"         json:"sendgrid"`
+		Mailgun        *mailgun.Config        `env:"init"     envPrefix:"MAILGUN_"          json:"mailgun"`
+		Mailjet        *mailjet.Config        `env:"init"     envPrefix:"MAILJET_"          json:"mailjet"`
+		Provider       string                 `env:"PROVIDER" json:"provider"`
+		CircuitBreaker circuitbreaking.Config `env:"init"     envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakerConfig"`
 	}
 )
 
@@ -50,7 +50,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // ProvideEmailer provides an outbound_emailer.
-func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client, circuitBreaker circuitbreaking2.CircuitBreaker) (email.Emailer, error) {
+func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client, circuitBreaker circuitbreaking.CircuitBreaker) (email.Emailer, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSendgrid:
 		return sendgrid.NewSendGridEmailer(cfg.Sendgrid, logger, tracerProvider, client, circuitBreaker)

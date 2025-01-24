@@ -30,7 +30,7 @@ func ProvideAdminWebappRouter(
 		return nil, err
 	}
 
-	router.Route("/_meta_", func(metaRouter routing.Router) {
+	router.Route("/_ops_", func(metaRouter routing.Router) {
 		// Expose a readiness check on /ready
 		metaRouter.Get("/live", func(res http.ResponseWriter, req *http.Request) {
 			res.WriteHeader(http.StatusOK)

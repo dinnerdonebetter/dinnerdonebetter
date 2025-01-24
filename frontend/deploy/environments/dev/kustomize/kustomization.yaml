@@ -26,6 +26,11 @@ patches:
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
+          name: PORT
+          value: "7000"
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
           name: NEXT_API_ENDPOINT
           value: "https://dinner-done-better-api-svc.dev.svc.cluster.local:8000"
       - op: add
@@ -71,6 +76,11 @@ patches:
       name: dinner-done-better-admin-app-deployment
 
   - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: PORT
+          value: "9000"
       - op: add
         path: "/spec/template/spec/containers/0/env/-"
         value:
@@ -125,6 +135,17 @@ patches:
       version: v1
       kind: Deployment
       name: dinner-done-better-webapp-deployment
+
+  - patch: |-
+      - op: add
+        path: "/spec/template/spec/containers/0/env/-"
+        value:
+          name: PORT
+          value: "10000"
+    target:
+      version: v1
+      kind: Deployment
+      name: dinner-done-better-landing-deployment
 
 labels:
   - pairs:

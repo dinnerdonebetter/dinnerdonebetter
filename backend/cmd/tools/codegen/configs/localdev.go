@@ -4,11 +4,13 @@ import (
 	"encoding/base64"
 	"time"
 
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -53,7 +55,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
 		Routing: routingcfg.Config{
 			Provider: routingcfg.ProviderChi,
-			ChiConfig: &chi.Config{
+			Chi: &chi.Config{
 				ServiceName:            otelServiceName,
 				EnableCORSForLocalhost: true,
 				SilenceRouteLogging:    false,
@@ -87,10 +89,26 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 				},
 			},
 		},
-		Search: textsearchcfg.Config{
+		FeatureFlags: featureflagscfg.Config{
+			// we're using a noop version of this in localdev right now, but it still tries to instantiate a circuit breaker.
+			CircuitBreaker: circuitbreaking.Config{
+				Name:                   "feature_flagger",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
+		},
+		Analytics: analyticscfg.Config{
+			// we're using a noop version of this in localdev right now, but it still tries to instantiate a circuit breaker.
+			CircuitBreaker: circuitbreaking.Config{
+				Name:                   "feature_flagger",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
+		},
+		TextSearch: textsearchcfg.Config{
 			Algolia:  &algolia.Config{},
 			Provider: textsearchcfg.AlgoliaProvider,
-			CircuitBreakerConfig: &circuitbreaking.Config{
+			CircuitBreaker: circuitbreaking.Config{
 				Name:                   "dev_text_searcher",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,

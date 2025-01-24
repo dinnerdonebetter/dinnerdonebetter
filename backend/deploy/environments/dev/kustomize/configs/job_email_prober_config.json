@@ -5,12 +5,12 @@
 		},
 		"mailgun": null,
 		"mailjet": null,
+		"provider": "sendgrid",
 		"circuitBreakerConfig": {
 			"name": "dev_emailer",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
-		},
-		"provider": "sendgrid"
+		}
 	},
 	"observability": {
 		"logging": {

@@ -146,7 +146,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		Queues:        s.RootConfig.Queues,
 		Email:         s.RootConfig.Email,
 		Analytics:     s.RootConfig.Analytics,
-		Search:        s.RootConfig.Search,
+		Search:        s.RootConfig.TextSearch,
 		Events:        s.RootConfig.Events,
 		Observability: s.RootConfig.Observability,
 		Database:      s.RootConfig.Database,

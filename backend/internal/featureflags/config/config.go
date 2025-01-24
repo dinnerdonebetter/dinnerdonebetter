@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	circuitbreaking2 "github.com/dinnerdonebetter/backend/internal/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/featureflags/launchdarkly"
 	"github.com/dinnerdonebetter/backend/internal/featureflags/posthog"
@@ -25,10 +25,10 @@ const (
 type (
 	// Config configures our feature flag managers.
 	Config struct {
-		LaunchDarkly          *launchdarkly.Config     `env:"init"     envPrefix:"LAUNCH_DARKLY"     json:"launchDarkly"`
-		PostHog               *posthog.Config          `env:"init"     envPrefix:"POSTHOG_"          json:"posthog"`
-		CircuitBreakingConfig *circuitbreaking2.Config `env:"init"     envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakingConfig"`
-		Provider              string                   `env:"PROVIDER" json:"provider"`
+		LaunchDarkly   *launchdarkly.Config   `env:"init"     envPrefix:"LAUNCH_DARKLY"     json:"launchDarkly"`
+		PostHog        *posthog.Config        `env:"init"     envPrefix:"POSTHOG_"          json:"posthog"`
+		Provider       string                 `env:"PROVIDER" json:"provider"`
+		CircuitBreaker circuitbreaking.Config `env:"init"     envPrefix:"CIRCUIT_BREAKING_" json:"circuitBreakingConfig"`
 	}
 )
 
@@ -43,7 +43,7 @@ func (c *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
-func (c *Config) ProvideFeatureFlagManager(logger logging.Logger, tracerProvider tracing.TracerProvider, httpClient *http.Client, circuitBreaker circuitbreaking2.CircuitBreaker) (featureflags.FeatureFlagManager, error) {
+func (c *Config) ProvideFeatureFlagManager(logger logging.Logger, tracerProvider tracing.TracerProvider, httpClient *http.Client, circuitBreaker circuitbreaking.CircuitBreaker) (featureflags.FeatureFlagManager, error) {
 	switch strings.TrimSpace(strings.ToLower(c.Provider)) {
 	case ProviderLaunchDarkly:
 		return launchdarkly.NewFeatureFlagManager(c.LaunchDarkly, logger, tracerProvider, httpClient, circuitBreaker)

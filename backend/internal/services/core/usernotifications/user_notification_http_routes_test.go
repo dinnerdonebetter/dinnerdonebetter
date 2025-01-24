@@ -12,7 +12,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -42,7 +42,7 @@ func TestUserNotificationsService_CreateUserNotificationHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.UserNotificationDataManagerMock.On(
 			"CreateUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.UserNotificationDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleUserNotification, nil)
 		helper.service.userNotificationDataManager = dbManager
@@ -50,8 +50,8 @@ func TestUserNotificationsService_CreateUserNotificationHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -123,7 +123,7 @@ func TestUserNotificationsService_CreateUserNotificationHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CreateUserNotificationHandler(helper.res, helper.req)
 
@@ -151,7 +151,7 @@ func TestUserNotificationsService_CreateUserNotificationHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.UserNotificationDataManagerMock.On(
 			"CreateUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.UserNotificationDatabaseCreationInput) bool { return true }),
 		).Return((*types.UserNotification)(nil), errors.New("blah"))
 		helper.service.userNotificationDataManager = dbManager
@@ -184,7 +184,7 @@ func TestUserNotificationsService_CreateUserNotificationHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.UserNotificationDataManagerMock.On(
 			"CreateUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.UserNotificationDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleUserNotification, nil)
 		helper.service.userNotificationDataManager = dbManager
@@ -192,8 +192,8 @@ func TestUserNotificationsService_CreateUserNotificationHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -220,7 +220,7 @@ func TestUserNotificationsService_ReadUserNotificationHandler(T *testing.T) {
 		userNotificationDataManager := &mocktypes.UserNotificationDataManagerMock{}
 		userNotificationDataManager.On(
 			"GetUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleUserNotification.ID,
 		).Return(helper.exampleUserNotification, nil)
@@ -241,7 +241,7 @@ func TestUserNotificationsService_ReadUserNotificationHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadUserNotificationHandler(helper.res, helper.req)
 
@@ -260,7 +260,7 @@ func TestUserNotificationsService_ReadUserNotificationHandler(T *testing.T) {
 		userNotificationDataManager := &mocktypes.UserNotificationDataManagerMock{}
 		userNotificationDataManager.On(
 			"GetUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleUserNotification.ID,
 		).Return((*types.UserNotification)(nil), sql.ErrNoRows)
@@ -285,7 +285,7 @@ func TestUserNotificationsService_ReadUserNotificationHandler(T *testing.T) {
 		userNotificationDataManager := &mocktypes.UserNotificationDataManagerMock{}
 		userNotificationDataManager.On(
 			"GetUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleUserNotification.ID,
 		).Return((*types.UserNotification)(nil), errors.New("blah"))
@@ -316,7 +316,7 @@ func TestUserNotificationsService_ListUserNotificationsHandler(T *testing.T) {
 		userNotificationDataManager := &mocktypes.UserNotificationDataManagerMock{}
 		userNotificationDataManager.On(
 			"GetUserNotifications",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleUserNotificationList, nil)
@@ -337,7 +337,7 @@ func TestUserNotificationsService_ListUserNotificationsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListUserNotificationsHandler(helper.res, helper.req)
 
@@ -356,7 +356,7 @@ func TestUserNotificationsService_ListUserNotificationsHandler(T *testing.T) {
 		userNotificationDataManager := &mocktypes.UserNotificationDataManagerMock{}
 		userNotificationDataManager.On(
 			"GetUserNotifications",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.UserNotification])(nil), sql.ErrNoRows)
@@ -381,7 +381,7 @@ func TestUserNotificationsService_ListUserNotificationsHandler(T *testing.T) {
 		userNotificationDataManager := &mocktypes.UserNotificationDataManagerMock{}
 		userNotificationDataManager.On(
 			"GetUserNotifications",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.UserNotification])(nil), errors.New("blah"))
@@ -419,14 +419,14 @@ func TestUserNotificationsService_UpdateUserNotificationHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.UserNotificationDataManagerMock.On(
 			"GetUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleUserNotification.ID,
 		).Return(helper.exampleUserNotification, nil)
 
 		dbManager.UserNotificationDataManagerMock.On(
 			"UpdateUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUserNotification,
 		).Return(nil)
 		helper.service.userNotificationDataManager = dbManager
@@ -434,8 +434,8 @@ func TestUserNotificationsService_UpdateUserNotificationHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -477,7 +477,7 @@ func TestUserNotificationsService_UpdateUserNotificationHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateUserNotificationHandler(helper.res, helper.req)
 
@@ -525,7 +525,7 @@ func TestUserNotificationsService_UpdateUserNotificationHandler(T *testing.T) {
 		userNotificationDataManager := &mocktypes.UserNotificationDataManagerMock{}
 		userNotificationDataManager.On(
 			"GetUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleUserNotification.ID,
 		).Return((*types.UserNotification)(nil), sql.ErrNoRows)
@@ -559,7 +559,7 @@ func TestUserNotificationsService_UpdateUserNotificationHandler(T *testing.T) {
 		userNotificationDataManager := &mocktypes.UserNotificationDataManagerMock{}
 		userNotificationDataManager.On(
 			"GetUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleUserNotification.ID,
 		).Return((*types.UserNotification)(nil), errors.New("blah"))
@@ -593,14 +593,14 @@ func TestUserNotificationsService_UpdateUserNotificationHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.UserNotificationDataManagerMock.On(
 			"GetUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleUserNotification.ID,
 		).Return(helper.exampleUserNotification, nil)
 
 		dbManager.UserNotificationDataManagerMock.On(
 			"UpdateUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUserNotification,
 		).Return(errors.New("blah"))
 		helper.service.userNotificationDataManager = dbManager
@@ -633,14 +633,14 @@ func TestUserNotificationsService_UpdateUserNotificationHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.UserNotificationDataManagerMock.On(
 			"GetUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleUserNotification.ID,
 		).Return(helper.exampleUserNotification, nil)
 
 		dbManager.UserNotificationDataManagerMock.On(
 			"UpdateUserNotification",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUserNotification,
 		).Return(nil)
 		helper.service.userNotificationDataManager = dbManager
@@ -648,8 +648,8 @@ func TestUserNotificationsService_UpdateUserNotificationHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

@@ -51,6 +51,4 @@ COPY --from=installer /app/apps/landing/package.json .
 COPY --from=installer --chown=nextjs:nodejs /app/apps/landing/.next/standalone ./
 COPY --from=installer --chown=nextjs:nodejs /app/apps/landing/.next/static ./apps/landing/.next/static
 
-ENV PORT=10000
-
 CMD node apps/landing/server.js

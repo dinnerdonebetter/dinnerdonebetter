@@ -40,7 +40,7 @@ resource "google_sql_database_instance" "dev" {
     password_validation_policy {
       min_length     = 30 # [0, 30]
       reuse_interval = 1
-      # A combination of lowercase, uppercase, numeric, and non-alphanumeric characters. only other option is "COMPLEXITY_UNSPECIFIED"
+      # A combination of lowercase, uppercase, numeric, and non-alphanumeric characters. The only other option is "COMPLEXITY_UNSPECIFIED"
       complexity                  = "COMPLEXITY_DEFAULT"
       disallow_username_substring = true
       password_change_interval    = "1s"
@@ -57,4 +57,14 @@ resource "google_sql_ssl_cert" "client_cert" {
 resource "google_sql_database" "api_database" {
   name     = local.database_name
   instance = google_sql_database_instance.dev.name
+}
+
+resource "cloudflare_record" "database_record" {
+  zone_id = var.CLOUDFLARE_ZONE_ID
+  name    = "db"
+  content = google_sql_database_instance.dev.public_ip_address
+  type    = "A"
+  proxied = true
+  ttl     = 1
+  comment = "Managed by Terraform"
 }
