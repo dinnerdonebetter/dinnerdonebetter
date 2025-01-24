@@ -10,54 +10,43 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestProvideCircuitBreaker(T *testing.T) {
-	T.Parallel()
+//nolint:paralleltest // race condition in the core circuit breaker library, I think?
+func TestProvideCircuitBreaker(t *testing.T) {
+	cfg := &Config{}
+	cfg.EnsureDefaults()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		cfg := &Config{}
-		cfg.EnsureDefaults()
-
-		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
-		assert.NotNil(t, cb)
-		assert.NoError(t, err)
-	})
+	cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
+	assert.NotNil(t, cb)
+	assert.NoError(t, err)
 }
 
+//nolint:paralleltest // race condition in the core circuit breaker library, I think?
 func TestEnsureCircuitBreaker(t *testing.T) {
-	t.Parallel()
-
 	assert.NotNil(t, EnsureCircuitBreaker(nil))
 }
 
-func TestCircuitBreaker_Integration(T *testing.T) {
-	T.Parallel()
+//nolint:paralleltest // race condition in the core circuit breaker library, I think?
+func TestCircuitBreaker_Integration(t *testing.T) {
+	cfg := &Config{
+		Name:                   t.Name(),
+		ErrorRate:              1,
+		MinimumSampleThreshold: 1,
+	}
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
+	cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
+	assert.NotNil(t, cb)
+	assert.NoError(t, err)
 
-		cfg := &Config{
-			Name:                   t.Name(),
-			ErrorRate:              1,
-			MinimumSampleThreshold: 1,
-		}
-
-		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
-		assert.NotNil(t, cb)
-		assert.NoError(t, err)
-
-		assert.True(t, cb.CanProceed())
-		cb.Failed()
-		assert.True(t, cb.CannotProceed())
-		cb.Succeeded()
-		assert.Eventually(
-			t,
-			func() bool {
-				return cb.CanProceed()
-			},
-			5*time.Second,
-			500*time.Millisecond,
-		)
-	})
+	assert.True(t, cb.CanProceed())
+	cb.Failed()
+	assert.True(t, cb.CannotProceed())
+	cb.Succeeded()
+	assert.Eventually(
+		t,
+		func() bool {
+			return cb.CanProceed()
+		},
+		5*time.Second,
+		500*time.Millisecond,
+	)
 }

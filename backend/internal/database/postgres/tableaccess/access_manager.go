@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 type Manager interface {
@@ -29,6 +30,12 @@ WHERE grantee = '%s'`, username))
 	if err != nil {
 		return false, err
 	}
+
+	defer func() {
+		if closeErr := results.Close(); closeErr != nil {
+			log.Println(err)
+		}
+	}()
 
 	for results.Next() {
 		var (
