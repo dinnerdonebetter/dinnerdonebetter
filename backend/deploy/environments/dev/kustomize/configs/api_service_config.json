@@ -50,7 +50,7 @@
 		"launchDarkly": null,
 		"posthog": null,
 		"circuitBreakingConfig": {
-			"name": "dev_emailer",
+			"name": "feature_flagger",
 			"circuitBreakerErrorPercentage": 0.5,
 			"circuitBreakerMinimumOccurrenceThreshold": 100
 		},

@@ -5,9 +5,11 @@ import (
 	"time"
 
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -92,6 +94,14 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 				Otel: &oteltrace.Config{
 					CollectorEndpoint: "http://tracing-server:14268/api/traces",
 				},
+			},
+		},
+		FeatureFlags: featureflagscfg.Config{
+			// we're using a noop version of this in dev right now, but it still tries to instantiate a circuit breaker.
+			CircuitBreaker: &circuitbreaking.Config{
+				Name:                   "feature_flagger",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
 			},
 		},
 		Services: config.ServicesConfig{

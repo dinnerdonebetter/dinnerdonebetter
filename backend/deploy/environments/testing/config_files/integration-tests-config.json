@@ -29,7 +29,11 @@
 	"featureFlags": {
 		"launchDarkly": null,
 		"posthog": null,
-		"circuitBreakingConfig": null,
+		"circuitBreakingConfig": {
+			"name": "feature_flagger",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		},
 		"provider": ""
 	},
 	"encoding": {
