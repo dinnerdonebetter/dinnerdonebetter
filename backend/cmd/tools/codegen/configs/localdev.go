@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"time"
 
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -89,6 +90,14 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			},
 		},
 		FeatureFlags: featureflagscfg.Config{
+			// we're using a noop version of this in dev right now, but it still tries to instantiate a circuit breaker.
+			CircuitBreaker: &circuitbreaking.Config{
+				Name:                   "feature_flagger",
+				ErrorRate:              .5,
+				MinimumSampleThreshold: 100,
+			},
+		},
+		Analytics: analyticscfg.Config{
 			// we're using a noop version of this in dev right now, but it still tries to instantiate a circuit breaker.
 			CircuitBreaker: &circuitbreaking.Config{
 				Name:                   "feature_flagger",

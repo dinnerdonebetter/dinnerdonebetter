@@ -10,7 +10,11 @@
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
-		"circuitBreaker": null,
+		"circuitBreaker": {
+			"name": "feature_flagger",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		},
 		"provider": ""
 	},
 	"events": {
