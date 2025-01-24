@@ -88,10 +88,7 @@ func buildDatabaseConnectionForTest(t *testing.T, ctx context.Context) (*sql.DB,
 	require.NoError(t, err)
 	require.NotNil(t, container)
 
-	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
-	require.NoError(t, err)
-
-	db, err := sql.Open("pgx", connStr)
+	db, err := sql.Open("pgx", container.MustConnectionString(ctx, "sslmode=disable"))
 	require.NoError(t, err)
 
 	return db, container
@@ -100,41 +97,25 @@ func buildDatabaseConnectionForTest(t *testing.T, ctx context.Context) (*sql.DB,
 func createDatabaseForTest(t *testing.T, db *sql.DB, database string) {
 	t.Helper()
 
-	res, err := db.Exec(fmt.Sprintf("CREATE DATABASE %s", database))
+	_, err := db.Exec(fmt.Sprintf("CREATE DATABASE %s;", database))
 	require.NoError(t, err)
-	rowsAffected, err := res.RowsAffected()
-	require.NoError(t, err)
-	require.Equal(t, 1, rowsAffected)
 }
 
 func createDatabaseUserForTest(t *testing.T, db *sql.DB, username, password string) {
 	t.Helper()
 
-	res, err := db.Exec(fmt.Sprintf("CREATE USER %s WITH ENCRYPTED PASSWORD '%s'", username, password))
+	_, err := db.Exec(fmt.Sprintf("CREATE USER %s WITH PASSWORD '%s';", username, password))
 	require.NoError(t, err)
-	rowsAffected, err := res.RowsAffected()
-	require.NoError(t, err)
-	require.Equal(t, 1, rowsAffected)
 }
 
-func grantAllPrivilegesToDatabaseForTest(t *testing.T, db *sql.DB, username, database string) {
+func grantRolesToUserForTest(t *testing.T, db *sql.DB, username string) {
 	t.Helper()
 
-	res, err := db.Exec(fmt.Sprintf("GRANT ALL PRIVILEGES ON DATABASE %s TO %s", database, username))
+	_, err := db.Exec(fmt.Sprintf("GRANT pg_read_all_data TO %s;", username))
 	require.NoError(t, err)
-	rowsAffected, err := res.RowsAffected()
-	require.NoError(t, err)
-	require.Equal(t, 1, rowsAffected)
-}
 
-func revokeAllPrivilegesToDatabaseForTest(t *testing.T, db *sql.DB, username, database string) {
-	t.Helper()
-
-	res, err := db.Exec(fmt.Sprintf("REVOKE ALL PRIVILEGES ON DATABASE %s FROM %s", database, username))
+	_, err = db.Exec(fmt.Sprintf("GRANT pg_write_all_data TO %s;", username))
 	require.NoError(t, err)
-	rowsAffected, err := res.RowsAffected()
-	require.NoError(t, err)
-	require.Equal(t, 1, rowsAffected)
 }
 
 func TestNewManager(T *testing.T) {
@@ -145,7 +126,7 @@ func TestNewManager(T *testing.T) {
 
 		ctx := context.Background()
 
-		db, container := buildDatabaseConnectionForTest(t, ctx)
+		adminDB, container := buildDatabaseConnectionForTest(t, ctx)
 		defer container.Stop(ctx, pointer.To(10*time.Second))
 
 		connStr, err := container.ConnectionString(ctx, "sslmode=disable")
@@ -153,14 +134,34 @@ func TestNewManager(T *testing.T) {
 		require.NotEmpty(t, connStr)
 
 		const (
-			databaseName = "example"
-			username     = "user"
+			databaseName = "exampledb"
+			username     = "username"
 			password     = "password123"
 		)
 
-		createDatabaseForTest(t, db, databaseName)
-		createDatabaseUserForTest(t, db, username, password)
-		grantAllPrivilegesToDatabaseForTest(t, db, username, databaseName)
+		createDatabaseForTest(t, adminDB, databaseName)
+		createDatabaseUserForTest(t, adminDB, username, password)
+		grantRolesToUserForTest(t, adminDB, username)
+
+		dbHost, err := container.Host(ctx)
+		require.NoError(t, err)
+		dbPort, err := container.MappedPort(ctx, "5432")
+		require.NoError(t, err)
+
+		createdUserDB, err := sql.Open("pgx", fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, dbHost, dbPort.Port(), databaseName))
+		require.NoError(t, err)
+
+		_, err = createdUserDB.ExecContext(ctx, `
+CREATE TABLE IF NOT EXISTS example (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    last_updated_at TIMESTAMP WITH TIME ZONE,
+    archived_at TIMESTAMP WITH TIME ZONE
+);
+`)
+		require.NoError(t, err)
+
 		println("")
 	})
 }

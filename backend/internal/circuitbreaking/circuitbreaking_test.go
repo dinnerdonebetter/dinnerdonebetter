@@ -16,7 +16,10 @@ func TestProvideCircuitBreaker(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		cb, err := ProvideCircuitBreaker(nil, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
+		cfg := &Config{}
+		cfg.EnsureDefaults()
+
+		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
 		assert.NotNil(t, cb)
 		assert.NoError(t, err)
 	})

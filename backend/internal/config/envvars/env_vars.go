@@ -83,6 +83,15 @@ const (
 	// DatabaseRunMigrationsEnvVarKey is the environment variable name to set in order to override `config.Database.RunMigrations`.
 	DatabaseRunMigrationsEnvVarKey = "DINNER_DONE_BETTER_DATABASE_RUN_MIGRATIONS"
 
+	// EmailCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreaker.ErrorRate`.
+	EmailCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_ERROR_RATE"
+
+	// EmailCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreaker.MinimumSampleThreshold`.
+	EmailCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// EmailCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreaker.Name`.
+	EmailCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_EMAIL_CIRCUIT_BREAKING_NAME"
+
 	// EmailInitEnvVarKey is the environment variable name to set in order to override `config.Email.CircuitBreaker`.
 	EmailInitEnvVarKey = "DINNER_DONE_BETTER_EMAIL_init"
 
@@ -142,6 +151,15 @@ const (
 
 	// EventsPublisherSqsQueueAddressEnvVarKey is the environment variable name to set in order to override `config.Events.Publisher.SQS.QueueAddress`.
 	EventsPublisherSqsQueueAddressEnvVarKey = "DINNER_DONE_BETTER_EVENTS_PUBLISHER_SQS_QUEUE_ADDRESS"
+
+	// FeatureFlagsCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreaker.ErrorRate`.
+	FeatureFlagsCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_ERROR_RATE"
+
+	// FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreaker.MinimumSampleThreshold`.
+	FeatureFlagsCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
+
+	// FeatureFlagsCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreaker.Name`.
+	FeatureFlagsCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_CIRCUIT_BREAKING_NAME"
 
 	// FeatureFlagsInitEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreaker`.
 	FeatureFlagsInitEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_init"
