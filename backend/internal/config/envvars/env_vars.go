@@ -17,13 +17,13 @@ const (
 	// AnalyticsInitEnvVarKey is the environment variable name to set in order to override `config.Analytics.CircuitBreaker`.
 	AnalyticsInitEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_init"
 
-	// AnalyticsPosthogCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreaker.ErrorRate`.
+	// AnalyticsPosthogCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreakerConfig.ErrorRate`.
 	AnalyticsPosthogCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_POSTHOG_CIRCUIT_BREAKING_ERROR_RATE"
 
-	// AnalyticsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreaker.MinimumSampleThreshold`.
+	// AnalyticsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreakerConfig.MinimumSampleThreshold`.
 	AnalyticsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_POSTHOG_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
 
-	// AnalyticsPosthogCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreaker.Name`.
+	// AnalyticsPosthogCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.CircuitBreakerConfig.Name`.
 	AnalyticsPosthogCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_POSTHOG_CIRCUIT_BREAKING_NAME"
 
 	// AnalyticsPosthogPersonalAPIKeyEnvVarKey is the environment variable name to set in order to override `config.Analytics.Posthog.PersonalAPIKey`.
@@ -146,13 +146,13 @@ const (
 	// FeatureFlagsInitEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.CircuitBreaker`.
 	FeatureFlagsInitEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_init"
 
-	// FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreaker.ErrorRate`.
+	// FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.ErrorRate`.
 	FeatureFlagsLaunchDarklycircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_ERROR_RATE"
 
-	// FeatureFlagsLaunchDarklycircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreaker.MinimumSampleThreshold`.
+	// FeatureFlagsLaunchDarklycircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.MinimumSampleThreshold`.
 	FeatureFlagsLaunchDarklycircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
 
-	// FeatureFlagsLaunchDarklycircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreaker.Name`.
+	// FeatureFlagsLaunchDarklycircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.CircuitBreakerConfig.Name`.
 	FeatureFlagsLaunchDarklycircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYCIRCUIT_BREAKING_NAME"
 
 	// FeatureFlagsLaunchDarklyinitTimeoutEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.InitTimeout`.
@@ -161,13 +161,13 @@ const (
 	// FeatureFlagsLaunchDarklysdkKeyEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.LaunchDarkly.SDKKey`.
 	FeatureFlagsLaunchDarklysdkKeyEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_LAUNCH_DARKLYSDK_KEY"
 
-	// FeatureFlagsPosthogCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.CircuitBreaker.ErrorRate`.
+	// FeatureFlagsPosthogCircuitBreakingErrorRateEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.CircuitBreakerConfig.ErrorRate`.
 	FeatureFlagsPosthogCircuitBreakingErrorRateEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_CIRCUIT_BREAKING_ERROR_RATE"
 
-	// FeatureFlagsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.CircuitBreaker.MinimumSampleThreshold`.
+	// FeatureFlagsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.CircuitBreakerConfig.MinimumSampleThreshold`.
 	FeatureFlagsPosthogCircuitBreakingMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_CIRCUIT_BREAKING_MINIMUM_SAMPLE_THRESHOLD"
 
-	// FeatureFlagsPosthogCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.CircuitBreaker.Name`.
+	// FeatureFlagsPosthogCircuitBreakingNameEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.CircuitBreakerConfig.Name`.
 	FeatureFlagsPosthogCircuitBreakingNameEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_POSTHOG_CIRCUIT_BREAKING_NAME"
 
 	// FeatureFlagsPosthogPersonalAPIKeyEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.PostHog.PersonalAPIKey`.
@@ -180,10 +180,10 @@ const (
 	FeatureFlagsProviderEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_PROVIDER"
 
 	// MetaDebugEnvVarKey is the environment variable name to set in order to override `config.Meta.Debug`.
-	MetaDebugEnvVarKey = "DINNER_DONE_BETTER_ops_DEBUG"
+	MetaDebugEnvVarKey = "DINNER_DONE_BETTER_META_DEBUG"
 
 	// MetaRunModeEnvVarKey is the environment variable name to set in order to override `config.Meta.RunMode`.
-	MetaRunModeEnvVarKey = "DINNER_DONE_BETTER_ops_RUN_MODE"
+	MetaRunModeEnvVarKey = "DINNER_DONE_BETTER_META_RUN_MODE"
 
 	// ObservabilityLoggingInitEnvVarKey is the environment variable name to set in order to override `config.Observability.Logging.OtelSlog`.
 	ObservabilityLoggingInitEnvVarKey = "DINNER_DONE_BETTER_OBSERVABILITY_LOGGING_init"
@@ -298,6 +298,15 @@ const (
 
 	// SearchAlgoliaTimeoutEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Algolia.Timeout`.
 	SearchAlgoliaTimeoutEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ALGOLIA_TIMEOUT"
+
+	// SearchCircuitBreakerErrorRateEnvVarKey is the environment variable name to set in order to override `config.TextSearch.CircuitBreaker.ErrorRate`.
+	SearchCircuitBreakerErrorRateEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_ERROR_RATE"
+
+	// SearchCircuitBreakerMinimumSampleThresholdEnvVarKey is the environment variable name to set in order to override `config.TextSearch.CircuitBreaker.MinimumSampleThreshold`.
+	SearchCircuitBreakerMinimumSampleThresholdEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_MINIMUM_SAMPLE_THRESHOLD"
+
+	// SearchCircuitBreakerNameEnvVarKey is the environment variable name to set in order to override `config.TextSearch.CircuitBreaker.Name`.
+	SearchCircuitBreakerNameEnvVarKey = "DINNER_DONE_BETTER_SEARCH_CIRCUIT_BREAKER_NAME"
 
 	// SearchElasticsearchAddressEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Elasticsearch.Address`.
 	SearchElasticsearchAddressEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ELASTICSEARCH_ADDRESS"
