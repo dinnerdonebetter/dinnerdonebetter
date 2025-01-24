@@ -17,7 +17,11 @@
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
-		"circuitBreakerConfig": null,
+		"circuitBreakerConfig": {
+			"name": "",
+			"circuitBreakerErrorPercentage": 0,
+			"circuitBreakerMinimumOccurrenceThreshold": 0
+		},
 		"provider": ""
 	},
 	"analytics": {

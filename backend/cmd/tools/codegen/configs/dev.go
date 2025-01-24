@@ -33,7 +33,6 @@ import (
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
 	mealplanningservice "github.com/dinnerdonebetter/backend/internal/services/eating/meal_planning"
 	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
-	validenumerations "github.com/dinnerdonebetter/backend/internal/services/eating/valid_enumerations"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 )
@@ -71,7 +70,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		FeatureFlags: featureflagscfg.Config{
 			// we're using a noop version of this in dev right now, but it still tries to instantiate a circuit breaker.
-			CircuitBreaker: &circuitbreaking.Config{
+			CircuitBreaker: circuitbreaking.Config{
 				Name:                   "feature_flagger",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -79,7 +78,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		Email: emailcfg.Config{
 			Provider: emailcfg.ProviderSendgrid,
-			CircuitBreaker: &circuitbreaking.Config{
+			CircuitBreaker: circuitbreaking.Config{
 				Name:                   "dev_emailer",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -88,7 +87,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		Analytics: analyticscfg.Config{
 			Provider: analyticscfg.ProviderSegment,
-			CircuitBreaker: &circuitbreaking.Config{
+			CircuitBreaker: circuitbreaking.Config{
 				Name:                   "dev_analytics",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -102,7 +101,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		TextSearch: textsearchcfg.Config{
 			Algolia: &algolia.Config{},
-			CircuitBreaker: &circuitbreaking.Config{
+			CircuitBreaker: circuitbreaking.Config{
 				Name:                   "dev_text_searcher",
 				ErrorRate:              .5,
 				MinimumSampleThreshold: 100,
@@ -215,7 +214,6 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			ValidEnumerations: validenumerations.Config{},
 			MealPlanning: mealplanningservice.Config{
 				UseSearchService: true,
 			},

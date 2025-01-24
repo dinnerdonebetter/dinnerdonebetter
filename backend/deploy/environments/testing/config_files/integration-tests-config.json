@@ -10,7 +10,11 @@
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
-		"circuitBreakerConfig": null,
+		"circuitBreakerConfig": {
+			"name": "",
+			"circuitBreakerErrorPercentage": 0,
+			"circuitBreakerMinimumOccurrenceThreshold": 0
+		},
 		"provider": ""
 	},
 	"analytics": {
@@ -27,7 +31,11 @@
 	"search": {
 		"algolia": null,
 		"elasticsearch": null,
-		"circuitBreakerConfig": null,
+		"circuitBreakerConfig": {
+			"name": "feature_flagger",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		},
 		"provider": ""
 	},
 	"featureFlags": {
