@@ -15,7 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/random"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -43,7 +43,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -51,7 +51,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
 			helper.exampleUser.TwoFactorSecret,
@@ -62,7 +62,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
@@ -70,8 +70,8 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -110,7 +110,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetAdminUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -118,7 +118,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
 			helper.exampleUser.TwoFactorSecret,
@@ -129,7 +129,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
@@ -137,8 +137,8 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -205,7 +205,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return((*types.User)(nil), sql.ErrNoRows)
 		helper.service.userDataManager = userDataManager
@@ -234,7 +234,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = userDataManager
@@ -266,7 +266,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -295,7 +295,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -303,7 +303,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
 			helper.exampleUser.TwoFactorSecret,
@@ -335,7 +335,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -343,7 +343,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
 			helper.exampleUser.TwoFactorSecret,
@@ -375,7 +375,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -383,7 +383,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
 			helper.exampleUser.TwoFactorSecret,
@@ -415,7 +415,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -423,7 +423,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
 			helper.exampleUser.TwoFactorSecret,
@@ -456,7 +456,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -464,7 +464,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
 			helper.exampleUser.TwoFactorSecret,
@@ -496,7 +496,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -504,7 +504,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
 			helper.exampleUser.TwoFactorSecret,
@@ -515,7 +515,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return("", errors.New("blah"))
 		helper.service.householdMembershipManager = membershipDB
@@ -544,7 +544,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.Username,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = userDataManager
@@ -552,7 +552,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		authenticator := &mockauthn.Authenticator{}
 		authenticator.On(
 			"CredentialsAreValid",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.HashedPassword,
 			helper.exampleLoginInput.Password,
 			helper.exampleUser.TwoFactorSecret,
@@ -563,7 +563,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdMembershipManager = membershipDB
@@ -571,8 +571,8 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -609,7 +609,7 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.StatusHandler(helper.res, helper.req)
 
