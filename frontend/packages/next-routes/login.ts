@@ -134,7 +134,6 @@ export function buildLoginRoute(config: {
             return;
           }
 
-          // TODO: exchange the cookie here for an OAuth2 token
           let token = await getOAuth2Token({
             baseURL: config.baseURL,
             scope: config.scope,
@@ -145,9 +144,17 @@ export function buildLoginRoute(config: {
             householdID: result.data.data.householdID,
           });
 
-          res.setHeader('Set-Cookie', config.cookieFunc(token, result.data.data.userID, result.data.data.householdID));
+          let written = false;
+          try {
+            res.setHeader('Set-Cookie', config.cookieFunc(token, result.data.data.userID, result.data.data.householdID));
+          } catch (e) {
+            res.status(401).send('');
+            written = true
+          }
 
-          res.status(202).send('');
+          if (!written) {
+            res.status(202).send('');
+          }
         })
         .catch((err: AxiosError<IAPIError>) => {
           span.addEvent('error received');
