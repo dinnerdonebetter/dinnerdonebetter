@@ -44,7 +44,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // ProvideIndex validates a Config struct.
-func ProvideIndex[T textsearch.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, cfg *Config, indexName string) (textsearch.Index[T], error) {
+func ProvideIndex[T any](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider, cfg *Config, indexName string) (textsearch.Index[T], error) {
 	//nolint:contextcheck // I actually want to use a whatever context here.
 	circuitBreaker, err := circuitbreaking.ProvideCircuitBreaker(&cfg.CircuitBreaker, logger, metricsProvider)
 	if err != nil {
@@ -55,7 +55,7 @@ func ProvideIndex[T textsearch.Searchable](ctx context.Context, logger logging.L
 	case ElasticsearchProvider:
 		return elasticsearch.ProvideIndexManager[T](ctx, logger, tracerProvider, cfg.Elasticsearch, indexName, circuitBreaker)
 	case AlgoliaProvider:
-		return algolia.ProvideIndexManager[T](ctx, logger, tracerProvider, cfg.Algolia, indexName, circuitBreaker)
+		return algolia.ProvideIndexManager[T](logger, tracerProvider, cfg.Algolia, indexName, circuitBreaker)
 	default:
 		return &textsearch.NoopIndexManager[T]{}, nil
 	}

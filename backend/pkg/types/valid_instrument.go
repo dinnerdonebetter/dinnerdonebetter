@@ -11,11 +11,11 @@ import (
 
 const (
 	// ValidInstrumentCreatedServiceEventType indicates a valid instrument was created.
-	ValidInstrumentCreatedServiceEventType ServiceEventType = "valid_instrument_created"
+	ValidInstrumentCreatedServiceEventType = "valid_instrument_created"
 	// ValidInstrumentUpdatedServiceEventType indicates a valid instrument was updated.
-	ValidInstrumentUpdatedServiceEventType ServiceEventType = "valid_instrument_updated"
+	ValidInstrumentUpdatedServiceEventType = "valid_instrument_updated"
 	// ValidInstrumentArchivedServiceEventType indicates a valid instrument was archived.
-	ValidInstrumentArchivedServiceEventType ServiceEventType = "valid_instrument_archived"
+	ValidInstrumentArchivedServiceEventType = "valid_instrument_archived"
 )
 
 func init() {

@@ -9,11 +9,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/lib/featureflags"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
 	ld "github.com/launchdarkly/go-server-sdk/v6"
@@ -97,7 +97,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
-		return false, types.ErrCircuitBroken
+		return false, internalerrors.ErrCircuitBroken
 	}
 
 	result, err := f.launchDarklyClient.BoolVariation(feature, ldcontext.New(userID), false)
@@ -111,22 +111,22 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 }
 
 // Identify identifies a user in LaunchDarkly.
-func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) error {
+func (f *featureFlagManager) Identify(ctx context.Context, user featureflags.User) error {
 	_, span := f.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := f.logger.WithValue(keys.UserIDKey, user.ID)
+	logger := f.logger.WithValue(keys.UserIDKey, user.GetID())
 
 	if !f.circuitBreaker.CanProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	err := f.launchDarklyClient.Identify(
-		ldcontext.NewBuilderFromContext(ldcontext.New(user.ID)).
-			Name(user.Username).
-			SetString("email", user.EmailAddress).
-			SetString("first_name", user.FirstName).
-			SetString("last_name", user.LastName).
+		ldcontext.NewBuilderFromContext(ldcontext.New(user.GetID())).
+			Name(user.GetUsername()).
+			SetString("email", user.GetEmail()).
+			SetString("first_name", user.GetFirstName()).
+			SetString("last_name", user.GetLastName()).
 			Build(),
 	)
 	if err != nil {

@@ -7,11 +7,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/lib/featureflags"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/posthog/posthog-go"
 )
@@ -82,7 +82,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
-		return false, types.ErrCircuitBroken
+		return false, internalerrors.ErrCircuitBroken
 	}
 
 	flagEnabled, err := f.posthogClient.IsFeatureEnabled(posthog.FeatureFlagPayload{
@@ -103,26 +103,26 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 }
 
 // Identify identifies a user in PostHog.
-func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) error {
+func (f *featureFlagManager) Identify(ctx context.Context, user featureflags.User) error {
 	_, span := f.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if !f.circuitBreaker.CanProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	if user == nil {
 		return ErrNilUser
 	}
 
-	logger := f.logger.WithValue(keys.UserIDKey, user.ID)
+	logger := f.logger.WithValue(keys.UserIDKey, user.GetID())
 
 	err := f.posthogClient.Enqueue(posthog.Identify{
-		DistinctId: user.ID,
+		DistinctId: user.GetID(),
 		Properties: map[string]any{
-			"username":   user.Username,
-			"first_name": user.FirstName,
-			"last_name":  user.LastName,
+			"username":   user.GetUsername(),
+			"first_name": user.GetFirstName(),
+			"last_name":  user.GetLastName(),
 		},
 	})
 	if err != nil {

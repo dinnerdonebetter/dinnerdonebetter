@@ -11,11 +11,11 @@ import (
 
 const (
 	// HouseholdInstrumentOwnershipCreatedServiceEventType indicates a household instrument ownership was created.
-	HouseholdInstrumentOwnershipCreatedServiceEventType ServiceEventType = "household_instrument_ownership_created"
+	HouseholdInstrumentOwnershipCreatedServiceEventType = "household_instrument_ownership_created"
 	// HouseholdInstrumentOwnershipUpdatedServiceEventType indicates a household instrument ownership was updated.
-	HouseholdInstrumentOwnershipUpdatedServiceEventType ServiceEventType = "household_instrument_ownership_updated"
+	HouseholdInstrumentOwnershipUpdatedServiceEventType = "household_instrument_ownership_updated"
 	// HouseholdInstrumentOwnershipArchivedServiceEventType indicates a household instrument ownership was archived.
-	HouseholdInstrumentOwnershipArchivedServiceEventType ServiceEventType = "household_instrument_ownership_archived"
+	HouseholdInstrumentOwnershipArchivedServiceEventType = "household_instrument_ownership_archived"
 )
 
 func init() {

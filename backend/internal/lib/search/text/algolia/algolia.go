@@ -1,7 +1,6 @@
 package algolia
 
 import (
-	"context"
 	"errors"
 	"fmt"
 
@@ -9,19 +8,18 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	algolia "github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 )
 
 var (
-	_ textsearch.Index[types.UserSearchSubset] = (*indexManager[types.UserSearchSubset])(nil)
+	_ textsearch.Index[any] = (*indexManager[any])(nil)
 
 	ErrNilConfig = errors.New("nil config provided")
 )
 
 type (
-	indexManager[T textsearch.Searchable] struct {
+	indexManager[T any] struct {
 		logger         logging.Logger
 		tracer         tracing.Tracer
 		circuitBreaker circuitbreaking.CircuitBreaker
@@ -30,8 +28,7 @@ type (
 	}
 )
 
-func ProvideIndexManager[T textsearch.Searchable](
-	_ context.Context,
+func ProvideIndexManager[T any](
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	cfg *Config,

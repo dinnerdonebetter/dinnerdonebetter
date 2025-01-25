@@ -11,11 +11,11 @@ import (
 
 const (
 	// RecipeStepCompletionConditionCreatedServiceEventType indicates a recipe step completion condition was created.
-	RecipeStepCompletionConditionCreatedServiceEventType ServiceEventType = "recipe_step_completion_condition_created"
+	RecipeStepCompletionConditionCreatedServiceEventType = "recipe_step_completion_condition_created"
 	// RecipeStepCompletionConditionUpdatedServiceEventType indicates a recipe step completion condition was updated.
-	RecipeStepCompletionConditionUpdatedServiceEventType ServiceEventType = "recipe_step_completion_condition_updated"
+	RecipeStepCompletionConditionUpdatedServiceEventType = "recipe_step_completion_condition_updated"
 	// RecipeStepCompletionConditionArchivedServiceEventType indicates a recipe step completion condition was archived.
-	RecipeStepCompletionConditionArchivedServiceEventType ServiceEventType = "recipe_step_completion_condition_archived"
+	RecipeStepCompletionConditionArchivedServiceEventType = "recipe_step_completion_condition_archived"
 )
 
 func init() {

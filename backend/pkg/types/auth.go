@@ -15,46 +15,42 @@ import (
 const (
 	// SessionContextDataKey is the non-string type we use for referencing SessionContextData structs.
 	SessionContextDataKey ContextKey = "session_context_data"
-	// UserIDContextKey is the non-string type we use for referencing SessionContextData structs.
-	UserIDContextKey ContextKey = "user_id"
-	// HouseholdIDContextKey is the non-string type we use for referencing SessionContextData structs.
-	HouseholdIDContextKey ContextKey = "household_id"
 	// UserRegistrationInputContextKey is the non-string type we use for referencing SessionContextData structs.
 	UserRegistrationInputContextKey ContextKey = "user_registration_input"
 
 	// TwoFactorSecretVerifiedServiceEventType indicates a user's two factor secret was verified.
 	/* #nosec G101 */
-	TwoFactorSecretVerifiedServiceEventType ServiceEventType = "two_factor_secret_verified"
+	TwoFactorSecretVerifiedServiceEventType = "two_factor_secret_verified"
 	// TwoFactorDeactivatedServiceEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
 	/* #nosec G101 */
-	TwoFactorDeactivatedServiceEventType ServiceEventType = "two_factor_deactivated"
+	TwoFactorDeactivatedServiceEventType = "two_factor_deactivated"
 	// TwoFactorSecretChangedServiceEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
 	/* #nosec G101 */
-	TwoFactorSecretChangedServiceEventType ServiceEventType = "two_factor_secret_changed"
+	TwoFactorSecretChangedServiceEventType = "two_factor_secret_changed"
 	// PasswordResetTokenCreatedEventType indicates a user created a password reset token.
-	PasswordResetTokenCreatedEventType ServiceEventType = "password_reset_token_created"
+	PasswordResetTokenCreatedEventType = "password_reset_token_created"
 	// PasswordResetTokenRedeemedEventType indicates a user created a password reset token.
-	PasswordResetTokenRedeemedEventType ServiceEventType = "password_reset_token_redeemed"
+	PasswordResetTokenRedeemedEventType = "password_reset_token_redeemed"
 	// PasswordChangedEventType indicates a user changed their password.
-	PasswordChangedEventType ServiceEventType = "password_changed"
+	PasswordChangedEventType = "password_changed"
 	// EmailAddressChangedEventType indicates a user changed their email address.
-	EmailAddressChangedEventType ServiceEventType = "email_address_changed"
+	EmailAddressChangedEventType = "email_address_changed"
 	// UsernameChangedEventType indicates a user changed their username.
-	UsernameChangedEventType ServiceEventType = "username_changed"
+	UsernameChangedEventType = "username_changed"
 	// UserDetailsChangedEventType indicates a user changed their information.
-	UserDetailsChangedEventType ServiceEventType = "user_details_changed"
+	UserDetailsChangedEventType = "user_details_changed"
 	// UsernameReminderRequestedEventType indicates a user requested a username reminder.
-	UsernameReminderRequestedEventType ServiceEventType = "username_reminder_requested"
+	UsernameReminderRequestedEventType = "username_reminder_requested"
 	// UserLoggedInServiceEventType indicates a user has logged in.
-	UserLoggedInServiceEventType ServiceEventType = "user_logged_in"
+	UserLoggedInServiceEventType = "user_logged_in"
 	// UserLoggedOutServiceEventType indicates a user has logged in.
-	UserLoggedOutServiceEventType ServiceEventType = "user_logged_out"
+	UserLoggedOutServiceEventType = "user_logged_out"
 	// UserChangedActiveHouseholdServiceEventType indicates a user has logged in.
-	UserChangedActiveHouseholdServiceEventType ServiceEventType = "changed_active_household"
+	UserChangedActiveHouseholdServiceEventType = "changed_active_household"
 	// UserEmailAddressVerifiedEventType indicates a user created a password reset token.
-	UserEmailAddressVerifiedEventType ServiceEventType = "user_email_address_verified"
+	UserEmailAddressVerifiedEventType = "user_email_address_verified"
 	// UserEmailAddressVerificationEmailRequestedEventType indicates a user created a password reset token.
-	UserEmailAddressVerificationEmailRequestedEventType ServiceEventType = "user_email_address_verification_email_requested"
+	UserEmailAddressVerificationEmailRequestedEventType = "user_email_address_verification_email_requested"
 )
 
 func init() {

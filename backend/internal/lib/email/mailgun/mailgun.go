@@ -7,10 +7,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/lib/email"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	"github.com/mailgun/mailgun-go/v4"
 )
@@ -82,7 +82,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
 
 	if e.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	msg := mailgun.NewMessage(details.FromName, details.Subject, details.HTMLContent, details.ToAddress)

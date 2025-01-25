@@ -11,11 +11,11 @@ import (
 
 const (
 	// UserNotificationCreatedServiceEventType indicates a user notification was created.
-	UserNotificationCreatedServiceEventType ServiceEventType = "user_notification_created"
+	UserNotificationCreatedServiceEventType = "user_notification_created"
 	// UserNotificationUpdatedServiceEventType indicates a user notification was updated.
-	UserNotificationUpdatedServiceEventType ServiceEventType = "user_notification_updated"
+	UserNotificationUpdatedServiceEventType = "user_notification_updated"
 	// UserNotificationArchivedServiceEventType indicates a user notification was archived.
-	UserNotificationArchivedServiceEventType ServiceEventType = "user_notification_archived"
+	UserNotificationArchivedServiceEventType = "user_notification_archived"
 
 	// UserNotificationStatusTypeUnread represents the user notification status type for unread.
 	UserNotificationStatusTypeUnread = "unread"

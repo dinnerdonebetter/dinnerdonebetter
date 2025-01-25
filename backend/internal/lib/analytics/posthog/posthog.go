@@ -6,9 +6,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	"github.com/posthog/posthog-go"
 )
@@ -71,7 +71,7 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	props := posthog.NewProperties()
@@ -93,12 +93,12 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 }
 
 // EventOccurred associates events with a user.
-func (c *EventReporter) EventOccurred(ctx context.Context, event types.ServiceEventType, userID string, properties map[string]any) error {
+func (c *EventReporter) EventOccurred(ctx context.Context, event, userID string, properties map[string]any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	props := posthog.NewProperties()
@@ -108,7 +108,7 @@ func (c *EventReporter) EventOccurred(ctx context.Context, event types.ServiceEv
 
 	err := c.client.Enqueue(posthog.Capture{
 		DistinctId: userID,
-		Event:      string(event),
+		Event:      event,
 		Properties: props,
 	})
 	if err != nil {

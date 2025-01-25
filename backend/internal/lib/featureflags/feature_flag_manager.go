@@ -2,14 +2,20 @@ package featureflags
 
 import (
 	"context"
-
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 type (
+	User interface {
+		GetID() string
+		GetEmail() string
+		GetUsername() string
+		GetFirstName() string
+		GetLastName() string
+	}
+
 	// FeatureFlagManager manages feature flags.
 	FeatureFlagManager interface {
-		Identify(ctx context.Context, user *types.User) error
+		Identify(ctx context.Context, user User) error
 		CanUseFeature(ctx context.Context, userID, feature string) (bool, error)
 		Close() error
 	}
@@ -19,11 +25,11 @@ func NewNoopFeatureFlagManager() FeatureFlagManager {
 	return &NoopFeatureFlagManager{}
 }
 
-// NoopFeatureFlagManager is a no-op FeatureFlagManager.
+// NoopFeatureFlagManager is a no-op FeatureFlagManager.s
 type NoopFeatureFlagManager struct{}
 
 // Identify implements the FeatureFlagManager interface.
-func (m *NoopFeatureFlagManager) Identify(context.Context, *types.User) error {
+func (m *NoopFeatureFlagManager) Identify(context.Context, User) error {
 	return nil
 }
 

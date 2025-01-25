@@ -39,7 +39,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // ProvideCache provides a Cache.
-func ProvideCache[T cache.Cacheable](cfg *Config) (cache.Cache[T], error) {
+func ProvideCache[T any](cfg *Config) (cache.Cache[T], error) {
 	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case ProviderMemory:
 		return memory.NewInMemoryCache[T](), nil

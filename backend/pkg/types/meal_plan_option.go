@@ -11,13 +11,13 @@ import (
 
 const (
 	// MealPlanOptionCreatedServiceEventType indicates a meal plan option was created.
-	MealPlanOptionCreatedServiceEventType ServiceEventType = "meal_plan_option_created"
+	MealPlanOptionCreatedServiceEventType = "meal_plan_option_created"
 	// MealPlanOptionUpdatedServiceEventType indicates a meal plan option was updated.
-	MealPlanOptionUpdatedServiceEventType ServiceEventType = "meal_plan_option_updated"
+	MealPlanOptionUpdatedServiceEventType = "meal_plan_option_updated"
 	// MealPlanOptionArchivedServiceEventType indicates a meal plan option was archived.
-	MealPlanOptionArchivedServiceEventType ServiceEventType = "meal_plan_option_archived"
+	MealPlanOptionArchivedServiceEventType = "meal_plan_option_archived"
 	// MealPlanOptionFinalizedCreatedServiceEventType indicates a meal plan option was created.
-	MealPlanOptionFinalizedCreatedServiceEventType ServiceEventType = "meal_plan_option_finalized"
+	MealPlanOptionFinalizedCreatedServiceEventType = "meal_plan_option_finalized"
 )
 
 func init() {

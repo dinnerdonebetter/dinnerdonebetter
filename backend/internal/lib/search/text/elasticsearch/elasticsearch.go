@@ -8,22 +8,22 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 )
 
 var (
-	_ textsearch.Index[types.UserSearchSubset] = (*indexManager[types.UserSearchSubset])(nil)
+	_ textsearch.Index[any] = (*indexManager[any])(nil)
 )
 
 type (
-	indexManager[T textsearch.Searchable] struct {
+	indexManager[T any] struct {
 		logger                logging.Logger
 		tracer                tracing.Tracer
 		circuitBreaker        circuitbreaking.CircuitBreaker
@@ -53,7 +53,7 @@ func provideElasticsearchClient(cfg *Config) (*elasticsearch.Client, error) {
 	return c, nil
 }
 
-func ProvideIndexManager[T textsearch.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, indexName string, circuitBreaker circuitbreaking.CircuitBreaker) (textsearch.Index[T], error) {
+func ProvideIndexManager[T any](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, indexName string, circuitBreaker circuitbreaking.CircuitBreaker) (textsearch.Index[T], error) {
 	c, err := provideElasticsearchClient(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("initializing search client: %w", err)
@@ -125,7 +125,7 @@ func (sm *indexManager[T]) ensureIndices(ctx context.Context) error {
 	defer span.End()
 
 	if sm.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	res, err := esapi.IndicesExistsRequest{

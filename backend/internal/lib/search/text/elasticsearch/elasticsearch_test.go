@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -70,7 +69,7 @@ func Test_ProvideIndexManager(T *testing.T) {
 			require.NoError(t, shutdownFunc(ctx))
 		}()
 
-		im, err := ProvideIndexManager[types.UserSearchSubset](ctx, nil, nil, cfg, t.Name(), circuitbreaking.NewNoopCircuitBreaker())
+		im, err := ProvideIndexManager[example](ctx, nil, nil, cfg, t.Name(), circuitbreaking.NewNoopCircuitBreaker())
 		assert.NoError(t, err)
 		assert.NotNil(t, im)
 	})
@@ -81,7 +80,7 @@ func Test_ProvideIndexManager(T *testing.T) {
 		ctx := context.Background()
 		cfg := &Config{}
 
-		im, err := ProvideIndexManager[types.UserSearchSubset](ctx, nil, nil, cfg, t.Name(), circuitbreaking.NewNoopCircuitBreaker())
+		im, err := ProvideIndexManager[example](ctx, nil, nil, cfg, t.Name(), circuitbreaking.NewNoopCircuitBreaker())
 		assert.Error(t, err)
 		assert.Nil(t, im)
 	})

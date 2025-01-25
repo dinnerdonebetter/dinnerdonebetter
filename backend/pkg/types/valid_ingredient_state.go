@@ -11,11 +11,11 @@ import (
 
 const (
 	// ValidIngredientStateCreatedServiceEventType indicates a valid ingredient state was created.
-	ValidIngredientStateCreatedServiceEventType ServiceEventType = "valid_ingredient_state_created"
+	ValidIngredientStateCreatedServiceEventType = "valid_ingredient_state_created"
 	// ValidIngredientStateUpdatedServiceEventType indicates a valid ingredient state was updated.
-	ValidIngredientStateUpdatedServiceEventType ServiceEventType = "valid_ingredient_state_updated"
+	ValidIngredientStateUpdatedServiceEventType = "valid_ingredient_state_updated"
 	// ValidIngredientStateArchivedServiceEventType indicates a valid ingredient state was archived.
-	ValidIngredientStateArchivedServiceEventType ServiceEventType = "valid_ingredient_state_archived"
+	ValidIngredientStateArchivedServiceEventType = "valid_ingredient_state_archived"
 
 	// ValidIngredientStateAttributeTypeTexture represents the ingredient attribute type for texture.
 	ValidIngredientStateAttributeTypeTexture = "texture"

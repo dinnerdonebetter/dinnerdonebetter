@@ -7,13 +7,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/cache"
 )
 
-type inMemoryCacheImpl[T cache.Cacheable] struct {
+type inMemoryCacheImpl[T any] struct {
 	cache    map[string]*T
 	cacheHat sync.RWMutex
 }
 
 // NewInMemoryCache builds an in-memory cache.
-func NewInMemoryCache[T cache.Cacheable]() cache.Cache[T] {
+func NewInMemoryCache[T any]() cache.Cache[T] {
 	return &inMemoryCacheImpl[T]{
 		cache: make(map[string]*T),
 	}

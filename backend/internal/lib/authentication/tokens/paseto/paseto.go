@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/o1egl/paseto/v2"
 )
@@ -49,7 +49,7 @@ type tokenPayload struct {
 }
 
 // IssueToken issues a new PASETO token.
-func (s *signer) IssueToken(ctx context.Context, user *types.User, expiry time.Duration) (string, error) {
+func (s *signer) IssueToken(ctx context.Context, user authentication.User, expiry time.Duration) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -61,7 +61,7 @@ func (s *signer) IssueToken(ctx context.Context, user *types.User, expiry time.D
 		Audience:   s.audience,
 		Issuer:     issuer,
 		JTI:        identifiers.New(),
-		Subject:    user.ID,
+		Subject:    user.GetID(),
 		IssuedAt:   time.Now().UTC(),
 		Expiration: time.Now().Add(expiry).UTC(),
 		NotBefore:  time.Now().Add(-1 * time.Minute).UTC(),

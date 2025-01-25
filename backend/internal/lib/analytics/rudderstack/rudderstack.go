@@ -6,9 +6,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	rudderstack "github.com/rudderlabs/analytics-go/v4"
 )
@@ -73,7 +73,7 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	t := rudderstack.NewTraits()
@@ -98,12 +98,12 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 }
 
 // EventOccurred associates events with a user.
-func (c *EventReporter) EventOccurred(ctx context.Context, event types.ServiceEventType, userID string, properties map[string]any) error {
+func (c *EventReporter) EventOccurred(ctx context.Context, event, userID string, properties map[string]any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	p := rudderstack.NewProperties()
@@ -114,7 +114,7 @@ func (c *EventReporter) EventOccurred(ctx context.Context, event types.ServiceEv
 	i := rudderstack.NewIntegrations().EnableAll()
 
 	err := c.client.Enqueue(rudderstack.Track{
-		Event:        string(event),
+		Event:        event,
 		UserId:       userID,
 		Properties:   p,
 		Integrations: i,

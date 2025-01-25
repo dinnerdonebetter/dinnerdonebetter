@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -39,7 +39,7 @@ func NewJWTSigner(logger logging.Logger, tracerProvider tracing.TracerProvider, 
 }
 
 // IssueToken issues a new JSON web token.
-func (s *signer) IssueToken(ctx context.Context, user *types.User, expiry time.Duration) (string, error) {
+func (s *signer) IssueToken(ctx context.Context, user authentication.User, expiry time.Duration) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -53,7 +53,7 @@ func (s *signer) IssueToken(ctx context.Context, user *types.User, expiry time.D
 		"iat": jwt.NewNumericDate(time.Now().UTC()),                       /* issued at */
 		"aud": s.audience,                                                 /* audience, i.e. server address */
 		"iss": issuer,                                                     /* issuer */
-		"sub": user.ID,                                                    /* subject */
+		"sub": user.GetID(),                                               /* subject */
 		"jti": identifiers.New(),                                          /* JWT ID */
 	})
 

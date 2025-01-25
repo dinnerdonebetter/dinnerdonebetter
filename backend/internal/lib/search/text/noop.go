@@ -2,11 +2,9 @@ package textsearch
 
 import (
 	"context"
-
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-var _ Index[types.UserSearchSubset] = (*NoopIndexManager[types.UserSearchSubset])(nil)
+var _ Index[any] = (*NoopIndexManager[any])(nil)
 
 // NoopIndexManager is a noop Index.
 type NoopIndexManager[T any] struct{}

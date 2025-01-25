@@ -34,7 +34,7 @@ func (m *WebhookDataManagerMock) GetWebhooks(ctx context.Context, householdID st
 }
 
 // GetWebhooksForHouseholdAndEvent satisfies our WebhookDataManagerMock interface.
-func (m *WebhookDataManagerMock) GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType types.ServiceEventType) ([]*types.Webhook, error) {
+func (m *WebhookDataManagerMock) GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID, eventType string) ([]*types.Webhook, error) {
 	returnValues := m.Called(ctx, householdID, eventType)
 	return returnValues.Get(0).([]*types.Webhook), returnValues.Error(1)
 }

@@ -2,8 +2,6 @@ package textsearch
 
 import (
 	"context"
-
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 const (
@@ -27,21 +25,8 @@ const (
 	IndexTypeUsers = "users"
 )
 
-type (
-	Searchable interface {
-		types.RecipeSearchSubset |
-			types.MealSearchSubset |
-			types.ValidIngredientSearchSubset |
-			types.ValidInstrumentSearchSubset |
-			types.ValidMeasurementUnitSearchSubset |
-			types.ValidPreparationSearchSubset |
-			types.ValidIngredientStateSearchSubset |
-			types.ValidVesselSearchSubset |
-			types.UserSearchSubset
-	}
-
-	// IndexSearcher is our wrapper interface for querying a text search index.
-	IndexSearcher[T Searchable] interface {
+type ( // IndexSearcher is our wrapper interface for querying a text search index.
+	IndexSearcher[T any] interface {
 		Search(ctx context.Context, query string) (ids []*T, err error)
 	}
 
@@ -53,7 +38,7 @@ type (
 	}
 
 	// Index is our wrapper interface for a text search index.
-	Index[T Searchable] interface {
+	Index[T any] interface {
 		IndexSearcher[T]
 		IndexManager
 	}

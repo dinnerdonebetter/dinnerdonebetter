@@ -74,7 +74,7 @@ type (
 		RecipeMediaID                    string                          `json:"recipeMediaID,omitempty"`
 		MealID                           string                          `json:"mealID,omitempty"`
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
-		EventType                        ServiceEventType                `json:"messageType"`
+		EventType                        string                          `json:"messageType"`
 		ValidIngredientStateIngredientID string                          `json:"validIngredientStateIngredientID"`
 		ValidMeasurementUnitConversionID string                          `json:"validMeasurementUnitConversionID,omitempty"`
 		ValidIngredientStateID           string                          `json:"validIngredientStateID,omitempty"`

@@ -11,11 +11,11 @@ import (
 
 const (
 	// ValidIngredientPreparationCreatedServiceEventType indicates a valid ingredient preparation was created.
-	ValidIngredientPreparationCreatedServiceEventType ServiceEventType = "valid_ingredient_preparation_created"
+	ValidIngredientPreparationCreatedServiceEventType = "valid_ingredient_preparation_created"
 	// ValidIngredientPreparationUpdatedServiceEventType indicates a valid ingredient preparation was updated.
-	ValidIngredientPreparationUpdatedServiceEventType ServiceEventType = "valid_ingredient_preparation_updated"
+	ValidIngredientPreparationUpdatedServiceEventType = "valid_ingredient_preparation_updated"
 	// ValidIngredientPreparationArchivedServiceEventType indicates a valid ingredient preparation was archived.
-	ValidIngredientPreparationArchivedServiceEventType ServiceEventType = "valid_ingredient_preparation_archived"
+	ValidIngredientPreparationArchivedServiceEventType = "valid_ingredient_preparation_archived"
 )
 
 func init() {

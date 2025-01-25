@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/require"
@@ -137,6 +136,6 @@ func TestRudderstackEventReporter_EventOccurred(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
-		require.NoError(t, collector.EventOccurred(ctx, types.ServiceEventType(t.Name()), exampleUserID, properties))
+		require.NoError(t, collector.EventOccurred(ctx, t.Name(), exampleUserID, properties))
 	})
 }

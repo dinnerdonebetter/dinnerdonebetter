@@ -6,9 +6,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	segment "github.com/segmentio/analytics-go/v3"
 )
@@ -61,7 +61,7 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	t := segment.NewTraits()
@@ -86,12 +86,12 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 }
 
 // EventOccurred associates events with a user.
-func (c *EventReporter) EventOccurred(ctx context.Context, event types.ServiceEventType, userID string, properties map[string]any) error {
+func (c *EventReporter) EventOccurred(ctx context.Context, event, userID string, properties map[string]any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if c.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	p := segment.NewProperties()

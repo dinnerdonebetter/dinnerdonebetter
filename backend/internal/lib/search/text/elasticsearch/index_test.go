@@ -6,12 +6,16 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+type example struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
 
 func Test_indexManager_CompleteLifecycle(T *testing.T) {
 	T.Parallel()
@@ -29,24 +33,20 @@ func Test_indexManager_CompleteLifecycle(T *testing.T) {
 			require.NoError(t, shutdownFunc(ctx))
 		}()
 
-		im, err := ProvideIndexManager[types.UserSearchSubset](ctx, nil, nil, cfg, "index_test", circuitbreaking.NewNoopCircuitBreaker())
+		im, err := ProvideIndexManager[example](ctx, nil, nil, cfg, "index_test", circuitbreaking.NewNoopCircuitBreaker())
 		assert.NoError(t, err)
 		assert.NotNil(t, im)
 
-		user := fakes.BuildFakeUser()
-		searchable := &types.UserSearchSubset{
-			ID:           user.ID,
-			Username:     user.Username,
-			FirstName:    user.FirstName,
-			LastName:     user.LastName,
-			EmailAddress: user.EmailAddress,
+		searchable := &example{
+			ID:   identifiers.New(),
+			Name: t.Name(),
 		}
 
 		assert.NoError(t, im.Index(ctx, searchable.ID, searchable))
 
 		time.Sleep(5 * time.Second)
 
-		results, err := im.Search(ctx, searchable.FirstName[0:2])
+		results, err := im.Search(ctx, searchable.Name[0:2])
 		assert.NoError(t, err)
 		assert.Len(t, results, 1)
 		assert.Equal(t, searchable, results[0])

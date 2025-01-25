@@ -11,11 +11,11 @@ import (
 
 const (
 	// ValidIngredientMeasurementUnitCreatedServiceEventType indicates a valid ingredient measurement unit was created.
-	ValidIngredientMeasurementUnitCreatedServiceEventType ServiceEventType = "valid_ingredient_measurement_unit_created"
+	ValidIngredientMeasurementUnitCreatedServiceEventType = "valid_ingredient_measurement_unit_created"
 	// ValidIngredientMeasurementUnitUpdatedServiceEventType indicates a valid ingredient measurement unit was updated.
-	ValidIngredientMeasurementUnitUpdatedServiceEventType ServiceEventType = "valid_ingredient_measurement_unit_updated"
+	ValidIngredientMeasurementUnitUpdatedServiceEventType = "valid_ingredient_measurement_unit_updated"
 	// ValidIngredientMeasurementUnitArchivedServiceEventType indicates a valid ingredient measurement unit was archived.
-	ValidIngredientMeasurementUnitArchivedServiceEventType ServiceEventType = "valid_ingredient_measurement_unit_archived"
+	ValidIngredientMeasurementUnitArchivedServiceEventType = "valid_ingredient_measurement_unit_archived"
 )
 
 func init() {

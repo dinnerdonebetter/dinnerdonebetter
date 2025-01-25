@@ -166,7 +166,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 }
 
 // GetWebhooksForHouseholdAndEvent fetches a list of webhooks from the database that meet a particular filter.
-func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType types.ServiceEventType) ([]*types.Webhook, error) {
+func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID, eventType string) ([]*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

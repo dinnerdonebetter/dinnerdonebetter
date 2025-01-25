@@ -14,11 +14,11 @@ const (
 	maxIngredientsPerStep = 100
 
 	// RecipeStepCreatedServiceEventType indicates a recipe step was created.
-	RecipeStepCreatedServiceEventType ServiceEventType = "recipe_step_created"
+	RecipeStepCreatedServiceEventType = "recipe_step_created"
 	// RecipeStepUpdatedServiceEventType indicates a recipe step was updated.
-	RecipeStepUpdatedServiceEventType ServiceEventType = "recipe_step_updated"
+	RecipeStepUpdatedServiceEventType = "recipe_step_updated"
 	// RecipeStepArchivedServiceEventType indicates a recipe step was archived.
-	RecipeStepArchivedServiceEventType ServiceEventType = "recipe_step_archived"
+	RecipeStepArchivedServiceEventType = "recipe_step_archived"
 )
 
 func init() {

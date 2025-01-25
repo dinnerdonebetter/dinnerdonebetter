@@ -19,13 +19,13 @@ type redisClient interface {
 	Del(ctx context.Context, keys ...string) *redis.IntCmd
 }
 
-type redisCacheImpl[T cache.Cacheable] struct {
+type redisCacheImpl[T any] struct {
 	client     redisClient
 	expiration time.Duration
 }
 
 // NewRedisCache builds a new redis-backed cache.
-func NewRedisCache[T cache.Cacheable](cfg *Config, expiration time.Duration) cache.Cache[T] {
+func NewRedisCache[T any](cfg *Config, expiration time.Duration) cache.Cache[T] {
 	return &redisCacheImpl[T]{
 		client:     buildRedisClient(cfg),
 		expiration: expiration,

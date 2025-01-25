@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 const (
@@ -26,7 +26,7 @@ func (m *indexManager[T]) Index(ctx context.Context, id string, value any) error
 	defer span.End()
 
 	if m.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	logger := m.logger.WithValue(idKey, id).WithValue("value", value)
@@ -59,7 +59,7 @@ func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 	defer span.End()
 
 	if m.circuitBreaker.CannotProceed() {
-		return nil, types.ErrCircuitBroken
+		return nil, internalerrors.ErrCircuitBroken
 	}
 
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
@@ -110,7 +110,7 @@ func (m *indexManager[T]) Delete(ctx context.Context, id string) error {
 	defer span.End()
 
 	if m.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	logger := m.logger.WithValue(idKey, id)
@@ -132,7 +132,7 @@ func (m *indexManager[T]) Wipe(ctx context.Context) error {
 	defer span.End()
 
 	if m.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	if _, err := m.client.ClearObjects(); err != nil {

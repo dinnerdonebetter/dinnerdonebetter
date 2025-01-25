@@ -12,13 +12,13 @@ import (
 
 const (
 	// UserSignedUpServiceEventType indicates a user signed up.
-	UserSignedUpServiceEventType ServiceEventType = "user_signed_up"
+	UserSignedUpServiceEventType = "user_signed_up"
 	// UserArchivedServiceEventType indicates a user archived their account.
-	UserArchivedServiceEventType ServiceEventType = "user_archived"
+	UserArchivedServiceEventType = "user_archived"
 	// UserDataDestroyedServiceEventType indicates a user destroyed their data.
-	UserDataDestroyedServiceEventType ServiceEventType = "user_data_destroyed"
+	UserDataDestroyedServiceEventType = "user_data_destroyed"
 	// UserDataAggregationRequestServiceEventType indicates a user requested their data be aggregated.
-	UserDataAggregationRequestServiceEventType ServiceEventType = "user_data_aggregation_requested"
+	UserDataAggregationRequestServiceEventType = "user_data_aggregation_requested"
 
 	// GoodStandingUserAccountStatus indicates a User's household is in good standing.
 	GoodStandingUserAccountStatus userAccountStatus = "good"
@@ -418,4 +418,31 @@ func (i *AvatarUpdateInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.Base64EncodedData, validation.Required),
 	)
+}
+
+// begin obligatory getter implementations
+
+// GetID fetches the User's ID value.
+func (u *User) GetID() string {
+	return u.ID
+}
+
+// GetEmail fetches the User's EmailAddress value.
+func (u *User) GetEmail() string {
+	return u.EmailAddress
+}
+
+// GetUsername fetches the User's Username value.
+func (u *User) GetUsername() string {
+	return u.Username
+}
+
+// GetFirstName fetches the User's FirstName value.
+func (u *User) GetFirstName() string {
+	return u.FirstName
+}
+
+// GetLastName fetches the User's LastName value.
+func (u *User) GetLastName() string {
+	return u.LastName
 }

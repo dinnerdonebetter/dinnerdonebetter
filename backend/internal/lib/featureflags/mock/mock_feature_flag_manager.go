@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/featureflags"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -22,7 +21,7 @@ func (m *FeatureFlagManager) CanUseFeature(ctx context.Context, username, featur
 }
 
 // Identify satisfies the FeatureFlagManager interface.
-func (m *FeatureFlagManager) Identify(ctx context.Context, user *types.User) error {
+func (m *FeatureFlagManager) Identify(ctx context.Context, user featureflags.User) error {
 	return m.Called(ctx, user).Error(0)
 }
 

@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 )
@@ -27,7 +27,7 @@ func (sm *indexManager[T]) Index(ctx context.Context, id string, value any) erro
 	defer span.End()
 
 	if sm.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	logger := sm.logger.WithValue("id", id).WithValue("value", value)
@@ -72,7 +72,7 @@ func (sm *indexManager[T]) search(ctx context.Context, query string) (results []
 	defer span.End()
 
 	if sm.circuitBreaker.CannotProceed() {
-		return nil, types.ErrCircuitBroken
+		return nil, internalerrors.ErrCircuitBroken
 	}
 
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
@@ -160,7 +160,7 @@ func (sm *indexManager[T]) Delete(ctx context.Context, id string) error {
 	defer span.End()
 
 	if sm.circuitBreaker.CannotProceed() {
-		return types.ErrCircuitBroken
+		return internalerrors.ErrCircuitBroken
 	}
 
 	logger := sm.logger.WithValue("id", id)

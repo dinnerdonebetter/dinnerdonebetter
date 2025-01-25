@@ -12,11 +12,11 @@ import (
 
 const (
 	// RecipeRatingCreatedServiceEventType indicates a recipe rating was created.
-	RecipeRatingCreatedServiceEventType ServiceEventType = "recipe_rating_created"
+	RecipeRatingCreatedServiceEventType = "recipe_rating_created"
 	// RecipeRatingUpdatedServiceEventType indicates a recipe rating was updated.
-	RecipeRatingUpdatedServiceEventType ServiceEventType = "recipe_rating_updated"
+	RecipeRatingUpdatedServiceEventType = "recipe_rating_updated"
 	// RecipeRatingArchivedServiceEventType indicates a recipe rating was archived.
-	RecipeRatingArchivedServiceEventType ServiceEventType = "recipe_rating_archived"
+	RecipeRatingArchivedServiceEventType = "recipe_rating_archived"
 )
 
 func init() {
