@@ -75,10 +75,10 @@ func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.Sessi
 }
 
 // AttachUserToSpan provides a consistent way to attach a user to a span.
-func AttachUserToSpan(span trace.Span, user *types.User) {
+func AttachUserToSpan(span trace.Span, user User) {
 	if user != nil {
-		AttachToSpan(span, keys.UserIDKey, user.ID)
-		AttachToSpan(span, keys.UsernameKey, user.Username)
+		AttachToSpan(span, keys.UserIDKey, user.GetID())
+		AttachToSpan(span, keys.UsernameKey, user.GetUsername())
 	}
 }
 

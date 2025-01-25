@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -22,13 +21,6 @@ type RouteParamManager struct {
 // UserIDFetcherFromSessionContextData satisfies our interface contract.
 func (m *RouteParamManager) UserIDFetcherFromSessionContextData(req *http.Request) uint64 {
 	return m.Called(req).Get(0).(uint64)
-}
-
-// FetchContextFromRequest satisfies our interface contract.
-func (m *RouteParamManager) FetchContextFromRequest(req *http.Request) (*types.SessionContextData, error) {
-	args := m.Called(req)
-
-	return args.Get(0).(*types.SessionContextData), args.Error(1)
 }
 
 // BuildRouteParamIDFetcher satisfies our interface contract.

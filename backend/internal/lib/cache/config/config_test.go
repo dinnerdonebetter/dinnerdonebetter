@@ -4,10 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
-
 	"github.com/stretchr/testify/assert"
 )
+
+type example struct {
+	Name string `json:"name"`
+}
 
 func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Parallel()
@@ -30,7 +32,7 @@ func TestProvideCache(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		_, err := ProvideCache[types.SessionContextData](&Config{
+		_, err := ProvideCache[example](&Config{
 			Provider: ProviderMemory,
 		})
 
@@ -40,7 +42,7 @@ func TestProvideCache(T *testing.T) {
 	T.Run("invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		_, err := ProvideCache[types.SessionContextData](&Config{})
+		_, err := ProvideCache[example](&Config{})
 
 		assert.Error(t, err)
 	})

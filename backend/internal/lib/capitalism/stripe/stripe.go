@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/capitalism"
-	encoding "github.com/dinnerdonebetter/backend/internal/lib/encoding"
+	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 

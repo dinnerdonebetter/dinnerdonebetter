@@ -209,6 +209,7 @@ func (e *serverEncoderDecoder) EncodeErrorResponse(ctx context.Context, res http
 		enc = json.NewEncoder(res)
 	}
 
+	// TODO: move this to the call site
 	outboundResponse := &types.APIResponse[any]{
 		Details: types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),

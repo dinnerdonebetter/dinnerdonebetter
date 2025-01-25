@@ -25,7 +25,7 @@ func NewNoopFeatureFlagManager() FeatureFlagManager {
 	return &NoopFeatureFlagManager{}
 }
 
-// NoopFeatureFlagManager is a no-op FeatureFlagManager.s
+// NoopFeatureFlagManager is a no-op FeatureFlagManager.
 type NoopFeatureFlagManager struct{}
 
 // Identify implements the FeatureFlagManager interface.

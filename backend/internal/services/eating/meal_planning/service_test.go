@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	encoding "github.com/dinnerdonebetter/backend/internal/lib/encoding"
+	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"

@@ -5,9 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	rediscontainers "github.com/testcontainers/testcontainers-go/modules/redis"
@@ -16,6 +13,10 @@ import (
 const (
 	exampleKey = "example"
 )
+
+type example struct {
+	Name string `json:"name"`
+}
 
 func buildContainerBackedRedisConfig(t *testing.T, ctx context.Context) (config *Config, shutdownFunction func(context.Context) error) {
 	t.Helper()
@@ -52,9 +53,9 @@ func Test_redisCacheImpl_Get(T *testing.T) {
 		defer func() {
 			assert.NoError(t, containerShutdown(ctx))
 		}()
-		c := NewRedisCache[types.SessionContextData](cfg, 0)
+		c := NewRedisCache[example](cfg, 0)
 
-		exampleContent := fakes.BuildFakeSessionContextData()
+		exampleContent := &example{Name: t.Name()}
 		assert.NoError(t, c.Set(ctx, exampleKey, exampleContent))
 
 		actual, err := c.Get(ctx, exampleKey)
@@ -75,9 +76,9 @@ func Test_redisCacheImpl_Set(T *testing.T) {
 		defer func() {
 			assert.NoError(t, containerShutdown(ctx))
 		}()
-		c := NewRedisCache[types.SessionContextData](cfg, 0)
+		c := NewRedisCache[example](cfg, 0)
 
-		exampleContent := fakes.BuildFakeSessionContextData()
+		exampleContent := &example{Name: t.Name()}
 		assert.NoError(t, c.Set(ctx, exampleKey, exampleContent))
 	})
 }
@@ -94,9 +95,9 @@ func Test_redisCacheImpl_Delete(T *testing.T) {
 		defer func() {
 			assert.NoError(t, containerShutdown(ctx))
 		}()
-		c := NewRedisCache[types.SessionContextData](cfg, 0)
+		c := NewRedisCache[example](cfg, 0)
 
-		exampleContent := fakes.BuildFakeSessionContextData()
+		exampleContent := &example{Name: t.Name()}
 		assert.NoError(t, c.Set(ctx, exampleKey, exampleContent))
 
 		assert.NoError(t, c.Delete(ctx, exampleKey))

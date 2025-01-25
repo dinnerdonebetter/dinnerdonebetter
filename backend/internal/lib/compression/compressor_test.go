@@ -3,18 +3,19 @@ package compression
 import (
 	"context"
 	"encoding/base64"
-	"net/http"
 	"testing"
-	"time"
 
-	encoding "github.com/dinnerdonebetter/backend/internal/lib/encoding"
+	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+type whatever struct {
+	Name string `json:"name"`
+}
 
 func Test_compressor_CompressBytes(T *testing.T) {
 	T.Parallel()
@@ -26,23 +27,13 @@ func Test_compressor_CompressBytes(T *testing.T) {
 		comp, err := NewCompressor(algoZstd)
 		require.NoError(t, err)
 
-		dt, err := time.Parse(time.DateTime, time.DateTime)
-		require.NoError(t, err)
-
-		x := &types.Webhook{
-			CreatedAt:          dt,
-			Name:               "testing",
-			URL:                "https://whatever.gov",
-			Method:             http.MethodPost,
-			ID:                 "blah-blah-blah",
-			BelongsToHousehold: "something",
-			ContentType:        "application/json",
-			Events:             []*types.WebhookTriggerEvent{},
+		x := &whatever{
+			Name: "testing",
 		}
 
 		encoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		expected := "KLUv_QQAjQUAsownIUAL3AC7zVqQSRJj2JxtUcpeGL5HRbWY0WOmmqqZh3ixAgARDAv416uPHn35NRzLrFNhzbk8Xt1D0qu9rKxWht_xqvHS53ABJ29Zbro4urGyLY5X7OgJgsHB8YpXK3P0h5eARh_tXA7Hgc91r-Nb4xx9WdZP-3hlcpVL6JftqDVnH7aUJo-uoEgokFCBJIlkIMkYSClxfBMo7dRGOUQFAJ5hOIJSDOewuCJ_Z1BlfrNA6Q=="
+		expected := "KLUv_QQAmQAAeyJuYW1lIjoidGVzdGluZyJ9Ch6HXww="
 		compressed, err := comp.CompressBytes(encoder.MustEncodeJSON(ctx, x))
 		assert.NoError(t, err)
 		actual := base64.URLEncoding.EncodeToString(compressed)
@@ -57,23 +48,13 @@ func Test_compressor_CompressBytes(T *testing.T) {
 		comp, err := NewCompressor(algoS2)
 		require.NoError(t, err)
 
-		dt, err := time.Parse(time.DateTime, time.DateTime)
-		require.NoError(t, err)
-
-		x := &types.Webhook{
-			CreatedAt:          dt,
-			Name:               "testing",
-			URL:                "https://whatever.gov",
-			Method:             http.MethodPost,
-			ID:                 "blah-blah-blah",
-			BelongsToHousehold: "something",
-			ContentType:        "application/json",
-			Events:             []*types.WebhookTriggerEvent{},
+		x := &whatever{
+			Name: "testing",
 		}
 
 		encoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		expected := "_wYAAFMyc1R3TwHyAACmH-pBeyJjcmVhdGVkQXQiOiIyMDA2LTAxLTAyVDE1OjA0OjA1WiIsImFyY2hpdmVkQXQiOm51bGwsImxhc3RVcGRhdGVkQXQiOm51bGwsIm5hbWUiOiJ0ZXN0aW5nIiwidXJsIjoiaHR0cHM6Ly93aGF0ZXZlci5nb3YiLCJtZXRob2QiOiJQT1NUIiwiaWQiOiJibGFoLWJsYWgtYmxhaCIsImJlbG9uZ3NUb0hvdXNlaG9sZCI6InNvbWV0aGluZyIsImNvbnRlbnRUeXBlIjoiYXBwbGljYXRpb24vanNvbiIsImV2ZW50cyI6W119Cg=="
+		expected := "_wYAAFMyc1R3TwEXAABui7jXeyJuYW1lIjoidGVzdGluZyJ9Cg=="
 		compressed, err := comp.CompressBytes(encoder.MustEncodeJSON(ctx, x))
 		assert.NoError(t, err)
 		actual := base64.URLEncoding.EncodeToString(compressed)
@@ -98,18 +79,8 @@ func Test_compressor_DecompressBytes(T *testing.T) {
 			comp, err := NewCompressor(a)
 			require.NoError(t, err)
 
-			dt, err := time.Parse(time.DateTime, time.DateTime)
-			require.NoError(t, err)
-
-			x := &types.Webhook{
-				CreatedAt:          dt,
-				Name:               "testing",
-				URL:                "https://whatever.gov",
-				Method:             http.MethodPost,
-				ID:                 "blah-blah-blah",
-				BelongsToHousehold: "something",
-				ContentType:        "application/json",
-				Events:             []*types.WebhookTriggerEvent{},
+			x := &whatever{
+				Name: "testing",
 			}
 
 			encoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
@@ -120,7 +91,7 @@ func Test_compressor_DecompressBytes(T *testing.T) {
 			decompressed, err := comp.DecompressBytes(compressed)
 			assert.NoError(t, err)
 
-			var y *types.Webhook
+			var y *whatever
 			require.NoError(t, encoder.DecodeBytes(ctx, decompressed, &y))
 
 			assert.Equal(t, x, y)

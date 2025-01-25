@@ -8,7 +8,7 @@ import (
 	"path"
 	"time"
 
-	encoding "github.com/dinnerdonebetter/backend/internal/lib/encoding"
+	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	logging "github.com/dinnerdonebetter/backend/internal/lib/observability/logging"

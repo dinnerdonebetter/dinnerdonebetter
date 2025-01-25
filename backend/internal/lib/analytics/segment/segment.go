@@ -99,15 +99,12 @@ func (c *EventReporter) EventOccurred(ctx context.Context, event, userID string,
 		p.Set(k, v)
 	}
 
-	i := segment.NewIntegrations().EnableAll()
-
-	err := c.client.Enqueue(segment.Track{
-		Event:        string(event),
+	if err := c.client.Enqueue(segment.Track{
+		Event:        event,
 		UserId:       userID,
 		Properties:   p,
-		Integrations: i,
-	})
-	if err != nil {
+		Integrations: segment.NewIntegrations().EnableAll(),
+	}); err != nil {
 		c.circuitBreaker.Failed()
 		return err
 	}
