@@ -15,7 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
-	encoding "github.com/dinnerdonebetter/backend/internal/lib/encoding"
+	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
@@ -28,7 +28,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/services/core/admin"
 	"github.com/dinnerdonebetter/backend/internal/services/core/auditlogentries"
-	authenticationsvc "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
+	authentication2 "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
 	"github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/services/core/householdinvitations"
 	"github.com/dinnerdonebetter/backend/internal/services/core/households"
@@ -100,7 +100,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	queuesConfig := &cfg.Queues
-	authDataService, err := authenticationsvc.ProvideService(logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, provider, queuesConfig)
+	authDataService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

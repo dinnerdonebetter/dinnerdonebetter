@@ -402,14 +402,14 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	return result, nil
 }`
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability",
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
 			)
 
 			if shouldFormatPath {
 				imports = append(imports,
 					"fmt",
-					"github.com/dinnerdonebetter/backend/internal/observability/keys")
+					"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 			}
 		} else {
 			// GET routes that don't return lists
@@ -454,15 +454,15 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	return apiResponse.Data, nil
 }`
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability",
 			)
 			if shouldFormatPath {
 				imports = append(imports, "fmt")
 			}
 			if len(f.Params) > 0 {
 				imports = append(imports,
-					"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-					"github.com/dinnerdonebetter/backend/internal/observability/keys")
+					"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+					"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 			}
 		}
 	case http.MethodPost:
@@ -519,15 +519,15 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 }`
 
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/observability",
+			"github.com/dinnerdonebetter/backend/internal/lib/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 		}
 
 	case http.MethodPut:
@@ -573,15 +573,15 @@ reqMods ...RequestModifier,
 	return nil
 }`
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/observability",
+			"github.com/dinnerdonebetter/backend/internal/lib/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 		}
 
 	case http.MethodPatch:
@@ -627,15 +627,15 @@ reqMods ...RequestModifier,
 	return nil
 }`
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/observability",
+			"github.com/dinnerdonebetter/backend/internal/lib/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 		}
 
 	case http.MethodDelete:
@@ -680,15 +680,15 @@ reqMods ...RequestModifier,
 	return  nil
 }`
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/observability",
+			"github.com/dinnerdonebetter/backend/internal/lib/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 		}
 	}
 

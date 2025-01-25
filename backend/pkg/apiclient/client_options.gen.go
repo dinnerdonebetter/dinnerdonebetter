@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"time"
 
-	encoding "github.com/dinnerdonebetter/backend/internal/lib/encoding"
+	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
