@@ -1,9 +1,9 @@
 package capitalism
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/capitalism"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/capitalism"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 

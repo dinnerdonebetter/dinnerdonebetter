@@ -9,25 +9,26 @@ package api
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/authentication"
-	"github.com/dinnerdonebetter/backend/internal/business/recipeanalysis"
+	"github.com/dinnerdonebetter/backend/internal/businesslogic/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/featureflags/config"
-	"github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/random"
-	"github.com/dinnerdonebetter/backend/internal/routing/config"
-	"github.com/dinnerdonebetter/backend/internal/server/http"
+	"github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	encoding "github.com/dinnerdonebetter/backend/internal/lib/encoding"
+	"github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/random"
+	"github.com/dinnerdonebetter/backend/internal/lib/routing/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
+	"github.com/dinnerdonebetter/backend/internal/lib/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/services/core/admin"
 	"github.com/dinnerdonebetter/backend/internal/services/core/auditlogentries"
-	authentication2 "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
+	authenticationsvc "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
 	"github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/services/core/householdinvitations"
 	"github.com/dinnerdonebetter/backend/internal/services/core/households"
@@ -41,7 +42,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/eating/meal_planning"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/valid_enumerations"
-	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 )
 
 // Injectors from build.go:
@@ -100,7 +100,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	queuesConfig := &cfg.Queues
-	authDataService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, provider, queuesConfig)
+	authDataService, err := authenticationsvc.ProvideService(logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

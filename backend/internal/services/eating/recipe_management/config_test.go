@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/uploads"
+	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
 
 	"github.com/stretchr/testify/assert"
 )

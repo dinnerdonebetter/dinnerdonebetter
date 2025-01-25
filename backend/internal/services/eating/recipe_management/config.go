@@ -3,7 +3,7 @@ package recipemanagement
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/uploads"
+	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

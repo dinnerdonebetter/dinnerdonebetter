@@ -3,10 +3,10 @@ package capitalism
 import (
 	"testing"
 
-	capitalismmock "github.com/dinnerdonebetter/backend/internal/capitalism/mock"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
+	capitalismmock "github.com/dinnerdonebetter/backend/internal/lib/capitalism/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	mockrouting "github.com/dinnerdonebetter/backend/internal/lib/routing/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

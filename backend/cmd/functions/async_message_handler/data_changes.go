@@ -6,15 +6,15 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/email"
-	"github.com/dinnerdonebetter/backend/internal/messagequeue"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	textsearch "github.com/dinnerdonebetter/backend/internal/search/text"
-	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
+	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
+	"github.com/dinnerdonebetter/backend/internal/lib/email"
+	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 

@@ -3,7 +3,7 @@ package capitalism
 import (
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	servertiming "github.com/mitchellh/go-server-timing"
 )

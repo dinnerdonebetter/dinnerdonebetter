@@ -6,7 +6,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 

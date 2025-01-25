@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/server/http"
+	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
 
 	"github.com/google/wire"
 )

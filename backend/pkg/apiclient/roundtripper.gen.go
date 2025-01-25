@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	"github.com/hashicorp/go-retryablehttp"
 )

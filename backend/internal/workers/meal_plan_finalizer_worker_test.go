@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 

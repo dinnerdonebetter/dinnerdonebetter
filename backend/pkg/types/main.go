@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

@@ -9,14 +9,14 @@ import (
 	"strings"
 	"testing"
 
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/random/mock"
-	testutils "github.com/dinnerdonebetter/backend/internal/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
+	encoding "github.com/dinnerdonebetter/backend/internal/lib/encoding"
+	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/random/mock"
+	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -818,13 +818,11 @@ func TestService_CreateUserHandler(T *testing.T) {
 		).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
 
-		helper.req = helper.req.WithContext(
-			context.WithValue(
-				helper.req.Context(),
-				types.UserRegistrationInputContextKey,
-				exampleInput,
-			),
-		)
+		helper.req = helper.req.WithContext(context.WithValue(
+			helper.req.Context(),
+			types.UserRegistrationInputContextKey,
+			exampleInput,
+		))
 
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateUserHandler(helper.res, helper.req)

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 
 	"github.com/stretchr/testify/assert"
 )

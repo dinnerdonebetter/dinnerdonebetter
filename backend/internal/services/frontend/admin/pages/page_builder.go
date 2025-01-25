@@ -3,8 +3,8 @@ package pages
 import (
 	"net/url"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 )
 
 type Builder struct {

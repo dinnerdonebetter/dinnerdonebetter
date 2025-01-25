@@ -7,10 +7,10 @@ import (
 	"log/slog"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/email"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/email"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/lib/email/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	_ "go.uber.org/automaxprocs"
 )

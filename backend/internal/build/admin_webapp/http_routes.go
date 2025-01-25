@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/routing"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/routing/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/routing"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
 	adminsvc "github.com/dinnerdonebetter/backend/internal/services/frontend/admin"
 
 	ghttp "maragu.dev/gomponents/http"

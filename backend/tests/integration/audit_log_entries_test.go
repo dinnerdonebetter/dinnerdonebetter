@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 )

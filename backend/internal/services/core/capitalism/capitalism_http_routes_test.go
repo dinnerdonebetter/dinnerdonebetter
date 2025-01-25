@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"testing"
 
-	capitalismmock "github.com/dinnerdonebetter/backend/internal/capitalism/mock"
-	"github.com/dinnerdonebetter/backend/internal/random"
+	capitalismmock "github.com/dinnerdonebetter/backend/internal/lib/capitalism/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/random"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

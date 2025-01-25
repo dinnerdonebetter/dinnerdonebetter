@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 
 	"github.com/stretchr/testify/assert"

@@ -9,7 +9,7 @@ import (
 	"go/token"
 	"strings"
 
-	main2 "github.com/dinnerdonebetter/backend/cmd/tools/codegen/openapi/enums"
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/openapi/enums"
 
 	"github.com/fatih/structtag"
 )
@@ -137,7 +137,7 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 		},
 	}
 
-	for _, enum := range main2.AllEnums {
+	for _, enum := range enums.AllEnums {
 		declaredStructs = append(declaredStructs, &openapiSchema{
 			Enum: enum.Values,
 			name: enum.Name,
@@ -234,7 +234,7 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 						}
 					}
 
-					if x, ok2 := main2.TypeMap[fmt.Sprintf("%s.%s", typeName, fieldName)]; ok2 {
+					if x, ok2 := enums.TypeMap[fmt.Sprintf("%s.%s", typeName, fieldName)]; ok2 {
 						property.Type = ""
 						property.Ref = fmt.Sprintf("#/components/schemas/%s", x)
 					}
