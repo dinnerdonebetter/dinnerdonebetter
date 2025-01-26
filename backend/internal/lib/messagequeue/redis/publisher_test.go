@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"

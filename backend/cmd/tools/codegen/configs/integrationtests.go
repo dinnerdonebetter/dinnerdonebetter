@@ -22,13 +22,13 @@ import (
 	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/core/authentication"
-	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/dataprivacy"
-	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/users"
-	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/recipe_management"
-	"github.com/dinnerdonebetter/backend/internal/testutils"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
+	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/dataprivacy"
+	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/users"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
 )
 
 func buildIntegrationTestsConfig() *config.APIServiceConfig {

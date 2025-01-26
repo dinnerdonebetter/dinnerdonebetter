@@ -6,14 +6,14 @@ import (
 	"log"
 	"log/slog"
 
-	"github.com/dinnerdonebetter/backend/internal/businesslogic/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/workers"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
 
 	_ "go.uber.org/automaxprocs"
 )

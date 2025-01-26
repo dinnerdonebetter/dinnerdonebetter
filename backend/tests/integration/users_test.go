@@ -8,7 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -193,7 +193,7 @@ func (s *TestSuite) TestUsers_Searching() {
 					Username:     fmt.Sprintf("%s%d", exampleUsername, i),
 					Password:     gofakeit.Password(true, true, true, true, false, 64),
 				}
-				user, err := testutils.CreateServiceUser(ctx, urlToUse, in)
+				user, err := createServiceUser(ctx, urlToUse, in)
 				require.NoError(t, err)
 				createdUserIDs = append(createdUserIDs, user.ID)
 			}

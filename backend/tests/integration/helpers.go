@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -13,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/server/http/utils"
-	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -45,7 +45,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 		input = fakes.BuildFakeUserRegistrationInput()
 	}
 
-	user, err := testutils.CreateServiceUser(ctx, urlToUse, input)
+	user, err := createServiceUser(ctx, urlToUse, input)
 	require.NoError(t, err)
 
 	t.Logf("created user %s", user.ID)
@@ -161,4 +161,55 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauth
 	require.NoError(t, err)
 
 	return oauthedClient
+}
+
+// createServiceUser creates a user.
+func createServiceUser(ctx context.Context, address string, in *types.UserRegistrationInput) (*types.User, error) {
+	if address == "" {
+		return nil, errors.New("empty address not allowed")
+	}
+
+	parsedAddress, err := url.Parse(address)
+	if err != nil {
+		return nil, err
+	}
+
+	c, err := apiclient.NewClient(
+		parsedAddress,
+		tracing.NewNoopTracerProvider(),
+		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingURL(address),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("initializing client: %w", err)
+	}
+
+	ucr, err := c.CreateUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	token, tokenErr := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
+	if tokenErr != nil {
+		return nil, fmt.Errorf("generating totp code: %w", tokenErr)
+	}
+
+	if _, validationErr := c.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
+		TOTPToken: token,
+		UserID:    ucr.CreatedUserID,
+	}); validationErr != nil {
+		return nil, fmt.Errorf("verifying totp code: %w", validationErr)
+	}
+
+	u := &types.User{
+		ID:              ucr.CreatedUserID,
+		Username:        ucr.Username,
+		EmailAddress:    ucr.EmailAddress,
+		TwoFactorSecret: ucr.TwoFactorSecret,
+		CreatedAt:       ucr.CreatedAt,
+		// this is a dirty trick to reuse most of this model,
+		HashedPassword: in.Password,
+	}
+
+	return u, nil
 }

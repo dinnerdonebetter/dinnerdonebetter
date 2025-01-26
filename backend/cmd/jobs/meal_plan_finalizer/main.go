@@ -11,8 +11,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/workers"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
 
 	_ "go.uber.org/automaxprocs"
 )

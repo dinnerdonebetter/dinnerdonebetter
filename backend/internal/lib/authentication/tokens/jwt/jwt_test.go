@@ -8,7 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/golang-jwt/jwt/v5"
