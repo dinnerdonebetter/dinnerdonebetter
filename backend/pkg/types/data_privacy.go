@@ -30,22 +30,35 @@ type (
 	UserDataCollection struct {
 		_ struct{} `json:"-"`
 
-		Webhooks                         map[string][]Webhook                      `json:"webhooks"`
-		ServiceSettingConfigurations     map[string][]ServiceSettingConfiguration  `json:"serviceSettingConfigurations"`
-		HouseholdInstrumentOwnerships    map[string][]HouseholdInstrumentOwnership `json:"householdInstrumentOwnerships"`
-		AuditLogEntries                  map[string][]AuditLogEntry                `json:"auditLogEntries"`
-		MealPlans                        map[string][]MealPlan                     `json:"mealPlans"`
-		ReportID                         string                                    `json:"reportID"`
-		User                             User                                      `json:"user"`
-		RecipeRatings                    []RecipeRating                            `json:"recipeRatings"`
-		Recipes                          []Recipe                                  `json:"recipes"`
-		Meals                            []Meal                                    `json:"meals"`
-		ReceivedInvites                  []HouseholdInvitation                     `json:"receivedInvites"`
-		UserIngredientPreferences        []UserIngredientPreference                `json:"userIngredientPreferences"`
-		SentInvites                      []HouseholdInvitation                     `json:"sentInvites"`
-		UserServiceSettingConfigurations []ServiceSettingConfiguration             `json:"userServiceSettingConfigurations"`
-		UserAuditLogEntries              []AuditLogEntry                           `json:"userAuditLogEntries"`
-		Households                       []Household                               `json:"households"`
+		Core     CoreUserDataCollection   `json:"core"`
+		Eating   EatingUserDataCollection `json:"eating"`
+		ReportID string                   `json:"reportID"`
+		User     User                     `json:"user"`
+	}
+
+	CoreUserDataCollection struct {
+		_ struct{} `json:"-"`
+
+		Webhooks                         map[string][]Webhook                     `json:"webhooks"`
+		ServiceSettingConfigurations     map[string][]ServiceSettingConfiguration `json:"serviceSettingConfigurations"`
+		AuditLogEntries                  map[string][]AuditLogEntry               `json:"auditLogEntries"`
+		ReceivedInvites                  []HouseholdInvitation                    `json:"receivedInvites"`
+		SentInvites                      []HouseholdInvitation                    `json:"sentInvites"`
+		UserServiceSettingConfigurations []ServiceSettingConfiguration            `json:"userServiceSettingConfigurations"`
+		UserAuditLogEntries              []AuditLogEntry                          `json:"userAuditLogEntries"`
+		Households                       []Household                              `json:"households"`
+	}
+
+	EatingUserDataCollection struct {
+		_ struct{} `json:"-"`
+
+		HouseholdInstrumentOwnerships map[string][]HouseholdInstrumentOwnership `json:"householdInstrumentOwnerships"`
+		MealPlans                     map[string][]MealPlan                     `json:"mealPlans"`
+		ReportID                      string                                    `json:"reportID"`
+		RecipeRatings                 []RecipeRating                            `json:"recipeRatings"`
+		Recipes                       []Recipe                                  `json:"recipes"`
+		Meals                         []Meal                                    `json:"meals"`
+		UserIngredientPreferences     []UserIngredientPreference                `json:"userIngredientPreferences"`
 	}
 
 	// DataPrivacyService describes a structure capable of serving CCPA/GRPC-related requests.

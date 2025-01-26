@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -127,21 +128,26 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 	}
 
 	output := &types.UserDataCollection{
-		User:                             *user,
-		Households:                       allHouseholds,
-		UserAuditLogEntries:              allUserAuditLogEntries,
-		UserServiceSettingConfigurations: allSettingConfigs,
-		UserIngredientPreferences:        userIngredientPreferences,
-		ReceivedInvites:                  receivedInvites,
-		SentInvites:                      sentInvites,
-		RecipeRatings:                    recipeRatings,
-		Recipes:                          recipes,
-		Meals:                            meals,
-		AuditLogEntries:                  map[string][]types.AuditLogEntry{},
-		MealPlans:                        map[string][]types.MealPlan{},
-		HouseholdInstrumentOwnerships:    map[string][]types.HouseholdInstrumentOwnership{},
-		ServiceSettingConfigurations:     map[string][]types.ServiceSettingConfiguration{},
-		Webhooks:                         map[string][]types.Webhook{},
+		User:     *user,
+		ReportID: identifiers.New(),
+		Core: types.CoreUserDataCollection{
+			Households:                       allHouseholds,
+			UserAuditLogEntries:              allUserAuditLogEntries,
+			UserServiceSettingConfigurations: allSettingConfigs,
+			ReceivedInvites:                  receivedInvites,
+			SentInvites:                      sentInvites,
+			AuditLogEntries:                  map[string][]types.AuditLogEntry{},
+			ServiceSettingConfigurations:     map[string][]types.ServiceSettingConfiguration{},
+			Webhooks:                         map[string][]types.Webhook{},
+		},
+		Eating: types.EatingUserDataCollection{
+			UserIngredientPreferences:     userIngredientPreferences,
+			RecipeRatings:                 recipeRatings,
+			Recipes:                       recipes,
+			Meals:                         meals,
+			MealPlans:                     map[string][]types.MealPlan{},
+			HouseholdInstrumentOwnerships: map[string][]types.HouseholdInstrumentOwnership{},
+		},
 	}
 
 	// set up data collections for all households
@@ -153,7 +159,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		if fetchErr != nil {
 			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
 		}
-		output.AuditLogEntries[household.ID] = auditLogEntries
+		output.Core.AuditLogEntries[household.ID] = auditLogEntries
 
 		serviceSettingConfigs, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
 			return q.GetServiceSettingConfigurationsForHousehold(ctx, household.ID, filter)
@@ -161,7 +167,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		if fetchErr != nil {
 			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
 		}
-		output.ServiceSettingConfigurations[household.ID] = serviceSettingConfigs
+		output.Core.ServiceSettingConfigurations[household.ID] = serviceSettingConfigs
 
 		webhooks, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
 			return q.GetWebhooks(ctx, household.ID, filter)
@@ -169,7 +175,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		if fetchErr != nil {
 			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
 		}
-		output.Webhooks[household.ID] = webhooks
+		output.Core.Webhooks[household.ID] = webhooks
 
 		householdInstrumentOwnerships, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership], error) {
 			return q.GetHouseholdInstrumentOwnerships(ctx, household.ID, filter)
@@ -177,7 +183,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		if fetchErr != nil {
 			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
 		}
-		output.HouseholdInstrumentOwnerships[household.ID] = householdInstrumentOwnerships
+		output.Eating.HouseholdInstrumentOwnerships[household.ID] = householdInstrumentOwnerships
 
 		mealPlans, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error) {
 			return q.GetMealPlansForHousehold(ctx, household.ID, filter)
@@ -185,7 +191,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		if fetchErr != nil {
 			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
 		}
-		output.MealPlans[household.ID] = mealPlans
+		output.Eating.MealPlans[household.ID] = mealPlans
 	}
 
 	logger.Info("user data collected")
