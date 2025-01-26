@@ -1,16 +1,12 @@
 package types
 
-const (
-	// FinalizeMealPlansWithExpiredVotingPeriodsChoreType asks the worker to finalize meal plans with expired voting periods.
-	FinalizeMealPlansWithExpiredVotingPeriodsChoreType = "finalize_meal_plans_with_expired_voting_periods"
-	// CreateMealPlanTasksChoreType asks the worker to finalize meal plans with expired voting periods.
-	CreateMealPlanTasksChoreType = "create_meal_plan_tasks"
+import (
+	"context"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// ServiceEventType enumerates valid service event types.
-	ServiceEventType string
-
 	// DataChangeMessage represents an event that asks a worker to write data to the datastore.
 	DataChangeMessage struct {
 		_ struct{} `json:"-"`
@@ -88,3 +84,9 @@ type (
 		UserIngredientPreferences        []*UserIngredientPreference     `json:"userIngredientPreference,omitempty"`
 	}
 )
+
+func (d *DataChangeMessage) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, &d,
+		validation.Field(&d.RequestID, validation.Required),
+	)
+}

@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random/mock"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -47,7 +47,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
@@ -55,7 +55,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			64,
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
@@ -63,7 +63,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleHouseholdInvitation, nil)
 		helper.service.householdInvitationDataManager = dbManager
@@ -71,8 +71,8 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -147,7 +147,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			64,
 		).Return("", errors.New("blah"))
 		helper.service.secretGenerator = sg
@@ -180,7 +180,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			64,
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
@@ -188,7 +188,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return((*types.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = udm
@@ -221,7 +221,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
@@ -229,7 +229,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			64,
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
@@ -237,7 +237,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
 		helper.service.householdInvitationDataManager = dbManager
@@ -270,7 +270,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
@@ -278,7 +278,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			64,
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
@@ -286,7 +286,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleHouseholdInvitation, nil)
 		helper.service.householdInvitationDataManager = dbManager
@@ -294,8 +294,8 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -329,7 +329,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
@@ -337,7 +337,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			64,
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
@@ -345,7 +345,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleHouseholdInvitation, nil)
 		helper.service.householdInvitationDataManager = dbManager
@@ -353,8 +353,8 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -388,7 +388,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			strings.TrimSpace(strings.ToLower(exampleInput.ToEmail)),
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
@@ -396,7 +396,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			64,
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
@@ -404,7 +404,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleHouseholdInvitation, nil)
 		helper.service.householdInvitationDataManager = dbManager
@@ -412,8 +412,8 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -442,7 +442,7 @@ func Test_service_ReadHouseholdInviteHandler(T *testing.T) {
 		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetHouseholdInvitationByHouseholdAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
@@ -465,7 +465,7 @@ func Test_service_ReadHouseholdInviteHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHouseholdInviteHandler(helper.res, helper.req)
 
@@ -484,7 +484,7 @@ func Test_service_ReadHouseholdInviteHandler(T *testing.T) {
 		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetHouseholdInvitationByHouseholdAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
@@ -509,7 +509,7 @@ func Test_service_ReadHouseholdInviteHandler(T *testing.T) {
 		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetHouseholdInvitationByHouseholdAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
@@ -539,7 +539,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetPendingHouseholdInvitationsForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleHouseholdInvitations, nil)
@@ -581,7 +581,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetPendingHouseholdInvitationsForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
@@ -611,7 +611,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetPendingHouseholdInvitationsFromUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleHouseholdInvitations, nil)
@@ -653,7 +653,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetPendingHouseholdInvitationsFromUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
@@ -691,14 +691,14 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 
 		dataManager.On(
 			"AcceptHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.Note,
@@ -708,8 +708,8 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -800,7 +800,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
@@ -834,7 +834,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
@@ -868,14 +868,14 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 
 		dataManager.On(
 			"AcceptHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.Note,
@@ -910,14 +910,14 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 
 		dataManager.On(
 			"AcceptHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.Note,
@@ -927,8 +927,8 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -963,14 +963,14 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 
 		dataManager.On(
 			"CancelHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(nil)
@@ -979,8 +979,8 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1054,7 +1054,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
@@ -1088,7 +1088,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
@@ -1139,14 +1139,14 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 
 		dataManager.On(
 			"CancelHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(errors.New("blah"))
@@ -1180,14 +1180,14 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 
 		dataManager.On(
 			"CancelHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(nil)
@@ -1196,8 +1196,8 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1232,14 +1232,14 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 
 		dataManager.On(
 			"RejectHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(nil)
@@ -1248,8 +1248,8 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1303,7 +1303,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
@@ -1337,7 +1337,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
@@ -1409,14 +1409,14 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 
 		dataManager.On(
 			"RejectHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(errors.New("blah"))
@@ -1450,14 +1450,14 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.Token,
 			helper.exampleHouseholdInvitation.ID,
 		).Return(helper.exampleHouseholdInvitation, nil)
 
 		dataManager.On(
 			"RejectHouseholdInvitation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHouseholdInvitation.ID,
 			helper.exampleHouseholdInvitation.Note,
 		).Return(nil)
@@ -1466,8 +1466,8 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

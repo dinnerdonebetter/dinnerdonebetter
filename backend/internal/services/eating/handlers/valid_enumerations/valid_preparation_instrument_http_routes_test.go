@@ -15,7 +15,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -45,7 +45,7 @@ func TestValidPreparationInstrumentsService_CreateValidPreparationInstrumentHand
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"CreateValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidPreparationInstrumentDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleValidPreparationInstrument, nil)
 		helper.service.validEnumerationDataManager = dbManager
@@ -53,8 +53,8 @@ func TestValidPreparationInstrumentsService_CreateValidPreparationInstrumentHand
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -126,7 +126,7 @@ func TestValidPreparationInstrumentsService_CreateValidPreparationInstrumentHand
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CreateValidPreparationInstrumentHandler(helper.res, helper.req)
 
@@ -154,7 +154,7 @@ func TestValidPreparationInstrumentsService_CreateValidPreparationInstrumentHand
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"CreateValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidPreparationInstrumentDatabaseCreationInput) bool { return true }),
 		).Return((*types.ValidPreparationInstrument)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = dbManager
@@ -182,7 +182,7 @@ func TestValidPreparationInstrumentsService_ReadValidPreparationInstrumentHandle
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return(helper.exampleValidPreparationInstrument, nil)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -202,7 +202,7 @@ func TestValidPreparationInstrumentsService_ReadValidPreparationInstrumentHandle
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadValidPreparationInstrumentHandler(helper.res, helper.req)
 
@@ -221,7 +221,7 @@ func TestValidPreparationInstrumentsService_ReadValidPreparationInstrumentHandle
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return((*types.ValidPreparationInstrument)(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -245,7 +245,7 @@ func TestValidPreparationInstrumentsService_ReadValidPreparationInstrumentHandle
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return((*types.ValidPreparationInstrument)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -275,7 +275,7 @@ func TestValidPreparationInstrumentsService_ListValidPreparationInstrumentsHandl
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstruments",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidPreparationInstrumentList, nil)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -296,7 +296,7 @@ func TestValidPreparationInstrumentsService_ListValidPreparationInstrumentsHandl
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListValidPreparationInstrumentsHandler(helper.res, helper.req)
 
@@ -315,7 +315,7 @@ func TestValidPreparationInstrumentsService_ListValidPreparationInstrumentsHandl
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstruments",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.ValidPreparationInstrument])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -339,7 +339,7 @@ func TestValidPreparationInstrumentsService_ListValidPreparationInstrumentsHandl
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstruments",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -376,13 +376,13 @@ func TestValidPreparationInstrumentsService_UpdateValidPreparationInstrumentHand
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return(helper.exampleValidPreparationInstrument, nil)
 
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"UpdateValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument,
 		).Return(nil)
 		helper.service.validEnumerationDataManager = dbManager
@@ -390,8 +390,8 @@ func TestValidPreparationInstrumentsService_UpdateValidPreparationInstrumentHand
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -433,7 +433,7 @@ func TestValidPreparationInstrumentsService_UpdateValidPreparationInstrumentHand
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateValidPreparationInstrumentHandler(helper.res, helper.req)
 
@@ -481,7 +481,7 @@ func TestValidPreparationInstrumentsService_UpdateValidPreparationInstrumentHand
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return((*types.ValidPreparationInstrument)(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -514,7 +514,7 @@ func TestValidPreparationInstrumentsService_UpdateValidPreparationInstrumentHand
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return((*types.ValidPreparationInstrument)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -547,13 +547,13 @@ func TestValidPreparationInstrumentsService_UpdateValidPreparationInstrumentHand
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return(helper.exampleValidPreparationInstrument, nil)
 
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"UpdateValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument,
 		).Return(errors.New("blah"))
 		helper.service.validEnumerationDataManager = dbManager
@@ -581,13 +581,13 @@ func TestValidPreparationInstrumentsService_ArchiveValidPreparationInstrumentHan
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"ValidPreparationInstrumentExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return(true, nil)
 
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"ArchiveValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return(nil)
 		helper.service.validEnumerationDataManager = dbManager
@@ -595,8 +595,8 @@ func TestValidPreparationInstrumentsService_ArchiveValidPreparationInstrumentHan
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -614,7 +614,7 @@ func TestValidPreparationInstrumentsService_ArchiveValidPreparationInstrumentHan
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveValidPreparationInstrumentHandler(helper.res, helper.req)
 
@@ -633,7 +633,7 @@ func TestValidPreparationInstrumentsService_ArchiveValidPreparationInstrumentHan
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"ValidPreparationInstrumentExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return(false, nil)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -657,7 +657,7 @@ func TestValidPreparationInstrumentsService_ArchiveValidPreparationInstrumentHan
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"ValidPreparationInstrumentExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
@@ -681,13 +681,13 @@ func TestValidPreparationInstrumentsService_ArchiveValidPreparationInstrumentHan
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"ValidPreparationInstrumentExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return(true, nil)
 
 		dbManager.ValidPreparationInstrumentDataManagerMock.On(
 			"ArchiveValidPreparationInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparationInstrument.ID,
 		).Return(errors.New("blah"))
 		helper.service.validEnumerationDataManager = dbManager
@@ -717,9 +717,9 @@ func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByP
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrumentsForPreparation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
-			testutils2.QueryFilterMatcher,
+			testutils.QueryFilterMatcher,
 		).Return(exampleValidPreparationInstrumentList, nil)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
 
@@ -761,9 +761,9 @@ func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByP
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrumentsForPreparation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
-			testutils2.QueryFilterMatcher,
+			testutils.QueryFilterMatcher,
 		).Return((*filtering.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
 
@@ -791,9 +791,9 @@ func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByI
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrumentsForInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
-			testutils2.QueryFilterMatcher,
+			testutils.QueryFilterMatcher,
 		).Return(exampleValidPreparationInstrumentList, nil)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
 
@@ -835,9 +835,9 @@ func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByI
 		validPreparationInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstrumentsForInstrument",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
-			testutils2.QueryFilterMatcher,
+			testutils.QueryFilterMatcher,
 		).Return((*filtering.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
 

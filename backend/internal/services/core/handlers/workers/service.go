@@ -14,7 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
-	workers2 "github.com/dinnerdonebetter/backend/internal/services/eating/workers"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -31,9 +31,9 @@ type (
 		sessionContextDataFetcher      func(*http.Request) (*sessioncontext.SessionContextData, error)
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		tracer                         tracing.Tracer
-		mealPlanFinalizationWorker     workers2.MealPlanFinalizationWorker
-		mealPlanGroceryListInitializer workers2.MealPlanGroceryListInitializer
-		mealPlanTaskCreatorWorker      workers2.MealPlanTaskCreatorWorker
+		mealPlanFinalizationWorker     workers.MealPlanFinalizationWorker
+		mealPlanGroceryListInitializer workers.MealPlanGroceryListInitializer
+		mealPlanTaskCreatorWorker      workers.MealPlanTaskCreatorWorker
 	}
 )
 
@@ -53,7 +53,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
-	mealPlanFinalizationWorker, err := workers2.ProvideMealPlanFinalizationWorker(
+	mealPlanFinalizationWorker, err := workers.ProvideMealPlanFinalizationWorker(
 		logger,
 		dataManager,
 		dataChangesPublisher,
@@ -64,7 +64,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s meal plan finalization worker: %w", serviceName, err)
 	}
 
-	mealPlanGroceryListInitializer := workers2.ProvideMealPlanGroceryListInitializer(
+	mealPlanGroceryListInitializer := workers.ProvideMealPlanGroceryListInitializer(
 		logger,
 		dataManager,
 		dataChangesPublisher,
@@ -72,7 +72,7 @@ func ProvideService(
 		grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider),
 	)
 
-	mealPlanTaskCreatorWorker := workers2.ProvideMealPlanTaskCreationEnsurerWorker(
+	mealPlanTaskCreatorWorker := workers.ProvideMealPlanTaskCreationEnsurerWorker(
 		logger,
 		dataManager,
 		grapher,

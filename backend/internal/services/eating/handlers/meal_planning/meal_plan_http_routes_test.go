@@ -13,7 +13,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -43,7 +43,7 @@ func TestMealPlansService_CreateMealPlanHandler(T *testing.T) {
 		dbManager := mocktypes.NewMealPlanningDataManagerMock()
 		dbManager.MealPlanDataManagerMock.On(
 			"CreateMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleMealPlan, nil)
 		helper.service.mealPlanningDataManager = dbManager
@@ -51,8 +51,8 @@ func TestMealPlansService_CreateMealPlanHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -124,7 +124,7 @@ func TestMealPlansService_CreateMealPlanHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CreateMealPlanHandler(helper.res, helper.req)
 
@@ -152,7 +152,7 @@ func TestMealPlansService_CreateMealPlanHandler(T *testing.T) {
 		dbManager := mocktypes.NewMealPlanningDataManagerMock()
 		dbManager.MealPlanDataManagerMock.On(
 			"CreateMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanDatabaseCreationInput) bool { return true }),
 		).Return((*types.MealPlan)(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
@@ -180,7 +180,7 @@ func TestMealPlansService_ReadMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"GetMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleMealPlan, nil)
@@ -201,7 +201,7 @@ func TestMealPlansService_ReadMealPlanHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadMealPlanHandler(helper.res, helper.req)
 
@@ -220,7 +220,7 @@ func TestMealPlansService_ReadMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"GetMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.MealPlan)(nil), sql.ErrNoRows)
@@ -245,7 +245,7 @@ func TestMealPlansService_ReadMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"GetMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.MealPlan)(nil), errors.New("blah"))
@@ -276,7 +276,7 @@ func TestMealPlansService_ListMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"GetMealPlansForHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleMealPlanList, nil)
@@ -297,7 +297,7 @@ func TestMealPlansService_ListMealPlanHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListMealPlanHandler(helper.res, helper.req)
 
@@ -316,7 +316,7 @@ func TestMealPlansService_ListMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"GetMealPlansForHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.MealPlan])(nil), sql.ErrNoRows)
@@ -341,7 +341,7 @@ func TestMealPlansService_ListMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"GetMealPlansForHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.MealPlan])(nil), errors.New("blah"))
@@ -379,14 +379,14 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 		dbManager := mocktypes.NewMealPlanningDataManagerMock()
 		dbManager.MealPlanDataManagerMock.On(
 			"GetMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleMealPlan, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
 			"UpdateMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan,
 		).Return(nil)
 		helper.service.mealPlanningDataManager = dbManager
@@ -394,8 +394,8 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -437,7 +437,7 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateMealPlanHandler(helper.res, helper.req)
 
@@ -485,7 +485,7 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"GetMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.MealPlan)(nil), sql.ErrNoRows)
@@ -519,7 +519,7 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"GetMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.MealPlan)(nil), errors.New("blah"))
@@ -553,14 +553,14 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 		dbManager := mocktypes.NewMealPlanningDataManagerMock()
 		dbManager.MealPlanDataManagerMock.On(
 			"GetMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleMealPlan, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
 			"UpdateMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan,
 		).Return(errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
@@ -588,14 +588,14 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 		dbManager := mocktypes.NewMealPlanningDataManagerMock()
 		dbManager.MealPlanDataManagerMock.On(
 			"MealPlanExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
 			"ArchiveMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(nil)
@@ -604,8 +604,8 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -623,7 +623,7 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveMealPlanHandler(helper.res, helper.req)
 
@@ -642,7 +642,7 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"MealPlanExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, nil)
@@ -667,7 +667,7 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
 			"MealPlanExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, errors.New("blah"))
@@ -692,14 +692,14 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 		dbManager := mocktypes.NewMealPlanningDataManagerMock()
 		dbManager.MealPlanDataManagerMock.On(
 			"MealPlanExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
 			"ArchiveMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(errors.New("blah"))
@@ -729,14 +729,14 @@ func TestMealPlansService_FinalizeMealPlanHandler(T *testing.T) {
 		dbManager := mocktypes.NewMealPlanningDataManagerMock()
 		dbManager.MealPlanDataManagerMock.On(
 			"GetMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleMealPlan, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
 			"AttemptToFinalizeMealPlan",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
@@ -745,8 +745,8 @@ func TestMealPlansService_FinalizeMealPlanHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

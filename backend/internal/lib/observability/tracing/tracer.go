@@ -33,7 +33,7 @@ type Tracer interface {
 // TracerProvider is a simple alias for trace.TracerProvider.
 type TracerProvider interface {
 	trace.TracerProvider
-	ForceFlush(ctx context.Context) error
+	ForceFlush(context.Context) error
 }
 
 type noopTracerProvider struct {
@@ -44,11 +44,11 @@ func (n *noopTracerProvider) Tracer(instrumentationName string, opts ...trace.Tr
 	return noop.NewTracerProvider().Tracer(instrumentationName, opts...)
 }
 
-func (n *noopTracerProvider) ForceFlush(_ context.Context) error {
+func (n *noopTracerProvider) ForceFlush(context.Context) error {
 	return nil
 }
 
-// NewNoopTracerProvider is a shadow for opentelemetry's NewNoopTracerProvider.
+// NewNoopTracerProvider is a shadow for Otel's NewNoopTracerProvider.
 var NewNoopTracerProvider = func() TracerProvider {
 	return &noopTracerProvider{}
 }

@@ -14,7 +14,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -37,7 +37,7 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHouseholds",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleHouseholdList, nil)
@@ -64,7 +64,7 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListHouseholdsHandler(helper.res, helper.req)
 
@@ -83,7 +83,7 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHouseholds",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.Household])(nil), sql.ErrNoRows)
@@ -108,7 +108,7 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHouseholds",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.Household])(nil), errors.New("blah"))
@@ -146,7 +146,7 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"CreateHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
@@ -154,8 +154,8 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -185,7 +185,7 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CreateHouseholdHandler(helper.res, helper.req)
 
@@ -256,7 +256,7 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"CreateHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
@@ -289,7 +289,7 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"CreateHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
@@ -297,8 +297,8 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -326,7 +326,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
@@ -347,7 +347,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
@@ -366,7 +366,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
@@ -390,7 +390,7 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
@@ -418,7 +418,7 @@ func TestHouseholdsService_ReadHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
@@ -439,7 +439,7 @@ func TestHouseholdsService_ReadHouseholdHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHouseholdHandler(helper.res, helper.req)
 
@@ -458,7 +458,7 @@ func TestHouseholdsService_ReadHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
@@ -482,7 +482,7 @@ func TestHouseholdsService_ReadHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
@@ -519,12 +519,12 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHousehold, nil)
 		householdDataManager.On(
 			"UpdateHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.Household{}),
 		).Return(nil)
 		helper.service.householdDataManager = householdDataManager
@@ -532,8 +532,8 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -563,7 +563,7 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
 
@@ -634,7 +634,7 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
@@ -667,7 +667,7 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
@@ -703,12 +703,12 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHousehold, nil)
 		householdDataManager.On(
 			"UpdateHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.Household{}),
 		).Return(errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
@@ -741,12 +741,12 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"GetHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleHousehold, nil)
 		householdDataManager.On(
 			"UpdateHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&types.Household{}),
 		).Return(nil)
 		helper.service.householdDataManager = householdDataManager
@@ -754,8 +754,8 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -783,7 +783,7 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"ArchiveHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
@@ -792,8 +792,8 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -811,7 +811,7 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
 
@@ -830,7 +830,7 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"ArchiveHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(sql.ErrNoRows)
@@ -855,7 +855,7 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"ArchiveHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
@@ -880,7 +880,7 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
 		householdDataManager.On(
 			"ArchiveHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
@@ -889,8 +889,8 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -925,7 +925,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"ModifyUserPermissions",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
 			exampleInput,
@@ -935,8 +935,8 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -997,7 +997,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
@@ -1034,7 +1034,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"ModifyUserPermissions",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
 			exampleInput,
@@ -1069,7 +1069,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"ModifyUserPermissions",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
 			exampleInput,
@@ -1079,8 +1079,8 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1115,7 +1115,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"TransferHouseholdOwnership",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			exampleInput,
 		).Return(nil)
@@ -1124,8 +1124,8 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1186,7 +1186,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
@@ -1223,7 +1223,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"TransferHouseholdOwnership",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			exampleInput,
 		).Return(errors.New("blah"))
@@ -1257,7 +1257,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"TransferHouseholdOwnership",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			exampleInput,
 		).Return(nil)
@@ -1266,8 +1266,8 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1295,7 +1295,7 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"RemoveUserFromHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
 		).Return(nil)
@@ -1304,8 +1304,8 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1325,7 +1325,7 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
@@ -1347,7 +1347,7 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"RemoveUserFromHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
 		).Return(errors.New("blah"))
@@ -1374,7 +1374,7 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"RemoveUserFromHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
 		).Return(nil)
@@ -1383,8 +1383,8 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1412,7 +1412,7 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"MarkHouseholdAsUserDefault",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
 		).Return(nil)
@@ -1421,8 +1421,8 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1440,7 +1440,7 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
 
@@ -1459,7 +1459,7 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"MarkHouseholdAsUserDefault",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
 		).Return(errors.New("blah"))
@@ -1484,7 +1484,7 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipDataManager.On(
 			"MarkHouseholdAsUserDefault",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			helper.exampleHousehold.ID,
 		).Return(nil)
@@ -1493,8 +1493,8 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

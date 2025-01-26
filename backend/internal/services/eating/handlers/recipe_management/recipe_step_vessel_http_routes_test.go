@@ -14,7 +14,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -43,7 +43,7 @@ func TestRecipeStepVesselsService_CreateRecipeStepVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"CreateRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepVesselDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleRecipeStepVessel, nil)
 		helper.service.recipeManagementDataManager = dbManager
@@ -51,8 +51,8 @@ func TestRecipeStepVesselsService_CreateRecipeStepVesselHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -124,7 +124,7 @@ func TestRecipeStepVesselsService_CreateRecipeStepVesselHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CreateRecipeStepVesselHandler(helper.res, helper.req)
 
@@ -152,7 +152,7 @@ func TestRecipeStepVesselsService_CreateRecipeStepVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"CreateRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepVesselDatabaseCreationInput) bool { return true }),
 		).Return((*types.RecipeStepVessel)(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = dbManager
@@ -180,7 +180,7 @@ func TestRecipeStepVesselsService_ReadRecipeStepVesselHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -202,7 +202,7 @@ func TestRecipeStepVesselsService_ReadRecipeStepVesselHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadRecipeStepVesselHandler(helper.res, helper.req)
 
@@ -221,7 +221,7 @@ func TestRecipeStepVesselsService_ReadRecipeStepVesselHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -247,7 +247,7 @@ func TestRecipeStepVesselsService_ReadRecipeStepVesselHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -279,7 +279,7 @@ func TestRecipeStepVesselsService_ListRecipeStepVesselsHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessels",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			mock.IsType(&filtering.QueryFilter{}),
@@ -301,7 +301,7 @@ func TestRecipeStepVesselsService_ListRecipeStepVesselsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListRecipeStepVesselsHandler(helper.res, helper.req)
 
@@ -320,7 +320,7 @@ func TestRecipeStepVesselsService_ListRecipeStepVesselsHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessels",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			mock.IsType(&filtering.QueryFilter{}),
@@ -346,7 +346,7 @@ func TestRecipeStepVesselsService_ListRecipeStepVesselsHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessels",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			mock.IsType(&filtering.QueryFilter{}),
@@ -385,7 +385,7 @@ func TestRecipeStepVesselsService_UpdateRecipeStepVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -394,7 +394,7 @@ func TestRecipeStepVesselsService_UpdateRecipeStepVesselHandler(T *testing.T) {
 
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"UpdateRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipeStepVessel,
 		).Return(nil)
 		helper.service.recipeManagementDataManager = dbManager
@@ -402,8 +402,8 @@ func TestRecipeStepVesselsService_UpdateRecipeStepVesselHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -445,7 +445,7 @@ func TestRecipeStepVesselsService_UpdateRecipeStepVesselHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateRecipeStepVesselHandler(helper.res, helper.req)
 
@@ -493,7 +493,7 @@ func TestRecipeStepVesselsService_UpdateRecipeStepVesselHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -528,7 +528,7 @@ func TestRecipeStepVesselsService_UpdateRecipeStepVesselHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -563,7 +563,7 @@ func TestRecipeStepVesselsService_UpdateRecipeStepVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"GetRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -572,7 +572,7 @@ func TestRecipeStepVesselsService_UpdateRecipeStepVesselHandler(T *testing.T) {
 
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"UpdateRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipeStepVessel,
 		).Return(errors.New("blah"))
 		helper.service.recipeManagementDataManager = dbManager
@@ -600,7 +600,7 @@ func TestRecipeStepVesselsService_ArchiveRecipeStepVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"RecipeStepVesselExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -608,7 +608,7 @@ func TestRecipeStepVesselsService_ArchiveRecipeStepVesselHandler(T *testing.T) {
 
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"ArchiveRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
 		).Return(nil)
@@ -617,8 +617,8 @@ func TestRecipeStepVesselsService_ArchiveRecipeStepVesselHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -636,7 +636,7 @@ func TestRecipeStepVesselsService_ArchiveRecipeStepVesselHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveRecipeStepVesselHandler(helper.res, helper.req)
 
@@ -655,7 +655,7 @@ func TestRecipeStepVesselsService_ArchiveRecipeStepVesselHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"RecipeStepVesselExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -681,7 +681,7 @@ func TestRecipeStepVesselsService_ArchiveRecipeStepVesselHandler(T *testing.T) {
 		recipeStepVesselDataManager := NewRecipeManagementDataManagerMock()
 		recipeStepVesselDataManager.RecipeStepVesselDataManagerMock.On(
 			"RecipeStepVesselExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -707,7 +707,7 @@ func TestRecipeStepVesselsService_ArchiveRecipeStepVesselHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"RecipeStepVesselExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
@@ -715,7 +715,7 @@ func TestRecipeStepVesselsService_ArchiveRecipeStepVesselHandler(T *testing.T) {
 
 		dbManager.RecipeStepVesselDataManagerMock.On(
 			"ArchiveRecipeStepVessel",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipeStep.ID,
 			helper.exampleRecipeStepVessel.ID,
 		).Return(errors.New("blah"))

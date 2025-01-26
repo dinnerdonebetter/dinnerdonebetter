@@ -15,7 +15,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -45,7 +45,7 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleAccountStatusUpdateInput.TargetUserID,
 			helper.exampleAccountStatusUpdateInput,
 		).Return(nil)
@@ -106,7 +106,7 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleAccountStatusUpdateInput.TargetUserID,
 			helper.exampleAccountStatusUpdateInput,
 		).Return(nil)
@@ -123,7 +123,7 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.exampleAccountStatusUpdateInput.NewStatus = string(types.BannedUserAccountStatus)
 
@@ -279,7 +279,7 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleAccountStatusUpdateInput.TargetUserID,
 			helper.exampleAccountStatusUpdateInput,
 		).Return(sql.ErrNoRows)
@@ -310,7 +310,7 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleAccountStatusUpdateInput.TargetUserID,
 			helper.exampleAccountStatusUpdateInput,
 		).Return(errors.New("blah"))
@@ -345,7 +345,7 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		userDataManager := &mocktypes.AdminUserDataManagerMock{}
 		userDataManager.On(
 			"UpdateUserAccountStatus",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleAccountStatusUpdateInput.TargetUserID,
 			helper.exampleAccountStatusUpdateInput,
 		).Return(nil)
@@ -388,7 +388,7 @@ func TestAdminService_WriteArbitraryQueueMessageHandler(T *testing.T) {
 		mockPublisher := &mockpublishers.Publisher{}
 		mockPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(x []byte) bool {
 				var y types.DataChangeMessage
 				err = json.Unmarshal(x, &y)

@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -28,7 +28,7 @@ func TestAuditLogEntriesService_ReadAuditLogEntryHandler(T *testing.T) {
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntry",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleAuditLogEntry.ID,
 		).Return(helper.exampleAuditLogEntry, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
@@ -48,7 +48,7 @@ func TestAuditLogEntriesService_ReadAuditLogEntryHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadAuditLogEntryHandler(helper.res, helper.req)
 
@@ -67,7 +67,7 @@ func TestAuditLogEntriesService_ReadAuditLogEntryHandler(T *testing.T) {
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntry",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleAuditLogEntry.ID,
 		).Return((*types.AuditLogEntry)(nil), sql.ErrNoRows)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
@@ -91,7 +91,7 @@ func TestAuditLogEntriesService_ReadAuditLogEntryHandler(T *testing.T) {
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntry",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleAuditLogEntry.ID,
 		).Return((*types.AuditLogEntry)(nil), errors.New("blah"))
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
@@ -121,7 +121,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntriesForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
@@ -149,7 +149,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntriesForUserAndResourceType",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			[]string{helper.exampleAuditLogEntry.ResourceType},
 			mock.IsType(&filtering.QueryFilter{}),
@@ -176,7 +176,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
 
@@ -195,7 +195,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntriesForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
@@ -220,7 +220,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntriesForUser",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
@@ -251,7 +251,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntriesForHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
@@ -279,7 +279,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntriesForHouseholdAndResourceType",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			[]string{helper.exampleAuditLogEntry.ResourceType},
 			mock.IsType(&filtering.QueryFilter{}),
@@ -306,7 +306,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
 
@@ -325,7 +325,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntriesForHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
@@ -350,7 +350,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
 			"GetAuditLogEntriesForHousehold",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))

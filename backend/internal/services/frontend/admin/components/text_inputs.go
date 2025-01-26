@@ -10,7 +10,7 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-func buildInputAndLabel(_ context.Context, input ValidatedTextInput) []gomponents.Node {
+func buildInputAndLabel(input ValidatedTextInput) []gomponents.Node {
 	props := input.data()
 
 	return []gomponents.Node{
@@ -128,7 +128,7 @@ type ValidatedTextInput interface {
 
 func FormTextInput(ctx context.Context, props ValidatedTextInput) gomponents.Node {
 	return ghtml.Div(
-		buildInputAndLabel(ctx, props)...,
+		buildInputAndLabel(props)...,
 	)
 }
 
@@ -139,7 +139,7 @@ func TextInputs(ctx context.Context, props ...ValidatedTextInput) gomponents.Nod
 			ghtml.Div(
 				append(
 					[]gomponents.Node{ghtml.Class("w-full")},
-					buildInputAndLabel(ctx, prop)...,
+					buildInputAndLabel(prop)...,
 				)...,
 			),
 		)

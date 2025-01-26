@@ -13,7 +13,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -43,7 +43,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManagerMock.On(
 			"CreateWebhook",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.WebhookDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleWebhook, nil)
 		helper.service.webhookDataManager = dbManager
@@ -51,8 +51,8 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -71,7 +71,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		exampleCreationInput := fakes.BuildFakeWebhookCreationRequestInput()
@@ -145,7 +145,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManagerMock.On(
 			"CreateWebhook",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.WebhookDatabaseCreationInput) bool { return true }),
 		).Return((*types.Webhook)(nil), errors.New("blah"))
 		helper.service.webhookDataManager = dbManager
@@ -178,7 +178,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.WebhookDataManagerMock.On(
 			"CreateWebhook",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(message *types.WebhookDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleWebhook, nil)
 		helper.service.webhookDataManager = dbManager
@@ -186,8 +186,8 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -216,7 +216,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhooks",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleWebhookList, nil)
@@ -237,7 +237,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 
@@ -256,7 +256,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhooks",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.Webhook])(nil), sql.ErrNoRows)
@@ -281,7 +281,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhooks",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.Webhook])(nil), errors.New("blah"))
@@ -310,7 +310,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhook",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleWebhook, nil)
@@ -331,7 +331,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 
@@ -350,7 +350,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhook",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.Webhook)(nil), sql.ErrNoRows)
@@ -375,7 +375,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"GetWebhook",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return((*types.Webhook)(nil), errors.New("blah"))
@@ -404,14 +404,14 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dataManager.On(
 			"ArchiveWebhook",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(nil)
@@ -420,8 +420,8 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -439,7 +439,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 
@@ -458,7 +458,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, errors.New("blah"))
@@ -483,7 +483,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, sql.ErrNoRows)
@@ -508,14 +508,14 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dataManager.On(
 			"ArchiveWebhook",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(errors.New("blah"))
@@ -540,14 +540,14 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dataManager.On(
 			"ArchiveWebhook",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(nil)
@@ -556,8 +556,8 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -590,14 +590,14 @@ func TestWebhooksService_AddWebhookTriggerEventHandler(T *testing.T) {
 		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dataManager.On(
 			"AddWebhookTriggerEvent",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.MatchedBy(func(message *types.WebhookTriggerEventDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleWebhookTriggerEvent, nil)
@@ -606,8 +606,8 @@ func TestWebhooksService_AddWebhookTriggerEventHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -663,7 +663,7 @@ func TestWebhooksService_AddWebhookTriggerEventHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleTriggerEventCreationInput)
 
@@ -696,7 +696,7 @@ func TestWebhooksService_AddWebhookTriggerEventHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, errors.New("blah"))
@@ -728,7 +728,7 @@ func TestWebhooksService_AddWebhookTriggerEventHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, sql.ErrNoRows)
@@ -760,14 +760,14 @@ func TestWebhooksService_AddWebhookTriggerEventHandler(T *testing.T) {
 		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dataManager.On(
 			"AddWebhookTriggerEvent",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.MatchedBy(func(message *types.WebhookTriggerEventDatabaseCreationInput) bool { return true }),
 		).Return((*types.WebhookTriggerEvent)(nil), errors.New("blah"))
@@ -799,14 +799,14 @@ func TestWebhooksService_AddWebhookTriggerEventHandler(T *testing.T) {
 		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dataManager.On(
 			"AddWebhookTriggerEvent",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			mock.MatchedBy(func(message *types.WebhookTriggerEventDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleWebhookTriggerEvent, nil)
@@ -815,8 +815,8 @@ func TestWebhooksService_AddWebhookTriggerEventHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -842,14 +842,14 @@ func TestWebhooksService_ArchiveWebhookTriggerEventHandler(T *testing.T) {
 		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dataManager.On(
 			"ArchiveWebhookTriggerEvent",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleWebhookTriggerEvent.ID,
 		).Return(nil)
@@ -858,8 +858,8 @@ func TestWebhooksService_ArchiveWebhookTriggerEventHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -877,7 +877,7 @@ func TestWebhooksService_ArchiveWebhookTriggerEventHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveWebhookTriggerEventHandler(helper.res, helper.req)
 
@@ -896,7 +896,7 @@ func TestWebhooksService_ArchiveWebhookTriggerEventHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, errors.New("blah"))
@@ -921,7 +921,7 @@ func TestWebhooksService_ArchiveWebhookTriggerEventHandler(T *testing.T) {
 		wd := &mocktypes.WebhookDataManagerMock{}
 		wd.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(false, sql.ErrNoRows)
@@ -946,14 +946,14 @@ func TestWebhooksService_ArchiveWebhookTriggerEventHandler(T *testing.T) {
 		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dataManager.On(
 			"ArchiveWebhookTriggerEvent",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleWebhookTriggerEvent.ID,
 		).Return(errors.New("blah"))
@@ -978,14 +978,14 @@ func TestWebhooksService_ArchiveWebhookTriggerEventHandler(T *testing.T) {
 		dataManager := &mocktypes.WebhookDataManagerMock{}
 		dataManager.On(
 			"WebhookExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleHousehold.ID,
 		).Return(true, nil)
 
 		dataManager.On(
 			"ArchiveWebhookTriggerEvent",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleWebhook.ID,
 			helper.exampleWebhookTriggerEvent.ID,
 		).Return(nil)
@@ -994,8 +994,8 @@ func TestWebhooksService_ArchiveWebhookTriggerEventHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"Publish",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

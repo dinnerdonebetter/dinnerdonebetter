@@ -18,7 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -49,7 +49,7 @@ func TestRecipesService_CreateRecipeHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleRecipe, nil)
 		helper.service.recipeManagementDataManager = dbManager
@@ -57,8 +57,8 @@ func TestRecipesService_CreateRecipeHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -130,7 +130,7 @@ func TestRecipesService_CreateRecipeHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CreateRecipeHandler(helper.res, helper.req)
 
@@ -158,7 +158,7 @@ func TestRecipesService_CreateRecipeHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeDatabaseCreationInput) bool { return true }),
 		).Return((*types.Recipe)(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = dbManager
@@ -189,7 +189,7 @@ func TestRecipesService_ReadRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(helper.exampleRecipe, nil)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -209,7 +209,7 @@ func TestRecipesService_ReadRecipeHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadRecipeHandler(helper.res, helper.req)
 
@@ -231,7 +231,7 @@ func TestRecipesService_ReadRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return((*types.Recipe)(nil), sql.ErrNoRows)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -258,7 +258,7 @@ func TestRecipesService_ReadRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return((*types.Recipe)(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -288,7 +288,7 @@ func TestRecipesService_ListRecipesHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipes",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleRecipeList, nil)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -308,7 +308,7 @@ func TestRecipesService_ListRecipesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListRecipesHandler(helper.res, helper.req)
 
@@ -327,7 +327,7 @@ func TestRecipesService_ListRecipesHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipes",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.Recipe])(nil), sql.ErrNoRows)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -351,7 +351,7 @@ func TestRecipesService_ListRecipesHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipes",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.Recipe])(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -383,7 +383,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"SearchForRecipes",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleRecipeList, nil)
@@ -423,7 +423,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		searchIndex := &mocksearch.IndexManager[types.RecipeSearchSubset]{}
 		searchIndex.On(
 			"Search",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(recipeSearchSubsets, nil)
 		helper.service.searchIndex = searchIndex
@@ -431,7 +431,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipesWithIDs",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			expectedIDs,
 		).Return(exampleRecipeList.Data, nil)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -451,7 +451,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.SearchRecipesHandler(helper.res, helper.req)
 
@@ -471,7 +471,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"SearchForRecipes",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.Recipe])(nil), sql.ErrNoRows)
@@ -497,7 +497,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"SearchForRecipes",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.Recipe])(nil), errors.New("blah"))
@@ -535,13 +535,13 @@ func TestRecipesService_UpdateRecipeHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(helper.exampleRecipe, nil)
 
 		dbManager.RecipeDataManagerMock.On(
 			"UpdateRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe,
 		).Return(nil)
 		helper.service.recipeManagementDataManager = dbManager
@@ -549,8 +549,8 @@ func TestRecipesService_UpdateRecipeHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -592,7 +592,7 @@ func TestRecipesService_UpdateRecipeHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateRecipeHandler(helper.res, helper.req)
 
@@ -640,7 +640,7 @@ func TestRecipesService_UpdateRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return((*types.Recipe)(nil), sql.ErrNoRows)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -673,7 +673,7 @@ func TestRecipesService_UpdateRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return((*types.Recipe)(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -706,13 +706,13 @@ func TestRecipesService_UpdateRecipeHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(helper.exampleRecipe, nil)
 
 		dbManager.RecipeDataManagerMock.On(
 			"UpdateRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe,
 		).Return(errors.New("blah"))
 		helper.service.recipeManagementDataManager = dbManager
@@ -740,13 +740,13 @@ func TestRecipesService_ArchiveRecipeHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManagerMock.On(
 			"RecipeExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(true, nil)
 
 		dbManager.RecipeDataManagerMock.On(
 			"ArchiveRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
@@ -755,8 +755,8 @@ func TestRecipesService_ArchiveRecipeHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -774,7 +774,7 @@ func TestRecipesService_ArchiveRecipeHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveRecipeHandler(helper.res, helper.req)
 
@@ -793,7 +793,7 @@ func TestRecipesService_ArchiveRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"RecipeExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(false, nil)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -817,7 +817,7 @@ func TestRecipesService_ArchiveRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"RecipeExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -841,13 +841,13 @@ func TestRecipesService_ArchiveRecipeHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.RecipeDataManagerMock.On(
 			"RecipeExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(true, nil)
 
 		dbManager.RecipeDataManagerMock.On(
 			"ArchiveRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
@@ -879,7 +879,7 @@ func TestRecipesService_RecipeEstimatedPrepStepsHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(helper.exampleRecipe, nil)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -887,7 +887,7 @@ func TestRecipesService_RecipeEstimatedPrepStepsHandler(T *testing.T) {
 		mockGrapher := &recipeanalysis.MockRecipeAnalyzer{}
 		mockGrapher.On(
 			"GenerateMealPlanTasksForRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			"",
 			helper.exampleRecipe,
 		).Return([]*types.MealPlanTaskDatabaseCreationInput{}, nil)
@@ -918,7 +918,7 @@ func TestRecipesService_RecipeMermaidHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(helper.exampleRecipe, nil)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -927,7 +927,7 @@ func TestRecipesService_RecipeMermaidHandler(T *testing.T) {
 		mockGrapher := &recipeanalysis.MockRecipeAnalyzer{}
 		mockGrapher.On(
 			"RenderMermaidDiagramForRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe,
 		).Return(fakeResult)
 		helper.service.recipeAnalyzer = mockGrapher
@@ -943,7 +943,7 @@ func TestRecipesService_RecipeMermaidHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.RecipeMermaidHandler(helper.res, helper.req)
 
@@ -965,7 +965,7 @@ func TestRecipesService_RecipeMermaidHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return((*types.Recipe)(nil), sql.ErrNoRows)
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -992,7 +992,7 @@ func TestRecipesService_RecipeMermaidHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return((*types.Recipe)(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -1023,13 +1023,13 @@ func TestRecipesService_CloneRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(helper.exampleRecipe, nil)
 
 		recipeDataManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(recipe *types.RecipeDatabaseCreationInput) bool {
 				return assert.NotEqual(t, helper.exampleRecipe.ID, recipe.ID)
 			}),
@@ -1039,8 +1039,8 @@ func TestRecipesService_CloneRecipeHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1066,7 +1066,7 @@ func TestRecipesService_CloneRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return((*types.Recipe)(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = recipeDataManager
@@ -1093,13 +1093,13 @@ func TestRecipesService_CloneRecipeHandler(T *testing.T) {
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(helper.exampleRecipe, nil)
 
 		recipeDataManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(recipe *types.RecipeDatabaseCreationInput) bool {
 				return assert.NotEqual(t, helper.exampleRecipe.ID, recipe.ID)
 			}),

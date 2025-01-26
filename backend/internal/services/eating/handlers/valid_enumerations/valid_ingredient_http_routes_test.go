@@ -18,7 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -49,7 +49,7 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManagerMock.On(
 			"CreateValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientDatabaseCreationInput) bool { return true }),
 		).Return(helper.exampleValidIngredient, nil)
 		helper.service.validEnumerationDataManager = dbManager
@@ -57,8 +57,8 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -130,7 +130,7 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CreateValidIngredientHandler(helper.res, helper.req)
 
@@ -158,7 +158,7 @@ func TestValidIngredientsService_CreateValidIngredientHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManagerMock.On(
 			"CreateValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientDatabaseCreationInput) bool { return true }),
 		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = dbManager
@@ -186,7 +186,7 @@ func TestValidIngredientsService_ReadValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(helper.exampleValidIngredient, nil)
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -206,7 +206,7 @@ func TestValidIngredientsService_ReadValidIngredientHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadValidIngredientHandler(helper.res, helper.req)
 
@@ -225,7 +225,7 @@ func TestValidIngredientsService_ReadValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return((*types.ValidIngredient)(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -249,7 +249,7 @@ func TestValidIngredientsService_ReadValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -279,7 +279,7 @@ func TestValidIngredientsService_ListValidIngredientsHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredients",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidIngredientList, nil)
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -300,7 +300,7 @@ func TestValidIngredientsService_ListValidIngredientsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListValidIngredientsHandler(helper.res, helper.req)
 
@@ -319,7 +319,7 @@ func TestValidIngredientsService_ListValidIngredientsHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredients",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.ValidIngredient])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -343,7 +343,7 @@ func TestValidIngredientsService_ListValidIngredientsHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredients",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.ValidIngredient])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -380,7 +380,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"SearchForValidIngredients",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidIngredientList, nil)
@@ -419,7 +419,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
 		searchIndex.On(
 			"Search",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(validIngredientSearchSubsets, nil)
 		helper.service.validIngredientSearchIndex = searchIndex
@@ -427,7 +427,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredientsWithIDs",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			expectedIDs,
 		).Return(exampleValidIngredientList.Data, nil)
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -443,7 +443,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.SearchValidIngredientsHandler(helper.res, helper.req)
 
@@ -467,7 +467,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"SearchForValidIngredients",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(&filtering.QueryFilteredResult[types.ValidIngredient]{}, sql.ErrNoRows)
@@ -496,7 +496,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"SearchForValidIngredients",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.ValidIngredient])(nil), errors.New("blah"))
@@ -527,7 +527,7 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
 		searchIndex.On(
 			"Search",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ValidIngredientSearchSubset(nil), errors.New("blah"))
 		helper.service.validIngredientSearchIndex = searchIndex
@@ -557,7 +557,7 @@ func TestValidIngredientsService_SearchValidIngredientsByPreparationAndIngredien
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"SearchForValidIngredientsForPreparation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			helper.exampleValidIngredient.Name,
 			mock.IsType(&filtering.QueryFilter{}),
@@ -584,7 +584,7 @@ func TestValidIngredientsService_SearchValidIngredientsByPreparationAndIngredien
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.SearchValidIngredientsByPreparationAndIngredientNameHandler(helper.res, helper.req)
 
@@ -603,7 +603,7 @@ func TestValidIngredientsService_SearchValidIngredientsByPreparationAndIngredien
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"SearchForValidIngredientsForPreparation",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			helper.exampleValidIngredient.Name,
 			mock.IsType(&filtering.QueryFilter{}),
@@ -646,13 +646,13 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(helper.exampleValidIngredient, nil)
 
 		dbManager.ValidIngredientDataManagerMock.On(
 			"UpdateValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient,
 		).Return(nil)
 		helper.service.validEnumerationDataManager = dbManager
@@ -660,8 +660,8 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -703,7 +703,7 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.UpdateValidIngredientHandler(helper.res, helper.req)
 
@@ -751,7 +751,7 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return((*types.ValidIngredient)(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -784,7 +784,7 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -817,13 +817,13 @@ func TestValidIngredientsService_UpdateValidIngredientHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManagerMock.On(
 			"GetValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(helper.exampleValidIngredient, nil)
 
 		dbManager.ValidIngredientDataManagerMock.On(
 			"UpdateValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient,
 		).Return(errors.New("blah"))
 		helper.service.validEnumerationDataManager = dbManager
@@ -851,13 +851,13 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManagerMock.On(
 			"ValidIngredientExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(true, nil)
 
 		dbManager.ValidIngredientDataManagerMock.On(
 			"ArchiveValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(nil)
 		helper.service.validEnumerationDataManager = dbManager
@@ -865,8 +865,8 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
 			"PublishAsync",
-			testutils2.ContextMatcher,
-			testutils2.DataChangeMessageMatcher,
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -881,7 +881,7 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveValidIngredientHandler(helper.res, helper.req)
 
@@ -900,7 +900,7 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"ValidIngredientExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(false, nil)
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -924,7 +924,7 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"ValidIngredientExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientDataManager
@@ -948,13 +948,13 @@ func TestValidIngredientsService_ArchiveValidIngredientHandler(T *testing.T) {
 		dbManager := database.NewMockDatabase()
 		dbManager.ValidIngredientDataManagerMock.On(
 			"ValidIngredientExists",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(true, nil)
 
 		dbManager.ValidIngredientDataManagerMock.On(
 			"ArchiveValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 		).Return(errors.New("blah"))
 		helper.service.validEnumerationDataManager = dbManager
@@ -982,7 +982,7 @@ func TestValidIngredientsService_RandomValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetRandomValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 		).Return(helper.exampleValidIngredient, nil)
 		helper.service.validEnumerationDataManager = validIngredientDataManager
 
@@ -1001,7 +1001,7 @@ func TestValidIngredientsService_RandomValidIngredientHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.RandomValidIngredientHandler(helper.res, helper.req)
 
@@ -1020,7 +1020,7 @@ func TestValidIngredientsService_RandomValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetRandomValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 		).Return((*types.ValidIngredient)(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validIngredientDataManager
 
@@ -1043,7 +1043,7 @@ func TestValidIngredientsService_RandomValidIngredientHandler(T *testing.T) {
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
 		validIngredientDataManager.ValidIngredientDataManagerMock.On(
 			"GetRandomValidIngredient",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 		).Return((*types.ValidIngredient)(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientDataManager
 

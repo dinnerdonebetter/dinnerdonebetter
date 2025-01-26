@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
-	recipeanalysis2 "github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -28,7 +28,7 @@ func TestProvideMealPlanTaskCreationEnsurerWorker(T *testing.T) {
 		actual := ProvideMealPlanTaskCreationEnsurerWorker(
 			logging.NewNoopLogger(),
 			&database.MockDatabase{},
-			&recipeanalysis2.MockRecipeAnalyzer{},
+			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
 			tracing.NewNoopTracerProvider(),
 		)
@@ -45,7 +45,7 @@ func TestMealPlanTaskCreationEnsurerWorker_HandleMessage(T *testing.T) {
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
 			logging.NewNoopLogger(),
 			&database.MockDatabase{},
-			&recipeanalysis2.MockRecipeAnalyzer{},
+			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
 			tracing.NewNoopTracerProvider(),
 		)
@@ -71,7 +71,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
 			logging.NewNoopLogger(),
 			&database.MockDatabase{},
-			&recipeanalysis2.MockRecipeAnalyzer{},
+			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
 			tracing.NewNoopTracerProvider(),
 		)
@@ -97,7 +97,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
 			logging.NewNoopLogger(),
 			&database.MockDatabase{},
-			&recipeanalysis2.MockRecipeAnalyzer{},
+			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
 			tracing.NewNoopTracerProvider(),
 		)
@@ -191,7 +191,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			},
 		}
 
-		mockAnalyzer := &recipeanalysis2.MockRecipeAnalyzer{}
+		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
 		for _, result := range exampleFinalizedMealPlanResults {
 			mdm.MealPlanEventDataManagerMock.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
 
@@ -233,7 +233,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
 			logging.NewNoopLogger(),
 			&database.MockDatabase{},
-			recipeanalysis2.NewRecipeAnalyzer(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+			recipeanalysis.NewRecipeAnalyzer(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&mockpublishers.Publisher{},
 			tracing.NewNoopTracerProvider(),
 		)
@@ -355,7 +355,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		mdm := database.NewMockDatabase()
 		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
 
-		mockAnalyzer := &recipeanalysis2.MockRecipeAnalyzer{}
+		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
 		expectedReturnResults := []*types.MealPlanTaskDatabaseCreationInput{
 			{
 				CreationExplanation: t.Name(),

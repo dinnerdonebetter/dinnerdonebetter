@@ -10,7 +10,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	testutils2 "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -31,7 +31,7 @@ func TestServiceSettingsService_ReadServiceSettingHandler(T *testing.T) {
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSetting",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleServiceSetting.ID,
 		).Return(helper.exampleServiceSetting, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
@@ -51,7 +51,7 @@ func TestServiceSettingsService_ReadServiceSettingHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadServiceSettingHandler(helper.res, helper.req)
 
@@ -70,7 +70,7 @@ func TestServiceSettingsService_ReadServiceSettingHandler(T *testing.T) {
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSetting",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleServiceSetting.ID,
 		).Return((*types.ServiceSetting)(nil), sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
@@ -94,7 +94,7 @@ func TestServiceSettingsService_ReadServiceSettingHandler(T *testing.T) {
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSetting",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			helper.exampleServiceSetting.ID,
 		).Return((*types.ServiceSetting)(nil), errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
@@ -124,7 +124,7 @@ func TestServiceSettingsService_ListServiceSettingsHandler(T *testing.T) {
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSettings",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleServiceSettingList, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
@@ -144,7 +144,7 @@ func TestServiceSettingsService_ListServiceSettingsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListServiceSettingsHandler(helper.res, helper.req)
 
@@ -163,7 +163,7 @@ func TestServiceSettingsService_ListServiceSettingsHandler(T *testing.T) {
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSettings",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.ServiceSetting])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
@@ -187,7 +187,7 @@ func TestServiceSettingsService_ListServiceSettingsHandler(T *testing.T) {
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSettings",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.ServiceSetting])(nil), errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
@@ -224,7 +224,7 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"SearchForServiceSettings",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(exampleServiceSettingList.Data, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
@@ -244,7 +244,7 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils2.BrokenSessionContextDataFetcher
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.SearchServiceSettingsHandler(helper.res, helper.req)
 
@@ -268,7 +268,7 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"SearchForServiceSettings",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ServiceSetting{}, sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
@@ -296,7 +296,7 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"SearchForServiceSettings",
-			testutils2.ContextMatcher,
+			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ServiceSetting{}, errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
