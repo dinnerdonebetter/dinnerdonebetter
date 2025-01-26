@@ -116,16 +116,6 @@ type (
 		OnlyForVessels              *bool                                        `json:"onlyForVessels,omitempty"`
 	}
 
-	// ValidPreparationSearchSubset represents the subset of values suitable to index for search.
-	ValidPreparationSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		PastTense   string `json:"pastTense,omitempty"`
-		ID          string `json:"id,omitempty"`
-		Name        string `json:"name,omitempty"`
-		Description string `json:"description,omitempty"`
-	}
-
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
 	ValidPreparationDataManager interface {
 		ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error)

@@ -136,18 +136,6 @@ type (
 		Shape                          *string  `json:"shape"`
 	}
 
-	// ValidVesselSearchSubset represents the subset of values suitable to index for search.
-	ValidVesselSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID               string  `json:"id,omitempty"`
-		Name             string  `json:"name,omitempty"`
-		PluralName       string  `json:"pluralName,omitempty"`
-		Description      string  `json:"description,omitempty"`
-		CapacityUnitName string  `json:"capacityUnitName"`
-		Capacity         float32 `json:"capacity,omitempty"`
-	}
-
 	// ValidVesselDataManager describes a structure capable of storing valid vessels permanently.
 	ValidVesselDataManager interface {
 		ValidVesselExists(ctx context.Context, validVesselID string) (bool, error)

@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -248,7 +249,7 @@ func (s *service) SearchValidIngredientsHandler(res http.ResponseWriter, req *ht
 	if useDB {
 		validIngredients, err = s.validEnumerationDataManager.SearchForValidIngredients(ctx, query, filter)
 	} else {
-		var validIngredientSubsets []*types.ValidIngredientSearchSubset
+		var validIngredientSubsets []*indexing.ValidIngredientSearchSubset
 		validIngredientSubsets, err = s.validIngredientSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid ingredients")

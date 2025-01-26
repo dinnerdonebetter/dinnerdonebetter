@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -246,7 +247,7 @@ func (s *service) SearchValidPreparationsHandler(res http.ResponseWriter, req *h
 	if useDB {
 		validPreparations, err = s.validEnumerationDataManager.SearchForValidPreparations(ctx, query)
 	} else {
-		var validPreparationSubsets []*types.ValidPreparationSearchSubset
+		var validPreparationSubsets []*indexing.ValidPreparationSearchSubset
 		validPreparationSubsets, err = s.validPreparationsSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid preparations")

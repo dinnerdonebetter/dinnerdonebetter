@@ -29,17 +29,6 @@ func ConvertUserToUserDatabaseCreationInput(user *types.User) *types.UserDatabas
 	}
 }
 
-// ConvertUserToUserSearchSubset converts a User to a UserSearchSubset.
-func ConvertUserToUserSearchSubset(x *types.User) *types.UserSearchSubset {
-	return &types.UserSearchSubset{
-		ID:           x.ID,
-		Username:     x.Username,
-		FirstName:    x.FirstName,
-		LastName:     x.LastName,
-		EmailAddress: x.EmailAddress,
-	}
-}
-
 func ConvertUserDetailsUpdateRequestInputToUserDetailsUpdateInput(x *types.UserDetailsUpdateRequestInput) *types.UserDetailsDatabaseUpdateInput {
 	return &types.UserDetailsDatabaseUpdateInput{
 		FirstName: x.FirstName,

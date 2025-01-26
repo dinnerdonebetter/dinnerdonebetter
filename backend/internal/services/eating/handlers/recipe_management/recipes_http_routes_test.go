@@ -18,10 +18,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -414,13 +414,13 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		}.Encode()
 
 		expectedIDs := []string{}
-		recipeSearchSubsets := make([]*types.RecipeSearchSubset, len(exampleRecipeList.Data))
+		recipeSearchSubsets := make([]*indexing.RecipeSearchSubset, len(exampleRecipeList.Data))
 		for i := range exampleRecipeList.Data {
 			expectedIDs = append(expectedIDs, exampleRecipeList.Data[i].ID)
-			recipeSearchSubsets[i] = converters.ConvertRecipeToRecipeSearchSubset(exampleRecipeList.Data[i])
+			recipeSearchSubsets[i] = indexing.ConvertRecipeToRecipeSearchSubset(exampleRecipeList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.RecipeSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[indexing.RecipeSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,

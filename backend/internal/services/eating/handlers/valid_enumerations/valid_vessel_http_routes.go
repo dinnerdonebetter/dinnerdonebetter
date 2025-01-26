@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -251,7 +252,7 @@ func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.R
 		validVessels, err = s.validEnumerationDataManager.SearchForValidVessels(ctx, query)
 		readTimer.Stop()
 	} else {
-		var validVesselSubsets []*types.ValidVesselSearchSubset
+		var validVesselSubsets []*indexing.ValidVesselSearchSubset
 		validVesselSubsets, err = s.validVesselsSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid vessels")

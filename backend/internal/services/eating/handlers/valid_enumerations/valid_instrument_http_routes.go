@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -246,7 +247,7 @@ func (s *service) SearchValidInstrumentsHandler(res http.ResponseWriter, req *ht
 	if useDB {
 		validInstruments, err = s.validEnumerationDataManager.SearchForValidInstruments(ctx, query)
 	} else {
-		var validInstrumentSubsets []*types.ValidInstrumentSearchSubset
+		var validInstrumentSubsets []*indexing.ValidInstrumentSearchSubset
 		validInstrumentSubsets, err = s.validInstrumentSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid instruments")

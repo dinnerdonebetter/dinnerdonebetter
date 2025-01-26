@@ -18,9 +18,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -408,13 +408,13 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		}.Encode()
 
 		expectedIDs := []string{}
-		validInstrumentSearchSubsets := make([]*types.ValidInstrumentSearchSubset, len(exampleValidInstrumentList.Data))
+		validInstrumentSearchSubsets := make([]*indexing.ValidInstrumentSearchSubset, len(exampleValidInstrumentList.Data))
 		for i := range exampleValidInstrumentList.Data {
 			expectedIDs = append(expectedIDs, exampleValidInstrumentList.Data[i].ID)
-			validInstrumentSearchSubsets[i] = converters.ConvertValidInstrumentToValidInstrumentSearchSubset(exampleValidInstrumentList.Data[i])
+			validInstrumentSearchSubsets[i] = indexing.ConvertValidInstrumentToValidInstrumentSearchSubset(exampleValidInstrumentList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidInstrumentSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[indexing.ValidInstrumentSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,

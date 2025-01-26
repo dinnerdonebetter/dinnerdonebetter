@@ -18,9 +18,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -407,13 +407,13 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 		}.Encode()
 
 		expectedIDs := []string{}
-		validMeasurementUnitSearchSubsets := make([]*types.ValidMeasurementUnitSearchSubset, len(exampleValidMeasurementUnitList.Data))
+		validMeasurementUnitSearchSubsets := make([]*indexing.ValidMeasurementUnitSearchSubset, len(exampleValidMeasurementUnitList.Data))
 		for i := range exampleValidMeasurementUnitList.Data {
 			expectedIDs = append(expectedIDs, exampleValidMeasurementUnitList.Data[i].ID)
-			validMeasurementUnitSearchSubsets[i] = converters.ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(exampleValidMeasurementUnitList.Data[i])
+			validMeasurementUnitSearchSubsets[i] = indexing.ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(exampleValidMeasurementUnitList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidMeasurementUnitSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[indexing.ValidMeasurementUnitSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,

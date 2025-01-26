@@ -12,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
 var (
@@ -60,7 +59,7 @@ func HandleIndexRequest(
 
 	switch indexReq.IndexType {
 	case textsearch.IndexTypeRecipes:
-		im, err = textsearchcfg.ProvideIndex[types.RecipeSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
+		im, err = textsearchcfg.ProvideIndex[RecipeSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -71,11 +70,11 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "getting recipe")
 		}
 
-		toBeIndexed = converters.ConvertRecipeToRecipeSearchSubset(recipe)
+		toBeIndexed = ConvertRecipeToRecipeSearchSubset(recipe)
 		markAsIndexedFunc = func() error { return dataManager.MarkRecipeAsIndexed(ctx, indexReq.RowID) }
 
 	case textsearch.IndexTypeMeals:
-		im, err = textsearchcfg.ProvideIndex[types.MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
+		im, err = textsearchcfg.ProvideIndex[MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -86,11 +85,11 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "getting meal")
 		}
 
-		toBeIndexed = converters.ConvertMealToMealSearchSubset(meal)
+		toBeIndexed = ConvertMealToMealSearchSubset(meal)
 		markAsIndexedFunc = func() error { return dataManager.MarkMealAsIndexed(ctx, indexReq.RowID) }
 
 	case textsearch.IndexTypeValidIngredients:
-		im, err = textsearchcfg.ProvideIndex[types.ValidIngredientSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
+		im, err = textsearchcfg.ProvideIndex[ValidIngredientSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -101,11 +100,11 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient")
 		}
 
-		toBeIndexed = converters.ConvertValidIngredientToValidIngredientSearchSubset(validIngredient)
+		toBeIndexed = ConvertValidIngredientToValidIngredientSearchSubset(validIngredient)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientAsIndexed(ctx, indexReq.RowID) }
 
 	case textsearch.IndexTypeValidInstruments:
-		im, err = textsearchcfg.ProvideIndex[types.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
+		im, err = textsearchcfg.ProvideIndex[ValidInstrumentSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -116,11 +115,11 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "getting valid instrument")
 		}
 
-		toBeIndexed = converters.ConvertValidInstrumentToValidInstrumentSearchSubset(validInstrument)
+		toBeIndexed = ConvertValidInstrumentToValidInstrumentSearchSubset(validInstrument)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidInstrumentAsIndexed(ctx, indexReq.RowID) }
 
 	case textsearch.IndexTypeValidMeasurementUnits:
-		im, err = textsearchcfg.ProvideIndex[types.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
+		im, err = textsearchcfg.ProvideIndex[ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -131,11 +130,11 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "getting valid measurement unit")
 		}
 
-		toBeIndexed = converters.ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(validMeasurementUnit)
+		toBeIndexed = ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(validMeasurementUnit)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidMeasurementUnitAsIndexed(ctx, indexReq.RowID) }
 
 	case textsearch.IndexTypeValidPreparations:
-		im, err = textsearchcfg.ProvideIndex[types.ValidPreparationSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
+		im, err = textsearchcfg.ProvideIndex[ValidPreparationSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -146,11 +145,11 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "getting valid preparation")
 		}
 
-		toBeIndexed = converters.ConvertValidPreparationToValidPreparationSearchSubset(validPreparation)
+		toBeIndexed = ConvertValidPreparationToValidPreparationSearchSubset(validPreparation)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidPreparationAsIndexed(ctx, indexReq.RowID) }
 
 	case textsearch.IndexTypeValidIngredientStates:
-		im, err = textsearchcfg.ProvideIndex[types.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
+		im, err = textsearchcfg.ProvideIndex[ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -161,11 +160,11 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state")
 		}
 
-		toBeIndexed = converters.ConvertValidIngredientStateToValidIngredientStateSearchSubset(validIngredientState)
+		toBeIndexed = ConvertValidIngredientStateToValidIngredientStateSearchSubset(validIngredientState)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientStateAsIndexed(ctx, indexReq.RowID) }
 
 	case textsearch.IndexTypeValidVessels:
-		im, err = textsearchcfg.ProvideIndex[types.ValidVesselSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
+		im, err = textsearchcfg.ProvideIndex[ValidVesselSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -176,11 +175,11 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "getting valid vessel")
 		}
 
-		toBeIndexed = converters.ConvertValidVesselToValidVesselSearchSubset(validVessel)
+		toBeIndexed = ConvertValidVesselToValidVesselSearchSubset(validVessel)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidVesselAsIndexed(ctx, indexReq.RowID) }
 
 	case textsearch.IndexTypeUsers:
-		im, err = textsearchcfg.ProvideIndex[types.UserSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
+		im, err = textsearchcfg.ProvideIndex[UserSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
@@ -191,7 +190,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "getting user")
 		}
 
-		toBeIndexed = converters.ConvertUserToUserSearchSubset(user)
+		toBeIndexed = ConvertUserToUserSearchSubset(user)
 		markAsIndexedFunc = func() error { return dataManager.MarkUserAsIndexed(ctx, indexReq.RowID) }
 	default:
 		logger.Info("invalid index type specified, exiting")

@@ -58,14 +58,3 @@ func ConvertValidIngredientStateToValidIngredientStateDatabaseCreationInput(vali
 		AttributeType: validIngredientState.AttributeType,
 	}
 }
-
-// ConvertValidIngredientStateToValidIngredientStateSearchSubset converts a ValidIngredientState to a ValidIngredientStateSearchSubset.
-func ConvertValidIngredientStateToValidIngredientStateSearchSubset(x *types.ValidIngredientState) *types.ValidIngredientStateSearchSubset {
-	return &types.ValidIngredientStateSearchSubset{
-		ID:            x.ID,
-		Name:          x.Name,
-		PastTense:     x.PastTense,
-		Description:   x.Description,
-		AttributeType: x.AttributeType,
-	}
-}

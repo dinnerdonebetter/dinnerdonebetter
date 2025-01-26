@@ -130,17 +130,3 @@ func ConvertMealComponentToMealComponentUpdateRequestInput(input *types.MealComp
 
 	return x
 }
-
-func ConvertMealToMealSearchSubset(r *types.Meal) *types.MealSearchSubset {
-	x := &types.MealSearchSubset{
-		ID:          r.ID,
-		Name:        r.Name,
-		Description: r.Description,
-	}
-
-	for _, component := range r.Components {
-		x.Recipes = append(x.Recipes, types.NamedID{ID: component.Recipe.ID, Name: component.Recipe.Name})
-	}
-
-	return x
-}

@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -255,7 +256,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 	if useDB {
 		meals, err = s.mealPlanningDataManager.SearchForMeals(ctx, query, filter)
 	} else {
-		var mealSubsets []*types.MealSearchSubset
+		var mealSubsets []*indexing.MealSearchSubset
 		mealSubsets, err = s.searchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for meals")

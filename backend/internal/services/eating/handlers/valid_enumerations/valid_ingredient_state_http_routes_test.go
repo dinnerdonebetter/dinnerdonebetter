@@ -18,9 +18,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -407,13 +407,13 @@ func TestValidIngredientStatesService_SearchValidIngredientStatesHandler(T *test
 		}.Encode()
 
 		expectedIDs := []string{}
-		validIngredientStateSearchSubsets := make([]*types.ValidIngredientStateSearchSubset, len(exampleValidIngredientStateList.Data))
+		validIngredientStateSearchSubsets := make([]*indexing.ValidIngredientStateSearchSubset, len(exampleValidIngredientStateList.Data))
 		for i := range exampleValidIngredientStateList.Data {
 			expectedIDs = append(expectedIDs, exampleValidIngredientStateList.Data[i].ID)
-			validIngredientStateSearchSubsets[i] = converters.ConvertValidIngredientStateToValidIngredientStateSearchSubset(exampleValidIngredientStateList.Data[i])
+			validIngredientStateSearchSubsets[i] = indexing.ConvertValidIngredientStateToValidIngredientStateSearchSubset(exampleValidIngredientStateList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidIngredientStateSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[indexing.ValidIngredientStateSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,

@@ -135,16 +135,6 @@ type (
 		RecipeScale   *float32 `json:"recipeScale"`
 	}
 
-	// MealSearchSubset represents the subset of values suitable to index for search.
-	MealSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID          string    `json:"id,omitempty"`
-		Name        string    `json:"name,omitempty"`
-		Description string    `json:"description,omitempty"`
-		Recipes     []NamedID `json:"recipes,omitempty"`
-	}
-
 	// MealDataManager describes a structure capable of storing meals permanently.
 	MealDataManager interface {
 		MealExists(ctx context.Context, mealID string) (bool, error)

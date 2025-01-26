@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/routing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -28,12 +29,12 @@ type (
 	// service handles valid enumerations.
 	service struct {
 		logger                                  logging.Logger
-		validIngredientStatesSearchIndex        textsearch.IndexSearcher[types.ValidIngredientStateSearchSubset]
-		validInstrumentSearchIndex              textsearch.IndexSearcher[types.ValidInstrumentSearchSubset]
-		validMeasurementUnitSearchIndex         textsearch.IndexSearcher[types.ValidMeasurementUnitSearchSubset]
-		validIngredientSearchIndex              textsearch.IndexSearcher[types.ValidIngredientSearchSubset]
-		validPreparationsSearchIndex            textsearch.IndexSearcher[types.ValidPreparationSearchSubset]
-		validVesselsSearchIndex                 textsearch.IndexSearcher[types.ValidVesselSearchSubset]
+		validIngredientStatesSearchIndex        textsearch.IndexSearcher[indexing.ValidIngredientStateSearchSubset]
+		validInstrumentSearchIndex              textsearch.IndexSearcher[indexing.ValidInstrumentSearchSubset]
+		validMeasurementUnitSearchIndex         textsearch.IndexSearcher[indexing.ValidMeasurementUnitSearchSubset]
+		validIngredientSearchIndex              textsearch.IndexSearcher[indexing.ValidIngredientSearchSubset]
+		validPreparationsSearchIndex            textsearch.IndexSearcher[indexing.ValidPreparationSearchSubset]
+		validVesselsSearchIndex                 textsearch.IndexSearcher[indexing.ValidVesselSearchSubset]
 		validEnumerationDataManager             types.ValidEnumerationDataManager
 		validPreparationVesselIDFetcher         func(*http.Request) string
 		validVesselIDFetcher                    func(*http.Request) string

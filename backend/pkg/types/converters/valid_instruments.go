@@ -84,13 +84,3 @@ func ConvertValidInstrumentToValidInstrumentDatabaseCreationInput(validInstrumen
 		IncludeInGeneratedInstructions: validInstrument.IncludeInGeneratedInstructions,
 	}
 }
-
-// ConvertValidInstrumentToValidInstrumentSearchSubset converts a ValidInstrument to a ValidInstrumentSearchSubset.
-func ConvertValidInstrumentToValidInstrumentSearchSubset(x *types.ValidInstrument) *types.ValidInstrumentSearchSubset {
-	return &types.ValidInstrumentSearchSubset{
-		ID:          x.ID,
-		Name:        x.Name,
-		PluralName:  x.PluralName,
-		Description: x.Description,
-	}
-}

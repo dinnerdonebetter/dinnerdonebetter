@@ -18,9 +18,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -410,13 +410,13 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		}.Encode()
 
 		expectedIDs := []string{}
-		validIngredientSearchSubsets := make([]*types.ValidIngredientSearchSubset, len(exampleValidIngredientList.Data))
+		validIngredientSearchSubsets := make([]*indexing.ValidIngredientSearchSubset, len(exampleValidIngredientList.Data))
 		for i := range exampleValidIngredientList.Data {
 			expectedIDs = append(expectedIDs, exampleValidIngredientList.Data[i].ID)
-			validIngredientSearchSubsets[i] = converters.ConvertValidIngredientToValidIngredientSearchSubset(exampleValidIngredientList.Data[i])
+			validIngredientSearchSubsets[i] = indexing.ConvertValidIngredientToValidIngredientSearchSubset(exampleValidIngredientList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[indexing.ValidIngredientSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,
@@ -524,12 +524,12 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[indexing.ValidIngredientSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,
 			exampleQuery,
-		).Return([]*types.ValidIngredientSearchSubset(nil), errors.New("blah"))
+		).Return([]*indexing.ValidIngredientSearchSubset(nil), errors.New("blah"))
 		helper.service.validIngredientSearchIndex = searchIndex
 
 		helper.service.SearchValidIngredientsHandler(helper.res, helper.req)

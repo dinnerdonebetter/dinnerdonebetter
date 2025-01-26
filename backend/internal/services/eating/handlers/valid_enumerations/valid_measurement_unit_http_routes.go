@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -247,7 +248,7 @@ func (s *service) SearchValidMeasurementUnitsHandler(res http.ResponseWriter, re
 	if useDB {
 		validMeasurementUnits, err = s.validEnumerationDataManager.SearchForValidMeasurementUnits(ctx, query)
 	} else {
-		var validMeasurementUnitSubsets []*types.ValidMeasurementUnitSearchSubset
+		var validMeasurementUnitSubsets []*indexing.ValidMeasurementUnitSearchSubset
 		validMeasurementUnitSubsets, err = s.validMeasurementUnitSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for valid measurement units")

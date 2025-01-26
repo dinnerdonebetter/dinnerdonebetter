@@ -112,16 +112,6 @@ type (
 		Slug        *string `json:"slug,omitempty"`
 	}
 
-	// ValidMeasurementUnitSearchSubset represents the subset of values suitable to index for search.
-	ValidMeasurementUnitSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		Name        string `json:"name,omitempty"`
-		ID          string `json:"id,omitempty"`
-		Description string `json:"description,omitempty"`
-		PluralName  string `json:"pluralName,omitempty"`
-	}
-
 	// ValidMeasurementUnitDataManager describes a structure capable of storing valid measurement units permanently.
 	ValidMeasurementUnitDataManager interface {
 		ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (bool, error)

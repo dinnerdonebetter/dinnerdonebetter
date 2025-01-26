@@ -116,16 +116,6 @@ type (
 		YieldsComponentType *string                                       `json:"yieldsComponentType"`
 	}
 
-	// RecipeSearchSubset represents the subset of values suitable to index for search.
-	RecipeSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID          string                    `json:"id,omitempty"`
-		Name        string                    `json:"name,omitempty"`
-		Description string                    `json:"description,omitempty"`
-		Steps       []*RecipeStepSearchSubset `json:"steps,omitempty"`
-	}
-
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)

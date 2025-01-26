@@ -106,16 +106,6 @@ type (
 		IncludeInGeneratedInstructions *bool   `json:"includeInGeneratedInstructions,omitempty"`
 	}
 
-	// ValidInstrumentSearchSubset represents the subset of values suitable to index for search.
-	ValidInstrumentSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID          string `json:"id,omitempty"`
-		Name        string `json:"name,omitempty"`
-		PluralName  string `json:"pluralName,omitempty"`
-		Description string `json:"description,omitempty"`
-	}
-
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
 	ValidInstrumentDataManager interface {
 		ValidInstrumentExists(ctx context.Context, validInstrumentID string) (bool, error)

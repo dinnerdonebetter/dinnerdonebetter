@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -264,7 +265,7 @@ func (s *service) SearchRecipesHandler(res http.ResponseWriter, req *http.Reques
 	if useDB {
 		recipes, err = s.recipeManagementDataManager.SearchForRecipes(ctx, query, filter)
 	} else {
-		var recipeSubsets []*types.RecipeSearchSubset
+		var recipeSubsets []*indexing.RecipeSearchSubset
 		recipeSubsets, err = s.searchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "external search for recipes")

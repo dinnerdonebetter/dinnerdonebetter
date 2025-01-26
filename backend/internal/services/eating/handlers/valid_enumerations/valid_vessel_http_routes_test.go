@@ -18,9 +18,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -407,13 +407,13 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		}.Encode()
 
 		expectedIDs := []string{}
-		validVesselSearchSubsets := make([]*types.ValidVesselSearchSubset, len(exampleValidVesselList.Data))
+		validVesselSearchSubsets := make([]*indexing.ValidVesselSearchSubset, len(exampleValidVesselList.Data))
 		for i := range exampleValidVesselList.Data {
 			expectedIDs = append(expectedIDs, exampleValidVesselList.Data[i].ID)
-			validVesselSearchSubsets[i] = converters.ConvertValidVesselToValidVesselSearchSubset(exampleValidVesselList.Data[i])
+			validVesselSearchSubsets[i] = indexing.ConvertValidVesselToValidVesselSearchSubset(exampleValidVesselList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidVesselSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[indexing.ValidVesselSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,

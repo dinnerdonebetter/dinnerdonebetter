@@ -18,9 +18,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -407,13 +407,13 @@ func TestValidPreparationsService_SearchValidPreparationsHandler(T *testing.T) {
 		}.Encode()
 
 		expectedIDs := []string{}
-		validPreparationSearchSubsets := make([]*types.ValidPreparationSearchSubset, len(exampleValidPreparationList.Data))
+		validPreparationSearchSubsets := make([]*indexing.ValidPreparationSearchSubset, len(exampleValidPreparationList.Data))
 		for i := range exampleValidPreparationList.Data {
 			expectedIDs = append(expectedIDs, exampleValidPreparationList.Data[i].ID)
-			validPreparationSearchSubsets[i] = converters.ConvertValidPreparationToValidPreparationSearchSubset(exampleValidPreparationList.Data[i])
+			validPreparationSearchSubsets[i] = indexing.ConvertValidPreparationToValidPreparationSearchSubset(exampleValidPreparationList.Data[i])
 		}
 
-		searchIndex := &mocksearch.IndexManager[types.ValidPreparationSearchSubset]{}
+		searchIndex := &mocksearch.IndexManager[indexing.ValidPreparationSearchSubset]{}
 		searchIndex.On(
 			"Search",
 			testutils.ContextMatcher,

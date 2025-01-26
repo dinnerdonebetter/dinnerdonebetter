@@ -99,17 +99,6 @@ type (
 		IconPath      *string `json:"iconPath,omitempty"`
 	}
 
-	// ValidIngredientStateSearchSubset represents the subset of values suitable to index for search.
-	ValidIngredientStateSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID            string `json:"id,omitempty"`
-		PastTense     string `json:"pastTense,omitempty"`
-		Description   string `json:"description,omitempty"`
-		Name          string `json:"name,omitempty"`
-		AttributeType string `json:"attributeType,omitempty"`
-	}
-
 	// ValidIngredientStateDataManager describes a structure capable of storing valid ingredient states permanently.
 	ValidIngredientStateDataManager interface {
 		ValidIngredientStateExists(ctx context.Context, validIngredientState string) (bool, error)

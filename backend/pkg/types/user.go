@@ -68,17 +68,6 @@ type (
 		RequiresPasswordChange     bool       `json:"requiresPasswordChange"`
 	}
 
-	// UserSearchSubset represents the subset of values suitable to index for search.
-	UserSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID           string `json:"id,omitempty"`
-		Username     string `json:"username,omitempty"`
-		FirstName    string `json:"firstName,omitempty"`
-		LastName     string `json:"lastName,omitempty"`
-		EmailAddress string `json:"emailAddress,omitempty"`
-	}
-
 	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
 		_ struct{} `json:"-"`
