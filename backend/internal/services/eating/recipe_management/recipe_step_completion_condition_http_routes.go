@@ -165,7 +165,7 @@ func (s *service) ReadRecipeStepCompletionConditionHandler(res http.ResponseWrit
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListRecipeStepCompletionConditionsHandler is our list route.
@@ -228,7 +228,7 @@ func (s *service) ListRecipeStepCompletionConditionsHandler(res http.ResponseWri
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateRecipeStepCompletionConditionHandler returns a handler that updates a recipe step completion condition.
@@ -330,7 +330,7 @@ func (s *service) UpdateRecipeStepCompletionConditionHandler(res http.ResponseWr
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveRecipeStepCompletionConditionHandler returns a handler that archives a recipe step completion condition.
@@ -412,5 +412,5 @@ func (s *service) ArchiveRecipeStepCompletionConditionHandler(res http.ResponseW
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

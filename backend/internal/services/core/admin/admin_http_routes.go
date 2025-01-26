@@ -71,7 +71,15 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 
 	if !sessionCtxData.Requester.ServicePermissions.CanUpdateUserAccountStatuses() {
 		// this should never happen in production
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "inadequate permissions for route", http.StatusForbidden)
+		errorResponse := &types.APIResponse[any]{
+			Details: types.ResponseDetails{
+				TraceID: span.SpanContext().TraceID().String(),
+			},
+			Error: &types.APIError{
+				Message: "inadequate permissions for route",
+			},
+		}
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errorResponse, http.StatusForbidden)
 		return
 	}
 
@@ -222,5 +230,5 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 	}
 	publishTimer.Stop()
 
-	s.encoderDecoder.RespondWithData(ctx, res, &types.ArbitraryQueueMessageResponse{Success: true})
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, &types.ArbitraryQueueMessageResponse{Success: true}, http.StatusOK)
 }

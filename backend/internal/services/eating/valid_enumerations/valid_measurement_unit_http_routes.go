@@ -145,7 +145,7 @@ func (s *service) ReadValidMeasurementUnitHandler(res http.ResponseWriter, req *
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidMeasurementUnitsHandler is our list route.
@@ -198,7 +198,7 @@ func (s *service) ListValidMeasurementUnitsHandler(res http.ResponseWriter, req 
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidMeasurementUnitsHandler is our search route.
@@ -281,7 +281,7 @@ func (s *service) SearchValidMeasurementUnitsHandler(res http.ResponseWriter, re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidMeasurementUnitsByIngredientIDHandler is our search route.
@@ -349,7 +349,7 @@ func (s *service) SearchValidMeasurementUnitsByIngredientIDHandler(res http.Resp
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidMeasurementUnitHandler returns a handler that updates a valid measurement unit.
@@ -440,7 +440,7 @@ func (s *service) UpdateValidMeasurementUnitHandler(res http.ResponseWriter, req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidMeasurementUnitHandler returns a handler that archives a valid measurement unit.
@@ -511,5 +511,5 @@ func (s *service) ArchiveValidMeasurementUnitHandler(res http.ResponseWriter, re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

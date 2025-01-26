@@ -149,7 +149,7 @@ func (s *service) ReadValidVesselHandler(res http.ResponseWriter, req *http.Requ
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidVesselsHandler is our list route.
@@ -204,7 +204,7 @@ func (s *service) ListValidVesselsHandler(res http.ResponseWriter, req *http.Req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidVesselsHandler is our search route.
@@ -287,7 +287,7 @@ func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidVesselHandler returns a handler that updates a valid vessel.
@@ -382,7 +382,7 @@ func (s *service) UpdateValidVesselHandler(res http.ResponseWriter, req *http.Re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidVesselHandler returns a handler that archives a valid vessel.
@@ -453,7 +453,7 @@ func (s *service) ArchiveValidVesselHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // RandomValidVesselHandler returns a GET handler that returns a valid vessel.
@@ -505,5 +505,5 @@ func (s *service) RandomValidVesselHandler(res http.ResponseWriter, req *http.Re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

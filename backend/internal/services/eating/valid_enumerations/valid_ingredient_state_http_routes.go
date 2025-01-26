@@ -145,7 +145,7 @@ func (s *service) ReadValidIngredientStateHandler(res http.ResponseWriter, req *
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidIngredientStatesHandler is our list route.
@@ -198,7 +198,7 @@ func (s *service) ListValidIngredientStatesHandler(res http.ResponseWriter, req 
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidIngredientStatesHandler is our search route.
@@ -273,7 +273,7 @@ func (s *service) SearchValidIngredientStatesHandler(res http.ResponseWriter, re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidIngredientStateHandler returns a handler that updates a valid ingredient state.
@@ -364,7 +364,7 @@ func (s *service) UpdateValidIngredientStateHandler(res http.ResponseWriter, req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidIngredientStateHandler returns a handler that archives a valid ingredient state.
@@ -435,5 +435,5 @@ func (s *service) ArchiveValidIngredientStateHandler(res http.ResponseWriter, re
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

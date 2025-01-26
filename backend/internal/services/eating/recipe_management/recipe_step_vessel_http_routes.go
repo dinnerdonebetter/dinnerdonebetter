@@ -162,7 +162,7 @@ func (s *service) ReadRecipeStepVesselHandler(res http.ResponseWriter, req *http
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListRecipeStepVesselsHandler is our list route.
@@ -227,7 +227,7 @@ func (s *service) ListRecipeStepVesselsHandler(res http.ResponseWriter, req *htt
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateRecipeStepVesselHandler returns a handler that updates a recipe step vessel.
@@ -331,7 +331,7 @@ func (s *service) UpdateRecipeStepVesselHandler(res http.ResponseWriter, req *ht
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveRecipeStepVesselHandler returns a handler that archives a recipe step vessel.
@@ -413,5 +413,5 @@ func (s *service) ArchiveRecipeStepVesselHandler(res http.ResponseWriter, req *h
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

@@ -72,12 +72,6 @@ func (m *EncoderDecoder) EncodeUnauthorizedResponse(ctx context.Context, res htt
 	res.WriteHeader(http.StatusUnauthorized)
 }
 
-// EncodeInvalidPermissionsResponse satisfies our EncoderDecoder interface.
-func (m *EncoderDecoder) EncodeInvalidPermissionsResponse(ctx context.Context, res http.ResponseWriter) {
-	m.Called(ctx, res)
-	res.WriteHeader(http.StatusForbidden)
-}
-
 // DecodeRequest satisfies our EncoderDecoder interface.
 func (m *EncoderDecoder) DecodeRequest(ctx context.Context, req *http.Request, v any) error {
 	return m.Called(ctx, req, v).Error(0)

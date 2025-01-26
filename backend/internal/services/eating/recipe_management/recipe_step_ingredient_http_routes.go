@@ -167,7 +167,7 @@ func (s *service) ReadRecipeStepIngredientHandler(res http.ResponseWriter, req *
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListRecipeStepIngredientsHandler is our list route.
@@ -232,7 +232,7 @@ func (s *service) ListRecipeStepIngredientsHandler(res http.ResponseWriter, req 
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateRecipeStepIngredientHandler returns a handler that updates a recipe step ingredient.
@@ -336,7 +336,7 @@ func (s *service) UpdateRecipeStepIngredientHandler(res http.ResponseWriter, req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveRecipeStepIngredientHandler returns a handler that archives a recipe step ingredient.
@@ -418,5 +418,5 @@ func (s *service) ArchiveRecipeStepIngredientHandler(res http.ResponseWriter, re
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

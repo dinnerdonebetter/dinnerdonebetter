@@ -147,7 +147,7 @@ func (s *service) ReadValidIngredientGroupHandler(res http.ResponseWriter, req *
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidIngredientGroupsHandler is our list route.
@@ -202,7 +202,7 @@ func (s *service) ListValidIngredientGroupsHandler(res http.ResponseWriter, req 
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidIngredientGroupsHandler is our search route.
@@ -253,7 +253,7 @@ func (s *service) SearchValidIngredientGroupsHandler(res http.ResponseWriter, re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidIngredientGroupHandler returns a handler that updates a valid ingredient.
@@ -344,7 +344,7 @@ func (s *service) UpdateValidIngredientGroupHandler(res http.ResponseWriter, req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidIngredientGroupHandler returns a handler that archives a valid ingredient.
@@ -415,5 +415,5 @@ func (s *service) ArchiveValidIngredientGroupHandler(res http.ResponseWriter, re
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

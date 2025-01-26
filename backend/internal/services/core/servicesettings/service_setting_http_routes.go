@@ -154,7 +154,7 @@ func (s *service) ReadServiceSettingHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListServiceSettingsHandler is our list route.
@@ -209,7 +209,7 @@ func (s *service) ListServiceSettingsHandler(res http.ResponseWriter, req *http.
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchServiceSettingsHandler is our search route.
@@ -261,7 +261,7 @@ func (s *service) SearchServiceSettingsHandler(res http.ResponseWriter, req *htt
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveServiceSettingHandler returns a handler that archives a service setting.
@@ -334,5 +334,5 @@ func (s *service) ArchiveServiceSettingHandler(res http.ResponseWriter, req *htt
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

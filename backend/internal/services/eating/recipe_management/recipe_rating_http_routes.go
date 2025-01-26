@@ -151,7 +151,7 @@ func (s *service) ReadRecipeRatingHandler(res http.ResponseWriter, req *http.Req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListRecipeRatingsHandler is our list route.
@@ -211,7 +211,7 @@ func (s *service) ListRecipeRatingsHandler(res http.ResponseWriter, req *http.Re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateRecipeRatingHandler returns a handler that updates a recipe rating.
@@ -309,7 +309,7 @@ func (s *service) UpdateRecipeRatingHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveRecipeRatingHandler returns a handler that archives a recipe rating.
@@ -385,5 +385,5 @@ func (s *service) ArchiveRecipeRatingHandler(res http.ResponseWriter, req *http.
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

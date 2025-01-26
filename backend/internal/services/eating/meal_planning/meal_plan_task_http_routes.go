@@ -159,7 +159,7 @@ func (s *service) ReadMealPlanTaskHandler(res http.ResponseWriter, req *http.Req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListMealPlanTasksByMealPlanHandler is our list route.
@@ -219,7 +219,7 @@ func (s *service) ListMealPlanTasksByMealPlanHandler(res http.ResponseWriter, re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // MealPlanTaskStatusChangeHandler returns a handler that updates a meal plan task.
@@ -315,5 +315,5 @@ func (s *service) MealPlanTaskStatusChangeHandler(res http.ResponseWriter, req *
 		Data:    mealPlanTask,
 	}
 
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

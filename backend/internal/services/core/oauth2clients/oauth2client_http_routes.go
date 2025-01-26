@@ -185,7 +185,7 @@ func (s *service) ReadOAuth2ClientHandler(res http.ResponseWriter, req *http.Req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListOAuth2ClientsHandler is a handler that returns a list of OAuth2 clients.
@@ -243,7 +243,7 @@ func (s *service) ListOAuth2ClientsHandler(res http.ResponseWriter, req *http.Re
 	}
 
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveOAuth2ClientHandler returns a handler that archives an OAuth2 client.
@@ -310,5 +310,5 @@ func (s *service) ArchiveOAuth2ClientHandler(res http.ResponseWriter, req *http.
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

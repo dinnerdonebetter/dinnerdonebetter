@@ -144,7 +144,7 @@ func (s *service) ReadValidMeasurementUnitConversionHandler(res http.ResponseWri
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidMeasurementUnitConversionHandler returns a handler that updates a valid measurement conversion.
@@ -235,7 +235,7 @@ func (s *service) UpdateValidMeasurementUnitConversionHandler(res http.ResponseW
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidMeasurementUnitConversionHandler returns a handler that archives a valid measurement conversion.
@@ -306,7 +306,7 @@ func (s *service) ArchiveValidMeasurementUnitConversionHandler(res http.Response
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 func (s *service) ValidMeasurementUnitConversionsFromMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
@@ -363,7 +363,7 @@ func (s *service) ValidMeasurementUnitConversionsFromMeasurementUnitHandler(res 
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 func (s *service) ValidMeasurementUnitConversionsToMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
@@ -420,5 +420,5 @@ func (s *service) ValidMeasurementUnitConversionsToMeasurementUnitHandler(res ht
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

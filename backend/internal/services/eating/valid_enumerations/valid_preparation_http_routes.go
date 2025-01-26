@@ -147,7 +147,7 @@ func (s *service) ReadValidPreparationHandler(res http.ResponseWriter, req *http
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidPreparationsHandler is our list route.
@@ -202,7 +202,7 @@ func (s *service) ListValidPreparationsHandler(res http.ResponseWriter, req *htt
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidPreparationsHandler is our search route.
@@ -281,7 +281,7 @@ func (s *service) SearchValidPreparationsHandler(res http.ResponseWriter, req *h
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidPreparationHandler returns a handler that updates a valid preparation.
@@ -374,7 +374,7 @@ func (s *service) UpdateValidPreparationHandler(res http.ResponseWriter, req *ht
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidPreparationHandler returns a handler that archives a valid preparation.
@@ -445,7 +445,7 @@ func (s *service) ArchiveValidPreparationHandler(res http.ResponseWriter, req *h
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // RandomValidPreparationHandler returns a GET handler that returns a valid preparation.
@@ -497,5 +497,5 @@ func (s *service) RandomValidPreparationHandler(res http.ResponseWriter, req *ht
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

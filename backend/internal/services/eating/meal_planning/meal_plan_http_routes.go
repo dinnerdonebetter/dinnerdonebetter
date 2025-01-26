@@ -163,7 +163,7 @@ func (s *service) ReadMealPlanHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListMealPlanHandler is our list route.
@@ -218,7 +218,7 @@ func (s *service) ListMealPlanHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateMealPlanHandler returns a handler that updates a meal plan.
@@ -313,7 +313,7 @@ func (s *service) UpdateMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveMealPlanHandler returns a handler that archives a meal plan.
@@ -386,7 +386,7 @@ func (s *service) ArchiveMealPlanHandler(res http.ResponseWriter, req *http.Requ
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // FinalizeMealPlanHandler returns a handler that attempts to finalize a meal plan.
@@ -476,6 +476,6 @@ func (s *service) FinalizeMealPlanHandler(res http.ResponseWriter, req *http.Req
 		}
 
 		// encode our response and peace.
-		s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 	}
 }

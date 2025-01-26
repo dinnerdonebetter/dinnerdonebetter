@@ -152,7 +152,7 @@ func (s *service) GetServiceSettingConfigurationsForUserByNameHandler(res http.R
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // GetServiceSettingConfigurationsForUserHandler returns a GET handler that returns a service setting configuration.
@@ -205,7 +205,7 @@ func (s *service) GetServiceSettingConfigurationsForUserHandler(res http.Respons
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // GetServiceSettingConfigurationsForHouseholdHandler returns a GET handler that returns a service setting configuration.
@@ -263,7 +263,7 @@ func (s *service) GetServiceSettingConfigurationsForHouseholdHandler(res http.Re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateServiceSettingConfigurationHandler returns a handler that updates a service setting configuration.
@@ -356,7 +356,7 @@ func (s *service) UpdateServiceSettingConfigurationHandler(res http.ResponseWrit
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveServiceSettingConfigurationHandler returns a handler that archives a service setting configuration.
@@ -429,5 +429,5 @@ func (s *service) ArchiveServiceSettingConfigurationHandler(res http.ResponseWri
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

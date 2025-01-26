@@ -144,7 +144,7 @@ func (s *service) ReadHouseholdInstrumentOwnershipHandler(res http.ResponseWrite
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListHouseholdInstrumentOwnershipHandler is our list route.
@@ -197,7 +197,7 @@ func (s *service) ListHouseholdInstrumentOwnershipHandler(res http.ResponseWrite
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateHouseholdInstrumentOwnershipHandler returns a handler that updates a household instrument ownership.
@@ -288,7 +288,7 @@ func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveHouseholdInstrumentOwnershipHandler returns a handler that archives a household instrument ownership.
@@ -359,5 +359,5 @@ func (s *service) ArchiveHouseholdInstrumentOwnershipHandler(res http.ResponseWr
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

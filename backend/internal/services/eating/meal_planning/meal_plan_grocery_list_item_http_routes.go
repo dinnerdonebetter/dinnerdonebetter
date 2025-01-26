@@ -158,7 +158,7 @@ func (s *service) ReadMealPlanGroceryListItemHandler(res http.ResponseWriter, re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListMealPlanGroceryListItemsByMealPlanHandler is our list route.
@@ -215,7 +215,7 @@ func (s *service) ListMealPlanGroceryListItemsByMealPlanHandler(res http.Respons
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateMealPlanGroceryListItemHandler returns a handler that updates a meal plan grocery list item.
@@ -311,7 +311,7 @@ func (s *service) UpdateMealPlanGroceryListItemHandler(res http.ResponseWriter, 
 		Data:    mealPlanGroceryListItem,
 	}
 
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveMealPlanGroceryListItemHandler returns a GET handler that returns a meal plan grocery list item.
@@ -392,5 +392,5 @@ func (s *service) ArchiveMealPlanGroceryListItemHandler(res http.ResponseWriter,
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

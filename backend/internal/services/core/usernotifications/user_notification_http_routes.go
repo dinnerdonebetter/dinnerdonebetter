@@ -151,7 +151,7 @@ func (s *service) ReadUserNotificationHandler(res http.ResponseWriter, req *http
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListUserNotificationsHandler is our list route.
@@ -206,7 +206,7 @@ func (s *service) ListUserNotificationsHandler(res http.ResponseWriter, req *htt
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateUserNotificationHandler returns a handler that updates a user notification.
@@ -302,5 +302,5 @@ func (s *service) UpdateUserNotificationHandler(res http.ResponseWriter, req *ht
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

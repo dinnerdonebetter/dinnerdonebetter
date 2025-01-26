@@ -171,7 +171,7 @@ func (s *service) ReadRecipeStepHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListRecipeStepsHandler is our list route.
@@ -231,7 +231,7 @@ func (s *service) ListRecipeStepsHandler(res http.ResponseWriter, req *http.Requ
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateRecipeStepHandler returns a handler that updates a recipe step.
@@ -330,7 +330,7 @@ func (s *service) UpdateRecipeStepHandler(res http.ResponseWriter, req *http.Req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveRecipeStepHandler returns a handler that archives a recipe step.
@@ -407,7 +407,7 @@ func (s *service) ArchiveRecipeStepHandler(res http.ResponseWriter, req *http.Re
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // RecipeStepImageUploadHandler updates a user's avatar.
@@ -452,7 +452,16 @@ func (s *service) RecipeStepImageUploadHandler(res http.ResponseWriter, req *htt
 	images, err := s.imageUploadProcessor.ProcessFiles(ctx, req, "upload")
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "processing provided image")
-		s.encoderDecoder.EncodeInvalidInputResponse(ctx, res)
+		errorResponse := &types.APIResponse[any]{
+			Details: types.ResponseDetails{
+				TraceID: span.SpanContext().TraceID().String(),
+			},
+			Error: &types.APIError{
+				Message: "invalid input attached to request",
+			},
+		}
+
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errorResponse, http.StatusBadRequest)
 		return
 	}
 

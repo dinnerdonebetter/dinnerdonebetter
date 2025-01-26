@@ -143,7 +143,7 @@ func (s *service) ReadValidPreparationInstrumentHandler(res http.ResponseWriter,
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidPreparationInstrumentsHandler is our list route.
@@ -196,7 +196,7 @@ func (s *service) ListValidPreparationInstrumentsHandler(res http.ResponseWriter
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidPreparationInstrumentHandler returns a handler that updates a valid preparation instrument.
@@ -287,7 +287,7 @@ func (s *service) UpdateValidPreparationInstrumentHandler(res http.ResponseWrite
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidPreparationInstrumentHandler returns a handler that archives a valid preparation instrument.
@@ -358,7 +358,7 @@ func (s *service) ArchiveValidPreparationInstrumentHandler(res http.ResponseWrit
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidPreparationInstrumentsByPreparationHandler is our valid preparation instrument search route for preparations.

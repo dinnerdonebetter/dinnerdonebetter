@@ -174,7 +174,7 @@ func (s *service) ReadRecipePrepTaskHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListRecipePrepTaskHandler is our list route.
@@ -234,7 +234,7 @@ func (s *service) ListRecipePrepTaskHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateRecipePrepTaskHandler returns a handler that updates a recipe prep task.
@@ -333,7 +333,7 @@ func (s *service) UpdateRecipePrepTaskHandler(res http.ResponseWriter, req *http
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveRecipePrepTaskHandler returns a handler that archives a recipe prep task.
@@ -410,5 +410,5 @@ func (s *service) ArchiveRecipePrepTaskHandler(res http.ResponseWriter, req *htt
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

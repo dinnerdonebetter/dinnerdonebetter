@@ -138,7 +138,7 @@ func (s *service) ListUserIngredientPreferencesHandler(res http.ResponseWriter, 
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateUserIngredientPreferenceHandler returns a handler that updates a user ingredient preference.
@@ -229,7 +229,7 @@ func (s *service) UpdateUserIngredientPreferenceHandler(res http.ResponseWriter,
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveUserIngredientPreferenceHandler returns a handler that archives a user ingredient preference.
@@ -300,5 +300,5 @@ func (s *service) ArchiveUserIngredientPreferenceHandler(res http.ResponseWriter
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

@@ -143,7 +143,7 @@ func (s *service) ReadValidPreparationVesselHandler(res http.ResponseWriter, req
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidPreparationVesselsHandler is our list route.
@@ -196,7 +196,7 @@ func (s *service) ListValidPreparationVesselsHandler(res http.ResponseWriter, re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidPreparationVesselHandler returns a handler that updates a valid preparation vessel.
@@ -287,7 +287,7 @@ func (s *service) UpdateValidPreparationVesselHandler(res http.ResponseWriter, r
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidPreparationVesselHandler returns a handler that archives a valid preparation vessel.
@@ -357,7 +357,7 @@ func (s *service) ArchiveValidPreparationVesselHandler(res http.ResponseWriter, 
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidPreparationVesselsByPreparationHandler is our valid preparation vessel search route for preparations.

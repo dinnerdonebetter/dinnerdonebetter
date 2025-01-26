@@ -144,7 +144,7 @@ func (s *service) ReadValidIngredientMeasurementUnitHandler(res http.ResponseWri
 	}
 
 	// encode the response.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidIngredientMeasurementUnitsHandler is our list route.
@@ -197,7 +197,7 @@ func (s *service) ListValidIngredientMeasurementUnitsHandler(res http.ResponseWr
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidIngredientMeasurementUnitHandler returns a handler that updates a valid ingredient measurement unit.
@@ -288,7 +288,7 @@ func (s *service) UpdateValidIngredientMeasurementUnitHandler(res http.ResponseW
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidIngredientMeasurementUnitHandler returns a handler that archives a valid ingredient measurement unit.
@@ -358,7 +358,7 @@ func (s *service) ArchiveValidIngredientMeasurementUnitHandler(res http.Response
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidIngredientMeasurementUnitsByIngredientHandler is our valid ingredient measurement unit search route.

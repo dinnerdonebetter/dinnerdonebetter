@@ -160,7 +160,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	// encode the response.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ReadWebhookHandler returns a GET handler that returns a webhook.
@@ -225,7 +225,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 	}
 
 	// encode the response.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveWebhookHandler returns a handler that archives a webhook.
@@ -301,7 +301,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // AddWebhookTriggerEventHandler returns a handler that adds a webhook trigger event.
@@ -397,7 +397,7 @@ func (s *service) AddWebhookTriggerEventHandler(res http.ResponseWriter, req *ht
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveWebhookTriggerEventHandler returns a handler that archives a webhook trigger event.
@@ -478,5 +478,5 @@ func (s *service) ArchiveWebhookTriggerEventHandler(res http.ResponseWriter, req
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

@@ -159,7 +159,7 @@ func (s *service) ReadRecipeHandler(res http.ResponseWriter, req *http.Request) 
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListRecipesHandler is our list route.
@@ -214,7 +214,7 @@ func (s *service) ListRecipesHandler(res http.ResponseWriter, req *http.Request)
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchRecipesHandler is our list route.
@@ -302,7 +302,7 @@ func (s *service) SearchRecipesHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateRecipeHandler returns a handler that updates a recipe.
@@ -402,7 +402,7 @@ func (s *service) UpdateRecipeHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveRecipeHandler returns a handler that archives a recipe.
@@ -475,7 +475,7 @@ func (s *service) ArchiveRecipeHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // RecipeEstimatedPrepStepsHandler is a handler that returns expected prep steps for a given recipe.
@@ -548,7 +548,7 @@ func (s *service) RecipeEstimatedPrepStepsHandler(res http.ResponseWriter, req *
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // RecipeImageUploadHandler updates a user's avatar.
@@ -588,7 +588,16 @@ func (s *service) RecipeImageUploadHandler(res http.ResponseWriter, req *http.Re
 	images, err := s.imageUploadProcessor.ProcessFiles(ctx, req, "upload")
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "processing provided image")
-		s.encoderDecoder.EncodeInvalidInputResponse(ctx, res)
+		errorResponse := &types.APIResponse[any]{
+			Details: types.ResponseDetails{
+				TraceID: span.SpanContext().TraceID().String(),
+			},
+			Error: &types.APIError{
+				Message: "invalid input attached to request",
+			},
+		}
+
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errorResponse, http.StatusBadRequest)
 		return
 	}
 
@@ -707,7 +716,7 @@ func (s *service) RecipeMermaidHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // CloneRecipeHandler returns a POST handler that returns a cloned recipe.

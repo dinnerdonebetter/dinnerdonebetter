@@ -73,7 +73,7 @@ func (s *service) ReadAuditLogEntryHandler(res http.ResponseWriter, req *http.Re
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListUserAuditLogEntriesHandler is our list route.
@@ -139,7 +139,7 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, req *http.Request) {
@@ -203,5 +203,5 @@ func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, r
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

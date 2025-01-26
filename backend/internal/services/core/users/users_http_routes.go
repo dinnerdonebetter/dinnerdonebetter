@@ -127,7 +127,7 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// encode response.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListUsersHandler is a handler for responding with a list of users.
@@ -164,7 +164,7 @@ func (s *service) ListUsersHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// encode response.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // CreateUserHandler is our user creation route.
@@ -467,7 +467,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UserPermissionsHandler returns information about the user making the request.
@@ -523,7 +523,7 @@ func (s *service) UserPermissionsHandler(res http.ResponseWriter, req *http.Requ
 	}
 
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ReadUserHandler is our read route.
@@ -566,7 +566,7 @@ func (s *service) ReadUserHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // TOTPSecretVerificationHandler accepts a TOTP token as input and returns 200 if the TOTP token
@@ -1284,7 +1284,7 @@ func (s *service) ArchiveUserHandler(res http.ResponseWriter, req *http.Request)
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // RequestUsernameReminderHandler checks for a user with a given email address and notifies them via email if there is a username associated with it.

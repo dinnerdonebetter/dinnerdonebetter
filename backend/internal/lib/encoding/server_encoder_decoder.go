@@ -13,7 +13,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/panicking"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/BurntSushi/toml"
 	"github.com/go-yaml/yaml"
@@ -21,12 +20,15 @@ import (
 
 const (
 	// ContentTypeHeaderKey is the HTTP standard header name for content type.
-	ContentTypeHeaderKey = "RawHTML-type"
-	contentTypeXML       = "application/xml"
-	contentTypeJSON      = "application/json"
-	contentTypeTOML      = "application/toml"
-	contentTypeYAML      = "application/yaml"
-	contentTypeEmoji     = "application/emoji"
+	ContentTypeHeaderKey = "Content-type"
+
+	serviceName = "server_encoder_decoder"
+
+	contentTypeXML   = "application/xml"
+	contentTypeJSON  = "application/json"
+	contentTypeTOML  = "application/toml"
+	contentTypeYAML  = "application/yaml"
+	contentTypeEmoji = "application/emoji"
 )
 
 var (
@@ -36,14 +38,7 @@ var (
 type (
 	// ServerEncoderDecoder is an interface that allows for multiple implementations of HTTP response formats.
 	ServerEncoderDecoder interface {
-		RespondWithData(ctx context.Context, res http.ResponseWriter, val any)
 		EncodeResponseWithStatus(ctx context.Context, res http.ResponseWriter, val any, statusCode int)
-		EncodeErrorResponse(ctx context.Context, res http.ResponseWriter, msg string, statusCode int)
-		EncodeInvalidInputResponse(ctx context.Context, res http.ResponseWriter)
-		EncodeNotFoundResponse(ctx context.Context, res http.ResponseWriter)
-		EncodeUnspecifiedInternalServerErrorResponse(ctx context.Context, res http.ResponseWriter)
-		EncodeUnauthorizedResponse(ctx context.Context, res http.ResponseWriter)
-		EncodeInvalidPermissionsResponse(ctx context.Context, res http.ResponseWriter)
 		DecodeRequest(ctx context.Context, req *http.Request, dest any) error
 		DecodeBytes(ctx context.Context, payload []byte, dest any) error
 		MustEncode(ctx context.Context, v any) []byte
@@ -181,90 +176,6 @@ func (e *serverEncoderDecoder) encodeResponse(ctx context.Context, res http.Resp
 	}
 }
 
-// EncodeErrorResponse encodes errs to responses.
-func (e *serverEncoderDecoder) EncodeErrorResponse(ctx context.Context, res http.ResponseWriter, msg string, statusCode int) {
-	_, span := e.tracer.StartSpan(ctx)
-	defer span.End()
-
-	var (
-		enc    encoder
-		logger = e.logger.WithValue("error_message", msg).WithValue(keys.ResponseStatusKey, statusCode)
-	)
-
-	switch e.contentType {
-	case ContentTypeXML:
-		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
-		enc = xml.NewEncoder(res)
-	case ContentTypeTOML:
-		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
-		enc = toml.NewEncoder(res)
-	case ContentTypeYAML:
-		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
-		enc = yaml.NewEncoder(res)
-	case ContentTypeEmoji:
-		res.Header().Set(ContentTypeHeaderKey, contentTypeEmoji)
-		enc = newEmojiEncoder(res)
-	default:
-		res.Header().Set(ContentTypeHeaderKey, contentTypeJSON)
-		enc = json.NewEncoder(res)
-	}
-
-	// TODO: move this to the call site
-	outboundResponse := &types.APIResponse[any]{
-		Details: types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
-		Error: &types.APIError{
-			Message: msg,
-		},
-	}
-
-	res.WriteHeader(statusCode)
-	if err := enc.Encode(outboundResponse); err != nil {
-		observability.AcknowledgeError(err, logger, span, "encoding error response")
-	}
-}
-
-// EncodeInvalidInputResponse encodes a generic 400 error to a response.
-func (e *serverEncoderDecoder) EncodeInvalidInputResponse(ctx context.Context, res http.ResponseWriter) {
-	ctx, span := e.tracer.StartSpan(ctx)
-	defer span.End()
-
-	e.EncodeErrorResponse(ctx, res, "invalid input attached to request", http.StatusBadRequest)
-}
-
-// EncodeNotFoundResponse encodes a generic 404 error to a response.
-func (e *serverEncoderDecoder) EncodeNotFoundResponse(ctx context.Context, res http.ResponseWriter) {
-	ctx, span := e.tracer.StartSpan(ctx)
-	defer span.End()
-
-	e.EncodeErrorResponse(ctx, res, "resource not found", http.StatusNotFound)
-}
-
-// EncodeUnspecifiedInternalServerErrorResponse encodes a generic 500 error to a response.
-func (e *serverEncoderDecoder) EncodeUnspecifiedInternalServerErrorResponse(ctx context.Context, res http.ResponseWriter) {
-	ctx, span := e.tracer.StartSpan(ctx)
-	defer span.End()
-
-	e.EncodeErrorResponse(ctx, res, "something has gone awry", http.StatusInternalServerError)
-}
-
-// EncodeUnauthorizedResponse encodes a generic 401 error to a response.
-func (e *serverEncoderDecoder) EncodeUnauthorizedResponse(ctx context.Context, res http.ResponseWriter) {
-	ctx, span := e.tracer.StartSpan(ctx)
-	defer span.End()
-
-	e.EncodeErrorResponse(ctx, res, "invalid credentials provided", http.StatusUnauthorized)
-}
-
-// EncodeInvalidPermissionsResponse encodes a generic 403 error to a response.
-func (e *serverEncoderDecoder) EncodeInvalidPermissionsResponse(ctx context.Context, res http.ResponseWriter) {
-	ctx, span := e.tracer.StartSpan(ctx)
-	defer span.End()
-
-	e.EncodeErrorResponse(ctx, res, "invalid permissions", http.StatusForbidden)
-}
-
 func (e *serverEncoderDecoder) MustEncodeJSON(ctx context.Context, v any) []byte {
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
@@ -359,8 +270,8 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 // ProvideServerEncoderDecoder provides a ServerEncoderDecoder.
 func ProvideServerEncoderDecoder(logger logging.Logger, tracerProvider tracing.TracerProvider, contentType ContentType) ServerEncoderDecoder {
 	return &serverEncoderDecoder{
-		logger:      logging.EnsureLogger(logger).WithName("server_encoder_decoder"),
-		tracer:      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("server_encoder_decoder")),
+		logger:      logging.EnsureLogger(logger).WithName(serviceName),
+		tracer:      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		panicker:    panicking.NewProductionPanicker(),
 		contentType: contentType,
 	}

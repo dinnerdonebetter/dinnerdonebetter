@@ -170,11 +170,20 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			logger := s.logger.WithRequest(req).WithSpan(span)
 			logger.Debug("checking permissions in middleware")
 
+			unauthorizedResponse := &types.APIResponse[any]{
+				Details: types.ResponseDetails{
+					TraceID: span.SpanContext().TraceID().String(),
+				},
+				Error: &types.APIError{
+					Message: "invalid credentials provided",
+				},
+			}
+
 			// check for a session context data first.
 			sessionContextData, err := s.sessionContextDataFetcher(req)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-				s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, unauthorizedResponse, http.StatusUnauthorized)
 				return
 			}
 
@@ -186,7 +195,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			if _, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]; !allowed && !isServiceAdmin {
 				permissionCheckTimer.Stop()
 				logger.Info("not authorized for household")
-				s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, unauthorizedResponse, http.StatusUnauthorized)
 				return
 			}
 
@@ -196,7 +205,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 				if doesNotHaveServicePermission && doesNotHaveHouseholdPermission {
 					permissionCheckTimer.Stop()
 					logger.WithValue("deficient_permission", perm.ID()).Info("request filtered out")
-					s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+					s.encoderDecoder.EncodeResponseWithStatus(ctx, res, unauthorizedResponse, http.StatusUnauthorized)
 					return
 				}
 			}

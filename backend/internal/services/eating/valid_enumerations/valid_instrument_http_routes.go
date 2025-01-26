@@ -147,7 +147,7 @@ func (s *service) ReadValidInstrumentHandler(res http.ResponseWriter, req *http.
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidInstrumentsHandler is our list route.
@@ -202,7 +202,7 @@ func (s *service) ListValidInstrumentsHandler(res http.ResponseWriter, req *http
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidInstrumentsHandler is our search route.
@@ -281,7 +281,7 @@ func (s *service) SearchValidInstrumentsHandler(res http.ResponseWriter, req *ht
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidInstrumentHandler returns a handler that updates a valid instrument.
@@ -374,7 +374,7 @@ func (s *service) UpdateValidInstrumentHandler(res http.ResponseWriter, req *htt
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidInstrumentHandler returns a handler that archives a valid instrument.
@@ -445,7 +445,7 @@ func (s *service) ArchiveValidInstrumentHandler(res http.ResponseWriter, req *ht
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // RandomValidInstrumentHandler returns a GET handler that returns a valid instrument.
@@ -497,5 +497,5 @@ func (s *service) RandomValidInstrumentHandler(res http.ResponseWriter, req *htt
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

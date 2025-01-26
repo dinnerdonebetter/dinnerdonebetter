@@ -198,7 +198,7 @@ func (s *service) ReadHouseholdInviteHandler(res http.ResponseWriter, req *http.
 	}
 
 	// encode the response.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Request) {
@@ -252,7 +252,7 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// encode the response.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Request) {
@@ -309,7 +309,7 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 		Pagination: &invitations.Pagination,
 	}
 
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request) {

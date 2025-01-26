@@ -146,7 +146,7 @@ func (s *service) ReadValidIngredientHandler(res http.ResponseWriter, req *http.
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidIngredientsHandler is our list route.
@@ -201,7 +201,7 @@ func (s *service) ListValidIngredientsHandler(res http.ResponseWriter, req *http
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidIngredientsHandler is our search route.
@@ -283,7 +283,7 @@ func (s *service) SearchValidIngredientsHandler(res http.ResponseWriter, req *ht
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidIngredientsByPreparationAndIngredientNameHandler is our valid ingredient measurement unit search route.
@@ -432,7 +432,7 @@ func (s *service) UpdateValidIngredientHandler(res http.ResponseWriter, req *htt
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidIngredientHandler returns a handler that archives a valid ingredient.
@@ -503,7 +503,7 @@ func (s *service) ArchiveValidIngredientHandler(res http.ResponseWriter, req *ht
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // RandomValidIngredientHandler returns a GET handler that returns a random valid ingredient.
@@ -555,5 +555,5 @@ func (s *service) RandomValidIngredientHandler(res http.ResponseWriter, req *htt
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

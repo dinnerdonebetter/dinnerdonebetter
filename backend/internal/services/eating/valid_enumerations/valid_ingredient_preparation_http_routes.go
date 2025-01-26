@@ -143,7 +143,7 @@ func (s *service) ReadValidIngredientPreparationHandler(res http.ResponseWriter,
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidIngredientPreparationsHandler is our list route.
@@ -196,7 +196,7 @@ func (s *service) ListValidIngredientPreparationsHandler(res http.ResponseWriter
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidIngredientPreparationHandler returns a handler that updates a valid ingredient preparation.
@@ -287,7 +287,7 @@ func (s *service) UpdateValidIngredientPreparationHandler(res http.ResponseWrite
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidIngredientPreparationHandler returns a handler that archives a valid ingredient preparation.

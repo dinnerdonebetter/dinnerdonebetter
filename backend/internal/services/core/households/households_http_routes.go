@@ -78,7 +78,7 @@ func (s *service) ListHouseholdsHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// encode our response and say farewell.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // CreateHouseholdHandler is our household creation route.
@@ -234,7 +234,7 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ReadHouseholdHandler returns a GET handler that returns a household.
@@ -304,7 +304,7 @@ func (s *service) ReadHouseholdHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateHouseholdHandler returns a handler that updates a household.
@@ -404,7 +404,7 @@ func (s *service) UpdateHouseholdHandler(res http.ResponseWriter, req *http.Requ
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveHouseholdHandler returns a handler that archives a household.
@@ -469,7 +469,7 @@ func (s *service) ArchiveHouseholdHandler(res http.ResponseWriter, req *http.Req
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ModifyMemberPermissionsHandler is our household creation route.

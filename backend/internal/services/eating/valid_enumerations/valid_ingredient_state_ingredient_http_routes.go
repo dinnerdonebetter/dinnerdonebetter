@@ -143,7 +143,7 @@ func (s *service) ReadValidIngredientStateIngredientHandler(res http.ResponseWri
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ListValidIngredientStateIngredientsHandler is our list route.
@@ -196,7 +196,7 @@ func (s *service) ListValidIngredientStateIngredientsHandler(res http.ResponseWr
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // UpdateValidIngredientStateIngredientHandler returns a handler that updates a valid ingredient state ingredient.
@@ -287,7 +287,7 @@ func (s *service) UpdateValidIngredientStateIngredientHandler(res http.ResponseW
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ArchiveValidIngredientStateIngredientHandler returns a handler that archives a valid ingredient state ingredient.
@@ -358,7 +358,7 @@ func (s *service) ArchiveValidIngredientStateIngredientHandler(res http.Response
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchValidIngredientStateIngredientsByIngredientHandler is our valid ingredient state ingredient search route.
