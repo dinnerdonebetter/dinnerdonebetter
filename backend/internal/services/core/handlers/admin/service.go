@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -25,7 +25,7 @@ type (
 		encoderDecoder            encoding.ServerEncoderDecoder
 		publisherProvider         messagequeue.PublisherProvider
 		tracer                    tracing.Tracer
-		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
+		sessionContextDataFetcher func(*http.Request) (*sessioncontext.SessionContextData, error)
 		queuesConfig              msgconfig.QueuesConfig
 	}
 )
@@ -49,7 +49,7 @@ func ProvideService(
 		userDB:                    userDataManager,
 		queuesConfig:              *queuesConfig,
 		publisherProvider:         publisherProvider,
-		sessionContextDataFetcher: authentication.FetchContextFromRequest,
+		sessionContextDataFetcher: sessioncontext.FetchContextFromRequest,
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 

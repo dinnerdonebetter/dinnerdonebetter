@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
@@ -32,7 +32,7 @@ const (
 var errArbitrary = errors.New("blah")
 
 // BrokenSessionContextDataFetcher is a deliberately broken sessionContextDataFetcher.
-func BrokenSessionContextDataFetcher(_ *http.Request) (*types.SessionContextData, error) {
+func BrokenSessionContextDataFetcher(_ *http.Request) (*sessioncontext.SessionContextData, error) {
 	return nil, errArbitrary
 }
 

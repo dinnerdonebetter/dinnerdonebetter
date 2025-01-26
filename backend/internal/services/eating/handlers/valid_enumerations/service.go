@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
@@ -48,7 +48,7 @@ type (
 		validIngredientIDFetcher                func(*http.Request) string
 		validMeasurementUnitIDFetcher           func(*http.Request) string
 		validIngredientGroupIDFetcher           func(*http.Request) string
-		sessionContextDataFetcher               func(*http.Request) (*types.SessionContextData, error)
+		sessionContextDataFetcher               func(*http.Request) (*sessioncontext.SessionContextData, error)
 		dataChangesPublisher                    messagequeue.Publisher
 		encoderDecoder                          encoding.ServerEncoderDecoder
 		tracer                                  tracing.Tracer
@@ -95,7 +95,7 @@ func ProvideService(
 		validIngredientMeasurementUnitIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientMeasurementUnitIDURIParamKey),
 		validIngredientIDFetcher:                routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
 		validMeasurementUnitIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(ValidMeasurementUnitIDURIParamKey),
-		sessionContextDataFetcher:               authentication.FetchContextFromRequest,
+		sessionContextDataFetcher:               sessioncontext.FetchContextFromRequest,
 		validEnumerationDataManager:             dataManager,
 		dataChangesPublisher:                    dataChangesPublisher,
 		encoderDecoder:                          encoder,

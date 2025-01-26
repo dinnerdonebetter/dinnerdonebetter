@@ -2,21 +2,19 @@ package types
 
 import (
 	"context"
-	"encoding/gob"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/routing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// SessionContextDataKey is the non-string type we use for referencing SessionContextData structs.
-	SessionContextDataKey ContextKey = "session_context_data"
+
 	// UserRegistrationInputContextKey is the non-string type we use for referencing SessionContextData structs.
-	UserRegistrationInputContextKey ContextKey = "user_registration_input"
+	UserRegistrationInputContextKey routing.ContextKey = "user_registration_input"
 
 	// TwoFactorSecretVerifiedServiceEventType indicates a user's two factor secret was verified.
 	/* #nosec G101 */
@@ -53,32 +51,7 @@ const (
 	UserEmailAddressVerificationEmailRequestedEventType = "user_email_address_verification_email_requested"
 )
 
-func init() {
-	gob.Register(&SessionContextData{})
-}
-
 type (
-	// SessionContextData represents what we encode in our passwords cookies.
-	SessionContextData struct {
-		_ struct{} `json:"-"`
-
-		HouseholdPermissions map[string]authorization.HouseholdRolePermissionsChecker `json:"-"`
-		Requester            RequesterInfo                                            `json:"-"`
-		ActiveHouseholdID    string                                                   `json:"-"`
-	}
-
-	// RequesterInfo contains data relevant to the user making a request.
-	RequesterInfo struct {
-		_ struct{} `json:"-"`
-
-		ServicePermissions       authorization.ServiceRolePermissionChecker `json:"-"`
-		AccountStatus            string                                     `json:"-"`
-		AccountStatusExplanation string                                     `json:"-"`
-		UserID                   string                                     `json:"-"`
-		EmailAddress             string                                     `json:"-"`
-		Username                 string                                     `json:"-"`
-	}
-
 	// UserStatusResponse is what we encode when the frontend wants to check auth status.
 	UserStatusResponse struct {
 		_ struct{} `json:"-"`
@@ -153,24 +126,4 @@ func (x *UserPermissionsRequestInput) ValidateWithContext(ctx context.Context) e
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.Permissions, validation.Required),
 	)
-}
-
-// HouseholdRolePermissionsChecker returns the relevant HouseholdRolePermissionsChecker.
-func (x *SessionContextData) HouseholdRolePermissionsChecker() authorization.HouseholdRolePermissionsChecker {
-	return x.HouseholdPermissions[x.ActiveHouseholdID]
-}
-
-// ServiceRolePermissionChecker returns the relevant ServiceRolePermissionChecker.
-func (x *SessionContextData) ServiceRolePermissionChecker() authorization.ServiceRolePermissionChecker {
-	return x.Requester.ServicePermissions
-}
-
-// AttachToLogger provides a consistent way to attach a SessionContextData object to a logger.
-func (x *SessionContextData) AttachToLogger(logger logging.Logger) logging.Logger {
-	if x != nil {
-		logger = logger.WithValue(keys.RequesterIDKey, x.Requester.UserID).
-			WithValue(keys.ActiveHouseholdIDKey, x.ActiveHouseholdID)
-	}
-
-	return logger
 }

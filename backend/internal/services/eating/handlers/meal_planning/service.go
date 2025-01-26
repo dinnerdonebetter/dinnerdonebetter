@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -43,7 +43,7 @@ type (
 		mealPlanOptionIDFetcher               func(*http.Request) string
 		mealPlanTaskIDFetcher                 func(*http.Request) string
 		mealPlanOptionVoteIDFetcher           func(*http.Request) string
-		sessionContextDataFetcher             func(*http.Request) (*types.SessionContextData, error)
+		sessionContextDataFetcher             func(*http.Request) (*sessioncontext.SessionContextData, error)
 		useSearchService                      bool
 	}
 )
@@ -88,7 +88,7 @@ func ProvideService(
 		mealPlanOptionVoteIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(MealPlanOptionVoteIDURIParamKey),
 		householdInstrumentOwnershipIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInstrumentOwnershipIDURIParamKey),
 		userIngredientPreferenceIDFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(UserIngredientPreferenceIDURIParamKey),
-		sessionContextDataFetcher:             authentication.FetchContextFromRequest,
+		sessionContextDataFetcher:             sessioncontext.FetchContextFromRequest,
 		dataChangesPublisher:                  dataChangesPublisher,
 		encoderDecoder:                        encoder,
 		mealPlanningDataManager:               mealPlanningDataManager,

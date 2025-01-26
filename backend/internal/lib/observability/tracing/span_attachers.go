@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/mssola/useragent"
 	"go.opentelemetry.io/otel/attribute"
@@ -64,13 +64,20 @@ func AttachToSpan[T any](span trace.Span, attachmentKey string, x T) {
 	}
 }
 
+// this is effectively an alias for the existing authentication.SessionContextData struct.
+type sessionContextData interface {
+	GetUserID() string
+	GetServicePermissions() authorization.ServiceRolePermissionChecker
+	GetActiveHouseholdID() string
+}
+
 // AttachSessionContextDataToSpan provides a consistent way to attach a SessionContextData object to a span.
-func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.SessionContextData) {
+func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData sessionContextData) {
 	if sessionCtxData != nil {
-		AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
-		AttachToSpan(span, keys.ActiveHouseholdIDKey, sessionCtxData.ActiveHouseholdID)
-		if sessionCtxData.Requester.ServicePermissions != nil {
-			AttachToSpan(span, keys.UserIsServiceAdminKey, sessionCtxData.Requester.ServicePermissions.IsServiceAdmin())
+		AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.GetUserID())
+		AttachToSpan(span, keys.ActiveHouseholdIDKey, sessionCtxData.GetActiveHouseholdID())
+		if servicePerms := sessionCtxData.GetServicePermissions(); servicePerms != nil {
+			AttachToSpan(span, keys.UserIsServiceAdminKey, servicePerms.IsServiceAdmin())
 		}
 	}
 }

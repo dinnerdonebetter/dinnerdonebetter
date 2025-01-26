@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
@@ -736,7 +737,7 @@ func TestValidIngredientStateIngredientsService_SearchValidIngredientStateIngred
 
 		helper := buildTestHelper(t)
 
-		helper.service.sessionContextDataFetcher = func(request *http.Request) (*types.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(request *http.Request) (*sessioncontext.SessionContextData, error) {
 			return nil, errors.New("blah")
 		}
 
@@ -811,7 +812,7 @@ func TestValidIngredientStateIngredientsService_SearchValidIngredientStateIngred
 
 		helper := buildTestHelper(t)
 
-		helper.service.sessionContextDataFetcher = func(request *http.Request) (*types.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(request *http.Request) (*sessioncontext.SessionContextData, error) {
 			return nil, errors.New("blah")
 		}
 

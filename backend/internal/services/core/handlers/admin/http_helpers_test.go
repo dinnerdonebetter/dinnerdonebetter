@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -30,9 +31,9 @@ type adminServiceHTTPRoutesTestHelper struct {
 
 func (helper *adminServiceHTTPRoutesTestHelper) neuterAdminUser() {
 	helper.exampleUser.ServiceRole = authorization.ServiceUserRole.String()
-	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
-		return &types.SessionContextData{
-			Requester: types.RequesterInfo{
+	helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+		return &sessioncontext.SessionContextData{
+			Requester: sessioncontext.RequesterInfo{
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
@@ -66,8 +67,8 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	require.NoError(t, err)
 	require.NotNil(t, helper.req)
 
-	sessionCtxData := &types.SessionContextData{
-		Requester: types.RequesterInfo{
+	sessionCtxData := &sessioncontext.SessionContextData{
+		Requester: sessioncontext.RequesterInfo{
 			UserID:                   helper.exampleUser.ID,
 			AccountStatus:            helper.exampleUser.AccountStatus,
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
@@ -78,7 +79,7 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
 	}
-	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
+	helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
 		return sessionCtxData, nil
 	}
 

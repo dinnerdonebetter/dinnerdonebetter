@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
@@ -32,7 +32,7 @@ type (
 		tracer                    tracing.Tracer
 		dataChangesPublisher      messagequeue.Publisher
 		urlClientIDExtractor      func(req *http.Request) string
-		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
+		sessionContextDataFetcher func(*http.Request) (*sessioncontext.SessionContextData, error)
 	}
 )
 
@@ -66,7 +66,7 @@ func ProvideOAuth2ClientsService(
 		oauth2ClientDataManager:   clientDataManager,
 		encoderDecoder:            encoderDecoder,
 		urlClientIDExtractor:      routeParamManager.BuildRouteParamStringIDFetcher(OAuth2ClientIDURIParamKey),
-		sessionContextDataFetcher: authentication.FetchContextFromRequest,
+		sessionContextDataFetcher: sessioncontext.FetchContextFromRequest,
 		secretGenerator:           secretGenerator,
 		dataChangesPublisher:      dataChangesPublisher,
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),

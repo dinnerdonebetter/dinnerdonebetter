@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -28,7 +28,7 @@ func buildTestService(t *testing.T) *service {
 		oauth2ClientDataManager:   database.NewMockDatabase(),
 		logger:                    logging.NewNoopLogger(),
 		encoderDecoder:            encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		sessionContextDataFetcher: authentication.FetchContextFromRequest,
+		sessionContextDataFetcher: sessioncontext.FetchContextFromRequest,
 		urlClientIDExtractor:      func(req *http.Request) string { return "" },
 		secretGenerator:           &randommock.Generator{},
 		tracer:                    tracing.NewTracerForTest(serviceName),

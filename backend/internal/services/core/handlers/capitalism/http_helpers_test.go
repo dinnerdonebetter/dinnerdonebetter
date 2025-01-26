@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -32,8 +33,8 @@ func buildTestHelper(t *testing.T) *capitalismServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 
-	sessionCtxData := &types.SessionContextData{
-		Requester: types.RequesterInfo{
+	sessionCtxData := &sessioncontext.SessionContextData{
+		Requester: sessioncontext.RequesterInfo{
 			UserID:                   helper.exampleUser.ID,
 			AccountStatus:            helper.exampleUser.AccountStatus,
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
@@ -47,7 +48,7 @@ func buildTestHelper(t *testing.T) *capitalismServiceHTTPRoutesTestHelper {
 
 	req := testutils.BuildTestRequest(t)
 
-	helper.req = req.WithContext(context.WithValue(req.Context(), types.SessionContextDataKey, sessionCtxData))
+	helper.req = req.WithContext(context.WithValue(req.Context(), sessioncontext.SessionContextDataKey, sessionCtxData))
 	helper.res = httptest.NewRecorder()
 
 	return helper

@@ -174,13 +174,9 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 	@$(GO_TEST) -coverprofile=$(COVERAGE_OUT) -covermode=atomic $(TESTABLE_PACKAGE_LIST) > /dev/null
 	@go tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
 
-.PHONY: build
-build:
-	go build $(TOTAL_PACKAGE_LIST)
-
-.PHONY: test
-test: $(ARTIFACTS_DIR) vendor build
-	$(GO_TEST) -failfast $(TESTABLE_PACKAGE_LIST)
+.PHONY: check_lib_for_types
+check_lib_for_types:
+	! grep -r 'pkg/types"' internal/lib/
 
 ## Generated files
 
@@ -248,6 +244,14 @@ integration_tests_postgres:
 	--attach tests
 
 ## Running
+
+.PHONY: build
+build:
+	go build $(TOTAL_PACKAGE_LIST)
+
+.PHONY: test
+test: $(ARTIFACTS_DIR) vendor build
+	$(GO_TEST) -failfast $(TESTABLE_PACKAGE_LIST)
 
 .PHONY: dev
 dev: $(ARTIFACTS_DIR)

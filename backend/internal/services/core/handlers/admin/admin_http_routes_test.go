@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
@@ -62,13 +63,13 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		sessionCtxData := &types.SessionContextData{
-			Requester: types.RequesterInfo{
+		sessionCtxData := &sessioncontext.SessionContextData{
+			Requester: sessioncontext.RequesterInfo{
 				ServicePermissions: authorization.NewServiceRolePermissionChecker(),
 			},
 			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{},
 		}
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
 			return sessionCtxData, nil
 		}
 
@@ -194,9 +195,9 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
-			scd := &types.SessionContextData{
-				Requester: types.RequesterInfo{
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+			scd := &sessioncontext.SessionContextData{
+				Requester: sessioncontext.RequesterInfo{
 					ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 				},
 			}
@@ -224,9 +225,9 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
-			scd := &types.SessionContextData{
-				Requester: types.RequesterInfo{
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+			scd := &sessioncontext.SessionContextData{
+				Requester: sessioncontext.RequesterInfo{
 					ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 				},
 			}

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	authentication2 "github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -20,7 +21,7 @@ type authServiceHTTPRoutesTestHelper struct {
 	ctx                 context.Context
 	req                 *http.Request
 	res                 *httptest.ResponseRecorder
-	sessionCtxData      *types.SessionContextData
+	sessionCtxData      *authentication2.SessionContextData
 	service             *service
 	exampleUser         *types.User
 	exampleHousehold    *types.Household
@@ -31,8 +32,8 @@ type authServiceHTTPRoutesTestHelper struct {
 func (helper *authServiceHTTPRoutesTestHelper) setContextFetcher(t *testing.T) {
 	t.Helper()
 
-	sessionCtxData := &types.SessionContextData{
-		Requester: types.RequesterInfo{
+	sessionCtxData := &authentication2.SessionContextData{
+		Requester: authentication2.RequesterInfo{
 			UserID:                   helper.exampleUser.ID,
 			AccountStatus:            helper.exampleUser.AccountStatus,
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
@@ -43,7 +44,7 @@ func (helper *authServiceHTTPRoutesTestHelper) setContextFetcher(t *testing.T) {
 	}
 
 	helper.sessionCtxData = sessionCtxData
-	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
+	helper.service.sessionContextDataFetcher = func(*http.Request) (*authentication2.SessionContextData, error) {
 		return sessionCtxData, nil
 	}
 }

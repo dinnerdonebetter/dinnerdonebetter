@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -28,7 +28,7 @@ type (
 	// service handles worker invocation requests.
 	service struct {
 		logger                         logging.Logger
-		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
+		sessionContextDataFetcher      func(*http.Request) (*sessioncontext.SessionContextData, error)
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		tracer                         tracing.Tracer
 		mealPlanFinalizationWorker     workers2.MealPlanFinalizationWorker
@@ -86,7 +86,7 @@ func ProvideService(
 		mealPlanFinalizationWorker:     mealPlanFinalizationWorker,
 		mealPlanGroceryListInitializer: mealPlanGroceryListInitializer,
 		mealPlanTaskCreatorWorker:      mealPlanTaskCreatorWorker,
-		sessionContextDataFetcher:      authentication.FetchContextFromRequest,
+		sessionContextDataFetcher:      sessioncontext.FetchContextFromRequest,
 		tracer:                         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 

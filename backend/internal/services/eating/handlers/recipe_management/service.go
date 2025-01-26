@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -51,7 +51,7 @@ type (
 		dataChangesPublisher                   messagequeue.Publisher
 		searchIndex                            textsearch.IndexSearcher[types.RecipeSearchSubset]
 		uploadManager                          uploads.UploadManager
-		sessionContextDataFetcher              func(*http.Request) (*types.SessionContextData, error)
+		sessionContextDataFetcher              func(*http.Request) (*sessioncontext.SessionContextData, error)
 		cfg                                    *Config
 	}
 )
@@ -108,7 +108,7 @@ func ProvideService(
 		recipeStepCompletionConditionIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(RecipeStepCompletionConditionIDURIParamKey),
 		recipePrepTaskIDFetcher:                routeParamManager.BuildRouteParamStringIDFetcher(RecipePrepTaskIDURIParamKey),
 		recipeRatingIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(RecipeRatingIDURIParamKey),
-		sessionContextDataFetcher:              authentication.FetchContextFromRequest,
+		sessionContextDataFetcher:              sessioncontext.FetchContextFromRequest,
 		recipeManagementDataManager:            recipesDataManager,
 		cfg:                                    cfg,
 		dataChangesPublisher:                   dataChangesPublisher,
