@@ -16,6 +16,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -372,8 +373,8 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -402,8 +403,8 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		helper.service.useSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -457,8 +458,8 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -485,8 +486,8 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()

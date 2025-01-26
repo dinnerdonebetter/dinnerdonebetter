@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -213,7 +214,7 @@ func (s *service) SearchValidInstrumentsHandler(res http.ResponseWriter, req *ht
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	query := req.URL.Query().Get(filtering.QueryKeySearch)
+	query := req.URL.Query().Get(textsearch.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 

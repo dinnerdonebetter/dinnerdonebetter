@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -30,7 +31,7 @@ func (c *Client) SearchForValidIngredients(
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	values := filter.ToValues()
-	values.Set(filtering.QueryKeySearch, q)
+	values.Set(textsearch.QueryKeySearch, q)
 
 	u := c.BuildURL(ctx, values, "/api/v1/valid_ingredients/search")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)

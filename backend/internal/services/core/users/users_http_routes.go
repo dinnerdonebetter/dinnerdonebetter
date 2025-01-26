@@ -21,6 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -93,7 +94,7 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	query := req.URL.Query().Get(filtering.QueryKeySearch)
+	query := req.URL.Query().Get(textsearch.QueryKeySearch)
 	tracing.AttachRequestToSpan(span, req)
 
 	logger := s.logger.WithRequest(req).WithSpan(span)

@@ -16,6 +16,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -361,8 +362,8 @@ func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *test
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientGroupDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -402,8 +403,8 @@ func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *test
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientGroupDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -427,8 +428,8 @@ func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *test
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientGroupDataManager := mocktypes.NewValidEnumerationDataManagerMock()

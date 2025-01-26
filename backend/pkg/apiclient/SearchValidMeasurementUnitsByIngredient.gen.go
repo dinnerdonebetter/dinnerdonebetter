@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -39,7 +40,7 @@ func (c *Client) SearchValidMeasurementUnitsByIngredient(
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	values := filter.ToValues()
-	values.Set(filtering.QueryKeySearch, q)
+	values.Set(textsearch.QueryKeySearch, q)
 
 	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/valid_measurement_units/by_ingredient/%s", validIngredientID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)

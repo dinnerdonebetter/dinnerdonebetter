@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -209,7 +210,7 @@ func (s *service) SearchValidIngredientGroupsHandler(res http.ResponseWriter, re
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	query := req.URL.Query().Get(filtering.QueryKeySearch)
+	query := req.URL.Query().Get(textsearch.QueryKeySearch)
 	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span).
 		WithValue(keys.SearchQueryKey, query)

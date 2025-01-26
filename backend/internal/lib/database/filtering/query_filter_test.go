@@ -11,6 +11,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -71,15 +72,15 @@ func TestQueryFilter_FromParams(T *testing.T) {
 		}
 
 		exampleInput := url.Values{
-			QueryKeySearch:          []string{t.Name()},
-			QueryKeyPage:            []string{strconv.Itoa(int(*expected.Page))},
-			QueryKeyLimit:           []string{strconv.Itoa(int(*expected.Limit))},
-			QueryKeyCreatedBefore:   []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
-			QueryKeyCreatedAfter:    []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
-			QueryKeyUpdatedBefore:   []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
-			QueryKeyUpdatedAfter:    []string{expected.UpdatedBefore.Format(time.RFC3339Nano)},
-			QueryKeySortBy:          []string{*expected.SortBy},
-			QueryKeyIncludeArchived: []string{strconv.FormatBool(true)},
+			textsearch.QueryKeySearch: []string{t.Name()},
+			QueryKeyPage:              []string{strconv.Itoa(int(*expected.Page))},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.Limit))},
+			QueryKeyCreatedBefore:     []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
+			QueryKeyCreatedAfter:      []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
+			QueryKeyUpdatedBefore:     []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
+			QueryKeyUpdatedAfter:      []string{expected.UpdatedBefore.Format(time.RFC3339Nano)},
+			QueryKeySortBy:            []string{*expected.SortBy},
+			QueryKeyIncludeArchived:   []string{strconv.FormatBool(true)},
 		}
 
 		actual.FromParams(exampleInput)
@@ -170,15 +171,15 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		}
 
 		expected := url.Values{
-			QueryKeySearch:          []string{t.Name()},
-			QueryKeyPage:            []string{strconv.Itoa(int(*qf.Page))},
-			QueryKeyLimit:           []string{strconv.Itoa(int(*qf.Limit))},
-			QueryKeyCreatedBefore:   []string{qf.CreatedAfter.Format(time.RFC3339Nano)},
-			QueryKeyCreatedAfter:    []string{qf.CreatedBefore.Format(time.RFC3339Nano)},
-			QueryKeyUpdatedBefore:   []string{qf.UpdatedAfter.Format(time.RFC3339Nano)},
-			QueryKeyUpdatedAfter:    []string{qf.UpdatedBefore.Format(time.RFC3339Nano)},
-			QueryKeyIncludeArchived: []string{strconv.FormatBool(*qf.IncludeArchived)},
-			QueryKeySortBy:          []string{*qf.SortBy},
+			textsearch.QueryKeySearch: []string{t.Name()},
+			QueryKeyPage:              []string{strconv.Itoa(int(*qf.Page))},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*qf.Limit))},
+			QueryKeyCreatedBefore:     []string{qf.CreatedAfter.Format(time.RFC3339Nano)},
+			QueryKeyCreatedAfter:      []string{qf.CreatedBefore.Format(time.RFC3339Nano)},
+			QueryKeyUpdatedBefore:     []string{qf.UpdatedAfter.Format(time.RFC3339Nano)},
+			QueryKeyUpdatedAfter:      []string{qf.UpdatedBefore.Format(time.RFC3339Nano)},
+			QueryKeyIncludeArchived:   []string{strconv.FormatBool(*qf.IncludeArchived)},
+			QueryKeySortBy:            []string{*qf.SortBy},
 		}
 
 		actual := qf.ToValues()
@@ -216,14 +217,14 @@ func TestExtractQueryFilter(T *testing.T) {
 			SortBy:        SortDescending,
 		}
 		exampleInput := url.Values{
-			QueryKeySearch:        []string{t.Name()},
-			QueryKeyPage:          []string{strconv.Itoa(int(*expected.Page))},
-			QueryKeyLimit:         []string{strconv.Itoa(int(*expected.Limit))},
-			QueryKeyCreatedBefore: []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
-			QueryKeyCreatedAfter:  []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
-			QueryKeyUpdatedBefore: []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
-			QueryKeyUpdatedAfter:  []string{expected.UpdatedBefore.Format(time.RFC3339Nano)},
-			QueryKeySortBy:        []string{*expected.SortBy},
+			textsearch.QueryKeySearch: []string{t.Name()},
+			QueryKeyPage:              []string{strconv.Itoa(int(*expected.Page))},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.Limit))},
+			QueryKeyCreatedBefore:     []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
+			QueryKeyCreatedAfter:      []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
+			QueryKeyUpdatedBefore:     []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
+			QueryKeyUpdatedAfter:      []string{expected.UpdatedBefore.Format(time.RFC3339Nano)},
+			QueryKeySortBy:            []string{*expected.SortBy},
 		}
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://verygoodsoftwarenotvirus.ru", http.NoBody)

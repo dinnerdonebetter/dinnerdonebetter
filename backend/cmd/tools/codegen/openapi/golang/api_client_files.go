@@ -11,6 +11,7 @@ import (
 	"unicode"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 
 	"github.com/swaggest/openapi-go/openapi31"
 )
@@ -347,16 +348,16 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	ctx context.Context,
 	{{ range .Params }}{{ .Name }} {{ .Type }},
 	{{ end -}}
-	filter *types.QueryFilter,
+	filter *filtering.QueryFilter,
 	reqMods ...RequestModifier,
-) (*types.QueryFilteredResult[types.{{ .ResponseType.TypeName }}], error) {
+) (*filtering.QueryFilteredResult[types.{{ .ResponseType.TypeName }}], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -372,7 +373,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 
 	values := filter.ToValues()
 	{{ if paramsContain .Params "q" -}}
-	values.Set(types.QueryKeySearch, q)
+	values.Set(textsearch.QueryKeySearch, q)
 	{{- end }}
 
 	u := c.BuildURL(ctx, values, {{ if shouldFormatPath }}fmt.Sprintf({{ end }}"{{ .PathTemplate }}"{{if shouldFormatPath }} {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}){{ end }})
@@ -394,7 +395,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 		return nil, err
 	}
 
-	result := &types.QueryFilteredResult[types.{{ .ResponseType.TypeName }}]{
+	result := &filtering.QueryFilteredResult[types.{{ .ResponseType.TypeName }}]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}
@@ -404,7 +405,16 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 			imports = append(imports,
 				"github.com/dinnerdonebetter/backend/internal/lib/observability",
 				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/database/filtering",
 			)
+
+			for _, z := range f.Params {
+				if z.Name == textsearch.QueryKeySearch {
+					imports = append(imports,
+						"github.com/dinnerdonebetter/backend/internal/lib/search/text",
+					)
+				}
+			}
 
 			if shouldFormatPath {
 				imports = append(imports,
@@ -734,7 +744,7 @@ reqMods ...RequestModifier,
 		},
 		"paramsContain": func(x []functionParam, y string) bool {
 			for _, z := range x {
-				if z.Name == filtering.QueryKeySearch {
+				if z.Name == textsearch.QueryKeySearch {
 					return true
 				}
 			}
@@ -1174,7 +1184,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		},
 		"paramsContain": func(x []functionParam, y string) bool {
 			for _, z := range x {
-				if z.Name == filtering.QueryKeySearch {
+				if z.Name == textsearch.QueryKeySearch {
 					return true
 				}
 			}

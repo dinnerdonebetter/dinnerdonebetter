@@ -17,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -228,7 +229,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		helper.service.userDataManager = mockDB
 
 		v := helper.req.URL.Query()
-		v.Set(filtering.QueryKeySearch, helper.exampleUser.Username)
+		v.Set(textsearch.QueryKeySearch, helper.exampleUser.Username)
 		helper.req.URL.RawQuery = v.Encode()
 
 		helper.service.UsernameSearchHandler(helper.res, helper.req)
@@ -259,7 +260,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		helper.service.userDataManager = mockDB
 
 		v := helper.req.URL.Query()
-		v.Set(filtering.QueryKeySearch, helper.exampleUser.Username)
+		v.Set(textsearch.QueryKeySearch, helper.exampleUser.Username)
 		helper.req.URL.RawQuery = v.Encode()
 
 		helper.service.UsernameSearchHandler(helper.res, helper.req)

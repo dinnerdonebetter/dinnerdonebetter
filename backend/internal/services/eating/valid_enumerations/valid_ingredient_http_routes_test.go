@@ -16,6 +16,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -372,8 +373,8 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -404,8 +405,8 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		helper.service.useSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -459,8 +460,8 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -488,8 +489,8 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -519,8 +520,8 @@ func TestValidIngredientsService_SearchValidIngredientsHandler(T *testing.T) {
 		helper.service.useSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		searchIndex := &mocksearch.IndexManager[types.ValidIngredientSearchSubset]{}
@@ -564,7 +565,7 @@ func TestValidIngredientsService_SearchValidIngredientsByPreparationAndIngredien
 		helper.service.validEnumerationDataManager = validIngredientDataManager
 
 		newQueryParams := helper.req.URL.Query()
-		newQueryParams.Set(filtering.QueryKeySearch, helper.exampleValidIngredient.Name)
+		newQueryParams.Set(textsearch.QueryKeySearch, helper.exampleValidIngredient.Name)
 		helper.req.URL.RawQuery = newQueryParams.Encode()
 
 		helper.service.SearchValidIngredientsByPreparationAndIngredientNameHandler(helper.res, helper.req)
@@ -610,7 +611,7 @@ func TestValidIngredientsService_SearchValidIngredientsByPreparationAndIngredien
 		helper.service.validEnumerationDataManager = validIngredientDataManager
 
 		newQueryParams := helper.req.URL.Query()
-		newQueryParams.Set(filtering.QueryKeySearch, helper.exampleValidIngredient.Name)
+		newQueryParams.Set(textsearch.QueryKeySearch, helper.exampleValidIngredient.Name)
 		helper.req.URL.RawQuery = newQueryParams.Encode()
 
 		helper.service.SearchValidIngredientsByPreparationAndIngredientNameHandler(helper.res, helper.req)

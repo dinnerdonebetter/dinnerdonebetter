@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 )
 
 const (
@@ -33,8 +34,6 @@ const (
 	// DefaultQueryFilterLimit represents how many results we return in a response by default.
 	DefaultQueryFilterLimit = 50
 
-	// QueryKeySearch is the query param key to find search queries in requests.
-	QueryKeySearch = "q"
 	// QueryKeySearchWithDatabase is the query param key to find search queries in requests.
 	QueryKeySearchWithDatabase = "useDB"
 
@@ -106,7 +105,7 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 	}
 
 	if qf.Query != "" {
-		l = l.WithValue(QueryKeySearch, qf.Query)
+		l = l.WithValue(textsearch.QueryKeySearch, qf.Query)
 	}
 
 	if qf.Page != nil {
@@ -142,7 +141,7 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 
 // FromParams overrides the core QueryFilter values with values retrieved from url.Params.
 func (qf *QueryFilter) FromParams(params url.Values) {
-	if i := params.Get(QueryKeySearch); i != "" {
+	if i := params.Get(textsearch.QueryKeySearch); i != "" {
 		qf.Query = i
 	}
 
@@ -211,7 +210,7 @@ func (qf *QueryFilter) ToValues() url.Values {
 	v := url.Values{}
 
 	if qf.Query != "" {
-		v.Set(QueryKeySearch, qf.Query)
+		v.Set(textsearch.QueryKeySearch, qf.Query)
 	}
 
 	if qf.Page != nil {

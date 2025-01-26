@@ -209,7 +209,7 @@ func main() {
 
 	spec.Paths = paths
 
-	schemas, err := parseTypes("pkg/types")
+	schemas, err := parseTypes("pkg/types", "internal/lib/database/filtering")
 	if err != nil {
 		log.Fatal(err)
 	}

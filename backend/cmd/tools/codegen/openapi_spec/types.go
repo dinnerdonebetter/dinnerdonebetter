@@ -110,18 +110,7 @@ func getJSONTagForField(field *ast.Field) string {
 	return jsonTag.Name
 }
 
-func parseTypes(pkgDir string) ([]*openapiSchema, error) {
-	fileset := token.NewFileSet()
-
-	astPkg, err := parser.ParseDir(fileset, pkgDir, nil, parser.AllErrors)
-	if err != nil {
-		return nil, fmt.Errorf("parsing package directory: %w", err)
-	}
-
-	if len(astPkg) == 0 || astPkg == nil {
-		return nil, errors.New("no go files found")
-	}
-
+func parseTypes(packages ...string) ([]*openapiSchema, error) {
 	declaredStructs := []*openapiSchema{
 		{
 			name: "APIResponseWithError",
@@ -137,135 +126,152 @@ func parseTypes(pkgDir string) ([]*openapiSchema, error) {
 		},
 	}
 
-	for _, enum := range enums.AllEnums {
-		declaredStructs = append(declaredStructs, &openapiSchema{
-			Enum: enum.Values,
-			name: enum.Name,
-			Type: "string",
-		})
-	}
+	for _, pkgDir := range packages {
+		fileset := token.NewFileSet()
 
-	for _, file := range astPkg {
-		// Traverse the AST
-		ast.Inspect(file, func(n ast.Node) bool {
-			// Look for type declarations (i.e., structs)
-			genDecl, ok := n.(*ast.GenDecl)
-			if !ok || genDecl.Tok != token.TYPE {
-				return true
-			}
+		astPkg, err := parser.ParseDir(fileset, pkgDir, nil, parser.AllErrors)
+		if err != nil {
+			return nil, fmt.Errorf("parsing package directory: %w", err)
+		}
 
-			// Process each type spec (we're interested in struct types)
-			for _, spec := range genDecl.Specs {
-				typeSpec, ok1 := spec.(*ast.TypeSpec)
-				if !ok1 {
-					continue
+		if len(astPkg) == 0 || astPkg == nil {
+			return nil, errors.New("no go files found")
+		}
+
+		for _, enum := range enums.AllEnums {
+			declaredStructs = append(declaredStructs, &openapiSchema{
+				Enum: enum.Values,
+				name: enum.Name,
+				Type: "string",
+			})
+		}
+
+		for _, file := range astPkg {
+			// Traverse the AST
+			ast.Inspect(file, func(n ast.Node) bool {
+				// Look for type declarations (i.e., structs)
+				genDecl, ok := n.(*ast.GenDecl)
+				if !ok || genDecl.Tok != token.TYPE {
+					return true
 				}
 
-				typeName := typeSpec.Name.Name
-				if _, ok2 := skipTypes[typeName]; ok2 {
-					continue
-				}
-
-				if strings.Contains(typeName, "DatabaseCreationInput") ||
-					strings.Contains(typeName, "DatabaseUpdateInput") ||
-					strings.Contains(typeName, "SearchSubset") ||
-					strings.Contains(typeName, "Mock") ||
-					strings.Contains(typeName, "Nullable") {
-					continue
-				}
-
-				// Check if it's a struct type
-				structType, ok1 := typeSpec.Type.(*ast.StructType)
-				if !ok1 {
-					continue
-				}
-
-				schema := &openapiSchema{
-					name:       typeName,
-					Type:       "object",
-					Properties: map[string]*openapiProperty{},
-				}
-				for _, field := range structType.Fields.List {
-					fieldName := field.Names[0].Name
-					if fieldName == "_" {
+				// Process each type spec (we're interested in struct types)
+				for _, spec := range genDecl.Specs {
+					typeSpec, ok1 := spec.(*ast.TypeSpec)
+					if !ok1 {
 						continue
 					}
 
-					if fieldName == "data" && typeName == "APIResponse" {
+					typeName := typeSpec.Name.Name
+					if _, ok2 := skipTypes[typeName]; ok2 {
 						continue
 					}
 
-					if field.Tag != nil {
-						if name := getJSONTagForField(field); name != "" {
-							if name == "-" {
-								continue
-							}
-							fieldName = name
+					if strings.Contains(typeName, "DatabaseCreationInput") ||
+						strings.Contains(typeName, "DatabaseUpdateInput") ||
+						strings.Contains(typeName, "SearchSubset") ||
+						strings.Contains(typeName, "Mock") ||
+						strings.Contains(typeName, "Nullable") {
+						continue
+					}
+
+					// Check if it's a struct type
+					structType, ok1 := typeSpec.Type.(*ast.StructType)
+					if !ok1 {
+						continue
+					}
+
+					schema := &openapiSchema{
+						name:       typeName,
+						Type:       "object",
+						Properties: map[string]*openapiProperty{},
+					}
+					for _, field := range structType.Fields.List {
+						fieldName := field.Names[0].Name
+						if fieldName == "_" {
+							continue
 						}
-					}
 
-					if fieldName == "data" && typeName == "APIResponse" {
-						continue
-					}
+						if fieldName == "data" && typeName == "APIResponse" {
+							continue
+						}
 
-					fieldType, format, isArray := deriveOpenAPIFieldType(typeName, fieldName, field)
-					property := &openapiProperty{
-						Type: fieldType,
-					}
+						if field.Tag != nil {
+							if name := getJSONTagForField(field); name != "" {
+								if name == "-" {
+									continue
+								}
+								fieldName = name
+							}
+						}
 
-					if _, nativeType := nativeTypesMap[fieldType]; !nativeType {
-						property.Type = ""
-						property.Ref = fmt.Sprintf("#/components/schemas/%s", fieldType)
-					}
+						if fieldName == "data" && typeName == "APIResponse" {
+							continue
+						}
 
-					if format != "" {
-						property.Format = format
-					}
-
-					if isArray {
-						property.Type = "array"
-						property.Ref = ""
-						property.Items = &openapiProperty{
+						fieldType, format, isArray := deriveOpenAPIFieldType(typeName, fieldName, field)
+						property := &openapiProperty{
 							Type: fieldType,
 						}
+
+						if fieldType == "filtering.Pagination" {
+							fieldType = "Pagination"
+						}
+
 						if _, nativeType := nativeTypesMap[fieldType]; !nativeType {
-							property.Items.Type = ""
-							property.Items = &openapiProperty{Ref: fmt.Sprintf("#/components/schemas/%s", fieldType)}
-						}
-					}
-
-					if x, ok2 := enums.TypeMap[fmt.Sprintf("%s.%s", typeName, fieldName)]; ok2 {
-						property.Type = ""
-						property.Ref = fmt.Sprintf("#/components/schemas/%s", x)
-					}
-
-					if _, isPointer := field.Type.(*ast.StarExpr); isPointer {
-						marshaled, marshalErr := json.Marshal(property)
-						if marshalErr != nil {
-							panic(marshalErr)
+							property.Type = ""
+							property.Ref = fmt.Sprintf("#/components/schemas/%s", fieldType)
 						}
 
-						newPropMap := map[string]string{}
-						if err = json.Unmarshal(marshaled, &newPropMap); err != nil {
-							panic(err)
+						if format != "" {
+							property.Format = format
 						}
 
-						property = &openapiProperty{OneOf: []map[string]string{
-							{
-								"type": "null",
-							},
-							newPropMap,
-						}}
+						if isArray {
+							property.Type = "array"
+							property.Ref = ""
+							property.Items = &openapiProperty{
+								Type: fieldType,
+							}
+							if _, nativeType := nativeTypesMap[fieldType]; !nativeType {
+								property.Items.Type = ""
+								property.Items = &openapiProperty{Ref: fmt.Sprintf("#/components/schemas/%s", fieldType)}
+							}
+						}
+
+						if x, ok2 := enums.TypeMap[fmt.Sprintf("%s.%s", typeName, fieldName)]; ok2 {
+							property.Type = ""
+							property.Ref = fmt.Sprintf("#/components/schemas/%s", x)
+						}
+
+						if _, isPointer := field.Type.(*ast.StarExpr); isPointer {
+							marshaled, marshalErr := json.Marshal(property)
+							if marshalErr != nil {
+								panic(marshalErr)
+							}
+
+							newPropMap := map[string]string{}
+							if err = json.Unmarshal(marshaled, &newPropMap); err != nil {
+								panic(err)
+							}
+
+							property = &openapiProperty{OneOf: []map[string]string{
+								{
+									"type": "null",
+								},
+								newPropMap,
+							}}
+						}
+
+						schema.Properties[fieldName] = property
 					}
 
-					schema.Properties[fieldName] = property
+					declaredStructs = append(declaredStructs, schema)
 				}
 
-				declaredStructs = append(declaredStructs, schema)
-			}
-
-			return true
-		})
+				return true
+			})
+		}
 	}
 
 	return declaredStructs, nil

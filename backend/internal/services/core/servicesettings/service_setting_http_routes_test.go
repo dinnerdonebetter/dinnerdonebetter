@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -216,8 +217,8 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
@@ -260,8 +261,8 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
@@ -288,8 +289,8 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}

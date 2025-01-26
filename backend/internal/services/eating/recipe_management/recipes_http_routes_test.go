@@ -17,6 +17,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/mock"
 	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -377,7 +378,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{filtering.QueryKeySearch: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{textsearch.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
@@ -408,8 +409,8 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		exampleLimit := uint8(123)
 
 		helper.req.URL.RawQuery = url.Values{
-			filtering.QueryKeySearch: []string{exampleQuery},
-			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			textsearch.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:   []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -465,7 +466,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{filtering.QueryKeySearch: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{textsearch.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
@@ -491,7 +492,7 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{filtering.QueryKeySearch: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{textsearch.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
