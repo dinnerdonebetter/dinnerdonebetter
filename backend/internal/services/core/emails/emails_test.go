@@ -1,9 +1,10 @@
-package email
+package emails
 
 import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/email"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -20,7 +21,7 @@ func TestBuildGeneratedPasswordResetTokenEmail(T *testing.T) {
 		user.EmailAddressVerifiedAt = pointer.To(time.Now())
 		token := fakes.BuildFakePasswordResetToken()
 
-		actual, err := BuildGeneratedPasswordResetTokenEmail(user, token, envConfigsMap[defaultEnv])
+		actual, err := BuildGeneratedPasswordResetTokenEmail(user, token, &email.EnvironmentConfig{})
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 		assert.Contains(t, actual.HTMLContent, logoURL)
@@ -35,26 +36,9 @@ func TestBuildInviteMemberEmail(T *testing.T) {
 
 		invitation := fakes.BuildFakeHouseholdInvitation()
 
-		actual, err := BuildInviteMemberEmail(invitation, envConfigsMap[defaultEnv])
+		actual, err := BuildInviteMemberEmail(invitation, &email.EnvironmentConfig{})
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
-	})
-}
-
-func TestBuildMealPlanCreatedEmail(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		user := fakes.BuildFakeUser()
-		user.EmailAddressVerifiedAt = pointer.To(time.Now())
-		mealPlan := fakes.BuildFakeMealPlan()
-
-		actual, err := BuildMealPlanCreatedEmail(user, mealPlan, envConfigsMap[defaultEnv])
-		assert.NoError(t, err)
-		assert.NotNil(t, actual)
-		assert.Contains(t, actual.HTMLContent, logoURL)
 	})
 }
 
@@ -67,7 +51,7 @@ func TestBuildPasswordResetTokenRedeemedEmail(T *testing.T) {
 		user := fakes.BuildFakeUser()
 		user.EmailAddressVerifiedAt = pointer.To(time.Now())
 
-		actual, err := BuildPasswordResetTokenRedeemedEmail(user, envConfigsMap[defaultEnv])
+		actual, err := BuildPasswordResetTokenRedeemedEmail(user, &email.EnvironmentConfig{})
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})
@@ -82,7 +66,7 @@ func TestBuildUsernameReminderEmail(T *testing.T) {
 		user := fakes.BuildFakeUser()
 		user.EmailAddressVerifiedAt = pointer.To(time.Now())
 
-		actual, err := BuildUsernameReminderEmail(user, envConfigsMap[defaultEnv])
+		actual, err := BuildUsernameReminderEmail(user, &email.EnvironmentConfig{})
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})

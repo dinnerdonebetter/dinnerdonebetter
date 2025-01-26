@@ -21,7 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/algolia"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/indexing"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 

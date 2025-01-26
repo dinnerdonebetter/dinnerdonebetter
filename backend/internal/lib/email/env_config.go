@@ -51,17 +51,17 @@ func (c *EnvironmentConfig) OutboundInvitesEmailAddress() string {
 	return c.outboundInvitesEmailAddress
 }
 
-// PasswordResetCreationEmailAddress returns the PasswordResetCreationEmailAddress field.
+// PasswordResetCreationEmailAddress returns the passwordResetCreationEmailAddress field.
 func (c *EnvironmentConfig) PasswordResetCreationEmailAddress() string {
 	return c.passwordResetCreationEmailAddress
 }
 
-// PasswordResetRedemptionEmailAddress returns the PasswordResetRedemptionEmailAddress field.
+// PasswordResetRedemptionEmailAddress returns the passwordResetRedemptionEmailAddress field.
 func (c *EnvironmentConfig) PasswordResetRedemptionEmailAddress() string {
 	return c.passwordResetRedemptionEmailAddress
 }
 
-func (c *EnvironmentConfig) buildHermes() *hermes.Hermes {
+func (c *EnvironmentConfig) BuildHermes() *hermes.Hermes {
 	return &hermes.Hermes{
 		Product: hermes.Product{
 			// Appears in header & footer of e-mails

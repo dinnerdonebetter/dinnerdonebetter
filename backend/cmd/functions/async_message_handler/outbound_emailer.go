@@ -10,6 +10,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	coreemails "github.com/dinnerdonebetter/backend/internal/services/core/emails"
+	eatingemails "github.com/dinnerdonebetter/backend/internal/services/eating/emails"
 )
 
 func handleEmailRequest(
@@ -48,13 +50,13 @@ func handleEmailRequest(
 			return observability.PrepareAndLogError(err, logger, span, "missing household invitation")
 		}
 
-		mail, err = email.BuildInviteMemberEmail(emailDeliveryRequest.Invitation, envCfg)
+		mail, err = coreemails.BuildInviteMemberEmail(emailDeliveryRequest.Invitation, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building email message")
 		}
 		emailType = "invite"
 	case email.TemplateTypeUsernameReminder:
-		mail, err = email.BuildUsernameReminderEmail(user, envCfg)
+		mail, err = coreemails.BuildUsernameReminderEmail(user, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building username reminder email")
 		}
@@ -64,32 +66,32 @@ func handleEmailRequest(
 			return observability.PrepareAndLogError(err, logger, span, "missing password reset token")
 		}
 
-		mail, err = email.BuildGeneratedPasswordResetTokenEmail(user, emailDeliveryRequest.PasswordResetToken, envCfg)
+		mail, err = coreemails.BuildGeneratedPasswordResetTokenEmail(user, emailDeliveryRequest.PasswordResetToken, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token created email")
 		}
 		emailType = "password reset token"
 	case email.TemplateTypePasswordReset:
-		mail, err = email.BuildPasswordChangedEmail(user, envCfg)
+		mail, err = coreemails.BuildPasswordChangedEmail(user, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token email")
 		}
 		emailType = "password reset token"
 	case email.TemplateTypePasswordResetTokenRedeemed:
-		mail, err = email.BuildPasswordResetTokenRedeemedEmail(user, envCfg)
+		mail, err = coreemails.BuildPasswordResetTokenRedeemedEmail(user, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token redemption email")
 		}
 		emailType = "password reset token redemption"
 	case email.TemplateTypeMealPlanCreated:
-		mail, err = email.BuildMealPlanCreatedEmail(user, emailDeliveryRequest.MealPlan, envCfg)
+		mail, err = eatingemails.BuildMealPlanCreatedEmail(user, emailDeliveryRequest.MealPlan, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
 		}
 		emailType = "meal plan created"
 	case email.TemplateTypeVerifyEmailAddress:
 		shouldSkipIfUnverified = false
-		mail, err = email.BuildVerifyEmailAddressEmail(user, emailDeliveryRequest.EmailVerificationToken, envCfg)
+		mail, err = coreemails.BuildVerifyEmailAddressEmail(user, emailDeliveryRequest.EmailVerificationToken, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building address verification email")
 		}

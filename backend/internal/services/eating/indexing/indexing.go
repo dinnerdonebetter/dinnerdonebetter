@@ -73,6 +73,7 @@ func HandleIndexRequest(
 
 		toBeIndexed = converters.ConvertRecipeToRecipeSearchSubset(recipe)
 		markAsIndexedFunc = func() error { return dataManager.MarkRecipeAsIndexed(ctx, indexReq.RowID) }
+
 	case textsearch.IndexTypeMeals:
 		im, err = textsearchcfg.ProvideIndex[types.MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
@@ -87,6 +88,7 @@ func HandleIndexRequest(
 
 		toBeIndexed = converters.ConvertMealToMealSearchSubset(meal)
 		markAsIndexedFunc = func() error { return dataManager.MarkMealAsIndexed(ctx, indexReq.RowID) }
+
 	case textsearch.IndexTypeValidIngredients:
 		im, err = textsearchcfg.ProvideIndex[types.ValidIngredientSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
@@ -101,6 +103,7 @@ func HandleIndexRequest(
 
 		toBeIndexed = converters.ConvertValidIngredientToValidIngredientSearchSubset(validIngredient)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientAsIndexed(ctx, indexReq.RowID) }
+
 	case textsearch.IndexTypeValidInstruments:
 		im, err = textsearchcfg.ProvideIndex[types.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
@@ -115,6 +118,7 @@ func HandleIndexRequest(
 
 		toBeIndexed = converters.ConvertValidInstrumentToValidInstrumentSearchSubset(validInstrument)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidInstrumentAsIndexed(ctx, indexReq.RowID) }
+
 	case textsearch.IndexTypeValidMeasurementUnits:
 		im, err = textsearchcfg.ProvideIndex[types.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
@@ -129,6 +133,7 @@ func HandleIndexRequest(
 
 		toBeIndexed = converters.ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(validMeasurementUnit)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidMeasurementUnitAsIndexed(ctx, indexReq.RowID) }
+
 	case textsearch.IndexTypeValidPreparations:
 		im, err = textsearchcfg.ProvideIndex[types.ValidPreparationSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
@@ -143,6 +148,7 @@ func HandleIndexRequest(
 
 		toBeIndexed = converters.ConvertValidPreparationToValidPreparationSearchSubset(validPreparation)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidPreparationAsIndexed(ctx, indexReq.RowID) }
+
 	case textsearch.IndexTypeValidIngredientStates:
 		im, err = textsearchcfg.ProvideIndex[types.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
@@ -157,6 +163,7 @@ func HandleIndexRequest(
 
 		toBeIndexed = converters.ConvertValidIngredientStateToValidIngredientStateSearchSubset(validIngredientState)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientStateAsIndexed(ctx, indexReq.RowID) }
+
 	case textsearch.IndexTypeValidVessels:
 		im, err = textsearchcfg.ProvideIndex[types.ValidVesselSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
@@ -171,6 +178,7 @@ func HandleIndexRequest(
 
 		toBeIndexed = converters.ConvertValidVesselToValidVesselSearchSubset(validVessel)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidVesselAsIndexed(ctx, indexReq.RowID) }
+
 	case textsearch.IndexTypeUsers:
 		im, err = textsearchcfg.ProvideIndex[types.UserSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {

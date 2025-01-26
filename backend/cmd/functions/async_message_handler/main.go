@@ -28,9 +28,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/indexing"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "go.uber.org/automaxprocs"
