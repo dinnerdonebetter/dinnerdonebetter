@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -80,7 +82,7 @@ type (
 	UserIngredientPreferenceDataManager interface {
 		UserIngredientPreferenceExists(ctx context.Context, userIngredientPreferenceID, userID string) (bool, error)
 		GetUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) (*UserIngredientPreference, error)
-		GetUserIngredientPreferences(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[UserIngredientPreference], error)
+		GetUserIngredientPreferences(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[UserIngredientPreference], error)
 		CreateUserIngredientPreference(ctx context.Context, input *UserIngredientPreferenceDatabaseCreationInput) ([]*UserIngredientPreference, error)
 		UpdateUserIngredientPreference(ctx context.Context, updated *UserIngredientPreference) error
 		ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error

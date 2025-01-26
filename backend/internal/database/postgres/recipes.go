@@ -8,6 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -237,19 +238,19 @@ func (q *Querier) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe
 }
 
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.
-func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Recipe], err error) {
+func (q *Querier) GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.Recipe]{
+	x = &filtering.QueryFilteredResult[types.Recipe]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -296,14 +297,14 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 }
 
 // GetRecipesCreatedByUser fetches a list of recipes from the database that meet a particular filter.
-func (q *Querier) GetRecipesCreatedByUser(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Recipe], err error) {
+func (q *Querier) GetRecipesCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -314,7 +315,7 @@ func (q *Querier) GetRecipesCreatedByUser(ctx context.Context, userID string, fi
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	x = &types.QueryFilteredResult[types.Recipe]{
+	x = &filtering.QueryFilteredResult[types.Recipe]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -395,19 +396,19 @@ func (q *Querier) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]str
 }
 
 // SearchForRecipes fetches a list of recipes from the database that match a query.
-func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Recipe], err error) {
+func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.Recipe]{
+	x = &filtering.QueryFilteredResult[types.Recipe]{
 		Pagination: filter.ToPagination(),
 	}
 

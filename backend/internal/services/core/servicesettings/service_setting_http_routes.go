@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -161,7 +162,7 @@ func (s *service) ListServiceSettingsHandler(res http.ResponseWriter, req *http.
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -191,7 +192,7 @@ func (s *service) ListServiceSettingsHandler(res http.ResponseWriter, req *http.
 	serviceSettings, err := s.serviceSettingDataManager.GetServiceSettings(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		serviceSettings = &types.QueryFilteredResult[types.ServiceSetting]{Data: []*types.ServiceSetting{}}
+		serviceSettings = &filtering.QueryFilteredResult[types.ServiceSetting]{Data: []*types.ServiceSetting{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving service settings")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -215,8 +216,8 @@ func (s *service) SearchServiceSettingsHandler(res http.ResponseWriter, req *htt
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span).
 		WithValue(keys.SearchQueryKey, query)
 	logger = filter.AttachToLogger(logger)

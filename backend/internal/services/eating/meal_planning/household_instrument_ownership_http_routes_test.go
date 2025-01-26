@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -278,7 +279,7 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 			"GetHouseholdInstrumentOwnerships",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleHouseholdInstrumentOwnershipList, nil)
 		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
 
@@ -318,8 +319,8 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 			"GetHouseholdInstrumentOwnerships",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), sql.ErrNoRows)
 		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
 
 		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
@@ -343,8 +344,8 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 			"GetHouseholdInstrumentOwnerships",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
 
 		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -104,7 +106,7 @@ type (
 	MealPlanDataManager interface {
 		MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error)
 		GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*MealPlan, error)
-		GetMealPlansForHousehold(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[MealPlan], error)
+		GetMealPlansForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlan], error)
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error

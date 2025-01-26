@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -109,7 +111,7 @@ type (
 	// HouseholdDataManager describes a structure capable of storing households permanently.
 	HouseholdDataManager interface {
 		GetHousehold(ctx context.Context, householdID string) (*Household, error)
-		GetHouseholds(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Household], error)
+		GetHouseholds(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Household], error)
 		CreateHousehold(ctx context.Context, input *HouseholdDatabaseCreationInput) (*Household, error)
 		UpdateHousehold(ctx context.Context, updated *Household) error
 		ArchiveHousehold(ctx context.Context, householdID string, userID string) error

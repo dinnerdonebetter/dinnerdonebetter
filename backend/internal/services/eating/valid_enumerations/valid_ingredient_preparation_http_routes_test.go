@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -274,7 +275,7 @@ func TestValidIngredientPreparationsService_ListValidIngredientPreparationsHandl
 		validIngredientPreparationDataManager.ValidIngredientPreparationDataManagerMock.On(
 			"GetValidIngredientPreparations",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidIngredientPreparationList, nil)
 		helper.service.validEnumerationDataManager = validIngredientPreparationDataManager
 
@@ -314,8 +315,8 @@ func TestValidIngredientPreparationsService_ListValidIngredientPreparationsHandl
 		validIngredientPreparationDataManager.ValidIngredientPreparationDataManagerMock.On(
 			"GetValidIngredientPreparations",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientPreparation])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validIngredientPreparationDataManager
 
 		helper.service.ListValidIngredientPreparationsHandler(helper.res, helper.req)
@@ -338,8 +339,8 @@ func TestValidIngredientPreparationsService_ListValidIngredientPreparationsHandl
 		validIngredientPreparationDataManager.ValidIngredientPreparationDataManagerMock.On(
 			"GetValidIngredientPreparations",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientPreparationDataManager
 
 		helper.service.ListValidIngredientPreparationsHandler(helper.res, helper.req)
@@ -763,7 +764,7 @@ func TestValidIngredientPreparationsService_SearchValidIngredientPreparationsByI
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientPreparationDataManager
 
 		helper.service.SearchValidIngredientPreparationsByIngredientHandler(helper.res, helper.req)
@@ -838,7 +839,7 @@ func TestValidIngredientPreparationsService_SearchValidIngredientPreparationsByP
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientPreparation])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientPreparationDataManager
 
 		helper.service.SearchValidIngredientPreparationsByPreparationHandler(helper.res, helper.req)

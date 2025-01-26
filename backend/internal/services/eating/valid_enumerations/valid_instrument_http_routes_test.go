@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -278,7 +279,7 @@ func TestValidInstrumentsService_ListValidInstrumentsHandler(T *testing.T) {
 		validInstrumentDataManager.ValidInstrumentDataManagerMock.On(
 			"GetValidInstruments",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidInstrumentList, nil)
 		helper.service.validEnumerationDataManager = validInstrumentDataManager
 
@@ -318,8 +319,8 @@ func TestValidInstrumentsService_ListValidInstrumentsHandler(T *testing.T) {
 		validInstrumentDataManager.ValidInstrumentDataManagerMock.On(
 			"GetValidInstruments",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidInstrument])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidInstrument])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validInstrumentDataManager
 
 		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
@@ -342,8 +343,8 @@ func TestValidInstrumentsService_ListValidInstrumentsHandler(T *testing.T) {
 		validInstrumentDataManager.ValidInstrumentDataManagerMock.On(
 			"GetValidInstruments",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidInstrument])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidInstrument])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validInstrumentDataManager
 
 		helper.service.ListValidInstrumentsHandler(helper.res, helper.req)
@@ -371,8 +372,8 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -401,8 +402,8 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		helper.service.useSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -456,8 +457,8 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -484,8 +485,8 @@ func TestValidInstrumentsService_SearchValidInstrumentsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validInstrumentDataManager := mocktypes.NewValidEnumerationDataManagerMock()

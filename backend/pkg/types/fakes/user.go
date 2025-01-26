@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -34,14 +35,14 @@ func BuildFakeUser() *types.User {
 }
 
 // BuildFakeUsersList builds a faked UserList.
-func BuildFakeUsersList() *types.QueryFilteredResult[types.User] {
+func BuildFakeUsersList() *filtering.QueryFilteredResult[types.User] {
 	var examples []*types.User
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeUser())
 	}
 
-	return &types.QueryFilteredResult[types.User]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.User]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
@@ -104,7 +106,7 @@ type (
 	WebhookDataManager interface {
 		WebhookExists(ctx context.Context, webhookID, householdID string) (bool, error)
 		GetWebhook(ctx context.Context, webhookID, householdID string) (*Webhook, error)
-		GetWebhooks(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[Webhook], error)
+		GetWebhooks(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Webhook], error)
 		GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID, eventType string) ([]*Webhook, error)
 		CreateWebhook(ctx context.Context, input *WebhookDatabaseCreationInput) (*Webhook, error)
 		ArchiveWebhook(ctx context.Context, webhookID, householdID string) error

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
@@ -342,7 +342,7 @@ func buildQueryFilterPathParams() []openapi.ParameterOrReference {
 			Parameter: &openapi.Parameter{
 				Name:        "limit",
 				In:          "query",
-				Description: pointer.To(fmt.Sprintf("How many results should appear in output, max is %d.", types.MaxQueryFilterLimit)),
+				Description: pointer.To(fmt.Sprintf("How many results should appear in output, max is %d.", filtering.MaxQueryFilterLimit)),
 				Required:    pointer.To(true),
 				Schema: map[string]any{
 					"type": "integer",

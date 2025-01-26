@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -167,7 +168,7 @@ func (s *service) ListMealPlanTasksByMealPlanHandler(res http.ResponseWriter, re
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 

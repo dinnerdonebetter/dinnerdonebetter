@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -154,7 +155,7 @@ func (s *service) ListValidPreparationsHandler(res http.ResponseWriter, req *htt
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -184,7 +185,7 @@ func (s *service) ListValidPreparationsHandler(res http.ResponseWriter, req *htt
 	validPreparations, err := s.validEnumerationDataManager.GetValidPreparations(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validPreparations = &types.QueryFilteredResult[types.ValidPreparation]{Data: []*types.ValidPreparation{}}
+		validPreparations = &filtering.QueryFilteredResult[types.ValidPreparation]{Data: []*types.ValidPreparation{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparations")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -212,11 +213,11 @@ func (s *service) SearchValidPreparationsHandler(res http.ResponseWriter, req *h
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 

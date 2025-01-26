@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -217,7 +218,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 			"GetWebhooks",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleWebhookList, nil)
 		helper.service.webhookDataManager = wd
 
@@ -257,8 +258,8 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 			"GetWebhooks",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Webhook])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Webhook])(nil), sql.ErrNoRows)
 		helper.service.webhookDataManager = wd
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
@@ -282,8 +283,8 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 			"GetWebhooks",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Webhook])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Webhook])(nil), errors.New("blah"))
 		helper.service.webhookDataManager = wd
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)

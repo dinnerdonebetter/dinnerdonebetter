@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -91,8 +93,8 @@ type (
 	RecipeRatingDataManager interface {
 		RecipeRatingExists(ctx context.Context, recipeID, recipeRatingID string) (bool, error)
 		GetRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*RecipeRating, error)
-		GetRecipeRatingsForRecipe(ctx context.Context, recipeID string, filter *QueryFilter) (*QueryFilteredResult[RecipeRating], error)
-		GetRecipeRatingsForUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[RecipeRating], error)
+		GetRecipeRatingsForRecipe(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipeRating], error)
+		GetRecipeRatingsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipeRating], error)
 		CreateRecipeRating(ctx context.Context, input *RecipeRatingDatabaseCreationInput) (*RecipeRating, error)
 		UpdateRecipeRating(ctx context.Context, updated *RecipeRating) error
 		ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error

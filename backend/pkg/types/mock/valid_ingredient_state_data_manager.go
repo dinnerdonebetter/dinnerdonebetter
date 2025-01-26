@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -34,9 +35,9 @@ func (m *ValidIngredientStateDataManagerMock) SearchForValidIngredientStates(ctx
 }
 
 // GetValidIngredientStates is a mock function.
-func (m *ValidIngredientStateDataManagerMock) GetValidIngredientStates(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientState], error) {
+func (m *ValidIngredientStateDataManagerMock) GetValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientState], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientState]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredientState]), returnValues.Error(1)
 }
 
 // CreateValidIngredientState is a mock function.

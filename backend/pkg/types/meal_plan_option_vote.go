@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -104,7 +106,7 @@ type (
 	MealPlanOptionVoteDataManager interface {
 		MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (bool, error)
 		GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*MealPlanOptionVote, error)
-		GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *QueryFilter) (*QueryFilteredResult[MealPlanOptionVote], error)
+		GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlanOptionVote], error)
 		GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (x []*MealPlanOptionVote, err error)
 		CreateMealPlanOptionVote(ctx context.Context, input *MealPlanOptionVotesDatabaseCreationInput) ([]*MealPlanOptionVote, error)
 		UpdateMealPlanOptionVote(ctx context.Context, updated *MealPlanOptionVote) error

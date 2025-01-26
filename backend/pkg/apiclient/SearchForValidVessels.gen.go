@@ -6,6 +6,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -14,22 +15,22 @@ import (
 func (c *Client) SearchForValidVessels(
 	ctx context.Context,
 	q string,
-	filter *types.QueryFilter,
+	filter *filtering.QueryFilter,
 	reqMods ...RequestModifier,
-) (*types.QueryFilteredResult[types.ValidVessel], error) {
+) (*filtering.QueryFilteredResult[types.ValidVessel], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	values := filter.ToValues()
-	values.Set(types.QueryKeySearch, q)
+	values.Set(filtering.QueryKeySearch, q)
 
 	u := c.BuildURL(ctx, values, "/api/v1/valid_vessels/search")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
@@ -50,7 +51,7 @@ func (c *Client) SearchForValidVessels(
 		return nil, err
 	}
 
-	result := &types.QueryFilteredResult[types.ValidVessel]{
+	result := &filtering.QueryFilteredResult[types.ValidVessel]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

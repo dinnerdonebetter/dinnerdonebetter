@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -357,7 +358,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
+		).Return((*filtering.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
 		helper.service.GetServiceSettingConfigurationsForUserHandler(helper.res, helper.req)
@@ -382,7 +383,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
 		helper.service.GetServiceSettingConfigurationsForUserHandler(helper.res, helper.req)
@@ -451,7 +452,7 @@ func TestServiceSettingConfigurationsService_GetServiceSettingConfigurationsForH
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
+		).Return((*filtering.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
 		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)
@@ -476,7 +477,7 @@ func TestServiceSettingConfigurationsService_GetServiceSettingConfigurationsForH
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
 		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)

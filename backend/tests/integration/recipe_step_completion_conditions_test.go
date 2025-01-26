@@ -3,6 +3,7 @@ package integration
 import (
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -74,7 +75,7 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			assert.NotNil(t, actual.LastUpdatedAt)
 
 			// assert recipe step completion condition list functionality works
-			listResponse, err := testClients.userClient.GetRecipeStepCompletionConditions(ctx, createdRecipe.ID, createdRecipeStep.ID, types.DefaultQueryFilter())
+			listResponse, err := testClients.userClient.GetRecipeStepCompletionConditions(ctx, createdRecipe.ID, createdRecipeStep.ID, filtering.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,

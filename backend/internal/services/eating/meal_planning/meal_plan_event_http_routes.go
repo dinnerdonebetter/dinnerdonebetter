@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -165,7 +166,7 @@ func (s *service) ListMealPlanEventHandler(res http.ResponseWriter, req *http.Re
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -198,7 +199,7 @@ func (s *service) ListMealPlanEventHandler(res http.ResponseWriter, req *http.Re
 	mealPlanEvents, err := s.mealPlanningDataManager.GetMealPlanEvents(ctx, mealPlanID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		mealPlanEvents = &types.QueryFilteredResult[types.MealPlanEvent]{Data: []*types.MealPlanEvent{}}
+		mealPlanEvents = &filtering.QueryFilteredResult[types.MealPlanEvent]{Data: []*types.MealPlanEvent{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plans")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

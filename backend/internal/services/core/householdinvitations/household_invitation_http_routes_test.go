@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -539,7 +540,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 			"GetPendingHouseholdInvitationsForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleHouseholdInvitations, nil)
 		helper.service.householdInvitationDataManager = wd
 
@@ -581,8 +582,8 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 			"GetPendingHouseholdInvitationsForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
@@ -611,7 +612,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 			"GetPendingHouseholdInvitationsFromUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleHouseholdInvitations, nil)
 		helper.service.householdInvitationDataManager = wd
 
@@ -653,8 +654,8 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 			"GetPendingHouseholdInvitationsFromUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)

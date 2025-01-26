@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -147,9 +149,9 @@ type (
 	MealDataManager interface {
 		MealExists(ctx context.Context, mealID string) (bool, error)
 		GetMeal(ctx context.Context, mealID string) (*Meal, error)
-		GetMeals(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
-		GetMealsCreatedByUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
-		SearchForMeals(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Meal], error)
+		GetMeals(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Meal], error)
+		GetMealsCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Meal], error)
+		SearchForMeals(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Meal], error)
 		CreateMeal(ctx context.Context, input *MealDatabaseCreationInput) (*Meal, error)
 		MarkMealAsIndexed(ctx context.Context, mealID string) error
 		ArchiveMeal(ctx context.Context, mealID, userID string) error

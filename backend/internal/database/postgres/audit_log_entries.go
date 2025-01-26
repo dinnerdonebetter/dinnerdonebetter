@@ -8,6 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -54,7 +55,7 @@ func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) 
 }
 
 // GetAuditLogEntriesForUser fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -67,11 +68,11 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &types.QueryFilteredResult[types.AuditLogEntry]{
+	x := &filtering.QueryFilteredResult[types.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -110,7 +111,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 }
 
 // GetAuditLogEntriesForUserAndResourceType fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID string, resourceTypes []string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -129,11 +130,11 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &types.QueryFilteredResult[types.AuditLogEntry]{
+	x := &filtering.QueryFilteredResult[types.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -173,7 +174,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 }
 
 // GetAuditLogEntriesForHousehold fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForHousehold(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -186,11 +187,11 @@ func (q *Querier) GetAuditLogEntriesForHousehold(ctx context.Context, householdI
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &types.QueryFilteredResult[types.AuditLogEntry]{
+	x := &filtering.QueryFilteredResult[types.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -229,7 +230,7 @@ func (q *Querier) GetAuditLogEntriesForHousehold(ctx context.Context, householdI
 }
 
 // GetAuditLogEntriesForHouseholdAndResourceType fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID string, resourceTypes []string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -248,11 +249,11 @@ func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &types.QueryFilteredResult[types.AuditLogEntry]{
+	x := &filtering.QueryFilteredResult[types.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
 

@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -277,7 +278,7 @@ func TestMealPlanEventsService_ListMealPlanEventHandler(T *testing.T) {
 			"GetMealPlanEvents",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleMealPlanEventList, nil)
 		helper.service.mealPlanningDataManager = mealPlanEventDataManager
 
@@ -317,8 +318,8 @@ func TestMealPlanEventsService_ListMealPlanEventHandler(T *testing.T) {
 			"GetMealPlanEvents",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.MealPlanEvent])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.MealPlanEvent])(nil), sql.ErrNoRows)
 		helper.service.mealPlanningDataManager = mealPlanEventDataManager
 
 		helper.service.ListMealPlanEventHandler(helper.res, helper.req)
@@ -342,8 +343,8 @@ func TestMealPlanEventsService_ListMealPlanEventHandler(T *testing.T) {
 			"GetMealPlanEvents",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.MealPlanEvent])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.MealPlanEvent])(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = mealPlanEventDataManager
 
 		helper.service.ListMealPlanEventHandler(helper.res, helper.req)

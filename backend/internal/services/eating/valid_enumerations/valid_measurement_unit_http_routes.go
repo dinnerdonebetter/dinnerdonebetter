@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -152,7 +153,7 @@ func (s *service) ListValidMeasurementUnitsHandler(res http.ResponseWriter, req 
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -181,7 +182,7 @@ func (s *service) ListValidMeasurementUnitsHandler(res http.ResponseWriter, req 
 	validMeasurementUnits, err := s.validEnumerationDataManager.GetValidMeasurementUnits(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validMeasurementUnits = &types.QueryFilteredResult[types.ValidMeasurementUnit]{Data: []*types.ValidMeasurementUnit{}}
+		validMeasurementUnits = &filtering.QueryFilteredResult[types.ValidMeasurementUnit]{Data: []*types.ValidMeasurementUnit{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid measurement units")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -208,11 +209,11 @@ func (s *service) SearchValidMeasurementUnitsHandler(res http.ResponseWriter, re
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
@@ -291,11 +292,11 @@ func (s *service) SearchValidMeasurementUnitsByIngredientIDHandler(res http.Resp
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
@@ -332,7 +333,7 @@ func (s *service) SearchValidMeasurementUnitsByIngredientIDHandler(res http.Resp
 	validMeasurementUnits, err := s.validEnumerationDataManager.ValidMeasurementUnitsForIngredientID(ctx, validIngredientID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validMeasurementUnits = &types.QueryFilteredResult[types.ValidMeasurementUnit]{}
+		validMeasurementUnits = &filtering.QueryFilteredResult[types.ValidMeasurementUnit]{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching valid measurement units for ingredient ID")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

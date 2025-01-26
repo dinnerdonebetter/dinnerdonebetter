@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -132,19 +133,19 @@ func (q *Querier) SearchForServiceSettings(ctx context.Context, query string) ([
 }
 
 // GetServiceSettings fetches a list of service settings from the database that meet a particular filter.
-func (q *Querier) GetServiceSettings(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ServiceSetting], err error) {
+func (q *Querier) GetServiceSettings(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ServiceSetting], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ServiceSetting]{
+	x = &filtering.QueryFilteredResult[types.ServiceSetting]{
 		Pagination: filter.ToPagination(),
 	}
 

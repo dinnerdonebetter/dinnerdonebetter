@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -126,7 +127,7 @@ func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIn
 }
 
 // GetValidIngredientMeasurementUnitsForIngredient fetches a list of valid measurement units from the database that belong to a given ingredient ID.
-func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], err error) {
+func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -139,12 +140,12 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, ingredientID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
 		Pagination: filter.ToPagination(),
 		Data:       []*types.ValidIngredientMeasurementUnit{},
 	}
@@ -240,7 +241,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 }
 
 // GetValidIngredientMeasurementUnitsForMeasurementUnit fetches a list of valid measurement units from the database that belong to a given ingredient ID.
-func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], err error) {
+func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -253,12 +254,12 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validMeasurementUnitID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
 		Pagination: filter.ToPagination(),
 		Data:       []*types.ValidIngredientMeasurementUnit{},
 	}
@@ -354,19 +355,19 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 }
 
 // GetValidIngredientMeasurementUnits fetches a list of valid ingredient measurement units from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
+func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x := &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
+	x := &filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
 		Pagination: filter.ToPagination(),
 		Data:       []*types.ValidIngredientMeasurementUnit{},
 	}

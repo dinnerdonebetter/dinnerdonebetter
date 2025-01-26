@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -212,7 +213,7 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	filter.AttachToLogger(logger)
 
 	// determine relevant user ID.
@@ -266,7 +267,7 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	filter.AttachToLogger(logger)
 
 	logger.Debug("fetching outbound invites for household")

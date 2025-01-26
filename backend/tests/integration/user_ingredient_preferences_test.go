@@ -3,6 +3,7 @@ package integration
 import (
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -46,7 +47,7 @@ func (s *TestSuite) TestUserIngredientPreferences_CompleteLifecycle() {
 
 			checkUserIngredientPreferenceEquality(t, exampleUserIngredientPreference, createdUserIngredientPreference)
 
-			createdUserIngredientPreferences, err := testClients.adminClient.GetUserIngredientPreferences(ctx, types.DefaultQueryFilter())
+			createdUserIngredientPreferences, err := testClients.adminClient.GetUserIngredientPreferences(ctx, filtering.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, createdUserIngredientPreference, err)
 			checkUserIngredientPreferenceEquality(t, exampleUserIngredientPreference, createdUserIngredientPreference)
 			require.NotEmpty(t, createdUserIngredientPreferences.Data, "expected to find at least one userClient ingredient preference")
@@ -59,7 +60,7 @@ func (s *TestSuite) TestUserIngredientPreferences_CompleteLifecycle() {
 			createdUserIngredientPreference.Update(updateInput)
 			assert.NoError(t, testClients.adminClient.UpdateUserIngredientPreference(ctx, createdUserIngredientPreference.ID, updateInput))
 
-			newResults, err := testClients.adminClient.GetUserIngredientPreferences(ctx, types.DefaultQueryFilter())
+			newResults, err := testClients.adminClient.GetUserIngredientPreferences(ctx, filtering.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, newResults, err)
 			require.NotEmpty(t, newResults.Data, "expected to find at least one userClient ingredient preference")
 			actual := newResults.Data[0]

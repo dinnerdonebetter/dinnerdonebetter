@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -151,7 +152,7 @@ func (s *service) ListValidPreparationVesselsHandler(res http.ResponseWriter, re
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -180,7 +181,7 @@ func (s *service) ListValidPreparationVesselsHandler(res http.ResponseWriter, re
 	validPreparationVessels, err := s.validEnumerationDataManager.GetValidPreparationVessels(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validPreparationVessels = &types.QueryFilteredResult[types.ValidPreparationVessel]{Data: []*types.ValidPreparationVessel{}}
+		validPreparationVessels = &filtering.QueryFilteredResult[types.ValidPreparationVessel]{Data: []*types.ValidPreparationVessel{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation vessels")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -366,7 +367,7 @@ func (s *service) SearchValidPreparationVesselsByPreparationHandler(res http.Res
 
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
 
 	tracing.AttachRequestToSpan(span, req)
@@ -418,7 +419,7 @@ func (s *service) SearchValidPreparationVesselsByVesselHandler(res http.Response
 	timing := servertiming.FromContext(ctx)
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	responseDetails := types.ResponseDetails{

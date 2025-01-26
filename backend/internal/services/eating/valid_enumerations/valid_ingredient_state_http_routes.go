@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -152,7 +153,7 @@ func (s *service) ListValidIngredientStatesHandler(res http.ResponseWriter, req 
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -181,7 +182,7 @@ func (s *service) ListValidIngredientStatesHandler(res http.ResponseWriter, req 
 	validIngredientStates, err := s.validEnumerationDataManager.GetValidIngredientStates(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredientStates = &types.QueryFilteredResult[types.ValidIngredientState]{Data: []*types.ValidIngredientState{}}
+		validIngredientStates = &filtering.QueryFilteredResult[types.ValidIngredientState]{Data: []*types.ValidIngredientState{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient states")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -206,10 +207,10 @@ func (s *service) SearchValidIngredientStatesHandler(res http.ResponseWriter, re
 
 	useDB := !s.useSearchService || s.searchFromDatabase(req)
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	logger := s.logger.WithRequest(req).WithSpan(span).

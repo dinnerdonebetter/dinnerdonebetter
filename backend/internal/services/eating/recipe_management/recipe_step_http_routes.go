@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -179,7 +180,7 @@ func (s *service) ListRecipeStepsHandler(res http.ResponseWriter, req *http.Requ
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -214,7 +215,7 @@ func (s *service) ListRecipeStepsHandler(res http.ResponseWriter, req *http.Requ
 	recipeSteps, err := s.recipeManagementDataManager.GetRecipeSteps(ctx, recipeID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipeSteps = &types.QueryFilteredResult[types.RecipeStep]{Data: []*types.RecipeStep{}}
+		recipeSteps = &filtering.QueryFilteredResult[types.RecipeStep]{Data: []*types.RecipeStep{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe steps")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

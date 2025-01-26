@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -151,7 +152,7 @@ func (s *service) ListValidIngredientPreparationsHandler(res http.ResponseWriter
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -180,7 +181,7 @@ func (s *service) ListValidIngredientPreparationsHandler(res http.ResponseWriter
 	validIngredientPreparations, err := s.validEnumerationDataManager.GetValidIngredientPreparations(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredientPreparations = &types.QueryFilteredResult[types.ValidIngredientPreparation]{Data: []*types.ValidIngredientPreparation{}}
+		validIngredientPreparations = &filtering.QueryFilteredResult[types.ValidIngredientPreparation]{Data: []*types.ValidIngredientPreparation{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient preparations")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -369,7 +370,7 @@ func (s *service) SearchValidIngredientPreparationsByIngredientHandler(res http.
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
@@ -421,7 +422,7 @@ func (s *service) SearchValidIngredientPreparationsByPreparationHandler(res http
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 

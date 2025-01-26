@@ -11,6 +11,7 @@ import (
 
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
@@ -101,7 +102,7 @@ func main() {
 			waitGroup.Wait()
 		}
 
-		filter := types.DefaultQueryFilter()
+		filter := filtering.DefaultQueryFilter()
 		filter.Limit = pointer.To(uint8(50))
 		thresholdMet := false
 
@@ -114,7 +115,7 @@ func main() {
 			}
 
 			for !thresholdMet {
-				var data *types.QueryFilteredResult[types.Recipe]
+				var data *filtering.QueryFilteredResult[types.Recipe]
 				data, err = dataManager.GetRecipes(ctx, filter)
 				if err != nil {
 					log.Println(fmt.Errorf("getting Recipe data: %w", err))
@@ -140,7 +141,7 @@ func main() {
 			}
 
 			for !thresholdMet {
-				var data *types.QueryFilteredResult[types.Meal]
+				var data *filtering.QueryFilteredResult[types.Meal]
 				data, err = dataManager.GetMeals(ctx, filter)
 				if err != nil {
 					log.Println(fmt.Errorf("getting Meal data: %w", err))
@@ -166,7 +167,7 @@ func main() {
 			}
 
 			for !thresholdMet {
-				var data *types.QueryFilteredResult[types.ValidIngredient]
+				var data *filtering.QueryFilteredResult[types.ValidIngredient]
 				data, err = dataManager.GetValidIngredients(ctx, filter)
 				if err != nil {
 					log.Println(fmt.Errorf("getting ValidIngredient data: %w", err))
@@ -192,7 +193,7 @@ func main() {
 			}
 
 			for !thresholdMet {
-				var data *types.QueryFilteredResult[types.ValidInstrument]
+				var data *filtering.QueryFilteredResult[types.ValidInstrument]
 				data, err = dataManager.GetValidInstruments(ctx, filter)
 				if err != nil {
 					log.Println(fmt.Errorf("getting ValidInstrument data: %w", err))
@@ -218,7 +219,7 @@ func main() {
 			}
 
 			for !thresholdMet {
-				var data *types.QueryFilteredResult[types.ValidMeasurementUnit]
+				var data *filtering.QueryFilteredResult[types.ValidMeasurementUnit]
 				data, err = dataManager.GetValidMeasurementUnits(ctx, filter)
 				if err != nil {
 					log.Println(fmt.Errorf("getting ValidMeasurementUnit data: %w", err))
@@ -244,7 +245,7 @@ func main() {
 			}
 
 			for !thresholdMet {
-				var data *types.QueryFilteredResult[types.ValidPreparation]
+				var data *filtering.QueryFilteredResult[types.ValidPreparation]
 				data, err = dataManager.GetValidPreparations(ctx, filter)
 				if err != nil {
 					log.Println(fmt.Errorf("getting ValidPreparation data: %w", err))
@@ -270,7 +271,7 @@ func main() {
 			}
 
 			for !thresholdMet {
-				var data *types.QueryFilteredResult[types.ValidIngredientState]
+				var data *filtering.QueryFilteredResult[types.ValidIngredientState]
 				data, err = dataManager.GetValidIngredientStates(ctx, filter)
 				if err != nil {
 					log.Println(fmt.Errorf("getting ValidIngredientState data: %w", err))
@@ -296,7 +297,7 @@ func main() {
 			}
 
 			for !thresholdMet {
-				var data *types.QueryFilteredResult[types.ValidVessel]
+				var data *filtering.QueryFilteredResult[types.ValidVessel]
 				data, err = dataManager.GetValidVessels(ctx, filter)
 				if err != nil {
 					log.Println(fmt.Errorf("getting ValidVessel data: %w", err))
@@ -322,7 +323,7 @@ func main() {
 			}
 
 			for !thresholdMet {
-				var data *types.QueryFilteredResult[types.User]
+				var data *filtering.QueryFilteredResult[types.User]
 				data, err = dataManager.GetUsers(ctx, filter)
 				if err != nil {
 					log.Println(fmt.Errorf("getting user data: %w", err))

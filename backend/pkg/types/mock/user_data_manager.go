@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -98,9 +99,9 @@ func (m *UserDataManagerMock) SearchForUsersByUsername(ctx context.Context, user
 }
 
 // GetUsers is a mock function.
-func (m *UserDataManagerMock) GetUsers(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.User], error) {
+func (m *UserDataManagerMock) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.User], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.User]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.User]), returnValues.Error(1)
 }
 
 // CreateUser is a mock function.

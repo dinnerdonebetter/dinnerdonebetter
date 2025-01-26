@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -137,19 +138,19 @@ func (q *Querier) GetValidIngredientPreparation(ctx context.Context, validIngred
 }
 
 // GetValidIngredientPreparations fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
+func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredientPreparation]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -253,7 +254,7 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 }
 
 // GetValidIngredientPreparationsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
+func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -266,12 +267,12 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, preparationID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredientPreparation]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -376,7 +377,7 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 }
 
 // GetValidIngredientPreparationsForIngredient fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
+func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -389,12 +390,12 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, ingredientID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredientPreparation]{
 		Pagination: filter.ToPagination(),
 	}
 

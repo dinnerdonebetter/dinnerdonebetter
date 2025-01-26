@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -274,7 +275,7 @@ func TestValidPreparationVesselsService_ListValidPreparationVesselsHandler(T *te
 		validPreparationVesselDataManager.ValidPreparationVesselDataManagerMock.On(
 			"GetValidPreparationVessels",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidPreparationVesselList, nil)
 		helper.service.validEnumerationDataManager = validPreparationVesselDataManager
 
@@ -314,8 +315,8 @@ func TestValidPreparationVesselsService_ListValidPreparationVesselsHandler(T *te
 		validPreparationVesselDataManager.ValidPreparationVesselDataManagerMock.On(
 			"GetValidPreparationVessels",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidPreparationVessel])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidPreparationVessel])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validPreparationVesselDataManager
 
 		helper.service.ListValidPreparationVesselsHandler(helper.res, helper.req)
@@ -338,8 +339,8 @@ func TestValidPreparationVesselsService_ListValidPreparationVesselsHandler(T *te
 		validPreparationVesselDataManager.ValidPreparationVesselDataManagerMock.On(
 			"GetValidPreparationVessels",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidPreparationVessel])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidPreparationVessel])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationVesselDataManager
 
 		helper.service.ListValidPreparationVesselsHandler(helper.res, helper.req)
@@ -762,7 +763,7 @@ func TestValidPreparationVesselsService_SearchValidPreparationVesselsByPreparati
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ValidPreparationVessel])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ValidPreparationVessel])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationVesselDataManager
 
 		helper.service.SearchValidPreparationVesselsByPreparationHandler(helper.res, helper.req)
@@ -837,7 +838,7 @@ func TestValidPreparationVesselsService_SearchValidPreparationVesselsByVesselHan
 			testutils.ContextMatcher,
 			helper.exampleValidVessel.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ValidPreparationVessel])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ValidPreparationVessel])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationVesselDataManager
 
 		helper.service.SearchValidPreparationVesselsByVesselHandler(helper.res, helper.req)

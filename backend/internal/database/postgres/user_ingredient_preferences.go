@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -129,7 +130,7 @@ func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredien
 }
 
 // GetUserIngredientPreferences fetches a list of user ingredient preferences from the database that meet a particular filter.
-func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.UserIngredientPreference], err error) {
+func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.UserIngredientPreference], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -142,12 +143,12 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.UserIngredientPreference]{
+	x = &filtering.QueryFilteredResult[types.UserIngredientPreference]{
 		Pagination: filter.ToPagination(),
 	}
 

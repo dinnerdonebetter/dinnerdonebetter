@@ -3,6 +3,7 @@ package fakes
 import (
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -31,14 +32,14 @@ func BuildFakeWebhook() *types.Webhook {
 }
 
 // BuildFakeWebhooksList builds a faked WebhookList.
-func BuildFakeWebhooksList() *types.QueryFilteredResult[types.Webhook] {
+func BuildFakeWebhooksList() *filtering.QueryFilteredResult[types.Webhook] {
 	var examples []*types.Webhook
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeWebhook())
 	}
 
-	return &types.QueryFilteredResult[types.Webhook]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.Webhook]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
@@ -60,14 +61,14 @@ func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
 }
 
 // BuildFakeWebhookTriggerEventList builds a faked WebhookList.
-func BuildFakeWebhookTriggerEventList() *types.QueryFilteredResult[types.WebhookTriggerEvent] {
+func BuildFakeWebhookTriggerEventList() *filtering.QueryFilteredResult[types.WebhookTriggerEvent] {
 	var examples []*types.WebhookTriggerEvent
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeWebhookTriggerEvent())
 	}
 
-	return &types.QueryFilteredResult[types.WebhookTriggerEvent]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.WebhookTriggerEvent]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

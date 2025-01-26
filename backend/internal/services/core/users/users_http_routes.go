@@ -15,6 +15,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -92,11 +93,11 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachRequestToSpan(span, req)
 
 	logger := s.logger.WithRequest(req).WithSpan(span)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -142,7 +143,7 @@ func (s *service) ListUsersHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine desired filter.
-	qf := types.ExtractQueryFilterFromRequest(req)
+	qf := filtering.ExtractQueryFilterFromRequest(req)
 
 	// fetch user data.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()

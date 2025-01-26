@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -151,7 +153,7 @@ type (
 		ValidVesselExists(ctx context.Context, validVesselID string) (bool, error)
 		GetValidVessel(ctx context.Context, validVesselID string) (*ValidVessel, error)
 		GetRandomValidVessel(ctx context.Context) (*ValidVessel, error)
-		GetValidVessels(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidVessel], error)
+		GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidVessel], error)
 		SearchForValidVessels(ctx context.Context, query string) ([]*ValidVessel, error)
 		CreateValidVessel(ctx context.Context, input *ValidVesselDatabaseCreationInput) (*ValidVessel, error)
 		UpdateValidVessel(ctx context.Context, updated *ValidVessel) error

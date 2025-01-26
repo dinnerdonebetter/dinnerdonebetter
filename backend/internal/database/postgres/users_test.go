@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -203,7 +204,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	for _, user := range createdUsers {
 		assert.NoError(t, dbc.DeleteUser(ctx, user.ID))
 
-		var y *types.QueryFilteredResult[types.Household]
+		var y *filtering.QueryFilteredResult[types.Household]
 		y, err = dbc.GetHouseholds(ctx, user.ID, nil)
 		assert.Nil(t, y)
 		assert.Error(t, err)

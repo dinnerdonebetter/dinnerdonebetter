@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -40,9 +41,9 @@ func (m *ServiceSettingDataManagerMock) SearchForServiceSettings(ctx context.Con
 }
 
 // GetServiceSettings is a mock function.
-func (m *ServiceSettingDataManagerMock) GetServiceSettings(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSetting], error) {
+func (m *ServiceSettingDataManagerMock) GetServiceSettings(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSetting], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ServiceSetting]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ServiceSetting]), returnValues.Error(1)
 }
 
 // CreateServiceSetting is a mock function.

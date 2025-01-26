@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -270,7 +271,7 @@ func TestValidIngredientMeasurementUnitsService_ListValidIngredientMeasurementUn
 		validIngredientMeasurementUnitDataManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"GetValidIngredientMeasurementUnits",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleResponse, nil)
 		helper.service.validEnumerationDataManager = validIngredientMeasurementUnitDataManager
 
@@ -310,8 +311,8 @@ func TestValidIngredientMeasurementUnitsService_ListValidIngredientMeasurementUn
 		validIngredientMeasurementUnitDataManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"GetValidIngredientMeasurementUnits",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validIngredientMeasurementUnitDataManager
 
 		helper.service.ListValidIngredientMeasurementUnitsHandler(helper.res, helper.req)
@@ -334,8 +335,8 @@ func TestValidIngredientMeasurementUnitsService_ListValidIngredientMeasurementUn
 		validIngredientMeasurementUnitDataManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"GetValidIngredientMeasurementUnits",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientMeasurementUnitDataManager
 
 		helper.service.ListValidIngredientMeasurementUnitsHandler(helper.res, helper.req)
@@ -751,7 +752,7 @@ func TestValidIngredientMeasurementUnitsService_SearchValidIngredientMeasurement
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientMeasurementUnitDataManager
 
 		helper.service.SearchValidIngredientMeasurementUnitsByIngredientHandler(helper.res, helper.req)
@@ -826,7 +827,7 @@ func TestValidIngredientMeasurementUnitsService_SearchValidIngredientMeasurement
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientMeasurementUnitDataManager
 
 		helper.service.SearchValidIngredientMeasurementUnitsByMeasurementUnitHandler(helper.res, helper.req)

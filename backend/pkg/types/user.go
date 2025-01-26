@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
@@ -242,7 +244,7 @@ type (
 		GetUser(ctx context.Context, userID string) (*User, error)
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
-		GetUsers(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[User], error)
+		GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
 		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)

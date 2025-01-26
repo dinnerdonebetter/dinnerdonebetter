@@ -8,7 +8,8 @@ import (
 	"strconv"
 	"testing"
 
-	testutils "github.com/dinnerdonebetter/backend/internal/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -123,7 +124,7 @@ func TestServiceSettingsService_ListServiceSettingsHandler(T *testing.T) {
 		serviceSettingDataManager.On(
 			"GetServiceSettings",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleServiceSettingList, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
@@ -162,8 +163,8 @@ func TestServiceSettingsService_ListServiceSettingsHandler(T *testing.T) {
 		serviceSettingDataManager.On(
 			"GetServiceSettings",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ServiceSetting])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ServiceSetting])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
 		helper.service.ListServiceSettingsHandler(helper.res, helper.req)
@@ -186,8 +187,8 @@ func TestServiceSettingsService_ListServiceSettingsHandler(T *testing.T) {
 		serviceSettingDataManager.On(
 			"GetServiceSettings",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ServiceSetting])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ServiceSetting])(nil), errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
 		helper.service.ListServiceSettingsHandler(helper.res, helper.req)
@@ -215,8 +216,8 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
@@ -259,8 +260,8 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
@@ -287,8 +288,8 @@ func TestServiceSettingsService_SearchServiceSettingsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}

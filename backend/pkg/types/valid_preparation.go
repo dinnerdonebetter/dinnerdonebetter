@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -129,7 +131,7 @@ type (
 		ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error)
 		GetValidPreparation(ctx context.Context, validPreparationID string) (*ValidPreparation, error)
 		GetRandomValidPreparation(ctx context.Context) (*ValidPreparation, error)
-		GetValidPreparations(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidPreparation], error)
+		GetValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparation], error)
 		SearchForValidPreparations(ctx context.Context, query string) ([]*ValidPreparation, error)
 		CreateValidPreparation(ctx context.Context, input *ValidPreparationDatabaseCreationInput) (*ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error

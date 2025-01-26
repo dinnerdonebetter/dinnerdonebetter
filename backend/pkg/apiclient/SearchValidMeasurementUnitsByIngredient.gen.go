@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -17,16 +18,16 @@ func (c *Client) SearchValidMeasurementUnitsByIngredient(
 	ctx context.Context,
 	q string,
 	validIngredientID string,
-	filter *types.QueryFilter,
+	filter *filtering.QueryFilter,
 	reqMods ...RequestModifier,
-) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
+) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -38,7 +39,7 @@ func (c *Client) SearchValidMeasurementUnitsByIngredient(
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	values := filter.ToValues()
-	values.Set(types.QueryKeySearch, q)
+	values.Set(filtering.QueryKeySearch, q)
 
 	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/valid_measurement_units/by_ingredient/%s", validIngredientID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
@@ -59,7 +60,7 @@ func (c *Client) SearchValidMeasurementUnitsByIngredient(
 		return nil, err
 	}
 
-	result := &types.QueryFilteredResult[types.ValidMeasurementUnit]{
+	result := &filtering.QueryFilteredResult[types.ValidMeasurementUnit]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

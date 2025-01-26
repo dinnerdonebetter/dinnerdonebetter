@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -25,14 +26,14 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 }
 
 // BuildFakeRecipeStepInstrumentsList builds a faked RecipeStepInstrumentList.
-func BuildFakeRecipeStepInstrumentsList() *types.QueryFilteredResult[types.RecipeStepInstrument] {
+func BuildFakeRecipeStepInstrumentsList() *filtering.QueryFilteredResult[types.RecipeStepInstrument] {
 	var examples []*types.RecipeStepInstrument
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepInstrument())
 	}
 
-	return &types.QueryFilteredResult[types.RecipeStepInstrument]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.RecipeStepInstrument]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

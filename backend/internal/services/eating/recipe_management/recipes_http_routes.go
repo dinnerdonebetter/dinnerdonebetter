@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -166,7 +167,7 @@ func (s *service) ListRecipesHandler(res http.ResponseWriter, req *http.Request)
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -196,7 +197,7 @@ func (s *service) ListRecipesHandler(res http.ResponseWriter, req *http.Request)
 	recipes, err := s.recipeManagementDataManager.GetRecipes(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipes = &types.QueryFilteredResult[types.Recipe]{Data: []*types.Recipe{}}
+		recipes = &filtering.QueryFilteredResult[types.Recipe]{Data: []*types.Recipe{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipes")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -224,15 +225,15 @@ func (s *service) SearchRecipesHandler(res http.ResponseWriter, req *http.Reques
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(filtering.QueryKeySearchWithDatabase))) == "true"
 	logger = logger.WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{
@@ -254,7 +255,7 @@ func (s *service) SearchRecipesHandler(res http.ResponseWriter, req *http.Reques
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	recipes := &types.QueryFilteredResult[types.Recipe]{
+	recipes := &filtering.QueryFilteredResult[types.Recipe]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -281,7 +282,7 @@ func (s *service) SearchRecipesHandler(res http.ResponseWriter, req *http.Reques
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipes = &types.QueryFilteredResult[types.Recipe]{
+		recipes = &filtering.QueryFilteredResult[types.Recipe]{
 			Pagination: filter.ToPagination(),
 			Data:       []*types.Recipe{},
 		}

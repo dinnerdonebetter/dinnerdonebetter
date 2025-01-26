@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -17,16 +18,16 @@ func (c *Client) GetRecipeStepVessels(
 	ctx context.Context,
 	recipeID string,
 	recipeStepID string,
-	filter *types.QueryFilter,
+	filter *filtering.QueryFilter,
 	reqMods ...RequestModifier,
-) (*types.QueryFilteredResult[types.RecipeStepVessel], error) {
+) (*filtering.QueryFilteredResult[types.RecipeStepVessel], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -64,7 +65,7 @@ func (c *Client) GetRecipeStepVessels(
 		return nil, err
 	}
 
-	result := &types.QueryFilteredResult[types.RecipeStepVessel]{
+	result := &filtering.QueryFilteredResult[types.RecipeStepVessel]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

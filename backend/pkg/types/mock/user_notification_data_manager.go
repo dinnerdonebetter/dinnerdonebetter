@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -28,9 +29,9 @@ func (m *UserNotificationDataManagerMock) GetUserNotification(ctx context.Contex
 }
 
 // GetUserNotifications is a mock function.
-func (m *UserNotificationDataManagerMock) GetUserNotifications(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.UserNotification], error) {
+func (m *UserNotificationDataManagerMock) GetUserNotifications(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.UserNotification], error) {
 	returnValues := m.Called(ctx, userID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.UserNotification]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.UserNotification]), returnValues.Error(1)
 }
 
 // CreateUserNotification is a mock function.

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -17,16 +18,16 @@ func (c *Client) GetRecipeStepCompletionConditions(
 	ctx context.Context,
 	recipeID string,
 	recipeStepID string,
-	filter *types.QueryFilter,
+	filter *filtering.QueryFilter,
 	reqMods ...RequestModifier,
-) (*types.QueryFilteredResult[types.RecipeStepCompletionCondition], error) {
+) (*filtering.QueryFilteredResult[types.RecipeStepCompletionCondition], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -64,7 +65,7 @@ func (c *Client) GetRecipeStepCompletionConditions(
 		return nil, err
 	}
 
-	result := &types.QueryFilteredResult[types.RecipeStepCompletionCondition]{
+	result := &filtering.QueryFilteredResult[types.RecipeStepCompletionCondition]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

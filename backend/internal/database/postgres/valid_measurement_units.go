@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -143,19 +144,19 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 }
 
 // ValidMeasurementUnitsForIngredientID fetches a valid measurement unit from the database.
-func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
+func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x := &types.QueryFilteredResult[types.ValidMeasurementUnit]{
+	x := &filtering.QueryFilteredResult[types.ValidMeasurementUnit]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -205,19 +206,19 @@ func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, vali
 }
 
 // GetValidMeasurementUnits fetches a list of valid measurement units from the database that meet a particular filter.
-func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidMeasurementUnit], err error) {
+func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidMeasurementUnit], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidMeasurementUnit]{
+	x = &filtering.QueryFilteredResult[types.ValidMeasurementUnit]{
 		Pagination: filter.ToPagination(),
 	}
 

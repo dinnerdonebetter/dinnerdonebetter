@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -124,7 +125,7 @@ func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGr
 }
 
 // SearchForValidIngredientGroups fetches a valid ingredient group from the database.
-func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query string, filter *types.QueryFilter) ([]*types.ValidIngredientGroup, error) {
+func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -137,7 +138,7 @@ func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query stri
 	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, query)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 	filter.AttachToLogger(logger)
@@ -232,19 +233,19 @@ func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query stri
 }
 
 // GetValidIngredientGroups fetches a list of valid ingredients group from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientGroup], err error) {
+func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientGroup], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientGroup]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredientGroup]{
 		Pagination: filter.ToPagination(),
 	}
 

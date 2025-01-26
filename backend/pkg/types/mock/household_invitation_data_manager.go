@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -40,15 +41,15 @@ func (m *HouseholdInvitationDataManagerMock) GetHouseholdInvitationByEmailAndTok
 }
 
 // GetPendingHouseholdInvitationsFromUser is a mock function.
-func (m *HouseholdInvitationDataManagerMock) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
+func (m *HouseholdInvitationDataManagerMock) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInvitation], error) {
 	returnValues := m.Called(ctx, userID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.HouseholdInvitation]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.HouseholdInvitation]), returnValues.Error(1)
 }
 
 // GetPendingHouseholdInvitationsForUser is a mock function.
-func (m *HouseholdInvitationDataManagerMock) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
+func (m *HouseholdInvitationDataManagerMock) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInvitation], error) {
 	returnValues := m.Called(ctx, userID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.HouseholdInvitation]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.HouseholdInvitation]), returnValues.Error(1)
 }
 
 // CreateHouseholdInvitation is a mock function.

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -114,7 +116,7 @@ type (
 	RecipeStepCompletionConditionDataManager interface {
 		RecipeStepCompletionConditionExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (bool, error)
 		GetRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*RecipeStepCompletionCondition, error)
-		GetRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*QueryFilteredResult[RecipeStepCompletionCondition], error)
+		GetRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipeStepCompletionCondition], error)
 		CreateRecipeStepCompletionCondition(ctx context.Context, input *RecipeStepCompletionConditionDatabaseCreationInput) (*RecipeStepCompletionCondition, error)
 		UpdateRecipeStepCompletionCondition(ctx context.Context, updated *RecipeStepCompletionCondition) error
 		ArchiveRecipeStepCompletionCondition(ctx context.Context, recipeStepID, recipeStepIngredientID string) error

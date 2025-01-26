@@ -13,12 +13,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/lib/cryptography/encryption"
 	"github.com/dinnerdonebetter/backend/internal/lib/cryptography/encryption/salsa20"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/XSAM/otelsql"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -178,11 +178,11 @@ func (q *Querier) rollbackTransaction(ctx context.Context, tx database.SQLQueryE
 	q.logger.Debug("transaction rolled back")
 }
 
-func fetchAllRows[T any](fetchFunc func(*types.QueryFilter) (*types.QueryFilteredResult[T], error)) ([]T, error) {
+func fetchAllRows[T any](fetchFunc func(*filtering.QueryFilter) (*filtering.QueryFilteredResult[T], error)) ([]T, error) {
 	var done bool
 	allData := []T{}
 
-	filter := &types.QueryFilter{
+	filter := &filtering.QueryFilter{
 		Page:            pointer.To(uint16(1)),
 		Limit:           pointer.To(uint8(math.MaxUint8)),
 		IncludeArchived: pointer.To(true),

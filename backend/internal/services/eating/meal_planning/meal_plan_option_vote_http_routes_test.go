@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -500,7 +501,7 @@ func TestMealPlanOptionVotesService_ListMealPlanOptionVoteHandler(T *testing.T) 
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleMealPlanOptionVoteList, nil)
 		helper.service.mealPlanningDataManager = dbManager
 
@@ -542,8 +543,8 @@ func TestMealPlanOptionVotesService_ListMealPlanOptionVoteHandler(T *testing.T) 
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.MealPlanOptionVote])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.MealPlanOptionVote])(nil), sql.ErrNoRows)
 		helper.service.mealPlanningDataManager = dbManager
 
 		helper.service.ListMealPlanOptionVoteHandler(helper.res, helper.req)
@@ -569,8 +570,8 @@ func TestMealPlanOptionVotesService_ListMealPlanOptionVoteHandler(T *testing.T) 
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.MealPlanOptionVote])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.MealPlanOptionVote])(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
 
 		helper.service.ListMealPlanOptionVoteHandler(helper.res, helper.req)

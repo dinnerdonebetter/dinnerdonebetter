@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -453,7 +454,7 @@ func TestOAuth2ClientsService_ListOAuth2ClientHandler(T *testing.T) {
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"GetOAuth2Clients",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleOAuth2ClientList, nil)
 		helper.service.oauth2ClientDataManager = mockDB
 
@@ -492,8 +493,8 @@ func TestOAuth2ClientsService_ListOAuth2ClientHandler(T *testing.T) {
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"GetOAuth2Clients",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.OAuth2Client])(nil), sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = mockDB
 
 		helper.service.ListOAuth2ClientsHandler(helper.res, helper.req)
@@ -516,8 +517,8 @@ func TestOAuth2ClientsService_ListOAuth2ClientHandler(T *testing.T) {
 		mockDB.OAuth2ClientDataManagerMock.On(
 			"GetOAuth2Clients",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.OAuth2Client])(nil), errors.New("blah"))
 		helper.service.oauth2ClientDataManager = mockDB
 
 		helper.service.ListOAuth2ClientsHandler(helper.res, helper.req)

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -121,7 +122,7 @@ func AttachErrorToSpan(span trace.Span, description string, err error) {
 }
 
 // AttachQueryFilterToSpan attaches a given query filter to a span.
-func AttachQueryFilterToSpan(span trace.Span, filter *types.QueryFilter) {
+func AttachQueryFilterToSpan(span trace.Span, filter *filtering.QueryFilter) {
 	if filter != nil {
 		if filter.Limit != nil {
 			AttachToSpan(span, keys.FilterLimitKey, *filter.Limit)

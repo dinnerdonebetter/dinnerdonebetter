@@ -4,23 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-)
-
-const (
-	// sortAscendingString is the pre-determined Ascending sortType for external use.
-	sortAscendingString = "asc"
-	// sortDescendingString is the pre-determined Descending sortType for external use.
-	sortDescendingString = "desc"
-)
-
-var (
-	// SortAscending is the pre-determined Ascending string for external use.
-	SortAscending = pointer.To(sortAscendingString)
-	// SortDescending is the pre-determined Descending string for external use.
-	SortDescending = pointer.To(sortDescendingString)
 )
 
 type (
@@ -28,23 +14,6 @@ type (
 	// 	"The provided key must be comparable and should not be of type string or
 	// 	 any other built-in type to avoid collisions between packages using context."
 	ContextKey string
-
-	// Pagination represents a pagination request.
-	Pagination struct {
-		_ struct{} `json:"-"`
-
-		Page          uint16 `json:"page"`
-		Limit         uint8  `json:"limit"`
-		FilteredCount uint64 `json:"filteredCount"`
-		TotalCount    uint64 `json:"totalCount"`
-	}
-
-	QueryFilteredResult[T any] struct {
-		_ struct{} `json:"-"`
-
-		Data []*T `json:"data"`
-		Pagination
-	}
 
 	// ResponseDetails represents details about the response.
 	ResponseDetails struct {
@@ -58,10 +27,10 @@ type (
 	APIResponse[T any] struct {
 		_ struct{} `json:"-"`
 
-		Data       T               `json:"data,omitempty"`
-		Pagination *Pagination     `json:"pagination,omitempty"`
-		Error      *APIError       `json:"error,omitempty"`
-		Details    ResponseDetails `json:"details"`
+		Data       T                     `json:"data,omitempty"`
+		Pagination *filtering.Pagination `json:"pagination,omitempty"`
+		Error      *APIError             `json:"error,omitempty"`
+		Details    ResponseDetails       `json:"details"`
 	}
 
 	// APIError represents a response we might send to the User in the event of an error.

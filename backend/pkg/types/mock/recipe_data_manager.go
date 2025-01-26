@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -28,21 +29,21 @@ func (m *RecipeDataManagerMock) GetRecipe(ctx context.Context, recipeID string) 
 }
 
 // SearchForRecipes is a mock function.
-func (m *RecipeDataManagerMock) SearchForRecipes(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Recipe], error) {
+func (m *RecipeDataManagerMock) SearchForRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Recipe], error) {
 	returnValues := m.Called(ctx, query, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.Recipe]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.Recipe]), returnValues.Error(1)
 }
 
 // GetRecipes is a mock function.
-func (m *RecipeDataManagerMock) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Recipe], error) {
+func (m *RecipeDataManagerMock) GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Recipe], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.Recipe]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.Recipe]), returnValues.Error(1)
 }
 
 // GetRecipesCreatedByUser is a mock function.
-func (m *RecipeDataManagerMock) GetRecipesCreatedByUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Recipe], error) {
+func (m *RecipeDataManagerMock) GetRecipesCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Recipe], error) {
 	returnValues := m.Called(ctx, userID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.Recipe]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.Recipe]), returnValues.Error(1)
 }
 
 // CreateRecipe is a mock function.

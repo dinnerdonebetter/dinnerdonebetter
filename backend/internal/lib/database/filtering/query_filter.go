@@ -1,4 +1,4 @@
-package types
+package filtering
 
 import (
 	"math"
@@ -11,6 +11,20 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+)
+
+const (
+	// sortAscendingString is the pre-determined Ascending sortType for external use.
+	sortAscendingString = "asc"
+	// sortDescendingString is the pre-determined Descending sortType for external use.
+	sortDescendingString = "desc"
+)
+
+var (
+	// SortAscending is the pre-determined Ascending string for external use.
+	SortAscending = pointer.To(sortAscendingString)
+	// SortDescending is the pre-determined Descending string for external use.
+	SortDescending = pointer.To(sortDescendingString)
 )
 
 const (
@@ -41,6 +55,23 @@ const (
 	// QueryKeySortBy is the query param key for sort order in a query.
 	QueryKeySortBy = "sortBy"
 )
+
+// Pagination represents a pagination request.
+type Pagination struct {
+	_ struct{} `json:"-"`
+
+	Page          uint16 `json:"page"`
+	Limit         uint8  `json:"limit"`
+	FilteredCount uint64 `json:"filteredCount"`
+	TotalCount    uint64 `json:"totalCount"`
+}
+
+type QueryFilteredResult[T any] struct {
+	_ struct{} `json:"-"`
+
+	Data []*T `json:"data"`
+	Pagination
+}
 
 // QueryFilter represents all the filters a User could apply to a list query.
 type QueryFilter struct {

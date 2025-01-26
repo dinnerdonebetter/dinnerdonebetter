@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -170,7 +171,7 @@ func (s *service) ListRecipeStepVesselsHandler(res http.ResponseWriter, req *htt
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -210,7 +211,7 @@ func (s *service) ListRecipeStepVesselsHandler(res http.ResponseWriter, req *htt
 	recipeStepVessels, err := s.recipeManagementDataManager.GetRecipeStepVessels(ctx, recipeID, recipeStepID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipeStepVessels = &types.QueryFilteredResult[types.RecipeStepVessel]{Data: []*types.RecipeStepVessel{}}
+		recipeStepVessels = &filtering.QueryFilteredResult[types.RecipeStepVessel]{Data: []*types.RecipeStepVessel{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe step vessels")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -28,21 +29,21 @@ func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasur
 }
 
 // GetValidIngredientMeasurementUnits is a mock function.
-func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
+func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), returnValues.Error(1)
 }
 
 // GetValidIngredientMeasurementUnitsForIngredient is a mock function.
-func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
+func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	returnValues := m.Called(ctx, ingredientID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), returnValues.Error(1)
 }
 
 // GetValidIngredientMeasurementUnitsForMeasurementUnit is a mock function.
-func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, measurementUnitID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
+func (m *ValidIngredientMeasurementUnitDataManagerMock) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, measurementUnitID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
 	returnValues := m.Called(ctx, measurementUnitID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit]), returnValues.Error(1)
 }
 
 // CreateValidIngredientMeasurementUnit is a mock function.

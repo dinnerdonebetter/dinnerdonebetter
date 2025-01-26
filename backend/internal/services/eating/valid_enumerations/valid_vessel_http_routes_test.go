@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -278,7 +279,7 @@ func TestValidVesselsService_ListValidVesselsHandler(T *testing.T) {
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessels",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidVesselList, nil)
 		helper.service.validEnumerationDataManager = validVesselDataManager
 
@@ -318,8 +319,8 @@ func TestValidVesselsService_ListValidVesselsHandler(T *testing.T) {
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessels",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidVessel])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidVessel])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validVesselDataManager
 
 		helper.service.ListValidVesselsHandler(helper.res, helper.req)
@@ -341,8 +342,8 @@ func TestValidVesselsService_ListValidVesselsHandler(T *testing.T) {
 		validVesselDataManager.ValidVesselDataManagerMock.On(
 			"GetValidVessels",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidVessel])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidVessel])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validVesselDataManager
 
 		helper.service.ListValidVesselsHandler(helper.res, helper.req)
@@ -370,8 +371,8 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -400,8 +401,8 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		helper.service.useSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -459,8 +460,8 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -486,8 +487,8 @@ func TestValidVesselsService_SearchValidVesselsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validVesselDataManager := mocktypes.NewValidEnumerationDataManagerMock()

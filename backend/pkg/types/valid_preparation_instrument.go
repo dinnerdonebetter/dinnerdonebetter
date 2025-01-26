@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -70,9 +72,9 @@ type (
 	ValidPreparationInstrumentDataManager interface {
 		ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (bool, error)
 		GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*ValidPreparationInstrument, error)
-		GetValidPreparationInstruments(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidPreparationInstrument], error)
-		GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*QueryFilteredResult[ValidPreparationInstrument], error)
-		GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *QueryFilter) (*QueryFilteredResult[ValidPreparationInstrument], error)
+		GetValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationInstrument], error)
+		GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationInstrument], error)
+		GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationInstrument], error)
 		CreateValidPreparationInstrument(ctx context.Context, input *ValidPreparationInstrumentDatabaseCreationInput) (*ValidPreparationInstrument, error)
 		UpdateValidPreparationInstrument(ctx context.Context, updated *ValidPreparationInstrument) error
 		ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error

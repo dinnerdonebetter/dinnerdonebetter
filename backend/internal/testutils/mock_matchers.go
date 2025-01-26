@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -19,7 +20,7 @@ var ContextMatcher any = mock.MatchedBy(func(context.Context) bool {
 // QueryFilterMatcher is a matcher for use with testify/mock's MatchBy function. It provides some level of type
 // safety reassurance over mock.Anything, in that the resulting function will panic if anything other than
 // a context.Context.
-var QueryFilterMatcher any = mock.MatchedBy(func(*types.QueryFilter) bool {
+var QueryFilterMatcher any = mock.MatchedBy(func(*filtering.QueryFilter) bool {
 	return true
 })
 

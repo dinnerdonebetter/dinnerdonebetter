@@ -3,6 +3,7 @@ package integration
 import (
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -82,7 +83,7 @@ func (s *TestSuite) TestValidIngredientMeasurementUnits_CompleteLifecycle() {
 			checkValidIngredientMeasurementUnitEquality(t, newValidIngredientMeasurementUnit, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			searchedMeasurementUnits, err := testClients.userClient.SearchValidMeasurementUnitsByIngredient(ctx, createdValidIngredient.Name, createdValidIngredient.ID, types.DefaultQueryFilter())
+			searchedMeasurementUnits, err := testClients.userClient.SearchValidMeasurementUnitsByIngredient(ctx, createdValidIngredient.Name, createdValidIngredient.ID, filtering.DefaultQueryFilter())
 			requireNotNilAndNoProblems(t, searchedMeasurementUnits, err)
 			assert.GreaterOrEqual(t, len(searchedMeasurementUnits.Data), 1)
 

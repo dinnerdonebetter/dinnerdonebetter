@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -276,7 +277,7 @@ func TestValidIngredientGroupsService_ListValidIngredientGroupsHandler(T *testin
 		validIngredientGroupDataManager.ValidIngredientGroupDataManagerMock.On(
 			"GetValidIngredientGroups",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidIngredientGroupList, nil)
 		helper.service.validEnumerationDataManager = validIngredientGroupDataManager
 
@@ -311,8 +312,8 @@ func TestValidIngredientGroupsService_ListValidIngredientGroupsHandler(T *testin
 		validIngredientGroupDataManager.ValidIngredientGroupDataManagerMock.On(
 			"GetValidIngredientGroups",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredientGroup])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientGroup])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validIngredientGroupDataManager
 
 		helper.service.ListValidIngredientGroupsHandler(helper.res, helper.req)
@@ -331,8 +332,8 @@ func TestValidIngredientGroupsService_ListValidIngredientGroupsHandler(T *testin
 		validIngredientGroupDataManager.ValidIngredientGroupDataManagerMock.On(
 			"GetValidIngredientGroups",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredientGroup])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientGroup])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientGroupDataManager
 
 		helper.service.ListValidIngredientGroupsHandler(helper.res, helper.req)
@@ -360,8 +361,8 @@ func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *test
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientGroupDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -369,7 +370,7 @@ func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *test
 			"SearchForValidIngredientGroups",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidIngredientGroupList.Data, nil)
 		helper.service.validEnumerationDataManager = validIngredientGroupDataManager
 
@@ -401,8 +402,8 @@ func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *test
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientGroupDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -410,7 +411,7 @@ func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *test
 			"SearchForValidIngredientGroups",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return([]*types.ValidIngredientGroup{}, sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validIngredientGroupDataManager
 
@@ -426,8 +427,8 @@ func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *test
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientGroupDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -435,7 +436,7 @@ func TestValidIngredientGroupsService_SearchValidIngredientGroupsHandler(T *test
 			"SearchForValidIngredientGroups",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return([]*types.ValidIngredientGroup(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientGroupDataManager
 

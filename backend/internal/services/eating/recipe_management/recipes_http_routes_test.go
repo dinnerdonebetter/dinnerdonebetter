@@ -12,6 +12,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/businesslogic/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -287,7 +288,7 @@ func TestRecipesService_ListRecipesHandler(T *testing.T) {
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipes",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleRecipeList, nil)
 		helper.service.recipeManagementDataManager = recipeDataManager
 
@@ -326,8 +327,8 @@ func TestRecipesService_ListRecipesHandler(T *testing.T) {
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipes",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Recipe])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Recipe])(nil), sql.ErrNoRows)
 		helper.service.recipeManagementDataManager = recipeDataManager
 
 		helper.service.ListRecipesHandler(helper.res, helper.req)
@@ -350,8 +351,8 @@ func TestRecipesService_ListRecipesHandler(T *testing.T) {
 		recipeDataManager.RecipeDataManagerMock.On(
 			"GetRecipes",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Recipe])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Recipe])(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = recipeDataManager
 
 		helper.service.ListRecipesHandler(helper.res, helper.req)
@@ -376,14 +377,14 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{types.QueryKeySearch: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{filtering.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"SearchForRecipes",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleRecipeList, nil)
 		helper.service.recipeManagementDataManager = recipeDataManager
 
@@ -407,8 +408,8 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		exampleLimit := uint8(123)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -464,15 +465,15 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{types.QueryKeySearch: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{filtering.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"SearchForRecipes",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Recipe])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Recipe])(nil), sql.ErrNoRows)
 		helper.service.recipeManagementDataManager = recipeDataManager
 
 		helper.service.SearchRecipesHandler(helper.res, helper.req)
@@ -490,15 +491,15 @@ func TestRecipesService_SearchRecipesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{types.QueryKeySearch: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{filtering.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		recipeDataManager := NewRecipeManagementDataManagerMock()
 		recipeDataManager.RecipeDataManagerMock.On(
 			"SearchForRecipes",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Recipe])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Recipe])(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = recipeDataManager
 
 		helper.service.SearchRecipesHandler(helper.res, helper.req)

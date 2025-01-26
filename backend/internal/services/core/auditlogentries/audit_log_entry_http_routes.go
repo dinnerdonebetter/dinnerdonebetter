@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -81,7 +82,7 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -113,7 +114,7 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 
-	var auditLogEntries *types.QueryFilteredResult[types.AuditLogEntry]
+	var auditLogEntries *filtering.QueryFilteredResult[types.AuditLogEntry]
 	if len(resourceTypes) == 0 {
 		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForUser(ctx, sessionCtxData.Requester.UserID, filter)
 	} else {
@@ -122,7 +123,7 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		auditLogEntries = &types.QueryFilteredResult[types.AuditLogEntry]{Data: []*types.AuditLogEntry{}}
+		auditLogEntries = &filtering.QueryFilteredResult[types.AuditLogEntry]{Data: []*types.AuditLogEntry{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -146,7 +147,7 @@ func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, r
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -177,7 +178,7 @@ func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, r
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	var auditLogEntries *types.QueryFilteredResult[types.AuditLogEntry]
+	var auditLogEntries *filtering.QueryFilteredResult[types.AuditLogEntry]
 	if len(resourceTypes) == 0 {
 		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForHousehold(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	} else {
@@ -186,7 +187,7 @@ func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, r
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		auditLogEntries = &types.QueryFilteredResult[types.AuditLogEntry]{Data: []*types.AuditLogEntry{}}
+		auditLogEntries = &filtering.QueryFilteredResult[types.AuditLogEntry]{Data: []*types.AuditLogEntry{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

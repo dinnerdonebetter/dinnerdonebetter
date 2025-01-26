@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -197,7 +198,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
+		filter := filtering.DefaultQueryFilter()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetWebhooks(ctx, "", filter)

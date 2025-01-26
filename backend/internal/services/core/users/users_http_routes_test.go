@@ -11,6 +11,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -227,7 +228,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		helper.service.userDataManager = mockDB
 
 		v := helper.req.URL.Query()
-		v.Set(types.QueryKeySearch, helper.exampleUser.Username)
+		v.Set(filtering.QueryKeySearch, helper.exampleUser.Username)
 		helper.req.URL.RawQuery = v.Encode()
 
 		helper.service.UsernameSearchHandler(helper.res, helper.req)
@@ -258,7 +259,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		helper.service.userDataManager = mockDB
 
 		v := helper.req.URL.Query()
-		v.Set(types.QueryKeySearch, helper.exampleUser.Username)
+		v.Set(filtering.QueryKeySearch, helper.exampleUser.Username)
 		helper.req.URL.RawQuery = v.Encode()
 
 		helper.service.UsernameSearchHandler(helper.res, helper.req)
@@ -287,7 +288,7 @@ func TestService_ListUsersHandler(T *testing.T) {
 		mockDB.UserDataManagerMock.On(
 			"GetUsers",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleUserList, nil)
 		helper.service.userDataManager = mockDB
 
@@ -314,8 +315,8 @@ func TestService_ListUsersHandler(T *testing.T) {
 		mockDB.UserDataManagerMock.On(
 			"GetUsers",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.User])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.User])(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
 
 		helper.service.ListUsersHandler(helper.res, helper.req)

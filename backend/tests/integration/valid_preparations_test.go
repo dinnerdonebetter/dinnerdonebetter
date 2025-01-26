@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
@@ -168,7 +169,7 @@ func (s *TestSuite) TestValidPreparations_Searching() {
 				expected = append(expected, createdValidPreparation)
 			}
 
-			filter := types.DefaultQueryFilter()
+			filter := filtering.DefaultQueryFilter()
 			filter.Limit = pointer.To(uint8(20))
 
 			// assert valid preparation list equality

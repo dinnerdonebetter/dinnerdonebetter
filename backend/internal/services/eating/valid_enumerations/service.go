@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
@@ -106,5 +107,5 @@ func ProvideService(
 }
 
 func (s *service) searchFromDatabase(req *http.Request) bool {
-	return strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
+	return strings.TrimSpace(strings.ToLower(req.URL.Query().Get(filtering.QueryKeySearchWithDatabase))) == "true"
 }

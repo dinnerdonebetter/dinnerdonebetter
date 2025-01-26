@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -38,7 +39,7 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 			"GetHouseholds",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleHouseholdList, nil)
 		helper.service.householdDataManager = householdDataManager
 
@@ -84,8 +85,8 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 			"GetHouseholds",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Household])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Household])(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
 
 		helper.service.ListHouseholdsHandler(helper.res, helper.req)
@@ -109,8 +110,8 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 			"GetHouseholds",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Household])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Household])(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
 
 		helper.service.ListHouseholdsHandler(helper.res, helper.req)

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -278,7 +279,7 @@ func TestValidMeasurementUnitsService_ListValidMeasurementUnitsHandler(T *testin
 		validMeasurementUnitDataManager.ValidMeasurementUnitDataManagerMock.On(
 			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidMeasurementUnitList, nil)
 		helper.service.validEnumerationDataManager = validMeasurementUnitDataManager
 
@@ -318,8 +319,8 @@ func TestValidMeasurementUnitsService_ListValidMeasurementUnitsHandler(T *testin
 		validMeasurementUnitDataManager.ValidMeasurementUnitDataManagerMock.On(
 			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validMeasurementUnitDataManager
 
 		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
@@ -341,8 +342,8 @@ func TestValidMeasurementUnitsService_ListValidMeasurementUnitsHandler(T *testin
 		validMeasurementUnitDataManager.ValidMeasurementUnitDataManagerMock.On(
 			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validMeasurementUnitDataManager
 
 		helper.service.ListValidMeasurementUnitsHandler(helper.res, helper.req)
@@ -370,8 +371,8 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -400,8 +401,8 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 		helper.service.useSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -459,8 +460,8 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -487,8 +488,8 @@ func TestValidMeasurementUnitsService_SearchValidMeasurementUnitsHandler(T *test
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -524,8 +525,8 @@ func TestVaValidMeasurementUnitslidMeasurementUnitsService_SearchByIngredientIDH
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -533,7 +534,7 @@ func TestVaValidMeasurementUnitslidMeasurementUnitsService_SearchByIngredientIDH
 			"ValidMeasurementUnitsForIngredientID",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidMeasurementUnitList, nil)
 		helper.service.validEnumerationDataManager = validMeasurementUnitDataManager
 
@@ -570,8 +571,8 @@ func TestVaValidMeasurementUnitslidMeasurementUnitsService_SearchByIngredientIDH
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -579,8 +580,8 @@ func TestVaValidMeasurementUnitslidMeasurementUnitsService_SearchByIngredientIDH
 			"ValidMeasurementUnitsForIngredientID",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidMeasurementUnit])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validMeasurementUnitDataManager
 
 		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)
@@ -599,8 +600,8 @@ func TestVaValidMeasurementUnitslidMeasurementUnitsService_SearchByIngredientIDH
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validMeasurementUnitDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -608,8 +609,8 @@ func TestVaValidMeasurementUnitslidMeasurementUnitsService_SearchByIngredientIDH
 			"ValidMeasurementUnitsForIngredientID",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidMeasurementUnit])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validMeasurementUnitDataManager
 
 		helper.service.SearchValidMeasurementUnitsByIngredientIDHandler(helper.res, helper.req)

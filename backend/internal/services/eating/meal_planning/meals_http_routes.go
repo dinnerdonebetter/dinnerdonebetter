@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -158,7 +159,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -188,7 +189,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 	meals, err := s.mealPlanningDataManager.GetMeals(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		meals = &types.QueryFilteredResult[types.Meal]{Data: []*types.Meal{}}
+		meals = &filtering.QueryFilteredResult[types.Meal]{Data: []*types.Meal{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meals")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -216,14 +217,14 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	useDB := !s.useSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.QueryKeySearchWithDatabase))) == "true"
+	useDB := !s.useSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(filtering.QueryKeySearchWithDatabase))) == "true"
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{
@@ -245,7 +246,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	meals := &types.QueryFilteredResult[types.Meal]{
+	meals := &filtering.QueryFilteredResult[types.Meal]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -272,7 +273,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		meals = &types.QueryFilteredResult[types.Meal]{
+		meals = &filtering.QueryFilteredResult[types.Meal]{
 			Pagination: filter.ToPagination(),
 			Data:       []*types.Meal{},
 		}

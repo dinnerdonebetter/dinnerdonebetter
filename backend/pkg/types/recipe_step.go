@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -129,7 +131,7 @@ type (
 	RecipeStepDataManager interface {
 		RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (bool, error)
 		GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*RecipeStep, error)
-		GetRecipeSteps(ctx context.Context, recipeID string, filter *QueryFilter) (*QueryFilteredResult[RecipeStep], error)
+		GetRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipeStep], error)
 		CreateRecipeStep(ctx context.Context, input *RecipeStepDatabaseCreationInput) (*RecipeStep, error)
 		UpdateRecipeStep(ctx context.Context, updated *RecipeStep) error
 		ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error

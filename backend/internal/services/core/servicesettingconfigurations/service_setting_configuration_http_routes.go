@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -182,7 +183,7 @@ func (s *service) GetServiceSettingConfigurationsForUserHandler(res http.Respons
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 
 	// fetch service setting configurations from database.
 	x, err := s.serviceSettingConfigurationDataManager.GetServiceSettingConfigurationsForUser(ctx, sessionCtxData.Requester.UserID, filter)
@@ -235,7 +236,7 @@ func (s *service) GetServiceSettingConfigurationsForHouseholdHandler(res http.Re
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 
 	// determine service setting ID.
 	serviceSettingConfigurationID := s.serviceSettingConfigurationIDFetcher(req)

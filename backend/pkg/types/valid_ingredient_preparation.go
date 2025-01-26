@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -70,9 +72,9 @@ type (
 	ValidIngredientPreparationDataManager interface {
 		ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (bool, error)
 		GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*ValidIngredientPreparation, error)
-		GetValidIngredientPreparations(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
-		GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
-		GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientPreparation], error)
+		GetValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientPreparation], error)
+		GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientPreparation], error)
+		GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientPreparation], error)
 		CreateValidIngredientPreparation(ctx context.Context, input *ValidIngredientPreparationDatabaseCreationInput) (*ValidIngredientPreparation, error)
 		UpdateValidIngredientPreparation(ctx context.Context, updated *ValidIngredientPreparation) error
 		ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error

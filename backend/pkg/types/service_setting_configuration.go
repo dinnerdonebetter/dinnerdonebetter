@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -79,8 +81,8 @@ type (
 		GetServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) (*ServiceSettingConfiguration, error)
 		GetServiceSettingConfigurationForUserByName(ctx context.Context, userID, serviceSettingConfigurationName string) (*ServiceSettingConfiguration, error)
 		GetServiceSettingConfigurationForHouseholdByName(ctx context.Context, householdID, serviceSettingConfigurationName string) (*ServiceSettingConfiguration, error)
-		GetServiceSettingConfigurationsForUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[ServiceSettingConfiguration], error)
-		GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[ServiceSettingConfiguration], error)
+		GetServiceSettingConfigurationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSettingConfiguration], error)
+		GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSettingConfiguration], error)
 		CreateServiceSettingConfiguration(ctx context.Context, input *ServiceSettingConfigurationDatabaseCreationInput) (*ServiceSettingConfiguration, error)
 		UpdateServiceSettingConfiguration(ctx context.Context, updated *ServiceSettingConfiguration) error
 		ArchiveServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) error

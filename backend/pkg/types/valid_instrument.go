@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -119,7 +121,7 @@ type (
 		ValidInstrumentExists(ctx context.Context, validInstrumentID string) (bool, error)
 		GetValidInstrument(ctx context.Context, validInstrumentID string) (*ValidInstrument, error)
 		GetRandomValidInstrument(ctx context.Context) (*ValidInstrument, error)
-		GetValidInstruments(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidInstrument], error)
+		GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidInstrument], error)
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error

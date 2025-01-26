@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -95,7 +96,7 @@ func TestAttachQueryFilterToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachQueryFilterToSpan(span, types.DefaultQueryFilter())
+		AttachQueryFilterToSpan(span, filtering.DefaultQueryFilter())
 	})
 
 	T.Run("with nil", func(t *testing.T) {

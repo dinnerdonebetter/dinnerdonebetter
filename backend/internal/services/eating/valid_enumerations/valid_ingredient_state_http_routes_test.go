@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -278,7 +279,7 @@ func TestValidIngredientStatesService_ListValidIngredientStatesHandler(T *testin
 		validIngredientStateDataManager.ValidIngredientStateDataManagerMock.On(
 			"GetValidIngredientStates",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidIngredientStateList, nil)
 		helper.service.validEnumerationDataManager = validIngredientStateDataManager
 
@@ -317,8 +318,8 @@ func TestValidIngredientStatesService_ListValidIngredientStatesHandler(T *testin
 		validIngredientStateDataManager.ValidIngredientStateDataManagerMock.On(
 			"GetValidIngredientStates",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredientState])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientState])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validIngredientStateDataManager
 
 		helper.service.ListValidIngredientStatesHandler(helper.res, helper.req)
@@ -341,8 +342,8 @@ func TestValidIngredientStatesService_ListValidIngredientStatesHandler(T *testin
 		validIngredientStateDataManager.ValidIngredientStateDataManagerMock.On(
 			"GetValidIngredientStates",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidIngredientState])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidIngredientState])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validIngredientStateDataManager
 
 		helper.service.ListValidIngredientStatesHandler(helper.res, helper.req)
@@ -370,8 +371,8 @@ func TestValidIngredientStatesService_SearchValidIngredientStatesHandler(T *test
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientStateDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -400,8 +401,8 @@ func TestValidIngredientStatesService_SearchValidIngredientStatesHandler(T *test
 		helper.service.useSearchService = true
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -455,8 +456,8 @@ func TestValidIngredientStatesService_SearchValidIngredientStatesHandler(T *test
 		helper := buildTestHelper(t)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientStateDataManager := mocktypes.NewValidEnumerationDataManagerMock()
@@ -483,8 +484,8 @@ func TestValidIngredientStatesService_SearchValidIngredientStatesHandler(T *test
 
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		validIngredientStateDataManager := mocktypes.NewValidEnumerationDataManagerMock()

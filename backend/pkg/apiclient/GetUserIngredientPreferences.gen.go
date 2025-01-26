@@ -6,6 +6,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -13,16 +14,16 @@ import (
 
 func (c *Client) GetUserIngredientPreferences(
 	ctx context.Context,
-	filter *types.QueryFilter,
+	filter *filtering.QueryFilter,
 	reqMods ...RequestModifier,
-) (*types.QueryFilteredResult[types.UserIngredientPreference], error) {
+) (*filtering.QueryFilteredResult[types.UserIngredientPreference], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -48,7 +49,7 @@ func (c *Client) GetUserIngredientPreferences(
 		return nil, err
 	}
 
-	result := &types.QueryFilteredResult[types.UserIngredientPreference]{
+	result := &filtering.QueryFilteredResult[types.UserIngredientPreference]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

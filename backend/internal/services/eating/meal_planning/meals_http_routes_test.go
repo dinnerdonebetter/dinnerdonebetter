@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -286,7 +287,7 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 		mealDataManager.MealDataManagerMock.On(
 			"GetMeals",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleMealList, nil)
 		helper.service.mealPlanningDataManager = mealDataManager
 
@@ -325,8 +326,8 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 		mealDataManager.MealDataManagerMock.On(
 			"GetMeals",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Meal])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Meal])(nil), sql.ErrNoRows)
 		helper.service.mealPlanningDataManager = mealDataManager
 
 		helper.service.ListMealsHandler(helper.res, helper.req)
@@ -349,8 +350,8 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 		mealDataManager.MealDataManagerMock.On(
 			"GetMeals",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Meal])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Meal])(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = mealDataManager
 
 		helper.service.ListMealsHandler(helper.res, helper.req)
@@ -375,14 +376,14 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{types.QueryKeySearch: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{filtering.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		mealDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealDataManager.MealDataManagerMock.On(
 			"SearchForMeals",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleMealList, nil)
 		helper.service.mealPlanningDataManager = mealDataManager
 
@@ -406,8 +407,8 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		exampleLimit := uint8(123)
 
 		helper.req.URL.RawQuery = url.Values{
-			types.QueryKeySearch: []string{exampleQuery},
-			types.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
+			filtering.QueryKeySearch: []string{exampleQuery},
+			filtering.QueryKeyLimit:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
 		expectedIDs := []string{}
@@ -463,15 +464,15 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{types.QueryKeySearch: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{filtering.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		mealDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealDataManager.MealDataManagerMock.On(
 			"SearchForMeals",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Meal])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Meal])(nil), sql.ErrNoRows)
 		helper.service.mealPlanningDataManager = mealDataManager
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
@@ -489,15 +490,15 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-		helper.req.URL.RawQuery = url.Values{types.QueryKeySearch: []string{exampleQuery}}.Encode()
+		helper.req.URL.RawQuery = url.Values{filtering.QueryKeySearch: []string{exampleQuery}}.Encode()
 
 		mealDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealDataManager.MealDataManagerMock.On(
 			"SearchForMeals",
 			testutils.ContextMatcher,
 			exampleQuery,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.Meal])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.Meal])(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = mealDataManager
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)

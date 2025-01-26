@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -19,14 +20,14 @@ func BuildFakeAuditLogEntry() *types.AuditLogEntry {
 }
 
 // BuildFakeAuditLogEntriesList builds a faked AuditLogEntryList.
-func BuildFakeAuditLogEntriesList() *types.QueryFilteredResult[types.AuditLogEntry] {
+func BuildFakeAuditLogEntriesList() *filtering.QueryFilteredResult[types.AuditLogEntry] {
 	var examples []*types.AuditLogEntry
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeAuditLogEntry())
 	}
 
-	return &types.QueryFilteredResult[types.AuditLogEntry]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.AuditLogEntry]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -62,63 +63,63 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 
 	// TODO: var outputWG sync.WG; var outputLock sync.Mutex; go func() {}()
 
-	allHouseholds, err := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.Household], error) {
+	allHouseholds, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Household], error) {
 		return q.getHouseholdsForUser(ctx, q.db, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting households: %w", err)
 	}
 
-	allUserAuditLogEntries, err := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+	allUserAuditLogEntries, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AuditLogEntry], error) {
 		return q.GetAuditLogEntriesForUser(ctx, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting user audit log entries: %w", err)
 	}
 
-	allSettingConfigs, err := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+	allSettingConfigs, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
 		return q.GetServiceSettingConfigurationsForUser(ctx, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting service setting configurations: %w", err)
 	}
 
-	userIngredientPreferences, err := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.UserIngredientPreference], error) {
+	userIngredientPreferences, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.UserIngredientPreference], error) {
 		return q.GetUserIngredientPreferences(ctx, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting user ingredient preferences: %w", err)
 	}
 
-	receivedInvites, err := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
+	receivedInvites, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInvitation], error) {
 		return q.GetPendingHouseholdInvitationsForUser(ctx, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting received invites: %w", err)
 	}
 
-	sentInvites, err := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
+	sentInvites, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInvitation], error) {
 		return q.GetPendingHouseholdInvitationsFromUser(ctx, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting sent invites: %w", err)
 	}
 
-	recipes, err := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.Recipe], error) {
+	recipes, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Recipe], error) {
 		return q.GetRecipesCreatedByUser(ctx, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting recipes: %w", err)
 	}
 
-	recipeRatings, err := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.RecipeRating], error) {
+	recipeRatings, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeRating], error) {
 		return q.GetRecipeRatingsForUser(ctx, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting recipe ratings: %w", err)
 	}
 
-	meals, err := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.Meal], error) {
+	meals, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error) {
 		return q.GetMealsCreatedByUser(ctx, userID, filter)
 	})
 	if err != nil {
@@ -146,7 +147,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 	// set up data collections for all households
 	for i := range allHouseholds {
 		household := allHouseholds[i]
-		auditLogEntries, fetchErr := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+		auditLogEntries, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AuditLogEntry], error) {
 			return q.GetAuditLogEntriesForHousehold(ctx, household.ID, filter)
 		})
 		if fetchErr != nil {
@@ -154,7 +155,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		}
 		output.AuditLogEntries[household.ID] = auditLogEntries
 
-		serviceSettingConfigs, fetchErr := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+		serviceSettingConfigs, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
 			return q.GetServiceSettingConfigurationsForHousehold(ctx, household.ID, filter)
 		})
 		if fetchErr != nil {
@@ -162,7 +163,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		}
 		output.ServiceSettingConfigurations[household.ID] = serviceSettingConfigs
 
-		webhooks, fetchErr := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.Webhook], error) {
+		webhooks, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
 			return q.GetWebhooks(ctx, household.ID, filter)
 		})
 		if fetchErr != nil {
@@ -170,7 +171,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		}
 		output.Webhooks[household.ID] = webhooks
 
-		householdInstrumentOwnerships, fetchErr := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInstrumentOwnership], error) {
+		householdInstrumentOwnerships, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership], error) {
 			return q.GetHouseholdInstrumentOwnerships(ctx, household.ID, filter)
 		})
 		if fetchErr != nil {
@@ -178,7 +179,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		}
 		output.HouseholdInstrumentOwnerships[household.ID] = householdInstrumentOwnerships
 
-		mealPlans, fetchErr := fetchAllRows(func(filter *types.QueryFilter) (*types.QueryFilteredResult[types.MealPlan], error) {
+		mealPlans, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error) {
 			return q.GetMealPlansForHousehold(ctx, household.ID, filter)
 		})
 		if fetchErr != nil {

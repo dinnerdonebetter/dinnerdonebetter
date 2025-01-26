@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -112,7 +114,7 @@ type (
 	ValidIngredientStateDataManager interface {
 		ValidIngredientStateExists(ctx context.Context, validIngredientState string) (bool, error)
 		GetValidIngredientState(ctx context.Context, validIngredientState string) (*ValidIngredientState, error)
-		GetValidIngredientStates(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientState], error)
+		GetValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientState], error)
 		SearchForValidIngredientStates(ctx context.Context, query string) ([]*ValidIngredientState, error)
 		CreateValidIngredientState(ctx context.Context, input *ValidIngredientStateDatabaseCreationInput) (*ValidIngredientState, error)
 		UpdateValidIngredientState(ctx context.Context, updated *ValidIngredientState) error

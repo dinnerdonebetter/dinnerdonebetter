@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -281,7 +282,7 @@ func TestRecipeStepInstrumentsService_ListRecipeStepInstrumentsHandler(T *testin
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleRecipeStepInstrumentList, nil)
 		helper.service.recipeManagementDataManager = recipeStepInstrumentDataManager
 
@@ -322,8 +323,8 @@ func TestRecipeStepInstrumentsService_ListRecipeStepInstrumentsHandler(T *testin
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.RecipeStepInstrument])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.RecipeStepInstrument])(nil), sql.ErrNoRows)
 		helper.service.recipeManagementDataManager = recipeStepInstrumentDataManager
 
 		helper.service.ListRecipeStepInstrumentsHandler(helper.res, helper.req)
@@ -348,8 +349,8 @@ func TestRecipeStepInstrumentsService_ListRecipeStepInstrumentsHandler(T *testin
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.RecipeStepInstrument])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.RecipeStepInstrument])(nil), errors.New("blah"))
 		helper.service.recipeManagementDataManager = recipeStepInstrumentDataManager
 
 		helper.service.ListRecipeStepInstrumentsHandler(helper.res, helper.req)

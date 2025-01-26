@@ -28,6 +28,6 @@ func (m *EventReporter) AddUser(ctx context.Context, userID string, properties m
 }
 
 // EventOccurred implements the EventReporter interface.
-func (m *EventReporter) EventOccurred(ctx context.Context, event string, userID string, properties map[string]any) error {
+func (m *EventReporter) EventOccurred(ctx context.Context, event, userID string, properties map[string]any) error {
 	return m.Called(ctx, event, userID, properties).Error(0)
 }

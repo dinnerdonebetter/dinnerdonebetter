@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -193,7 +194,7 @@ func (s *service) ListOAuth2ClientsHandler(res http.ResponseWriter, req *http.Re
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -224,7 +225,7 @@ func (s *service) ListOAuth2ClientsHandler(res http.ResponseWriter, req *http.Re
 	oauth2Clients, err := s.oauth2ClientDataManager.GetOAuth2Clients(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// just return an empty list if there are no results.
-		oauth2Clients = &types.QueryFilteredResult[types.OAuth2Client]{
+		oauth2Clients = &filtering.QueryFilteredResult[types.OAuth2Client]{
 			Data: []*types.OAuth2Client{},
 		}
 	} else if err != nil {

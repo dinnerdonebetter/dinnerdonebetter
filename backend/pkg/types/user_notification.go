@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -73,7 +75,7 @@ type (
 	UserNotificationDataManager interface {
 		UserNotificationExists(ctx context.Context, userID, userNotificationID string) (bool, error)
 		GetUserNotification(ctx context.Context, userID, userNotificationID string) (*UserNotification, error)
-		GetUserNotifications(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[UserNotification], error)
+		GetUserNotifications(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[UserNotification], error)
 		CreateUserNotification(ctx context.Context, input *UserNotificationDatabaseCreationInput) (*UserNotification, error)
 		UpdateUserNotification(ctx context.Context, updated *UserNotification) error
 	}

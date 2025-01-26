@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -186,7 +187,7 @@ func TestUserIngredientPreferencesService_ListUserIngredientPreferencesHandler(T
 			"GetUserIngredientPreferences",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleUserIngredientPreferenceList, nil)
 		helper.service.mealPlanningDataManager = userIngredientPreferenceDataManager
 
@@ -226,8 +227,8 @@ func TestUserIngredientPreferencesService_ListUserIngredientPreferencesHandler(T
 			"GetUserIngredientPreferences",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.UserIngredientPreference])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.UserIngredientPreference])(nil), sql.ErrNoRows)
 		helper.service.mealPlanningDataManager = userIngredientPreferenceDataManager
 
 		helper.service.ListUserIngredientPreferencesHandler(helper.res, helper.req)
@@ -247,8 +248,8 @@ func TestUserIngredientPreferencesService_ListUserIngredientPreferencesHandler(T
 			"GetUserIngredientPreferences",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.UserIngredientPreference])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.UserIngredientPreference])(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = userIngredientPreferenceDataManager
 
 		helper.service.ListUserIngredientPreferencesHandler(helper.res, helper.req)

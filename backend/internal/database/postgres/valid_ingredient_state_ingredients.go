@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -119,19 +120,19 @@ func (q *Querier) GetValidIngredientStateIngredient(ctx context.Context, validIn
 }
 
 // GetValidIngredientStateIngredients fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientStateIngredient], err error) {
+func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredientStateIngredient]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -219,7 +220,7 @@ func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter
 }
 
 // GetValidIngredientStateIngredientsForIngredientState fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientStateIngredient], err error) {
+func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -232,12 +233,12 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, ingredientStateID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredientStateIngredient]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -326,7 +327,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 }
 
 // GetValidIngredientStateIngredientsForIngredient fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredientStateIngredient], err error) {
+func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -339,12 +340,12 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, ingredientID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredientStateIngredient]{
 		Pagination: filter.ToPagination(),
 	}
 

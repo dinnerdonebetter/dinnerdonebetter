@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -124,9 +126,9 @@ type (
 	ValidMeasurementUnitDataManager interface {
 		ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (bool, error)
 		GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*ValidMeasurementUnit, error)
-		GetValidMeasurementUnits(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidMeasurementUnit], error)
+		GetValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidMeasurementUnit], error)
 		SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*ValidMeasurementUnit, error)
-		ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidMeasurementUnit], error)
+		ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidMeasurementUnit], error)
 		CreateValidMeasurementUnit(ctx context.Context, input *ValidMeasurementUnitDatabaseCreationInput) (*ValidMeasurementUnit, error)
 		UpdateValidMeasurementUnit(ctx context.Context, updated *ValidMeasurementUnit) error
 		MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error

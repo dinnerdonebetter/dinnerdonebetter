@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -152,7 +153,7 @@ func (s *service) ListHouseholdInstrumentOwnershipHandler(res http.ResponseWrite
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -181,7 +182,7 @@ func (s *service) ListHouseholdInstrumentOwnershipHandler(res http.ResponseWrite
 	householdInstrumentOwnerships, err := s.mealPlanningDataManager.GetHouseholdInstrumentOwnerships(ctx, householdID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		householdInstrumentOwnerships = &types.QueryFilteredResult[types.HouseholdInstrumentOwnership]{Data: []*types.HouseholdInstrumentOwnership{}}
+		householdInstrumentOwnerships = &filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership]{Data: []*types.HouseholdInstrumentOwnership{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving household instrument ownerships")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

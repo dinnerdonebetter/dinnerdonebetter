@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -314,7 +315,7 @@ func (s *service) ValidMeasurementUnitConversionsFromMeasurementUnitHandler(res 
 
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -371,7 +372,7 @@ func (s *service) ValidMeasurementUnitConversionsToMeasurementUnitHandler(res ht
 
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachRequestToSpan(span, req)
 

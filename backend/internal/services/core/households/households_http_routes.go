@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -31,7 +32,7 @@ func (s *service) ListHouseholdsHandler(res http.ResponseWriter, req *http.Reque
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -61,7 +62,7 @@ func (s *service) ListHouseholdsHandler(res http.ResponseWriter, req *http.Reque
 	households, err := s.householdDataManager.GetHouseholds(ctx, requester, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		households = &types.QueryFilteredResult[types.Household]{Data: []*types.Household{}}
+		households = &filtering.QueryFilteredResult[types.Household]{Data: []*types.Household{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching households")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

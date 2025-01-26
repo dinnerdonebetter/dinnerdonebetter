@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -152,7 +153,7 @@ func (s *service) ListValidIngredientMeasurementUnitsHandler(res http.ResponseWr
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -181,7 +182,7 @@ func (s *service) ListValidIngredientMeasurementUnitsHandler(res http.ResponseWr
 	validIngredientMeasurementUnits, err := s.validEnumerationDataManager.GetValidIngredientMeasurementUnits(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredientMeasurementUnits = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{Data: []*types.ValidIngredientMeasurementUnit{}}
+		validIngredientMeasurementUnits = &filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{Data: []*types.ValidIngredientMeasurementUnit{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient measurement units")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -369,7 +370,7 @@ func (s *service) SearchValidIngredientMeasurementUnitsByIngredientHandler(res h
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
@@ -421,7 +422,7 @@ func (s *service) SearchValidIngredientMeasurementUnitsByMeasurementUnitHandler(
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 

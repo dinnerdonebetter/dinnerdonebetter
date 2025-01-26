@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -17,16 +18,16 @@ func (c *Client) SearchValidIngredientsByPreparation(
 	ctx context.Context,
 	q string,
 	validPreparationID string,
-	filter *types.QueryFilter,
+	filter *filtering.QueryFilter,
 	reqMods ...RequestModifier,
-) (*types.QueryFilteredResult[types.ValidIngredient], error) {
+) (*filtering.QueryFilteredResult[types.ValidIngredient], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -38,7 +39,7 @@ func (c *Client) SearchValidIngredientsByPreparation(
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	values := filter.ToValues()
-	values.Set(types.QueryKeySearch, q)
+	values.Set(filtering.QueryKeySearch, q)
 
 	u := c.BuildURL(ctx, values, fmt.Sprintf("/api/v1/valid_ingredients/by_preparation/%s", validPreparationID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
@@ -59,7 +60,7 @@ func (c *Client) SearchValidIngredientsByPreparation(
 		return nil, err
 	}
 
-	result := &types.QueryFilteredResult[types.ValidIngredient]{
+	result := &filtering.QueryFilteredResult[types.ValidIngredient]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

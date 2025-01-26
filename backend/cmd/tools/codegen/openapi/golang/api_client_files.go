@@ -10,7 +10,7 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 
 	"github.com/swaggest/openapi-go/openapi31"
 )
@@ -101,21 +101,21 @@ func paramsContainQueryFilter(params []openapi31.ParameterOrReference) (bool, []
 	outParams := []openapi31.ParameterOrReference{}
 	for _, p := range params {
 		switch p.Parameter.Name {
-		case types.QueryKeyLimit:
+		case filtering.QueryKeyLimit:
 			containsLimit = true
-		case types.QueryKeyPage:
+		case filtering.QueryKeyPage:
 			containsPage = true
-		case types.QueryKeyCreatedBefore:
+		case filtering.QueryKeyCreatedBefore:
 			containsCreatedBefore = true
-		case types.QueryKeyCreatedAfter:
+		case filtering.QueryKeyCreatedAfter:
 			containsCreatedAfter = true
-		case types.QueryKeyUpdatedBefore:
+		case filtering.QueryKeyUpdatedBefore:
 			containsUpdatedBefore = true
-		case types.QueryKeyUpdatedAfter:
+		case filtering.QueryKeyUpdatedAfter:
 			containsUpdatedAfter = true
-		case types.QueryKeyIncludeArchived:
+		case filtering.QueryKeyIncludeArchived:
 			containsIncludeArchived = true
-		case types.QueryKeySortBy:
+		case filtering.QueryKeySortBy:
 			containsSortBy = true
 		default:
 			outParams = append(outParams, p)
@@ -734,7 +734,7 @@ reqMods ...RequestModifier,
 		},
 		"paramsContain": func(x []functionParam, y string) bool {
 			for _, z := range x {
-				if z.Name == types.QueryKeySearch {
+				if z.Name == filtering.QueryKeySearch {
 					return true
 				}
 			}
@@ -1174,7 +1174,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		},
 		"paramsContain": func(x []functionParam, y string) bool {
 			for _, z := range x {
-				if z.Name == types.QueryKeySearch {
+				if z.Name == filtering.QueryKeySearch {
 					return true
 				}
 			}

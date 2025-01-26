@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -28,21 +29,21 @@ func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVessel(ctx co
 }
 
 // GetValidPreparationVessels is a mock function.
-func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVessels(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationVessel], error) {
+func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationVessel], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparationVessel]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidPreparationVessel]), returnValues.Error(1)
 }
 
 // GetValidPreparationVesselsForPreparation is a mock function.
-func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationVessel], error) {
+func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationVessel], error) {
 	returnValues := m.Called(ctx, preparationID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparationVessel]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidPreparationVessel]), returnValues.Error(1)
 }
 
 // GetValidPreparationVesselsForVessel is a mock function.
-func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationVessel], error) {
+func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationVessel], error) {
 	returnValues := m.Called(ctx, vesselID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparationVessel]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidPreparationVessel]), returnValues.Error(1)
 }
 
 // CreateValidPreparationVessel is a mock function.

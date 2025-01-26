@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -294,19 +295,19 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 }
 
 // GetUsers fetches a list of users from the database that meet a particular filter.
-func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.User], err error) {
+func (q *Querier) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.User], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 	filter.AttachToLogger(logger)
 
-	x = &types.QueryFilteredResult[types.User]{
+	x = &filtering.QueryFilteredResult[types.User]{
 		Pagination: filter.ToPagination(),
 	}
 

@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -128,9 +130,9 @@ type (
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
-		GetRecipes(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
-		GetRecipesCreatedByUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
-		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
+		GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
+		GetRecipesCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
+		SearchForRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
 		MarkRecipeAsIndexed(ctx context.Context, recipeID string) error

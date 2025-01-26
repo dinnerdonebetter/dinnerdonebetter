@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -173,7 +174,7 @@ func (s *service) ListRecipeStepCompletionConditionsHandler(res http.ResponseWri
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -212,7 +213,7 @@ func (s *service) ListRecipeStepCompletionConditionsHandler(res http.ResponseWri
 	recipeStepCompletionConditions, err := s.recipeManagementDataManager.GetRecipeStepCompletionConditions(ctx, recipeID, recipeStepID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipeStepCompletionConditions = &types.QueryFilteredResult[types.RecipeStepCompletionCondition]{Data: []*types.RecipeStepCompletionCondition{}}
+		recipeStepCompletionConditions = &filtering.QueryFilteredResult[types.RecipeStepCompletionCondition]{Data: []*types.RecipeStepCompletionCondition{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe step completion conditions")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

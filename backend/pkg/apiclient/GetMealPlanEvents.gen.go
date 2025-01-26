@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -16,16 +17,16 @@ import (
 func (c *Client) GetMealPlanEvents(
 	ctx context.Context,
 	mealPlanID string,
-	filter *types.QueryFilter,
+	filter *filtering.QueryFilter,
 	reqMods ...RequestModifier,
-) (*types.QueryFilteredResult[types.MealPlanEvent], error) {
+) (*filtering.QueryFilteredResult[types.MealPlanEvent], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -57,7 +58,7 @@ func (c *Client) GetMealPlanEvents(
 		return nil, err
 	}
 
-	result := &types.QueryFilteredResult[types.MealPlanEvent]{
+	result := &filtering.QueryFilteredResult[types.MealPlanEvent]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

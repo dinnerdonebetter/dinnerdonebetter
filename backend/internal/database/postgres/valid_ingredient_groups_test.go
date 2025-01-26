@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -152,7 +153,7 @@ func TestQuerier_SearchForValidIngredientGroups(T *testing.T) {
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
-		filter := types.DefaultQueryFilter()
+		filter := filtering.DefaultQueryFilter()
 
 		actual, err := c.SearchForValidIngredientGroups(ctx, "", filter)
 		assert.Error(t, err)

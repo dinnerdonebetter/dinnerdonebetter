@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -48,14 +49,14 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 }
 
 // BuildFakeValidIngredientsList builds a faked ValidIngredientList.
-func BuildFakeValidIngredientsList() *types.QueryFilteredResult[types.ValidIngredient] {
+func BuildFakeValidIngredientsList() *filtering.QueryFilteredResult[types.ValidIngredient] {
 	var examples []*types.ValidIngredient
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidIngredient())
 	}
 
-	return &types.QueryFilteredResult[types.ValidIngredient]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.ValidIngredient]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

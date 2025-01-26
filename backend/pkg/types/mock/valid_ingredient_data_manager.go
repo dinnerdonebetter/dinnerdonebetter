@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -34,21 +35,21 @@ func (m *ValidIngredientDataManagerMock) GetRandomValidIngredient(ctx context.Co
 }
 
 // SearchForValidIngredients is a mock function.
-func (m *ValidIngredientDataManagerMock) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
+func (m *ValidIngredientDataManagerMock) SearchForValidIngredients(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error) {
 	returnValues := m.Called(ctx, query, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredient]), returnValues.Error(1)
 }
 
 // SearchForValidIngredientsForPreparation is a mock function.
-func (m *ValidIngredientDataManagerMock) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
+func (m *ValidIngredientDataManagerMock) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error) {
 	returnValues := m.Called(ctx, preparationID, query, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredient]), returnValues.Error(1)
 }
 
 // GetValidIngredients is a mock function.
-func (m *ValidIngredientDataManagerMock) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
+func (m *ValidIngredientDataManagerMock) GetValidIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredient]), returnValues.Error(1)
 }
 
 // CreateValidIngredient is a mock function.

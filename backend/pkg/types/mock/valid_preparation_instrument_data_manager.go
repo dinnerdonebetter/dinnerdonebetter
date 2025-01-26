@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -28,21 +29,21 @@ func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstrumen
 }
 
 // GetValidPreparationInstruments is a mock function.
-func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationInstrument], error) {
+func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationInstrument], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
 // GetValidPreparationInstrumentsForPreparation is a mock function.
-func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationInstrument], error) {
+func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationInstrument], error) {
 	returnValues := m.Called(ctx, preparationID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
 // GetValidPreparationInstrumentsForInstrument is a mock function.
-func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationInstrument], error) {
+func (m *ValidPreparationInstrumentDataManagerMock) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationInstrument], error) {
 	returnValues := m.Called(ctx, instrumentID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidPreparationInstrument]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidPreparationInstrument]), returnValues.Error(1)
 }
 
 // CreateValidPreparationInstrument is a mock function.

@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -34,20 +35,20 @@ func (m *MealDataManagerMock) GetMealByIDAndUser(ctx context.Context, recipeID, 
 }
 
 // GetMeals is a mock function.
-func (m *MealDataManagerMock) GetMeals(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Meal], error) {
+func (m *MealDataManagerMock) GetMeals(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.Meal]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.Meal]), returnValues.Error(1)
 }
 
-func (m *MealDataManagerMock) GetMealsCreatedByUser(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
+func (m *MealDataManagerMock) GetMealsCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Meal], err error) {
 	returnValues := m.Called(ctx, userID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.Meal]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.Meal]), returnValues.Error(1)
 }
 
 // SearchForMeals is a mock function.
-func (m *MealDataManagerMock) SearchForMeals(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Meal], error) {
+func (m *MealDataManagerMock) SearchForMeals(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error) {
 	returnValues := m.Called(ctx, query, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.Meal]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.Meal]), returnValues.Error(1)
 }
 
 // CreateMeal is a mock function.

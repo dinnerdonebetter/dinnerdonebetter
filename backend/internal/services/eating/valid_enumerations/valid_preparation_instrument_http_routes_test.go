@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -274,7 +275,7 @@ func TestValidPreparationInstrumentsService_ListValidPreparationInstrumentsHandl
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstruments",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleValidPreparationInstrumentList, nil)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
 
@@ -314,8 +315,8 @@ func TestValidPreparationInstrumentsService_ListValidPreparationInstrumentsHandl
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstruments",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidPreparationInstrument])(nil), sql.ErrNoRows)
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
 
 		helper.service.ListValidPreparationInstrumentsHandler(helper.res, helper.req)
@@ -338,8 +339,8 @@ func TestValidPreparationInstrumentsService_ListValidPreparationInstrumentsHandl
 		validPreparationInstrumentDataManager.ValidPreparationInstrumentDataManagerMock.On(
 			"GetValidPreparationInstruments",
 			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
 
 		helper.service.ListValidPreparationInstrumentsHandler(helper.res, helper.req)
@@ -762,7 +763,7 @@ func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByP
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
 
 		helper.service.SearchValidPreparationInstrumentsByPreparationHandler(helper.res, helper.req)
@@ -836,7 +837,7 @@ func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByI
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 			testutils.QueryFilterMatcher,
-		).Return((*types.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
+		).Return((*filtering.QueryFilteredResult[types.ValidPreparationInstrument])(nil), errors.New("blah"))
 		helper.service.validEnumerationDataManager = validPreparationInstrumentDataManager
 
 		helper.service.SearchValidPreparationInstrumentsByInstrumentHandler(helper.res, helper.req)

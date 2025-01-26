@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -110,7 +111,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := filter.AttachToLogger(s.logger)
 
 	responseDetails := types.ResponseDetails{
@@ -140,7 +141,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 	webhooks, err := s.webhookDataManager.GetWebhooks(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			webhooks = &types.QueryFilteredResult[types.Webhook]{
+			webhooks = &filtering.QueryFilteredResult[types.Webhook]{
 				Data: []*types.Webhook{},
 			}
 		} else {

@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"testing"
 
-	testutils "github.com/dinnerdonebetter/backend/internal/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -122,7 +123,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 			"GetAuditLogEntriesForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
@@ -151,7 +152,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			[]string{helper.exampleAuditLogEntry.ResourceType},
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
@@ -196,8 +197,8 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 			"GetAuditLogEntriesForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
 		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
@@ -221,8 +222,8 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 			"GetAuditLogEntriesForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
 		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
@@ -252,7 +253,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 			"GetAuditLogEntriesForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
@@ -281,7 +282,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
 			[]string{helper.exampleAuditLogEntry.ResourceType},
-			mock.IsType(&types.QueryFilter{}),
+			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
@@ -326,8 +327,8 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 			"GetAuditLogEntriesForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
 		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
@@ -351,8 +352,8 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 			"GetAuditLogEntriesForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
+			mock.IsType(&filtering.QueryFilter{}),
+		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
 		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)

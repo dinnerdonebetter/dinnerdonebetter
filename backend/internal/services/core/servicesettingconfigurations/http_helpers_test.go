@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -24,7 +25,7 @@ type serviceSettingConfigurationsServiceHTTPRoutesTestHelper struct {
 	exampleUser                            *types.User
 	exampleHousehold                       *types.Household
 	exampleServiceSettingConfiguration     *types.ServiceSettingConfiguration
-	exampleServiceSettingConfigurationList *types.QueryFilteredResult[types.ServiceSettingConfiguration]
+	exampleServiceSettingConfigurationList *filtering.QueryFilteredResult[types.ServiceSettingConfiguration]
 	exampleCreationInput                   *types.ServiceSettingConfigurationCreationRequestInput
 	exampleUpdateInput                     *types.ServiceSettingConfigurationUpdateRequestInput
 }

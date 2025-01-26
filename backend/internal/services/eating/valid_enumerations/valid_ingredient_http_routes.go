@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -153,7 +154,7 @@ func (s *service) ListValidIngredientsHandler(res http.ResponseWriter, req *http
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
@@ -183,7 +184,7 @@ func (s *service) ListValidIngredientsHandler(res http.ResponseWriter, req *http
 	validIngredients, err := s.validEnumerationDataManager.GetValidIngredients(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredients = &types.QueryFilteredResult[types.ValidIngredient]{Data: []*types.ValidIngredient{}}
+		validIngredients = &filtering.QueryFilteredResult[types.ValidIngredient]{Data: []*types.ValidIngredient{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredients")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -211,11 +212,11 @@ func (s *service) SearchValidIngredientsHandler(res http.ResponseWriter, req *ht
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
@@ -242,7 +243,7 @@ func (s *service) SearchValidIngredientsHandler(res http.ResponseWriter, req *ht
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	validIngredients := &types.QueryFilteredResult[types.ValidIngredient]{}
+	validIngredients := &filtering.QueryFilteredResult[types.ValidIngredient]{}
 	if useDB {
 		validIngredients, err = s.validEnumerationDataManager.SearchForValidIngredients(ctx, query, filter)
 	} else {
@@ -293,11 +294,11 @@ func (s *service) SearchValidIngredientsByPreparationAndIngredientNameHandler(re
 	tracing.AttachRequestToSpan(span, req)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachRequestToSpan(span, req)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 

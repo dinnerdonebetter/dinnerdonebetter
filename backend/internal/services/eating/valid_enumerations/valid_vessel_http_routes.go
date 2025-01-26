@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -157,7 +158,7 @@ func (s *service) ListValidVesselsHandler(res http.ResponseWriter, req *http.Req
 
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -186,7 +187,7 @@ func (s *service) ListValidVesselsHandler(res http.ResponseWriter, req *http.Req
 	validVessels, err := s.validEnumerationDataManager.GetValidVessels(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validVessels = &types.QueryFilteredResult[types.ValidVessel]{Data: []*types.ValidVessel{}}
+		validVessels = &filtering.QueryFilteredResult[types.ValidVessel]{Data: []*types.ValidVessel{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid vessels")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -213,11 +214,11 @@ func (s *service) SearchValidVesselsHandler(res http.ResponseWriter, req *http.R
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
+	filter := filtering.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	query := req.URL.Query().Get(types.QueryKeySearch)
+	query := req.URL.Query().Get(filtering.QueryKeySearch)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 

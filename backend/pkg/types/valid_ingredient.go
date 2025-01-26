@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -240,9 +242,9 @@ type (
 		ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredient(ctx context.Context, validIngredientID string) (*ValidIngredient, error)
 		GetRandomValidIngredient(ctx context.Context) (*ValidIngredient, error)
-		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredient], error)
-		SearchForValidIngredients(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredient], error)
-		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *QueryFilter) (x *QueryFilteredResult[ValidIngredient], err error)
+		GetValidIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredient], error)
+		SearchForValidIngredients(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredient], error)
+		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[ValidIngredient], err error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
 		MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error

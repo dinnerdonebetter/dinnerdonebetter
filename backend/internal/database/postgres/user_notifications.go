@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -90,7 +91,7 @@ func (q *Querier) GetUserNotification(ctx context.Context, userID, userNotificat
 }
 
 // GetUserNotifications fetches a list of user notifications from the database that meet a particular filter.
-func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.UserNotification], err error) {
+func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.UserNotification], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -103,12 +104,12 @@ func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filte
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.UserNotification]{
+	x = &filtering.QueryFilteredResult[types.UserNotification]{
 		Pagination: filter.ToPagination(),
 	}
 
