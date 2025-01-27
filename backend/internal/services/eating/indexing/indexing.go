@@ -9,26 +9,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 var (
 	ErrNilIndexRequest = errors.New("nil index request")
-
-	// AllIndexTypes is a list of all index types.
-	AllIndexTypes = []string{
-		textsearch.IndexTypeRecipes,
-		textsearch.IndexTypeMeals,
-		textsearch.IndexTypeValidIngredients,
-		textsearch.IndexTypeValidInstruments,
-		textsearch.IndexTypeValidMeasurementUnits,
-		textsearch.IndexTypeValidPreparations,
-		textsearch.IndexTypeValidIngredientStates,
-		textsearch.IndexTypeValidVessels,
-		textsearch.IndexTypeUsers,
-	}
 )
 
 func HandleIndexRequest(
@@ -38,9 +25,9 @@ func HandleIndexRequest(
 	metricsProvider metrics.Provider,
 	searchConfig *textsearchcfg.Config,
 	dataManager database.DataManager,
-	indexReq *IndexRequest,
+	indexReq *textsearch.IndexRequest,
 ) error {
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer"))
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("eating_search_indexer"))
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -177,21 +164,6 @@ func HandleIndexRequest(
 
 		toBeIndexed = ConvertValidVesselToValidVesselSearchSubset(validVessel)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidVesselAsIndexed(ctx, indexReq.RowID) }
-
-	case textsearch.IndexTypeUsers:
-		im, err = textsearchcfg.ProvideIndex[UserSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
-		var user *types.User
-		user, err = dataManager.GetUser(ctx, indexReq.RowID)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "getting user")
-		}
-
-		toBeIndexed = ConvertUserToUserSearchSubset(user)
-		markAsIndexedFunc = func() error { return dataManager.MarkUserAsIndexed(ctx, indexReq.RowID) }
 	default:
 		logger.Info("invalid index type specified, exiting")
 		return nil
@@ -214,11 +186,4 @@ func HandleIndexRequest(
 	}
 
 	return nil
-}
-
-type IndexRequest struct {
-	RequestID string `json:"id"`
-	RowID     string `json:"rowID"`
-	IndexType string `json:"type"`
-	Delete    bool   `json:"delete"`
 }

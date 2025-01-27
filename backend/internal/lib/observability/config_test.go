@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/oteltrace"
 
 	"github.com/stretchr/testify/assert"

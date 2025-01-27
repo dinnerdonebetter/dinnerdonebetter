@@ -11,7 +11,7 @@ import (
 	"unicode"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 
 	"github.com/swaggest/openapi-go/openapi31"
 )

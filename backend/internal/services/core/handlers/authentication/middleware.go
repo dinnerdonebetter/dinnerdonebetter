@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -25,7 +25,7 @@ var (
 	ErrUserNotAuthorizedToImpersonateOthers = errors.New("user not authorized to impersonate others")
 )
 
-func (s *service) determineZuckMode(ctx context.Context, req *http.Request, sessionContextData *sessioncontext.SessionContextData) (userID, householdID string, err error) {
+func (s *service) determineZuckMode(ctx context.Context, req *http.Request, sessionContextData *sessions.ContextData) (userID, householdID string, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -112,7 +112,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 
 				userAttributionTimer.Stop()
 				if sessionCtxData != nil {
-					next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, sessioncontext.SessionContextDataKey, sessionCtxData)))
+					next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, sessions.SessionContextDataKey, sessionCtxData)))
 					return
 				}
 			}

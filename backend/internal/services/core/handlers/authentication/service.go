@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/featureflags"
@@ -46,7 +46,7 @@ type (
 		userDataManager            types.UserDataManager
 		householdMembershipManager types.HouseholdUserMembershipDataManager
 		encoderDecoder             encoding.ServerEncoderDecoder
-		sessionContextDataFetcher  func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher  func(*http.Request) (*sessions.ContextData, error)
 		authProviderFetcher        func(*http.Request) string
 		tracer                     tracing.Tracer
 		dataChangesPublisher       messagequeue.Publisher
@@ -100,7 +100,7 @@ func ProvideService(
 		userDataManager:            dataManager,
 		householdMembershipManager: householdMembershipManager,
 		authenticator:              authenticator,
-		sessionContextDataFetcher:  sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:  sessions.FetchContextFromRequest,
 		tracer:                     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,

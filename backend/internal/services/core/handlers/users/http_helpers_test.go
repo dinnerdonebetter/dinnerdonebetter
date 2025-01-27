@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -40,8 +40,8 @@ func newTestHelper(t *testing.T) *usersServiceHTTPRoutesTestHelper {
 		return helper.exampleUser.ID
 	}
 
-	sessionCtxData := &sessioncontext.SessionContextData{
-		Requester: sessioncontext.RequesterInfo{
+	sessionCtxData := &sessions.ContextData{
+		Requester: sessions.RequesterInfo{
 			UserID:                   helper.exampleUser.ID,
 			AccountStatus:            helper.exampleUser.AccountStatus,
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
@@ -58,12 +58,12 @@ func newTestHelper(t *testing.T) *usersServiceHTTPRoutesTestHelper {
 		tracing.NewNoopTracerProvider(),
 		encoding.ContentTypeJSON,
 	)
-	helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+	helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 		return sessionCtxData, nil
 	}
 
 	req := testutils.BuildTestRequest(t)
-	helper.req = req.WithContext(context.WithValue(req.Context(), sessioncontext.SessionContextDataKey, sessionCtxData))
+	helper.req = req.WithContext(context.WithValue(req.Context(), sessions.SessionContextDataKey, sessionCtxData))
 	helper.res = httptest.NewRecorder()
 
 	return helper

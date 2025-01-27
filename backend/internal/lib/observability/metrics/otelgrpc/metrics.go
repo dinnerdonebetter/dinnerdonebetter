@@ -8,7 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/utils"
+	o11yutils "github.com/dinnerdonebetter/backend/internal/lib/observability/utils"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"

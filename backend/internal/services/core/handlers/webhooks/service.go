@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -30,7 +30,7 @@ type (
 		dataChangesPublisher         messagequeue.Publisher
 		webhookIDFetcher             func(*http.Request) string
 		webhookTriggerEventIDFetcher func(*http.Request) string
-		sessionContextDataFetcher    func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher    func(*http.Request) (*sessions.ContextData, error)
 	}
 )
 
@@ -58,7 +58,7 @@ func ProvideWebhooksService(
 		webhookDataManager:           webhookDataManager,
 		encoderDecoder:               encoder,
 		dataChangesPublisher:         dataChangesPublisher,
-		sessionContextDataFetcher:    sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:    sessions.FetchContextFromRequest,
 		webhookIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(WebhookIDURIParamKey),
 		webhookTriggerEventIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(WebhookTriggerEventIDURIParamKey),
 		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),

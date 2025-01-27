@@ -9,13 +9,13 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -63,13 +63,13 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		sessionCtxData := &sessioncontext.SessionContextData{
-			Requester: sessioncontext.RequesterInfo{
+		sessionCtxData := &sessions.ContextData{
+			Requester: sessions.RequesterInfo{
 				ServicePermissions: authorization.NewServiceRolePermissionChecker(),
 			},
 			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{},
 		}
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 			return sessionCtxData, nil
 		}
 
@@ -195,9 +195,9 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
-			scd := &sessioncontext.SessionContextData{
-				Requester: sessioncontext.RequesterInfo{
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
+			scd := &sessions.ContextData{
+				Requester: sessions.RequesterInfo{
 					ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 				},
 			}
@@ -225,9 +225,9 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
-			scd := &sessioncontext.SessionContextData{
-				Requester: sessioncontext.RequesterInfo{
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
+			scd := &sessions.ContextData{
+				Requester: sessions.RequesterInfo{
 					ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 				},
 			}

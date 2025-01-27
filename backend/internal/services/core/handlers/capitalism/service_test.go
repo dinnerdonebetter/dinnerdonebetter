@@ -5,7 +5,7 @@ import (
 
 	capitalismmock "github.com/dinnerdonebetter/backend/internal/lib/capitalism/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/lib/routing/mock"
 
 	"github.com/stretchr/testify/assert"

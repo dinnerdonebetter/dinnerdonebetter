@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
+	mockauthn "github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens/paseto"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"

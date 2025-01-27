@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -14,8 +14,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/routing"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -44,7 +44,7 @@ type (
 		mealPlanOptionIDFetcher               func(*http.Request) string
 		mealPlanTaskIDFetcher                 func(*http.Request) string
 		mealPlanOptionVoteIDFetcher           func(*http.Request) string
-		sessionContextDataFetcher             func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher             func(*http.Request) (*sessions.ContextData, error)
 		useSearchService                      bool
 	}
 )
@@ -89,7 +89,7 @@ func ProvideService(
 		mealPlanOptionVoteIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(MealPlanOptionVoteIDURIParamKey),
 		householdInstrumentOwnershipIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInstrumentOwnershipIDURIParamKey),
 		userIngredientPreferenceIDFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(UserIngredientPreferenceIDURIParamKey),
-		sessionContextDataFetcher:             sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:             sessions.FetchContextFromRequest,
 		dataChangesPublisher:                  dataChangesPublisher,
 		encoderDecoder:                        encoder,
 		mealPlanningDataManager:               mealPlanningDataManager,

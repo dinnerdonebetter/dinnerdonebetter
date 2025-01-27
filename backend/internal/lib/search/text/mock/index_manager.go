@@ -3,7 +3,7 @@ package mocksearch
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 
 	"github.com/stretchr/testify/mock"
 )

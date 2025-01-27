@@ -15,13 +15,26 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 
 	"github.com/hashicorp/go-multierror"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	_ "go.uber.org/automaxprocs"
+)
+
+var (
+	allIndexTypes = []string{
+		textsearch.IndexTypeRecipes,
+		textsearch.IndexTypeMeals,
+		textsearch.IndexTypeValidIngredients,
+		textsearch.IndexTypeValidInstruments,
+		textsearch.IndexTypeValidMeasurementUnits,
+		textsearch.IndexTypeValidPreparations,
+		textsearch.IndexTypeValidIngredientStates,
+		textsearch.IndexTypeValidVessels,
+		textsearch.IndexTypeUsers,
+	}
 )
 
 func doTheThing() error {
@@ -81,7 +94,7 @@ func doTheThing() error {
 	defer searchDataIndexPublisher.Stop()
 
 	// figure out what records to join
-	chosenIndex := random.Element(indexing.AllIndexTypes)
+	chosenIndex := random.Element(allIndexTypes)
 
 	logger = logger.WithValue("chosen_index_type", chosenIndex)
 	logger.Info("index type chosen")
@@ -128,7 +141,7 @@ func doTheThing() error {
 	publishedIDCount := int64(0)
 	errs := &multierror.Error{}
 	for _, id := range ids {
-		indexReq := &indexing.IndexRequest{
+		indexReq := &textsearch.IndexRequest{
 			RowID:     id,
 			IndexType: chosenIndex,
 		}

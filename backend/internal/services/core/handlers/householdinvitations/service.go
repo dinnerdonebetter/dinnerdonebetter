@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -36,7 +36,7 @@ type (
 		dataChangesPublisher           messagequeue.Publisher
 		householdIDFetcher             func(*http.Request) string
 		householdInvitationIDFetcher   func(*http.Request) string
-		sessionContextDataFetcher      func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher      func(*http.Request) (*sessions.ContextData, error)
 	}
 )
 
@@ -68,7 +68,7 @@ func ProvideHouseholdInvitationsService(
 		encoderDecoder:                 encoder,
 		dataChangesPublisher:           dataChangesPublisher,
 		secretGenerator:                secretGenerator,
-		sessionContextDataFetcher:      sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:      sessions.FetchContextFromRequest,
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),
 		householdInvitationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInvitationIDURIParamKey),
 		tracer:                         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),

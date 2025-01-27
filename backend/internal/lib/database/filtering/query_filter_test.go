@@ -11,7 +11,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

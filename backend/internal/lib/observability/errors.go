@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 )
 
 // PrepareAndLogError standardizes our error handling by logging, tracing, and formatting an error consistently.

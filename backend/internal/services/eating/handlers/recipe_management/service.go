@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -15,8 +15,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/routing"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
@@ -52,7 +52,7 @@ type (
 		dataChangesPublisher                   messagequeue.Publisher
 		searchIndex                            textsearch.IndexSearcher[indexing.RecipeSearchSubset]
 		uploadManager                          uploads.UploadManager
-		sessionContextDataFetcher              func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher              func(*http.Request) (*sessions.ContextData, error)
 		cfg                                    *Config
 	}
 )
@@ -109,7 +109,7 @@ func ProvideService(
 		recipeStepCompletionConditionIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(RecipeStepCompletionConditionIDURIParamKey),
 		recipePrepTaskIDFetcher:                routeParamManager.BuildRouteParamStringIDFetcher(RecipePrepTaskIDURIParamKey),
 		recipeRatingIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(RecipeRatingIDURIParamKey),
-		sessionContextDataFetcher:              sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:              sessions.FetchContextFromRequest,
 		recipeManagementDataManager:            recipesDataManager,
 		cfg:                                    cfg,
 		dataChangesPublisher:                   dataChangesPublisher,

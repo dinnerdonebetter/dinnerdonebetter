@@ -6,7 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
@@ -46,7 +46,7 @@ type (
 		secretGenerator                    random.Generator
 		userIDFetcher                      func(*http.Request) string
 		authSettings                       *authservice.Config
-		sessionContextDataFetcher          func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher          func(*http.Request) (*sessions.ContextData, error)
 		featureFlagManager                 featureflags.FeatureFlagManager
 	}
 )
@@ -84,7 +84,7 @@ func ProvideUsersService(
 		householdInvitationDataManager:     householdInvitationDataManager,
 		authenticator:                      authenticator,
 		userIDFetcher:                      routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		sessionContextDataFetcher:          sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:          sessions.FetchContextFromRequest,
 		encoderDecoder:                     encoder,
 		authSettings:                       authSettings,
 		secretGenerator:                    secretGenerator,

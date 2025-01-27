@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

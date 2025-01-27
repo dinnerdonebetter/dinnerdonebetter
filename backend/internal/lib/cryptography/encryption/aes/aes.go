@@ -3,7 +3,7 @@ package aes
 import (
 	"github.com/dinnerdonebetter/backend/internal/lib/cryptography/encryption"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 )
 
 // aesImpl is the standard EncryptorDecryptor implementation.

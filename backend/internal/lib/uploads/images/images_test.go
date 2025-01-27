@@ -17,7 +17,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

@@ -14,13 +14,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/algolia"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -71,7 +71,7 @@ func main() {
 
 	var (
 		im               textsearch.IndexManager
-		indexRequestChan = make(chan *indexing.IndexRequest)
+		indexRequestChan = make(chan *textsearch.IndexRequest)
 		wipeOnce         sync.Once
 		waitGroup        sync.WaitGroup
 	)
@@ -123,7 +123,7 @@ func main() {
 				}
 
 				for _, x := range data.Data {
-					indexRequestChan <- &indexing.IndexRequest{
+					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
 						IndexType: textsearch.IndexTypeRecipes,
 					}
@@ -149,7 +149,7 @@ func main() {
 				}
 
 				for _, x := range data.Data {
-					indexRequestChan <- &indexing.IndexRequest{
+					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
 						IndexType: textsearch.IndexTypeMeals,
 					}
@@ -175,7 +175,7 @@ func main() {
 				}
 
 				for _, x := range data.Data {
-					indexRequestChan <- &indexing.IndexRequest{
+					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
 						IndexType: textsearch.IndexTypeValidIngredients,
 					}
@@ -201,7 +201,7 @@ func main() {
 				}
 
 				for _, x := range data.Data {
-					indexRequestChan <- &indexing.IndexRequest{
+					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
 						IndexType: textsearch.IndexTypeValidInstruments,
 					}
@@ -227,7 +227,7 @@ func main() {
 				}
 
 				for _, x := range data.Data {
-					indexRequestChan <- &indexing.IndexRequest{
+					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
 						IndexType: textsearch.IndexTypeValidMeasurementUnits,
 					}
@@ -253,7 +253,7 @@ func main() {
 				}
 
 				for _, x := range data.Data {
-					indexRequestChan <- &indexing.IndexRequest{
+					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
 						IndexType: textsearch.IndexTypeValidPreparations,
 					}
@@ -279,7 +279,7 @@ func main() {
 				}
 
 				for _, x := range data.Data {
-					indexRequestChan <- &indexing.IndexRequest{
+					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
 						IndexType: textsearch.IndexTypeValidIngredientStates,
 					}
@@ -305,7 +305,7 @@ func main() {
 				}
 
 				for _, x := range data.Data {
-					indexRequestChan <- &indexing.IndexRequest{
+					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
 						IndexType: textsearch.IndexTypeValidVessels,
 					}
@@ -331,7 +331,7 @@ func main() {
 				}
 
 				for _, x := range data.Data {
-					indexRequestChan <- &indexing.IndexRequest{
+					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
 						IndexType: textsearch.IndexTypeUsers,
 					}

@@ -7,14 +7,14 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
+	mockencoding "github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/lib/routing/mock"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"

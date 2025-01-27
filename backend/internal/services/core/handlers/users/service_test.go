@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
+	mockauthn "github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
+	mockencoding "github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/featureflags"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"

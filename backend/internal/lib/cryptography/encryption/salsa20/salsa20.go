@@ -3,7 +3,7 @@ package salsa20
 import (
 	"github.com/dinnerdonebetter/backend/internal/lib/cryptography/encryption"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 )
 
 // salsa20Impl is the standard EncryptorDecryptor implementation.

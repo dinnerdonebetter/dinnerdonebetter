@@ -213,6 +213,7 @@ sqlc_struct_check:
 .PHONY: openapi
 openapi:
 	go run $(THIS)/cmd/tools/codegen/openapi_spec
+	(cd .. && $(MAKE) yaml_format)
 
 .PHONY: env_vars
 env_vars:

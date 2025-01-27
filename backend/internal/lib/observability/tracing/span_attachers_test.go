@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -22,9 +22,9 @@ func TestAttachSessionContextDataToSpan(T *testing.T) {
 
 		_, span := StartSpan(context.Background())
 
-		AttachSessionContextDataToSpan(span, &sessioncontext.SessionContextData{
+		AttachSessionContextDataToSpan(span, &sessions.ContextData{
 			HouseholdPermissions: nil,
-			Requester: sessioncontext.RequesterInfo{
+			Requester: sessions.RequesterInfo{
 				ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 			},
 			ActiveHouseholdID: "",

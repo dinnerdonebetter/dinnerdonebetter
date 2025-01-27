@@ -1,4 +1,4 @@
-package sessioncontext
+package sessions
 
 import (
 	"context"
@@ -14,7 +14,7 @@ func TestFetchContextFromRequest(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.WithValue(context.Background(), SessionContextDataKey, &SessionContextData{})
+		ctx := context.WithValue(context.Background(), SessionContextDataKey, &ContextData{})
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", http.NoBody)
 		require.NoError(t, err)
 		require.NotNil(t, req)

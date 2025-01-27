@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -27,7 +27,7 @@ type (
 	// service handles data privacy.
 	service struct {
 		logger                       logging.Logger
-		sessionContextDataFetcher    func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher    func(*http.Request) (*sessions.ContextData, error)
 		encoderDecoder               encoding.ServerEncoderDecoder
 		tracer                       tracing.Tracer
 		dataChangesPublisher         messagequeue.Publisher
@@ -72,7 +72,7 @@ func ProvideService(
 	svc := &service{
 		logger:                       logging.EnsureLogger(logger).WithName(serviceName),
 		encoderDecoder:               encoder,
-		sessionContextDataFetcher:    sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:    sessions.FetchContextFromRequest,
 		reportIDFetcher:              routeParamManager.BuildRouteParamStringIDFetcher(ReportIDURIParamKey),
 		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		dataPrivacyDataManager:       dataManager,

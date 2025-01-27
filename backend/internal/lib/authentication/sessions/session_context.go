@@ -1,4 +1,4 @@
-package sessioncontext
+package sessions
 
 import (
 	"encoding/gob"
@@ -12,17 +12,17 @@ import (
 )
 
 func init() {
-	gob.Register(&SessionContextData{})
+	gob.Register(&ContextData{})
 }
 
 var (
-	// ErrNoSessionContextDataAvailable indicates no SessionContextData was attached to the request.
-	ErrNoSessionContextDataAvailable = errors.New("no SessionContextData attached to session context data")
+	// ErrNoSessionContextDataAvailable indicates no ContextData was attached to the request.
+	ErrNoSessionContextDataAvailable = errors.New("no ContextData attached to session context data")
 )
 
-// FetchContextFromRequest fetches a SessionContextData from a request.
-func FetchContextFromRequest(req *http.Request) (*SessionContextData, error) {
-	if sessionCtxData, ok := req.Context().Value(SessionContextDataKey).(*SessionContextData); ok && sessionCtxData != nil {
+// FetchContextFromRequest fetches a ContextData from a request.
+func FetchContextFromRequest(req *http.Request) (*ContextData, error) {
+	if sessionCtxData, ok := req.Context().Value(SessionContextDataKey).(*ContextData); ok && sessionCtxData != nil {
 		return sessionCtxData, nil
 	}
 
@@ -31,8 +31,8 @@ func FetchContextFromRequest(req *http.Request) (*SessionContextData, error) {
 
 const SessionContextDataKey routing.ContextKey = "session_context_data"
 
-// SessionContextData represents what we encode in our passwords cookies.
-type SessionContextData struct {
+// ContextData represents what we encode in our passwords cookies.
+type ContextData struct {
 	_ struct{} `json:"-"`
 
 	HouseholdPermissions map[string]authorization.HouseholdRolePermissionsChecker `json:"-"`
@@ -53,32 +53,32 @@ type RequesterInfo struct {
 }
 
 // GetUserID is a simple getter.
-func (x *SessionContextData) GetUserID() string {
+func (x *ContextData) GetUserID() string {
 	return x.Requester.UserID
 }
 
 // GetServicePermissions is a simple getter.
-func (x *SessionContextData) GetServicePermissions() authorization.ServiceRolePermissionChecker {
+func (x *ContextData) GetServicePermissions() authorization.ServiceRolePermissionChecker {
 	return x.Requester.ServicePermissions
 }
 
 // GetActiveHouseholdID is a simple getter.
-func (x *SessionContextData) GetActiveHouseholdID() string {
+func (x *ContextData) GetActiveHouseholdID() string {
 	return x.ActiveHouseholdID
 }
 
 // HouseholdRolePermissionsChecker returns the relevant HouseholdRolePermissionsChecker.
-func (x *SessionContextData) HouseholdRolePermissionsChecker() authorization.HouseholdRolePermissionsChecker {
+func (x *ContextData) HouseholdRolePermissionsChecker() authorization.HouseholdRolePermissionsChecker {
 	return x.HouseholdPermissions[x.ActiveHouseholdID]
 }
 
 // ServiceRolePermissionChecker returns the relevant ServiceRolePermissionChecker.
-func (x *SessionContextData) ServiceRolePermissionChecker() authorization.ServiceRolePermissionChecker {
+func (x *ContextData) ServiceRolePermissionChecker() authorization.ServiceRolePermissionChecker {
 	return x.Requester.ServicePermissions
 }
 
-// AttachToLogger provides a consistent way to attach a SessionContextData object to a logger.
-func (x *SessionContextData) AttachToLogger(logger logging.Logger) logging.Logger {
+// AttachToLogger provides a consistent way to attach a ContextData object to a logger.
+func (x *ContextData) AttachToLogger(logger logging.Logger) logging.Logger {
 	if x != nil {
 		logger = logger.WithValue(keys.RequesterIDKey, x.Requester.UserID).
 			WithValue(keys.ActiveHouseholdIDKey, x.ActiveHouseholdID)

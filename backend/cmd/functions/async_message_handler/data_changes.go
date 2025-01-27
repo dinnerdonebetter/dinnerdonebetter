@@ -14,10 +14,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	coreemails "github.com/dinnerdonebetter/backend/internal/services/core/emails"
 	eatingemails "github.com/dinnerdonebetter/backend/internal/services/eating/emails"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -107,7 +106,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for User")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.UserID,
 			IndexType: textsearch.IndexTypeUsers,
 			Delete:    changeMessage.EventType == types.UserArchivedServiceEventType,
@@ -123,7 +122,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for Recipe")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.Recipe.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.RecipeArchivedServiceEventType,
@@ -139,7 +138,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for Meal")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.Meal.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.MealArchivedServiceEventType,
@@ -155,7 +154,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredient")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.ValidIngredient.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidIngredientArchivedServiceEventType,
@@ -171,7 +170,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidInstrument")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.ValidInstrument.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidInstrumentArchivedServiceEventType,
@@ -187,7 +186,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidMeasurementUnit")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.ValidMeasurementUnit.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidMeasurementUnitArchivedServiceEventType,
@@ -203,7 +202,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidPreparation")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.ValidPreparation.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidPreparationArchivedServiceEventType,
@@ -219,7 +218,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredientState")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.ValidIngredientState.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidIngredientStateArchivedServiceEventType,
@@ -235,7 +234,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredientMeasurementUnit")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.ValidIngredientMeasurementUnit.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidIngredientMeasurementUnitArchivedServiceEventType,
@@ -251,7 +250,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidPreparationInstrument")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.ValidPreparationInstrument.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidPreparationInstrumentArchivedServiceEventType,
@@ -267,7 +266,7 @@ func handleSearchIndexUpdates(
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for ValidIngredientPreparation")
 		}
 
-		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+		if err := searchDataIndexPublisher.Publish(ctx, &textsearch.IndexRequest{
 			RowID:     changeMessage.ValidIngredientPreparation.ID,
 			IndexType: textsearch.IndexTypeRecipes,
 			Delete:    changeMessage.EventType == types.ValidIngredientPreparationArchivedServiceEventType,

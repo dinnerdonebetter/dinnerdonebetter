@@ -16,11 +16,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/cookies"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/lib/email/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
 

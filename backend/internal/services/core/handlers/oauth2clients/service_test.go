@@ -5,15 +5,15 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
+	mockencoding "github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
-	"github.com/dinnerdonebetter/backend/internal/lib/random/mock"
+	randommock "github.com/dinnerdonebetter/backend/internal/lib/random/mock"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/lib/routing/mock"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -28,7 +28,7 @@ func buildTestService(t *testing.T) *service {
 		oauth2ClientDataManager:   database.NewMockDatabase(),
 		logger:                    logging.NewNoopLogger(),
 		encoderDecoder:            encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		sessionContextDataFetcher: sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher: sessions.FetchContextFromRequest,
 		urlClientIDExtractor:      func(req *http.Request) string { return "" },
 		secretGenerator:           &randommock.Generator{},
 		tracer:                    tracing.NewTracerForTest(serviceName),

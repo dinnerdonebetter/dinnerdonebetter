@@ -8,9 +8,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
 	"github.com/dinnerdonebetter/backend/internal/services/frontend/admin"
 

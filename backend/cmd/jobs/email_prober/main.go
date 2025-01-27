@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/email"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/lib/email/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	tracing "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	_ "go.uber.org/automaxprocs"
 )

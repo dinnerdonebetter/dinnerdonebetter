@@ -9,16 +9,16 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	"github.com/dinnerdonebetter/backend/pkg/types/mock"
+	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -740,7 +740,7 @@ func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByP
 
 		helper := buildTestHelper(t)
 
-		helper.service.sessionContextDataFetcher = func(request *http.Request) (*sessioncontext.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(request *http.Request) (*sessions.ContextData, error) {
 			return nil, errors.New("blah")
 		}
 
@@ -814,7 +814,7 @@ func TestValidPreparationInstrumentsService_SearchValidPreparationInstrumentsByI
 
 		helper := buildTestHelper(t)
 
-		helper.service.sessionContextDataFetcher = func(request *http.Request) (*sessioncontext.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(request *http.Request) (*sessions.ContextData, error) {
 			return nil, errors.New("blah")
 		}
 

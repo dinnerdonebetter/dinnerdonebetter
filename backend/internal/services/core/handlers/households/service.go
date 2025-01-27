@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -31,7 +31,7 @@ type (
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		dataChangesPublisher           messagequeue.Publisher
 		secretGenerator                random.Generator
-		sessionContextDataFetcher      func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher      func(*http.Request) (*sessions.ContextData, error)
 		userIDFetcher                  func(*http.Request) string
 		householdIDFetcher             func(*http.Request) string
 	}
@@ -62,7 +62,7 @@ func ProvideService(
 		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(HouseholdIDURIParamKey),
 		userIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		sessionContextDataFetcher:      sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:      sessions.FetchContextFromRequest,
 		householdDataManager:           householdDataManager,
 		householdMembershipDataManager: householdMembershipDataManager,
 		encoderDecoder:                 encoder,

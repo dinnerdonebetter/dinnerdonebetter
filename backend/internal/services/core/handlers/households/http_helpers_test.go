@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -37,8 +37,8 @@ func buildTestHelper(t *testing.T) *householdsServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 
-	sessionCtxData := &sessioncontext.SessionContextData{
-		Requester: sessioncontext.RequesterInfo{
+	sessionCtxData := &sessions.ContextData{
+		Requester: sessions.RequesterInfo{
 			UserID:                   helper.exampleUser.ID,
 			AccountStatus:            helper.exampleUser.AccountStatus,
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
@@ -51,7 +51,7 @@ func buildTestHelper(t *testing.T) *householdsServiceHTTPRoutesTestHelper {
 	}
 
 	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-	helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+	helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 		return sessionCtxData, nil
 	}
 	helper.service.householdIDFetcher = func(req *http.Request) string {

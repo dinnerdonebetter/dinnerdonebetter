@@ -9,14 +9,14 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/lib/random/mock"
-	testutils "github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	randommock "github.com/dinnerdonebetter/backend/internal/lib/random/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -94,7 +94,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 			return nil, errors.New("blah")
 		}
 
@@ -560,7 +560,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 			return nil, errors.New("blah")
 		}
 
@@ -632,7 +632,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 			return nil, errors.New("blah")
 		}
 
@@ -727,7 +727,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 			return nil, errors.New("blah")
 		}
 
@@ -1109,7 +1109,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 			return nil, errors.New("blah")
 		}
 
@@ -1359,7 +1359,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessioncontext.SessionContextData, error) {
+		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 			return nil, errors.New("blah")
 		}
 

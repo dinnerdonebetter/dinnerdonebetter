@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
+	mockauthn "github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 
 	"github.com/stretchr/testify/assert"

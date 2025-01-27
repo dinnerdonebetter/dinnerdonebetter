@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
@@ -14,7 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/routing"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -49,7 +49,7 @@ type (
 		validIngredientIDFetcher                func(*http.Request) string
 		validMeasurementUnitIDFetcher           func(*http.Request) string
 		validIngredientGroupIDFetcher           func(*http.Request) string
-		sessionContextDataFetcher               func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher               func(*http.Request) (*sessions.ContextData, error)
 		dataChangesPublisher                    messagequeue.Publisher
 		encoderDecoder                          encoding.ServerEncoderDecoder
 		tracer                                  tracing.Tracer
@@ -96,7 +96,7 @@ func ProvideService(
 		validIngredientMeasurementUnitIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientMeasurementUnitIDURIParamKey),
 		validIngredientIDFetcher:                routeParamManager.BuildRouteParamStringIDFetcher(ValidIngredientIDURIParamKey),
 		validMeasurementUnitIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(ValidMeasurementUnitIDURIParamKey),
-		sessionContextDataFetcher:               sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:               sessions.FetchContextFromRequest,
 		validEnumerationDataManager:             dataManager,
 		dataChangesPublisher:                    dataChangesPublisher,
 		encoderDecoder:                          encoder,

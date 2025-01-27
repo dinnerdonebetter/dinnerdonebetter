@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
@@ -24,8 +24,8 @@ var (
 	_ types.HouseholdUserMembershipDataManager = (*Querier)(nil)
 )
 
-// BuildSessionContextDataForUser queries the database for the memberships of a user and constructs a SessionContextData struct from the results.
-func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessioncontext.SessionContextData, error) {
+// BuildSessionContextDataForUser queries the database for the memberships of a user and constructs a ContextData struct from the results.
+func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -55,8 +55,8 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching user from database")
 	}
 
-	sessionCtxData := &sessioncontext.SessionContextData{
-		Requester: sessioncontext.RequesterInfo{
+	sessionCtxData := &sessions.ContextData{
+		Requester: sessions.RequesterInfo{
 			UserID:                   user.ID,
 			Username:                 user.Username,
 			EmailAddress:             user.EmailAddress,

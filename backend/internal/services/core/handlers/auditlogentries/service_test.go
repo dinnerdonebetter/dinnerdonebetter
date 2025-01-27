@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
+	mockencoding "github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/lib/routing/mock"

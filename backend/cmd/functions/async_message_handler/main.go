@@ -27,10 +27,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/routing/chi"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "go.uber.org/automaxprocs"
@@ -40,28 +42,28 @@ var (
 	errRequiredDataIsNil = errors.New("required data is nil")
 
 	nonWebhookEventTypes = []string{
-		string(types.UserSignedUpServiceEventType),
-		string(types.UserArchivedServiceEventType),
-		string(types.TwoFactorSecretVerifiedServiceEventType),
-		string(types.TwoFactorDeactivatedServiceEventType),
-		string(types.TwoFactorSecretChangedServiceEventType),
-		string(types.PasswordResetTokenCreatedEventType),
-		string(types.PasswordResetTokenRedeemedEventType),
-		string(types.PasswordChangedEventType),
-		string(types.EmailAddressChangedEventType),
-		string(types.UsernameChangedEventType),
-		string(types.UserDetailsChangedEventType),
-		string(types.UsernameReminderRequestedEventType),
-		string(types.UserLoggedInServiceEventType),
-		string(types.UserLoggedOutServiceEventType),
-		string(types.UserChangedActiveHouseholdServiceEventType),
-		string(types.UserEmailAddressVerifiedEventType),
-		string(types.UserEmailAddressVerificationEmailRequestedEventType),
-		string(types.HouseholdMemberRemovedServiceEventType),
-		string(types.HouseholdMembershipPermissionsUpdatedServiceEventType),
-		string(types.HouseholdOwnershipTransferredServiceEventType),
-		string(types.OAuth2ClientCreatedServiceEventType),
-		string(types.OAuth2ClientArchivedServiceEventType),
+		types.UserSignedUpServiceEventType,
+		types.UserArchivedServiceEventType,
+		types.TwoFactorSecretVerifiedServiceEventType,
+		types.TwoFactorDeactivatedServiceEventType,
+		types.TwoFactorSecretChangedServiceEventType,
+		types.PasswordResetTokenCreatedEventType,
+		types.PasswordResetTokenRedeemedEventType,
+		types.PasswordChangedEventType,
+		types.EmailAddressChangedEventType,
+		types.UsernameChangedEventType,
+		types.UserDetailsChangedEventType,
+		types.UsernameReminderRequestedEventType,
+		types.UserLoggedInServiceEventType,
+		types.UserLoggedOutServiceEventType,
+		types.UserChangedActiveHouseholdServiceEventType,
+		types.UserEmailAddressVerifiedEventType,
+		types.UserEmailAddressVerificationEmailRequestedEventType,
+		types.HouseholdMemberRemovedServiceEventType,
+		types.HouseholdMembershipPermissionsUpdatedServiceEventType,
+		types.HouseholdOwnershipTransferredServiceEventType,
+		types.OAuth2ClientCreatedServiceEventType,
+		types.OAuth2ClientArchivedServiceEventType,
 	}
 )
 
@@ -468,14 +470,30 @@ func buildSearchIndexRequestsEventHandler(
 
 		start := time.Now()
 
-		var searchIndexRequest indexing.IndexRequest
+		var searchIndexRequest textsearch.IndexRequest
 		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&searchIndexRequest); err != nil {
 			return fmt.Errorf("decoding JSON body: %w", err)
 		}
 
-		// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
-		if err := indexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, searchCfg, dataManager, &searchIndexRequest); err != nil {
-			return fmt.Errorf("handling search indexing request: %w", err)
+		switch searchIndexRequest.IndexType {
+		case textsearch.IndexTypeRecipes,
+			textsearch.IndexTypeMeals,
+			textsearch.IndexTypeValidIngredients,
+			textsearch.IndexTypeValidInstruments,
+			textsearch.IndexTypeValidMeasurementUnits,
+			textsearch.IndexTypeValidPreparations,
+			textsearch.IndexTypeValidIngredientStates,
+			textsearch.IndexTypeValidVessels:
+			// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
+			if err := eatingindexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, searchCfg, dataManager, &searchIndexRequest); err != nil {
+				return fmt.Errorf("handling search indexing request: %w", err)
+			}
+
+		case textsearch.IndexTypeUsers:
+			// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
+			if err := coreindexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, searchCfg, dataManager, &searchIndexRequest); err != nil {
+				return fmt.Errorf("handling search indexing request: %w", err)
+			}
 		}
 
 		executionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))

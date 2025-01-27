@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -28,7 +28,7 @@ type (
 		tracer                      tracing.Tracer
 		encoderDecoder              encoding.ServerEncoderDecoder
 		userNotificationDataManager types.UserNotificationDataManager
-		sessionContextDataFetcher   func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher   func(*http.Request) (*sessions.ContextData, error)
 		userNotificationIDFetcher   func(*http.Request) string
 	}
 )
@@ -55,7 +55,7 @@ func ProvideService(
 	svc := &service{
 		logger:                      logging.EnsureLogger(logger).WithName(serviceName),
 		userNotificationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(UserNotificationIDURIParamKey),
-		sessionContextDataFetcher:   sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher:   sessions.FetchContextFromRequest,
 		dataChangesPublisher:        dataChangesPublisher,
 		encoderDecoder:              encoder,
 		userNotificationDataManager: userNotificationDataManager,

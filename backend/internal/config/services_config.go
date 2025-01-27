@@ -16,9 +16,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/users"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/workers"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/handlers/meal_planning"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/handlers/valid_enumerations"
+	mealplanning "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/meal_planning"
+	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
+	validenumerations "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/valid_enumerations"
 
 	"github.com/hashicorp/go-multierror"
 )

@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	servertiming "github.com/mitchellh/go-server-timing"
@@ -167,14 +167,14 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 		}
 	case "search_index_requests":
 		topicName = s.queuesConfig.SearchIndexRequestsTopicName
-		dest = &indexing.IndexRequest{}
+		dest = &textsearch.IndexRequest{}
 		if err := s.encoderDecoder.DecodeBytes(ctx, []byte(input.Body), dest); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding message queue body")
 			errRes := types.NewAPIErrorResponse("decoding message queue body", types.ErrDecodingRequestInput, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
-		if x, ok := dest.(*indexing.IndexRequest); ok {
+		if x, ok := dest.(*textsearch.IndexRequest); ok {
 			x.RequestID = identifiers.New()
 		}
 	case "user_data_aggregator":

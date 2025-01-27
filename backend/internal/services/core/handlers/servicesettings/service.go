@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessioncontext"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -26,7 +26,7 @@ type (
 		logger                    logging.Logger
 		serviceSettingDataManager types.ServiceSettingDataManager
 		serviceSettingIDFetcher   func(*http.Request) string
-		sessionContextDataFetcher func(*http.Request) (*sessioncontext.SessionContextData, error)
+		sessionContextDataFetcher func(*http.Request) (*sessions.ContextData, error)
 		dataChangesPublisher      messagequeue.Publisher
 		encoderDecoder            encoding.ServerEncoderDecoder
 		tracer                    tracing.Tracer
@@ -55,7 +55,7 @@ func ProvideService(
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		serviceSettingIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ServiceSettingIDURIParamKey),
-		sessionContextDataFetcher: sessioncontext.FetchContextFromRequest,
+		sessionContextDataFetcher: sessions.FetchContextFromRequest,
 		serviceSettingDataManager: serviceSettingDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,
