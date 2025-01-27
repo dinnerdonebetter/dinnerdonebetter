@@ -52,7 +52,7 @@ func TestRecipeRatingsService_CreateRecipeRatingHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -395,7 +395,7 @@ func TestRecipeRatingsService_UpdateRecipeRatingHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -605,7 +605,7 @@ func TestRecipeRatingsService_ArchiveRecipeRatingHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

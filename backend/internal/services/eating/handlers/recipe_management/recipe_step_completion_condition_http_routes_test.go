@@ -52,7 +52,7 @@ func TestRecipeStepCompletionConditionsService_CreateRecipeStepCompletionConditi
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -402,7 +402,7 @@ func TestRecipeStepCompletionConditionsService_UpdateRecipeStepCompletionConditi
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -616,7 +616,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveRecipeStepCompletionCondit
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

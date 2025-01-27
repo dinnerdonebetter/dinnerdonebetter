@@ -242,7 +242,7 @@ func TestMealPlanTasksService_MealPlanTaskStatusChangeHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

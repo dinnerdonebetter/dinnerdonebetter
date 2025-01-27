@@ -52,7 +52,7 @@ func TestRecipeStepProductsService_CreateRecipeStepProductHandler(T *testing.T) 
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -303,7 +303,7 @@ func TestRecipeStepProductsService_UpdateRecipeStepProductHandler(T *testing.T) 
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -616,7 +616,7 @@ func TestRecipeStepProductsService_ArchiveRecipeStepProductHandler(T *testing.T)
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

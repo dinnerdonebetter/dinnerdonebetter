@@ -54,7 +54,7 @@ func TestValidPreparationVesselsService_CreateValidPreparationVesselHandler(T *t
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -391,7 +391,7 @@ func TestValidPreparationVesselsService_UpdateValidPreparationVesselHandler(T *t
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -596,7 +596,7 @@ func TestValidPreparationVesselsService_ArchiveValidPreparationVesselHandler(T *
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

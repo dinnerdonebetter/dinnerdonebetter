@@ -52,7 +52,7 @@ func TestRecipeStepIngredientsService_CreateRecipeStepIngredientHandler(T *testi
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -402,7 +402,7 @@ func TestRecipeStepIngredientsService_UpdateRecipeStepIngredientHandler(T *testi
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -616,7 +616,7 @@ func TestRecipeStepIngredientsService_ArchiveRecipeStepIngredientHandler(T *test
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

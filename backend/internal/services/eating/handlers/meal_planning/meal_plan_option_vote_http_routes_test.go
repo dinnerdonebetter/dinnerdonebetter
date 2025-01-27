@@ -58,7 +58,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 
 		dbManager.MealPlanOptionDataManagerMock.On(
@@ -73,7 +73,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 
 		dbManager.MealPlanDataManagerMock.On(
@@ -87,7 +87,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -287,7 +287,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 
 		dbManager.MealPlanOptionDataManagerMock.On(
@@ -345,7 +345,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 
 		dbManager.MealPlanOptionDataManagerMock.On(
@@ -360,7 +360,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -624,7 +624,7 @@ func TestMealPlanOptionVotesService_UpdateMealPlanOptionVoteHandler(T *testing.T
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -844,7 +844,7 @@ func TestMealPlanOptionVotesService_ArchiveMealPlanOptionVoteHandler(T *testing.
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

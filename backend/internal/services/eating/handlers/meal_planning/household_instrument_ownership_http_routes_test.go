@@ -53,7 +53,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -396,7 +396,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -606,7 +606,7 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

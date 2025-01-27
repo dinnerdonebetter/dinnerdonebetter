@@ -72,7 +72,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -295,7 +295,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -354,7 +354,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -413,7 +413,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -709,7 +709,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -928,7 +928,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -980,7 +980,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1197,7 +1197,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1249,7 +1249,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -1467,7 +1467,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

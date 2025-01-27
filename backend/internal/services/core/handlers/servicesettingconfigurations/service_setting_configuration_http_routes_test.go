@@ -52,7 +52,7 @@ func TestServiceSettingConfigurationsService_CreateServiceSettingConfigurationHa
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -194,7 +194,7 @@ func TestServiceSettingConfigurationsService_CreateServiceSettingConfigurationHa
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -527,7 +527,7 @@ func TestServiceSettingConfigurationsService_UpdateServiceSettingConfigurationHa
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -737,7 +737,7 @@ func TestServiceSettingConfigurationsService_UpdateServiceSettingConfigurationHa
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -779,7 +779,7 @@ func TestServiceSettingConfigurationsService_ArchiveServiceSettingConfigurationH
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -909,7 +909,7 @@ func TestServiceSettingConfigurationsService_ArchiveServiceSettingConfigurationH
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 

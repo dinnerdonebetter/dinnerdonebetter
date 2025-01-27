@@ -154,7 +154,7 @@ queries_lint:
 	$(SQL_GENERATOR) vet --no-remote
 
 .PHONY: golang_lint
-golang_lint: sqlc_struct_check
+golang_lint: check_lib_for_types sqlc_struct_check
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
 	$(LINTER) run --config=.golangci.yml --timeout 15m ./...
 
@@ -176,7 +176,7 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 
 .PHONY: check_lib_for_types
 check_lib_for_types:
-	! grep -r 'pkg/types"' internal/lib/
+	@! grep -r 'pkg/types"' internal/lib/
 
 ## Generated files
 

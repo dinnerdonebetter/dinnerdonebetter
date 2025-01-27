@@ -247,7 +247,7 @@ func TestMealPlanGroceryListItemsService_UpdateMealPlanGroceryListItemHandler(T 
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -345,7 +345,7 @@ func TestMealPlanGroceryListItemsService_ArchiveMealPlanGroceryListItemHandler(T
 		dataChangesPublisher.On(
 			"PublishAsync",
 			testutils.ContextMatcher,
-			testutils.DataChangeMessageMatcher,
+			testutils.MatchType[*types.DataChangeMessage](),
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
