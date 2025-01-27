@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MatchType is a matcher for use with testify/mock's MatchBy function.
+// MatchType is a matcher for use with testify/mock.
 func MatchType[T any]() any {
 	return mock.MatchedBy(func(T) bool {
 		return true

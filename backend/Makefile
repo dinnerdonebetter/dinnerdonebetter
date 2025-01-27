@@ -41,7 +41,7 @@ $(ARTIFACTS_DIR):
 clean-$(ARTIFACTS_DIR):
 	@rm -rf $(ARTIFACTS_DIR)
 
-## prerequisites
+## PREREQUISITES
 
 .PHONY: ensure_scc_installed
 ensure_scc_installed:
@@ -106,7 +106,7 @@ vendor:
 .PHONY: revendor
 revendor: clean_vendor vendor
 
-## dependency injection
+## DEPENDENCY INJECTION
 
 .PHONY: rewire
 rewire: ensure_wire_installed
@@ -114,7 +114,7 @@ rewire: ensure_wire_installed
 		rm -f $(THIS)/$$tgt/wire_gen.go && wire gen $(THIS)/$$tgt; \
 	done
 
-## formatting
+## FORMATTING
 
 .PHONY: format_golang
 format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
@@ -140,7 +140,7 @@ fmt: format
 format_yaml: ensure_yamlfmt_installed
 	yamlfmt -conf .yamlfmt.yaml
 
-## Linting
+## LINTING
 
 .PHONY: lint_containers
 lint_containers:
@@ -178,7 +178,7 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 check_lib_for_types:
 	@! grep -r 'pkg/types"' internal/lib/
 
-## Generated files
+## GENERATED FILES
 
 .PHONY: configs
 configs:
@@ -219,7 +219,7 @@ env_vars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars
 	gofmt -s -w internal/config/envvars/*.go
 
-## Integration tests
+## INTEGRATION TESTING
 
 .PHONY: integration-tests
 integration-tests: integration_tests
@@ -243,7 +243,7 @@ integration_tests_postgres:
 	--attach api_server \
 	--attach tests
 
-## Running
+## EXECUTION
 
 .PHONY: build
 build:
@@ -277,12 +277,7 @@ dev: $(ARTIFACTS_DIR)
 run_admin_app: ensure_air_installed
 	(cd cmd/services/admin_webapp && CONFIGURATION_FILEPATH="../../../$(ENVIRONMENTS_DIR)/localdev/config_files/admin_webapp_config.json" air -c .air.toml)
 
-## misc
-
-.PHONY: tree
-tree:
-	# there are no long args for tree, but d means "directories only" and I means "ignore pattern"
-	tree -d -I vendor
+## MISC
 
 .PHONY: line_count
 line_count: ensure_scc_installed
@@ -290,11 +285,13 @@ line_count: ensure_scc_installed
 
 # OPERATIONS
 
+GCP_DEV_PROJECT_NAME := dinner-done-better-dev
+
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
 .PHONY: proxy_dev_db
 proxy_dev_db:
-	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
+	cloud_sql_proxy $(GCP_DEV_PROJECT_NAME):us-central1:dev --port 5434 --gcloud-auth
 
 .PHONY: deploy_dev
 deploy_dev:
-	skaffold run --filename=skaffold.yaml --build-concurrency 2 --profile dev
+	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile dev
