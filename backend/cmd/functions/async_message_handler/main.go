@@ -332,7 +332,6 @@ func doTheThing(
 		buildOutboundEmailsEventHandler(
 			logger,
 			tracer,
-			dataManager,
 			emailer,
 			analyticsEventReporter,
 			outboundEmailsExecutionTimeHistogram,
@@ -429,7 +428,6 @@ func buildDataChangesEventHandler(
 func buildOutboundEmailsEventHandler(
 	logger logging.Logger,
 	tracer tracing.Tracer,
-	dataManager database.DataManager,
 	emailer email.Emailer,
 	analyticsEventReporter analytics.EventReporter,
 	executionTimestampHistogram metrics.Float64Histogram,
@@ -440,12 +438,12 @@ func buildOutboundEmailsEventHandler(
 
 		start := time.Now()
 
-		var emailMessage email.DeliveryRequest
+		var emailMessage email.OutboundEmailMessage
 		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&emailMessage); err != nil {
 			return fmt.Errorf("decoding JSON body: %w", err)
 		}
 
-		if err := handleEmailRequest(ctx, logger, tracer, dataManager, emailer, analyticsEventReporter, &emailMessage); err != nil {
+		if err := handleEmailRequest(ctx, logger, tracer, emailer, analyticsEventReporter, &emailMessage); err != nil {
 			return fmt.Errorf("handling outbound email request: %w", err)
 		}
 

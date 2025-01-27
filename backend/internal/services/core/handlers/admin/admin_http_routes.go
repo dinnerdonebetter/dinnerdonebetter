@@ -158,15 +158,12 @@ func (s *service) WriteArbitraryQueueMessageHandler(res http.ResponseWriter, req
 		}
 	case "outbound_emails":
 		topicName = s.queuesConfig.OutboundEmailsTopicName
-		dest = &email.DeliveryRequest{}
+		dest = &email.OutboundEmailMessage{}
 		if err := s.encoderDecoder.DecodeBytes(ctx, []byte(input.Body), dest); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding message queue body")
 			errRes := types.NewAPIErrorResponse("decoding message queue body", types.ErrDecodingRequestInput, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
-		}
-		if x, ok := dest.(*email.DeliveryRequest); ok {
-			x.RequestID = identifiers.New()
 		}
 	case "search_index_requests":
 		topicName = s.queuesConfig.SearchIndexRequestsTopicName

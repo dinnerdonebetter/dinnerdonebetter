@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"net/http"
 	"time"
@@ -436,4 +437,18 @@ func (u *User) GetFirstName() string {
 // GetLastName fetches the User's LastName value.
 func (u *User) GetLastName() string {
 	return u.LastName
+}
+
+// FullName tries to construct the user's full name.
+func (u *User) FullName() string {
+	out := ""
+	if u.FirstName != "" {
+		out = u.FirstName
+	}
+
+	if u.LastName != "" {
+		out += fmt.Sprintf(" %s", u.LastName)
+	}
+
+	return out
 }

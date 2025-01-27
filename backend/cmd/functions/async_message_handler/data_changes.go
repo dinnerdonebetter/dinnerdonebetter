@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"slices"
 	"sync"
 
@@ -14,6 +15,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	coreemails "github.com/dinnerdonebetter/backend/internal/services/core/emails"
+	eatingemails "github.com/dinnerdonebetter/backend/internal/services/eating/emails"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -64,7 +67,7 @@ func handleDataChangeMessage(
 
 	wg.Add(1)
 	go func() {
-		if err := handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, webhookExecutionRequestPublisher, analyticsEventReporter, changeMessage); err != nil {
+		if err := handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, analyticsEventReporter, changeMessage); err != nil {
 			observability.AcknowledgeError(err, logger, span, "notifying customer(s)")
 		}
 		wg.Done()
@@ -284,41 +287,52 @@ func handleOutboundNotifications(
 	l logging.Logger,
 	tracer tracing.Tracer,
 	dataManager database.DataManager,
-	outboundEmailsPublisher,
-	_ messagequeue.Publisher,
+	outboundEmailsPublisher messagequeue.Publisher,
 	analyticsEventReporter analytics.EventReporter,
 	changeMessage *types.DataChangeMessage,
 ) error {
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	var (
-		emailType string
-		edrs      []*email.DeliveryRequest
-	)
+	envCfg := email.GetConfigForEnvironment(os.Getenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"))
+	if envCfg == nil {
+		return observability.PrepareAndLogError(email.ErrMissingEnvCfg, l, span, "getting environment config")
+	}
 
 	logger := l.WithValue("event_type", changeMessage.EventType)
+
+	user, err := dataManager.GetUser(ctx, changeMessage.UserID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "getting user")
+	}
+
+	var (
+		emailType             string
+		msg                   *email.OutboundEmailMessage
+		outboundEmailMessages []*email.OutboundEmailMessage
+	)
 
 	switch changeMessage.EventType {
 	case types.UserSignedUpServiceEventType:
 		emailType = "user signup"
-		if err := analyticsEventReporter.AddUser(ctx, changeMessage.UserID, changeMessage.Context); err != nil {
+		if err = analyticsEventReporter.AddUser(ctx, changeMessage.UserID, changeMessage.Context); err != nil {
 			observability.AcknowledgeError(err, logger, span, "notifying customer data platform")
 		}
 
-		edrs = append(edrs, &email.DeliveryRequest{
-			UserID:                 changeMessage.UserID,
-			Template:               email.TemplateTypeVerifyEmailAddress,
-			EmailVerificationToken: changeMessage.EmailVerificationToken,
-		})
+		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, changeMessage.EmailVerificationToken, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building address verification email")
+		}
+		outboundEmailMessages = append(outboundEmailMessages, msg)
+
 	case types.UserEmailAddressVerificationEmailRequestedEventType:
 		emailType = "email address verification"
+		msg, err = coreemails.BuildVerifyEmailAddressEmail(user, changeMessage.EmailVerificationToken, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building address verification email")
+		}
+		outboundEmailMessages = append(outboundEmailMessages, msg)
 
-		edrs = append(edrs, &email.DeliveryRequest{
-			UserID:                 changeMessage.UserID,
-			Template:               email.TemplateTypeVerifyEmailAddress,
-			EmailVerificationToken: changeMessage.EmailVerificationToken,
-		})
 	case types.MealPlanCreatedServiceEventType:
 		emailType = "meal plan created"
 		mealPlan := changeMessage.MealPlan
@@ -326,18 +340,20 @@ func handleOutboundNotifications(
 			return observability.PrepareError(fmt.Errorf("meal plan is nil"), span, "publishing meal plan created email")
 		}
 
-		household, err := dataManager.GetHousehold(ctx, mealPlan.BelongsToHousehold)
+		var household *types.Household
+		household, err = dataManager.GetHousehold(ctx, mealPlan.BelongsToHousehold)
 		if err != nil {
 			return observability.PrepareError(err, span, "getting household")
 		}
 
 		for _, member := range household.Members {
 			if member.BelongsToUser.EmailAddressVerifiedAt != nil {
-				edrs = append(edrs, &email.DeliveryRequest{
-					UserID:   member.BelongsToUser.ID,
-					Template: email.TemplateTypeMealPlanCreated,
-					MealPlan: mealPlan,
-				})
+				msg, err = eatingemails.BuildMealPlanCreatedEmail(user, mealPlan, envCfg)
+				if err != nil {
+					return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
+				}
+
+				outboundEmailMessages = append(outboundEmailMessages, msg)
 			}
 		}
 	case types.PasswordResetTokenCreatedEventType:
@@ -346,32 +362,39 @@ func handleOutboundNotifications(
 			return observability.PrepareError(fmt.Errorf("password reset token is nil"), span, "publishing password reset token email")
 		}
 
-		edrs = append(edrs, &email.DeliveryRequest{
-			UserID:             changeMessage.UserID,
-			Template:           email.TemplateTypePasswordResetTokenCreated,
-			PasswordResetToken: changeMessage.PasswordResetToken,
-		})
+		msg, err = coreemails.BuildGeneratedPasswordResetTokenEmail(user, changeMessage.PasswordResetToken, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building password reset token created email")
+		}
+
+		outboundEmailMessages = append(outboundEmailMessages, msg)
 
 	case types.UsernameReminderRequestedEventType:
 		emailType = "username reminder"
-		edrs = append(edrs, &email.DeliveryRequest{
-			UserID:   changeMessage.UserID,
-			Template: email.TemplateTypeUsernameReminder,
-		})
+		msg, err = coreemails.BuildUsernameReminderEmail(user, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building username reminder email")
+		}
+
+		outboundEmailMessages = append(outboundEmailMessages, msg)
 
 	case types.PasswordResetTokenRedeemedEventType:
 		emailType = "password reset token redeemed"
-		edrs = append(edrs, &email.DeliveryRequest{
-			UserID:   changeMessage.UserID,
-			Template: email.TemplateTypePasswordResetTokenRedeemed,
-		})
+		msg, err = coreemails.BuildPasswordResetTokenRedeemedEmail(user, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building password reset token redemption email")
+		}
+
+		outboundEmailMessages = append(outboundEmailMessages, msg)
 
 	case types.PasswordChangedEventType:
 		emailType = "password reset token redeemed"
-		edrs = append(edrs, &email.DeliveryRequest{
-			UserID:   changeMessage.UserID,
-			Template: email.TemplateTypePasswordReset,
-		})
+		msg, err = coreemails.BuildPasswordChangedEmail(user, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building password reset token email")
+		}
+
+		outboundEmailMessages = append(outboundEmailMessages, msg)
 
 	case types.HouseholdInvitationCreatedServiceEventType:
 		emailType = "household invitation created"
@@ -379,19 +402,20 @@ func handleOutboundNotifications(
 			return observability.PrepareError(fmt.Errorf("household invitation is nil"), span, "publishing password reset token redemption email")
 		}
 
-		edrs = append(edrs, &email.DeliveryRequest{
-			UserID:     changeMessage.UserID,
-			Template:   email.TemplateTypeInvite,
-			Invitation: changeMessage.HouseholdInvitation,
-		})
+		msg, err = coreemails.BuildInviteMemberEmail(user, changeMessage.HouseholdInvitation, envCfg)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "building email message")
+		}
+
+		outboundEmailMessages = append(outboundEmailMessages, msg)
 	}
 
-	if len(edrs) == 0 {
-		logger.WithValue("email_type", emailType).WithValue("outbound_emails_to_send", len(edrs)).Info("publishing email requests")
+	if len(outboundEmailMessages) == 0 {
+		logger.WithValue("email_type", emailType).WithValue("outbound_emails_to_send", len(outboundEmailMessages)).Info("publishing email requests")
 	}
 
-	for _, edr := range edrs {
-		if err := outboundEmailsPublisher.Publish(ctx, edr); err != nil {
+	for _, oem := range outboundEmailMessages {
+		if err = outboundEmailsPublisher.Publish(ctx, oem); err != nil {
 			observability.AcknowledgeError(err, logger, span, "publishing %s request email", emailType)
 		}
 	}
