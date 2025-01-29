@@ -24,8 +24,6 @@ func init() {
 }
 
 var baseFiles = map[string]string{
-	"api_response":             fetchStaticFile("api_response"),
-	"query_filters":            fetchStaticFile("query_filters"),
 	"client":                   fetchStaticFile("client"),
 	"client_test":              fetchStaticFile("client_test"),
 	"client_options":           fetchStaticFile("client_options"),

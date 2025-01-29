@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/openapi/golang"
@@ -61,39 +60,15 @@ func writeTypescriptFiles(spec *openapi31.Spec) error {
 func writeGoFiles(spec *openapi31.Spec) error {
 	errPrefix := "failed to write golang"
 
-	if err := os.MkdirAll(golangAPIClientOutputPath, 0o0750); err != nil {
-		return fmt.Errorf("failed to create directory: %w", err)
-	}
-
-	if err := purgeGoFiles(golangAPIClientOutputPath); err != nil {
-		return fmt.Errorf("failed to purge golang files: %w", err)
+	if err := golang.WriteAPITypesFiles(spec, golangAPIClientOutputPath); err != nil {
+		return fmt.Errorf("%s API client files: %w", errPrefix, err)
 	}
 
 	if err := golang.WriteAPIClientFiles(spec, golangAPIClientOutputPath); err != nil {
 		return fmt.Errorf("%s API client files: %w", errPrefix, err)
 	}
 
-	if err := golang.WriteAPITypesFiles(spec, golangAPIClientOutputPath); err != nil {
-		return fmt.Errorf("%s API client files: %w", errPrefix, err)
-	}
-
 	return nil
-}
-
-func purgeGoFiles(dirPath string) error {
-	return filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if !info.IsDir() && filepath.Ext(info.Name()) == ".go" {
-			if err = os.Remove(path); err != nil {
-				return err
-			}
-		}
-
-		return nil
-	})
 }
 
 func main() {
@@ -110,7 +85,7 @@ func main() {
 		wg.Add(1)
 		go func() {
 			if err = writeTypescriptFiles(spec); err != nil {
-				log.Fatalf("writing typescript files: %v", err)
+				log.Fatalf("failed to write typescript files: %v", err)
 			}
 			wg.Done()
 		}()
@@ -120,7 +95,7 @@ func main() {
 		wg.Add(1)
 		go func() {
 			if err = writeGoFiles(spec); err != nil {
-				log.Fatalf("writing golang files: %v", err)
+				log.Fatalf("failed to write typescript files: %v", err)
 			}
 			wg.Done()
 		}()

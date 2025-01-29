@@ -91,12 +91,6 @@ ifeq (, $(shell which air))
 	$(shell go install github.com/air-verse/air@v1.61.5)
 endif
 
-.PHONY: ensure_goimports_installed
-ensure_goimports_installed:
-ifeq (, $(shell which goimports))
-	$(shell go install golang.org/x/tools/cmd/goimports@v0.29.0)
-endif
-
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed ensure_yamlfmt_installed
 

@@ -35,7 +35,7 @@ const (
 	// AnalyticsProviderEnvVarKey is the environment variable name to set in order to override `config.Analytics.Provider`.
 	AnalyticsProviderEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_PROVIDER"
 
-	// AnalyticsRudderstackAPIKeyEnvVarKey is the environment variable name to set in order to override `config.Analytics.Rudderstack.AuthToken`.
+	// AnalyticsRudderstackAPIKeyEnvVarKey is the environment variable name to set in order to override `config.Analytics.Rudderstack.APIKey`.
 	AnalyticsRudderstackAPIKeyEnvVarKey = "DINNER_DONE_BETTER_ANALYTICS_RUDDERSTACK_API_KEY"
 
 	// AnalyticsRudderstackDataPlaneURLEnvVarKey is the environment variable name to set in order to override `config.Analytics.Rudderstack.DataPlaneURL`.
@@ -101,7 +101,7 @@ const (
 	// EmailMailgunPrivateAPIKeyEnvVarKey is the environment variable name to set in order to override `config.Email.Mailgun.PrivateAPIKey`.
 	EmailMailgunPrivateAPIKeyEnvVarKey = "DINNER_DONE_BETTER_EMAIL_MAILGUN_PRIVATE_API_KEY"
 
-	// EmailMailjetAPIKeyEnvVarKey is the environment variable name to set in order to override `config.Email.Mailjet.AuthToken`.
+	// EmailMailjetAPIKeyEnvVarKey is the environment variable name to set in order to override `config.Email.Mailjet.APIKey`.
 	EmailMailjetAPIKeyEnvVarKey = "DINNER_DONE_BETTER_EMAIL_MAILJET_API_KEY"
 
 	// EmailMailjetSecretKeyEnvVarKey is the environment variable name to set in order to override `config.Email.Mailjet.SecretKey`.
@@ -308,7 +308,7 @@ const (
 	// RoutingProviderEnvVarKey is the environment variable name to set in order to override `config.Routing.Provider`.
 	RoutingProviderEnvVarKey = "DINNER_DONE_BETTER_ROUTING_PROVIDER"
 
-	// SearchAlgoliaAPIKeyEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Algolia.AuthToken`.
+	// SearchAlgoliaAPIKeyEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Algolia.APIKey`.
 	SearchAlgoliaAPIKeyEnvVarKey = "DINNER_DONE_BETTER_SEARCH_ALGOLIA_API_KEY"
 
 	// SearchAlgoliaAppIDEnvVarKey is the environment variable name to set in order to override `config.TextSearch.Algolia.AppID`.

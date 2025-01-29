@@ -9,13 +9,16 @@ import (
 
 	"github.com/dinnerdonebetter/backend/cmd/tools/codegen/openapi/enums"
 
-	"github.com/codemodus/kace"
 	"github.com/swaggest/openapi-go/openapi31"
 )
 
 const (
 	stringType = "string"
 	nullType   = "null"
+
+	typeNameNumberRange                = "NumberRange"
+	typeNameNumberRangeWithOptionalMax = "NumberRangeWithOptionalMax"
+	typeNameOptionalNumberRange        = "OptionalNumberRange"
 )
 
 type Field struct {
@@ -32,15 +35,11 @@ type TypeDefinition struct {
 }
 
 var typeReplacementMap = map[string]string{
-	"integer": "uint64",
-	"number":  "float64",
-	"boolean": "bool",
-	"object":  "map[string]any",
+	"integer": "number",
 }
 
 var skipTypes = map[string]bool{
 	"APIResponse": true,
-	"Pagination":  true,
 }
 
 func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error) {
@@ -137,14 +136,28 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 						field.Type = x
 					}
 
-					if x, ok3 := enums.TypeMap[fmt.Sprintf("%s.%s", name, k)]; ok3 {
-						field.Type = x
+					switch {
+					case slices.Contains([]string{
+						"OptionalFloat32Range",
+						"OptionalUint32Range",
+					}, field.Type):
+						field.Type = typeNameNumberRange
+					case slices.Contains([]string{
+						"Float32RangeWithOptionalMax",
+						"Uint16RangeWithOptionalMax",
+						"Uint32RangeWithOptionalMax",
+					}, field.Type):
+						field.Type = typeNameNumberRangeWithOptionalMax
+					case slices.Contains([]string{
+						"Float32RangeWithOptionalMaxUpdateRequestInput",
+						"Uint16RangeWithOptionalMaxUpdateRequestInput",
+						"Uint32RangeWithOptionalMaxUpdateRequestInput",
+					}, field.Type):
+						field.Type = typeNameOptionalNumberRange
 					}
 
-					if x, ok3 := spec.Components.Schemas[field.Type]; ok3 {
-						if _, ok4 := x["enum"]; ok4 {
-							field.Type = "string"
-						}
+					if x, ok3 := enums.TypeMap[fmt.Sprintf("%s.%s", name, k)]; ok3 {
+						field.Type = x
 					}
 
 					def.Fields = append(def.Fields, field)
@@ -182,13 +195,23 @@ func (d *TypeDefinition) Render() (string, error) {
 		}
 	})
 
-	tmpl := `type (
-{{ .Name }} struct {
-  {{ range .Fields}} {{ pascal .Name }} {{ if .Array }}[]{{ end }}{{ if .Nullable}}*{{ end }}{{ .Type }} ` + "`" + `json:"{{ .Name }}"` + "`" + `
+	tmpl := `{{- range $key, $values := .Imports}} import { {{ join (sortStrings $values) ", " }} } from '{{ $key }}';
+{{ end }}
+
+export interface I{{ .Name }} {
+  {{ range .Fields}} {{ .Name }}{{ if .Nullable}}?{{ end }}: {{ .Type }}{{ if .Array }}[]{{ end }};
 {{ end }}
 }
-)
-`
+
+export class {{ .Name }} implements I{{ .Name }} {
+  {{ range .Fields}} {{ .Name }}{{ if .Nullable}}?{{ end }}: {{ .Type }}{{ if .Array }}[]{{ end }};
+{{ end -}}
+
+  constructor(input: Partial<{{ .Name }}> = {}) {
+	{{ range .Fields}} this.{{.Name}} = input.{{.Name}}{{ if not .Nullable }} || {{ .DefaultValue }}{{ end }};
+{{ end -}}
+  }
+}`
 
 	t := template.Must(template.New("model").Funcs(map[string]any{
 		"lowercase": strings.ToLower,
@@ -196,9 +219,6 @@ func (d *TypeDefinition) Render() (string, error) {
 			return slices.Contains([]string{
 				stringType,
 			}, x)
-		},
-		"pascal": func(s string) string {
-			return kace.Pascal(s)
 		},
 		"join": strings.Join,
 		"sortStrings": func(s []string) []string {
