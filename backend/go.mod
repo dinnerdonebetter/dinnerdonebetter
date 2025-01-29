@@ -28,6 +28,7 @@ require (
 	github.com/fatih/structtag v1.2.0
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/go-chi/cors v1.2.1
+	github.com/go-faker/faker/v4 v4.5.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-redis/redis/v8 v8.11.5
@@ -102,7 +103,7 @@ require (
 	gocloud.dev v0.40.0
 	golang.org/x/crypto v0.32.0
 	golang.org/x/net v0.34.0
-	golang.org/x/oauth2 v0.24.0
+	golang.org/x/oauth2 v0.25.0
 	gonum.org/v1/gonum v0.15.1
 	google.golang.org/api v0.212.0
 	google.golang.org/grpc v1.69.4

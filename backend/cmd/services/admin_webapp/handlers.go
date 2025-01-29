@@ -25,13 +25,9 @@ func (s *Server) handleLoginSubmission(res http.ResponseWriter, req *http.Reques
 
 	logger := s.logger.WithRequest(req)
 
-	var x types.UserLoginInput
+	var x apiclient.UserLoginInput
 	if err := json.NewDecoder(req.Body).Decode(&x); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "decoding json")
-	}
-
-	if err := x.ValidateWithContext(ctx); err != nil {
-		return nil, err
 	}
 
 	client, err := apiclient.NewClient(s.apiServerURL, s.tracerProvider)

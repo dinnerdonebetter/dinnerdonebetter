@@ -73,7 +73,7 @@ func WriteAPIClientFiles(spec *openapi31.Spec, outputPath string) error {
 	for _, function := range clientFiles {
 		fileContents, renderErr := function.Render()
 		if renderErr != nil {
-			return fmt.Errorf("failed to render: %w", renderErr)
+			return fmt.Errorf("failed to render client file: %w", renderErr)
 		}
 
 		testContent, renderErr := function.RenderTest()
@@ -176,7 +176,7 @@ func WriteModelFiles(spec *openapi31.Spec, outputPath string) error {
 
 		rawFileContents, renderErr := function.Render()
 		if renderErr != nil {
-			return fmt.Errorf("failed to render: %w", renderErr)
+			return fmt.Errorf("failed to render model: %w", renderErr)
 		}
 
 		fileContents := fmt.Sprintf("%s\n\n%s", GeneratedDisclaimer, rawFileContents)
@@ -233,7 +233,7 @@ func WriteMockAPIFiles(spec *openapi31.Spec, outputPath string) error {
 
 		rawFileContents, renderErr := function.Render()
 		if renderErr != nil {
-			return fmt.Errorf("failed to render: %w", renderErr)
+			return fmt.Errorf("failed to render mock function: %w", renderErr)
 		}
 
 		importStatement := "import type { Page, Route } from '@playwright/test';\n\n"
