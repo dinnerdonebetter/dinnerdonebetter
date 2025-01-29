@@ -60,10 +60,6 @@ func writeTypescriptFiles(spec *openapi31.Spec) error {
 func writeGoFiles(spec *openapi31.Spec) error {
 	errPrefix := "failed to write golang"
 
-	if err := golang.WriteAPITypesFiles(spec, golangAPIClientOutputPath); err != nil {
-		return fmt.Errorf("%s API client files: %w", errPrefix, err)
-	}
-
 	if err := golang.WriteAPIClientFiles(spec, golangAPIClientOutputPath); err != nil {
 		return fmt.Errorf("%s API client files: %w", errPrefix, err)
 	}
