@@ -31,7 +31,7 @@ func buildTestService(t *testing.T) *service {
 			UserDataAggregationTopicName:      "UserDataAggregationTopicName",
 			WebhookExecutionRequestsTopicName: "WebhookExecutionRequestsTopicName",
 		},
-		&mockpublishers.ProducerProvider{},
+		&mockpublishers.PublisherProvider{},
 	)
 	assert.NoError(t, err)
 
@@ -55,7 +55,7 @@ func TestProvideAdminService(T *testing.T) {
 			encoding.ProvideServerEncoderDecoder(logger, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON),
 			tracing.NewNoopTracerProvider(),
 			&msgconfig.QueuesConfig{},
-			&mockpublishers.ProducerProvider{},
+			&mockpublishers.PublisherProvider{},
 		)
 		assert.NoError(t, err)
 

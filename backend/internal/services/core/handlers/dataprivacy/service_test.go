@@ -62,7 +62,7 @@ func TestProvideService(T *testing.T) {
 			cfg.Uploads.Storage.UploadFilenameKey,
 		).Return(func(*http.Request) string { return "" })
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 		pp.On("ProvidePublisher", msgCfg.UserDataAggregationTopicName).Return(&mockpublishers.Publisher{}, nil)
 
@@ -109,7 +109,7 @@ func TestProvideService(T *testing.T) {
 			ReportIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
@@ -155,7 +155,7 @@ func TestProvideService(T *testing.T) {
 			ReportIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 		pp.On("ProvidePublisher", msgCfg.UserDataAggregationTopicName).Return(&mockpublishers.Publisher{}, errors.New("blah"))
 

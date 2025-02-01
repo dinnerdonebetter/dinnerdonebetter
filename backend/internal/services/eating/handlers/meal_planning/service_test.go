@@ -46,7 +46,7 @@ func TestProvideMealsService(T *testing.T) {
 		cfg := &Config{}
 		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
@@ -75,7 +75,7 @@ func TestProvideMealsService(T *testing.T) {
 		cfg := &Config{}
 		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(

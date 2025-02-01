@@ -47,7 +47,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 
 		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		actual, err := ProvideHouseholdInvitationsService(
@@ -73,7 +73,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 
 		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		actual, err := ProvideHouseholdInvitationsService(

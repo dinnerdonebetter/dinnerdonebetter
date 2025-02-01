@@ -47,7 +47,7 @@ func TestProvideValidIngredientGroupsService(T *testing.T) {
 
 		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
@@ -74,7 +74,7 @@ func TestProvideValidIngredientGroupsService(T *testing.T) {
 
 		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(

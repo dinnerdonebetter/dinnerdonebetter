@@ -28,7 +28,7 @@ func buildTestService(t *testing.T) *service {
 
 	msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-	pp := &mockpublishers.ProducerProvider{}
+	pp := &mockpublishers.PublisherProvider{}
 	pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	s, err := ProvideUsersService(
@@ -68,7 +68,7 @@ func TestProvideUsersService(T *testing.T) {
 			UserIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideUsersService(

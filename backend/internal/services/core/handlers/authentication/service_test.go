@@ -41,7 +41,7 @@ func buildTestService(t *testing.T) *service {
 	}
 	queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-	pp := &mockpublishers.ProducerProvider{}
+	pp := &mockpublishers.PublisherProvider{}
 	pp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	rpm := mockrouting.NewRouteParamManager()
@@ -94,7 +94,7 @@ func TestProvideService(T *testing.T) {
 		}
 		queueCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		rpm := mockrouting.NewRouteParamManager()

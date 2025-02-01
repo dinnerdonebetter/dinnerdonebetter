@@ -51,7 +51,7 @@ func TestProvideOAuth2ClientsService(T *testing.T) {
 		cfg := &Config{OAuth2ClientCreationDisabled: true}
 		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideOAuth2ClientsService(

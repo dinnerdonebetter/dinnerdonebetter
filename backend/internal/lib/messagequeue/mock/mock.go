@@ -30,19 +30,19 @@ func (m *Publisher) Stop() {
 	m.Called()
 }
 
-// ProducerProvider implements our interface.
-type ProducerProvider struct {
+// PublisherProvider implements our interface.
+type PublisherProvider struct {
 	mock.Mock
 }
 
 // ProvidePublisher implements our interface.
-func (m *ProducerProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
+func (m *PublisherProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
 	args := m.Called(topic)
 
 	return args.Get(0).(messagequeue.Publisher), args.Error(1)
 }
 
 // Close implements our interface.
-func (m *ProducerProvider) Close() {
+func (m *PublisherProvider) Close() {
 	m.Called()
 }

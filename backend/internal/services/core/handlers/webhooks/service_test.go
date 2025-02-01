@@ -48,7 +48,7 @@ func TestProvideWebhooksService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 		}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		actual, err := ProvideWebhooksService(
@@ -74,7 +74,7 @@ func TestProvideWebhooksService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 		}
 
-		pp := &mockpublishers.ProducerProvider{}
+		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		actual, err := ProvideWebhooksService(
