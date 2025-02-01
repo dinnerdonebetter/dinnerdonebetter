@@ -38,7 +38,7 @@ func NewMealPlanGroceryListInitializer(logger logging.Logger,
 	metricsProvider metrics.Provider,
 	publisherProvider messagequeue.PublisherProvider,
 	groceryListCreator grocerylistpreparation.GroceryListCreator,
-	cfg msgconfig.QueuesConfig,
+	cfg *msgconfig.QueuesConfig,
 ) (*Worker, error) {
 	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
@@ -92,6 +92,7 @@ func (w *Worker) Work(ctx context.Context) error {
 		l = l.WithValue("to_create", len(dbInputs))
 		l.Info("creating grocery list items for meal plan")
 
+		var createdCount int64
 		for _, dbInput := range dbInputs {
 			var createdItem *types.MealPlanGroceryListItem
 			createdItem, err = w.dataManager.CreateMealPlanGroceryListItem(ctx, dbInput)
@@ -100,6 +101,7 @@ func (w *Worker) Work(ctx context.Context) error {
 				l.Error("failed to create grocery list for meal plan", err)
 				continue
 			}
+			createdCount++
 
 			if err = w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
 				MealPlanGroceryListItem:   createdItem,
@@ -110,6 +112,7 @@ func (w *Worker) Work(ctx context.Context) error {
 				l.Error("failed to write update message for meal plan grocery list item", err)
 			}
 		}
+		w.recordsProcessedCounter.Add(ctx, createdCount)
 	}
 
 	return errorResult.ErrorOrNil()

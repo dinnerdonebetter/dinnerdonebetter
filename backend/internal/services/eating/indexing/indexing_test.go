@@ -19,50 +19,6 @@ import (
 func TestHandleIndexRequest(T *testing.T) {
 	T.Parallel()
 
-	T.Run("user index type", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUser := fakes.BuildFakeUser()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
-
-		dataManager := database.NewMockDatabase()
-		dataManager.UserDataManagerMock.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
-		dataManager.UserDataManagerMock.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
-
-		indexReq := &textsearch.IndexRequest{
-			RowID:     exampleUser.ID,
-			IndexType: textsearch.IndexTypeUsers,
-			Delete:    false,
-		}
-
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
-	})
-
-	T.Run("deleting user index type", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUser := fakes.BuildFakeUser()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
-
-		dataManager := database.NewMockDatabase()
-		dataManager.UserDataManagerMock.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
-		dataManager.UserDataManagerMock.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
-
-		indexReq := &textsearch.IndexRequest{
-			RowID:     exampleUser.ID,
-			IndexType: textsearch.IndexTypeUsers,
-			Delete:    true,
-		}
-
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
-	})
-
 	T.Run("recipe index type", func(t *testing.T) {
 		t.Parallel()
 
@@ -78,7 +34,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleRecipe.ID,
-			IndexType: textsearch.IndexTypeRecipes,
+			IndexType: IndexTypeRecipes,
 			Delete:    false,
 		}
 
@@ -100,7 +56,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleMeal.ID,
-			IndexType: textsearch.IndexTypeMeals,
+			IndexType: IndexTypeMeals,
 			Delete:    false,
 		}
 
@@ -122,7 +78,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidVessel.ID,
-			IndexType: textsearch.IndexTypeValidVessels,
+			IndexType: IndexTypeValidVessels,
 			Delete:    false,
 		}
 
@@ -144,7 +100,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidIngredient.ID,
-			IndexType: textsearch.IndexTypeValidIngredients,
+			IndexType: IndexTypeValidIngredients,
 			Delete:    false,
 		}
 
@@ -166,7 +122,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidInstrument.ID,
-			IndexType: textsearch.IndexTypeValidInstruments,
+			IndexType: IndexTypeValidInstruments,
 			Delete:    false,
 		}
 
@@ -188,7 +144,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidPreparation.ID,
-			IndexType: textsearch.IndexTypeValidPreparations,
+			IndexType: IndexTypeValidPreparations,
 			Delete:    false,
 		}
 
@@ -210,7 +166,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidMeasurementUnit.ID,
-			IndexType: textsearch.IndexTypeValidMeasurementUnits,
+			IndexType: IndexTypeValidMeasurementUnits,
 			Delete:    false,
 		}
 
@@ -232,7 +188,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidIngredientState.ID,
-			IndexType: textsearch.IndexTypeValidIngredientStates,
+			IndexType: IndexTypeValidIngredientStates,
 			Delete:    false,
 		}
 

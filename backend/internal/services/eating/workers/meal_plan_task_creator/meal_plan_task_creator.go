@@ -40,7 +40,7 @@ func NewMealPlanTaskCreator(
 	dataManager database.DataManager, // TODO: make this less potent
 	publisherProvider messagequeue.PublisherProvider,
 	metricsProvider metrics.Provider,
-	cfg msgconfig.QueuesConfig,
+	cfg *msgconfig.QueuesConfig,
 ) (*Worker, error) {
 	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
@@ -85,6 +85,8 @@ func (w *Worker) Work(ctx context.Context) error {
 			observability.AcknowledgeError(creationErr, l, span, "creating meal plan tasks for meal plan option")
 			continue
 		}
+
+		w.processedRecordsCounter.Add(ctx, int64(len(createdMealPlanTasks)))
 
 		for _, createdStep := range createdMealPlanTasks {
 			if publishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{

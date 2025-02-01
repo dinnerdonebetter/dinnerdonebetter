@@ -21,7 +21,8 @@ import (
 	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/algolia"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -89,7 +90,7 @@ func main() {
 				}
 			})
 
-			if err = indexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, cfg, dataManager, x); err != nil {
+			if err = eatingindexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, cfg, dataManager, x); err != nil {
 				observability.AcknowledgeError(err, logger, nil, "indexing row")
 			}
 
@@ -107,8 +108,8 @@ func main() {
 		thresholdMet := false
 
 		switch index {
-		case textsearch.IndexTypeRecipes:
-			im, err = textsearchcfg.ProvideIndex[indexing.RecipeSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
+		case eatingindexing.IndexTypeRecipes:
+			im, err = textsearchcfg.ProvideIndex[eatingindexing.RecipeSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -125,7 +126,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
-						IndexType: textsearch.IndexTypeRecipes,
+						IndexType: eatingindexing.IndexTypeRecipes,
 					}
 					waitGroup.Add(1)
 				}
@@ -133,8 +134,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case textsearch.IndexTypeMeals:
-			im, err = textsearchcfg.ProvideIndex[indexing.MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
+		case eatingindexing.IndexTypeMeals:
+			im, err = textsearchcfg.ProvideIndex[eatingindexing.MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -151,7 +152,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
-						IndexType: textsearch.IndexTypeMeals,
+						IndexType: eatingindexing.IndexTypeMeals,
 					}
 					waitGroup.Add(1)
 				}
@@ -159,8 +160,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case textsearch.IndexTypeValidIngredients:
-			im, err = textsearchcfg.ProvideIndex[indexing.ValidIngredientSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
+		case eatingindexing.IndexTypeValidIngredients:
+			im, err = textsearchcfg.ProvideIndex[eatingindexing.ValidIngredientSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -177,7 +178,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
-						IndexType: textsearch.IndexTypeValidIngredients,
+						IndexType: eatingindexing.IndexTypeValidIngredients,
 					}
 					waitGroup.Add(1)
 				}
@@ -185,8 +186,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case textsearch.IndexTypeValidInstruments:
-			im, err = textsearchcfg.ProvideIndex[indexing.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
+		case eatingindexing.IndexTypeValidInstruments:
+			im, err = textsearchcfg.ProvideIndex[eatingindexing.ValidInstrumentSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -203,7 +204,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
-						IndexType: textsearch.IndexTypeValidInstruments,
+						IndexType: eatingindexing.IndexTypeValidInstruments,
 					}
 					waitGroup.Add(1)
 				}
@@ -211,8 +212,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case textsearch.IndexTypeValidMeasurementUnits:
-			im, err = textsearchcfg.ProvideIndex[indexing.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
+		case eatingindexing.IndexTypeValidMeasurementUnits:
+			im, err = textsearchcfg.ProvideIndex[eatingindexing.ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -229,7 +230,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
-						IndexType: textsearch.IndexTypeValidMeasurementUnits,
+						IndexType: eatingindexing.IndexTypeValidMeasurementUnits,
 					}
 					waitGroup.Add(1)
 				}
@@ -237,8 +238,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case textsearch.IndexTypeValidPreparations:
-			im, err = textsearchcfg.ProvideIndex[indexing.ValidPreparationSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
+		case eatingindexing.IndexTypeValidPreparations:
+			im, err = textsearchcfg.ProvideIndex[eatingindexing.ValidPreparationSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -255,7 +256,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
-						IndexType: textsearch.IndexTypeValidPreparations,
+						IndexType: eatingindexing.IndexTypeValidPreparations,
 					}
 					waitGroup.Add(1)
 				}
@@ -263,8 +264,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case textsearch.IndexTypeValidIngredientStates:
-			im, err = textsearchcfg.ProvideIndex[indexing.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
+		case eatingindexing.IndexTypeValidIngredientStates:
+			im, err = textsearchcfg.ProvideIndex[eatingindexing.ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -281,7 +282,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
-						IndexType: textsearch.IndexTypeValidIngredientStates,
+						IndexType: eatingindexing.IndexTypeValidIngredientStates,
 					}
 					waitGroup.Add(1)
 				}
@@ -289,8 +290,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case textsearch.IndexTypeValidVessels:
-			im, err = textsearchcfg.ProvideIndex[indexing.ValidVesselSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
+		case eatingindexing.IndexTypeValidVessels:
+			im, err = textsearchcfg.ProvideIndex[eatingindexing.ValidVesselSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -307,7 +308,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
-						IndexType: textsearch.IndexTypeValidVessels,
+						IndexType: eatingindexing.IndexTypeValidVessels,
 					}
 					waitGroup.Add(1)
 				}
@@ -315,8 +316,8 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
-		case textsearch.IndexTypeUsers:
-			im, err = textsearchcfg.ProvideIndex[indexing.UserSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
+		case coreindexing.IndexTypeUsers:
+			im, err = textsearchcfg.ProvideIndex[coreindexing.UserSearchSubset](ctx, logger, tracerProvider, metricsProvider, cfg, index)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
 				return
@@ -333,7 +334,7 @@ func main() {
 				for _, x := range data.Data {
 					indexRequestChan <- &textsearch.IndexRequest{
 						RowID:     x.ID,
-						IndexType: textsearch.IndexTypeUsers,
+						IndexType: coreindexing.IndexTypeUsers,
 					}
 					waitGroup.Add(1)
 				}

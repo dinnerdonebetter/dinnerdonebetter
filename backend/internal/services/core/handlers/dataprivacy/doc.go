@@ -1,4 +1,4 @@
 /*
-Package dataprivacy provides a series of HTTP handlers for managing valid vessels in a compatible database.
+Package dataprivacy provides a series of HTTP handlers for managing user data disclousure.
 */
 package dataprivacy

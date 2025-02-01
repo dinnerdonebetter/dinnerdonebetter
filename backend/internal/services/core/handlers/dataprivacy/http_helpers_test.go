@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 )
 
-type validVesselsServiceHTTPRoutesTestHelper struct {
+type dataPrivacyServiceHTTPRoutesTestHelper struct {
 	ctx              context.Context
 	req              *http.Request
 	res              *httptest.ResponseRecorder
@@ -25,10 +25,10 @@ type validVesselsServiceHTTPRoutesTestHelper struct {
 	exampleHousehold *types.Household
 }
 
-func buildTestHelper(t *testing.T) *validVesselsServiceHTTPRoutesTestHelper {
+func buildTestHelper(t *testing.T) *dataPrivacyServiceHTTPRoutesTestHelper {
 	t.Helper()
 
-	helper := &validVesselsServiceHTTPRoutesTestHelper{}
+	helper := &dataPrivacyServiceHTTPRoutesTestHelper{}
 
 	helper.ctx = context.Background()
 	helper.service = buildTestService()

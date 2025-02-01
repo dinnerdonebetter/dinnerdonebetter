@@ -35,7 +35,7 @@ func NewMealPlanFinalizer(
 	dataManager database.DataManager,
 	publisherProvider messagequeue.PublisherProvider,
 	metricsProvider metrics.Provider,
-	cfg msgconfig.QueuesConfig,
+	cfg *msgconfig.QueuesConfig,
 ) (*Worker, error) {
 	finalizedRecordsCounter, err := metricsProvider.NewInt64Counter("meal_plan_finalizer.finalized_records")
 	if err != nil {
@@ -93,7 +93,7 @@ func (w *Worker) Work(ctx context.Context) (int64, error) {
 		}
 	}
 
-	w.finalizedRecordsCounter.Add(ctx, int64(changedCount))
+	w.finalizedRecordsCounter.Add(ctx, changedCount)
 	logger.WithValue("changed_count", changedCount).Info("finalized expired meal plans")
 
 	return changedCount, nil

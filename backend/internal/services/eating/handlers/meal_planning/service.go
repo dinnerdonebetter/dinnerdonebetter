@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/routing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -34,7 +34,7 @@ type (
 		encoderDecoder                        encoding.ServerEncoderDecoder
 		tracer                                tracing.Tracer
 		mealPlanningDataManager               types.MealPlanningDataManager
-		searchIndex                           textsearch.IndexSearcher[indexing.MealSearchSubset]
+		searchIndex                           textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
 		householdInstrumentOwnershipIDFetcher func(*http.Request) string
 		userIngredientPreferenceIDFetcher     func(*http.Request) string
 		mealPlanIDFetcher                     func(*http.Request) string
@@ -72,7 +72,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, err)
 	}
 
-	searchIndex, err := textsearchcfg.ProvideIndex[indexing.MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, textsearch.IndexTypeMeals)
+	searchIndex, err := textsearchcfg.ProvideIndex[eatingindexing.MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, eatingindexing.IndexTypeMeals)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing recipe index manager")
 	}

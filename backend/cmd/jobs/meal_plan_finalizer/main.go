@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -12,9 +13,7 @@ import (
 	_ "go.uber.org/automaxprocs"
 )
 
-func main() {
-	ctx := context.Background()
-
+func doTheThing(ctx context.Context) error {
 	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		os.Exit(0)
@@ -22,16 +21,24 @@ func main() {
 
 	cfg, err := config.LoadConfigFromEnvironment[config.MealPlanFinalizerConfig]()
 	if err != nil {
-		log.Fatalf("error getting config: %v", err)
+		return fmt.Errorf("error getting config: %w", err)
 	}
 	cfg.Database.RunMigrations = false
 
 	worker, err := mealplanfinalizer.Build(ctx, cfg)
 	if err != nil {
-		log.Fatalf("error building mealplantaskcreator: %v", err)
+		return fmt.Errorf("error building mealplantaskcreator: %w", err)
 	}
 
 	if _, err = worker.Work(ctx); err != nil {
-		log.Fatalf("error building mealplantaskcreator: %v", err)
+		return fmt.Errorf("error building mealplantaskcreator: %w", err)
+	}
+
+	return nil
+}
+
+func main() {
+	if err := doTheThing(context.Background()); err != nil {
+		log.Fatal(err)
 	}
 }

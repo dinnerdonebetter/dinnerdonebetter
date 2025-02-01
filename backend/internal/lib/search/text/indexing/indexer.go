@@ -58,8 +58,13 @@ func NewIndexScheduler(
 	}
 
 	indexFunctionsMap := indexFunctions
-	if indexFunctionsMap == nil {
+	if indexFunctions == nil {
 		indexFunctionsMap = make(map[string]Function)
+	}
+
+	allIndexTypes := []string{}
+	for k := range indexFunctionsMap {
+		allIndexTypes = append(allIndexTypes, k)
 	}
 
 	return &IndexScheduler{
@@ -68,10 +73,9 @@ func NewIndexScheduler(
 		logger:                   logging.EnsureLogger(logger).WithName(serviceName),
 		tracer:                   tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 
-		allIndexTypes:  []string{},
-		indexFunctions: map[string]Function{},
+		allIndexTypes:  allIndexTypes,
+		indexFunctions: indexFunctionsMap,
 	}, nil
-
 }
 
 func (i *IndexScheduler) IndexTypes(ctx context.Context) error {

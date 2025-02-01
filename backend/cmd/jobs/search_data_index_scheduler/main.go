@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -12,9 +13,7 @@ import (
 	_ "go.uber.org/automaxprocs"
 )
 
-func main() {
-	ctx := context.Background()
-
+func doTheThing(ctx context.Context) error {
 	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		os.Exit(0)
@@ -22,16 +21,24 @@ func main() {
 
 	cfg, err := config.LoadConfigFromEnvironment[config.SearchDataIndexSchedulerConfig]()
 	if err != nil {
-		log.Fatalf("error getting config: %w", err)
+		return fmt.Errorf("error getting config: %w", err)
 	}
 	cfg.Database.RunMigrations = false
 
 	scheduler, err := searchdataindexscheduler.Build(ctx, cfg)
 	if err != nil {
-		log.Fatalf("error building scheduler: %v", err)
+		return fmt.Errorf("error building scheduler: %w", err)
 	}
 
 	if err = scheduler.IndexTypes(ctx); err != nil {
-		log.Fatalf("error indexing types: %v", err)
+		return fmt.Errorf("error indexing types: %w", err)
+	}
+
+	return nil
+}
+
+func main() {
+	if err := doTheThing(context.Background()); err != nil {
+		log.Fatal(err)
 	}
 }

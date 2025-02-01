@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -14,9 +15,8 @@ import (
 	_ "go.uber.org/automaxprocs"
 )
 
-func main() {
-	ctx := context.Background()
-
+// I'm not going to bother with turning this into a proper worker because it probably just should not exist.
+func doTheThing(ctx context.Context) error {
 	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		os.Exit(0)
@@ -24,21 +24,22 @@ func main() {
 
 	cfg, err := config.LoadConfigFromEnvironment[config.EmailProberConfig]()
 	if err != nil {
-		log.Fatalf("error getting config: %v", err)
+		return fmt.Errorf("error getting config: %w", err)
 	}
 	cfg.Database.RunMigrations = false
 
 	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
-		log.Fatalf("could not establish observability pillars: %v", err)
+		return fmt.Errorf("could not establish observability pillars: %w", err)
 	}
 
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("email_prober_job")).StartSpan(ctx)
 	defer span.End()
 
+	//nolint:contextcheck // the context it's complaining about is irrelevant.
 	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, tracing.BuildTracedHTTPClient())
 	if err != nil {
-		log.Fatalf("could not establish observability pillars: %v", err)
+		return fmt.Errorf("could not establish observability pillars: %w", err)
 	}
 
 	if err = emailer.SendEmail(ctx, &email.OutboundEmailMessage{
@@ -49,6 +50,14 @@ func main() {
 		Subject:     "Testing",
 		HTMLContent: "Hi",
 	}); err != nil {
-		log.Fatalf("could not send email: %v", err)
+		return fmt.Errorf("could not send email: %w", err)
+	}
+
+	return nil
+}
+
+func main() {
+	if err := doTheThing(context.Background()); err != nil {
+		log.Fatal(err)
 	}
 }

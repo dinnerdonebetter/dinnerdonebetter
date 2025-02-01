@@ -2,20 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
 
 	dbcleaner "github.com/dinnerdonebetter/backend/internal/build/jobs/db_cleaner"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 
 	_ "go.uber.org/automaxprocs"
 )
 
-func main() {
-	ctx := context.Background()
-
+func doTheThing(ctx context.Context) error {
 	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		os.Exit(0)
@@ -23,21 +21,24 @@ func main() {
 
 	cfg, err := config.LoadConfigFromEnvironment[config.DBCleanerConfig]()
 	if err != nil {
-		log.Fatalf("error getting config: %v", err)
+		return fmt.Errorf("error getting config: %w", err)
 	}
 	cfg.Database.RunMigrations = false
 
-	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
-	if err != nil {
-		log.Fatalf("error getting logger: %v", err)
-	}
-
 	dbCleaner, err := dbcleaner.Build(ctx, cfg)
 	if err != nil {
-		log.Fatalf("error building db cleaner: %v", err)
+		return fmt.Errorf("error building db cleaner: %w", err)
 	}
 
 	if err = dbCleaner.Do(ctx); err != nil {
-		observability.AcknowledgeError(err, logger, nil, "cleaning database")
+		return fmt.Errorf("cleaning database: %w", err)
+	}
+
+	return nil
+}
+
+func main() {
+	if err := doTheThing(context.Background()); err != nil {
+		log.Fatal(err)
 	}
 }

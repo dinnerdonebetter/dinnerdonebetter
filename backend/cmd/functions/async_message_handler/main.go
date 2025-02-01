@@ -476,20 +476,20 @@ func buildSearchIndexRequestsEventHandler(
 		}
 
 		switch searchIndexRequest.IndexType {
-		case textsearch.IndexTypeRecipes,
-			textsearch.IndexTypeMeals,
-			textsearch.IndexTypeValidIngredients,
-			textsearch.IndexTypeValidInstruments,
-			textsearch.IndexTypeValidMeasurementUnits,
-			textsearch.IndexTypeValidPreparations,
-			textsearch.IndexTypeValidIngredientStates,
-			textsearch.IndexTypeValidVessels:
+		case eatingindexing.IndexTypeRecipes,
+			eatingindexing.IndexTypeMeals,
+			eatingindexing.IndexTypeValidIngredients,
+			eatingindexing.IndexTypeValidInstruments,
+			eatingindexing.IndexTypeValidMeasurementUnits,
+			eatingindexing.IndexTypeValidPreparations,
+			eatingindexing.IndexTypeValidIngredientStates,
+			eatingindexing.IndexTypeValidVessels:
 			// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
 			if err := eatingindexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, searchCfg, dataManager, &searchIndexRequest); err != nil {
 				return fmt.Errorf("handling search indexing request: %w", err)
 			}
 
-		case textsearch.IndexTypeUsers:
+		case coreindexing.IndexTypeUsers:
 			// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
 			if err := coreindexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, searchCfg, dataManager, &searchIndexRequest); err != nil {
 				return fmt.Errorf("handling search indexing request: %w", err)

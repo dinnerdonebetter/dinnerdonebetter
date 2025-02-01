@@ -45,7 +45,7 @@ func HandleIndexRequest(
 	)
 
 	switch indexReq.IndexType {
-	case textsearch.IndexTypeUsers:
+	case IndexTypeUsers:
 		im, err = textsearchcfg.ProvideIndex[UserSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")

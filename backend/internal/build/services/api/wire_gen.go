@@ -156,18 +156,17 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	msgconfigQueuesConfig := cfg.Queues
-	worker, err := mealplanfinalizer.NewMealPlanFinalizer(logger, tracerProvider, dataManager, publisherProvider, provider, msgconfigQueuesConfig)
+	worker, err := mealplanfinalizer.NewMealPlanFinalizer(logger, tracerProvider, dataManager, publisherProvider, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
-	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, msgconfigQueuesConfig)
+	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
-	mealplantaskcreatorWorker, err := mealplantaskcreator.NewMealPlanTaskCreator(logger, tracerProvider, recipeAnalyzer, dataManager, publisherProvider, provider, msgconfigQueuesConfig)
+	mealplantaskcreatorWorker, err := mealplantaskcreator.NewMealPlanTaskCreator(logger, tracerProvider, recipeAnalyzer, dataManager, publisherProvider, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

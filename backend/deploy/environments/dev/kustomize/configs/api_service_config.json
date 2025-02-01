@@ -158,7 +158,6 @@
 		"userNotifications": {},
 		"households": {},
 		"serviceSettings": {},
-		"workers": {},
 		"users": {
 			"publicMediaURLPrefix": "https://media.dinnerdonebetter.dev/avatars",
 			"uploads": {

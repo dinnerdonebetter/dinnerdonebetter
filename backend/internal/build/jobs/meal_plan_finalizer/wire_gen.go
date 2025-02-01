@@ -48,7 +48,7 @@ func Build(ctx context.Context, cfg *config.MealPlanFinalizerConfig) (*mealplanf
 	if err != nil {
 		return nil, err
 	}
-	queuesConfig := cfg.Queues
+	queuesConfig := &cfg.Queues
 	worker, err := mealplanfinalizer.NewMealPlanFinalizer(logger, tracerProvider, dataManager, publisherProvider, provider, queuesConfig)
 	if err != nil {
 		return nil, err

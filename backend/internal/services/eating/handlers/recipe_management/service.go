@@ -21,7 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -50,7 +50,7 @@ type (
 		imageUploadProcessor                   images.MediaUploadProcessor
 		encoderDecoder                         encoding.ServerEncoderDecoder
 		dataChangesPublisher                   messagequeue.Publisher
-		searchIndex                            textsearch.IndexSearcher[indexing.RecipeSearchSubset]
+		searchIndex                            textsearch.IndexSearcher[eatingindexing.RecipeSearchSubset]
 		uploadManager                          uploads.UploadManager
 		sessionContextDataFetcher              func(*http.Request) (*sessions.ContextData, error)
 		cfg                                    *Config
@@ -93,7 +93,7 @@ func ProvideService(
 		return nil, fmt.Errorf("initializing %s upload manager: %w", serviceName, err)
 	}
 
-	searchIndex, err := textsearchcfg.ProvideIndex[indexing.RecipeSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, textsearch.IndexTypeRecipes)
+	searchIndex, err := textsearchcfg.ProvideIndex[eatingindexing.RecipeSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, eatingindexing.IndexTypeRecipes)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "initializing recipe index manager")
 	}

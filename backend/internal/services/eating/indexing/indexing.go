@@ -45,7 +45,7 @@ func HandleIndexRequest(
 	)
 
 	switch indexReq.IndexType {
-	case textsearch.IndexTypeRecipes:
+	case IndexTypeRecipes:
 		im, err = textsearchcfg.ProvideIndex[RecipeSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
@@ -60,7 +60,7 @@ func HandleIndexRequest(
 		toBeIndexed = ConvertRecipeToRecipeSearchSubset(recipe)
 		markAsIndexedFunc = func() error { return dataManager.MarkRecipeAsIndexed(ctx, indexReq.RowID) }
 
-	case textsearch.IndexTypeMeals:
+	case IndexTypeMeals:
 		im, err = textsearchcfg.ProvideIndex[MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
@@ -75,7 +75,7 @@ func HandleIndexRequest(
 		toBeIndexed = ConvertMealToMealSearchSubset(meal)
 		markAsIndexedFunc = func() error { return dataManager.MarkMealAsIndexed(ctx, indexReq.RowID) }
 
-	case textsearch.IndexTypeValidIngredients:
+	case IndexTypeValidIngredients:
 		im, err = textsearchcfg.ProvideIndex[ValidIngredientSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
@@ -90,7 +90,7 @@ func HandleIndexRequest(
 		toBeIndexed = ConvertValidIngredientToValidIngredientSearchSubset(validIngredient)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientAsIndexed(ctx, indexReq.RowID) }
 
-	case textsearch.IndexTypeValidInstruments:
+	case IndexTypeValidInstruments:
 		im, err = textsearchcfg.ProvideIndex[ValidInstrumentSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
@@ -105,7 +105,7 @@ func HandleIndexRequest(
 		toBeIndexed = ConvertValidInstrumentToValidInstrumentSearchSubset(validInstrument)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidInstrumentAsIndexed(ctx, indexReq.RowID) }
 
-	case textsearch.IndexTypeValidMeasurementUnits:
+	case IndexTypeValidMeasurementUnits:
 		im, err = textsearchcfg.ProvideIndex[ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
@@ -120,7 +120,7 @@ func HandleIndexRequest(
 		toBeIndexed = ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(validMeasurementUnit)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidMeasurementUnitAsIndexed(ctx, indexReq.RowID) }
 
-	case textsearch.IndexTypeValidPreparations:
+	case IndexTypeValidPreparations:
 		im, err = textsearchcfg.ProvideIndex[ValidPreparationSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
@@ -135,7 +135,7 @@ func HandleIndexRequest(
 		toBeIndexed = ConvertValidPreparationToValidPreparationSearchSubset(validPreparation)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidPreparationAsIndexed(ctx, indexReq.RowID) }
 
-	case textsearch.IndexTypeValidIngredientStates:
+	case IndexTypeValidIngredientStates:
 		im, err = textsearchcfg.ProvideIndex[ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
@@ -150,7 +150,7 @@ func HandleIndexRequest(
 		toBeIndexed = ConvertValidIngredientStateToValidIngredientStateSearchSubset(validIngredientState)
 		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientStateAsIndexed(ctx, indexReq.RowID) }
 
-	case textsearch.IndexTypeValidVessels:
+	case IndexTypeValidVessels:
 		im, err = textsearchcfg.ProvideIndex[ValidVesselSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
