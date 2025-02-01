@@ -7,14 +7,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/posthog/posthog-go"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -73,7 +74,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 		t.SkipNow()
 
 		ctx := context.Background()
-		exampleUsername := fakes.BuildFakeUser().Username
+		exampleUsername := "username"
 
 		flagName := t.Name()
 		cfg := &Config{ProjectAPIKey: t.Name(), PersonalAPIKey: t.Name()}
@@ -117,7 +118,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 
 	T.Run("with error executing request", func(t *testing.T) {
 		ctx := context.Background()
-		exampleUsername := fakes.BuildFakeUser().Username
+		exampleUsername := "username"
 
 		cfg := &Config{ProjectAPIKey: t.Name(), PersonalAPIKey: t.Name()}
 
@@ -140,7 +141,12 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 func TestFeatureFlagManager_Identify(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		ctx := context.Background()
-		user := fakes.BuildFakeUser()
+
+		user := authentication.NewMockUser()
+		user.On("GetID").Return("ID").Twice()
+		user.On("GetUsername").Return("Username")
+		user.On("GetFirstName").Return("FirstName")
+		user.On("GetLastName").Return("LastName")
 
 		cfg := &Config{ProjectAPIKey: t.Name(), PersonalAPIKey: t.Name()}
 
@@ -155,6 +161,8 @@ func TestFeatureFlagManager_Identify(T *testing.T) {
 		require.NoError(t, err)
 
 		assert.NoError(t, ffm.Identify(ctx, user))
+
+		mock.AssertExpectationsForObjects(t, user)
 	})
 
 	T.Run("with nil user", func(t *testing.T) {

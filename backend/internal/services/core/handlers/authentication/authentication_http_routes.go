@@ -80,7 +80,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		readTimer.Stop()
 
 		logger = logger.WithValue(keys.UserIDKey, user.ID)
-		tracing.AttachUserToSpan(span, user)
+		tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
 		if user.IsBanned() {
 			errRes := types.NewAPIErrorResponse("user is banned", types.ErrUserIsBanned, responseDetails)

@@ -2,77 +2,42 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"log/slog"
-	"time"
+	"os"
 
+	dbcleaner "github.com/dinnerdonebetter/backend/internal/build/jobs/db_cleaner"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/metric"
 	_ "go.uber.org/automaxprocs"
 )
 
-func doTheThing() error {
+func main() {
 	ctx := context.Background()
 
 	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
-		return nil
+		os.Exit(0)
 	}
 
 	cfg, err := config.LoadConfigFromEnvironment[config.DBCleanerConfig]()
 	if err != nil {
-		return fmt.Errorf("error getting config: %w", err)
+		log.Fatalf("error getting config: %v", err)
 	}
 	cfg.Database.RunMigrations = false
 
-	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
+	logger, err := cfg.Observability.Logging.ProvideLogger(ctx)
 	if err != nil {
-		return fmt.Errorf("could not establish observability pillars: %w", err)
+		log.Fatalf("error getting logger: %v", err)
 	}
 
-	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("db_cleaner_job")).StartSpan(ctx)
-	defer span.End()
-
-	handledRecordsCounter, err := metricsProvider.NewInt64Counter("db_cleaner.handled_records")
+	dbCleaner, err := dbcleaner.Build(ctx, cfg)
 	if err != nil {
-		return fmt.Errorf("could not create metrics counter: %w", err)
+		log.Fatalf("error building db cleaner: %v", err)
 	}
 
-	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
-	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
-	if err != nil {
-		cancel()
-		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
+	if err = dbCleaner.Do(ctx); err != nil {
+		observability.AcknowledgeError(err, logger, nil, "cleaning database")
 	}
-
-	cancel()
-	defer dataManager.Close()
-
-	deleted, err := dataManager.DeleteExpiredOAuth2ClientTokens(ctx)
-	if err != nil {
-		logger.Error("deleting expired oauth2 client tokens", err)
-	}
-
-	handledRecordsCounter.Add(ctx, deleted, metric.WithAttributes(
-		attribute.KeyValue{
-			Key:   "db_table",
-			Value: attribute.StringValue("oauth2_clients"),
-		},
-	))
-
-	return nil
-}
-
-func main() {
-	log.Println("doing the thing")
-	if err := doTheThing(); err != nil {
-		log.Fatal(err)
-	}
-	log.Println("the thing is done")
 }

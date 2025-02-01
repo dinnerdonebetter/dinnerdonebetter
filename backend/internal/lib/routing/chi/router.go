@@ -123,7 +123,7 @@ func buildRouter(mux chi.Router, l logging.Logger, tracerProvider tracing.Tracer
 
 	r := &router{
 		router:         mux,
-		logger:         logger,
+		logger:         logging.EnsureLogger(logger),
 		tracerProvider: tracerProvider,
 		metricProvider: metricProvider,
 		cfg:            cfg,

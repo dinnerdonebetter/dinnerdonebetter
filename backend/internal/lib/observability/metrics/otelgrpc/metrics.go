@@ -116,7 +116,7 @@ func ProvideMetricsProvider(ctx context.Context, logger logging.Logger, serviceN
 	otel.SetMeterProvider(meterProvider)
 
 	i := &providerImpl{
-		logger:        logger,
+		logger:        logging.EnsureLogger(logger),
 		serviceName:   serviceName,
 		meterProvider: meterProvider,
 		mp:            meterProvider.Meter(serviceName),

@@ -2,6 +2,9 @@ package authentication
 
 import (
 	"context"
+	"crypto/rand"
+	"math"
+	"runtime"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -11,21 +14,27 @@ import (
 	"github.com/pquerna/otp/totp"
 )
 
+func init() {
+	b := make([]byte, 64)
+	if _, err := rand.Read(b); err != nil {
+		panic(err)
+	}
+}
+
 const (
-	argon2IterationCount = 1
-	argon2ThreadCount    = 2
-	argon2SaltLength     = 16
-	argon2KeyLength      = 32
-	sixtyFourMegabytes   = 64 * 1024
+	serviceName        = "argon2"
+	sixtyFourMegabytes = 2<<15 - 1
 )
 
-var argonParams = &argon2id.Params{
-	Memory:      sixtyFourMegabytes,
-	Iterations:  argon2IterationCount,
-	Parallelism: argon2ThreadCount,
-	SaltLength:  argon2SaltLength,
-	KeyLength:   argon2KeyLength,
-}
+var (
+	argonParams = &argon2id.Params{
+		Memory:      sixtyFourMegabytes,
+		Iterations:  1,
+		Parallelism: uint8(math.Max(2, float64(runtime.NumCPU()))),
+		SaltLength:  16,
+		KeyLength:   32,
+	}
+)
 
 type (
 	// Argon2Authenticator is our argon2-based authenticator.
@@ -38,8 +47,8 @@ type (
 // ProvideArgon2Authenticator returns an argon2 powered Argon2Authenticator.
 func ProvideArgon2Authenticator(logger logging.Logger, tracerProvider tracing.TracerProvider) Authenticator {
 	ba := &Argon2Authenticator{
-		logger: logging.EnsureLogger(logger).WithName("argon2"),
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("argon2")),
+		logger: logging.EnsureLogger(logger).WithName(serviceName),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return ba

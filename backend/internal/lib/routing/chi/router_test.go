@@ -9,7 +9,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/routing"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -346,7 +345,7 @@ func Test_router_BuildRouteParamStringIDFetcher(T *testing.T) {
 		assert.NoError(t, err)
 		require.NotNil(t, req)
 
-		expected := fakes.BuildFakeUser().ID
+		expected := "fake_user_id"
 
 		req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, &chi.Context{
 			URLParams: chi.RouteParams{

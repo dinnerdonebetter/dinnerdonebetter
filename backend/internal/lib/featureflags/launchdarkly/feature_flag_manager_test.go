@@ -8,7 +8,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
 	ld "github.com/launchdarkly/go-server-sdk/v6"
@@ -93,7 +92,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleUsername := fakes.BuildFakeUser().Username
+		exampleUsername := "username"
 
 		cfg := &Config{SDKKey: t.Name()}
 

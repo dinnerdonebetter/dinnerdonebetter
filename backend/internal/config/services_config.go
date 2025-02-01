@@ -15,7 +15,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/usernotifications"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/users"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/workers"
 	mealplanning "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/meal_planning"
 	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
 	validenumerations "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/valid_enumerations"
@@ -33,7 +32,6 @@ type (
 		UserNotifications            usernotifications.Config            `envPrefix:"USER_NOTIFICATIONS_"             json:"userNotifications,omitempty"`
 		Households                   households.Config                   `envPrefix:"HOUSEHOLDS_"                     json:"households,omitempty"`
 		ServiceSettings              servicesettings.Config              `envPrefix:"SERVICE_SETTINGS_"               json:"serviceSettings,omitempty"`
-		Workers                      workers.Config                      `envPrefix:"WORKERS_"                        json:"workers,omitempty"`
 		Users                        users.Config                        `envPrefix:"USERS_"                          json:"users,omitempty"`
 		DataPrivacy                  dataprivacy.Config                  `envPrefix:"DATA_PRIVACY_"                   json:"dataPrivacy,omitempty"`
 		Recipes                      recipemanagement.Config             `envPrefix:"RECIPES_"                        json:"recipes,omitempty"`
@@ -56,7 +54,6 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"UserNotifications":            cfg.UserNotifications.ValidateWithContext,
 		"Households":                   cfg.Households.ValidateWithContext,
 		"ServiceSettings":              cfg.ServiceSettings.ValidateWithContext,
-		"Workers":                      cfg.Workers.ValidateWithContext,
 		"Users":                        cfg.Users.ValidateWithContext,
 		"DataPrivacy":                  cfg.DataPrivacy.ValidateWithContext,
 		"Recipes":                      cfg.Recipes.ValidateWithContext,

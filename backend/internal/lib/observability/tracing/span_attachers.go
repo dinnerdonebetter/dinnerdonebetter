@@ -82,14 +82,6 @@ func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData sessionConte
 	}
 }
 
-// AttachUserToSpan provides a consistent way to attach a user to a span.
-func AttachUserToSpan(span trace.Span, user User) {
-	if user != nil {
-		AttachToSpan(span, keys.UserIDKey, user.GetID())
-		AttachToSpan(span, keys.UsernameKey, user.GetUsername())
-	}
-}
-
 // AttachRequestToSpan attaches a given HTTP request to a span.
 func AttachRequestToSpan(span trace.Span, req *http.Request) {
 	if req != nil {

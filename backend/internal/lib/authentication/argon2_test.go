@@ -14,6 +14,9 @@ import (
 )
 
 const (
+	examplePassword        = "Pa$$w0rdPa$$w0rdPa$$w0rdPa$$w0rd"
+	exampleTwoFactorSecret = "HEREISASECRETWHICHIVEMADEUPBECAUSEIWANNATESTRELIABLY"
+
 	argon2HashedExamplePassword = `$argon2id$v=19$m=65536,t=1,p=2$C+YWiNi21e94acF3ip8UGA$Ru6oL96HZSP7cVcfAbRwOuK9+vwBo/BLhCzOrGrMH0M`
 )
 

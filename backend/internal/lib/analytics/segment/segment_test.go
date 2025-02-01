@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/require"
 )
@@ -60,7 +60,7 @@ func TestSegmentEventReporter_AddUser(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		exampleUserID := fakes.BuildFakeID()
+		exampleUserID := identifiers.New()
 		properties := map[string]any{
 			"test.name": t.Name(),
 		}
@@ -81,7 +81,7 @@ func TestSegmentEventReporter_EventOccurred(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		exampleUserID := fakes.BuildFakeID()
+		exampleUserID := identifiers.New()
 		properties := map[string]any{
 			"test.name": t.Name(),
 		}

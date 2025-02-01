@@ -13,12 +13,7 @@ import (
 )
 
 const (
-	stringType = "string"
-	nullType   = "null"
-
-	typeNameNumberRange                = "NumberRange"
-	typeNameNumberRangeWithOptionalMax = "NumberRangeWithOptionalMax"
-	typeNameOptionalNumberRange        = "OptionalNumberRange"
+	nullType = "null"
 )
 
 type Field struct {
@@ -141,19 +136,19 @@ func GenerateModelFiles(spec *openapi31.Spec) (map[string]*TypeDefinition, error
 						"OptionalFloat32Range",
 						"OptionalUint32Range",
 					}, field.Type):
-						field.Type = typeNameNumberRange
+						field.Type = "NumberRange"
 					case slices.Contains([]string{
 						"Float32RangeWithOptionalMax",
 						"Uint16RangeWithOptionalMax",
 						"Uint32RangeWithOptionalMax",
 					}, field.Type):
-						field.Type = typeNameNumberRangeWithOptionalMax
+						field.Type = "NumberRangeWithOptionalMax"
 					case slices.Contains([]string{
 						"Float32RangeWithOptionalMaxUpdateRequestInput",
 						"Uint16RangeWithOptionalMaxUpdateRequestInput",
 						"Uint32RangeWithOptionalMaxUpdateRequestInput",
 					}, field.Type):
-						field.Type = typeNameOptionalNumberRange
+						field.Type = "OptionalNumberRange"
 					}
 
 					if x, ok3 := enums.TypeMap[fmt.Sprintf("%s.%s", name, k)]; ok3 {
@@ -214,17 +209,10 @@ export class {{ .Name }} implements I{{ .Name }} {
 }`
 
 	t := template.Must(template.New("model").Funcs(map[string]any{
-		"lowercase": strings.ToLower,
-		"typeIsNative": func(x string) bool {
-			return slices.Contains([]string{
-				stringType,
-			}, x)
-		},
-		"join": strings.Join,
-		"sortStrings": func(s []string) []string {
-			slices.Sort(s)
-			return s
-		},
+		"join":         strings.Join,
+		"lowercase":    strings.ToLower,
+		"sortStrings":  slices.Sort[[]string],
+		"typeIsNative": func(x string) bool { return slices.Contains([]string{"string"}, x) },
 	}).Parse(tmpl))
 
 	var b bytes.Buffer

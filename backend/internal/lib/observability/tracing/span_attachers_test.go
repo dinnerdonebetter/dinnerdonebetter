@@ -9,10 +9,29 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
+
+type mockSessionData struct {
+	mock.Mock
+}
+
+// GetUserID implements our interface.
+func (m *mockSessionData) GetUserID() string {
+	return m.Called().String(0)
+}
+
+// GetServicePermissions implements our interface.
+func (m *mockSessionData) GetServicePermissions() authorization.ServiceRolePermissionChecker {
+	return m.Called().Get(0).(authorization.ServiceRolePermissionChecker)
+}
+
+// GetActiveHouseholdID implements our interface.
+func (m *mockSessionData) GetActiveHouseholdID() string {
+	return m.Called().String(0)
+}
 
 func TestAttachSessionContextDataToSpan(T *testing.T) {
 	T.Parallel()
@@ -29,19 +48,6 @@ func TestAttachSessionContextDataToSpan(T *testing.T) {
 			},
 			ActiveHouseholdID: "",
 		})
-	})
-}
-
-func TestAttachUserToSpan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUser := fakes.BuildFakeUser()
-		_, span := StartSpan(context.Background())
-
-		AttachUserToSpan(span, exampleUser)
 	})
 }
 

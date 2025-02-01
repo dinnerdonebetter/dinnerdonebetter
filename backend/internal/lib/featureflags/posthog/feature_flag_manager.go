@@ -16,6 +16,10 @@ import (
 	"github.com/posthog/posthog-go"
 )
 
+const (
+	serviceName = "posthog_feature_flag_manager"
+)
+
 var (
 	ErrNilConfig          = errors.New("missing config")
 	ErrNilUser            = errors.New("missing user")
@@ -67,8 +71,8 @@ func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tr
 	ffm := &featureFlagManager{
 		posthogClient:  client,
 		circuitBreaker: circuitBreaker,
-		logger:         logger,
-		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("posthog_feature_flag_manager")),
+		logger:         logging.EnsureLogger(logger).WithName(serviceName),
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return ffm, nil

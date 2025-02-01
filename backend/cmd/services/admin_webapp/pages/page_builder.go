@@ -22,7 +22,7 @@ func NewPageBuilder(
 	s := &Builder{
 		tracer:         tracing.NewTracer(tracerProvider.Tracer("admin-page-builder")),
 		tracerProvider: tracerProvider,
-		logger:         logger,
+		logger:         logging.EnsureLogger(logger),
 		apiServerURL:   apiServerURL,
 	}
 

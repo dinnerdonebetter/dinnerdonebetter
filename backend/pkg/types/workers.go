@@ -13,7 +13,7 @@ type (
 	}
 
 	FinalizeMealPlansResponse struct {
-		Count int `json:"count"`
+		Count int64 `json:"count"`
 	}
 
 	InitializeMealPlanGroceryListRequest struct {

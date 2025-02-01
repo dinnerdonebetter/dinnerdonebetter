@@ -23,24 +23,31 @@ type (
 	Float64Counter interface {
 		Add(ctx context.Context, incr float64, options ...metric.AddOption)
 	}
+
 	Float64Gauge interface {
 		Record(ctx context.Context, value float64, options ...metric.RecordOption)
 	}
+
 	Float64UpDownCounter interface {
 		Add(ctx context.Context, incr float64, options ...metric.AddOption)
 	}
+
 	Float64Histogram interface {
 		Record(ctx context.Context, incr float64, options ...metric.RecordOption)
 	}
+
 	Int64Counter interface {
 		Add(ctx context.Context, incr int64, options ...metric.AddOption)
 	}
+
 	Int64Gauge interface {
 		Record(ctx context.Context, value int64, options ...metric.RecordOption)
 	}
+
 	Int64UpDownCounter interface {
 		Add(ctx context.Context, incr int64, options ...metric.AddOption)
 	}
+
 	Int64Histogram interface {
 		Record(ctx context.Context, incr int64, options ...metric.RecordOption)
 	}

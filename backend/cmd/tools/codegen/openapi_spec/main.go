@@ -11,7 +11,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/build/api"
+	"github.com/dinnerdonebetter/backend/internal/build/services/api"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
 

@@ -28,13 +28,9 @@ var (
 		ProvideValidEnumerationDataManager,
 		ProvideRecipeManagementDataManager,
 		ProvideMealPlanningDataManager,
+		ProvideMaintenanceDataManager,
 	)
 )
-
-// ProvideMealPlanTaskDataManager is an arbitrary function for dependency injection's sake.
-func ProvideMealPlanTaskDataManager(db DataManager) types.MealPlanTaskDataManager {
-	return db
-}
 
 // ProvideHouseholdDataManager is an arbitrary function for dependency injection's sake.
 func ProvideHouseholdDataManager(db DataManager) types.HouseholdDataManager {
@@ -48,26 +44,6 @@ func ProvideHouseholdInvitationDataManager(db DataManager) types.HouseholdInvita
 
 // ProvideHouseholdUserMembershipDataManager is an arbitrary function for dependency injection's sake.
 func ProvideHouseholdUserMembershipDataManager(db DataManager) types.HouseholdUserMembershipDataManager {
-	return db
-}
-
-// ProvideMealDataManager is an arbitrary function for dependency injection's sake.
-func ProvideMealDataManager(db DataManager) types.MealDataManager {
-	return db
-}
-
-// ProvideMealPlanDataManager is an arbitrary function for dependency injection's sake.
-func ProvideMealPlanDataManager(db DataManager) types.MealPlanDataManager {
-	return db
-}
-
-// ProvideMealPlanEventDataManager is an arbitrary function for dependency injection's sake.
-func ProvideMealPlanEventDataManager(db DataManager) types.MealPlanEventDataManager {
-	return db
-}
-
-// ProvideMealPlanOptionDataManager is an arbitrary function for dependency injection's sake.
-func ProvideMealPlanOptionDataManager(db DataManager) types.MealPlanOptionDataManager {
 	return db
 }
 
@@ -88,11 +64,6 @@ func ProvidePasswordResetTokenDataManager(db DataManager) types.PasswordResetTok
 
 // ProvideWebhookDataManager is an arbitrary function for dependency injection's sake.
 func ProvideWebhookDataManager(db DataManager) types.WebhookDataManager {
-	return db
-}
-
-// ProvideMealPlanGroceryListItemDataManager is an arbitrary function for dependency injection's sake.
-func ProvideMealPlanGroceryListItemDataManager(db DataManager) types.MealPlanGroceryListItemDataManager {
 	return db
 }
 
@@ -153,5 +124,9 @@ func ProvideRecipeManagementDataManager(db DataManager) types.RecipeManagementDa
 
 // ProvideMealPlanningDataManager is an arbitrary function for dependency injection's sake.
 func ProvideMealPlanningDataManager(db DataManager) types.MealPlanningDataManager {
+	return db
+}
+
+func ProvideMaintenanceDataManager(db DataManager) types.MaintenanceDataManager {
 	return db
 }

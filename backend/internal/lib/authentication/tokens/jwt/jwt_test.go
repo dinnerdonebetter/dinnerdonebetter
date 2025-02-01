@@ -6,13 +6,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -33,14 +34,17 @@ func Test_signer_IssueJWT(T *testing.T) {
 		require.NoError(t, err)
 
 		ctx := context.Background()
-		user := fakes.BuildFakeUser()
+		user := authentication.NewMockUser()
+		user.On("GetID").Return("user_id").Times(2)
 
 		actual, err := s.IssueToken(ctx, user, exampleExpiry)
 		assert.NoError(t, err)
 
 		parsed, err := s.ParseUserIDFromToken(ctx, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, parsed, user.ID)
+		assert.Equal(t, parsed, user.GetID())
+
+		mock.AssertExpectationsForObjects(t, user)
 	})
 }
 
@@ -54,14 +58,17 @@ func Test_signer_ParseJWT(T *testing.T) {
 		require.NoError(t, err)
 
 		ctx := context.Background()
-		user := fakes.BuildFakeUser()
+		user := authentication.NewMockUser()
+		user.On("GetID").Return("user_id").Times(2)
 
 		issuedToken, err := s.IssueToken(ctx, user, exampleExpiry)
 		assert.NoError(t, err)
 
 		actual, err := s.ParseUserIDFromToken(ctx, issuedToken)
 		assert.NoError(t, err)
-		assert.Equal(t, actual, user.ID)
+		assert.Equal(t, actual, user.GetID())
+
+		mock.AssertExpectationsForObjects(t, user)
 	})
 
 	T.Run("with invalid algo", func(t *testing.T) {

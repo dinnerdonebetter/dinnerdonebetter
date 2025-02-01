@@ -170,7 +170,7 @@ func (c *Client) fetchResponseToRequest(ctx context.Context, client *http.Client
 		logger = logger.WithValue("curl", command.String())
 	}
 
-	// this should be the only use of .Do in this package
+	// this should be the only use of .Work in this package
 	res, err := client.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing request")

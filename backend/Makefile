@@ -10,7 +10,13 @@ COVERAGE_OUT           := $(ARTIFACTS_DIR)/coverage.out
 ENVIRONMENTS_DIR       := deploy/environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-WIRE_TARGETS           := internal/build/api internal/build/admin_webapp
+WIRE_TARGETS           := internal/build/services/api \
+	internal/build/services/admin_webapp \
+	internal/build/jobs/db_cleaner \
+	internal/build/jobs/search_data_index_scheduler \
+	internal/build/jobs/meal_plan_finalizer \
+	internal/build/jobs/meal_plan_grocery_list_initializer \
+	internal/build/jobs/meal_plan_task_creator
 
 # COMPUTED
 TOTAL_PACKAGE_LIST    := `go list $(THIS)/...`
@@ -183,6 +189,7 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 .PHONY: check_lib_for_types
 check_lib_for_types:
 	@! grep -r 'pkg/types"' internal/lib/
+	@! grep -r 'pkg/types/fakes"' internal/lib/
 
 ## GENERATED FILES
 

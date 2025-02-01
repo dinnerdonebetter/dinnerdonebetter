@@ -80,7 +80,7 @@ func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tr
 	}
 
 	ffm := &featureFlagManager{
-		logger:             logger,
+		logger:             logging.EnsureLogger(logger),
 		circuitBreaker:     circuitBreaker,
 		tracer:             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("launchdarkly_feature_flag_manager")),
 		launchDarklyClient: client,
