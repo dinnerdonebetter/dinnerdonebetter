@@ -40,7 +40,7 @@ func TestWorkerService_MealPlanFinalizationHandler(T *testing.T) {
 		mpfw.On(
 			"Work",
 			testutils.ContextMatcher,
-		).Return(1, nil)
+		).Return(int64(1), nil)
 		helper.service.mealPlanFinalizerWorker = mpfw
 
 		helper.service.MealPlanFinalizationHandler(helper.res, helper.req)

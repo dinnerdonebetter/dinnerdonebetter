@@ -21329,7 +21329,7 @@ components:
     FinalizeMealPlansResponse:
       properties:
         count:
-          format: int32
+          format: int64
           type: integer
       type: object
     Float32RangeWithOptionalMax:
