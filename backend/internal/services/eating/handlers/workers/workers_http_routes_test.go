@@ -70,11 +70,11 @@ func TestWorkerService_MealPlanFinalizationHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mpfw := &workers.MockWorkerCounter{}
+		helper.service.mealPlanFinalizerWorker = mpfw
 		mpfw.On(
 			"Work",
 			testutils.ContextMatcher,
-		).Return(123, nil)
-		helper.service.mealPlanFinalizerWorker = mpfw
+		).Return(int64(123), nil)
 
 		helper.service.MealPlanFinalizationHandler(helper.res, helper.req)
 
