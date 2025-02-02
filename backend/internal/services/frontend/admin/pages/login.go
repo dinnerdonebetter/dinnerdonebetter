@@ -7,26 +7,23 @@ import (
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
 
-func (b *Builder) AdminLoginSubmit(req *http.Request) (*types.TokenResponse, error) {
+func (b *Builder) AdminLoginSubmit(req *http.Request) (*apiclient.TokenResponse, error) {
 	ctx, span := b.tracer.StartSpan(req.Context())
 	defer span.End()
 
 	logger := b.logger.WithRequest(req)
 
-	var x types.UserLoginInput
+	var x apiclient.UserLoginInput
 	if err := json.NewDecoder(req.Body).Decode(&x); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "decoding json")
 	}
 
-	if err := x.ValidateWithContext(ctx); err != nil {
-		return nil, err
-	}
+	// TODO: validate
 
 	client, err := apiclient.NewClient(b.apiServerURL, b.tracerProvider)
 	if err != nil {

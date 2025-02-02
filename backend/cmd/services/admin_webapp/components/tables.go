@@ -3,7 +3,7 @@ package components
 import (
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 
 	"maragu.dev/gomponents"
 	ghtmx "maragu.dev/gomponents-htmx"
@@ -43,7 +43,7 @@ func buildRowForType[T any](x T) gomponents.Node {
 	return html.Tr(rowContents...)
 }
 
-func TableView[T any](newHref string, data *filtering.QueryFilteredResult[T]) gomponents.Node {
+func TableView[T any](newHref string, data *apiclient.QueryFilteredResult[T]) gomponents.Node {
 	rowComponents := []gomponents.Node{}
 	for _, row := range data.Data {
 		rowComponents = append(rowComponents, buildRowForType(*row))

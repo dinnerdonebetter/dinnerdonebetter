@@ -150,10 +150,10 @@ func init() {
 		panic(err)
 	}
 
-	jwtRes, err := simpleClient.AdminLoginForToken(ctx, &types.UserLoginInput{
+	jwtRes, err := simpleClient.AdminLoginForToken(ctx, &apiclient.UserLoginInput{
 		Username:  premadeAdminUser.Username,
 		Password:  premadeAdminUser.HashedPassword,
-		TOTPToken: code,
+		TotpToken: code,
 	})
 	if err != nil {
 		panic(err)

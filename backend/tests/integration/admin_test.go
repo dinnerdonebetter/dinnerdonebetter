@@ -1,25 +1,26 @@
 package integration
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	"net/http"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/dinnerdonebetter/backend/internal/lib/fake"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserAccountStatus() {
-	s.runTest("should not be possible to ban a userClient that does not exist", func(testClients *testClientWrapper) func() {
+	s.runTest("should not be possible to ban a user that does not exist", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			input := fakes.BuildFakeUserAccountStatusUpdateInput()
+			input := fake.BuildFakeForTest[*apiclient.UserAccountStatusUpdateInput](t)
 			input.TargetUserID = nonexistentID
 
 			// Ban userClient.
@@ -43,7 +44,7 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 			_, err := userClient.GetWebhooks(ctx, nil)
 			require.NoError(t, err)
 
-			input := &types.UserAccountStatusUpdateInput{
+			input := &apiclient.UserAccountStatusUpdateInput{
 				TargetUserID: user.ID,
 				NewStatus:    string(types.BannedUserAccountStatus),
 				Reason:       "testing",
@@ -73,8 +74,13 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 			defer span.End()
 
 			// Create webhook.
-			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
+			exampleWebhookInput := &apiclient.WebhookCreationRequestInput{
+				ContentType: "application/json",
+				Method:      http.MethodPost,
+				Name:        t.Name(),
+				URL:         "https://whatever.gov",
+				Events:      nil,
+			}
 
 			createdWebhook, err := testClients.userClient.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
@@ -99,7 +105,7 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 		}
 	})
 
-	s.runTest("plain userClient should not be able to impersonate users", func(testClients *testClientWrapper) func() {
+	s.runTest("plain user should not be able to impersonate users", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -111,8 +117,13 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 			user, userClient := createUserAndClientForTest(ctx, t, nil)
 
 			// Create webhook.
-			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
+			exampleWebhookInput := &apiclient.WebhookCreationRequestInput{
+				ContentType: "application/json",
+				Method:      http.MethodPost,
+				Name:        t.Name(),
+				URL:         "https://whatever.gov",
+				Events:      nil,
+			}
 
 			createdWebhook, err := userClient.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)

@@ -57,11 +57,19 @@ func writeTypescriptFiles(spec *openapi31.Spec) error {
 	return nil
 }
 
-func writeGoFiles(spec *openapi31.Spec) error {
+func writeGoFiles(outPath string, spec *openapi31.Spec) error {
 	errPrefix := "failed to write golang"
 
-	if err := golang.WriteAPIClientFiles(spec, golangAPIClientOutputPath); err != nil {
+	if err := os.RemoveAll(fmt.Sprintf("%s/*.go", outPath)); err != nil {
+		return fmt.Errorf("removing go files: %w", err)
+	}
+
+	if err := golang.WriteAPIClientFiles(spec, outPath); err != nil {
 		return fmt.Errorf("%s API client files: %w", errPrefix, err)
+	}
+
+	if err := golang.WriteAPITypesFiles(spec, outPath); err != nil {
+		return fmt.Errorf("%s type files: %w", errPrefix, err)
 	}
 
 	return nil
@@ -90,7 +98,7 @@ func main() {
 	if *generateGolang {
 		wg.Add(1)
 		go func() {
-			if err = writeGoFiles(spec); err != nil {
+			if err = writeGoFiles(golangAPIClientOutputPath, spec); err != nil {
 				log.Fatalf("failed to write typescript files: %v", err)
 			}
 			wg.Done()

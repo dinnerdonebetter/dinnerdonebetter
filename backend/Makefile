@@ -152,6 +152,10 @@ fmt: format
 format_yaml: ensure_yamlfmt_installed
 	yamlfmt -conf .yamlfmt.yaml
 
+.PHONY: goimports
+goimports: ensure_goimports_installed
+	goimports -w .
+
 ## LINTING
 
 .PHONY: lint_containers
@@ -209,7 +213,7 @@ codegen-ts:
 .PHONY: codegen-go
 codegen-go:
 	go run $(THIS)/cmd/tools/codegen/openapi --golang
-	@$(MAKE) format_golang
+	@$(MAKE) goimports format_golang
 
 .PHONY: codegen
 codegen: codegen-ts codegen-go

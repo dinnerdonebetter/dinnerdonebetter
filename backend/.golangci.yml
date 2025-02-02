@@ -316,7 +316,7 @@ issues:
       linters:
         - gosec
 
-    - path: pkg/apiclient/roundtripper_*
+    - path: pkg/apiclient/core.roundtripper*
       linters:
         - bodyclose
 
