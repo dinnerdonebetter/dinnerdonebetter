@@ -122,7 +122,9 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 				Method:      http.MethodPost,
 				Name:        t.Name(),
 				URL:         "https://whatever.gov",
-				Events:      nil,
+				Events: []string{
+					"webhook_created",
+				},
 			}
 
 			createdWebhook, err := userClient.CreateWebhook(ctx, exampleWebhookInput)
