@@ -6,9 +6,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/build/services/api"
+	grpcapi "github.com/dinnerdonebetter/backend/internal/build/services/grpc_api"
 	"github.com/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"
@@ -31,7 +30,7 @@ func main() {
 	}
 
 	// build our server struct.
-	srv, err := api.Build(buildCtx, cfg)
+	srv, err := grpcapi.Build(buildCtx, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,13 +57,6 @@ func main() {
 		<-signalChan
 	}()
 
-	cancelCtx, cancelShutdown := context.WithTimeout(rootCtx, 10*time.Second)
-	defer cancelShutdown()
-
 	logger.Info("shutting down")
-
-	// Gracefully shutdown the server by waiting on existing requests (except websockets).
-	if err = srv.Shutdown(cancelCtx); err != nil {
-		logger.Error("shutting down server", err)
-	}
+	srv.Shutdown()
 }

@@ -21,6 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
 
@@ -63,22 +64,21 @@ type (
 
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
-		_ struct{} `json:"-"`
-
-		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
-		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
-		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
-		TextSearch    textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
-		FeatureFlags  featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
-		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Meta          MetaSettings           `envPrefix:"META_"          json:"meta"`
-		Routing       routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
-		HTTPServer    http.Config            `envPrefix:"SERVER_"        json:"server"`
-		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
-		Services      ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
-
+		_                struct{}               `json:"-"`
+		Queues           msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Routing          routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
+		Encoding         encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
+		Events           msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability    observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Meta             MetaSettings           `envPrefix:"META_"          json:"meta"`
+		Email            emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
+		Analytics        analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
+		TextSearch       textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
+		FeatureFlags     featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
+		HTTPServer       http.Config            `envPrefix:"SERVER_"        json:"server"`
+		Database         databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
+		GRPCServer       grpc.Config            `envPrefix:"GRPC_SERVER_"   json:"grpcServer"`
 		validateServices bool
 	}
 

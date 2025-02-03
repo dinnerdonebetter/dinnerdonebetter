@@ -4,31 +4,31 @@
 //go:build !wireinject
 // +build !wireinject
 
-package mealplanfinalizer
+package grpcapi
 
 import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/grpcimpl/serverimpl"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_finalizer"
+	"github.com/dinnerdonebetter/backend/internal/lib/server/grpc"
 )
 
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, cfg *config.MealPlanFinalizerConfig) (*mealplanfinalizer.Worker, error) {
+func Build(ctx context.Context, cfg *config.APIServiceConfig) (*grpc.Server, error) {
+	grpcConfig := &cfg.GRPCServer
 	observabilityConfig := &cfg.Observability
+	tracingcfgConfig := &observabilityConfig.Tracing
 	loggingcfgConfig := &observabilityConfig.Logging
 	logger, err := loggingcfg.ProvideLogger(ctx, loggingcfgConfig)
 	if err != nil {
 		return nil, err
 	}
-	tracingcfgConfig := &observabilityConfig.Tracing
 	tracerProvider, err := tracingcfg.ProvideTracerProvider(ctx, tracingcfgConfig, logger)
 	if err != nil {
 		return nil, err
@@ -38,20 +38,13 @@ func Build(ctx context.Context, cfg *config.MealPlanFinalizerConfig) (*mealplanf
 	if err != nil {
 		return nil, err
 	}
-	msgconfigConfig := &cfg.Events
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
+	eatingServiceServer, err := serverimpl.NewServer(tracerProvider, logger, dataManager)
 	if err != nil {
 		return nil, err
 	}
-	metricscfgConfig := &observabilityConfig.Metrics
-	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
+	server, err := BuildWrappedServer(grpcConfig, eatingServiceServer)
 	if err != nil {
 		return nil, err
 	}
-	queuesConfig := &cfg.Queues
-	worker, err := mealplanfinalizer.NewMealPlanFinalizer(logger, tracerProvider, dataManager, publisherProvider, provider, queuesConfig)
-	if err != nil {
-		return nil, err
-	}
-	return worker, nil
+	return server, nil
 }

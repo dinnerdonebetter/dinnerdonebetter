@@ -10,7 +10,8 @@ COVERAGE_OUT           := $(ARTIFACTS_DIR)/coverage.out
 ENVIRONMENTS_DIR       := deploy/environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-WIRE_TARGETS           := internal/build/services/api \
+WIRE_TARGETS           := internal/build/services/grpc_api \
+	internal/build/services/api \
 	internal/build/services/admin_webapp \
 	internal/build/jobs/db_cleaner \
 	internal/build/jobs/search_data_index_scheduler \
@@ -258,7 +259,6 @@ proto: ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
 	--go-grpc_opt=module=github.com/dinnerdonebetter/backend \
 	-I internal/services/eating/ \
 	internal/services/eating/messages.proto internal/services/eating/service.proto
-
 
 ## INTEGRATION TESTING
 

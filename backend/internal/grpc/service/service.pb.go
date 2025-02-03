@@ -7,12 +7,14 @@
 package service
 
 import (
+	reflect "reflect"
+	unsafe "unsafe"
+
 	messages "github.com/dinnerdonebetter/backend/internal/grpc/messages"
+
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	reflect "reflect"
-	unsafe "unsafe"
 )
 
 const (

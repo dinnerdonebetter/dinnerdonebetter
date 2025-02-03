@@ -10,15 +10,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pquerna/otp/totp"
-	"github.com/stretchr/testify/require"
-
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	serverutils "github.com/dinnerdonebetter/backend/internal/lib/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/require"
 )
 
 func requireNotNilAndNoProblems(t *testing.T, i any, err error) {
