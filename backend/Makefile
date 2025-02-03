@@ -103,6 +103,18 @@ ifeq (, $(shell which goimports))
 	$(shell go install golang.org/x/tools/cmd/goimports@v0.29.0)
 endif
 
+.PHONY: ensure_protoc-gen-go_installed
+ensure_protoc-gen-go_installed:
+ifeq (, $(shell which protoc-gen-go-grpc))
+	$(shell go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.4)
+endif
+
+.PHONY: ensure_protoc-gen-go-grpc_installed
+ensure_protoc-gen-go-grpc_installed:
+ifeq (, $(shell which protoc-gen-go-grpc))
+	$(shell go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1)
+endif
+
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed ensure_yamlfmt_installed
 
@@ -236,6 +248,17 @@ openapi:
 env_vars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars
 	gofmt -s -w internal/config/envvars/*.go
+
+.PHONY: proto
+proto: ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
+	rm -rf internal/grpc/
+	mkdir -p internal/grpc
+	protoc --go_out=. --go-grpc_out=. \
+	--go_opt=module=github.com/dinnerdonebetter/backend \
+	--go-grpc_opt=module=github.com/dinnerdonebetter/backend \
+	-I internal/services/eating/ \
+	internal/services/eating/messages.proto internal/services/eating/service.proto
+
 
 ## INTEGRATION TESTING
 
