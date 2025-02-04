@@ -11,11 +11,11 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
 	errUnimplemented = errors.New("unimplemented procedure")
-	emptyResponse    = &emptypb.Empty{}
 )
 
 func (s *Server) AcceptHouseholdInvitation(ctx context.Context, request *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
@@ -23,56 +23,6 @@ func (s *Server) AcceptHouseholdInvitation(ctx context.Context, request *message
 	defer span.End()
 
 	return nil, errUnimplemented
-}
-
-func (s *Server) AdminLoginForToken(ctx context.Context, input *messages.UserLoginInput) (*messages.TokenResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	// TODO: validation
-
-	user, err := s.dataManager.GetAdminUserByUsername(ctx, input.Username)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching user by username")
-	}
-
-	loginValid, err := s.authenticator.CredentialsAreValid(
-		ctx,
-		user.HashedPassword,
-		input.Password,
-		user.TwoFactorSecret,
-		input.TOTPToken,
-	)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "validating login")
-	}
-
-	if !loginValid {
-		return nil, observability.PrepareError(err, span, "invalid login")
-	}
-
-	if loginValid && user.TwoFactorSecretVerifiedAt != nil && input.TOTPToken == "" {
-		return nil, observability.PrepareError(err, span, "user with two factor verification active attempted to log in without providing TOTP")
-	}
-
-	defaultHouseholdID, err := s.dataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching user memberships")
-	}
-
-	var token string
-	token, err = s.tokenIssuer.IssueToken(ctx, user, s.config.Services.Auth.TokenLifetime)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "signing token")
-	}
-
-	output := &messages.TokenResponse{
-		UserID:      user.ID,
-		HouseholdID: defaultHouseholdID,
-		Token:       token,
-	}
-
-	return output, nil
 }
 
 func (s *Server) AdminUpdateUserStatus(ctx context.Context, input *messages.UserAccountStatusUpdateInput) (*messages.UserStatusResponse, error) {
@@ -89,270 +39,317 @@ func (s *Server) AggregateUserDataReport(ctx context.Context, _ *emptypb.Empty) 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveHousehold(ctx context.Context, request *messages.ArchiveHouseholdRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveHousehold(ctx context.Context, request *messages.ArchiveHouseholdRequest) (*messages.Household, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveHouseholdInstrumentOwnership(ctx context.Context, request *messages.ArchiveHouseholdInstrumentOwnershipRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveHouseholdInstrumentOwnership(ctx context.Context, request *messages.ArchiveHouseholdInstrumentOwnershipRequest) (*messages.HouseholdInstrumentOwnership, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveMeal(ctx context.Context, request *messages.ArchiveMealRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveMeal(ctx context.Context, request *messages.ArchiveMealRequest) (*messages.Meal, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveMealPlan(ctx context.Context, request *messages.ArchiveMealPlanRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveMealPlan(ctx context.Context, request *messages.ArchiveMealPlanRequest) (*messages.MealPlan, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveMealPlanEvent(ctx context.Context, request *messages.ArchiveMealPlanEventRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveMealPlanEvent(ctx context.Context, request *messages.ArchiveMealPlanEventRequest) (*messages.MealPlanEvent, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveMealPlanGroceryListItem(ctx context.Context, request *messages.ArchiveMealPlanGroceryListItemRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveMealPlanGroceryListItem(ctx context.Context, request *messages.ArchiveMealPlanGroceryListItemRequest) (*messages.MealPlanGroceryListItem, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveMealPlanOption(ctx context.Context, request *messages.ArchiveMealPlanOptionRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveMealPlanOption(ctx context.Context, request *messages.ArchiveMealPlanOptionRequest) (*messages.MealPlanOption, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveMealPlanOptionVote(ctx context.Context, request *messages.ArchiveMealPlanOptionVoteRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveMealPlanOptionVote(ctx context.Context, request *messages.ArchiveMealPlanOptionVoteRequest) (*messages.MealPlanOptionVote, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveOAuth2Client(ctx context.Context, request *messages.ArchiveOAuth2ClientRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveOAuth2Client(ctx context.Context, request *messages.ArchiveOAuth2ClientRequest) (*messages.OAuth2Client, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveRecipe(ctx context.Context, request *messages.ArchiveRecipeRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveRecipe(ctx context.Context, request *messages.ArchiveRecipeRequest) (*messages.Recipe, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveRecipePrepTask(ctx context.Context, request *messages.ArchiveRecipePrepTaskRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveRecipePrepTask(ctx context.Context, request *messages.ArchiveRecipePrepTaskRequest) (*messages.RecipePrepTask, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveRecipeRating(ctx context.Context, request *messages.ArchiveRecipeRatingRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveRecipeRating(ctx context.Context, request *messages.ArchiveRecipeRatingRequest) (*messages.RecipeRating, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveRecipeStep(ctx context.Context, request *messages.ArchiveRecipeStepRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveRecipeStep(ctx context.Context, request *messages.ArchiveRecipeStepRequest) (*messages.RecipeStep, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveRecipeStepCompletionCondition(ctx context.Context, request *messages.ArchiveRecipeStepCompletionConditionRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveRecipeStepCompletionCondition(ctx context.Context, request *messages.ArchiveRecipeStepCompletionConditionRequest) (*messages.RecipeStepCompletionCondition, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveRecipeStepIngredient(ctx context.Context, request *messages.ArchiveRecipeStepIngredientRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveRecipeStepIngredient(ctx context.Context, request *messages.ArchiveRecipeStepIngredientRequest) (*messages.RecipeStepIngredient, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveRecipeStepInstrument(ctx context.Context, request *messages.ArchiveRecipeStepInstrumentRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveRecipeStepInstrument(ctx context.Context, request *messages.ArchiveRecipeStepInstrumentRequest) (*messages.RecipeStepInstrument, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveRecipeStepProduct(ctx context.Context, request *messages.ArchiveRecipeStepProductRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveRecipeStepProduct(ctx context.Context, request *messages.ArchiveRecipeStepProductRequest) (*messages.RecipeStepProduct, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveRecipeStepVessel(ctx context.Context, request *messages.ArchiveRecipeStepVesselRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveRecipeStepVessel(ctx context.Context, request *messages.ArchiveRecipeStepVesselRequest) (*messages.RecipeStepVessel, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveServiceSetting(ctx context.Context, request *messages.ArchiveServiceSettingRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveServiceSetting(ctx context.Context, request *messages.ArchiveServiceSettingRequest) (*messages.ServiceSetting, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveServiceSettingConfiguration(ctx context.Context, request *messages.ArchiveServiceSettingConfigurationRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveServiceSettingConfiguration(ctx context.Context, request *messages.ArchiveServiceSettingConfigurationRequest) (*messages.ServiceSettingConfiguration, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveUser(ctx context.Context, request *messages.ArchiveUserRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveUser(ctx context.Context, request *messages.ArchiveUserRequest) (*messages.User, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveUserIngredientPreference(ctx context.Context, request *messages.ArchiveUserIngredientPreferenceRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveUserIngredientPreference(ctx context.Context, request *messages.ArchiveUserIngredientPreferenceRequest) (*messages.UserIngredientPreference, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveUserMembership(ctx context.Context, request *messages.ArchiveUserMembershipRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveUserMembership(ctx context.Context, request *messages.ArchiveUserMembershipRequest) (*messages.HouseholdUserMembership, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidIngredient(ctx context.Context, request *messages.ArchiveValidIngredientRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidIngredient(ctx context.Context, request *messages.ArchiveValidIngredientRequest) (*messages.ValidIngredient, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if err := s.dataManager.ArchiveValidIngredient(ctx, request.ValidIngredientID); err != nil {
+	validIngredient, err := s.dataManager.GetValidIngredient(ctx, request.ValidIngredientID)
+	if err != nil {
 		return nil, err
 	}
 
-	return emptyResponse, nil
+	if err = s.dataManager.ArchiveValidIngredient(ctx, request.ValidIngredientID); err != nil {
+		return nil, err
+	}
+
+	output := &messages.ValidIngredient{
+		CreatedAt:     converters.ConvertTimeToPBTimestamp(validIngredient.CreatedAt),
+		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(validIngredient.LastUpdatedAt),
+		ArchivedAt:    timestamppb.Now(),
+		StorageTemperatureInCelsius: &messages.OptionalFloat32Range{
+			Max: validIngredient.StorageTemperatureInCelsius.Max,
+			Min: validIngredient.StorageTemperatureInCelsius.Min,
+		},
+		IconPath:               validIngredient.IconPath,
+		Warning:                validIngredient.Warning,
+		PluralName:             validIngredient.PluralName,
+		StorageInstructions:    validIngredient.StorageInstructions,
+		Name:                   validIngredient.Name,
+		ID:                     validIngredient.ID,
+		Description:            validIngredient.Description,
+		Slug:                   validIngredient.Slug,
+		ShoppingSuggestions:    validIngredient.ShoppingSuggestions,
+		ContainsShellfish:      validIngredient.ContainsShellfish,
+		IsLiquid:               validIngredient.IsLiquid,
+		ContainsPeanut:         validIngredient.ContainsPeanut,
+		ContainsTreeNut:        validIngredient.ContainsTreeNut,
+		ContainsEgg:            validIngredient.ContainsEgg,
+		ContainsWheat:          validIngredient.ContainsWheat,
+		ContainsSoy:            validIngredient.ContainsSoy,
+		AnimalDerived:          validIngredient.AnimalDerived,
+		RestrictToPreparations: validIngredient.RestrictToPreparations,
+		ContainsSesame:         validIngredient.ContainsSesame,
+		ContainsFish:           validIngredient.ContainsFish,
+		ContainsGluten:         validIngredient.ContainsGluten,
+		ContainsDairy:          validIngredient.ContainsDairy,
+		ContainsAlcohol:        validIngredient.ContainsAlcohol,
+		AnimalFlesh:            validIngredient.AnimalFlesh,
+		IsStarch:               validIngredient.IsStarch,
+		IsProtein:              validIngredient.IsProtein,
+		IsGrain:                validIngredient.IsGrain,
+		IsFruit:                validIngredient.IsFruit,
+		IsSalt:                 validIngredient.IsSalt,
+		IsFat:                  validIngredient.IsFat,
+		IsAcid:                 validIngredient.IsAcid,
+		IsHeat:                 validIngredient.IsHeat,
+	}
+
+	return output, nil
 }
 
-func (s *Server) ArchiveValidIngredientGroup(ctx context.Context, request *messages.ArchiveValidIngredientGroupRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidIngredientGroup(ctx context.Context, request *messages.ArchiveValidIngredientGroupRequest) (*messages.ValidIngredientGroup, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidIngredientMeasurementUnit(ctx context.Context, request *messages.ArchiveValidIngredientMeasurementUnitRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidIngredientMeasurementUnit(ctx context.Context, request *messages.ArchiveValidIngredientMeasurementUnitRequest) (*messages.ValidIngredientMeasurementUnit, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidIngredientPreparation(ctx context.Context, request *messages.ArchiveValidIngredientPreparationRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidIngredientPreparation(ctx context.Context, request *messages.ArchiveValidIngredientPreparationRequest) (*messages.ValidIngredientPreparation, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidIngredientState(ctx context.Context, request *messages.ArchiveValidIngredientStateRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidIngredientState(ctx context.Context, request *messages.ArchiveValidIngredientStateRequest) (*messages.ValidIngredientState, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidIngredientStateIngredient(ctx context.Context, request *messages.ArchiveValidIngredientStateIngredientRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidIngredientStateIngredient(ctx context.Context, request *messages.ArchiveValidIngredientStateIngredientRequest) (*messages.ValidIngredientStateIngredient, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidInstrument(ctx context.Context, request *messages.ArchiveValidInstrumentRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidInstrument(ctx context.Context, request *messages.ArchiveValidInstrumentRequest) (*messages.ValidInstrument, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidMeasurementUnit(ctx context.Context, request *messages.ArchiveValidMeasurementUnitRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidMeasurementUnit(ctx context.Context, request *messages.ArchiveValidMeasurementUnitRequest) (*messages.ValidMeasurementUnit, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidMeasurementUnitConversion(ctx context.Context, request *messages.ArchiveValidMeasurementUnitConversionRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidMeasurementUnitConversion(ctx context.Context, request *messages.ArchiveValidMeasurementUnitConversionRequest) (*messages.ValidMeasurementUnitConversion, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidPreparation(ctx context.Context, request *messages.ArchiveValidPreparationRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidPreparation(ctx context.Context, request *messages.ArchiveValidPreparationRequest) (*messages.ValidPreparation, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidPreparationInstrument(ctx context.Context, request *messages.ArchiveValidPreparationInstrumentRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidPreparationInstrument(ctx context.Context, request *messages.ArchiveValidPreparationInstrumentRequest) (*messages.ValidPreparationInstrument, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidPreparationVessel(ctx context.Context, request *messages.ArchiveValidPreparationVesselRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidPreparationVessel(ctx context.Context, request *messages.ArchiveValidPreparationVesselRequest) (*messages.ValidPreparationVessel, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveValidVessel(ctx context.Context, request *messages.ArchiveValidVesselRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveValidVessel(ctx context.Context, request *messages.ArchiveValidVesselRequest) (*messages.ValidVessel, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveWebhook(ctx context.Context, request *messages.ArchiveWebhookRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveWebhook(ctx context.Context, request *messages.ArchiveWebhookRequest) (*messages.Webhook, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, errUnimplemented
 }
 
-func (s *Server) ArchiveWebhookTriggerEvent(ctx context.Context, request *messages.ArchiveWebhookTriggerEventRequest) (*emptypb.Empty, error) {
+func (s *Server) ArchiveWebhookTriggerEvent(ctx context.Context, request *messages.ArchiveWebhookTriggerEventRequest) (*messages.WebhookTriggerEvent, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1574,13 +1571,6 @@ func (s *Server) GetWebhook(ctx context.Context, request *messages.GetWebhookReq
 }
 
 func (s *Server) GetWebhooks(ctx context.Context, request *messages.GetWebhooksRequest) (*messages.Webhook, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	return nil, errUnimplemented
-}
-
-func (s *Server) LoginForToken(ctx context.Context, input *messages.UserLoginInput) (*messages.TokenResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -45,14 +46,11 @@ func NewGRPCServer(
 		return nil, internalerrors.NilConfigError("grpc server")
 	}
 
-	opts := []grpc.ServerOption{}
-	for _, interceptor := range unaryServerInterceptors {
-		opts = append(opts, grpc.UnaryInterceptor(interceptor))
+	opts := []grpc.ServerOption{
+		grpc.ChainUnaryInterceptor(append([]grpc.UnaryServerInterceptor{LoggingInterceptor(logger)}, unaryServerInterceptors...)...),
+		grpc.ChainStreamInterceptor(streamServerInterceptors...),
 	}
 
-	for _, interceptor := range streamServerInterceptors {
-		opts = append(opts, grpc.StreamInterceptor(interceptor))
-	}
 	grpcServer := grpc.NewServer(opts...)
 
 	for _, rf := range registrationFunctions {
@@ -80,12 +78,19 @@ func (s *Server) Serve() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s.logger.WithValue("portx", s.config.Port).Info("listener established, serving")
+	s.logger.WithValue("port", s.config.Port).Info("listener established, serving")
 	if err = s.grpcServer.Serve(lis); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
-			// NOTE: there is a chance that next line won't have time to run,
+			// NOTE: there is a chance that next line won't have tim  e to run,
 			// as main() doesn't wait for this goroutine to stop.
 			os.Exit(0)
 		}
+	}
+}
+
+func LoggingInterceptor(logger logging.Logger) grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+		logger.WithValue("rpc.method", info.FullMethod).Info("rpc invoked")
+		return handler(ctx, req)
 	}
 }

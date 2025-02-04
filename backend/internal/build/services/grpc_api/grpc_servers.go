@@ -18,7 +18,7 @@ func BuildRegistrationFuncs(eatingServer *serverimpl.Server) []grpc.Registration
 
 func BuildUnaryServerInterceptors(eatingServer *serverimpl.Server) []grpc2.UnaryServerInterceptor {
 	return []grpc2.UnaryServerInterceptor{
-		eatingServer.AuthInterceptor,
+		eatingServer.AuthInterceptor(),
 	}
 }
 

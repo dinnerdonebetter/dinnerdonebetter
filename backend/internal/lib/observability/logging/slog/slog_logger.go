@@ -74,6 +74,8 @@ func (l *slogLogger) Debug(input string) {
 func (l *slogLogger) Error(whatWasHappeningWhenErrorOccurred string, err error) {
 	if err != nil {
 		l.logger.Error(fmt.Sprintf("error %s: %s", whatWasHappeningWhenErrorOccurred, err.Error()))
+	} else {
+		l.logger.Error(whatWasHappeningWhenErrorOccurred)
 	}
 }
 
