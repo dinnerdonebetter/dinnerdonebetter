@@ -29,7 +29,7 @@ func Build(
 		tracingcfg.ProvidersTracingConfig,
 		observability.ProvidersObservability,
 		postgres.ProvidersPostgres,
-		loggingcfg.ProvidersLogConfig,
+		loggingcfg.ProvidersLoggingConfig,
 		metricscfg.ProvidersMetrics,
 		ConfigProviders,
 	)

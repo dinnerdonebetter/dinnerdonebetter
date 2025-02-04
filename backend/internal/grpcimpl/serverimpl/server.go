@@ -2,7 +2,6 @@ package serverimpl
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -21,10 +20,6 @@ import (
 
 const (
 	serviceName = "grpc_service"
-)
-
-var (
-	errUnimplemented = errors.New("unimplemented procedure")
 )
 
 var _ service.EatingServiceServer = (*server)(nil)

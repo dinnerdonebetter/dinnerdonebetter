@@ -26,7 +26,7 @@ func Build(
 		admin.ProvidersAdminWebapp,
 		tracingcfg.ProvidersTracingConfig,
 		observability.ProvidersObservability,
-		loggingcfg.ProvidersLogConfig,
+		loggingcfg.ProvidersLoggingConfig,
 		metricscfg.ProvidersMetrics,
 		http.ProvidersHTTP,
 		ConfigProviders,

@@ -1,6 +1,7 @@
 package converters
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -15,4 +16,15 @@ func ConvertTimePointerToPBTimestamp(t *time.Time) *timestamppb.Timestamp {
 		return nil
 	}
 	return timestamppb.New(*t)
+}
+
+func ConvertPBTimestampToTime(t *timestamppb.Timestamp) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return t.AsTime()
+}
+
+func ConvertPBTimestampToTimePointer(t *timestamppb.Timestamp) *time.Time {
+	return pointer.To(ConvertPBTimestampToTime(t))
 }

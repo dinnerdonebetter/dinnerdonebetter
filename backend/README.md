@@ -16,6 +16,7 @@ The following tools are prerequisites for development work:
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) for deploying/formatting
 - [cloud_sql_proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) for production database access
 - [fieldalignment](https://pkg.go.dev/golang.org/x/tools/go/analysis/passes/fieldalignment) (`go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest`)
+- [protoc](https://grpc.io/docs/protoc-installation/)
 
 ## dev setup
 

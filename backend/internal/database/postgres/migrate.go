@@ -28,7 +28,7 @@ func (q *Querier) migrationFunc() {
 			q.logger.WithValues(map[string]any{
 				"version": x.Migration.Version,
 				"status":  x.Status.String(),
-			}).Info("database migration handledsssd")
+			}).Info("database migration handled")
 		}
 	}()
 

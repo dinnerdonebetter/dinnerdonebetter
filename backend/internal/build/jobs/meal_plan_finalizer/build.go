@@ -29,7 +29,7 @@ func Build(
 		observability.ProvidersObservability,
 		postgres.ProvidersPostgres,
 		msgconfig.MessageQueueProviders,
-		loggingcfg.ProvidersLogConfig,
+		loggingcfg.ProvidersLoggingConfig,
 		metricscfg.ProvidersMetrics,
 		ConfigProviders,
 	)

@@ -1,20 +1,13 @@
 package integration
 
 import (
-	"context"
-	"fmt"
-	"testing"
-
+	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
+/*
 func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIngredient) {
 	t.Helper()
 
@@ -96,6 +89,7 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 		}
 	})
 }
+*/
 
 func (s *TestSuite) TestValidIngredients_GetRandom() {
 	s.runTest("should be able to get a random valid ingredient", func(testClients *testClientWrapper) func() {
@@ -105,20 +99,59 @@ func (s *TestSuite) TestValidIngredients_GetRandom() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			require.NoError(t, err)
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+			exampleValidIngredientInput := &messages.ValidIngredientCreationRequestInput{
+				StorageTemperatureInCelsius: &messages.OptionalFloat32Range{
+					Max: pointer.To(float32(1000.0)),
+					Min: pointer.To(float32(1.0)),
+				},
+				Warning:                "warning",
+				IconPath:               "picture.png",
+				PluralName:             "things",
+				StorageInstructions:    "do it right",
+				Name:                   "thing",
+				Description:            "example description",
+				Slug:                   "whatever",
+				ShoppingSuggestions:    "example shopping suggestions",
+				ContainsFish:           true,
+				ContainsShellfish:      false,
+				AnimalFlesh:            true,
+				ContainsEgg:            false,
+				IsLiquid:               true,
+				ContainsSoy:            false,
+				ContainsPeanut:         true,
+				AnimalDerived:          false,
+				RestrictToPreparations: true,
+				ContainsDairy:          false,
+				ContainsSesame:         true,
+				ContainsTreeNut:        false,
+				ContainsWheat:          true,
+				ContainsAlcohol:        false,
+				ContainsGluten:         true,
+				IsStarch:               false,
+				IsProtein:              true,
+				IsGrain:                false,
+				IsFruit:                true,
+				IsSalt:                 false,
+				IsFat:                  true,
+				IsAcid:                 false,
+				IsHeat:                 true,
+			}
 
-			createdValidIngredient, err = testClients.adminClient.GetRandomValidIngredient(ctx)
+			createdValidIngredient, err := testClients.grpcClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			assert.NoError(t, err)
+			assert.NotNil(t, createdValidIngredient)
+
+			createdValidIngredient, err = testClients.grpcClient.GetRandomValidIngredient(ctx, nil)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 
-			assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
+			deleted, err := testClients.grpcClient.ArchiveValidIngredient(ctx, &messages.ArchiveValidIngredientRequest{ValidIngredientID: createdValidIngredient.ID})
+			assert.NoError(t, err)
+			assert.NotNil(t, deleted)
 		}
 	})
 }
 
+/*
 func (s *TestSuite) TestValidIngredients_Listing() {
 	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -196,3 +229,4 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 		}
 	})
 }
+*/

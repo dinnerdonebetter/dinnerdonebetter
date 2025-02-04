@@ -8,7 +8,6 @@ package grpcapi
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/grpcimpl/serverimpl"
@@ -23,12 +22,12 @@ import (
 func Build(ctx context.Context, cfg *config.APIServiceConfig) (*grpc.Server, error) {
 	grpcConfig := &cfg.GRPCServer
 	observabilityConfig := &cfg.Observability
-	tracingcfgConfig := &observabilityConfig.Tracing
 	loggingcfgConfig := &observabilityConfig.Logging
 	logger, err := loggingcfg.ProvideLogger(ctx, loggingcfgConfig)
 	if err != nil {
 		return nil, err
 	}
+	tracingcfgConfig := &observabilityConfig.Tracing
 	tracerProvider, err := tracingcfg.ProvideTracerProvider(ctx, tracingcfgConfig, logger)
 	if err != nil {
 		return nil, err
@@ -42,7 +41,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*grpc.Server, err
 	if err != nil {
 		return nil, err
 	}
-	server, err := BuildWrappedServer(grpcConfig, eatingServiceServer)
+	v := BuildRegistrationFuncs(eatingServiceServer)
+	server, err := grpc.NewGRPCServer(grpcConfig, logger, v...)
 	if err != nil {
 		return nil, err
 	}

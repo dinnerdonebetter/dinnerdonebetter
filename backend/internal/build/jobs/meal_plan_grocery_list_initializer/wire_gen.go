@@ -8,7 +8,6 @@ package mealplangrocerylistinitializer
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"

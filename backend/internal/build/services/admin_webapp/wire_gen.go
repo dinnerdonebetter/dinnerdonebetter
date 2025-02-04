@@ -8,7 +8,6 @@ package adminwebapp
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"

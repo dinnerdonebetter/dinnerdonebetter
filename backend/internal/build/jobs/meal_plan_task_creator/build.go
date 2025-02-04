@@ -31,7 +31,7 @@ func Build(
 		tracingcfg.ProvidersTracingConfig,
 		observability.ProvidersObservability,
 		msgconfig.MessageQueueProviders,
-		loggingcfg.ProvidersLogConfig,
+		loggingcfg.ProvidersLoggingConfig,
 		metricscfg.ProvidersMetrics,
 		ConfigProviders,
 	)

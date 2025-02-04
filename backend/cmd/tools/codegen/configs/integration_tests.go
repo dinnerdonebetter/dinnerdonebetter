@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"github.com/dinnerdonebetter/backend/internal/lib/server/grpc"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -73,6 +74,9 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 			Debug:           false,
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
+		},
+		GRPCServer: grpc.Config{
+			Port: defaultPort,
 		},
 		Database: databasecfg.Config{
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,

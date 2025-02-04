@@ -24,12 +24,13 @@ func Build(
 ) (*grpc.Server, error) {
 	wire.Build(
 		serverimpl.Providers,
+		loggingcfg.ProvidersLoggingConfig,
+		grpc.ProvidersGRPC,
 		ConfigProviders,
-		BuildWrappedServer,
+		BuildRegistrationFuncs,
 		tracingcfg.ProvidersTracingConfig,
 		observability.ProvidersObservability,
 		postgres.ProvidersPostgres,
-		loggingcfg.ProvidersLogConfig,
 	)
 
 	return nil, nil

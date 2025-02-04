@@ -66,7 +66,7 @@ func Build(
 		tracingcfg.ProvidersTracingConfig,
 		observability.ProvidersObservability,
 		postgres.ProvidersPostgres,
-		loggingcfg.ProvidersLogConfig,
+		loggingcfg.ProvidersLoggingConfig,
 		graphing.ProvidersRecipeAnalysis,
 		authservice.Providers,
 		usersservice.Providers,

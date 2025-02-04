@@ -2,6 +2,10 @@ package integration
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/grpc/service"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -17,6 +21,7 @@ const (
 
 type testClientWrapper struct {
 	user        *types.User
+	grpcClient  service.EatingServiceClient
 	userClient  *apiclient.Client
 	adminClient *apiclient.Client
 	authType    string
@@ -31,8 +36,9 @@ func TestIntegration(t *testing.T) {
 type TestSuite struct {
 	suite.Suite
 
-	ctx  context.Context
-	user *types.User
+	ctx        context.Context
+	user       *types.User
+	grpcClient service.EatingServiceClient
 	oauthedClient,
 	adminOAuthedClient *apiclient.Client
 }
@@ -47,8 +53,15 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.oauthedClient = createUserAndClientForTest(s.ctx, t, nil)
-	s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
+	//s.user, s.oauthedClient = createUserAndClientForTest(s.ctx, t, nil)
+	//s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
+
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+	conn, err := grpc.NewClient(urlToUse, opts...)
+	require.NoError(t, err)
+	s.grpcClient = service.NewEatingServiceClient(conn)
 }
 
 /*
@@ -65,5 +78,11 @@ func (s *TestSuite) TearDownSuite() {
 
 func (s *TestSuite) runTest(name string, subtestBuilder func(*testClientWrapper) func()) {
 	s.T().Logf("\n\nrunning '%s'\n\n", name)
-	s.Run(name, subtestBuilder(&testClientWrapper{authType: oauth2AuthType, userClient: s.oauthedClient, adminClient: s.adminOAuthedClient, user: s.user}))
+	s.Run(name, subtestBuilder(&testClientWrapper{
+		authType:    oauth2AuthType,
+		grpcClient:  s.grpcClient,
+		userClient:  s.oauthedClient,
+		adminClient: s.adminOAuthedClient,
+		user:        s.user,
+	}))
 }

@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -15,11 +16,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
-	serverutils "github.com/dinnerdonebetter/backend/internal/lib/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -54,11 +53,14 @@ func init() {
 		panic("could not create logger: " + err.Error())
 	}
 
-	parsedURLToUse = serverutils.DetermineServiceURL()
-	urlToUse = parsedURLToUse.String()
+	//parsedURLToUse = serverutils.DetermineServiceURL()
+	//urlToUse = parsedURLToUse.String()
+	urlToUse = "api_server:8000"
 
-	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	serverutils.EnsureServerIsUp(ctx, urlToUse)
+	//logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
+	//serverutils.EnsureServerIsUp(ctx, urlToUse)
+
+	time.Sleep(15 * time.Second)
 
 	dbAddr := os.Getenv("TARGET_DATABASE")
 	if dbAddr == "" {
@@ -135,38 +137,40 @@ func init() {
 		panic(err)
 	}
 
-	simpleClient, err := apiclient.NewClient(
-		parsedURLToUse,
-		tracing.NewNoopTracerProvider(),
-		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
-		apiclient.UsingURL(urlToUse),
-	)
-	if err != nil {
-		panic(err)
-	}
+	/*
+		simpleClient, err := apiclient.NewClient(
+			parsedURLToUse,
+			tracing.NewNoopTracerProvider(),
+			apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
+			apiclient.UsingURL(urlToUse),
+		)
+		if err != nil {
+			panic(err)
+		}
 
-	code, err := generateTOTPTokenForUserWithoutTest(premadeAdminUser)
-	if err != nil {
-		panic(err)
-	}
+		code, err := generateTOTPTokenForUserWithoutTest(premadeAdminUser)
+		if err != nil {
+			panic(err)
+		}
 
-	jwtRes, err := simpleClient.AdminLoginForToken(ctx, &apiclient.UserLoginInput{
-		Username:  premadeAdminUser.Username,
-		Password:  premadeAdminUser.HashedPassword,
-		TotpToken: code,
-	})
-	if err != nil {
-		panic(err)
-	}
+		jwtRes, err := simpleClient.AdminLoginForToken(ctx, &apiclient.UserLoginInput{
+			Username:  premadeAdminUser.Username,
+			Password:  premadeAdminUser.HashedPassword,
+			TotpToken: code,
+		})
+		if err != nil {
+			panic(err)
+		}
 
-	premadeAdminClient, err = apiclient.NewClient(
-		parsedURLToUse,
-		tracing.NewNoopTracerProvider(),
-		apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"service_admin"}, jwtRes.Token),
-	)
-	if err != nil {
-		panic(err)
-	}
+		premadeAdminClient, err = apiclient.NewClient(
+			parsedURLToUse,
+			tracing.NewNoopTracerProvider(),
+			apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"service_admin"}, jwtRes.Token),
+		)
+		if err != nil {
+			panic(err)
+		}
+	*/
 
 	fiftySpaces := strings.Repeat("\n", 50)
 	fmt.Printf("%s\tRunning tests%s", fiftySpaces, fiftySpaces)
