@@ -1,8 +1,9 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"time"
+
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

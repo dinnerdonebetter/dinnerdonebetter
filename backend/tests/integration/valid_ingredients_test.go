@@ -4,6 +4,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+
 	"github.com/stretchr/testify/assert"
 )
 

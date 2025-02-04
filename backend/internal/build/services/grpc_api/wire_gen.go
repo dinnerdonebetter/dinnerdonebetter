@@ -8,6 +8,7 @@ package grpcapi
 
 import (
 	"context"
+
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/grpcimpl/serverimpl"
@@ -37,14 +38,16 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*grpc.Server, err
 	if err != nil {
 		return nil, err
 	}
-	eatingServiceServer, err := serverimpl.NewServer(tracerProvider, logger, dataManager)
+	server, err := serverimpl.NewServer(tracerProvider, logger, dataManager)
 	if err != nil {
 		return nil, err
 	}
-	v := BuildRegistrationFuncs(eatingServiceServer)
-	server, err := grpc.NewGRPCServer(grpcConfig, logger, v...)
+	v := BuildUnaryServerInterceptors(server)
+	v2 := BuildStreamServerInterceptors(server)
+	v3 := BuildRegistrationFuncs(server)
+	grpcServer, err := grpc.NewGRPCServer(grpcConfig, logger, v, v2, v3...)
 	if err != nil {
 		return nil, err
 	}
-	return server, nil
+	return grpcServer, nil
 }

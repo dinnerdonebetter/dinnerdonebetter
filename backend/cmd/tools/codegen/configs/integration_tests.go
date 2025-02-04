@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/base64"
-	"github.com/dinnerdonebetter/backend/internal/lib/server/grpc"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -22,6 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads"

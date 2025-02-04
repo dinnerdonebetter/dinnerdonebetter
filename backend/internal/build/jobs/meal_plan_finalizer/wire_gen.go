@@ -8,6 +8,7 @@ package mealplanfinalizer
 
 import (
 	"context"
+
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"

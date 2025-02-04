@@ -27,6 +27,8 @@ func Build(
 		loggingcfg.ProvidersLoggingConfig,
 		grpc.ProvidersGRPC,
 		ConfigProviders,
+		BuildUnaryServerInterceptors,
+		BuildStreamServerInterceptors,
 		BuildRegistrationFuncs,
 		tracingcfg.ProvidersTracingConfig,
 		observability.ProvidersObservability,

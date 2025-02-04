@@ -3,13 +3,13 @@ package grpc
 import (
 	"errors"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"log"
 	"net"
 	"net/http"
 	"os"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 
 	"google.golang.org/grpc"
 )
@@ -24,21 +24,35 @@ type (
 	}
 
 	Server struct {
-		logger     logging.Logger
-		config     *Config
-		grpcServer *grpc.Server
+		logger                   logging.Logger
+		config                   *Config
+		grpcServer               *grpc.Server
+		unaryServerInterceptors  []grpc.UnaryServerInterceptor
+		streamServerInterceptors []grpc.StreamServerInterceptor
 	}
 
 	RegistrationFunc func(*grpc.Server)
 )
 
-func NewGRPCServer(cfg *Config, logger logging.Logger, registrationFunctions ...RegistrationFunc) (*Server, error) {
+func NewGRPCServer(
+	cfg *Config,
+	logger logging.Logger,
+	unaryServerInterceptors []grpc.UnaryServerInterceptor,
+	streamServerInterceptors []grpc.StreamServerInterceptor,
+	registrationFunctions ...RegistrationFunc,
+) (*Server, error) {
 	if cfg == nil {
 		return nil, internalerrors.NilConfigError("grpc server")
 	}
 
-	var opts []grpc.ServerOption
+	opts := []grpc.ServerOption{}
+	for _, interceptor := range unaryServerInterceptors {
+		opts = append(opts, grpc.UnaryInterceptor(interceptor))
+	}
 
+	for _, interceptor := range streamServerInterceptors {
+		opts = append(opts, grpc.StreamInterceptor(interceptor))
+	}
 	grpcServer := grpc.NewServer(opts...)
 
 	for _, rf := range registrationFunctions {
@@ -66,7 +80,7 @@ func (s *Server) Serve() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s.logger.WithValue("port", s.config.Port).Info("listener established, serving")
+	s.logger.WithValue("portx", s.config.Port).Info("listener established, serving")
 	if err = s.grpcServer.Serve(lis); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
 			// NOTE: there is a chance that next line won't have time to run,
