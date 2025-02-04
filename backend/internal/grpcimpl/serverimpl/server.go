@@ -4,10 +4,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/grpc/service"
+	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
+	"github.com/dinnerdonebetter/backend/internal/lib/featureflags"
+	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/random"
 )
 
 const (
@@ -18,12 +22,16 @@ var _ service.EatingServiceServer = (*Server)(nil)
 
 type Server struct {
 	service.UnimplementedEatingServiceServer
-	tracer        tracing.Tracer
-	logger        logging.Logger
-	config        *config.APIServiceConfig
-	dataManager   database.DataManager
-	tokenIssuer   tokens.Issuer
-	authenticator authentication.Authenticator
+	dataChangesPublisher messagequeue.Publisher
+	analyticsReporter    analytics.EventReporter
+	featureFlagManager   featureflags.FeatureFlagManager
+	tracer               tracing.Tracer
+	logger               logging.Logger
+	config               *config.APIServiceConfig
+	dataManager          database.DataManager
+	tokenIssuer          tokens.Issuer
+	authenticator        authentication.Authenticator
+	secretGenerator      random.Generator
 }
 
 func NewServer(

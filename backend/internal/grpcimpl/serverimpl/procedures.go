@@ -538,13 +538,6 @@ func (s *Server) CreateServiceSettingConfiguration(ctx context.Context, input *m
 	return nil, errUnimplemented
 }
 
-func (s *Server) CreateUser(ctx context.Context, input *messages.UserRegistrationInput) (*messages.UserCreationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	return nil, errUnimplemented
-}
-
 func (s *Server) CreateUserIngredientPreference(ctx context.Context, input *messages.UserIngredientPreferenceCreationRequestInput) (*messages.UserIngredientPreference, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()

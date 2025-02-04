@@ -11,6 +11,8 @@ const (
 	HouseholdInvitationTokenKey = "household_invitation.token"
 	// ActiveHouseholdIDKey is the standard key for referring to an active household ID.
 	ActiveHouseholdIDKey = "active_household.id"
+	// DefaultHouseholdIDKey is the standard key for referring to a default household ID.
+	DefaultHouseholdIDKey = "household.default.id"
 	// UserIDKey is the standard key for referring to a user ID.
 	UserIDKey = "user.id"
 	// UserNotificationIDKey is the standard key for referring to a user notification ID.
