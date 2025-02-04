@@ -47,20 +47,3 @@ func NewServer(
 
 	return s, nil
 }
-
-func (s *server) AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, status.Error(codes.Unauthenticated, "missing metadata")
-	}
-
-	token := strings.TrimPrefix(md.Get("authorization")[0], "Bearer ")
-
-	_, err := s.tokenIssuer.ParseUserIDFromToken(ctx, token)
-	if err != nil {
-		return nil, status.Error(codes.Unauthenticated, "invalid token")
-	}
-
-	// Attach claims to context
-	return handler(ctx, req)
-}

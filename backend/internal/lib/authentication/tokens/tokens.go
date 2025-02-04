@@ -12,10 +12,4 @@ type (
 		IssueToken(ctx context.Context, user authentication.User, expiry time.Duration) (string, error)
 		ParseUserIDFromToken(ctx context.Context, token string) (string, error)
 	}
-
-	Token interface {
-		UserID() string
-		Claims() map[string]bool
-		Expiry() time.Time
-	}
 )
