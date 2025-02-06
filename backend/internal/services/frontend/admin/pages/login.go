@@ -58,7 +58,7 @@ var (
 	validatedTOTPCodeInputProps = mustValidateTextProps(&components.TextInputsProps{
 		ID:          "totpToken",
 		Name:        "totpToken",
-		LabelText:   "TOTP Token",
+		LabelText:   "TOTP AccessToken",
 		Type:        "text",
 		Placeholder: "123456",
 	})

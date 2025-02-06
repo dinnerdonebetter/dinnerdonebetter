@@ -63,15 +63,6 @@ type (
 		UserIsAuthenticated      bool   `json:"isAuthenticated"`
 	}
 
-	// TokenResponse is used to return a JWT to a user.
-	TokenResponse struct {
-		_ struct{} `json:"-"`
-
-		UserID      string `json:"userID"`
-		HouseholdID string `json:"householdID"`
-		Token       string `json:"token"`
-	}
-
 	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.
 	UserPermissionsRequestInput struct {
 		_ struct{} `json:"-"`

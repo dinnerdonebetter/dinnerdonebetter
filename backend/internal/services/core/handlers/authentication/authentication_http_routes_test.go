@@ -9,6 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/lib/authentication/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens/paseto"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
@@ -82,12 +83,12 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.TokenResponse]
+		var actual *types.APIResponse[*tokens.TokenResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		sub, err := helper.service.tokenIssuer.ParseUserIDFromToken(helper.ctx, actual.Data.Token)
+		sub, err := helper.service.tokenIssuer.ParseUserIDFromToken(helper.ctx, actual.Data.AccessToken)
 		assert.NoError(t, err)
 		assert.Equal(t, helper.exampleUser.ID, sub)
 
@@ -145,7 +146,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper.service.BuildLoginHandler(true)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.TokenResponse]
+		var actual *types.APIResponse[*tokens.TokenResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
@@ -579,7 +580,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.TokenResponse]
+		var actual *types.APIResponse[*tokens.TokenResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotNil(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())

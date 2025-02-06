@@ -12,6 +12,7 @@ var (
 	ConfigProviders = wire.NewSet(
 		wire.FieldsOf(
 			new(*config.APIServiceConfig),
+			"Auth",
 			"Queues",
 			"Email",
 			"Analytics",

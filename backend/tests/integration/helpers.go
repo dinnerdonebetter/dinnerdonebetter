@@ -43,7 +43,7 @@ func hashStringToNumber(s string) uint64 {
 	return h.Sum64()
 }
 
-func createUserAndClientForTest(ctx context.Context, t *testing.T, input *messages.UserRegistrationInput) (user *types.User, oauthedClient service.EatingServiceClient) {
+func createUserAndClientForTest(ctx context.Context, t *testing.T, address string, input *messages.UserRegistrationInput) (user *types.User, oauthedClient service.EatingServiceClient) {
 	t.Helper()
 
 	if input == nil {
@@ -60,7 +60,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *messag
 		}
 	}
 
-	user, err := createServiceUser(ctx, urlToUse, input)
+	user, err := createServiceUser(ctx, address, input)
 	require.NoError(t, err)
 
 	t.Logf("created user %s", user.ID)
@@ -74,14 +74,14 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *messag
 		TOTPToken: code,
 	}
 
-	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
+	oauthedClient, err = initializeOAuth2PoweredClient(ctx, address, loginInput)
 	require.NoError(t, err)
 
 	return user, oauthedClient
 }
 
-func initializeOAuth2PoweredClient(ctx context.Context, input *messages.UserLoginInput) (service.EatingServiceClient, error) {
-	c := buildUnauthedGRPCClient()
+func initializeOAuth2PoweredClient(ctx context.Context, address string, input *messages.UserLoginInput) (service.EatingServiceClient, error) {
+	c := buildUnauthedGRPCClient(address)
 
 	tokenResponse, err := c.LoginForToken(ctx, input)
 	if err != nil {
@@ -93,7 +93,7 @@ func initializeOAuth2PoweredClient(ctx context.Context, input *messages.UserLogi
 		grpc.WithPerRPCCredentials(&tokenCreds{token: tokenResponse.AccessToken}),
 	}
 
-	conn, err := grpc.NewClient(urlToUse, opts...)
+	conn, err := grpc.NewClient(address, opts...)
 	if err != nil {
 		panic(err)
 	}
@@ -119,12 +119,12 @@ func generateTOTPTokenForUser(t *testing.T, u *types.User) string {
 	return code
 }
 
-func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauthedClient service.EatingServiceClient) {
+func buildAdminCookieAndOAuthedClients(ctx context.Context, address string, t *testing.T) (oauthedClient service.EatingServiceClient) {
 	t.Helper()
 
 	logger, err := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger(ctx)
 	require.NoError(t, err)
-	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
+	logger.WithValue(keys.URLKey, address).Info("checking server")
 
 	adminCode, err := totp.GenerateCode(strings.ToUpper(premadeAdminUser.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
@@ -135,18 +135,18 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauth
 		TOTPToken: adminCode,
 	}
 
-	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
+	oauthedClient, err = initializeOAuth2PoweredClient(ctx, address, loginInput)
 	require.NoError(t, err)
 
 	return oauthedClient
 }
 
-func buildUnauthedGRPCClient() service.EatingServiceClient {
+func buildUnauthedGRPCClient(address string) service.EatingServiceClient {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		/*
 			grpc.WithPerRPCCredentials(oauth.TokenSource{
-				TokenSource: oauth2.StaticTokenSource(&oauth2.Token{
+				TokenSource: oauth2.StaticTokenSource(&oauth2.AccessToken{
 					AccessToken:  "",
 					TokenType:    "",
 					RefreshToken: "",
@@ -158,7 +158,7 @@ func buildUnauthedGRPCClient() service.EatingServiceClient {
 		*/
 	}
 
-	conn, err := grpc.NewClient(urlToUse, opts...)
+	conn, err := grpc.NewClient(address, opts...)
 	if err != nil {
 		panic(err)
 	}
@@ -168,11 +168,7 @@ func buildUnauthedGRPCClient() service.EatingServiceClient {
 
 // createServiceUser creates a user.
 func createServiceUser(ctx context.Context, address string, in *messages.UserRegistrationInput) (*types.User, error) {
-	if address == "" {
-		return nil, errors.New("empty address not allowed")
-	}
-
-	c := buildUnauthedGRPCClient()
+	c := buildUnauthedGRPCClient(address)
 
 	ucr, err := c.CreateUser(ctx, in)
 	if err != nil {

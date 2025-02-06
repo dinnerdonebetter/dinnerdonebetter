@@ -22,6 +22,7 @@ var _ service.EatingServiceServer = (*Server)(nil)
 
 type Server struct {
 	service.UnimplementedEatingServiceServer
+	authManager          authentication.Manager
 	dataChangesPublisher messagequeue.Publisher
 	analyticsReporter    analytics.EventReporter
 	featureFlagManager   featureflags.FeatureFlagManager
@@ -36,6 +37,7 @@ type Server struct {
 
 func NewServer(
 	cfg *config.APIServiceConfig,
+	authManager authentication.Manager,
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	dataManager database.DataManager,
@@ -59,6 +61,7 @@ func NewServer(
 		analyticsReporter:    analyticsReporter,
 		featureFlagManager:   featureFlagManager,
 		config:               cfg,
+		authManager:          authManager,
 		tokenIssuer:          tokenIssuer,
 		authenticator:        authenticator,
 		secretGenerator:      secretGenerator,

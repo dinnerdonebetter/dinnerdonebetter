@@ -6,7 +6,6 @@ import (
 	"errors"
 	"math"
 	"strings"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -122,61 +121,21 @@ func (s *Server) loginForToken(ctx context.Context, admin bool, input *messages.
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	//
-	// TODO: validation
-	//
-
-	userFetcher := s.dataManager.GetUserByUsername
-	if admin {
-		userFetcher = s.dataManager.GetAdminUserByUsername
-	}
-
-	user, err := userFetcher(ctx, input.Username)
+	tokenResponse, err := s.authManager.ProcessLogin(ctx, admin, &types.UserLoginInput{
+		Username:  input.Username,
+		Password:  input.Password,
+		TOTPToken: input.TOTPToken,
+	})
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching user by username")
-	}
-
-	loginValid, err := s.authenticator.CredentialsAreValid(
-		ctx,
-		user.HashedPassword,
-		input.Password,
-		user.TwoFactorSecret,
-		input.TOTPToken,
-	)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "validating login")
-	}
-
-	if !loginValid {
-		return nil, observability.PrepareError(err, span, "invalid login")
-	}
-
-	if loginValid && user.TwoFactorSecretVerifiedAt != nil && input.TOTPToken == "" {
-		return nil, observability.PrepareError(err, span, "user with two factor verification active attempted to log in without providing TOTP")
-	}
-
-	defaultHouseholdID, err := s.dataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching user memberships")
-	}
-
-	var accessToken, refreshToken string
-	accessToken, err = s.tokenIssuer.IssueToken(ctx, user, s.config.Services.Auth.MaxAccessTokenLifetime)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "signing token")
-	}
-
-	refreshToken, err = s.tokenIssuer.IssueToken(ctx, user, s.config.Services.Auth.MaxRefreshTokenLifetime)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "signing token")
+		return nil, observability.PrepareError(err, span, "processing login")
 	}
 
 	output := &messages.TokenResponse{
-		UserID:       user.ID,
-		HouseholdID:  defaultHouseholdID,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		Expires:      timestamppb.New(time.Now().Add(s.config.Services.Auth.MaxAccessTokenLifetime)),
+		UserID:       tokenResponse.UserID,
+		HouseholdID:  tokenResponse.HouseholdID,
+		AccessToken:  tokenResponse.AccessToken,
+		RefreshToken: tokenResponse.RefreshToken,
+		ExpiresUTC:   timestamppb.New(tokenResponse.ExpiresUTC),
 	}
 
 	return output, nil

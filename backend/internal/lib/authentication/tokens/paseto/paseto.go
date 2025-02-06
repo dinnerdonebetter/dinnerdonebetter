@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/users"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -49,7 +49,7 @@ type tokenPayload struct {
 }
 
 // IssueToken issues a new PASETO token.
-func (s *signer) IssueToken(ctx context.Context, user authentication.User, expiry time.Duration) (string, error) {
+func (s *signer) IssueToken(ctx context.Context, user users.User, expiry time.Duration) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -75,7 +75,7 @@ func (s *signer) IssueToken(ctx context.Context, user authentication.User, expir
 	return tokenString, nil
 }
 
-// ParseUserIDFromToken parses a Token and returns the associated user ID.
+// ParseUserIDFromToken parses a AccessToken and returns the associated user ID.
 func (s *signer) ParseUserIDFromToken(ctx context.Context, providedToken string) (string, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()

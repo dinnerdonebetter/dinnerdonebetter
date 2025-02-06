@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/users"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -16,7 +16,7 @@ type Issuer struct {
 	mock.Mock
 }
 
-func (m *Issuer) IssueToken(ctx context.Context, user authentication.User, expiry time.Duration) (string, error) {
+func (m *Issuer) IssueToken(ctx context.Context, user users.User, expiry time.Duration) (string, error) {
 	returnValues := m.Called(ctx, user, expiry)
 	return returnValues.String(0), returnValues.Error(1)
 }

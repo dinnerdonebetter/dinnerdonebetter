@@ -23,6 +23,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	EatingService_Ping_FullMethodName                                                = "/eating.EatingService/Ping"
 	EatingService_AcceptHouseholdInvitation_FullMethodName                           = "/eating.EatingService/AcceptHouseholdInvitation"
 	EatingService_AdminLoginForToken_FullMethodName                                  = "/eating.EatingService/AdminLoginForToken"
 	EatingService_AdminUpdateUserStatus_FullMethodName                               = "/eating.EatingService/AdminUpdateUserStatus"
@@ -288,6 +289,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EatingServiceClient interface {
+	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AcceptHouseholdInvitation(ctx context.Context, in *messages.AcceptHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
 	AdminLoginForToken(ctx context.Context, in *messages.UserLoginInput, opts ...grpc.CallOption) (*messages.TokenResponse, error)
 	AdminUpdateUserStatus(ctx context.Context, in *messages.UserAccountStatusUpdateInput, opts ...grpc.CallOption) (*messages.UserStatusResponse, error)
@@ -555,6 +557,16 @@ type eatingServiceClient struct {
 
 func NewEatingServiceClient(cc grpc.ClientConnInterface) EatingServiceClient {
 	return &eatingServiceClient{cc}
+}
+
+func (c *eatingServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, EatingService_Ping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *eatingServiceClient) AcceptHouseholdInvitation(ctx context.Context, in *messages.AcceptHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error) {
@@ -3151,6 +3163,7 @@ func (c *eatingServiceClient) VerifyTOTPSecret(ctx context.Context, in *messages
 // All implementations must embed UnimplementedEatingServiceServer
 // for forward compatibility.
 type EatingServiceServer interface {
+	Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	AcceptHouseholdInvitation(context.Context, *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error)
 	AdminLoginForToken(context.Context, *messages.UserLoginInput) (*messages.TokenResponse, error)
 	AdminUpdateUserStatus(context.Context, *messages.UserAccountStatusUpdateInput) (*messages.UserStatusResponse, error)
@@ -3420,6 +3433,9 @@ type EatingServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedEatingServiceServer struct{}
 
+func (UnimplementedEatingServiceServer) Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
 func (UnimplementedEatingServiceServer) AcceptHouseholdInvitation(context.Context, *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptHouseholdInvitation not implemented")
 }
@@ -4216,6 +4232,24 @@ func RegisterEatingServiceServer(s grpc.ServiceRegistrar, srv EatingServiceServe
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&EatingService_ServiceDesc, srv)
+}
+
+func _EatingService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EatingServiceServer).Ping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EatingService_Ping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EatingServiceServer).Ping(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_AcceptHouseholdInvitation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -8887,6 +8921,10 @@ var EatingService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "eating.EatingService",
 	HandlerType: (*EatingServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Ping",
+			Handler:    _EatingService_Ping_Handler,
+		},
 		{
 			MethodName: "AcceptHouseholdInvitation",
 			Handler:    _EatingService_AcceptHouseholdInvitation_Handler,

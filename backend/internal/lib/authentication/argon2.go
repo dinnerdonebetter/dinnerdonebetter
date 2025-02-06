@@ -22,7 +22,6 @@ func init() {
 }
 
 const (
-	serviceName        = "argon2"
 	sixtyFourMegabytes = 2<<15 - 1
 )
 
@@ -46,6 +45,8 @@ type (
 
 // ProvideArgon2Authenticator returns an argon2 powered Argon2Authenticator.
 func ProvideArgon2Authenticator(logger logging.Logger, tracerProvider tracing.TracerProvider) Authenticator {
+	const serviceName = "argon2"
+
 	ba := &Argon2Authenticator{
 		logger: logging.EnsureLogger(logger).WithName(serviceName),
 		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),

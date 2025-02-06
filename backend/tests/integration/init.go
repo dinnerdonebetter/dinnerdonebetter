@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"net/url"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -18,6 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/service"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
@@ -30,12 +31,12 @@ import (
 const (
 	debug         = true
 	nonexistentID = "_NOT_REAL_LOL_"
+
+	serviceURLEnvVarKey = "TARGET_ADDRESS"
 )
 
 var (
-	urlToUse       string
-	parsedURLToUse *url.URL
-	dbManager      database.DataManager
+	dbManager database.DataManager
 
 	createdClientID, createdClientSecret string
 
@@ -57,14 +58,10 @@ func init() {
 		panic("could not create logger: " + err.Error())
 	}
 
-	//parsedURLToUse = serverutils.DetermineServiceURL()
-	//urlToUse = parsedURLToUse.String()
-	urlToUse = "api_server:8000"
+	urlToUse := os.Getenv(serviceURLEnvVarKey)
 
-	//logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	//serverutils.EnsureServerIsUp(ctx, urlToUse)
-
-	time.Sleep(15 * time.Second)
+	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
+	ensureServerIsUp(ctx, urlToUse)
 
 	dbAddr := os.Getenv("TARGET_DATABASE")
 	if dbAddr == "" {
@@ -141,7 +138,7 @@ func init() {
 		panic(err)
 	}
 
-	simpleClient := buildUnauthedGRPCClient()
+	simpleClient := buildUnauthedGRPCClient(urlToUse)
 
 	code, err := generateTOTPTokenForUserWithoutTest(premadeAdminUser)
 	if err != nil {
@@ -187,4 +184,29 @@ func (t *tokenCreds) GetRequestMetadata(context.Context, ...string) (map[string]
 
 func (t *tokenCreds) RequireTransportSecurity() bool {
 	return false
+}
+
+func ensureServerIsUp(ctx context.Context, address string) {
+	c := buildUnauthedGRPCClient(address)
+
+	var (
+		isDown           = true
+		interval         = time.Second
+		maxAttempts      = 50
+		numberOfAttempts = 0
+	)
+
+	for isDown {
+		if _, err := c.Ping(ctx, nil); err != nil {
+			log.Printf("waiting %s before pinging again", interval)
+			time.Sleep(interval)
+
+			numberOfAttempts++
+			if numberOfAttempts >= maxAttempts {
+				log.Fatal("Maximum number of attempts made, something's gone awry")
+			}
+		} else {
+			isDown = false
+		}
+	}
 }

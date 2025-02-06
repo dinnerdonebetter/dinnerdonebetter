@@ -35,7 +35,7 @@ func EnsureServerIsUp(ctx context.Context, address string) {
 	)
 
 	for isDown {
-		if !IsUp(ctx, fmt.Sprintf("%s/_ops_/ready", address)) {
+		if !HTTPEndpointIsUp(ctx, fmt.Sprintf("%s/_ops_/ready", address)) {
 			log.Printf("waiting %s before pinging %s again", interval, address)
 			time.Sleep(interval)
 
@@ -49,8 +49,8 @@ func EnsureServerIsUp(ctx context.Context, address string) {
 	}
 }
 
-// IsUp can check if an instance of our server is alive.
-func IsUp(ctx context.Context, address string) bool {
+// HTTPEndpointIsUp can check if an instance of our server is alive.
+func HTTPEndpointIsUp(ctx context.Context, address string) bool {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, address, http.NoBody)
 	if err != nil {
 		panic(err)

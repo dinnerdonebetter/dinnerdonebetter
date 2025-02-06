@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/users"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
@@ -34,7 +34,7 @@ func Test_signer_IssueToken(T *testing.T) {
 		require.NoError(t, err)
 
 		ctx := context.Background()
-		user := authentication.NewMockUser()
+		user := users.NewMockUser()
 		user.On("GetID").Return("user_id").Times(2)
 
 		actual, err := s.IssueToken(ctx, user, exampleExpiry)
@@ -58,7 +58,7 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 		require.NoError(t, err)
 
 		ctx := context.Background()
-		user := authentication.NewMockUser()
+		user := users.NewMockUser()
 		user.On("GetID").Return("user_id").Times(2)
 
 		issuedToken, err := s.IssueToken(ctx, user, exampleExpiry)

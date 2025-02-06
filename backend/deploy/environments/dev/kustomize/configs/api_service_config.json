@@ -1,4 +1,16 @@
 {
+	"auth": {
+		"tokens": {
+			"provider": "",
+			"audience": "",
+			"base64EncodedSigningKey": ""
+		},
+		"sso": {
+			"google": {}
+		},
+		"maxAccessTokenLifetime": 0,
+		"maxRefreshTokenLifetime": 0
+	},
 	"queues": {
 		"dataChangesTopicName": "",
 		"outboundEmailsTopicName": "",
@@ -216,7 +228,8 @@
 				"refreshTokenLifespan": 3600000000000,
 				"debug": false
 			},
-			"jwtLifetime": 300000000000,
+			"maxAccessTokenLifetime": 300000000000,
+			"maxRefreshTokenLifetime": 0,
 			"debug": true,
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,

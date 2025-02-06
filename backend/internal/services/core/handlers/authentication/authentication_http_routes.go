@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -157,12 +158,12 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
-		responseValue := &types.APIResponse[*types.TokenResponse]{
+		responseValue := &types.APIResponse[*tokens.TokenResponse]{
 			Details: responseDetails,
-			Data: &types.TokenResponse{
+			Data: &tokens.TokenResponse{
 				HouseholdID: defaultHouseholdID,
 				UserID:      user.ID,
-				Token:       token,
+				AccessToken: token,
 			},
 		}
 
@@ -411,12 +412,12 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 		return
 	}
 
-	responseValue := &types.APIResponse[*types.TokenResponse]{
+	responseValue := &types.APIResponse[*tokens.TokenResponse]{
 		Details: responseDetails,
-		Data: &types.TokenResponse{
+		Data: &tokens.TokenResponse{
 			HouseholdID: defaultHouseholdID,
 			UserID:      user.ID,
-			Token:       token,
+			AccessToken: token,
 		},
 	}
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -1732,12 +1733,12 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"POST /users/login/jwt": {
 		ID:           "LoginForToken",
-		ResponseType: &types.TokenResponse{},
+		ResponseType: &tokens.TokenResponse{},
 		InputType:    &types.UserLoginInput{},
 	},
 	"POST /users/login/jwt/admin": {
 		ID:           "AdminLoginForToken",
-		ResponseType: &types.TokenResponse{},
+		ResponseType: &tokens.TokenResponse{},
 		InputType:    &types.UserLoginInput{},
 	},
 	"POST /users/logout": {

@@ -3,6 +3,7 @@ package fakes
 import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -60,11 +61,11 @@ func BuildFakeUserStatusResponse() *types.UserStatusResponse {
 }
 
 // BuildFakeTokenResponse builds a faked TokenResponse.
-func BuildFakeTokenResponse() *types.TokenResponse {
-	return &types.TokenResponse{
+func BuildFakeTokenResponse() *tokens.TokenResponse {
+	return &tokens.TokenResponse{
 		UserID:      BuildFakeID(),
 		HouseholdID: BuildFakeID(),
-		Token:       fake.UUID(),
+		AccessToken: fake.UUID(),
 	}
 }
 

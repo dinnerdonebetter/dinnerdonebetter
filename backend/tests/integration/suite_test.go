@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/grpc/service"
@@ -22,20 +23,23 @@ type testClientWrapper struct {
 	authType                string
 }
 
-func TestIntegration(t *testing.T) {
-	t.Parallel()
+func TestIntegration(T *testing.T) {
+	T.Parallel()
 
-	suite.Run(t, new(TestSuite))
+	s := new(TestSuite)
+	s.address = os.Getenv(serviceURLEnvVarKey) // it's this or global variables
+
+	suite.Run(T, s)
 }
 
 type TestSuite struct {
 	suite.Suite
-
-	ctx        context.Context
-	user       *types.User
-	grpcClient service.EatingServiceClient
-	oauthedClient,
+	ctx                context.Context
+	grpcClient         service.EatingServiceClient
+	oauthedClient      service.EatingServiceClient
 	adminOAuthedClient service.EatingServiceClient
+	user               *types.User
+	address            string
 }
 
 var _ suite.SetupTestSuite = (*TestSuite)(nil)
@@ -48,8 +52,8 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.oauthedClient = createUserAndClientForTest(s.ctx, t, nil)
-	s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
+	s.user, s.oauthedClient = createUserAndClientForTest(s.ctx, t, s.address, nil)
+	s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, s.address, t)
 }
 
 /*
@@ -65,7 +69,6 @@ func (s *TestSuite) TearDownSuite() {
 */
 
 func (s *TestSuite) runTest(name string, subtestBuilder func(*testClientWrapper) func()) {
-	s.T().Logf("\n\nrunning '%s'\n\n", name)
 	s.Run(name, subtestBuilder(&testClientWrapper{
 		authType:    oauth2AuthType,
 		userClient:  s.oauthedClient,

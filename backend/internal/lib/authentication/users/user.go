@@ -1,4 +1,4 @@
-package authentication
+package users
 
 import (
 	"github.com/stretchr/testify/mock"

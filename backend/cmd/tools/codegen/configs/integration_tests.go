@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
+	authcfg "github.com/dinnerdonebetter/backend/internal/lib/authentication/config"
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
@@ -32,8 +33,25 @@ import (
 	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
 )
 
+const (
+	oneDay = 24 * time.Hour
+)
+
 func buildIntegrationTestsConfig() *config.APIServiceConfig {
 	return &config.APIServiceConfig{
+		Auth: authcfg.Config{
+			Debug:                   false,
+			EnableUserSignup:        true,
+			MinimumUsernameLength:   3,
+			MinimumPasswordLength:   8,
+			MaxAccessTokenLifetime:  7 * oneDay,
+			MaxRefreshTokenLifetime: 30 * oneDay,
+			Tokens: tokenscfg.Config{
+				Provider:                tokenscfg.ProviderPASETO,
+				Audience:                "https://api.dinnerdonebetter.dev",
+				Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
+			},
+		},
 		Routing: routingcfg.Config{
 			Provider: routingcfg.ProviderChi,
 			Chi: &chi.Config{

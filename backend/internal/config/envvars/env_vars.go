@@ -197,6 +197,9 @@ const (
 	// FeatureFlagsProviderEnvVarKey is the environment variable name to set in order to override `config.FeatureFlags.Provider`.
 	FeatureFlagsProviderEnvVarKey = "DINNER_DONE_BETTER_FEATURE_FLAGS_PROVIDER"
 
+	// GrpcServerPortEnvVarKey is the environment variable name to set in order to override `config.GRPCServer.Port`.
+	GrpcServerPortEnvVarKey = "DINNER_DONE_BETTER_GRPC_SERVER_PORT"
+
 	// MetaDebugEnvVarKey is the environment variable name to set in order to override `config.Meta.Debug`.
 	MetaDebugEnvVarKey = "DINNER_DONE_BETTER_META_DEBUG"
 
@@ -368,8 +371,11 @@ const (
 	// ServiceAuthEnableUserSignupEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.EnableUserSignup`.
 	ServiceAuthEnableUserSignupEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_ENABLE_USER_SIGNUP"
 
-	// ServiceAuthJwtLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.MaxAccessTokenLifetime`.
-	ServiceAuthJwtLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_LIFETIME"
+	// ServiceAuthMaxAccessTokenLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.MaxAccessTokenLifetime`.
+	ServiceAuthMaxAccessTokenLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_MAX_ACCESS_TOKEN_LIFETIME"
+
+	// ServiceAuthMaxRefreshTokenLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.MaxRefreshTokenLifetime`.
+	ServiceAuthMaxRefreshTokenLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_MAX_REFRESH_TOKEN_LIFETIME"
 
 	// ServiceAuthMinimumPasswordLengthEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.MinimumPasswordLength`.
 	ServiceAuthMinimumPasswordLengthEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_MINIMUM_PASSWORD_LENGTH"

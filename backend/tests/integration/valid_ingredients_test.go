@@ -2,8 +2,8 @@ package integration
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
+	"github.com/dinnerdonebetter/backend/internal/lib/fake"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -100,50 +100,15 @@ func (s *TestSuite) TestValidIngredients_GetRandom() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			exampleValidIngredientInput := &messages.ValidIngredientCreationRequestInput{
-				StorageTemperatureInCelsius: &messages.OptionalFloat32Range{
-					Max: pointer.To(float32(1000.0)),
-					Min: pointer.To(float32(1.0)),
-				},
-				Warning:                "warning",
-				IconPath:               "picture.png",
-				PluralName:             "things",
-				StorageInstructions:    "do it right",
-				Name:                   "thing",
-				Description:            "example description",
-				Slug:                   "whatever",
-				ShoppingSuggestions:    "example shopping suggestions",
-				ContainsFish:           true,
-				ContainsShellfish:      false,
-				AnimalFlesh:            true,
-				ContainsEgg:            false,
-				IsLiquid:               true,
-				ContainsSoy:            false,
-				ContainsPeanut:         true,
-				AnimalDerived:          false,
-				RestrictToPreparations: true,
-				ContainsDairy:          false,
-				ContainsSesame:         true,
-				ContainsTreeNut:        false,
-				ContainsWheat:          true,
-				ContainsAlcohol:        false,
-				ContainsGluten:         true,
-				IsStarch:               false,
-				IsProtein:              true,
-				IsGrain:                false,
-				IsFruit:                true,
-				IsSalt:                 false,
-				IsFat:                  true,
-				IsAcid:                 false,
-				IsHeat:                 true,
-			}
+			exampleValidIngredientInput := fake.BuildFakeForTest[*messages.ValidIngredientCreationRequestInput](t)
 
 			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			assert.NoError(t, err)
 			assert.NotNil(t, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.userClient.GetRandomValidIngredient(ctx, nil)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
+			retrievedValidIngredient, err := testClients.userClient.GetRandomValidIngredient(ctx, nil)
+			requireNotNilAndNoProblems(t, retrievedValidIngredient, err)
+			assert.Equal(t, createdValidIngredient.ID, retrievedValidIngredient.ID)
 
 			deleted, err := testClients.adminClient.ArchiveValidIngredient(ctx, &messages.ArchiveValidIngredientRequest{ValidIngredientID: createdValidIngredient.ID})
 			assert.NoError(t, err)

@@ -18,6 +18,13 @@ var (
 	errUnimplemented = errors.New("unimplemented procedure")
 )
 
+func (s *Server) Ping(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return &emptypb.Empty{}, nil
+}
+
 func (s *Server) AcceptHouseholdInvitation(ctx context.Context, request *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()

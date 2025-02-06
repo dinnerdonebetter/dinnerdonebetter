@@ -13,6 +13,7 @@ import (
 
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
+	authcfg "github.com/dinnerdonebetter/backend/internal/lib/authentication/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/cookies"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/lib/email/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
@@ -65,6 +66,7 @@ type (
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
 		_                struct{}               `json:"-"`
+		Auth             authcfg.Config         `envPrefix:"AUTH_"          json:"auth"`
 		Queues           msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Routing          routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
 		Encoding         encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`

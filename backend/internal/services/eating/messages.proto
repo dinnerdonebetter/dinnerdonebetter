@@ -1241,7 +1241,7 @@ message TokenResponse {
   string HouseholdID = 2;
   string AccessToken = 3;
   string RefreshToken = 4;
-  google.protobuf.Timestamp Expires = 5;
+  google.protobuf.Timestamp ExpiresUTC = 5;
 }
 
 message Uint16RangeWithOptionalMax {

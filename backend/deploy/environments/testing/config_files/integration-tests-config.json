@@ -1,4 +1,19 @@
 {
+	"auth": {
+		"tokens": {
+			"provider": "paseto",
+			"audience": "https://api.dinnerdonebetter.dev",
+			"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA="
+		},
+		"sso": {
+			"google": {}
+		},
+		"maxAccessTokenLifetime": 604800000000000,
+		"maxRefreshTokenLifetime": 2592000000000000,
+		"enableUserSignup": true,
+		"minimumUsernameLength": 3,
+		"minimumPasswordLength": 8
+	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -188,7 +203,8 @@
 				"refreshTokenLifespan": 3600000000000,
 				"debug": false
 			},
-			"jwtLifetime": 300000000000,
+			"maxAccessTokenLifetime": 300000000000,
+			"maxRefreshTokenLifetime": 0,
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8

@@ -36,13 +36,29 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*grpc.Server, err
 	if err != nil {
 		return nil, err
 	}
+	authcfgConfig := &cfg.Auth
+	queuesConfig := cfg.Queues
+	servicesConfig := &cfg.Services
+	authenticationConfig := &servicesConfig.Auth
+	tokenscfgConfig := &authenticationConfig.Tokens
 	tracingcfgConfig := &observabilityConfig.Tracing
 	tracerProvider, err := tracingcfg.ProvideTracerProvider(ctx, tracingcfgConfig, logger)
 	if err != nil {
 		return nil, err
 	}
-	databasecfgConfig := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	issuer, err := tokenscfg.ProvideTokenIssuer(tokenscfgConfig, logger, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
+	featureflagscfgConfig := &cfg.FeatureFlags
+	metricscfgConfig := &observabilityConfig.Metrics
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	client := tracing.BuildTracedHTTPClient()
+	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, provider, client)
 	if err != nil {
 		return nil, err
 	}
@@ -52,31 +68,22 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*grpc.Server, err
 		return nil, err
 	}
 	analyticscfgConfig := &cfg.Analytics
-	metricscfgConfig := &observabilityConfig.Metrics
-	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
-	if err != nil {
-		return nil, err
-	}
 	eventReporter, err := analyticscfg.ProvideEventReporter(analyticscfgConfig, logger, tracerProvider, provider)
 	if err != nil {
 		return nil, err
 	}
-	featureflagscfgConfig := &cfg.FeatureFlags
-	client := tracing.BuildTracedHTTPClient()
-	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, provider, client)
+	databasecfgConfig := &cfg.Database
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
 	if err != nil {
 		return nil, err
 	}
-	servicesConfig := &cfg.Services
-	authenticationConfig := &servicesConfig.Auth
-	tokenscfgConfig := &authenticationConfig.Tokens
-	issuer, err := tokenscfg.ProvideTokenIssuer(tokenscfgConfig, logger, tracerProvider)
+	userAuthDataManager := authentication.ProvideUserAuthDataManager(dataManager)
+	manager, err := authentication.NewManager(authcfgConfig, queuesConfig, issuer, authenticator, tracerProvider, logger, featureFlagManager, publisherProvider, eventReporter, userAuthDataManager)
 	if err != nil {
 		return nil, err
 	}
-	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
 	generator := random.NewGenerator(logger, tracerProvider)
-	server, err := serverimpl.NewServer(cfg, tracerProvider, logger, dataManager, publisherProvider, eventReporter, featureFlagManager, issuer, authenticator, generator)
+	server, err := serverimpl.NewServer(cfg, manager, tracerProvider, logger, dataManager, publisherProvider, eventReporter, featureFlagManager, issuer, authenticator, generator)
 	if err != nil {
 		return nil, err
 	}
