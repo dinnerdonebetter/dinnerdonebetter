@@ -27,6 +27,7 @@ type (
 	}
 
 	UserAuthDataManager interface {
+		GetUserByID(ctx context.Context, userID string) (*types.User, error)
 		GetUserByUsername(ctx context.Context, username string) (*types.User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*types.User, error)
 		GetDefaultHouseholdIDForUser(ctx context.Context, userID string) (string, error)
@@ -170,6 +171,68 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *t
 
 	if user.TwoFactorSecretVerifiedAt != nil && loginData.TOTPToken == "" {
 		return nil, observability.PrepareError(err, span, "TOTP code required but not provided")
+	}
+
+	defaultHouseholdID, err := m.userAuthDataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType:   types.UserLoggedInServiceEventType,
+		HouseholdID: defaultHouseholdID,
+		UserID:      user.ID,
+	}
+
+	if err = m.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		return nil, observability.PrepareError(err, span, "publishing data change")
+	}
+
+	response := &tokens.TokenResponse{
+		UserID:      user.ID,
+		HouseholdID: defaultHouseholdID,
+		ExpiresUTC:  time.Now().Add(m.config.MaxAccessTokenLifetime).UTC(),
+	}
+
+	response.AccessToken, err = m.tokenIssuer.IssueToken(ctx, user, m.config.MaxAccessTokenLifetime)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "creating accessToken")
+	}
+
+	response.RefreshToken, err = m.tokenIssuer.IssueToken(ctx, user, m.config.MaxRefreshTokenLifetime)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "creating accessToken")
+	}
+
+	return response, nil
+}
+
+// TODO: REFINEME
+func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken string) (*tokens.TokenResponse, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.Clone()
+
+	userID, err := m.tokenIssuer.ParseUserIDFromToken(ctx, refreshToken)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "parsing userID from token")
+	}
+
+	user, err := m.userAuthDataManager.GetUserByID(ctx, userID)
+	if err != nil || user == nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, observability.PrepareError(err, span, "user does not exist")
+		}
+
+		return nil, observability.PrepareError(err, span, "fetching user")
+	}
+
+	logger = logger.WithValue(keys.UserIDKey, user.ID)
+	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
+
+	if user.IsBanned() {
+		return nil, observability.PrepareError(err, span, "user is banned")
 	}
 
 	defaultHouseholdID, err := m.userAuthDataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)

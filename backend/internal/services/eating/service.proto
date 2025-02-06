@@ -9,6 +9,7 @@ import "google/protobuf/empty.proto";
 
 service EatingService {
   rpc Ping (google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc ExchangeToken(ExchangeTokenRequest) returns (TokenResponse);
   rpc AcceptHouseholdInvitation (AcceptHouseholdInvitationRequest) returns (HouseholdInvitation);
   rpc AdminLoginForToken (UserLoginInput) returns (TokenResponse);
   rpc AdminUpdateUserStatus (UserAccountStatusUpdateInput) returns (UserStatusResponse);

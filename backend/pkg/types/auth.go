@@ -41,6 +41,8 @@ const (
 	UsernameReminderRequestedEventType = "username_reminder_requested"
 	// UserLoggedInServiceEventType indicates a user has logged in.
 	UserLoggedInServiceEventType = "user_logged_in"
+	// UserRefreshedTokenServiceEventType indicates a user has refreshed a token.
+	UserRefreshedTokenServiceEventType = "user_refreshed_token"
 	// UserLoggedOutServiceEventType indicates a user has logged in.
 	UserLoggedOutServiceEventType = "user_logged_out"
 	// UserChangedActiveHouseholdServiceEventType indicates a user has logged in.

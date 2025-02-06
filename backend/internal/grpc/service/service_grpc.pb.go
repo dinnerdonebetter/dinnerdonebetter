@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	EatingService_Ping_FullMethodName                                                = "/eating.EatingService/Ping"
+	EatingService_ExchangeToken_FullMethodName                                       = "/eating.EatingService/ExchangeToken"
 	EatingService_AcceptHouseholdInvitation_FullMethodName                           = "/eating.EatingService/AcceptHouseholdInvitation"
 	EatingService_AdminLoginForToken_FullMethodName                                  = "/eating.EatingService/AdminLoginForToken"
 	EatingService_AdminUpdateUserStatus_FullMethodName                               = "/eating.EatingService/AdminUpdateUserStatus"
@@ -290,6 +291,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EatingServiceClient interface {
 	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ExchangeToken(ctx context.Context, in *messages.ExchangeTokenRequest, opts ...grpc.CallOption) (*messages.TokenResponse, error)
 	AcceptHouseholdInvitation(ctx context.Context, in *messages.AcceptHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
 	AdminLoginForToken(ctx context.Context, in *messages.UserLoginInput, opts ...grpc.CallOption) (*messages.TokenResponse, error)
 	AdminUpdateUserStatus(ctx context.Context, in *messages.UserAccountStatusUpdateInput, opts ...grpc.CallOption) (*messages.UserStatusResponse, error)
@@ -563,6 +565,16 @@ func (c *eatingServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, EatingService_Ping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eatingServiceClient) ExchangeToken(ctx context.Context, in *messages.ExchangeTokenRequest, opts ...grpc.CallOption) (*messages.TokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(messages.TokenResponse)
+	err := c.cc.Invoke(ctx, EatingService_ExchangeToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -3164,6 +3176,7 @@ func (c *eatingServiceClient) VerifyTOTPSecret(ctx context.Context, in *messages
 // for forward compatibility.
 type EatingServiceServer interface {
 	Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	ExchangeToken(context.Context, *messages.ExchangeTokenRequest) (*messages.TokenResponse, error)
 	AcceptHouseholdInvitation(context.Context, *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error)
 	AdminLoginForToken(context.Context, *messages.UserLoginInput) (*messages.TokenResponse, error)
 	AdminUpdateUserStatus(context.Context, *messages.UserAccountStatusUpdateInput) (*messages.UserStatusResponse, error)
@@ -3435,6 +3448,9 @@ type UnimplementedEatingServiceServer struct{}
 
 func (UnimplementedEatingServiceServer) Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedEatingServiceServer) ExchangeToken(context.Context, *messages.ExchangeTokenRequest) (*messages.TokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExchangeToken not implemented")
 }
 func (UnimplementedEatingServiceServer) AcceptHouseholdInvitation(context.Context, *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptHouseholdInvitation not implemented")
@@ -4248,6 +4264,24 @@ func _EatingService_Ping_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(EatingServiceServer).Ping(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EatingService_ExchangeToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(messages.ExchangeTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EatingServiceServer).ExchangeToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EatingService_ExchangeToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EatingServiceServer).ExchangeToken(ctx, req.(*messages.ExchangeTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -8924,6 +8958,10 @@ var EatingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Ping",
 			Handler:    _EatingService_Ping_Handler,
+		},
+		{
+			MethodName: "ExchangeToken",
+			Handler:    _EatingService_ExchangeToken_Handler,
 		},
 		{
 			MethodName: "AcceptHouseholdInvitation",

@@ -1244,6 +1244,10 @@ message TokenResponse {
   google.protobuf.Timestamp ExpiresUTC = 5;
 }
 
+message ExchangeTokenRequest {
+  string RefreshToken = 1;
+}
+
 message Uint16RangeWithOptionalMax {
   uint32 Max = 1;
   uint32 Min = 2;

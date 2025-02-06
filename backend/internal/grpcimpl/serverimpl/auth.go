@@ -103,6 +103,21 @@ func (s *Server) AuthInterceptor() grpc.UnaryServerInterceptor {
 	}
 }
 
+func (s *Server) ExchangeToken(ctx context.Context, input *messages.ExchangeTokenRequest) (*messages.TokenResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	userID, err := s.tokenIssuer.ParseUserIDFromToken(ctx, input.RefreshToken)
+	if err != nil {
+		return nil, Unauthenticated("invalid token")
+	}
+
+	_ = userID
+	// issue new token
+
+	return nil, Unimplemented()
+}
+
 func (s *Server) LoginForToken(ctx context.Context, input *messages.UserLoginInput) (*messages.TokenResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

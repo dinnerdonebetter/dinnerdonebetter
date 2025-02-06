@@ -41,8 +41,8 @@ func OutOfRange(msg string) error {
 	return status.Error(codes.OutOfRange, msg)
 }
 
-func Unimplemented(msg string) error {
-	return status.Error(codes.Unimplemented, msg)
+func Unimplemented() error {
+	return status.Error(codes.Unimplemented, "unimplemented")
 }
 
 func Internal(msg string) error {
