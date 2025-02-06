@@ -368,7 +368,7 @@ const (
 	// ServiceAuthEnableUserSignupEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.EnableUserSignup`.
 	ServiceAuthEnableUserSignupEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_ENABLE_USER_SIGNUP"
 
-	// ServiceAuthJwtLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.TokenLifetime`.
+	// ServiceAuthJwtLifetimeEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.MaxAccessTokenLifetime`.
 	ServiceAuthJwtLifetimeEnvVarKey = "DINNER_DONE_BETTER_SERVICE_AUTH_JWT_LIFETIME"
 
 	// ServiceAuthMinimumPasswordLengthEnvVarKey is the environment variable name to set in order to override `config.Services.Auth.MinimumPasswordLength`.

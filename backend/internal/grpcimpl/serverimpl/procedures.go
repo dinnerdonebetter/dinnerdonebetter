@@ -2024,10 +2024,3 @@ func (s *Server) VerifyEmailAddress(ctx context.Context, input *messages.EmailAd
 
 	return nil, errUnimplemented
 }
-
-func (s *Server) VerifyTOTPSecret(ctx context.Context, input *messages.TOTPSecretVerificationInput) (*messages.User, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	return nil, errUnimplemented
-}

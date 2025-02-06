@@ -138,14 +138,14 @@ func (s *TestSuite) TestValidIngredients_GetRandom() {
 				IsHeat:                 true,
 			}
 
-			createdValidIngredient, err := testClients.grpcClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
+			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			assert.NoError(t, err)
 			assert.NotNil(t, createdValidIngredient)
 
-			createdValidIngredient, err = testClients.grpcClient.GetRandomValidIngredient(ctx, nil)
+			createdValidIngredient, err = testClients.userClient.GetRandomValidIngredient(ctx, nil)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 
-			deleted, err := testClients.grpcClient.ArchiveValidIngredient(ctx, &messages.ArchiveValidIngredientRequest{ValidIngredientID: createdValidIngredient.ID})
+			deleted, err := testClients.adminClient.ArchiveValidIngredient(ctx, &messages.ArchiveValidIngredientRequest{ValidIngredientID: createdValidIngredient.ID})
 			assert.NoError(t, err)
 			assert.NotNil(t, deleted)
 		}

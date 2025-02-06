@@ -546,7 +546,7 @@ type EatingServiceClient interface {
 	UpdateValidVessel(ctx context.Context, in *messages.UpdateValidVesselRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error)
 	UploadUserAvatar(ctx context.Context, in *messages.AvatarUpdateInput, opts ...grpc.CallOption) (*messages.User, error)
 	VerifyEmailAddress(ctx context.Context, in *messages.EmailAddressVerificationRequestInput, opts ...grpc.CallOption) (*messages.User, error)
-	VerifyTOTPSecret(ctx context.Context, in *messages.TOTPSecretVerificationInput, opts ...grpc.CallOption) (*messages.User, error)
+	VerifyTOTPSecret(ctx context.Context, in *messages.TOTPSecretVerificationInput, opts ...grpc.CallOption) (*messages.TOTPSecretVerificationResponse, error)
 }
 
 type eatingServiceClient struct {
@@ -3137,9 +3137,9 @@ func (c *eatingServiceClient) VerifyEmailAddress(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) VerifyTOTPSecret(ctx context.Context, in *messages.TOTPSecretVerificationInput, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) VerifyTOTPSecret(ctx context.Context, in *messages.TOTPSecretVerificationInput, opts ...grpc.CallOption) (*messages.TOTPSecretVerificationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.TOTPSecretVerificationResponse)
 	err := c.cc.Invoke(ctx, EatingService_VerifyTOTPSecret_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3409,7 +3409,7 @@ type EatingServiceServer interface {
 	UpdateValidVessel(context.Context, *messages.UpdateValidVesselRequest) (*messages.ValidVessel, error)
 	UploadUserAvatar(context.Context, *messages.AvatarUpdateInput) (*messages.User, error)
 	VerifyEmailAddress(context.Context, *messages.EmailAddressVerificationRequestInput) (*messages.User, error)
-	VerifyTOTPSecret(context.Context, *messages.TOTPSecretVerificationInput) (*messages.User, error)
+	VerifyTOTPSecret(context.Context, *messages.TOTPSecretVerificationInput) (*messages.TOTPSecretVerificationResponse, error)
 	mustEmbedUnimplementedEatingServiceServer()
 }
 
@@ -4194,7 +4194,7 @@ func (UnimplementedEatingServiceServer) UploadUserAvatar(context.Context, *messa
 func (UnimplementedEatingServiceServer) VerifyEmailAddress(context.Context, *messages.EmailAddressVerificationRequestInput) (*messages.User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmailAddress not implemented")
 }
-func (UnimplementedEatingServiceServer) VerifyTOTPSecret(context.Context, *messages.TOTPSecretVerificationInput) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) VerifyTOTPSecret(context.Context, *messages.TOTPSecretVerificationInput) (*messages.TOTPSecretVerificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyTOTPSecret not implemented")
 }
 func (UnimplementedEatingServiceServer) mustEmbedUnimplementedEatingServiceServer() {}

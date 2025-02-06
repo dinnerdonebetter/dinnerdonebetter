@@ -5,20 +5,21 @@ import (
 	"errors"
 	"fmt"
 	"hash/fnv"
-	"net/url"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
+	"github.com/dinnerdonebetter/backend/internal/grpc/service"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	serverutils "github.com/dinnerdonebetter/backend/internal/lib/server/http/utils"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func requireNotNilAndNoProblems(t *testing.T, i any, err error) {
@@ -33,8 +34,7 @@ func hashStringToNumber(s string) uint64 {
 	h := fnv.New64a()
 
 	// Write the bytes of the string into the hash object
-	_, err := h.Write([]byte(s))
-	if err != nil {
+	if _, err := h.Write([]byte(s)); err != nil {
 		// Handle error if necessary
 		panic(err)
 	}
@@ -43,12 +43,12 @@ func hashStringToNumber(s string) uint64 {
 	return h.Sum64()
 }
 
-func createUserAndClientForTest(ctx context.Context, t *testing.T, input *apiclient.UserRegistrationInput) (user *types.User, oauthedClient *apiclient.Client) {
+func createUserAndClientForTest(ctx context.Context, t *testing.T, input *messages.UserRegistrationInput) (user *types.User, oauthedClient service.EatingServiceClient) {
 	t.Helper()
 
 	if input == nil {
-		input = &apiclient.UserRegistrationInput{
-			Birthday:              time.Now().Format(time.RFC3339),
+		input = &messages.UserRegistrationInput{
+			Birthday:              timestamppb.New(time.Now().UTC()),
 			EmailAddress:          fmt.Sprintf("test+%d@whatever.com", hashStringToNumber(t.Name())),
 			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
 			HouseholdName:         fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
@@ -56,7 +56,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *apicli
 			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
 			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
 			AcceptedPrivacyPolicy: true,
-			AcceptedTos:           true,
+			AcceptedTOS:           true,
 		}
 	}
 
@@ -68,10 +68,10 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *apicli
 	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
 
-	loginInput := &apiclient.UserLoginInput{
+	loginInput := &messages.UserLoginInput{
 		Username:  user.Username,
 		Password:  user.HashedPassword,
-		TotpToken: code,
+		TOTPToken: code,
 	}
 
 	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
@@ -80,57 +80,25 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *apicli
 	return user, oauthedClient
 }
 
-func initializeOAuth2PoweredClient(ctx context.Context, input *apiclient.UserLoginInput) (*apiclient.Client, error) {
-	if parsedURLToUse == nil {
-		panic("url not set!")
-	}
-
-	logger, err := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("could not create logger: %v", err)
-	}
-
-	c, err := apiclient.NewClient(
-		parsedURLToUse,
-		tracing.NewNoopTracerProvider(),
-		apiclient.UsingLogger(logger),
-		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
-		apiclient.UsingURL(urlToUse),
-	)
-	if err != nil {
-		return nil, err
-	}
+func initializeOAuth2PoweredClient(ctx context.Context, input *messages.UserLoginInput) (service.EatingServiceClient, error) {
+	c := buildUnauthedGRPCClient()
 
 	tokenResponse, err := c.LoginForToken(ctx, input)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)); err != nil {
-		return nil, err
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithPerRPCCredentials(&tokenCreds{token: tokenResponse.AccessToken}),
 	}
 
-	if debug {
-		if setOptionErr := c.SetOptions(apiclient.UsingDebug(true)); setOptionErr != nil {
-			return nil, setOptionErr
-		}
+	conn, err := grpc.NewClient(urlToUse, opts...)
+	if err != nil {
+		panic(err)
 	}
 
-	return c, nil
-}
-
-func buildSimpleClient(t *testing.T) *apiclient.Client {
-	t.Helper()
-
-	c, err := apiclient.NewClient(
-		parsedURLToUse,
-		tracing.NewNoopTracerProvider(),
-		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
-		apiclient.UsingURL(urlToUse),
-	)
-	require.NoError(t, err)
-
-	return c
+	return service.NewEatingServiceClient(conn), nil
 }
 
 func generateTOTPTokenForUserWithoutTest(u *types.User) (string, error) {
@@ -151,25 +119,20 @@ func generateTOTPTokenForUser(t *testing.T, u *types.User) string {
 	return code
 }
 
-func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauthedClient *apiclient.Client) {
+func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauthedClient service.EatingServiceClient) {
 	t.Helper()
-
-	u := serverutils.DetermineServiceURL()
-	urlToUse = u.String()
 
 	logger, err := (&loggingcfg.Config{Provider: loggingcfg.ProviderSlog}).ProvideLogger(ctx)
 	require.NoError(t, err)
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
 
-	serverutils.EnsureServerIsUp(ctx, urlToUse)
-
 	adminCode, err := totp.GenerateCode(strings.ToUpper(premadeAdminUser.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
 
-	loginInput := &apiclient.UserLoginInput{
+	loginInput := &messages.UserLoginInput{
 		Username:  premadeAdminUser.Username,
 		Password:  premadeAdminUser.HashedPassword,
-		TotpToken: adminCode,
+		TOTPToken: adminCode,
 	}
 
 	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
@@ -178,47 +141,54 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauth
 	return oauthedClient
 }
 
+func buildUnauthedGRPCClient() service.EatingServiceClient {
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		/*
+			grpc.WithPerRPCCredentials(oauth.TokenSource{
+				TokenSource: oauth2.StaticTokenSource(&oauth2.Token{
+					AccessToken:  "",
+					TokenType:    "",
+					RefreshToken: "",
+					Expiry:       time.Time{},
+					ExpiresIn:    0,
+				},
+				),
+			}),
+		*/
+	}
+
+	conn, err := grpc.NewClient(urlToUse, opts...)
+	if err != nil {
+		panic(err)
+	}
+
+	return service.NewEatingServiceClient(conn)
+}
+
 // createServiceUser creates a user.
-func createServiceUser(ctx context.Context, address string, in *apiclient.UserRegistrationInput) (*types.User, error) {
+func createServiceUser(ctx context.Context, address string, in *messages.UserRegistrationInput) (*types.User, error) {
 	if address == "" {
 		return nil, errors.New("empty address not allowed")
 	}
 
-	parsedAddress, err := url.Parse(address)
-	if err != nil {
-		return nil, err
-	}
-
-	c, err := apiclient.NewClient(
-		parsedAddress,
-		tracing.NewNoopTracerProvider(),
-		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
-		apiclient.UsingURL(address),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("initializing client: %w", err)
-	}
+	c := buildUnauthedGRPCClient()
 
 	ucr, err := c.CreateUser(ctx, in)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("creating user: %w", err)
 	}
 
-	token, tokenErr := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
-	if tokenErr != nil {
-		return nil, fmt.Errorf("generating totp code: %w", tokenErr)
-	}
-
-	if _, validationErr := c.VerifyTOTPSecret(ctx, &apiclient.TOTPSecretVerificationInput{
-		TotpToken: token,
-		UserID:    ucr.CreatedUserID,
-	}); validationErr != nil {
-		return nil, fmt.Errorf("verifying totp code: %w", validationErr)
-	}
-
-	parsedTime, err := time.Parse(time.RFC3339, ucr.CreatedAt)
+	token, err := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("generating totp code: %w", err)
+	}
+
+	if _, err = c.VerifyTOTPSecret(ctx, &messages.TOTPSecretVerificationInput{
+		TOTPToken: token,
+		UserID:    ucr.CreatedUserID,
+	}); err != nil {
+		return nil, fmt.Errorf("verifying totp code: %w", err)
 	}
 
 	u := &types.User{
@@ -226,8 +196,8 @@ func createServiceUser(ctx context.Context, address string, in *apiclient.UserRe
 		Username:        ucr.Username,
 		EmailAddress:    ucr.EmailAddress,
 		TwoFactorSecret: ucr.TwoFactorSecret,
-		CreatedAt:       parsedTime,
-		// this is a dirty trick to reuse most of this model,
+		CreatedAt:       ucr.CreatedAt.AsTime(),
+		// this is a dirty trick to reuse most of this type
 		HashedPassword: in.Password,
 	}
 

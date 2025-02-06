@@ -266,7 +266,7 @@ service EatingService {
   rpc UpdateValidVessel (UpdateValidVesselRequest) returns (ValidVessel);
   rpc UploadUserAvatar (AvatarUpdateInput) returns (User);
   rpc VerifyEmailAddress (EmailAddressVerificationRequestInput) returns (User);
-  rpc VerifyTOTPSecret (TOTPSecretVerificationInput) returns (User);
+  rpc VerifyTOTPSecret (TOTPSecretVerificationInput) returns (TOTPSecretVerificationResponse);
 }
 
 /*

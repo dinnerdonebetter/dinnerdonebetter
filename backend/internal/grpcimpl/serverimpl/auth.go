@@ -4,6 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"math"
+	"strings"
+	"time"
+
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
@@ -14,13 +18,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/pquerna/otp/totp"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"math"
-	"strings"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -155,16 +160,23 @@ func (s *Server) loginForToken(ctx context.Context, admin bool, input *messages.
 		return nil, observability.PrepareError(err, span, "fetching user memberships")
 	}
 
-	var token string
-	token, err = s.tokenIssuer.IssueToken(ctx, user, s.config.Services.Auth.TokenLifetime)
+	var accessToken, refreshToken string
+	accessToken, err = s.tokenIssuer.IssueToken(ctx, user, s.config.Services.Auth.MaxAccessTokenLifetime)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "signing token")
+	}
+
+	refreshToken, err = s.tokenIssuer.IssueToken(ctx, user, s.config.Services.Auth.MaxRefreshTokenLifetime)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "signing token")
 	}
 
 	output := &messages.TokenResponse{
-		UserID:      user.ID,
-		HouseholdID: defaultHouseholdID,
-		Token:       token,
+		UserID:       user.ID,
+		HouseholdID:  defaultHouseholdID,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		Expires:      timestamppb.New(time.Now().Add(s.config.Services.Auth.MaxAccessTokenLifetime)),
 	}
 
 	return output, nil
@@ -174,7 +186,9 @@ func (s *Server) CreateUser(ctx context.Context, input *messages.UserRegistratio
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if err := validation.ValidateStructWithContext(ctx, &input,
+	if err := validation.ValidateStructWithContext(
+		ctx,
+		input,
 		validation.Field(&input.EmailAddress, validation.Required, is.EmailFormat),
 		validation.Field(&input.Username, validation.Required, validation.Length(4, math.MaxInt8)),
 		validation.Field(&input.Password, validation.Required, validation.Length(8, math.MaxInt8)),
@@ -299,5 +313,70 @@ func (s *Server) CreateUser(ctx context.Context, input *messages.UserRegistratio
 		observability.AcknowledgeError(err, logger, span, "identifying user in feature flag manager")
 	}
 
-	return nil, errUnimplemented
+	userResponse := &messages.UserCreationResponse{
+		CreatedAt:       converters.ConvertTimeToPBTimestamp(user.CreatedAt),
+		Birthday:        converters.ConvertTimePointerToPBTimestamp(user.Birthday),
+		TwoFactorQRCode: "TODO",
+		Username:        user.Username,
+		EmailAddress:    user.EmailAddress,
+		CreatedUserID:   user.ID,
+		AccountStatus:   user.AccountStatus,
+		TwoFactorSecret: user.TwoFactorSecret,
+		FirstName:       user.FirstName,
+		LastName:        user.LastName,
+	}
+
+	return userResponse, nil
+}
+
+func (s *Server) VerifyTOTPSecret(ctx context.Context, input *messages.TOTPSecretVerificationInput) (*messages.TOTPSecretVerificationResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.Clone()
+
+	// TODO: validate
+
+	user, err := s.dataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user to verify two factor secret")
+		return nil, err
+	}
+
+	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
+	tracing.AttachToSpan(span, keys.UsernameKey, user.Username)
+	logger = logger.WithValue(keys.UsernameKey, user.Username)
+
+	if user.TwoFactorSecretVerifiedAt != nil {
+		// I suppose if this happens too many times, we might want to keep track of that
+		logger.Debug("two factor secret already verified")
+		return nil, err
+	}
+
+	totpValid := totp.Validate(input.TOTPToken, user.TwoFactorSecret)
+	if !totpValid {
+		logger = logger.WithValue(keys.ValidationErrorKey, err)
+		observability.AcknowledgeError(err, logger, span, "TOTP code was invalid")
+		return nil, err
+	}
+
+	if err = s.dataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "verifying user two factor secret")
+		return nil, err
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.TwoFactorSecretVerifiedServiceEventType,
+		UserID:    user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
+	output := &messages.TOTPSecretVerificationResponse{
+		Accepted: true,
+	}
+
+	return output, nil
 }

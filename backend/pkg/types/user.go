@@ -112,7 +112,6 @@ type (
 
 		CreatedAt       time.Time  `json:"createdAt"`
 		Birthday        *time.Time `json:"birthday"`
-		AvatarSrc       *string    `json:"avatar"`
 		Username        string     `json:"username"`
 		EmailAddress    string     `json:"emailAddress"`
 		TwoFactorQRCode string     `json:"qrCode"`
@@ -121,7 +120,6 @@ type (
 		TwoFactorSecret string     `json:"twoFactorSecret"`
 		FirstName       string     `json:"firstName"`
 		LastName        string     `json:"lastName"`
-		IsAdmin         bool       `json:"isAdmin"`
 	}
 
 	// UserLoginInput represents the payload used to log in a User.

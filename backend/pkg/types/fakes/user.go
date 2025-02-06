@@ -111,7 +111,6 @@ func BuildFakeUserCreationResponse() *types.UserCreationResponse {
 	return &types.UserCreationResponse{
 		CreatedAt:       user.CreatedAt,
 		Birthday:        user.Birthday,
-		AvatarSrc:       user.AvatarSrc,
 		Username:        user.Username,
 		EmailAddress:    user.EmailAddress,
 		TwoFactorQRCode: fake.UUID(),
@@ -120,7 +119,6 @@ func BuildFakeUserCreationResponse() *types.UserCreationResponse {
 		TwoFactorSecret: user.TwoFactorSecret,
 		FirstName:       user.FirstName,
 		LastName:        user.LastName,
-		IsAdmin:         false,
 	}
 }
 

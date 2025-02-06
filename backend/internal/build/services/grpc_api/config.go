@@ -2,6 +2,7 @@ package grpcapi
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
 
 	"github.com/google/wire"
 )
@@ -25,6 +26,12 @@ var (
 			"HTTPServer",
 			"Database",
 			"Services",
+		),
+		wire.FieldsOf(
+			new(*authentication.Config),
+			"Tokens",
+			"SSO",
+			"OAuth2",
 		),
 		wire.FieldsOf(
 			new(*config.ServicesConfig),

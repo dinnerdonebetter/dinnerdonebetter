@@ -14,13 +14,17 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
+	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
+	"github.com/dinnerdonebetter/backend/internal/grpc/service"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -43,7 +47,7 @@ var (
 		HashedPassword:  "integration-tests-are-cool",
 	}
 
-	premadeAdminClient *apiclient.Client
+	premadeAdminClient service.EatingServiceClient
 )
 
 func init() {
@@ -137,41 +141,50 @@ func init() {
 		panic(err)
 	}
 
-	/*
-		simpleClient, err := apiclient.NewClient(
-			parsedURLToUse,
-			tracing.NewNoopTracerProvider(),
-			apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
-			apiclient.UsingURL(urlToUse),
-		)
-		if err != nil {
-			panic(err)
-		}
+	simpleClient := buildUnauthedGRPCClient()
 
-		code, err := generateTOTPTokenForUserWithoutTest(premadeAdminUser)
-		if err != nil {
-			panic(err)
-		}
+	code, err := generateTOTPTokenForUserWithoutTest(premadeAdminUser)
+	if err != nil {
+		panic(err)
+	}
 
-		jwtRes, err := simpleClient.AdminLoginForToken(ctx, &apiclient.UserLoginInput{
-			Username:  premadeAdminUser.Username,
-			Password:  premadeAdminUser.HashedPassword,
-			TotpToken: code,
-		})
-		if err != nil {
-			panic(err)
-		}
+	jwtRes, err := simpleClient.AdminLoginForToken(ctx, &messages.UserLoginInput{
+		Username:  premadeAdminUser.Username,
+		Password:  premadeAdminUser.HashedPassword,
+		TOTPToken: code,
+	})
+	if err != nil {
+		panic(err)
+	}
 
-		premadeAdminClient, err = apiclient.NewClient(
-			parsedURLToUse,
-			tracing.NewNoopTracerProvider(),
-			apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"service_admin"}, jwtRes.Token),
-		)
-		if err != nil {
-			panic(err)
-		}
-	*/
+	// TODO: replace with grpc-based API client builder
+
+	opts := []grpc.DialOption{
+		grpc.WithPerRPCCredentials(&tokenCreds{token: jwtRes.AccessToken}),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+
+	conn, err := grpc.NewClient(urlToUse, opts...)
+	if err != nil {
+		panic(err)
+	}
+
+	premadeAdminClient = service.NewEatingServiceClient(conn)
 
 	fiftySpaces := strings.Repeat("\n", 50)
 	fmt.Printf("%s\tRunning tests%s", fiftySpaces, fiftySpaces)
+}
+
+type tokenCreds struct {
+	token string
+}
+
+func (t *tokenCreds) GetRequestMetadata(context.Context, ...string) (map[string]string, error) {
+	return map[string]string{
+		"Authorization": fmt.Sprintf("Bearer %s", t.token),
+	}, nil
+}
+
+func (t *tokenCreds) RequireTransportSecurity() bool {
+	return false
 }

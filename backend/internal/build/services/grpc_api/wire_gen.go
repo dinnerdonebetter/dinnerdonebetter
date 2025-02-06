@@ -12,8 +12,16 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/grpcimpl/serverimpl"
+	"github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/random"
 	"github.com/dinnerdonebetter/backend/internal/lib/server/grpc"
 )
 
@@ -38,7 +46,37 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*grpc.Server, err
 	if err != nil {
 		return nil, err
 	}
-	server, err := serverimpl.NewServer(tracerProvider, logger, dataManager)
+	msgconfigConfig := &cfg.Events
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
+	if err != nil {
+		return nil, err
+	}
+	analyticscfgConfig := &cfg.Analytics
+	metricscfgConfig := &observabilityConfig.Metrics
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	eventReporter, err := analyticscfg.ProvideEventReporter(analyticscfgConfig, logger, tracerProvider, provider)
+	if err != nil {
+		return nil, err
+	}
+	featureflagscfgConfig := &cfg.FeatureFlags
+	client := tracing.BuildTracedHTTPClient()
+	featureFlagManager, err := featureflagscfg.ProvideFeatureFlagManager(featureflagscfgConfig, logger, tracerProvider, provider, client)
+	if err != nil {
+		return nil, err
+	}
+	servicesConfig := &cfg.Services
+	authenticationConfig := &servicesConfig.Auth
+	tokenscfgConfig := &authenticationConfig.Tokens
+	issuer, err := tokenscfg.ProvideTokenIssuer(tokenscfgConfig, logger, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
+	generator := random.NewGenerator(logger, tracerProvider)
+	server, err := serverimpl.NewServer(cfg, tracerProvider, logger, dataManager, publisherProvider, eventReporter, featureFlagManager, issuer, authenticator, generator)
 	if err != nil {
 		return nil, err
 	}

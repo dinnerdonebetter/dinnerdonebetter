@@ -35,15 +35,33 @@ type Server struct {
 }
 
 func NewServer(
+	cfg *config.APIServiceConfig,
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	dataManager database.DataManager,
-	// ) (service.EatingServiceServer, error) {
+	publisherProvider messagequeue.PublisherProvider,
+	analyticsReporter analytics.EventReporter,
+	featureFlagManager featureflags.FeatureFlagManager,
+	tokenIssuer tokens.Issuer,
+	authenticator authentication.Authenticator,
+	secretGenerator random.Generator,
 ) (*Server, error) {
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.DataChangesTopicName)
+	if err != nil {
+		return nil, err
+	}
+
 	s := &Server{
-		dataManager: dataManager,
-		tracer:      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		logger:      logging.EnsureLogger(logger).WithName(serviceName),
+		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:               logging.EnsureLogger(logger).WithName(serviceName),
+		dataManager:          dataManager,
+		dataChangesPublisher: dataChangesPublisher,
+		analyticsReporter:    analyticsReporter,
+		featureFlagManager:   featureFlagManager,
+		config:               cfg,
+		tokenIssuer:          tokenIssuer,
+		authenticator:        authenticator,
+		secretGenerator:      secretGenerator,
 	}
 
 	return s, nil

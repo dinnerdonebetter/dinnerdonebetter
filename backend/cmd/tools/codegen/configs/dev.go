@@ -170,7 +170,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 					Audience:                "https://api.dinnerdonebetter.dev",
 					Base64EncodedSigningKey: "",
 				},
-				TokenLifetime: 5 * time.Minute,
+				MaxAccessTokenLifetime: 5 * time.Minute,
 			},
 			DataPrivacy: dataprivacyservice.Config{
 				Uploads: uploads.Config{
