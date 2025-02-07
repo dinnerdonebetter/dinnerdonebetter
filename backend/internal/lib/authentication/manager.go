@@ -24,10 +24,11 @@ import (
 type (
 	Manager interface {
 		ProcessLogin(ctx context.Context, adminOnly bool, loginData *types.UserLoginInput) (*tokens.TokenResponse, error)
+		ExchangeTokenForUser(ctx context.Context, refreshToken string) (*tokens.TokenResponse, error)
 	}
 
 	UserAuthDataManager interface {
-		GetUserByID(ctx context.Context, userID string) (*types.User, error)
+		GetUser(ctx context.Context, userID string) (*types.User, error)
 		GetUserByUsername(ctx context.Context, username string) (*types.User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*types.User, error)
 		GetDefaultHouseholdIDForUser(ctx context.Context, userID string) (string, error)
@@ -207,7 +208,6 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *t
 	return response, nil
 }
 
-// TODO: REFINEME
 func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken string) (*tokens.TokenResponse, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -219,7 +219,7 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken string)
 		return nil, observability.PrepareError(err, span, "parsing userID from token")
 	}
 
-	user, err := m.userAuthDataManager.GetUserByID(ctx, userID)
+	user, err := m.userAuthDataManager.GetUser(ctx, userID)
 	if err != nil || user == nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, observability.PrepareError(err, span, "user does not exist")

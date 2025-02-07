@@ -107,15 +107,20 @@ func (s *Server) ExchangeToken(ctx context.Context, input *messages.ExchangeToke
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	userID, err := s.tokenIssuer.ParseUserIDFromToken(ctx, input.RefreshToken)
+	newToken, err := s.authManager.ExchangeTokenForUser(ctx, input.RefreshToken)
 	if err != nil {
 		return nil, Unauthenticated("invalid token")
 	}
 
-	_ = userID
-	// issue new token
+	output := &messages.TokenResponse{
+		UserID:       newToken.UserID,
+		HouseholdID:  newToken.HouseholdID,
+		AccessToken:  newToken.AccessToken,
+		RefreshToken: newToken.RefreshToken,
+		ExpiresUTC:   timestamppb.New(newToken.ExpiresUTC),
+	}
 
-	return nil, Unimplemented()
+	return output, nil
 }
 
 func (s *Server) LoginForToken(ctx context.Context, input *messages.UserLoginInput) (*messages.TokenResponse, error) {

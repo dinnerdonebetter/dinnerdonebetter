@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (s *Server) AcceptHouseholdInvitation(ctx context.Context, request *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
@@ -208,47 +207,7 @@ func (s *Server) ArchiveValidIngredient(ctx context.Context, request *messages.A
 		return nil, err
 	}
 
-	output := &messages.ValidIngredient{
-		CreatedAt:     converters.ConvertTimeToPBTimestamp(validIngredient.CreatedAt),
-		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(validIngredient.LastUpdatedAt),
-		ArchivedAt:    timestamppb.Now(),
-		StorageTemperatureInCelsius: &messages.OptionalFloat32Range{
-			Max: validIngredient.StorageTemperatureInCelsius.Max,
-			Min: validIngredient.StorageTemperatureInCelsius.Min,
-		},
-		IconPath:               validIngredient.IconPath,
-		Warning:                validIngredient.Warning,
-		PluralName:             validIngredient.PluralName,
-		StorageInstructions:    validIngredient.StorageInstructions,
-		Name:                   validIngredient.Name,
-		ID:                     validIngredient.ID,
-		Description:            validIngredient.Description,
-		Slug:                   validIngredient.Slug,
-		ShoppingSuggestions:    validIngredient.ShoppingSuggestions,
-		ContainsShellfish:      validIngredient.ContainsShellfish,
-		IsLiquid:               validIngredient.IsLiquid,
-		ContainsPeanut:         validIngredient.ContainsPeanut,
-		ContainsTreeNut:        validIngredient.ContainsTreeNut,
-		ContainsEgg:            validIngredient.ContainsEgg,
-		ContainsWheat:          validIngredient.ContainsWheat,
-		ContainsSoy:            validIngredient.ContainsSoy,
-		AnimalDerived:          validIngredient.AnimalDerived,
-		RestrictToPreparations: validIngredient.RestrictToPreparations,
-		ContainsSesame:         validIngredient.ContainsSesame,
-		ContainsFish:           validIngredient.ContainsFish,
-		ContainsGluten:         validIngredient.ContainsGluten,
-		ContainsDairy:          validIngredient.ContainsDairy,
-		ContainsAlcohol:        validIngredient.ContainsAlcohol,
-		AnimalFlesh:            validIngredient.AnimalFlesh,
-		IsStarch:               validIngredient.IsStarch,
-		IsProtein:              validIngredient.IsProtein,
-		IsGrain:                validIngredient.IsGrain,
-		IsFruit:                validIngredient.IsFruit,
-		IsSalt:                 validIngredient.IsSalt,
-		IsFat:                  validIngredient.IsFat,
-		IsAcid:                 validIngredient.IsAcid,
-		IsHeat:                 validIngredient.IsHeat,
-	}
+	output := converters.ConvertValidIngredientToProtobuf(validIngredient)
 
 	return output, nil
 }
@@ -593,47 +552,7 @@ func (s *Server) CreateValidIngredient(ctx context.Context, input *messages.Vali
 		return nil, err
 	}
 
-	output := &messages.ValidIngredient{
-		CreatedAt:     converters.ConvertTimeToPBTimestamp(created.CreatedAt),
-		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(created.LastUpdatedAt),
-		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(created.ArchivedAt),
-		StorageTemperatureInCelsius: &messages.OptionalFloat32Range{
-			Max: created.StorageTemperatureInCelsius.Max,
-			Min: created.StorageTemperatureInCelsius.Min,
-		},
-		IconPath:               created.IconPath,
-		Warning:                created.Warning,
-		PluralName:             created.PluralName,
-		StorageInstructions:    created.StorageInstructions,
-		Name:                   created.Name,
-		ID:                     created.ID,
-		Description:            created.Description,
-		Slug:                   created.Slug,
-		ShoppingSuggestions:    created.ShoppingSuggestions,
-		ContainsShellfish:      created.ContainsShellfish,
-		IsLiquid:               created.IsLiquid,
-		ContainsPeanut:         created.ContainsPeanut,
-		ContainsTreeNut:        created.ContainsTreeNut,
-		ContainsEgg:            created.ContainsEgg,
-		ContainsWheat:          created.ContainsWheat,
-		ContainsSoy:            created.ContainsSoy,
-		AnimalDerived:          created.AnimalDerived,
-		RestrictToPreparations: created.RestrictToPreparations,
-		ContainsSesame:         created.ContainsSesame,
-		ContainsFish:           created.ContainsFish,
-		ContainsGluten:         created.ContainsGluten,
-		ContainsDairy:          created.ContainsDairy,
-		ContainsAlcohol:        created.ContainsAlcohol,
-		AnimalFlesh:            created.AnimalFlesh,
-		IsStarch:               created.IsStarch,
-		IsProtein:              created.IsProtein,
-		IsGrain:                created.IsGrain,
-		IsFruit:                created.IsFruit,
-		IsSalt:                 created.IsSalt,
-		IsFat:                  created.IsFat,
-		IsAcid:                 created.IsAcid,
-		IsHeat:                 created.IsHeat,
-	}
+	output := converters.ConvertValidIngredientToProtobuf(created)
 
 	return output, nil
 }
@@ -962,47 +881,7 @@ func (s *Server) GetRandomValidIngredient(ctx context.Context, _ *emptypb.Empty)
 		return nil, observability.PrepareError(err, span, "getting random valid ingredient")
 	}
 
-	output := &messages.ValidIngredient{
-		CreatedAt:     converters.ConvertTimeToPBTimestamp(ingredient.CreatedAt),
-		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(ingredient.LastUpdatedAt),
-		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(ingredient.ArchivedAt),
-		StorageTemperatureInCelsius: &messages.OptionalFloat32Range{
-			Max: ingredient.StorageTemperatureInCelsius.Max,
-			Min: ingredient.StorageTemperatureInCelsius.Min,
-		},
-		IconPath:               ingredient.IconPath,
-		Warning:                ingredient.Warning,
-		PluralName:             ingredient.PluralName,
-		StorageInstructions:    ingredient.StorageInstructions,
-		Name:                   ingredient.Name,
-		ID:                     ingredient.ID,
-		Description:            ingredient.Description,
-		Slug:                   ingredient.Slug,
-		ShoppingSuggestions:    ingredient.ShoppingSuggestions,
-		ContainsShellfish:      ingredient.ContainsShellfish,
-		IsLiquid:               ingredient.IsLiquid,
-		ContainsPeanut:         ingredient.ContainsPeanut,
-		ContainsTreeNut:        ingredient.ContainsTreeNut,
-		ContainsEgg:            ingredient.ContainsEgg,
-		ContainsWheat:          ingredient.ContainsWheat,
-		ContainsSoy:            ingredient.ContainsSoy,
-		AnimalDerived:          ingredient.AnimalDerived,
-		RestrictToPreparations: ingredient.RestrictToPreparations,
-		ContainsSesame:         ingredient.ContainsSesame,
-		ContainsFish:           ingredient.ContainsFish,
-		ContainsGluten:         ingredient.ContainsGluten,
-		ContainsDairy:          ingredient.ContainsDairy,
-		ContainsAlcohol:        ingredient.ContainsAlcohol,
-		AnimalFlesh:            ingredient.AnimalFlesh,
-		IsStarch:               ingredient.IsStarch,
-		IsProtein:              ingredient.IsProtein,
-		IsGrain:                ingredient.IsGrain,
-		IsFruit:                ingredient.IsFruit,
-		IsSalt:                 ingredient.IsSalt,
-		IsFat:                  ingredient.IsFat,
-		IsAcid:                 ingredient.IsAcid,
-		IsHeat:                 ingredient.IsHeat,
-	}
+	output := converters.ConvertValidIngredientToProtobuf(ingredient)
 
 	return output, nil
 }
@@ -1293,10 +1172,17 @@ func (s *Server) GetUsers(ctx context.Context, request *messages.GetUsersRequest
 }
 
 func (s *Server) GetValidIngredient(ctx context.Context, request *messages.GetValidIngredientRequest) (*messages.ValidIngredient, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return nil, Unimplemented()
+	validIngredient, err := s.dataManager.GetValidIngredient(ctx, request.ValidIngredientID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "getting valid ingredient")
+	}
+
+	output := converters.ConvertValidIngredientToProtobuf(validIngredient)
+
+	return output, nil
 }
 
 func (s *Server) GetValidIngredientGroup(ctx context.Context, request *messages.GetValidIngredientGroupRequest) (*messages.ValidIngredientGroup, error) {
@@ -1916,10 +1802,15 @@ func (s *Server) UpdateUserUsername(ctx context.Context, input *messages.Usernam
 }
 
 func (s *Server) UpdateValidIngredient(ctx context.Context, request *messages.UpdateValidIngredientRequest) (*messages.ValidIngredient, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return nil, Unimplemented()
+	updated := converters.ConvertUpdateValidIngredientRequestToValidIngredient(request)
+
+	if err := s.dataManager.UpdateValidIngredient(ctx, updated); err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 func (s *Server) UpdateValidIngredientGroup(ctx context.Context, request *messages.UpdateValidIngredientGroupRequest) (*messages.ValidIngredientGroup, error) {
