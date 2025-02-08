@@ -2,6 +2,7 @@ package converters
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -43,6 +44,47 @@ func ConvertUpdateValidIngredientRequestToValidIngredient(req *messages.UpdateVa
 		IsFat:                  req.Input.IsFat,
 		IsAcid:                 req.Input.IsAcid,
 		IsHeat:                 req.Input.IsHeat,
+	}
+}
+
+func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(input *messages.ValidIngredientCreationRequestInput) *types.ValidIngredientDatabaseCreationInput {
+	return &types.ValidIngredientDatabaseCreationInput{
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+			Min: input.StorageTemperatureInCelsius.Min,
+			Max: input.StorageTemperatureInCelsius.Max,
+		},
+		ID:                     identifiers.New(),
+		Warning:                input.Warning,
+		IconPath:               input.IconPath,
+		PluralName:             input.PluralName,
+		StorageInstructions:    input.StorageInstructions,
+		Name:                   input.Name,
+		Description:            input.Description,
+		Slug:                   input.Slug,
+		ShoppingSuggestions:    input.ShoppingSuggestions,
+		ContainsFish:           input.ContainsFish,
+		ContainsShellfish:      input.ContainsShellfish,
+		AnimalFlesh:            input.AnimalFlesh,
+		ContainsEgg:            input.ContainsEgg,
+		IsLiquid:               input.IsLiquid,
+		ContainsSoy:            input.ContainsSoy,
+		ContainsPeanut:         input.ContainsPeanut,
+		AnimalDerived:          input.AnimalDerived,
+		RestrictToPreparations: input.RestrictToPreparations,
+		ContainsDairy:          input.ContainsDairy,
+		ContainsSesame:         input.ContainsSesame,
+		ContainsTreeNut:        input.ContainsTreeNut,
+		ContainsWheat:          input.ContainsWheat,
+		ContainsAlcohol:        input.ContainsAlcohol,
+		ContainsGluten:         input.ContainsGluten,
+		IsStarch:               input.IsStarch,
+		IsProtein:              input.IsProtein,
+		IsGrain:                input.IsGrain,
+		IsFruit:                input.IsFruit,
+		IsSalt:                 input.IsSalt,
+		IsFat:                  input.IsFat,
+		IsAcid:                 input.IsAcid,
+		IsHeat:                 input.IsHeat,
 	}
 }
 

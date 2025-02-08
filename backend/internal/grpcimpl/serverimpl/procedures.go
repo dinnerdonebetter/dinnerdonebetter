@@ -3,9 +3,9 @@ package serverimpl
 import (
 	"context"
 
-	"google.golang.org/protobuf/types/known/emptypb"
-
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
+
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (s *Server) AcceptHouseholdInvitation(ctx context.Context, request *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {

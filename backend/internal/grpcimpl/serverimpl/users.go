@@ -7,12 +7,6 @@ import (
 	"math"
 	"strings"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/pquerna/otp/totp"
-	passwordvalidator "github.com/wagslane/go-password-validator"
-	"google.golang.org/protobuf/types/known/emptypb"
-
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
 	"github.com/dinnerdonebetter/backend/internal/grpcimpl/converters"
@@ -21,6 +15,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/pquerna/otp/totp"
+	passwordvalidator "github.com/wagslane/go-password-validator"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (

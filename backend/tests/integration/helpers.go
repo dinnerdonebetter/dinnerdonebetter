@@ -30,16 +30,12 @@ func requireNotNilAndNoProblems(t *testing.T, i any, err error) {
 }
 
 func hashStringToNumber(s string) uint64 {
-	// Create a new FNV-1a 64-bit hash object
 	h := fnv.New64a()
 
-	// Write the bytes of the string into the hash object
 	if _, err := h.Write([]byte(s)); err != nil {
-		// Handle error if necessary
 		panic(err)
 	}
 
-	// Return the resulting hash value as a number (uint64)
 	return h.Sum64()
 }
 
