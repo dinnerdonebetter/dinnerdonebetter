@@ -4,13 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"math"
 	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
 	authcfg "github.com/dinnerdonebetter/backend/internal/lib/authentication/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens"
-	"github.com/dinnerdonebetter/backend/internal/lib/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
@@ -19,11 +18,23 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
 type (
+	// UserLoginInput represents the payload used to log in a User.
+	UserLoginInput struct {
+		_ struct{} `json:"-"`
+
+		Username  string `json:"username"`
+		Password  string `json:"password"`
+		TOTPToken string `json:"totpToken"`
+	}
+
 	Manager interface {
-		ProcessLogin(ctx context.Context, adminOnly bool, loginData *types.UserLoginInput) (*tokens.TokenResponse, error)
+		ProcessLogin(ctx context.Context, adminOnly bool, loginData *UserLoginInput) (*tokens.TokenResponse, error)
 		ExchangeTokenForUser(ctx context.Context, refreshToken string) (*tokens.TokenResponse, error)
 	}
 
@@ -40,23 +51,19 @@ type (
 		authenticator        Authenticator
 		tracer               tracing.Tracer
 		logger               logging.Logger
-		featureFlagManager   featureflags.FeatureFlagManager
 		dataChangesPublisher messagequeue.Publisher
-		analyticsReporter    analytics.EventReporter
 		userAuthDataManager  UserAuthDataManager
 	}
 )
 
 func NewManager(
 	cfg *authcfg.Config,
-	queuesConfig msgconfig.QueuesConfig,
+	queuesConfig *msgconfig.QueuesConfig,
 	tokenIssuer tokens.Issuer,
 	authenticator Authenticator,
 	tracingProvider tracing.TracerProvider,
 	logger logging.Logger,
-	featureFlagManager featureflags.FeatureFlagManager,
 	publisherProvider messagequeue.PublisherProvider,
-	analyticsReporter analytics.EventReporter,
 	userAuthDataManager UserAuthDataManager,
 ) (Manager, error) {
 	const name = "authentication_manager"
@@ -76,9 +83,7 @@ func NewManager(
 		logger:               logging.EnsureLogger(logger).WithName(name),
 		tokenIssuer:          tokenIssuer,
 		authenticator:        authenticator,
-		featureFlagManager:   featureFlagManager,
 		dataChangesPublisher: dataChangesPublisher,
-		analyticsReporter:    analyticsReporter,
 		userAuthDataManager:  userAuthDataManager,
 	}
 
@@ -87,7 +92,7 @@ func NewManager(
 
 // validateLogin takes login information and returns whether the login is valid.
 // In the event that there's an error, this function will return false and the error.
-func (m *manager) validateLogin(ctx context.Context, user *types.User, loginInput *types.UserLoginInput) (bool, error) {
+func (m *manager) validateLogin(ctx context.Context, user *types.User, loginInput *UserLoginInput) (bool, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -120,13 +125,17 @@ func (m *manager) validateLogin(ctx context.Context, user *types.User, loginInpu
 	return loginValid, nil
 }
 
-func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *types.UserLoginInput) (*tokens.TokenResponse, error) {
+func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *UserLoginInput) (*tokens.TokenResponse, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.Clone()
 
-	if err := loginData.ValidateWithContext(ctx); err != nil {
+	if err := validation.ValidateStructWithContext(ctx, loginData,
+		validation.Field(&loginData.Username, validation.Required, validation.Length(4, math.MaxInt8)),
+		validation.Field(&loginData.Password, validation.Required, validation.Length(8, math.MaxInt8)),
+		validation.Field(&loginData.TOTPToken, is.Digit, validation.RuneLength(6, 6)),
+	); err != nil {
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
@@ -258,12 +267,12 @@ func (m *manager) ExchangeTokenForUser(ctx context.Context, refreshToken string)
 
 	response.AccessToken, err = m.tokenIssuer.IssueToken(ctx, user, m.config.MaxAccessTokenLifetime)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "creating accessToken")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating accessToken")
 	}
 
 	response.RefreshToken, err = m.tokenIssuer.IssueToken(ctx, user, m.config.MaxRefreshTokenLifetime)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "creating accessToken")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating accessToken")
 	}
 
 	return response, nil

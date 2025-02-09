@@ -145,10 +145,12 @@ func init() {
 		panic(err)
 	}
 
-	jwtRes, err := simpleClient.AdminLoginForToken(ctx, &messages.UserLoginInput{
-		Username:  premadeAdminUser.Username,
-		Password:  premadeAdminUser.HashedPassword,
-		TOTPToken: code,
+	jwtRes, err := simpleClient.AdminLoginForToken(ctx, &messages.AdminLoginForTokenRequest{
+		Input: &messages.UserLoginInput{
+			Username:  premadeAdminUser.Username,
+			Password:  premadeAdminUser.HashedPassword,
+			TOTPToken: code,
+		},
 	})
 	if err != nil {
 		panic(err)
@@ -157,7 +159,7 @@ func init() {
 	// TODO: replace with grpc-based API client builder
 
 	opts := []grpc.DialOption{
-		grpc.WithPerRPCCredentials(&tokenCreds{token: jwtRes.AccessToken}),
+		grpc.WithPerRPCCredentials(&tokenCreds{token: jwtRes.Result.AccessToken}),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 

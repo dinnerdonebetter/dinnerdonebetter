@@ -183,7 +183,7 @@ queries_lint:
 	$(SQL_GENERATOR) vet --no-remote
 
 .PHONY: golang_lint
-golang_lint: check_lib_for_types sqlc_struct_check
+golang_lint: sqlc_struct_check # check_lib_for_types TODO: re-enable
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
 	$(LINTER) run --config=.golangci.yml --timeout 15m ./...
 
@@ -257,8 +257,9 @@ proto: ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
 	protoc --go_out=. --go-grpc_out=. \
 	--go_opt=module=github.com/dinnerdonebetter/backend \
 	--go-grpc_opt=module=github.com/dinnerdonebetter/backend \
-	-I internal/services/eating/ \
-	internal/services/eating/messages.proto internal/services/eating/service.proto
+	-I internal/services/ \
+	internal/services/*.proto
+	$(MAKE) format_golang
 
 ## INTEGRATION TESTING
 

@@ -100,7 +100,7 @@ func (s *TestSuite) TestValidIngredients_GetRandom() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			exampleValidIngredientInput := fake.BuildFakeForTest[*messages.ValidIngredientCreationRequestInput](t)
+			exampleValidIngredientInput := fake.BuildFakeForTest[*messages.CreateValidIngredientRequest](t)
 
 			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			assert.NoError(t, err)
@@ -108,9 +108,9 @@ func (s *TestSuite) TestValidIngredients_GetRandom() {
 
 			retrievedValidIngredient, err := testClients.userClient.GetRandomValidIngredient(ctx, nil)
 			requireNotNilAndNoProblems(t, retrievedValidIngredient, err)
-			assert.Equal(t, createdValidIngredient.ID, retrievedValidIngredient.ID)
+			assert.Equal(t, createdValidIngredient.Result.ID, retrievedValidIngredient.Result.ID)
 
-			deleted, err := testClients.adminClient.ArchiveValidIngredient(ctx, &messages.ArchiveValidIngredientRequest{ValidIngredientID: createdValidIngredient.ID})
+			deleted, err := testClients.adminClient.ArchiveValidIngredient(ctx, &messages.ArchiveValidIngredientRequest{ValidIngredientID: createdValidIngredient.Result.ID})
 			assert.NoError(t, err)
 			assert.NotNil(t, deleted)
 		}

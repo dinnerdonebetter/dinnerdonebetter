@@ -79,14 +79,14 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, address strin
 func initializeOAuth2PoweredClient(ctx context.Context, address string, input *messages.UserLoginInput) (service.EatingServiceClient, error) {
 	c := buildUnauthedGRPCClient(address)
 
-	tokenResponse, err := c.LoginForToken(ctx, input)
+	tokenResponse, err := c.LoginForToken(ctx, &messages.LoginForTokenRequest{Input: input})
 	if err != nil {
 		return nil, err
 	}
 
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithPerRPCCredentials(&tokenCreds{token: tokenResponse.AccessToken}),
+		grpc.WithPerRPCCredentials(&tokenCreds{token: tokenResponse.Result.AccessToken}),
 	}
 
 	conn, err := grpc.NewClient(address, opts...)
@@ -166,7 +166,7 @@ func buildUnauthedGRPCClient(address string) service.EatingServiceClient {
 func createServiceUser(ctx context.Context, address string, in *messages.UserRegistrationInput) (*types.User, error) {
 	c := buildUnauthedGRPCClient(address)
 
-	ucr, err := c.CreateUser(ctx, in)
+	ucr, err := c.CreateUser(ctx, &messages.CreateUserRequest{Input: in})
 	if err != nil {
 		return nil, fmt.Errorf("creating user: %w", err)
 	}
@@ -176,7 +176,7 @@ func createServiceUser(ctx context.Context, address string, in *messages.UserReg
 		return nil, fmt.Errorf("generating totp code: %w", err)
 	}
 
-	if _, err = c.VerifyTOTPSecret(ctx, &messages.TOTPSecretVerificationInput{
+	if _, err = c.VerifyTOTPSecret(ctx, &messages.VerifyTOTPSecretRequest{
 		TOTPToken: token,
 		UserID:    ucr.CreatedUserID,
 	}); err != nil {

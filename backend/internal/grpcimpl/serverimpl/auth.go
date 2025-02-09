@@ -5,15 +5,14 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -77,16 +76,16 @@ func (s *Server) AuthInterceptor() grpc.UnaryServerInterceptor {
 	}
 }
 
-func (s *Server) ExchangeToken(ctx context.Context, input *messages.ExchangeTokenRequest) (*messages.TokenResponse, error) {
+func (s *Server) ExchangeToken(ctx context.Context, request *messages.ExchangeTokenRequest) (*messages.ExchangeTokenResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	newToken, err := s.authManager.ExchangeTokenForUser(ctx, input.RefreshToken)
+	newToken, err := s.authManager.ExchangeTokenForUser(ctx, request.RefreshToken)
 	if err != nil {
 		return nil, Unauthenticated("invalid token")
 	}
 
-	output := &messages.TokenResponse{
+	output := &messages.ExchangeTokenResponse{
 		UserID:       newToken.UserID,
 		HouseholdID:  newToken.HouseholdID,
 		AccessToken:  newToken.AccessToken,
@@ -97,25 +96,39 @@ func (s *Server) ExchangeToken(ctx context.Context, input *messages.ExchangeToke
 	return output, nil
 }
 
-func (s *Server) LoginForToken(ctx context.Context, input *messages.UserLoginInput) (*messages.TokenResponse, error) {
+func (s *Server) LoginForToken(ctx context.Context, request *messages.LoginForTokenRequest) (*messages.LoginForTokenResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return s.loginForToken(ctx, false, input)
+	logger := s.logger.Clone()
+
+	tr, err := s.loginForToken(ctx, false, request.Input)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating login")
+	}
+
+	return &messages.LoginForTokenResponse{Result: tr}, nil
 }
 
-func (s *Server) AdminLoginForToken(ctx context.Context, input *messages.UserLoginInput) (*messages.TokenResponse, error) {
+func (s *Server) AdminLoginForToken(ctx context.Context, request *messages.AdminLoginForTokenRequest) (*messages.AdminLoginForTokenResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return s.loginForToken(ctx, true, input)
+	logger := s.logger.Clone()
+
+	tr, err := s.loginForToken(ctx, true, request.Input)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating login")
+	}
+
+	return &messages.AdminLoginForTokenResponse{Result: tr}, nil
 }
 
 func (s *Server) loginForToken(ctx context.Context, admin bool, input *messages.UserLoginInput) (*messages.TokenResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tokenResponse, err := s.authManager.ProcessLogin(ctx, admin, &types.UserLoginInput{
+	tokenResponse, err := s.authManager.ProcessLogin(ctx, admin, &authentication.UserLoginInput{
 		Username:  input.Username,
 		Password:  input.Password,
 		TOTPToken: input.TOTPToken,
@@ -135,14 +148,14 @@ func (s *Server) loginForToken(ctx context.Context, admin bool, input *messages.
 	return output, nil
 }
 
-func (s *Server) CheckPermissions(ctx context.Context, input *messages.UserPermissionsRequestInput) (*messages.UserPermissionsResponse, error) {
+func (s *Server) CheckPermissions(ctx context.Context, request *messages.CheckPermissionsRequest) (*messages.CheckPermissionsResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return nil, Unimplemented()
 }
 
-func (s *Server) GetAuthStatus(ctx context.Context, _ *emptypb.Empty) (*messages.UserStatusResponse, error) {
+func (s *Server) GetAuthStatus(ctx context.Context, request *messages.GetAuthStatusRequest) (*messages.GetAuthStatusResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

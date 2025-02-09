@@ -47,7 +47,7 @@ func ConvertUpdateValidIngredientRequestToValidIngredient(req *messages.UpdateVa
 	}
 }
 
-func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(input *messages.ValidIngredientCreationRequestInput) *types.ValidIngredientDatabaseCreationInput {
+func ConvertCreateValidIngredientRequestToValidIngredientDatabaseCreationInput(input *messages.CreateValidIngredientRequest) *types.ValidIngredientDatabaseCreationInput {
 	return &types.ValidIngredientDatabaseCreationInput{
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Min: input.StorageTemperatureInCelsius.Min,

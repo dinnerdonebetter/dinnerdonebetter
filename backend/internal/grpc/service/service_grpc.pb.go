@@ -14,7 +14,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -290,267 +289,267 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EatingServiceClient interface {
-	Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	ExchangeToken(ctx context.Context, in *messages.ExchangeTokenRequest, opts ...grpc.CallOption) (*messages.TokenResponse, error)
-	AcceptHouseholdInvitation(ctx context.Context, in *messages.AcceptHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
-	AdminLoginForToken(ctx context.Context, in *messages.UserLoginInput, opts ...grpc.CallOption) (*messages.TokenResponse, error)
-	AdminUpdateUserStatus(ctx context.Context, in *messages.UserAccountStatusUpdateInput, opts ...grpc.CallOption) (*messages.UserStatusResponse, error)
-	AggregateUserDataReport(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.UserDataCollectionResponse, error)
-	ArchiveHousehold(ctx context.Context, in *messages.ArchiveHouseholdRequest, opts ...grpc.CallOption) (*messages.Household, error)
-	ArchiveHouseholdInstrumentOwnership(ctx context.Context, in *messages.ArchiveHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error)
-	ArchiveMeal(ctx context.Context, in *messages.ArchiveMealRequest, opts ...grpc.CallOption) (*messages.Meal, error)
-	ArchiveMealPlan(ctx context.Context, in *messages.ArchiveMealPlanRequest, opts ...grpc.CallOption) (*messages.MealPlan, error)
-	ArchiveMealPlanEvent(ctx context.Context, in *messages.ArchiveMealPlanEventRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error)
-	ArchiveMealPlanGroceryListItem(ctx context.Context, in *messages.ArchiveMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error)
-	ArchiveMealPlanOption(ctx context.Context, in *messages.ArchiveMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error)
-	ArchiveMealPlanOptionVote(ctx context.Context, in *messages.ArchiveMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error)
-	ArchiveOAuth2Client(ctx context.Context, in *messages.ArchiveOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.OAuth2Client, error)
-	ArchiveRecipe(ctx context.Context, in *messages.ArchiveRecipeRequest, opts ...grpc.CallOption) (*messages.Recipe, error)
-	ArchiveRecipePrepTask(ctx context.Context, in *messages.ArchiveRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error)
-	ArchiveRecipeRating(ctx context.Context, in *messages.ArchiveRecipeRatingRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error)
-	ArchiveRecipeStep(ctx context.Context, in *messages.ArchiveRecipeStepRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error)
-	ArchiveRecipeStepCompletionCondition(ctx context.Context, in *messages.ArchiveRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error)
-	ArchiveRecipeStepIngredient(ctx context.Context, in *messages.ArchiveRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error)
-	ArchiveRecipeStepInstrument(ctx context.Context, in *messages.ArchiveRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error)
-	ArchiveRecipeStepProduct(ctx context.Context, in *messages.ArchiveRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error)
-	ArchiveRecipeStepVessel(ctx context.Context, in *messages.ArchiveRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error)
-	ArchiveServiceSetting(ctx context.Context, in *messages.ArchiveServiceSettingRequest, opts ...grpc.CallOption) (*messages.ServiceSetting, error)
-	ArchiveServiceSettingConfiguration(ctx context.Context, in *messages.ArchiveServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error)
-	ArchiveUser(ctx context.Context, in *messages.ArchiveUserRequest, opts ...grpc.CallOption) (*messages.User, error)
-	ArchiveUserIngredientPreference(ctx context.Context, in *messages.ArchiveUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.UserIngredientPreference, error)
-	ArchiveUserMembership(ctx context.Context, in *messages.ArchiveUserMembershipRequest, opts ...grpc.CallOption) (*messages.HouseholdUserMembership, error)
-	ArchiveValidIngredient(ctx context.Context, in *messages.ArchiveValidIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error)
-	ArchiveValidIngredientGroup(ctx context.Context, in *messages.ArchiveValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error)
-	ArchiveValidIngredientMeasurementUnit(ctx context.Context, in *messages.ArchiveValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error)
-	ArchiveValidIngredientPreparation(ctx context.Context, in *messages.ArchiveValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error)
-	ArchiveValidIngredientState(ctx context.Context, in *messages.ArchiveValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error)
-	ArchiveValidIngredientStateIngredient(ctx context.Context, in *messages.ArchiveValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error)
-	ArchiveValidInstrument(ctx context.Context, in *messages.ArchiveValidInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error)
-	ArchiveValidMeasurementUnit(ctx context.Context, in *messages.ArchiveValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error)
-	ArchiveValidMeasurementUnitConversion(ctx context.Context, in *messages.ArchiveValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error)
-	ArchiveValidPreparation(ctx context.Context, in *messages.ArchiveValidPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error)
-	ArchiveValidPreparationInstrument(ctx context.Context, in *messages.ArchiveValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error)
-	ArchiveValidPreparationVessel(ctx context.Context, in *messages.ArchiveValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error)
-	ArchiveValidVessel(ctx context.Context, in *messages.ArchiveValidVesselRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error)
-	ArchiveWebhook(ctx context.Context, in *messages.ArchiveWebhookRequest, opts ...grpc.CallOption) (*messages.Webhook, error)
-	ArchiveWebhookTriggerEvent(ctx context.Context, in *messages.ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*messages.WebhookTriggerEvent, error)
-	CancelHouseholdInvitation(ctx context.Context, in *messages.CancelHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
-	CheckForReadiness(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	CheckPermissions(ctx context.Context, in *messages.UserPermissionsRequestInput, opts ...grpc.CallOption) (*messages.UserPermissionsResponse, error)
-	CloneRecipe(ctx context.Context, in *messages.CloneRecipeRequest, opts ...grpc.CallOption) (*messages.Recipe, error)
-	CreateHousehold(ctx context.Context, in *messages.HouseholdCreationRequestInput, opts ...grpc.CallOption) (*messages.Household, error)
-	CreateHouseholdInstrumentOwnership(ctx context.Context, in *messages.HouseholdInstrumentOwnershipCreationRequestInput, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error)
-	CreateHouseholdInvitation(ctx context.Context, in *messages.CreateHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
-	CreateMeal(ctx context.Context, in *messages.MealCreationRequestInput, opts ...grpc.CallOption) (*messages.Meal, error)
-	CreateMealPlan(ctx context.Context, in *messages.MealPlanCreationRequestInput, opts ...grpc.CallOption) (*messages.MealPlan, error)
-	CreateMealPlanEvent(ctx context.Context, in *messages.CreateMealPlanEventRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error)
-	CreateMealPlanGroceryListItem(ctx context.Context, in *messages.CreateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error)
-	CreateMealPlanOption(ctx context.Context, in *messages.CreateMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error)
-	CreateMealPlanOptionVote(ctx context.Context, in *messages.CreateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error)
-	CreateMealPlanTask(ctx context.Context, in *messages.CreateMealPlanTaskRequest, opts ...grpc.CallOption) (*messages.MealPlanTask, error)
-	CreateOAuth2Client(ctx context.Context, in *messages.OAuth2ClientCreationRequestInput, opts ...grpc.CallOption) (*messages.OAuth2ClientCreationResponse, error)
-	CreateRecipe(ctx context.Context, in *messages.RecipeCreationRequestInput, opts ...grpc.CallOption) (*messages.Recipe, error)
-	CreateRecipePrepTask(ctx context.Context, in *messages.CreateRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error)
-	CreateRecipeRating(ctx context.Context, in *messages.CreateRecipeRatingRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error)
-	CreateRecipeStep(ctx context.Context, in *messages.CreateRecipeStepRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error)
-	CreateRecipeStepCompletionCondition(ctx context.Context, in *messages.CreateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error)
-	CreateRecipeStepIngredient(ctx context.Context, in *messages.CreateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error)
-	CreateRecipeStepInstrument(ctx context.Context, in *messages.CreateRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error)
-	CreateRecipeStepProduct(ctx context.Context, in *messages.CreateRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error)
-	CreateRecipeStepVessel(ctx context.Context, in *messages.CreateRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error)
-	CreateServiceSetting(ctx context.Context, in *messages.ServiceSettingCreationRequestInput, opts ...grpc.CallOption) (*messages.ServiceSetting, error)
-	CreateServiceSettingConfiguration(ctx context.Context, in *messages.ServiceSettingConfigurationCreationRequestInput, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error)
-	CreateUser(ctx context.Context, in *messages.UserRegistrationInput, opts ...grpc.CallOption) (*messages.UserCreationResponse, error)
-	CreateUserIngredientPreference(ctx context.Context, in *messages.UserIngredientPreferenceCreationRequestInput, opts ...grpc.CallOption) (*messages.UserIngredientPreference, error)
-	CreateUserNotification(ctx context.Context, in *messages.UserNotificationCreationRequestInput, opts ...grpc.CallOption) (*messages.UserNotification, error)
-	CreateValidIngredient(ctx context.Context, in *messages.ValidIngredientCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredient, error)
-	CreateValidIngredientGroup(ctx context.Context, in *messages.ValidIngredientGroupCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error)
-	CreateValidIngredientMeasurementUnit(ctx context.Context, in *messages.ValidIngredientMeasurementUnitCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error)
-	CreateValidIngredientPreparation(ctx context.Context, in *messages.ValidIngredientPreparationCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error)
-	CreateValidIngredientState(ctx context.Context, in *messages.ValidIngredientStateCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientState, error)
-	CreateValidIngredientStateIngredient(ctx context.Context, in *messages.ValidIngredientStateIngredientCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error)
-	CreateValidInstrument(ctx context.Context, in *messages.ValidInstrumentCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidInstrument, error)
-	CreateValidMeasurementUnit(ctx context.Context, in *messages.ValidMeasurementUnitCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error)
-	CreateValidMeasurementUnitConversion(ctx context.Context, in *messages.ValidMeasurementUnitConversionCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error)
-	CreateValidPreparation(ctx context.Context, in *messages.ValidPreparationCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidPreparation, error)
-	CreateValidPreparationInstrument(ctx context.Context, in *messages.ValidPreparationInstrumentCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error)
-	CreateValidPreparationVessel(ctx context.Context, in *messages.ValidPreparationVesselCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error)
-	CreateValidVessel(ctx context.Context, in *messages.ValidVesselCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidVessel, error)
-	CreateWebhook(ctx context.Context, in *messages.WebhookCreationRequestInput, opts ...grpc.CallOption) (*messages.Webhook, error)
-	CreateWebhookTriggerEvent(ctx context.Context, in *messages.CreateWebhookTriggerEventRequest, opts ...grpc.CallOption) (*messages.WebhookTriggerEvent, error)
-	DestroyAllUserData(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.DataDeletionResponse, error)
-	FetchUserDataReport(ctx context.Context, in *messages.FetchUserDataReportRequest, opts ...grpc.CallOption) (*messages.UserDataCollection, error)
-	FinalizeMealPlan(ctx context.Context, in *messages.FinalizeMealPlanRequest, opts ...grpc.CallOption) (*messages.FinalizeMealPlansResponse, error)
-	GetActiveHousehold(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.Household, error)
-	GetAuditLogEntriesForHousehold(ctx context.Context, in *messages.GetAuditLogEntriesForHouseholdRequest, opts ...grpc.CallOption) (*messages.AuditLogEntry, error)
-	GetAuditLogEntriesForUser(ctx context.Context, in *messages.GetAuditLogEntriesForUserRequest, opts ...grpc.CallOption) (*messages.AuditLogEntry, error)
-	GetAuditLogEntryByID(ctx context.Context, in *messages.GetAuditLogEntryByIDRequest, opts ...grpc.CallOption) (*messages.AuditLogEntry, error)
-	GetAuthStatus(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.UserStatusResponse, error)
-	GetHousehold(ctx context.Context, in *messages.GetHouseholdRequest, opts ...grpc.CallOption) (*messages.Household, error)
-	GetHouseholdInstrumentOwnership(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error)
-	GetHouseholdInstrumentOwnerships(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error)
-	GetHouseholdInvitation(ctx context.Context, in *messages.GetHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
-	GetHouseholdInvitationByID(ctx context.Context, in *messages.GetHouseholdInvitationByIDRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
-	GetHouseholds(ctx context.Context, in *messages.GetHouseholdsRequest, opts ...grpc.CallOption) (*messages.Household, error)
-	GetMeal(ctx context.Context, in *messages.GetMealRequest, opts ...grpc.CallOption) (*messages.Meal, error)
-	GetMealPlan(ctx context.Context, in *messages.GetMealPlanRequest, opts ...grpc.CallOption) (*messages.MealPlan, error)
-	GetMealPlanEvent(ctx context.Context, in *messages.GetMealPlanEventRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error)
-	GetMealPlanEvents(ctx context.Context, in *messages.GetMealPlanEventsRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error)
-	GetMealPlanGroceryListItem(ctx context.Context, in *messages.GetMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error)
-	GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, in *messages.GetMealPlanGroceryListItemsForMealPlanRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error)
-	GetMealPlanOption(ctx context.Context, in *messages.GetMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error)
-	GetMealPlanOptionVote(ctx context.Context, in *messages.GetMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error)
-	GetMealPlanOptionVotes(ctx context.Context, in *messages.GetMealPlanOptionVotesRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error)
-	GetMealPlanOptions(ctx context.Context, in *messages.GetMealPlanOptionsRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error)
-	GetMealPlanTask(ctx context.Context, in *messages.GetMealPlanTaskRequest, opts ...grpc.CallOption) (*messages.MealPlanTask, error)
-	GetMealPlanTasks(ctx context.Context, in *messages.GetMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.MealPlanTask, error)
-	GetMealPlansForHousehold(ctx context.Context, in *messages.GetMealPlansForHouseholdRequest, opts ...grpc.CallOption) (*messages.MealPlan, error)
-	GetMeals(ctx context.Context, in *messages.GetMealsRequest, opts ...grpc.CallOption) (*messages.Meal, error)
+	Ping(ctx context.Context, in *messages.PingRequest, opts ...grpc.CallOption) (*messages.PingResponse, error)
+	ExchangeToken(ctx context.Context, in *messages.ExchangeTokenRequest, opts ...grpc.CallOption) (*messages.ExchangeTokenResponse, error)
+	AcceptHouseholdInvitation(ctx context.Context, in *messages.AcceptHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.AcceptHouseholdInvitationResponse, error)
+	AdminLoginForToken(ctx context.Context, in *messages.AdminLoginForTokenRequest, opts ...grpc.CallOption) (*messages.AdminLoginForTokenResponse, error)
+	AdminUpdateUserStatus(ctx context.Context, in *messages.AdminUpdateUserStatusRequest, opts ...grpc.CallOption) (*messages.AdminUpdateUserStatusResponse, error)
+	AggregateUserDataReport(ctx context.Context, in *messages.AggregateUserDataReportRequest, opts ...grpc.CallOption) (*messages.AggregateUserDataReportResponse, error)
+	ArchiveHousehold(ctx context.Context, in *messages.ArchiveHouseholdRequest, opts ...grpc.CallOption) (*messages.ArchiveHouseholdResponse, error)
+	ArchiveHouseholdInstrumentOwnership(ctx context.Context, in *messages.ArchiveHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.ArchiveHouseholdInstrumentOwnershipResponse, error)
+	ArchiveMeal(ctx context.Context, in *messages.ArchiveMealRequest, opts ...grpc.CallOption) (*messages.ArchiveMealResponse, error)
+	ArchiveMealPlan(ctx context.Context, in *messages.ArchiveMealPlanRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanResponse, error)
+	ArchiveMealPlanEvent(ctx context.Context, in *messages.ArchiveMealPlanEventRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanEventResponse, error)
+	ArchiveMealPlanGroceryListItem(ctx context.Context, in *messages.ArchiveMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanGroceryListItemResponse, error)
+	ArchiveMealPlanOption(ctx context.Context, in *messages.ArchiveMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanOptionResponse, error)
+	ArchiveMealPlanOptionVote(ctx context.Context, in *messages.ArchiveMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanOptionVoteResponse, error)
+	ArchiveOAuth2Client(ctx context.Context, in *messages.ArchiveOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.ArchiveOAuth2ClientResponse, error)
+	ArchiveRecipe(ctx context.Context, in *messages.ArchiveRecipeRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeResponse, error)
+	ArchiveRecipePrepTask(ctx context.Context, in *messages.ArchiveRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipePrepTaskResponse, error)
+	ArchiveRecipeRating(ctx context.Context, in *messages.ArchiveRecipeRatingRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeRatingResponse, error)
+	ArchiveRecipeStep(ctx context.Context, in *messages.ArchiveRecipeStepRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepResponse, error)
+	ArchiveRecipeStepCompletionCondition(ctx context.Context, in *messages.ArchiveRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepCompletionConditionResponse, error)
+	ArchiveRecipeStepIngredient(ctx context.Context, in *messages.ArchiveRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepIngredientResponse, error)
+	ArchiveRecipeStepInstrument(ctx context.Context, in *messages.ArchiveRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepInstrumentResponse, error)
+	ArchiveRecipeStepProduct(ctx context.Context, in *messages.ArchiveRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepProductResponse, error)
+	ArchiveRecipeStepVessel(ctx context.Context, in *messages.ArchiveRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepVesselResponse, error)
+	ArchiveServiceSetting(ctx context.Context, in *messages.ArchiveServiceSettingRequest, opts ...grpc.CallOption) (*messages.ArchiveServiceSettingResponse, error)
+	ArchiveServiceSettingConfiguration(ctx context.Context, in *messages.ArchiveServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.ArchiveServiceSettingConfigurationResponse, error)
+	ArchiveUser(ctx context.Context, in *messages.ArchiveUserRequest, opts ...grpc.CallOption) (*messages.ArchiveUserResponse, error)
+	ArchiveUserIngredientPreference(ctx context.Context, in *messages.ArchiveUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.ArchiveUserIngredientPreferenceResponse, error)
+	ArchiveUserMembership(ctx context.Context, in *messages.ArchiveUserMembershipRequest, opts ...grpc.CallOption) (*messages.ArchiveUserMembershipResponse, error)
+	ArchiveValidIngredient(ctx context.Context, in *messages.ArchiveValidIngredientRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientResponse, error)
+	ArchiveValidIngredientGroup(ctx context.Context, in *messages.ArchiveValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientGroupResponse, error)
+	ArchiveValidIngredientMeasurementUnit(ctx context.Context, in *messages.ArchiveValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientMeasurementUnitResponse, error)
+	ArchiveValidIngredientPreparation(ctx context.Context, in *messages.ArchiveValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientPreparationResponse, error)
+	ArchiveValidIngredientState(ctx context.Context, in *messages.ArchiveValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientStateResponse, error)
+	ArchiveValidIngredientStateIngredient(ctx context.Context, in *messages.ArchiveValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientStateIngredientResponse, error)
+	ArchiveValidInstrument(ctx context.Context, in *messages.ArchiveValidInstrumentRequest, opts ...grpc.CallOption) (*messages.ArchiveValidInstrumentResponse, error)
+	ArchiveValidMeasurementUnit(ctx context.Context, in *messages.ArchiveValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ArchiveValidMeasurementUnitResponse, error)
+	ArchiveValidMeasurementUnitConversion(ctx context.Context, in *messages.ArchiveValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.ArchiveValidMeasurementUnitConversionResponse, error)
+	ArchiveValidPreparation(ctx context.Context, in *messages.ArchiveValidPreparationRequest, opts ...grpc.CallOption) (*messages.ArchiveValidPreparationResponse, error)
+	ArchiveValidPreparationInstrument(ctx context.Context, in *messages.ArchiveValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.ArchiveValidPreparationInstrumentResponse, error)
+	ArchiveValidPreparationVessel(ctx context.Context, in *messages.ArchiveValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.ArchiveValidPreparationVesselResponse, error)
+	ArchiveValidVessel(ctx context.Context, in *messages.ArchiveValidVesselRequest, opts ...grpc.CallOption) (*messages.ArchiveValidVesselResponse, error)
+	ArchiveWebhook(ctx context.Context, in *messages.ArchiveWebhookRequest, opts ...grpc.CallOption) (*messages.ArchiveWebhookResponse, error)
+	ArchiveWebhookTriggerEvent(ctx context.Context, in *messages.ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*messages.ArchiveWebhookTriggerEventResponse, error)
+	CancelHouseholdInvitation(ctx context.Context, in *messages.CancelHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.CancelHouseholdInvitationResponse, error)
+	CheckForReadiness(ctx context.Context, in *messages.CheckForReadinessRequest, opts ...grpc.CallOption) (*messages.CheckForReadinessResponse, error)
+	CheckPermissions(ctx context.Context, in *messages.CheckPermissionsRequest, opts ...grpc.CallOption) (*messages.CheckPermissionsResponse, error)
+	CloneRecipe(ctx context.Context, in *messages.CloneRecipeRequest, opts ...grpc.CallOption) (*messages.CloneRecipeResponse, error)
+	CreateHousehold(ctx context.Context, in *messages.CreateHouseholdRequest, opts ...grpc.CallOption) (*messages.CreateHouseholdResponse, error)
+	CreateHouseholdInstrumentOwnership(ctx context.Context, in *messages.CreateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.CreateHouseholdInstrumentOwnershipResponse, error)
+	CreateHouseholdInvitation(ctx context.Context, in *messages.CreateHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.CreateHouseholdInvitationResponse, error)
+	CreateMeal(ctx context.Context, in *messages.CreateMealRequest, opts ...grpc.CallOption) (*messages.CreateMealResponse, error)
+	CreateMealPlan(ctx context.Context, in *messages.CreateMealPlanRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanResponse, error)
+	CreateMealPlanEvent(ctx context.Context, in *messages.CreateMealPlanEventRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanEventResponse, error)
+	CreateMealPlanGroceryListItem(ctx context.Context, in *messages.CreateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanGroceryListItemResponse, error)
+	CreateMealPlanOption(ctx context.Context, in *messages.CreateMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanOptionResponse, error)
+	CreateMealPlanOptionVote(ctx context.Context, in *messages.CreateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanOptionVoteResponse, error)
+	CreateMealPlanTask(ctx context.Context, in *messages.CreateMealPlanTaskRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanTaskResponse, error)
+	CreateOAuth2Client(ctx context.Context, in *messages.CreateOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.CreateOAuth2ClientResponse, error)
+	CreateRecipe(ctx context.Context, in *messages.CreateRecipeRequest, opts ...grpc.CallOption) (*messages.CreateRecipeResponse, error)
+	CreateRecipePrepTask(ctx context.Context, in *messages.CreateRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.CreateRecipePrepTaskResponse, error)
+	CreateRecipeRating(ctx context.Context, in *messages.CreateRecipeRatingRequest, opts ...grpc.CallOption) (*messages.CreateRecipeRatingResponse, error)
+	CreateRecipeStep(ctx context.Context, in *messages.CreateRecipeStepRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepResponse, error)
+	CreateRecipeStepCompletionCondition(ctx context.Context, in *messages.CreateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepCompletionConditionResponse, error)
+	CreateRecipeStepIngredient(ctx context.Context, in *messages.CreateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepIngredientResponse, error)
+	CreateRecipeStepInstrument(ctx context.Context, in *messages.CreateRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepInstrumentResponse, error)
+	CreateRecipeStepProduct(ctx context.Context, in *messages.CreateRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepProductResponse, error)
+	CreateRecipeStepVessel(ctx context.Context, in *messages.CreateRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepVesselResponse, error)
+	CreateServiceSetting(ctx context.Context, in *messages.CreateServiceSettingRequest, opts ...grpc.CallOption) (*messages.CreateServiceSettingResponse, error)
+	CreateServiceSettingConfiguration(ctx context.Context, in *messages.CreateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.CreateServiceSettingConfigurationResponse, error)
+	CreateUser(ctx context.Context, in *messages.CreateUserRequest, opts ...grpc.CallOption) (*messages.CreateUserResponse, error)
+	CreateUserIngredientPreference(ctx context.Context, in *messages.CreateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.CreateUserIngredientPreferenceResponse, error)
+	CreateUserNotification(ctx context.Context, in *messages.CreateUserNotificationRequest, opts ...grpc.CallOption) (*messages.CreateUserNotificationResponse, error)
+	CreateValidIngredient(ctx context.Context, in *messages.CreateValidIngredientRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientResponse, error)
+	CreateValidIngredientGroup(ctx context.Context, in *messages.CreateValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientGroupResponse, error)
+	CreateValidIngredientMeasurementUnit(ctx context.Context, in *messages.CreateValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientMeasurementUnitResponse, error)
+	CreateValidIngredientPreparation(ctx context.Context, in *messages.CreateValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientPreparationResponse, error)
+	CreateValidIngredientState(ctx context.Context, in *messages.CreateValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientStateResponse, error)
+	CreateValidIngredientStateIngredient(ctx context.Context, in *messages.CreateValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientStateIngredientResponse, error)
+	CreateValidInstrument(ctx context.Context, in *messages.CreateValidInstrumentRequest, opts ...grpc.CallOption) (*messages.CreateValidInstrumentResponse, error)
+	CreateValidMeasurementUnit(ctx context.Context, in *messages.CreateValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.CreateValidMeasurementUnitResponse, error)
+	CreateValidMeasurementUnitConversion(ctx context.Context, in *messages.CreateValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.CreateValidMeasurementUnitConversionResponse, error)
+	CreateValidPreparation(ctx context.Context, in *messages.CreateValidPreparationRequest, opts ...grpc.CallOption) (*messages.CreateValidPreparationResponse, error)
+	CreateValidPreparationInstrument(ctx context.Context, in *messages.CreateValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.CreateValidPreparationInstrumentResponse, error)
+	CreateValidPreparationVessel(ctx context.Context, in *messages.CreateValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.CreateValidPreparationVesselResponse, error)
+	CreateValidVessel(ctx context.Context, in *messages.CreateValidVesselRequest, opts ...grpc.CallOption) (*messages.CreateValidVesselResponse, error)
+	CreateWebhook(ctx context.Context, in *messages.CreateWebhookRequest, opts ...grpc.CallOption) (*messages.CreateWebhookResponse, error)
+	CreateWebhookTriggerEvent(ctx context.Context, in *messages.CreateWebhookTriggerEventRequest, opts ...grpc.CallOption) (*messages.CreateWebhookTriggerEventResponse, error)
+	DestroyAllUserData(ctx context.Context, in *messages.DestroyAllUserDataRequest, opts ...grpc.CallOption) (*messages.DestroyAllUserDataResponse, error)
+	FetchUserDataReport(ctx context.Context, in *messages.FetchUserDataReportRequest, opts ...grpc.CallOption) (*messages.FetchUserDataReportResponse, error)
+	FinalizeMealPlan(ctx context.Context, in *messages.FinalizeMealPlanRequest, opts ...grpc.CallOption) (*messages.FinalizeMealPlanResponse, error)
+	GetActiveHousehold(ctx context.Context, in *messages.GetActiveHouseholdRequest, opts ...grpc.CallOption) (*messages.GetActiveHouseholdResponse, error)
+	GetAuditLogEntriesForHousehold(ctx context.Context, in *messages.GetAuditLogEntriesForHouseholdRequest, opts ...grpc.CallOption) (*messages.GetAuditLogEntriesForHouseholdResponse, error)
+	GetAuditLogEntriesForUser(ctx context.Context, in *messages.GetAuditLogEntriesForUserRequest, opts ...grpc.CallOption) (*messages.GetAuditLogEntriesForUserResponse, error)
+	GetAuditLogEntryByID(ctx context.Context, in *messages.GetAuditLogEntryByIDRequest, opts ...grpc.CallOption) (*messages.GetAuditLogEntryByIDResponse, error)
+	GetAuthStatus(ctx context.Context, in *messages.GetAuthStatusRequest, opts ...grpc.CallOption) (*messages.GetAuthStatusResponse, error)
+	GetHousehold(ctx context.Context, in *messages.GetHouseholdRequest, opts ...grpc.CallOption) (*messages.GetHouseholdResponse, error)
+	GetHouseholdInstrumentOwnership(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInstrumentOwnershipResponse, error)
+	GetHouseholdInstrumentOwnerships(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInstrumentOwnershipsResponse, error)
+	GetHouseholdInvitation(ctx context.Context, in *messages.GetHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInvitationResponse, error)
+	GetHouseholdInvitationByID(ctx context.Context, in *messages.GetHouseholdInvitationByIDRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInvitationByIDResponse, error)
+	GetHouseholds(ctx context.Context, in *messages.GetHouseholdsRequest, opts ...grpc.CallOption) (*messages.GetHouseholdsResponse, error)
+	GetMeal(ctx context.Context, in *messages.GetMealRequest, opts ...grpc.CallOption) (*messages.GetMealResponse, error)
+	GetMealPlan(ctx context.Context, in *messages.GetMealPlanRequest, opts ...grpc.CallOption) (*messages.GetMealPlanResponse, error)
+	GetMealPlanEvent(ctx context.Context, in *messages.GetMealPlanEventRequest, opts ...grpc.CallOption) (*messages.GetMealPlanEventResponse, error)
+	GetMealPlanEvents(ctx context.Context, in *messages.GetMealPlanEventsRequest, opts ...grpc.CallOption) (*messages.GetMealPlanEventsResponse, error)
+	GetMealPlanGroceryListItem(ctx context.Context, in *messages.GetMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.GetMealPlanGroceryListItemResponse, error)
+	GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, in *messages.GetMealPlanGroceryListItemsForMealPlanRequest, opts ...grpc.CallOption) (*messages.GetMealPlanGroceryListItemsForMealPlanResponse, error)
+	GetMealPlanOption(ctx context.Context, in *messages.GetMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.GetMealPlanOptionResponse, error)
+	GetMealPlanOptionVote(ctx context.Context, in *messages.GetMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.GetMealPlanOptionVoteResponse, error)
+	GetMealPlanOptionVotes(ctx context.Context, in *messages.GetMealPlanOptionVotesRequest, opts ...grpc.CallOption) (*messages.GetMealPlanOptionVotesResponse, error)
+	GetMealPlanOptions(ctx context.Context, in *messages.GetMealPlanOptionsRequest, opts ...grpc.CallOption) (*messages.GetMealPlanOptionsResponse, error)
+	GetMealPlanTask(ctx context.Context, in *messages.GetMealPlanTaskRequest, opts ...grpc.CallOption) (*messages.GetMealPlanTaskResponse, error)
+	GetMealPlanTasks(ctx context.Context, in *messages.GetMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.GetMealPlanTasksResponse, error)
+	GetMealPlansForHousehold(ctx context.Context, in *messages.GetMealPlansForHouseholdRequest, opts ...grpc.CallOption) (*messages.GetMealPlansForHouseholdResponse, error)
+	GetMeals(ctx context.Context, in *messages.GetMealsRequest, opts ...grpc.CallOption) (*messages.GetMealsResponse, error)
 	GetMermaidDiagramForRecipe(ctx context.Context, in *messages.GetMermaidDiagramForRecipeRequest, opts ...grpc.CallOption) (*messages.GetMermaidDiagramForRecipeResponse, error)
-	GetOAuth2Client(ctx context.Context, in *messages.GetOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.OAuth2Client, error)
-	GetOAuth2Clients(ctx context.Context, in *messages.GetOAuth2ClientsRequest, opts ...grpc.CallOption) (*messages.OAuth2Client, error)
-	GetRandomValidIngredient(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.ValidIngredient, error)
-	GetRandomValidInstrument(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.ValidInstrument, error)
-	GetRandomValidPreparation(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.ValidPreparation, error)
-	GetRandomValidVessel(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.ValidVessel, error)
-	GetReceivedHouseholdInvitations(ctx context.Context, in *messages.GetReceivedHouseholdInvitationsRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
-	GetRecipe(ctx context.Context, in *messages.GetRecipeRequest, opts ...grpc.CallOption) (*messages.Recipe, error)
-	GetRecipeMealPlanTasks(ctx context.Context, in *messages.GetRecipeMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.RecipePrepTaskStep, error)
-	GetRecipePrepTask(ctx context.Context, in *messages.GetRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error)
-	GetRecipePrepTasks(ctx context.Context, in *messages.GetRecipePrepTasksRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error)
-	GetRecipeRating(ctx context.Context, in *messages.GetRecipeRatingRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error)
-	GetRecipeRatingsForRecipe(ctx context.Context, in *messages.GetRecipeRatingsForRecipeRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error)
-	GetRecipeStep(ctx context.Context, in *messages.GetRecipeStepRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error)
-	GetRecipeStepCompletionCondition(ctx context.Context, in *messages.GetRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error)
-	GetRecipeStepCompletionConditions(ctx context.Context, in *messages.GetRecipeStepCompletionConditionsRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error)
-	GetRecipeStepIngredient(ctx context.Context, in *messages.GetRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error)
-	GetRecipeStepIngredients(ctx context.Context, in *messages.GetRecipeStepIngredientsRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error)
-	GetRecipeStepInstrument(ctx context.Context, in *messages.GetRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error)
-	GetRecipeStepInstruments(ctx context.Context, in *messages.GetRecipeStepInstrumentsRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error)
-	GetRecipeStepProduct(ctx context.Context, in *messages.GetRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error)
-	GetRecipeStepProducts(ctx context.Context, in *messages.GetRecipeStepProductsRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error)
-	GetRecipeStepVessel(ctx context.Context, in *messages.GetRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error)
-	GetRecipeStepVessels(ctx context.Context, in *messages.GetRecipeStepVesselsRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error)
-	GetRecipeSteps(ctx context.Context, in *messages.GetRecipeStepsRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error)
-	GetRecipes(ctx context.Context, in *messages.GetRecipesRequest, opts ...grpc.CallOption) (*messages.Recipe, error)
-	GetSelf(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.User, error)
-	GetSentHouseholdInvitations(ctx context.Context, in *messages.GetSentHouseholdInvitationsRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
-	GetServiceSetting(ctx context.Context, in *messages.GetServiceSettingRequest, opts ...grpc.CallOption) (*messages.ServiceSetting, error)
-	GetServiceSettingConfigurationByName(ctx context.Context, in *messages.GetServiceSettingConfigurationByNameRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error)
-	GetServiceSettingConfigurationsForHousehold(ctx context.Context, in *messages.GetServiceSettingConfigurationsForHouseholdRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error)
-	GetServiceSettingConfigurationsForUser(ctx context.Context, in *messages.GetServiceSettingConfigurationsForUserRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error)
-	GetServiceSettings(ctx context.Context, in *messages.GetServiceSettingsRequest, opts ...grpc.CallOption) (*messages.ServiceSetting, error)
-	GetUser(ctx context.Context, in *messages.GetUserRequest, opts ...grpc.CallOption) (*messages.User, error)
-	GetUserIngredientPreferences(ctx context.Context, in *messages.GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*messages.UserIngredientPreference, error)
-	GetUserNotification(ctx context.Context, in *messages.GetUserNotificationRequest, opts ...grpc.CallOption) (*messages.UserNotification, error)
-	GetUserNotifications(ctx context.Context, in *messages.GetUserNotificationsRequest, opts ...grpc.CallOption) (*messages.UserNotification, error)
-	GetUsers(ctx context.Context, in *messages.GetUsersRequest, opts ...grpc.CallOption) (*messages.User, error)
-	GetValidIngredient(ctx context.Context, in *messages.GetValidIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error)
-	GetValidIngredientGroup(ctx context.Context, in *messages.GetValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error)
-	GetValidIngredientGroups(ctx context.Context, in *messages.GetValidIngredientGroupsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error)
-	GetValidIngredientMeasurementUnit(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error)
-	GetValidIngredientMeasurementUnits(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error)
-	GetValidIngredientMeasurementUnitsByIngredient(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsByIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error)
-	GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error)
-	GetValidIngredientPreparation(ctx context.Context, in *messages.GetValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error)
-	GetValidIngredientPreparations(ctx context.Context, in *messages.GetValidIngredientPreparationsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error)
-	GetValidIngredientPreparationsByIngredient(ctx context.Context, in *messages.GetValidIngredientPreparationsByIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error)
-	GetValidIngredientPreparationsByPreparation(ctx context.Context, in *messages.GetValidIngredientPreparationsByPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error)
-	GetValidIngredientState(ctx context.Context, in *messages.GetValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error)
-	GetValidIngredientStateIngredient(ctx context.Context, in *messages.GetValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error)
-	GetValidIngredientStateIngredients(ctx context.Context, in *messages.GetValidIngredientStateIngredientsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error)
-	GetValidIngredientStateIngredientsByIngredient(ctx context.Context, in *messages.GetValidIngredientStateIngredientsByIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error)
-	GetValidIngredientStateIngredientsByIngredientState(ctx context.Context, in *messages.GetValidIngredientStateIngredientsByIngredientStateRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error)
-	GetValidIngredientStates(ctx context.Context, in *messages.GetValidIngredientStatesRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error)
-	GetValidIngredients(ctx context.Context, in *messages.GetValidIngredientsRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error)
-	GetValidInstrument(ctx context.Context, in *messages.GetValidInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error)
-	GetValidInstruments(ctx context.Context, in *messages.GetValidInstrumentsRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error)
-	GetValidMeasurementUnit(ctx context.Context, in *messages.GetValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error)
-	GetValidMeasurementUnitConversion(ctx context.Context, in *messages.GetValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error)
-	GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, in *messages.GetValidMeasurementUnitConversionsFromUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error)
-	GetValidMeasurementUnitConversionsToUnit(ctx context.Context, in *messages.GetValidMeasurementUnitConversionsToUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error)
-	GetValidMeasurementUnits(ctx context.Context, in *messages.GetValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error)
-	GetValidPreparation(ctx context.Context, in *messages.GetValidPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error)
-	GetValidPreparationInstrument(ctx context.Context, in *messages.GetValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error)
-	GetValidPreparationInstruments(ctx context.Context, in *messages.GetValidPreparationInstrumentsRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error)
-	GetValidPreparationInstrumentsByInstrument(ctx context.Context, in *messages.GetValidPreparationInstrumentsByInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error)
-	GetValidPreparationInstrumentsByPreparation(ctx context.Context, in *messages.GetValidPreparationInstrumentsByPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error)
-	GetValidPreparationVessel(ctx context.Context, in *messages.GetValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error)
-	GetValidPreparationVessels(ctx context.Context, in *messages.GetValidPreparationVesselsRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error)
-	GetValidPreparationVesselsByPreparation(ctx context.Context, in *messages.GetValidPreparationVesselsByPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error)
-	GetValidPreparationVesselsByVessel(ctx context.Context, in *messages.GetValidPreparationVesselsByVesselRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error)
-	GetValidPreparations(ctx context.Context, in *messages.GetValidPreparationsRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error)
-	GetValidVessel(ctx context.Context, in *messages.GetValidVesselRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error)
-	GetValidVessels(ctx context.Context, in *messages.GetValidVesselsRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error)
-	GetWebhook(ctx context.Context, in *messages.GetWebhookRequest, opts ...grpc.CallOption) (*messages.Webhook, error)
-	GetWebhooks(ctx context.Context, in *messages.GetWebhooksRequest, opts ...grpc.CallOption) (*messages.Webhook, error)
-	LoginForToken(ctx context.Context, in *messages.UserLoginInput, opts ...grpc.CallOption) (*messages.TokenResponse, error)
-	PublishArbitraryQueueMessage(ctx context.Context, in *messages.ArbitraryQueueMessageRequestInput, opts ...grpc.CallOption) (*messages.ArbitraryQueueMessageResponse, error)
-	RedeemPasswordResetToken(ctx context.Context, in *messages.PasswordResetTokenRedemptionRequestInput, opts ...grpc.CallOption) (*messages.User, error)
-	RefreshTOTPSecret(ctx context.Context, in *messages.TOTPSecretRefreshInput, opts ...grpc.CallOption) (*messages.TOTPSecretRefreshResponse, error)
-	RejectHouseholdInvitation(ctx context.Context, in *messages.RejectHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error)
-	RequestEmailVerificationEmail(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.User, error)
-	RequestPasswordResetToken(ctx context.Context, in *messages.PasswordResetTokenCreationRequestInput, opts ...grpc.CallOption) (*messages.PasswordResetToken, error)
-	RequestUsernameReminder(ctx context.Context, in *messages.UsernameReminderRequestInput, opts ...grpc.CallOption) (*messages.User, error)
-	RunFinalizeMealPlanWorker(ctx context.Context, in *messages.FinalizeMealPlansRequest, opts ...grpc.CallOption) (*messages.FinalizeMealPlansResponse, error)
-	RunMealPlanGroceryListInitializerWorker(ctx context.Context, in *messages.InitializeMealPlanGroceryListRequest, opts ...grpc.CallOption) (*messages.InitializeMealPlanGroceryListResponse, error)
-	RunMealPlanTaskCreatorWorker(ctx context.Context, in *messages.CreateMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanTasksResponse, error)
-	SearchForMeals(ctx context.Context, in *messages.SearchForMealsRequest, opts ...grpc.CallOption) (*messages.Meal, error)
-	SearchForRecipes(ctx context.Context, in *messages.SearchForRecipesRequest, opts ...grpc.CallOption) (*messages.Recipe, error)
-	SearchForServiceSettings(ctx context.Context, in *messages.SearchForServiceSettingsRequest, opts ...grpc.CallOption) (*messages.ServiceSetting, error)
-	SearchForUsers(ctx context.Context, in *messages.SearchForUsersRequest, opts ...grpc.CallOption) (*messages.User, error)
-	SearchForValidIngredientGroups(ctx context.Context, in *messages.SearchForValidIngredientGroupsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error)
-	SearchForValidIngredientStates(ctx context.Context, in *messages.SearchForValidIngredientStatesRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error)
-	SearchForValidIngredients(ctx context.Context, in *messages.SearchForValidIngredientsRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error)
-	SearchForValidInstruments(ctx context.Context, in *messages.SearchForValidInstrumentsRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error)
-	SearchForValidMeasurementUnits(ctx context.Context, in *messages.SearchForValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error)
-	SearchForValidPreparations(ctx context.Context, in *messages.SearchForValidPreparationsRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error)
-	SearchForValidVessels(ctx context.Context, in *messages.SearchForValidVesselsRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error)
-	SearchValidIngredientsByPreparation(ctx context.Context, in *messages.SearchValidIngredientsByPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error)
-	SearchValidMeasurementUnitsByIngredient(ctx context.Context, in *messages.SearchValidMeasurementUnitsByIngredientRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error)
-	SetDefaultHousehold(ctx context.Context, in *messages.SetDefaultHouseholdRequest, opts ...grpc.CallOption) (*messages.Household, error)
-	TransferHouseholdOwnership(ctx context.Context, in *messages.TransferHouseholdOwnershipRequest, opts ...grpc.CallOption) (*messages.Household, error)
-	UpdateHousehold(ctx context.Context, in *messages.UpdateHouseholdRequest, opts ...grpc.CallOption) (*messages.Household, error)
-	UpdateHouseholdInstrumentOwnership(ctx context.Context, in *messages.UpdateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error)
-	UpdateHouseholdMemberPermissions(ctx context.Context, in *messages.UpdateHouseholdMemberPermissionsRequest, opts ...grpc.CallOption) (*messages.UserPermissionsResponse, error)
-	UpdateMealPlan(ctx context.Context, in *messages.UpdateMealPlanRequest, opts ...grpc.CallOption) (*messages.MealPlan, error)
-	UpdateMealPlanEvent(ctx context.Context, in *messages.UpdateMealPlanEventRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error)
-	UpdateMealPlanGroceryListItem(ctx context.Context, in *messages.UpdateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error)
-	UpdateMealPlanOption(ctx context.Context, in *messages.UpdateMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error)
-	UpdateMealPlanOptionVote(ctx context.Context, in *messages.UpdateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error)
-	UpdateMealPlanTaskStatus(ctx context.Context, in *messages.UpdateMealPlanTaskStatusRequest, opts ...grpc.CallOption) (*messages.MealPlanTask, error)
-	UpdatePassword(ctx context.Context, in *messages.PasswordUpdateInput, opts ...grpc.CallOption) (*messages.PasswordResetResponse, error)
-	UpdateRecipe(ctx context.Context, in *messages.UpdateRecipeRequest, opts ...grpc.CallOption) (*messages.Recipe, error)
-	UpdateRecipePrepTask(ctx context.Context, in *messages.UpdateRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error)
-	UpdateRecipeRating(ctx context.Context, in *messages.UpdateRecipeRatingRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error)
-	UpdateRecipeStep(ctx context.Context, in *messages.UpdateRecipeStepRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error)
-	UpdateRecipeStepCompletionCondition(ctx context.Context, in *messages.UpdateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error)
-	UpdateRecipeStepIngredient(ctx context.Context, in *messages.UpdateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error)
-	UpdateRecipeStepInstrument(ctx context.Context, in *messages.UpdateRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error)
-	UpdateRecipeStepProduct(ctx context.Context, in *messages.UpdateRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error)
-	UpdateRecipeStepVessel(ctx context.Context, in *messages.UpdateRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error)
-	UpdateServiceSettingConfiguration(ctx context.Context, in *messages.UpdateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error)
-	UpdateUserDetails(ctx context.Context, in *messages.UserDetailsUpdateRequestInput, opts ...grpc.CallOption) (*messages.User, error)
-	UpdateUserEmailAddress(ctx context.Context, in *messages.UserEmailAddressUpdateInput, opts ...grpc.CallOption) (*messages.User, error)
-	UpdateUserIngredientPreference(ctx context.Context, in *messages.UpdateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.UserIngredientPreference, error)
-	UpdateUserNotification(ctx context.Context, in *messages.UpdateUserNotificationRequest, opts ...grpc.CallOption) (*messages.UserNotification, error)
-	UpdateUserUsername(ctx context.Context, in *messages.UsernameUpdateInput, opts ...grpc.CallOption) (*messages.User, error)
-	UpdateValidIngredient(ctx context.Context, in *messages.UpdateValidIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error)
-	UpdateValidIngredientGroup(ctx context.Context, in *messages.UpdateValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error)
-	UpdateValidIngredientMeasurementUnit(ctx context.Context, in *messages.UpdateValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error)
-	UpdateValidIngredientPreparation(ctx context.Context, in *messages.UpdateValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error)
-	UpdateValidIngredientState(ctx context.Context, in *messages.UpdateValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error)
-	UpdateValidIngredientStateIngredient(ctx context.Context, in *messages.UpdateValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error)
-	UpdateValidInstrument(ctx context.Context, in *messages.UpdateValidInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error)
-	UpdateValidMeasurementUnit(ctx context.Context, in *messages.UpdateValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error)
-	UpdateValidMeasurementUnitConversion(ctx context.Context, in *messages.UpdateValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error)
-	UpdateValidPreparation(ctx context.Context, in *messages.UpdateValidPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error)
-	UpdateValidPreparationInstrument(ctx context.Context, in *messages.UpdateValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error)
-	UpdateValidPreparationVessel(ctx context.Context, in *messages.UpdateValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error)
-	UpdateValidVessel(ctx context.Context, in *messages.UpdateValidVesselRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error)
-	UploadUserAvatar(ctx context.Context, in *messages.AvatarUpdateInput, opts ...grpc.CallOption) (*messages.User, error)
-	VerifyEmailAddress(ctx context.Context, in *messages.EmailAddressVerificationRequestInput, opts ...grpc.CallOption) (*messages.User, error)
-	VerifyTOTPSecret(ctx context.Context, in *messages.TOTPSecretVerificationInput, opts ...grpc.CallOption) (*messages.TOTPSecretVerificationResponse, error)
+	GetOAuth2Client(ctx context.Context, in *messages.GetOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.GetOAuth2ClientResponse, error)
+	GetOAuth2Clients(ctx context.Context, in *messages.GetOAuth2ClientsRequest, opts ...grpc.CallOption) (*messages.GetOAuth2ClientsResponse, error)
+	GetRandomValidIngredient(ctx context.Context, in *messages.GetRandomValidIngredientRequest, opts ...grpc.CallOption) (*messages.GetRandomValidIngredientResponse, error)
+	GetRandomValidInstrument(ctx context.Context, in *messages.GetRandomValidInstrumentRequest, opts ...grpc.CallOption) (*messages.GetRandomValidInstrumentResponse, error)
+	GetRandomValidPreparation(ctx context.Context, in *messages.GetRandomValidPreparationRequest, opts ...grpc.CallOption) (*messages.GetRandomValidPreparationResponse, error)
+	GetRandomValidVessel(ctx context.Context, in *messages.GetRandomValidVesselRequest, opts ...grpc.CallOption) (*messages.GetRandomValidVesselResponse, error)
+	GetReceivedHouseholdInvitations(ctx context.Context, in *messages.GetReceivedHouseholdInvitationsRequest, opts ...grpc.CallOption) (*messages.GetReceivedHouseholdInvitationsResponse, error)
+	GetRecipe(ctx context.Context, in *messages.GetRecipeRequest, opts ...grpc.CallOption) (*messages.GetRecipeResponse, error)
+	GetRecipeMealPlanTasks(ctx context.Context, in *messages.GetRecipeMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.GetRecipeMealPlanTasksResponse, error)
+	GetRecipePrepTask(ctx context.Context, in *messages.GetRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.GetRecipePrepTaskResponse, error)
+	GetRecipePrepTasks(ctx context.Context, in *messages.GetRecipePrepTasksRequest, opts ...grpc.CallOption) (*messages.GetRecipePrepTasksResponse, error)
+	GetRecipeRating(ctx context.Context, in *messages.GetRecipeRatingRequest, opts ...grpc.CallOption) (*messages.GetRecipeRatingResponse, error)
+	GetRecipeRatingsForRecipe(ctx context.Context, in *messages.GetRecipeRatingsForRecipeRequest, opts ...grpc.CallOption) (*messages.GetRecipeRatingsForRecipeResponse, error)
+	GetRecipeStep(ctx context.Context, in *messages.GetRecipeStepRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepResponse, error)
+	GetRecipeStepCompletionCondition(ctx context.Context, in *messages.GetRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepCompletionConditionResponse, error)
+	GetRecipeStepCompletionConditions(ctx context.Context, in *messages.GetRecipeStepCompletionConditionsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepCompletionConditionsResponse, error)
+	GetRecipeStepIngredient(ctx context.Context, in *messages.GetRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepIngredientResponse, error)
+	GetRecipeStepIngredients(ctx context.Context, in *messages.GetRecipeStepIngredientsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepIngredientsResponse, error)
+	GetRecipeStepInstrument(ctx context.Context, in *messages.GetRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepInstrumentResponse, error)
+	GetRecipeStepInstruments(ctx context.Context, in *messages.GetRecipeStepInstrumentsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepInstrumentsResponse, error)
+	GetRecipeStepProduct(ctx context.Context, in *messages.GetRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepProductResponse, error)
+	GetRecipeStepProducts(ctx context.Context, in *messages.GetRecipeStepProductsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepProductsResponse, error)
+	GetRecipeStepVessel(ctx context.Context, in *messages.GetRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepVesselResponse, error)
+	GetRecipeStepVessels(ctx context.Context, in *messages.GetRecipeStepVesselsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepVesselsResponse, error)
+	GetRecipeSteps(ctx context.Context, in *messages.GetRecipeStepsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepsResponse, error)
+	GetRecipes(ctx context.Context, in *messages.GetRecipesRequest, opts ...grpc.CallOption) (*messages.GetRecipesResponse, error)
+	GetSelf(ctx context.Context, in *messages.GetSelfRequest, opts ...grpc.CallOption) (*messages.GetSelfResponse, error)
+	GetSentHouseholdInvitations(ctx context.Context, in *messages.GetSentHouseholdInvitationsRequest, opts ...grpc.CallOption) (*messages.GetSentHouseholdInvitationsResponse, error)
+	GetServiceSetting(ctx context.Context, in *messages.GetServiceSettingRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingResponse, error)
+	GetServiceSettingConfigurationByName(ctx context.Context, in *messages.GetServiceSettingConfigurationByNameRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingConfigurationByNameResponse, error)
+	GetServiceSettingConfigurationsForHousehold(ctx context.Context, in *messages.GetServiceSettingConfigurationsForHouseholdRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingConfigurationsForHouseholdResponse, error)
+	GetServiceSettingConfigurationsForUser(ctx context.Context, in *messages.GetServiceSettingConfigurationsForUserRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingConfigurationsForUserResponse, error)
+	GetServiceSettings(ctx context.Context, in *messages.GetServiceSettingsRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingsResponse, error)
+	GetUser(ctx context.Context, in *messages.GetUserRequest, opts ...grpc.CallOption) (*messages.GetUserResponse, error)
+	GetUserIngredientPreferences(ctx context.Context, in *messages.GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*messages.GetUserIngredientPreferencesResponse, error)
+	GetUserNotification(ctx context.Context, in *messages.GetUserNotificationRequest, opts ...grpc.CallOption) (*messages.GetUserNotificationResponse, error)
+	GetUserNotifications(ctx context.Context, in *messages.GetUserNotificationsRequest, opts ...grpc.CallOption) (*messages.GetUserNotificationsResponse, error)
+	GetUsers(ctx context.Context, in *messages.GetUsersRequest, opts ...grpc.CallOption) (*messages.GetUsersResponse, error)
+	GetValidIngredient(ctx context.Context, in *messages.GetValidIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientResponse, error)
+	GetValidIngredientGroup(ctx context.Context, in *messages.GetValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientGroupResponse, error)
+	GetValidIngredientGroups(ctx context.Context, in *messages.GetValidIngredientGroupsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientGroupsResponse, error)
+	GetValidIngredientMeasurementUnit(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientMeasurementUnitResponse, error)
+	GetValidIngredientMeasurementUnits(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientMeasurementUnitsResponse, error)
+	GetValidIngredientMeasurementUnitsByIngredient(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsByIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientMeasurementUnitsByIngredientResponse, error)
+	GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse, error)
+	GetValidIngredientPreparation(ctx context.Context, in *messages.GetValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientPreparationResponse, error)
+	GetValidIngredientPreparations(ctx context.Context, in *messages.GetValidIngredientPreparationsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientPreparationsResponse, error)
+	GetValidIngredientPreparationsByIngredient(ctx context.Context, in *messages.GetValidIngredientPreparationsByIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientPreparationsByIngredientResponse, error)
+	GetValidIngredientPreparationsByPreparation(ctx context.Context, in *messages.GetValidIngredientPreparationsByPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientPreparationsByPreparationResponse, error)
+	GetValidIngredientState(ctx context.Context, in *messages.GetValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateResponse, error)
+	GetValidIngredientStateIngredient(ctx context.Context, in *messages.GetValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateIngredientResponse, error)
+	GetValidIngredientStateIngredients(ctx context.Context, in *messages.GetValidIngredientStateIngredientsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateIngredientsResponse, error)
+	GetValidIngredientStateIngredientsByIngredient(ctx context.Context, in *messages.GetValidIngredientStateIngredientsByIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateIngredientsByIngredientResponse, error)
+	GetValidIngredientStateIngredientsByIngredientState(ctx context.Context, in *messages.GetValidIngredientStateIngredientsByIngredientStateRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateIngredientsByIngredientStateResponse, error)
+	GetValidIngredientStates(ctx context.Context, in *messages.GetValidIngredientStatesRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStatesResponse, error)
+	GetValidIngredients(ctx context.Context, in *messages.GetValidIngredientsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientsResponse, error)
+	GetValidInstrument(ctx context.Context, in *messages.GetValidInstrumentRequest, opts ...grpc.CallOption) (*messages.GetValidInstrumentResponse, error)
+	GetValidInstruments(ctx context.Context, in *messages.GetValidInstrumentsRequest, opts ...grpc.CallOption) (*messages.GetValidInstrumentsResponse, error)
+	GetValidMeasurementUnit(ctx context.Context, in *messages.GetValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitResponse, error)
+	GetValidMeasurementUnitConversion(ctx context.Context, in *messages.GetValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitConversionResponse, error)
+	GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, in *messages.GetValidMeasurementUnitConversionsFromUnitRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitConversionsFromUnitResponse, error)
+	GetValidMeasurementUnitConversionsToUnit(ctx context.Context, in *messages.GetValidMeasurementUnitConversionsToUnitRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitConversionsToUnitResponse, error)
+	GetValidMeasurementUnits(ctx context.Context, in *messages.GetValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitsResponse, error)
+	GetValidPreparation(ctx context.Context, in *messages.GetValidPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationResponse, error)
+	GetValidPreparationInstrument(ctx context.Context, in *messages.GetValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationInstrumentResponse, error)
+	GetValidPreparationInstruments(ctx context.Context, in *messages.GetValidPreparationInstrumentsRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationInstrumentsResponse, error)
+	GetValidPreparationInstrumentsByInstrument(ctx context.Context, in *messages.GetValidPreparationInstrumentsByInstrumentRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationInstrumentsByInstrumentResponse, error)
+	GetValidPreparationInstrumentsByPreparation(ctx context.Context, in *messages.GetValidPreparationInstrumentsByPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationInstrumentsByPreparationResponse, error)
+	GetValidPreparationVessel(ctx context.Context, in *messages.GetValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationVesselResponse, error)
+	GetValidPreparationVessels(ctx context.Context, in *messages.GetValidPreparationVesselsRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationVesselsResponse, error)
+	GetValidPreparationVesselsByPreparation(ctx context.Context, in *messages.GetValidPreparationVesselsByPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationVesselsByPreparationResponse, error)
+	GetValidPreparationVesselsByVessel(ctx context.Context, in *messages.GetValidPreparationVesselsByVesselRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationVesselsByVesselResponse, error)
+	GetValidPreparations(ctx context.Context, in *messages.GetValidPreparationsRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationsResponse, error)
+	GetValidVessel(ctx context.Context, in *messages.GetValidVesselRequest, opts ...grpc.CallOption) (*messages.GetValidVesselResponse, error)
+	GetValidVessels(ctx context.Context, in *messages.GetValidVesselsRequest, opts ...grpc.CallOption) (*messages.GetValidVesselsResponse, error)
+	GetWebhook(ctx context.Context, in *messages.GetWebhookRequest, opts ...grpc.CallOption) (*messages.GetWebhookResponse, error)
+	GetWebhooks(ctx context.Context, in *messages.GetWebhooksRequest, opts ...grpc.CallOption) (*messages.GetWebhooksResponse, error)
+	LoginForToken(ctx context.Context, in *messages.LoginForTokenRequest, opts ...grpc.CallOption) (*messages.LoginForTokenResponse, error)
+	PublishArbitraryQueueMessage(ctx context.Context, in *messages.PublishArbitraryQueueMessageRequest, opts ...grpc.CallOption) (*messages.PublishArbitraryQueueMessageResponse, error)
+	RedeemPasswordResetToken(ctx context.Context, in *messages.RedeemPasswordResetTokenRequest, opts ...grpc.CallOption) (*messages.RedeemPasswordResetTokenResponse, error)
+	RefreshTOTPSecret(ctx context.Context, in *messages.RefreshTOTPSecretRequest, opts ...grpc.CallOption) (*messages.RefreshTOTPSecretResponse, error)
+	RejectHouseholdInvitation(ctx context.Context, in *messages.RejectHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.RejectHouseholdInvitationResponse, error)
+	RequestEmailVerificationEmail(ctx context.Context, in *messages.RequestEmailVerificationEmailRequest, opts ...grpc.CallOption) (*messages.RequestEmailVerificationEmailResponse, error)
+	RequestPasswordResetToken(ctx context.Context, in *messages.RequestPasswordResetTokenRequest, opts ...grpc.CallOption) (*messages.RequestPasswordResetTokenResponse, error)
+	RequestUsernameReminder(ctx context.Context, in *messages.RequestUsernameReminderRequest, opts ...grpc.CallOption) (*messages.RequestUsernameReminderResponse, error)
+	RunFinalizeMealPlanWorker(ctx context.Context, in *messages.RunFinalizeMealPlanWorkerRequest, opts ...grpc.CallOption) (*messages.RunFinalizeMealPlanWorkerResponse, error)
+	RunMealPlanGroceryListInitializerWorker(ctx context.Context, in *messages.RunMealPlanGroceryListInitializerWorkerRequest, opts ...grpc.CallOption) (*messages.RunMealPlanGroceryListInitializerWorkerResponse, error)
+	RunMealPlanTaskCreatorWorker(ctx context.Context, in *messages.RunMealPlanTaskCreatorWorkerRequest, opts ...grpc.CallOption) (*messages.RunMealPlanTaskCreatorWorkerResponse, error)
+	SearchForMeals(ctx context.Context, in *messages.SearchForMealsRequest, opts ...grpc.CallOption) (*messages.SearchForMealsResponse, error)
+	SearchForRecipes(ctx context.Context, in *messages.SearchForRecipesRequest, opts ...grpc.CallOption) (*messages.SearchForRecipesResponse, error)
+	SearchForServiceSettings(ctx context.Context, in *messages.SearchForServiceSettingsRequest, opts ...grpc.CallOption) (*messages.SearchForServiceSettingsResponse, error)
+	SearchForUsers(ctx context.Context, in *messages.SearchForUsersRequest, opts ...grpc.CallOption) (*messages.SearchForUsersResponse, error)
+	SearchForValidIngredientGroups(ctx context.Context, in *messages.SearchForValidIngredientGroupsRequest, opts ...grpc.CallOption) (*messages.SearchForValidIngredientGroupsResponse, error)
+	SearchForValidIngredientStates(ctx context.Context, in *messages.SearchForValidIngredientStatesRequest, opts ...grpc.CallOption) (*messages.SearchForValidIngredientStatesResponse, error)
+	SearchForValidIngredients(ctx context.Context, in *messages.SearchForValidIngredientsRequest, opts ...grpc.CallOption) (*messages.SearchForValidIngredientsResponse, error)
+	SearchForValidInstruments(ctx context.Context, in *messages.SearchForValidInstrumentsRequest, opts ...grpc.CallOption) (*messages.SearchForValidInstrumentsResponse, error)
+	SearchForValidMeasurementUnits(ctx context.Context, in *messages.SearchForValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.SearchForValidMeasurementUnitsResponse, error)
+	SearchForValidPreparations(ctx context.Context, in *messages.SearchForValidPreparationsRequest, opts ...grpc.CallOption) (*messages.SearchForValidPreparationsResponse, error)
+	SearchForValidVessels(ctx context.Context, in *messages.SearchForValidVesselsRequest, opts ...grpc.CallOption) (*messages.SearchForValidVesselsResponse, error)
+	SearchValidIngredientsByPreparation(ctx context.Context, in *messages.SearchValidIngredientsByPreparationRequest, opts ...grpc.CallOption) (*messages.SearchValidIngredientsByPreparationResponse, error)
+	SearchValidMeasurementUnitsByIngredient(ctx context.Context, in *messages.SearchValidMeasurementUnitsByIngredientRequest, opts ...grpc.CallOption) (*messages.SearchValidMeasurementUnitsByIngredientResponse, error)
+	SetDefaultHousehold(ctx context.Context, in *messages.SetDefaultHouseholdRequest, opts ...grpc.CallOption) (*messages.SetDefaultHouseholdResponse, error)
+	TransferHouseholdOwnership(ctx context.Context, in *messages.TransferHouseholdOwnershipRequest, opts ...grpc.CallOption) (*messages.TransferHouseholdOwnershipResponse, error)
+	UpdateHousehold(ctx context.Context, in *messages.UpdateHouseholdRequest, opts ...grpc.CallOption) (*messages.UpdateHouseholdResponse, error)
+	UpdateHouseholdInstrumentOwnership(ctx context.Context, in *messages.UpdateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.UpdateHouseholdInstrumentOwnershipResponse, error)
+	UpdateHouseholdMemberPermissions(ctx context.Context, in *messages.UpdateHouseholdMemberPermissionsRequest, opts ...grpc.CallOption) (*messages.UpdateHouseholdMemberPermissionsResponse, error)
+	UpdateMealPlan(ctx context.Context, in *messages.UpdateMealPlanRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanResponse, error)
+	UpdateMealPlanEvent(ctx context.Context, in *messages.UpdateMealPlanEventRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanEventResponse, error)
+	UpdateMealPlanGroceryListItem(ctx context.Context, in *messages.UpdateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanGroceryListItemResponse, error)
+	UpdateMealPlanOption(ctx context.Context, in *messages.UpdateMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanOptionResponse, error)
+	UpdateMealPlanOptionVote(ctx context.Context, in *messages.UpdateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanOptionVoteResponse, error)
+	UpdateMealPlanTaskStatus(ctx context.Context, in *messages.UpdateMealPlanTaskStatusRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanTaskStatusResponse, error)
+	UpdatePassword(ctx context.Context, in *messages.UpdatePasswordRequest, opts ...grpc.CallOption) (*messages.UpdatePasswordResponse, error)
+	UpdateRecipe(ctx context.Context, in *messages.UpdateRecipeRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeResponse, error)
+	UpdateRecipePrepTask(ctx context.Context, in *messages.UpdateRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.UpdateRecipePrepTaskResponse, error)
+	UpdateRecipeRating(ctx context.Context, in *messages.UpdateRecipeRatingRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeRatingResponse, error)
+	UpdateRecipeStep(ctx context.Context, in *messages.UpdateRecipeStepRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepResponse, error)
+	UpdateRecipeStepCompletionCondition(ctx context.Context, in *messages.UpdateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepCompletionConditionResponse, error)
+	UpdateRecipeStepIngredient(ctx context.Context, in *messages.UpdateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepIngredientResponse, error)
+	UpdateRecipeStepInstrument(ctx context.Context, in *messages.UpdateRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepInstrumentResponse, error)
+	UpdateRecipeStepProduct(ctx context.Context, in *messages.UpdateRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepProductResponse, error)
+	UpdateRecipeStepVessel(ctx context.Context, in *messages.UpdateRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepVesselResponse, error)
+	UpdateServiceSettingConfiguration(ctx context.Context, in *messages.UpdateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.UpdateServiceSettingConfigurationResponse, error)
+	UpdateUserDetails(ctx context.Context, in *messages.UpdateUserDetailsRequest, opts ...grpc.CallOption) (*messages.UpdateUserDetailsResponse, error)
+	UpdateUserEmailAddress(ctx context.Context, in *messages.UpdateUserEmailAddressRequest, opts ...grpc.CallOption) (*messages.UpdateUserEmailAddressResponse, error)
+	UpdateUserIngredientPreference(ctx context.Context, in *messages.UpdateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.UpdateUserIngredientPreferenceResponse, error)
+	UpdateUserNotification(ctx context.Context, in *messages.UpdateUserNotificationRequest, opts ...grpc.CallOption) (*messages.UpdateUserNotificationResponse, error)
+	UpdateUserUsername(ctx context.Context, in *messages.UpdateUserUsernameRequest, opts ...grpc.CallOption) (*messages.UpdateUserUsernameResponse, error)
+	UpdateValidIngredient(ctx context.Context, in *messages.UpdateValidIngredientRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientResponse, error)
+	UpdateValidIngredientGroup(ctx context.Context, in *messages.UpdateValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientGroupResponse, error)
+	UpdateValidIngredientMeasurementUnit(ctx context.Context, in *messages.UpdateValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientMeasurementUnitResponse, error)
+	UpdateValidIngredientPreparation(ctx context.Context, in *messages.UpdateValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientPreparationResponse, error)
+	UpdateValidIngredientState(ctx context.Context, in *messages.UpdateValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientStateResponse, error)
+	UpdateValidIngredientStateIngredient(ctx context.Context, in *messages.UpdateValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientStateIngredientResponse, error)
+	UpdateValidInstrument(ctx context.Context, in *messages.UpdateValidInstrumentRequest, opts ...grpc.CallOption) (*messages.UpdateValidInstrumentResponse, error)
+	UpdateValidMeasurementUnit(ctx context.Context, in *messages.UpdateValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.UpdateValidMeasurementUnitResponse, error)
+	UpdateValidMeasurementUnitConversion(ctx context.Context, in *messages.UpdateValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.UpdateValidMeasurementUnitConversionResponse, error)
+	UpdateValidPreparation(ctx context.Context, in *messages.UpdateValidPreparationRequest, opts ...grpc.CallOption) (*messages.UpdateValidPreparationResponse, error)
+	UpdateValidPreparationInstrument(ctx context.Context, in *messages.UpdateValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.UpdateValidPreparationInstrumentResponse, error)
+	UpdateValidPreparationVessel(ctx context.Context, in *messages.UpdateValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.UpdateValidPreparationVesselResponse, error)
+	UpdateValidVessel(ctx context.Context, in *messages.UpdateValidVesselRequest, opts ...grpc.CallOption) (*messages.UpdateValidVesselResponse, error)
+	UploadUserAvatar(ctx context.Context, in *messages.UploadUserAvatarRequest, opts ...grpc.CallOption) (*messages.UploadUserAvatarResponse, error)
+	VerifyEmailAddress(ctx context.Context, in *messages.VerifyEmailAddressRequest, opts ...grpc.CallOption) (*messages.VerifyEmailAddressResponse, error)
+	VerifyTOTPSecret(ctx context.Context, in *messages.VerifyTOTPSecretRequest, opts ...grpc.CallOption) (*messages.VerifyTOTPSecretResponse, error)
 }
 
 type eatingServiceClient struct {
@@ -561,9 +560,9 @@ func NewEatingServiceClient(cc grpc.ClientConnInterface) EatingServiceClient {
 	return &eatingServiceClient{cc}
 }
 
-func (c *eatingServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *eatingServiceClient) Ping(ctx context.Context, in *messages.PingRequest, opts ...grpc.CallOption) (*messages.PingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(messages.PingResponse)
 	err := c.cc.Invoke(ctx, EatingService_Ping_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -571,9 +570,9 @@ func (c *eatingServiceClient) Ping(ctx context.Context, in *emptypb.Empty, opts 
 	return out, nil
 }
 
-func (c *eatingServiceClient) ExchangeToken(ctx context.Context, in *messages.ExchangeTokenRequest, opts ...grpc.CallOption) (*messages.TokenResponse, error) {
+func (c *eatingServiceClient) ExchangeToken(ctx context.Context, in *messages.ExchangeTokenRequest, opts ...grpc.CallOption) (*messages.ExchangeTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.TokenResponse)
+	out := new(messages.ExchangeTokenResponse)
 	err := c.cc.Invoke(ctx, EatingService_ExchangeToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -581,9 +580,9 @@ func (c *eatingServiceClient) ExchangeToken(ctx context.Context, in *messages.Ex
 	return out, nil
 }
 
-func (c *eatingServiceClient) AcceptHouseholdInvitation(ctx context.Context, in *messages.AcceptHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error) {
+func (c *eatingServiceClient) AcceptHouseholdInvitation(ctx context.Context, in *messages.AcceptHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.AcceptHouseholdInvitationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInvitation)
+	out := new(messages.AcceptHouseholdInvitationResponse)
 	err := c.cc.Invoke(ctx, EatingService_AcceptHouseholdInvitation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -591,9 +590,9 @@ func (c *eatingServiceClient) AcceptHouseholdInvitation(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) AdminLoginForToken(ctx context.Context, in *messages.UserLoginInput, opts ...grpc.CallOption) (*messages.TokenResponse, error) {
+func (c *eatingServiceClient) AdminLoginForToken(ctx context.Context, in *messages.AdminLoginForTokenRequest, opts ...grpc.CallOption) (*messages.AdminLoginForTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.TokenResponse)
+	out := new(messages.AdminLoginForTokenResponse)
 	err := c.cc.Invoke(ctx, EatingService_AdminLoginForToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -601,9 +600,9 @@ func (c *eatingServiceClient) AdminLoginForToken(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) AdminUpdateUserStatus(ctx context.Context, in *messages.UserAccountStatusUpdateInput, opts ...grpc.CallOption) (*messages.UserStatusResponse, error) {
+func (c *eatingServiceClient) AdminUpdateUserStatus(ctx context.Context, in *messages.AdminUpdateUserStatusRequest, opts ...grpc.CallOption) (*messages.AdminUpdateUserStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserStatusResponse)
+	out := new(messages.AdminUpdateUserStatusResponse)
 	err := c.cc.Invoke(ctx, EatingService_AdminUpdateUserStatus_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -611,9 +610,9 @@ func (c *eatingServiceClient) AdminUpdateUserStatus(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) AggregateUserDataReport(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.UserDataCollectionResponse, error) {
+func (c *eatingServiceClient) AggregateUserDataReport(ctx context.Context, in *messages.AggregateUserDataReportRequest, opts ...grpc.CallOption) (*messages.AggregateUserDataReportResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserDataCollectionResponse)
+	out := new(messages.AggregateUserDataReportResponse)
 	err := c.cc.Invoke(ctx, EatingService_AggregateUserDataReport_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -621,9 +620,9 @@ func (c *eatingServiceClient) AggregateUserDataReport(ctx context.Context, in *e
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveHousehold(ctx context.Context, in *messages.ArchiveHouseholdRequest, opts ...grpc.CallOption) (*messages.Household, error) {
+func (c *eatingServiceClient) ArchiveHousehold(ctx context.Context, in *messages.ArchiveHouseholdRequest, opts ...grpc.CallOption) (*messages.ArchiveHouseholdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Household)
+	out := new(messages.ArchiveHouseholdResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveHousehold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -631,9 +630,9 @@ func (c *eatingServiceClient) ArchiveHousehold(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveHouseholdInstrumentOwnership(ctx context.Context, in *messages.ArchiveHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error) {
+func (c *eatingServiceClient) ArchiveHouseholdInstrumentOwnership(ctx context.Context, in *messages.ArchiveHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.ArchiveHouseholdInstrumentOwnershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInstrumentOwnership)
+	out := new(messages.ArchiveHouseholdInstrumentOwnershipResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveHouseholdInstrumentOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -641,9 +640,9 @@ func (c *eatingServiceClient) ArchiveHouseholdInstrumentOwnership(ctx context.Co
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveMeal(ctx context.Context, in *messages.ArchiveMealRequest, opts ...grpc.CallOption) (*messages.Meal, error) {
+func (c *eatingServiceClient) ArchiveMeal(ctx context.Context, in *messages.ArchiveMealRequest, opts ...grpc.CallOption) (*messages.ArchiveMealResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Meal)
+	out := new(messages.ArchiveMealResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveMeal_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -651,9 +650,9 @@ func (c *eatingServiceClient) ArchiveMeal(ctx context.Context, in *messages.Arch
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveMealPlan(ctx context.Context, in *messages.ArchiveMealPlanRequest, opts ...grpc.CallOption) (*messages.MealPlan, error) {
+func (c *eatingServiceClient) ArchiveMealPlan(ctx context.Context, in *messages.ArchiveMealPlanRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlan)
+	out := new(messages.ArchiveMealPlanResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveMealPlan_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -661,9 +660,9 @@ func (c *eatingServiceClient) ArchiveMealPlan(ctx context.Context, in *messages.
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveMealPlanEvent(ctx context.Context, in *messages.ArchiveMealPlanEventRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error) {
+func (c *eatingServiceClient) ArchiveMealPlanEvent(ctx context.Context, in *messages.ArchiveMealPlanEventRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanEventResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanEvent)
+	out := new(messages.ArchiveMealPlanEventResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveMealPlanEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -671,9 +670,9 @@ func (c *eatingServiceClient) ArchiveMealPlanEvent(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveMealPlanGroceryListItem(ctx context.Context, in *messages.ArchiveMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error) {
+func (c *eatingServiceClient) ArchiveMealPlanGroceryListItem(ctx context.Context, in *messages.ArchiveMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanGroceryListItemResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanGroceryListItem)
+	out := new(messages.ArchiveMealPlanGroceryListItemResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveMealPlanGroceryListItem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -681,9 +680,9 @@ func (c *eatingServiceClient) ArchiveMealPlanGroceryListItem(ctx context.Context
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveMealPlanOption(ctx context.Context, in *messages.ArchiveMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error) {
+func (c *eatingServiceClient) ArchiveMealPlanOption(ctx context.Context, in *messages.ArchiveMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanOptionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOption)
+	out := new(messages.ArchiveMealPlanOptionResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveMealPlanOption_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -691,9 +690,9 @@ func (c *eatingServiceClient) ArchiveMealPlanOption(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveMealPlanOptionVote(ctx context.Context, in *messages.ArchiveMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error) {
+func (c *eatingServiceClient) ArchiveMealPlanOptionVote(ctx context.Context, in *messages.ArchiveMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.ArchiveMealPlanOptionVoteResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOptionVote)
+	out := new(messages.ArchiveMealPlanOptionVoteResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveMealPlanOptionVote_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -701,9 +700,9 @@ func (c *eatingServiceClient) ArchiveMealPlanOptionVote(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveOAuth2Client(ctx context.Context, in *messages.ArchiveOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.OAuth2Client, error) {
+func (c *eatingServiceClient) ArchiveOAuth2Client(ctx context.Context, in *messages.ArchiveOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.ArchiveOAuth2ClientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.OAuth2Client)
+	out := new(messages.ArchiveOAuth2ClientResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveOAuth2Client_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -711,9 +710,9 @@ func (c *eatingServiceClient) ArchiveOAuth2Client(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveRecipe(ctx context.Context, in *messages.ArchiveRecipeRequest, opts ...grpc.CallOption) (*messages.Recipe, error) {
+func (c *eatingServiceClient) ArchiveRecipe(ctx context.Context, in *messages.ArchiveRecipeRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Recipe)
+	out := new(messages.ArchiveRecipeResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveRecipe_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -721,9 +720,9 @@ func (c *eatingServiceClient) ArchiveRecipe(ctx context.Context, in *messages.Ar
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveRecipePrepTask(ctx context.Context, in *messages.ArchiveRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error) {
+func (c *eatingServiceClient) ArchiveRecipePrepTask(ctx context.Context, in *messages.ArchiveRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipePrepTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipePrepTask)
+	out := new(messages.ArchiveRecipePrepTaskResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveRecipePrepTask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -731,9 +730,9 @@ func (c *eatingServiceClient) ArchiveRecipePrepTask(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveRecipeRating(ctx context.Context, in *messages.ArchiveRecipeRatingRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error) {
+func (c *eatingServiceClient) ArchiveRecipeRating(ctx context.Context, in *messages.ArchiveRecipeRatingRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeRatingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeRating)
+	out := new(messages.ArchiveRecipeRatingResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveRecipeRating_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -741,9 +740,9 @@ func (c *eatingServiceClient) ArchiveRecipeRating(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveRecipeStep(ctx context.Context, in *messages.ArchiveRecipeStepRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error) {
+func (c *eatingServiceClient) ArchiveRecipeStep(ctx context.Context, in *messages.ArchiveRecipeStepRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStep)
+	out := new(messages.ArchiveRecipeStepResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveRecipeStep_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -751,9 +750,9 @@ func (c *eatingServiceClient) ArchiveRecipeStep(ctx context.Context, in *message
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveRecipeStepCompletionCondition(ctx context.Context, in *messages.ArchiveRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error) {
+func (c *eatingServiceClient) ArchiveRecipeStepCompletionCondition(ctx context.Context, in *messages.ArchiveRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepCompletionConditionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepCompletionCondition)
+	out := new(messages.ArchiveRecipeStepCompletionConditionResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveRecipeStepCompletionCondition_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -761,9 +760,9 @@ func (c *eatingServiceClient) ArchiveRecipeStepCompletionCondition(ctx context.C
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveRecipeStepIngredient(ctx context.Context, in *messages.ArchiveRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error) {
+func (c *eatingServiceClient) ArchiveRecipeStepIngredient(ctx context.Context, in *messages.ArchiveRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepIngredient)
+	out := new(messages.ArchiveRecipeStepIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveRecipeStepIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -771,9 +770,9 @@ func (c *eatingServiceClient) ArchiveRecipeStepIngredient(ctx context.Context, i
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveRecipeStepInstrument(ctx context.Context, in *messages.ArchiveRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error) {
+func (c *eatingServiceClient) ArchiveRecipeStepInstrument(ctx context.Context, in *messages.ArchiveRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepInstrument)
+	out := new(messages.ArchiveRecipeStepInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveRecipeStepInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -781,9 +780,9 @@ func (c *eatingServiceClient) ArchiveRecipeStepInstrument(ctx context.Context, i
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveRecipeStepProduct(ctx context.Context, in *messages.ArchiveRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error) {
+func (c *eatingServiceClient) ArchiveRecipeStepProduct(ctx context.Context, in *messages.ArchiveRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepProductResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepProduct)
+	out := new(messages.ArchiveRecipeStepProductResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveRecipeStepProduct_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -791,9 +790,9 @@ func (c *eatingServiceClient) ArchiveRecipeStepProduct(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveRecipeStepVessel(ctx context.Context, in *messages.ArchiveRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error) {
+func (c *eatingServiceClient) ArchiveRecipeStepVessel(ctx context.Context, in *messages.ArchiveRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.ArchiveRecipeStepVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepVessel)
+	out := new(messages.ArchiveRecipeStepVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveRecipeStepVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -801,9 +800,9 @@ func (c *eatingServiceClient) ArchiveRecipeStepVessel(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveServiceSetting(ctx context.Context, in *messages.ArchiveServiceSettingRequest, opts ...grpc.CallOption) (*messages.ServiceSetting, error) {
+func (c *eatingServiceClient) ArchiveServiceSetting(ctx context.Context, in *messages.ArchiveServiceSettingRequest, opts ...grpc.CallOption) (*messages.ArchiveServiceSettingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSetting)
+	out := new(messages.ArchiveServiceSettingResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveServiceSetting_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -811,9 +810,9 @@ func (c *eatingServiceClient) ArchiveServiceSetting(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveServiceSettingConfiguration(ctx context.Context, in *messages.ArchiveServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error) {
+func (c *eatingServiceClient) ArchiveServiceSettingConfiguration(ctx context.Context, in *messages.ArchiveServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.ArchiveServiceSettingConfigurationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSettingConfiguration)
+	out := new(messages.ArchiveServiceSettingConfigurationResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveServiceSettingConfiguration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -821,9 +820,9 @@ func (c *eatingServiceClient) ArchiveServiceSettingConfiguration(ctx context.Con
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveUser(ctx context.Context, in *messages.ArchiveUserRequest, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) ArchiveUser(ctx context.Context, in *messages.ArchiveUserRequest, opts ...grpc.CallOption) (*messages.ArchiveUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.ArchiveUserResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -831,9 +830,9 @@ func (c *eatingServiceClient) ArchiveUser(ctx context.Context, in *messages.Arch
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveUserIngredientPreference(ctx context.Context, in *messages.ArchiveUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.UserIngredientPreference, error) {
+func (c *eatingServiceClient) ArchiveUserIngredientPreference(ctx context.Context, in *messages.ArchiveUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.ArchiveUserIngredientPreferenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserIngredientPreference)
+	out := new(messages.ArchiveUserIngredientPreferenceResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveUserIngredientPreference_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -841,9 +840,9 @@ func (c *eatingServiceClient) ArchiveUserIngredientPreference(ctx context.Contex
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveUserMembership(ctx context.Context, in *messages.ArchiveUserMembershipRequest, opts ...grpc.CallOption) (*messages.HouseholdUserMembership, error) {
+func (c *eatingServiceClient) ArchiveUserMembership(ctx context.Context, in *messages.ArchiveUserMembershipRequest, opts ...grpc.CallOption) (*messages.ArchiveUserMembershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdUserMembership)
+	out := new(messages.ArchiveUserMembershipResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveUserMembership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -851,9 +850,9 @@ func (c *eatingServiceClient) ArchiveUserMembership(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidIngredient(ctx context.Context, in *messages.ArchiveValidIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error) {
+func (c *eatingServiceClient) ArchiveValidIngredient(ctx context.Context, in *messages.ArchiveValidIngredientRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredient)
+	out := new(messages.ArchiveValidIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -861,9 +860,9 @@ func (c *eatingServiceClient) ArchiveValidIngredient(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidIngredientGroup(ctx context.Context, in *messages.ArchiveValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error) {
+func (c *eatingServiceClient) ArchiveValidIngredientGroup(ctx context.Context, in *messages.ArchiveValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientGroupResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientGroup)
+	out := new(messages.ArchiveValidIngredientGroupResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidIngredientGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -871,9 +870,9 @@ func (c *eatingServiceClient) ArchiveValidIngredientGroup(ctx context.Context, i
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidIngredientMeasurementUnit(ctx context.Context, in *messages.ArchiveValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error) {
+func (c *eatingServiceClient) ArchiveValidIngredientMeasurementUnit(ctx context.Context, in *messages.ArchiveValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientMeasurementUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientMeasurementUnit)
+	out := new(messages.ArchiveValidIngredientMeasurementUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidIngredientMeasurementUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -881,9 +880,9 @@ func (c *eatingServiceClient) ArchiveValidIngredientMeasurementUnit(ctx context.
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidIngredientPreparation(ctx context.Context, in *messages.ArchiveValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error) {
+func (c *eatingServiceClient) ArchiveValidIngredientPreparation(ctx context.Context, in *messages.ArchiveValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientPreparation)
+	out := new(messages.ArchiveValidIngredientPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidIngredientPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -891,9 +890,9 @@ func (c *eatingServiceClient) ArchiveValidIngredientPreparation(ctx context.Cont
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidIngredientState(ctx context.Context, in *messages.ArchiveValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error) {
+func (c *eatingServiceClient) ArchiveValidIngredientState(ctx context.Context, in *messages.ArchiveValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientStateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientState)
+	out := new(messages.ArchiveValidIngredientStateResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidIngredientState_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -901,9 +900,9 @@ func (c *eatingServiceClient) ArchiveValidIngredientState(ctx context.Context, i
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidIngredientStateIngredient(ctx context.Context, in *messages.ArchiveValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error) {
+func (c *eatingServiceClient) ArchiveValidIngredientStateIngredient(ctx context.Context, in *messages.ArchiveValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.ArchiveValidIngredientStateIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientStateIngredient)
+	out := new(messages.ArchiveValidIngredientStateIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidIngredientStateIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -911,9 +910,9 @@ func (c *eatingServiceClient) ArchiveValidIngredientStateIngredient(ctx context.
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidInstrument(ctx context.Context, in *messages.ArchiveValidInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error) {
+func (c *eatingServiceClient) ArchiveValidInstrument(ctx context.Context, in *messages.ArchiveValidInstrumentRequest, opts ...grpc.CallOption) (*messages.ArchiveValidInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidInstrument)
+	out := new(messages.ArchiveValidInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -921,9 +920,9 @@ func (c *eatingServiceClient) ArchiveValidInstrument(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidMeasurementUnit(ctx context.Context, in *messages.ArchiveValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error) {
+func (c *eatingServiceClient) ArchiveValidMeasurementUnit(ctx context.Context, in *messages.ArchiveValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ArchiveValidMeasurementUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnit)
+	out := new(messages.ArchiveValidMeasurementUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidMeasurementUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -931,9 +930,9 @@ func (c *eatingServiceClient) ArchiveValidMeasurementUnit(ctx context.Context, i
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidMeasurementUnitConversion(ctx context.Context, in *messages.ArchiveValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error) {
+func (c *eatingServiceClient) ArchiveValidMeasurementUnitConversion(ctx context.Context, in *messages.ArchiveValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.ArchiveValidMeasurementUnitConversionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnitConversion)
+	out := new(messages.ArchiveValidMeasurementUnitConversionResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidMeasurementUnitConversion_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -941,9 +940,9 @@ func (c *eatingServiceClient) ArchiveValidMeasurementUnitConversion(ctx context.
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidPreparation(ctx context.Context, in *messages.ArchiveValidPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error) {
+func (c *eatingServiceClient) ArchiveValidPreparation(ctx context.Context, in *messages.ArchiveValidPreparationRequest, opts ...grpc.CallOption) (*messages.ArchiveValidPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparation)
+	out := new(messages.ArchiveValidPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -951,9 +950,9 @@ func (c *eatingServiceClient) ArchiveValidPreparation(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidPreparationInstrument(ctx context.Context, in *messages.ArchiveValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error) {
+func (c *eatingServiceClient) ArchiveValidPreparationInstrument(ctx context.Context, in *messages.ArchiveValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.ArchiveValidPreparationInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationInstrument)
+	out := new(messages.ArchiveValidPreparationInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidPreparationInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -961,9 +960,9 @@ func (c *eatingServiceClient) ArchiveValidPreparationInstrument(ctx context.Cont
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidPreparationVessel(ctx context.Context, in *messages.ArchiveValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error) {
+func (c *eatingServiceClient) ArchiveValidPreparationVessel(ctx context.Context, in *messages.ArchiveValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.ArchiveValidPreparationVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationVessel)
+	out := new(messages.ArchiveValidPreparationVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidPreparationVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -971,9 +970,9 @@ func (c *eatingServiceClient) ArchiveValidPreparationVessel(ctx context.Context,
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveValidVessel(ctx context.Context, in *messages.ArchiveValidVesselRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error) {
+func (c *eatingServiceClient) ArchiveValidVessel(ctx context.Context, in *messages.ArchiveValidVesselRequest, opts ...grpc.CallOption) (*messages.ArchiveValidVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidVessel)
+	out := new(messages.ArchiveValidVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveValidVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -981,9 +980,9 @@ func (c *eatingServiceClient) ArchiveValidVessel(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveWebhook(ctx context.Context, in *messages.ArchiveWebhookRequest, opts ...grpc.CallOption) (*messages.Webhook, error) {
+func (c *eatingServiceClient) ArchiveWebhook(ctx context.Context, in *messages.ArchiveWebhookRequest, opts ...grpc.CallOption) (*messages.ArchiveWebhookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Webhook)
+	out := new(messages.ArchiveWebhookResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveWebhook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -991,9 +990,9 @@ func (c *eatingServiceClient) ArchiveWebhook(ctx context.Context, in *messages.A
 	return out, nil
 }
 
-func (c *eatingServiceClient) ArchiveWebhookTriggerEvent(ctx context.Context, in *messages.ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*messages.WebhookTriggerEvent, error) {
+func (c *eatingServiceClient) ArchiveWebhookTriggerEvent(ctx context.Context, in *messages.ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*messages.ArchiveWebhookTriggerEventResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.WebhookTriggerEvent)
+	out := new(messages.ArchiveWebhookTriggerEventResponse)
 	err := c.cc.Invoke(ctx, EatingService_ArchiveWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1001,9 +1000,9 @@ func (c *eatingServiceClient) ArchiveWebhookTriggerEvent(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) CancelHouseholdInvitation(ctx context.Context, in *messages.CancelHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error) {
+func (c *eatingServiceClient) CancelHouseholdInvitation(ctx context.Context, in *messages.CancelHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.CancelHouseholdInvitationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInvitation)
+	out := new(messages.CancelHouseholdInvitationResponse)
 	err := c.cc.Invoke(ctx, EatingService_CancelHouseholdInvitation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1011,9 +1010,9 @@ func (c *eatingServiceClient) CancelHouseholdInvitation(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) CheckForReadiness(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *eatingServiceClient) CheckForReadiness(ctx context.Context, in *messages.CheckForReadinessRequest, opts ...grpc.CallOption) (*messages.CheckForReadinessResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(messages.CheckForReadinessResponse)
 	err := c.cc.Invoke(ctx, EatingService_CheckForReadiness_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1021,9 +1020,9 @@ func (c *eatingServiceClient) CheckForReadiness(ctx context.Context, in *emptypb
 	return out, nil
 }
 
-func (c *eatingServiceClient) CheckPermissions(ctx context.Context, in *messages.UserPermissionsRequestInput, opts ...grpc.CallOption) (*messages.UserPermissionsResponse, error) {
+func (c *eatingServiceClient) CheckPermissions(ctx context.Context, in *messages.CheckPermissionsRequest, opts ...grpc.CallOption) (*messages.CheckPermissionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserPermissionsResponse)
+	out := new(messages.CheckPermissionsResponse)
 	err := c.cc.Invoke(ctx, EatingService_CheckPermissions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1031,9 +1030,9 @@ func (c *eatingServiceClient) CheckPermissions(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) CloneRecipe(ctx context.Context, in *messages.CloneRecipeRequest, opts ...grpc.CallOption) (*messages.Recipe, error) {
+func (c *eatingServiceClient) CloneRecipe(ctx context.Context, in *messages.CloneRecipeRequest, opts ...grpc.CallOption) (*messages.CloneRecipeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Recipe)
+	out := new(messages.CloneRecipeResponse)
 	err := c.cc.Invoke(ctx, EatingService_CloneRecipe_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1041,9 +1040,9 @@ func (c *eatingServiceClient) CloneRecipe(ctx context.Context, in *messages.Clon
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateHousehold(ctx context.Context, in *messages.HouseholdCreationRequestInput, opts ...grpc.CallOption) (*messages.Household, error) {
+func (c *eatingServiceClient) CreateHousehold(ctx context.Context, in *messages.CreateHouseholdRequest, opts ...grpc.CallOption) (*messages.CreateHouseholdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Household)
+	out := new(messages.CreateHouseholdResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateHousehold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1051,9 +1050,9 @@ func (c *eatingServiceClient) CreateHousehold(ctx context.Context, in *messages.
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateHouseholdInstrumentOwnership(ctx context.Context, in *messages.HouseholdInstrumentOwnershipCreationRequestInput, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error) {
+func (c *eatingServiceClient) CreateHouseholdInstrumentOwnership(ctx context.Context, in *messages.CreateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.CreateHouseholdInstrumentOwnershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInstrumentOwnership)
+	out := new(messages.CreateHouseholdInstrumentOwnershipResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateHouseholdInstrumentOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1061,9 +1060,9 @@ func (c *eatingServiceClient) CreateHouseholdInstrumentOwnership(ctx context.Con
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateHouseholdInvitation(ctx context.Context, in *messages.CreateHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error) {
+func (c *eatingServiceClient) CreateHouseholdInvitation(ctx context.Context, in *messages.CreateHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.CreateHouseholdInvitationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInvitation)
+	out := new(messages.CreateHouseholdInvitationResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateHouseholdInvitation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1071,9 +1070,9 @@ func (c *eatingServiceClient) CreateHouseholdInvitation(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateMeal(ctx context.Context, in *messages.MealCreationRequestInput, opts ...grpc.CallOption) (*messages.Meal, error) {
+func (c *eatingServiceClient) CreateMeal(ctx context.Context, in *messages.CreateMealRequest, opts ...grpc.CallOption) (*messages.CreateMealResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Meal)
+	out := new(messages.CreateMealResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateMeal_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1081,9 +1080,9 @@ func (c *eatingServiceClient) CreateMeal(ctx context.Context, in *messages.MealC
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateMealPlan(ctx context.Context, in *messages.MealPlanCreationRequestInput, opts ...grpc.CallOption) (*messages.MealPlan, error) {
+func (c *eatingServiceClient) CreateMealPlan(ctx context.Context, in *messages.CreateMealPlanRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlan)
+	out := new(messages.CreateMealPlanResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateMealPlan_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1091,9 +1090,9 @@ func (c *eatingServiceClient) CreateMealPlan(ctx context.Context, in *messages.M
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateMealPlanEvent(ctx context.Context, in *messages.CreateMealPlanEventRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error) {
+func (c *eatingServiceClient) CreateMealPlanEvent(ctx context.Context, in *messages.CreateMealPlanEventRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanEventResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanEvent)
+	out := new(messages.CreateMealPlanEventResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateMealPlanEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1101,9 +1100,9 @@ func (c *eatingServiceClient) CreateMealPlanEvent(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateMealPlanGroceryListItem(ctx context.Context, in *messages.CreateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error) {
+func (c *eatingServiceClient) CreateMealPlanGroceryListItem(ctx context.Context, in *messages.CreateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanGroceryListItemResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanGroceryListItem)
+	out := new(messages.CreateMealPlanGroceryListItemResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateMealPlanGroceryListItem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1111,9 +1110,9 @@ func (c *eatingServiceClient) CreateMealPlanGroceryListItem(ctx context.Context,
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateMealPlanOption(ctx context.Context, in *messages.CreateMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error) {
+func (c *eatingServiceClient) CreateMealPlanOption(ctx context.Context, in *messages.CreateMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanOptionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOption)
+	out := new(messages.CreateMealPlanOptionResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateMealPlanOption_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1121,9 +1120,9 @@ func (c *eatingServiceClient) CreateMealPlanOption(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateMealPlanOptionVote(ctx context.Context, in *messages.CreateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error) {
+func (c *eatingServiceClient) CreateMealPlanOptionVote(ctx context.Context, in *messages.CreateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanOptionVoteResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOptionVote)
+	out := new(messages.CreateMealPlanOptionVoteResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateMealPlanOptionVote_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1131,9 +1130,9 @@ func (c *eatingServiceClient) CreateMealPlanOptionVote(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateMealPlanTask(ctx context.Context, in *messages.CreateMealPlanTaskRequest, opts ...grpc.CallOption) (*messages.MealPlanTask, error) {
+func (c *eatingServiceClient) CreateMealPlanTask(ctx context.Context, in *messages.CreateMealPlanTaskRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanTask)
+	out := new(messages.CreateMealPlanTaskResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateMealPlanTask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1141,9 +1140,9 @@ func (c *eatingServiceClient) CreateMealPlanTask(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateOAuth2Client(ctx context.Context, in *messages.OAuth2ClientCreationRequestInput, opts ...grpc.CallOption) (*messages.OAuth2ClientCreationResponse, error) {
+func (c *eatingServiceClient) CreateOAuth2Client(ctx context.Context, in *messages.CreateOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.CreateOAuth2ClientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.OAuth2ClientCreationResponse)
+	out := new(messages.CreateOAuth2ClientResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateOAuth2Client_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1151,9 +1150,9 @@ func (c *eatingServiceClient) CreateOAuth2Client(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateRecipe(ctx context.Context, in *messages.RecipeCreationRequestInput, opts ...grpc.CallOption) (*messages.Recipe, error) {
+func (c *eatingServiceClient) CreateRecipe(ctx context.Context, in *messages.CreateRecipeRequest, opts ...grpc.CallOption) (*messages.CreateRecipeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Recipe)
+	out := new(messages.CreateRecipeResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateRecipe_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1161,9 +1160,9 @@ func (c *eatingServiceClient) CreateRecipe(ctx context.Context, in *messages.Rec
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateRecipePrepTask(ctx context.Context, in *messages.CreateRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error) {
+func (c *eatingServiceClient) CreateRecipePrepTask(ctx context.Context, in *messages.CreateRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.CreateRecipePrepTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipePrepTask)
+	out := new(messages.CreateRecipePrepTaskResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateRecipePrepTask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1171,9 +1170,9 @@ func (c *eatingServiceClient) CreateRecipePrepTask(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateRecipeRating(ctx context.Context, in *messages.CreateRecipeRatingRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error) {
+func (c *eatingServiceClient) CreateRecipeRating(ctx context.Context, in *messages.CreateRecipeRatingRequest, opts ...grpc.CallOption) (*messages.CreateRecipeRatingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeRating)
+	out := new(messages.CreateRecipeRatingResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateRecipeRating_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1181,9 +1180,9 @@ func (c *eatingServiceClient) CreateRecipeRating(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateRecipeStep(ctx context.Context, in *messages.CreateRecipeStepRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error) {
+func (c *eatingServiceClient) CreateRecipeStep(ctx context.Context, in *messages.CreateRecipeStepRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStep)
+	out := new(messages.CreateRecipeStepResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateRecipeStep_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1191,9 +1190,9 @@ func (c *eatingServiceClient) CreateRecipeStep(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateRecipeStepCompletionCondition(ctx context.Context, in *messages.CreateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error) {
+func (c *eatingServiceClient) CreateRecipeStepCompletionCondition(ctx context.Context, in *messages.CreateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepCompletionConditionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepCompletionCondition)
+	out := new(messages.CreateRecipeStepCompletionConditionResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateRecipeStepCompletionCondition_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1201,9 +1200,9 @@ func (c *eatingServiceClient) CreateRecipeStepCompletionCondition(ctx context.Co
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateRecipeStepIngredient(ctx context.Context, in *messages.CreateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error) {
+func (c *eatingServiceClient) CreateRecipeStepIngredient(ctx context.Context, in *messages.CreateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepIngredient)
+	out := new(messages.CreateRecipeStepIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateRecipeStepIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1211,9 +1210,9 @@ func (c *eatingServiceClient) CreateRecipeStepIngredient(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateRecipeStepInstrument(ctx context.Context, in *messages.CreateRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error) {
+func (c *eatingServiceClient) CreateRecipeStepInstrument(ctx context.Context, in *messages.CreateRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepInstrument)
+	out := new(messages.CreateRecipeStepInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateRecipeStepInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1221,9 +1220,9 @@ func (c *eatingServiceClient) CreateRecipeStepInstrument(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateRecipeStepProduct(ctx context.Context, in *messages.CreateRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error) {
+func (c *eatingServiceClient) CreateRecipeStepProduct(ctx context.Context, in *messages.CreateRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepProductResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepProduct)
+	out := new(messages.CreateRecipeStepProductResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateRecipeStepProduct_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1231,9 +1230,9 @@ func (c *eatingServiceClient) CreateRecipeStepProduct(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateRecipeStepVessel(ctx context.Context, in *messages.CreateRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error) {
+func (c *eatingServiceClient) CreateRecipeStepVessel(ctx context.Context, in *messages.CreateRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.CreateRecipeStepVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepVessel)
+	out := new(messages.CreateRecipeStepVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateRecipeStepVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1241,9 +1240,9 @@ func (c *eatingServiceClient) CreateRecipeStepVessel(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateServiceSetting(ctx context.Context, in *messages.ServiceSettingCreationRequestInput, opts ...grpc.CallOption) (*messages.ServiceSetting, error) {
+func (c *eatingServiceClient) CreateServiceSetting(ctx context.Context, in *messages.CreateServiceSettingRequest, opts ...grpc.CallOption) (*messages.CreateServiceSettingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSetting)
+	out := new(messages.CreateServiceSettingResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateServiceSetting_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1251,9 +1250,9 @@ func (c *eatingServiceClient) CreateServiceSetting(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateServiceSettingConfiguration(ctx context.Context, in *messages.ServiceSettingConfigurationCreationRequestInput, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error) {
+func (c *eatingServiceClient) CreateServiceSettingConfiguration(ctx context.Context, in *messages.CreateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.CreateServiceSettingConfigurationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSettingConfiguration)
+	out := new(messages.CreateServiceSettingConfigurationResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateServiceSettingConfiguration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1261,9 +1260,9 @@ func (c *eatingServiceClient) CreateServiceSettingConfiguration(ctx context.Cont
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateUser(ctx context.Context, in *messages.UserRegistrationInput, opts ...grpc.CallOption) (*messages.UserCreationResponse, error) {
+func (c *eatingServiceClient) CreateUser(ctx context.Context, in *messages.CreateUserRequest, opts ...grpc.CallOption) (*messages.CreateUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserCreationResponse)
+	out := new(messages.CreateUserResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1271,9 +1270,9 @@ func (c *eatingServiceClient) CreateUser(ctx context.Context, in *messages.UserR
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateUserIngredientPreference(ctx context.Context, in *messages.UserIngredientPreferenceCreationRequestInput, opts ...grpc.CallOption) (*messages.UserIngredientPreference, error) {
+func (c *eatingServiceClient) CreateUserIngredientPreference(ctx context.Context, in *messages.CreateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.CreateUserIngredientPreferenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserIngredientPreference)
+	out := new(messages.CreateUserIngredientPreferenceResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateUserIngredientPreference_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1281,9 +1280,9 @@ func (c *eatingServiceClient) CreateUserIngredientPreference(ctx context.Context
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateUserNotification(ctx context.Context, in *messages.UserNotificationCreationRequestInput, opts ...grpc.CallOption) (*messages.UserNotification, error) {
+func (c *eatingServiceClient) CreateUserNotification(ctx context.Context, in *messages.CreateUserNotificationRequest, opts ...grpc.CallOption) (*messages.CreateUserNotificationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserNotification)
+	out := new(messages.CreateUserNotificationResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateUserNotification_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1291,9 +1290,9 @@ func (c *eatingServiceClient) CreateUserNotification(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidIngredient(ctx context.Context, in *messages.ValidIngredientCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredient, error) {
+func (c *eatingServiceClient) CreateValidIngredient(ctx context.Context, in *messages.CreateValidIngredientRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredient)
+	out := new(messages.CreateValidIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1301,9 +1300,9 @@ func (c *eatingServiceClient) CreateValidIngredient(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidIngredientGroup(ctx context.Context, in *messages.ValidIngredientGroupCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error) {
+func (c *eatingServiceClient) CreateValidIngredientGroup(ctx context.Context, in *messages.CreateValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientGroupResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientGroup)
+	out := new(messages.CreateValidIngredientGroupResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidIngredientGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1311,9 +1310,9 @@ func (c *eatingServiceClient) CreateValidIngredientGroup(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidIngredientMeasurementUnit(ctx context.Context, in *messages.ValidIngredientMeasurementUnitCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error) {
+func (c *eatingServiceClient) CreateValidIngredientMeasurementUnit(ctx context.Context, in *messages.CreateValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientMeasurementUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientMeasurementUnit)
+	out := new(messages.CreateValidIngredientMeasurementUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidIngredientMeasurementUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1321,9 +1320,9 @@ func (c *eatingServiceClient) CreateValidIngredientMeasurementUnit(ctx context.C
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidIngredientPreparation(ctx context.Context, in *messages.ValidIngredientPreparationCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error) {
+func (c *eatingServiceClient) CreateValidIngredientPreparation(ctx context.Context, in *messages.CreateValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientPreparation)
+	out := new(messages.CreateValidIngredientPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidIngredientPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1331,9 +1330,9 @@ func (c *eatingServiceClient) CreateValidIngredientPreparation(ctx context.Conte
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidIngredientState(ctx context.Context, in *messages.ValidIngredientStateCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientState, error) {
+func (c *eatingServiceClient) CreateValidIngredientState(ctx context.Context, in *messages.CreateValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientStateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientState)
+	out := new(messages.CreateValidIngredientStateResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidIngredientState_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1341,9 +1340,9 @@ func (c *eatingServiceClient) CreateValidIngredientState(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidIngredientStateIngredient(ctx context.Context, in *messages.ValidIngredientStateIngredientCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error) {
+func (c *eatingServiceClient) CreateValidIngredientStateIngredient(ctx context.Context, in *messages.CreateValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.CreateValidIngredientStateIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientStateIngredient)
+	out := new(messages.CreateValidIngredientStateIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidIngredientStateIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1351,9 +1350,9 @@ func (c *eatingServiceClient) CreateValidIngredientStateIngredient(ctx context.C
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidInstrument(ctx context.Context, in *messages.ValidInstrumentCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidInstrument, error) {
+func (c *eatingServiceClient) CreateValidInstrument(ctx context.Context, in *messages.CreateValidInstrumentRequest, opts ...grpc.CallOption) (*messages.CreateValidInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidInstrument)
+	out := new(messages.CreateValidInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1361,9 +1360,9 @@ func (c *eatingServiceClient) CreateValidInstrument(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidMeasurementUnit(ctx context.Context, in *messages.ValidMeasurementUnitCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error) {
+func (c *eatingServiceClient) CreateValidMeasurementUnit(ctx context.Context, in *messages.CreateValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.CreateValidMeasurementUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnit)
+	out := new(messages.CreateValidMeasurementUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidMeasurementUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1371,9 +1370,9 @@ func (c *eatingServiceClient) CreateValidMeasurementUnit(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidMeasurementUnitConversion(ctx context.Context, in *messages.ValidMeasurementUnitConversionCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error) {
+func (c *eatingServiceClient) CreateValidMeasurementUnitConversion(ctx context.Context, in *messages.CreateValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.CreateValidMeasurementUnitConversionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnitConversion)
+	out := new(messages.CreateValidMeasurementUnitConversionResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidMeasurementUnitConversion_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1381,9 +1380,9 @@ func (c *eatingServiceClient) CreateValidMeasurementUnitConversion(ctx context.C
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidPreparation(ctx context.Context, in *messages.ValidPreparationCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidPreparation, error) {
+func (c *eatingServiceClient) CreateValidPreparation(ctx context.Context, in *messages.CreateValidPreparationRequest, opts ...grpc.CallOption) (*messages.CreateValidPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparation)
+	out := new(messages.CreateValidPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1391,9 +1390,9 @@ func (c *eatingServiceClient) CreateValidPreparation(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidPreparationInstrument(ctx context.Context, in *messages.ValidPreparationInstrumentCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error) {
+func (c *eatingServiceClient) CreateValidPreparationInstrument(ctx context.Context, in *messages.CreateValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.CreateValidPreparationInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationInstrument)
+	out := new(messages.CreateValidPreparationInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidPreparationInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1401,9 +1400,9 @@ func (c *eatingServiceClient) CreateValidPreparationInstrument(ctx context.Conte
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidPreparationVessel(ctx context.Context, in *messages.ValidPreparationVesselCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error) {
+func (c *eatingServiceClient) CreateValidPreparationVessel(ctx context.Context, in *messages.CreateValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.CreateValidPreparationVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationVessel)
+	out := new(messages.CreateValidPreparationVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidPreparationVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1411,9 +1410,9 @@ func (c *eatingServiceClient) CreateValidPreparationVessel(ctx context.Context, 
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateValidVessel(ctx context.Context, in *messages.ValidVesselCreationRequestInput, opts ...grpc.CallOption) (*messages.ValidVessel, error) {
+func (c *eatingServiceClient) CreateValidVessel(ctx context.Context, in *messages.CreateValidVesselRequest, opts ...grpc.CallOption) (*messages.CreateValidVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidVessel)
+	out := new(messages.CreateValidVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateValidVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1421,9 +1420,9 @@ func (c *eatingServiceClient) CreateValidVessel(ctx context.Context, in *message
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateWebhook(ctx context.Context, in *messages.WebhookCreationRequestInput, opts ...grpc.CallOption) (*messages.Webhook, error) {
+func (c *eatingServiceClient) CreateWebhook(ctx context.Context, in *messages.CreateWebhookRequest, opts ...grpc.CallOption) (*messages.CreateWebhookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Webhook)
+	out := new(messages.CreateWebhookResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateWebhook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1431,9 +1430,9 @@ func (c *eatingServiceClient) CreateWebhook(ctx context.Context, in *messages.We
 	return out, nil
 }
 
-func (c *eatingServiceClient) CreateWebhookTriggerEvent(ctx context.Context, in *messages.CreateWebhookTriggerEventRequest, opts ...grpc.CallOption) (*messages.WebhookTriggerEvent, error) {
+func (c *eatingServiceClient) CreateWebhookTriggerEvent(ctx context.Context, in *messages.CreateWebhookTriggerEventRequest, opts ...grpc.CallOption) (*messages.CreateWebhookTriggerEventResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.WebhookTriggerEvent)
+	out := new(messages.CreateWebhookTriggerEventResponse)
 	err := c.cc.Invoke(ctx, EatingService_CreateWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1441,9 +1440,9 @@ func (c *eatingServiceClient) CreateWebhookTriggerEvent(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) DestroyAllUserData(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.DataDeletionResponse, error) {
+func (c *eatingServiceClient) DestroyAllUserData(ctx context.Context, in *messages.DestroyAllUserDataRequest, opts ...grpc.CallOption) (*messages.DestroyAllUserDataResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.DataDeletionResponse)
+	out := new(messages.DestroyAllUserDataResponse)
 	err := c.cc.Invoke(ctx, EatingService_DestroyAllUserData_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1451,9 +1450,9 @@ func (c *eatingServiceClient) DestroyAllUserData(ctx context.Context, in *emptyp
 	return out, nil
 }
 
-func (c *eatingServiceClient) FetchUserDataReport(ctx context.Context, in *messages.FetchUserDataReportRequest, opts ...grpc.CallOption) (*messages.UserDataCollection, error) {
+func (c *eatingServiceClient) FetchUserDataReport(ctx context.Context, in *messages.FetchUserDataReportRequest, opts ...grpc.CallOption) (*messages.FetchUserDataReportResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserDataCollection)
+	out := new(messages.FetchUserDataReportResponse)
 	err := c.cc.Invoke(ctx, EatingService_FetchUserDataReport_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1461,9 +1460,9 @@ func (c *eatingServiceClient) FetchUserDataReport(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) FinalizeMealPlan(ctx context.Context, in *messages.FinalizeMealPlanRequest, opts ...grpc.CallOption) (*messages.FinalizeMealPlansResponse, error) {
+func (c *eatingServiceClient) FinalizeMealPlan(ctx context.Context, in *messages.FinalizeMealPlanRequest, opts ...grpc.CallOption) (*messages.FinalizeMealPlanResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.FinalizeMealPlansResponse)
+	out := new(messages.FinalizeMealPlanResponse)
 	err := c.cc.Invoke(ctx, EatingService_FinalizeMealPlan_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1471,9 +1470,9 @@ func (c *eatingServiceClient) FinalizeMealPlan(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetActiveHousehold(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.Household, error) {
+func (c *eatingServiceClient) GetActiveHousehold(ctx context.Context, in *messages.GetActiveHouseholdRequest, opts ...grpc.CallOption) (*messages.GetActiveHouseholdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Household)
+	out := new(messages.GetActiveHouseholdResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetActiveHousehold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1481,9 +1480,9 @@ func (c *eatingServiceClient) GetActiveHousehold(ctx context.Context, in *emptyp
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetAuditLogEntriesForHousehold(ctx context.Context, in *messages.GetAuditLogEntriesForHouseholdRequest, opts ...grpc.CallOption) (*messages.AuditLogEntry, error) {
+func (c *eatingServiceClient) GetAuditLogEntriesForHousehold(ctx context.Context, in *messages.GetAuditLogEntriesForHouseholdRequest, opts ...grpc.CallOption) (*messages.GetAuditLogEntriesForHouseholdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.AuditLogEntry)
+	out := new(messages.GetAuditLogEntriesForHouseholdResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetAuditLogEntriesForHousehold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1491,9 +1490,9 @@ func (c *eatingServiceClient) GetAuditLogEntriesForHousehold(ctx context.Context
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetAuditLogEntriesForUser(ctx context.Context, in *messages.GetAuditLogEntriesForUserRequest, opts ...grpc.CallOption) (*messages.AuditLogEntry, error) {
+func (c *eatingServiceClient) GetAuditLogEntriesForUser(ctx context.Context, in *messages.GetAuditLogEntriesForUserRequest, opts ...grpc.CallOption) (*messages.GetAuditLogEntriesForUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.AuditLogEntry)
+	out := new(messages.GetAuditLogEntriesForUserResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetAuditLogEntriesForUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1501,9 +1500,9 @@ func (c *eatingServiceClient) GetAuditLogEntriesForUser(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetAuditLogEntryByID(ctx context.Context, in *messages.GetAuditLogEntryByIDRequest, opts ...grpc.CallOption) (*messages.AuditLogEntry, error) {
+func (c *eatingServiceClient) GetAuditLogEntryByID(ctx context.Context, in *messages.GetAuditLogEntryByIDRequest, opts ...grpc.CallOption) (*messages.GetAuditLogEntryByIDResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.AuditLogEntry)
+	out := new(messages.GetAuditLogEntryByIDResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetAuditLogEntryByID_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1511,9 +1510,9 @@ func (c *eatingServiceClient) GetAuditLogEntryByID(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetAuthStatus(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.UserStatusResponse, error) {
+func (c *eatingServiceClient) GetAuthStatus(ctx context.Context, in *messages.GetAuthStatusRequest, opts ...grpc.CallOption) (*messages.GetAuthStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserStatusResponse)
+	out := new(messages.GetAuthStatusResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetAuthStatus_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1521,9 +1520,9 @@ func (c *eatingServiceClient) GetAuthStatus(ctx context.Context, in *emptypb.Emp
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetHousehold(ctx context.Context, in *messages.GetHouseholdRequest, opts ...grpc.CallOption) (*messages.Household, error) {
+func (c *eatingServiceClient) GetHousehold(ctx context.Context, in *messages.GetHouseholdRequest, opts ...grpc.CallOption) (*messages.GetHouseholdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Household)
+	out := new(messages.GetHouseholdResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetHousehold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1531,9 +1530,9 @@ func (c *eatingServiceClient) GetHousehold(ctx context.Context, in *messages.Get
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetHouseholdInstrumentOwnership(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error) {
+func (c *eatingServiceClient) GetHouseholdInstrumentOwnership(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInstrumentOwnershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInstrumentOwnership)
+	out := new(messages.GetHouseholdInstrumentOwnershipResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetHouseholdInstrumentOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1541,9 +1540,9 @@ func (c *eatingServiceClient) GetHouseholdInstrumentOwnership(ctx context.Contex
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetHouseholdInstrumentOwnerships(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error) {
+func (c *eatingServiceClient) GetHouseholdInstrumentOwnerships(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInstrumentOwnershipsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInstrumentOwnership)
+	out := new(messages.GetHouseholdInstrumentOwnershipsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetHouseholdInstrumentOwnerships_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1551,9 +1550,9 @@ func (c *eatingServiceClient) GetHouseholdInstrumentOwnerships(ctx context.Conte
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetHouseholdInvitation(ctx context.Context, in *messages.GetHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error) {
+func (c *eatingServiceClient) GetHouseholdInvitation(ctx context.Context, in *messages.GetHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInvitationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInvitation)
+	out := new(messages.GetHouseholdInvitationResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetHouseholdInvitation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1561,9 +1560,9 @@ func (c *eatingServiceClient) GetHouseholdInvitation(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetHouseholdInvitationByID(ctx context.Context, in *messages.GetHouseholdInvitationByIDRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error) {
+func (c *eatingServiceClient) GetHouseholdInvitationByID(ctx context.Context, in *messages.GetHouseholdInvitationByIDRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInvitationByIDResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInvitation)
+	out := new(messages.GetHouseholdInvitationByIDResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetHouseholdInvitationByID_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1571,9 +1570,9 @@ func (c *eatingServiceClient) GetHouseholdInvitationByID(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetHouseholds(ctx context.Context, in *messages.GetHouseholdsRequest, opts ...grpc.CallOption) (*messages.Household, error) {
+func (c *eatingServiceClient) GetHouseholds(ctx context.Context, in *messages.GetHouseholdsRequest, opts ...grpc.CallOption) (*messages.GetHouseholdsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Household)
+	out := new(messages.GetHouseholdsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetHouseholds_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1581,9 +1580,9 @@ func (c *eatingServiceClient) GetHouseholds(ctx context.Context, in *messages.Ge
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMeal(ctx context.Context, in *messages.GetMealRequest, opts ...grpc.CallOption) (*messages.Meal, error) {
+func (c *eatingServiceClient) GetMeal(ctx context.Context, in *messages.GetMealRequest, opts ...grpc.CallOption) (*messages.GetMealResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Meal)
+	out := new(messages.GetMealResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMeal_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1591,9 +1590,9 @@ func (c *eatingServiceClient) GetMeal(ctx context.Context, in *messages.GetMealR
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlan(ctx context.Context, in *messages.GetMealPlanRequest, opts ...grpc.CallOption) (*messages.MealPlan, error) {
+func (c *eatingServiceClient) GetMealPlan(ctx context.Context, in *messages.GetMealPlanRequest, opts ...grpc.CallOption) (*messages.GetMealPlanResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlan)
+	out := new(messages.GetMealPlanResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlan_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1601,9 +1600,9 @@ func (c *eatingServiceClient) GetMealPlan(ctx context.Context, in *messages.GetM
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanEvent(ctx context.Context, in *messages.GetMealPlanEventRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error) {
+func (c *eatingServiceClient) GetMealPlanEvent(ctx context.Context, in *messages.GetMealPlanEventRequest, opts ...grpc.CallOption) (*messages.GetMealPlanEventResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanEvent)
+	out := new(messages.GetMealPlanEventResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1611,9 +1610,9 @@ func (c *eatingServiceClient) GetMealPlanEvent(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanEvents(ctx context.Context, in *messages.GetMealPlanEventsRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error) {
+func (c *eatingServiceClient) GetMealPlanEvents(ctx context.Context, in *messages.GetMealPlanEventsRequest, opts ...grpc.CallOption) (*messages.GetMealPlanEventsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanEvent)
+	out := new(messages.GetMealPlanEventsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanEvents_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1621,9 +1620,9 @@ func (c *eatingServiceClient) GetMealPlanEvents(ctx context.Context, in *message
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanGroceryListItem(ctx context.Context, in *messages.GetMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error) {
+func (c *eatingServiceClient) GetMealPlanGroceryListItem(ctx context.Context, in *messages.GetMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.GetMealPlanGroceryListItemResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanGroceryListItem)
+	out := new(messages.GetMealPlanGroceryListItemResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanGroceryListItem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1631,9 +1630,9 @@ func (c *eatingServiceClient) GetMealPlanGroceryListItem(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, in *messages.GetMealPlanGroceryListItemsForMealPlanRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error) {
+func (c *eatingServiceClient) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, in *messages.GetMealPlanGroceryListItemsForMealPlanRequest, opts ...grpc.CallOption) (*messages.GetMealPlanGroceryListItemsForMealPlanResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanGroceryListItem)
+	out := new(messages.GetMealPlanGroceryListItemsForMealPlanResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanGroceryListItemsForMealPlan_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1641,9 +1640,9 @@ func (c *eatingServiceClient) GetMealPlanGroceryListItemsForMealPlan(ctx context
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanOption(ctx context.Context, in *messages.GetMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error) {
+func (c *eatingServiceClient) GetMealPlanOption(ctx context.Context, in *messages.GetMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.GetMealPlanOptionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOption)
+	out := new(messages.GetMealPlanOptionResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanOption_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1651,9 +1650,9 @@ func (c *eatingServiceClient) GetMealPlanOption(ctx context.Context, in *message
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanOptionVote(ctx context.Context, in *messages.GetMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error) {
+func (c *eatingServiceClient) GetMealPlanOptionVote(ctx context.Context, in *messages.GetMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.GetMealPlanOptionVoteResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOptionVote)
+	out := new(messages.GetMealPlanOptionVoteResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanOptionVote_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1661,9 +1660,9 @@ func (c *eatingServiceClient) GetMealPlanOptionVote(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanOptionVotes(ctx context.Context, in *messages.GetMealPlanOptionVotesRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error) {
+func (c *eatingServiceClient) GetMealPlanOptionVotes(ctx context.Context, in *messages.GetMealPlanOptionVotesRequest, opts ...grpc.CallOption) (*messages.GetMealPlanOptionVotesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOptionVote)
+	out := new(messages.GetMealPlanOptionVotesResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanOptionVotes_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1671,9 +1670,9 @@ func (c *eatingServiceClient) GetMealPlanOptionVotes(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanOptions(ctx context.Context, in *messages.GetMealPlanOptionsRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error) {
+func (c *eatingServiceClient) GetMealPlanOptions(ctx context.Context, in *messages.GetMealPlanOptionsRequest, opts ...grpc.CallOption) (*messages.GetMealPlanOptionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOption)
+	out := new(messages.GetMealPlanOptionsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanOptions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1681,9 +1680,9 @@ func (c *eatingServiceClient) GetMealPlanOptions(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanTask(ctx context.Context, in *messages.GetMealPlanTaskRequest, opts ...grpc.CallOption) (*messages.MealPlanTask, error) {
+func (c *eatingServiceClient) GetMealPlanTask(ctx context.Context, in *messages.GetMealPlanTaskRequest, opts ...grpc.CallOption) (*messages.GetMealPlanTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanTask)
+	out := new(messages.GetMealPlanTaskResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanTask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1691,9 +1690,9 @@ func (c *eatingServiceClient) GetMealPlanTask(ctx context.Context, in *messages.
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlanTasks(ctx context.Context, in *messages.GetMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.MealPlanTask, error) {
+func (c *eatingServiceClient) GetMealPlanTasks(ctx context.Context, in *messages.GetMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.GetMealPlanTasksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanTask)
+	out := new(messages.GetMealPlanTasksResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlanTasks_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1701,9 +1700,9 @@ func (c *eatingServiceClient) GetMealPlanTasks(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMealPlansForHousehold(ctx context.Context, in *messages.GetMealPlansForHouseholdRequest, opts ...grpc.CallOption) (*messages.MealPlan, error) {
+func (c *eatingServiceClient) GetMealPlansForHousehold(ctx context.Context, in *messages.GetMealPlansForHouseholdRequest, opts ...grpc.CallOption) (*messages.GetMealPlansForHouseholdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlan)
+	out := new(messages.GetMealPlansForHouseholdResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMealPlansForHousehold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1711,9 +1710,9 @@ func (c *eatingServiceClient) GetMealPlansForHousehold(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetMeals(ctx context.Context, in *messages.GetMealsRequest, opts ...grpc.CallOption) (*messages.Meal, error) {
+func (c *eatingServiceClient) GetMeals(ctx context.Context, in *messages.GetMealsRequest, opts ...grpc.CallOption) (*messages.GetMealsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Meal)
+	out := new(messages.GetMealsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetMeals_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1731,9 +1730,9 @@ func (c *eatingServiceClient) GetMermaidDiagramForRecipe(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetOAuth2Client(ctx context.Context, in *messages.GetOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.OAuth2Client, error) {
+func (c *eatingServiceClient) GetOAuth2Client(ctx context.Context, in *messages.GetOAuth2ClientRequest, opts ...grpc.CallOption) (*messages.GetOAuth2ClientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.OAuth2Client)
+	out := new(messages.GetOAuth2ClientResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetOAuth2Client_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1741,9 +1740,9 @@ func (c *eatingServiceClient) GetOAuth2Client(ctx context.Context, in *messages.
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetOAuth2Clients(ctx context.Context, in *messages.GetOAuth2ClientsRequest, opts ...grpc.CallOption) (*messages.OAuth2Client, error) {
+func (c *eatingServiceClient) GetOAuth2Clients(ctx context.Context, in *messages.GetOAuth2ClientsRequest, opts ...grpc.CallOption) (*messages.GetOAuth2ClientsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.OAuth2Client)
+	out := new(messages.GetOAuth2ClientsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetOAuth2Clients_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1751,9 +1750,9 @@ func (c *eatingServiceClient) GetOAuth2Clients(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRandomValidIngredient(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.ValidIngredient, error) {
+func (c *eatingServiceClient) GetRandomValidIngredient(ctx context.Context, in *messages.GetRandomValidIngredientRequest, opts ...grpc.CallOption) (*messages.GetRandomValidIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredient)
+	out := new(messages.GetRandomValidIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRandomValidIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1761,9 +1760,9 @@ func (c *eatingServiceClient) GetRandomValidIngredient(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRandomValidInstrument(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.ValidInstrument, error) {
+func (c *eatingServiceClient) GetRandomValidInstrument(ctx context.Context, in *messages.GetRandomValidInstrumentRequest, opts ...grpc.CallOption) (*messages.GetRandomValidInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidInstrument)
+	out := new(messages.GetRandomValidInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRandomValidInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1771,9 +1770,9 @@ func (c *eatingServiceClient) GetRandomValidInstrument(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRandomValidPreparation(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.ValidPreparation, error) {
+func (c *eatingServiceClient) GetRandomValidPreparation(ctx context.Context, in *messages.GetRandomValidPreparationRequest, opts ...grpc.CallOption) (*messages.GetRandomValidPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparation)
+	out := new(messages.GetRandomValidPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRandomValidPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1781,9 +1780,9 @@ func (c *eatingServiceClient) GetRandomValidPreparation(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRandomValidVessel(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.ValidVessel, error) {
+func (c *eatingServiceClient) GetRandomValidVessel(ctx context.Context, in *messages.GetRandomValidVesselRequest, opts ...grpc.CallOption) (*messages.GetRandomValidVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidVessel)
+	out := new(messages.GetRandomValidVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRandomValidVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1791,9 +1790,9 @@ func (c *eatingServiceClient) GetRandomValidVessel(ctx context.Context, in *empt
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetReceivedHouseholdInvitations(ctx context.Context, in *messages.GetReceivedHouseholdInvitationsRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error) {
+func (c *eatingServiceClient) GetReceivedHouseholdInvitations(ctx context.Context, in *messages.GetReceivedHouseholdInvitationsRequest, opts ...grpc.CallOption) (*messages.GetReceivedHouseholdInvitationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInvitation)
+	out := new(messages.GetReceivedHouseholdInvitationsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetReceivedHouseholdInvitations_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1801,9 +1800,9 @@ func (c *eatingServiceClient) GetReceivedHouseholdInvitations(ctx context.Contex
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipe(ctx context.Context, in *messages.GetRecipeRequest, opts ...grpc.CallOption) (*messages.Recipe, error) {
+func (c *eatingServiceClient) GetRecipe(ctx context.Context, in *messages.GetRecipeRequest, opts ...grpc.CallOption) (*messages.GetRecipeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Recipe)
+	out := new(messages.GetRecipeResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipe_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1811,9 +1810,9 @@ func (c *eatingServiceClient) GetRecipe(ctx context.Context, in *messages.GetRec
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeMealPlanTasks(ctx context.Context, in *messages.GetRecipeMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.RecipePrepTaskStep, error) {
+func (c *eatingServiceClient) GetRecipeMealPlanTasks(ctx context.Context, in *messages.GetRecipeMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.GetRecipeMealPlanTasksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipePrepTaskStep)
+	out := new(messages.GetRecipeMealPlanTasksResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeMealPlanTasks_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1821,9 +1820,9 @@ func (c *eatingServiceClient) GetRecipeMealPlanTasks(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipePrepTask(ctx context.Context, in *messages.GetRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error) {
+func (c *eatingServiceClient) GetRecipePrepTask(ctx context.Context, in *messages.GetRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.GetRecipePrepTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipePrepTask)
+	out := new(messages.GetRecipePrepTaskResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipePrepTask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1831,9 +1830,9 @@ func (c *eatingServiceClient) GetRecipePrepTask(ctx context.Context, in *message
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipePrepTasks(ctx context.Context, in *messages.GetRecipePrepTasksRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error) {
+func (c *eatingServiceClient) GetRecipePrepTasks(ctx context.Context, in *messages.GetRecipePrepTasksRequest, opts ...grpc.CallOption) (*messages.GetRecipePrepTasksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipePrepTask)
+	out := new(messages.GetRecipePrepTasksResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipePrepTasks_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1841,9 +1840,9 @@ func (c *eatingServiceClient) GetRecipePrepTasks(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeRating(ctx context.Context, in *messages.GetRecipeRatingRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error) {
+func (c *eatingServiceClient) GetRecipeRating(ctx context.Context, in *messages.GetRecipeRatingRequest, opts ...grpc.CallOption) (*messages.GetRecipeRatingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeRating)
+	out := new(messages.GetRecipeRatingResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeRating_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1851,9 +1850,9 @@ func (c *eatingServiceClient) GetRecipeRating(ctx context.Context, in *messages.
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeRatingsForRecipe(ctx context.Context, in *messages.GetRecipeRatingsForRecipeRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error) {
+func (c *eatingServiceClient) GetRecipeRatingsForRecipe(ctx context.Context, in *messages.GetRecipeRatingsForRecipeRequest, opts ...grpc.CallOption) (*messages.GetRecipeRatingsForRecipeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeRating)
+	out := new(messages.GetRecipeRatingsForRecipeResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeRatingsForRecipe_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1861,9 +1860,9 @@ func (c *eatingServiceClient) GetRecipeRatingsForRecipe(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStep(ctx context.Context, in *messages.GetRecipeStepRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error) {
+func (c *eatingServiceClient) GetRecipeStep(ctx context.Context, in *messages.GetRecipeStepRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStep)
+	out := new(messages.GetRecipeStepResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStep_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1871,9 +1870,9 @@ func (c *eatingServiceClient) GetRecipeStep(ctx context.Context, in *messages.Ge
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepCompletionCondition(ctx context.Context, in *messages.GetRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error) {
+func (c *eatingServiceClient) GetRecipeStepCompletionCondition(ctx context.Context, in *messages.GetRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepCompletionConditionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepCompletionCondition)
+	out := new(messages.GetRecipeStepCompletionConditionResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepCompletionCondition_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1881,9 +1880,9 @@ func (c *eatingServiceClient) GetRecipeStepCompletionCondition(ctx context.Conte
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepCompletionConditions(ctx context.Context, in *messages.GetRecipeStepCompletionConditionsRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error) {
+func (c *eatingServiceClient) GetRecipeStepCompletionConditions(ctx context.Context, in *messages.GetRecipeStepCompletionConditionsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepCompletionConditionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepCompletionCondition)
+	out := new(messages.GetRecipeStepCompletionConditionsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepCompletionConditions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1891,9 +1890,9 @@ func (c *eatingServiceClient) GetRecipeStepCompletionConditions(ctx context.Cont
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepIngredient(ctx context.Context, in *messages.GetRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error) {
+func (c *eatingServiceClient) GetRecipeStepIngredient(ctx context.Context, in *messages.GetRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepIngredient)
+	out := new(messages.GetRecipeStepIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1901,9 +1900,9 @@ func (c *eatingServiceClient) GetRecipeStepIngredient(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepIngredients(ctx context.Context, in *messages.GetRecipeStepIngredientsRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error) {
+func (c *eatingServiceClient) GetRecipeStepIngredients(ctx context.Context, in *messages.GetRecipeStepIngredientsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepIngredientsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepIngredient)
+	out := new(messages.GetRecipeStepIngredientsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepIngredients_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1911,9 +1910,9 @@ func (c *eatingServiceClient) GetRecipeStepIngredients(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepInstrument(ctx context.Context, in *messages.GetRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error) {
+func (c *eatingServiceClient) GetRecipeStepInstrument(ctx context.Context, in *messages.GetRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepInstrument)
+	out := new(messages.GetRecipeStepInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1921,9 +1920,9 @@ func (c *eatingServiceClient) GetRecipeStepInstrument(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepInstruments(ctx context.Context, in *messages.GetRecipeStepInstrumentsRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error) {
+func (c *eatingServiceClient) GetRecipeStepInstruments(ctx context.Context, in *messages.GetRecipeStepInstrumentsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepInstrumentsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepInstrument)
+	out := new(messages.GetRecipeStepInstrumentsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepInstruments_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1931,9 +1930,9 @@ func (c *eatingServiceClient) GetRecipeStepInstruments(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepProduct(ctx context.Context, in *messages.GetRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error) {
+func (c *eatingServiceClient) GetRecipeStepProduct(ctx context.Context, in *messages.GetRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepProductResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepProduct)
+	out := new(messages.GetRecipeStepProductResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepProduct_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1941,9 +1940,9 @@ func (c *eatingServiceClient) GetRecipeStepProduct(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepProducts(ctx context.Context, in *messages.GetRecipeStepProductsRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error) {
+func (c *eatingServiceClient) GetRecipeStepProducts(ctx context.Context, in *messages.GetRecipeStepProductsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepProductsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepProduct)
+	out := new(messages.GetRecipeStepProductsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepProducts_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1951,9 +1950,9 @@ func (c *eatingServiceClient) GetRecipeStepProducts(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepVessel(ctx context.Context, in *messages.GetRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error) {
+func (c *eatingServiceClient) GetRecipeStepVessel(ctx context.Context, in *messages.GetRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepVessel)
+	out := new(messages.GetRecipeStepVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1961,9 +1960,9 @@ func (c *eatingServiceClient) GetRecipeStepVessel(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeStepVessels(ctx context.Context, in *messages.GetRecipeStepVesselsRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error) {
+func (c *eatingServiceClient) GetRecipeStepVessels(ctx context.Context, in *messages.GetRecipeStepVesselsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepVesselsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepVessel)
+	out := new(messages.GetRecipeStepVesselsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeStepVessels_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1971,9 +1970,9 @@ func (c *eatingServiceClient) GetRecipeStepVessels(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipeSteps(ctx context.Context, in *messages.GetRecipeStepsRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error) {
+func (c *eatingServiceClient) GetRecipeSteps(ctx context.Context, in *messages.GetRecipeStepsRequest, opts ...grpc.CallOption) (*messages.GetRecipeStepsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStep)
+	out := new(messages.GetRecipeStepsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipeSteps_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1981,9 +1980,9 @@ func (c *eatingServiceClient) GetRecipeSteps(ctx context.Context, in *messages.G
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetRecipes(ctx context.Context, in *messages.GetRecipesRequest, opts ...grpc.CallOption) (*messages.Recipe, error) {
+func (c *eatingServiceClient) GetRecipes(ctx context.Context, in *messages.GetRecipesRequest, opts ...grpc.CallOption) (*messages.GetRecipesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Recipe)
+	out := new(messages.GetRecipesResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetRecipes_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -1991,9 +1990,9 @@ func (c *eatingServiceClient) GetRecipes(ctx context.Context, in *messages.GetRe
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetSelf(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) GetSelf(ctx context.Context, in *messages.GetSelfRequest, opts ...grpc.CallOption) (*messages.GetSelfResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.GetSelfResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetSelf_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2001,9 +2000,9 @@ func (c *eatingServiceClient) GetSelf(ctx context.Context, in *emptypb.Empty, op
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetSentHouseholdInvitations(ctx context.Context, in *messages.GetSentHouseholdInvitationsRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error) {
+func (c *eatingServiceClient) GetSentHouseholdInvitations(ctx context.Context, in *messages.GetSentHouseholdInvitationsRequest, opts ...grpc.CallOption) (*messages.GetSentHouseholdInvitationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInvitation)
+	out := new(messages.GetSentHouseholdInvitationsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetSentHouseholdInvitations_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2011,9 +2010,9 @@ func (c *eatingServiceClient) GetSentHouseholdInvitations(ctx context.Context, i
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetServiceSetting(ctx context.Context, in *messages.GetServiceSettingRequest, opts ...grpc.CallOption) (*messages.ServiceSetting, error) {
+func (c *eatingServiceClient) GetServiceSetting(ctx context.Context, in *messages.GetServiceSettingRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSetting)
+	out := new(messages.GetServiceSettingResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetServiceSetting_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2021,9 +2020,9 @@ func (c *eatingServiceClient) GetServiceSetting(ctx context.Context, in *message
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetServiceSettingConfigurationByName(ctx context.Context, in *messages.GetServiceSettingConfigurationByNameRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error) {
+func (c *eatingServiceClient) GetServiceSettingConfigurationByName(ctx context.Context, in *messages.GetServiceSettingConfigurationByNameRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingConfigurationByNameResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSettingConfiguration)
+	out := new(messages.GetServiceSettingConfigurationByNameResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetServiceSettingConfigurationByName_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2031,9 +2030,9 @@ func (c *eatingServiceClient) GetServiceSettingConfigurationByName(ctx context.C
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetServiceSettingConfigurationsForHousehold(ctx context.Context, in *messages.GetServiceSettingConfigurationsForHouseholdRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error) {
+func (c *eatingServiceClient) GetServiceSettingConfigurationsForHousehold(ctx context.Context, in *messages.GetServiceSettingConfigurationsForHouseholdRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingConfigurationsForHouseholdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSettingConfiguration)
+	out := new(messages.GetServiceSettingConfigurationsForHouseholdResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetServiceSettingConfigurationsForHousehold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2041,9 +2040,9 @@ func (c *eatingServiceClient) GetServiceSettingConfigurationsForHousehold(ctx co
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetServiceSettingConfigurationsForUser(ctx context.Context, in *messages.GetServiceSettingConfigurationsForUserRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error) {
+func (c *eatingServiceClient) GetServiceSettingConfigurationsForUser(ctx context.Context, in *messages.GetServiceSettingConfigurationsForUserRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingConfigurationsForUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSettingConfiguration)
+	out := new(messages.GetServiceSettingConfigurationsForUserResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetServiceSettingConfigurationsForUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2051,9 +2050,9 @@ func (c *eatingServiceClient) GetServiceSettingConfigurationsForUser(ctx context
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetServiceSettings(ctx context.Context, in *messages.GetServiceSettingsRequest, opts ...grpc.CallOption) (*messages.ServiceSetting, error) {
+func (c *eatingServiceClient) GetServiceSettings(ctx context.Context, in *messages.GetServiceSettingsRequest, opts ...grpc.CallOption) (*messages.GetServiceSettingsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSetting)
+	out := new(messages.GetServiceSettingsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetServiceSettings_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2061,9 +2060,9 @@ func (c *eatingServiceClient) GetServiceSettings(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetUser(ctx context.Context, in *messages.GetUserRequest, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) GetUser(ctx context.Context, in *messages.GetUserRequest, opts ...grpc.CallOption) (*messages.GetUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.GetUserResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2071,9 +2070,9 @@ func (c *eatingServiceClient) GetUser(ctx context.Context, in *messages.GetUserR
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetUserIngredientPreferences(ctx context.Context, in *messages.GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*messages.UserIngredientPreference, error) {
+func (c *eatingServiceClient) GetUserIngredientPreferences(ctx context.Context, in *messages.GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*messages.GetUserIngredientPreferencesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserIngredientPreference)
+	out := new(messages.GetUserIngredientPreferencesResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetUserIngredientPreferences_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2081,9 +2080,9 @@ func (c *eatingServiceClient) GetUserIngredientPreferences(ctx context.Context, 
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetUserNotification(ctx context.Context, in *messages.GetUserNotificationRequest, opts ...grpc.CallOption) (*messages.UserNotification, error) {
+func (c *eatingServiceClient) GetUserNotification(ctx context.Context, in *messages.GetUserNotificationRequest, opts ...grpc.CallOption) (*messages.GetUserNotificationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserNotification)
+	out := new(messages.GetUserNotificationResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetUserNotification_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2091,9 +2090,9 @@ func (c *eatingServiceClient) GetUserNotification(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetUserNotifications(ctx context.Context, in *messages.GetUserNotificationsRequest, opts ...grpc.CallOption) (*messages.UserNotification, error) {
+func (c *eatingServiceClient) GetUserNotifications(ctx context.Context, in *messages.GetUserNotificationsRequest, opts ...grpc.CallOption) (*messages.GetUserNotificationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserNotification)
+	out := new(messages.GetUserNotificationsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetUserNotifications_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2101,9 +2100,9 @@ func (c *eatingServiceClient) GetUserNotifications(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetUsers(ctx context.Context, in *messages.GetUsersRequest, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) GetUsers(ctx context.Context, in *messages.GetUsersRequest, opts ...grpc.CallOption) (*messages.GetUsersResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.GetUsersResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetUsers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2111,9 +2110,9 @@ func (c *eatingServiceClient) GetUsers(ctx context.Context, in *messages.GetUser
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredient(ctx context.Context, in *messages.GetValidIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error) {
+func (c *eatingServiceClient) GetValidIngredient(ctx context.Context, in *messages.GetValidIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredient)
+	out := new(messages.GetValidIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2121,9 +2120,9 @@ func (c *eatingServiceClient) GetValidIngredient(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientGroup(ctx context.Context, in *messages.GetValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error) {
+func (c *eatingServiceClient) GetValidIngredientGroup(ctx context.Context, in *messages.GetValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientGroupResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientGroup)
+	out := new(messages.GetValidIngredientGroupResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2131,9 +2130,9 @@ func (c *eatingServiceClient) GetValidIngredientGroup(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientGroups(ctx context.Context, in *messages.GetValidIngredientGroupsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error) {
+func (c *eatingServiceClient) GetValidIngredientGroups(ctx context.Context, in *messages.GetValidIngredientGroupsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientGroupsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientGroup)
+	out := new(messages.GetValidIngredientGroupsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientGroups_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2141,9 +2140,9 @@ func (c *eatingServiceClient) GetValidIngredientGroups(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientMeasurementUnit(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error) {
+func (c *eatingServiceClient) GetValidIngredientMeasurementUnit(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientMeasurementUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientMeasurementUnit)
+	out := new(messages.GetValidIngredientMeasurementUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientMeasurementUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2151,9 +2150,9 @@ func (c *eatingServiceClient) GetValidIngredientMeasurementUnit(ctx context.Cont
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientMeasurementUnits(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error) {
+func (c *eatingServiceClient) GetValidIngredientMeasurementUnits(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientMeasurementUnitsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientMeasurementUnit)
+	out := new(messages.GetValidIngredientMeasurementUnitsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientMeasurementUnits_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2161,9 +2160,9 @@ func (c *eatingServiceClient) GetValidIngredientMeasurementUnits(ctx context.Con
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientMeasurementUnitsByIngredient(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsByIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error) {
+func (c *eatingServiceClient) GetValidIngredientMeasurementUnitsByIngredient(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsByIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientMeasurementUnitsByIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientMeasurementUnit)
+	out := new(messages.GetValidIngredientMeasurementUnitsByIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientMeasurementUnitsByIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2171,9 +2170,9 @@ func (c *eatingServiceClient) GetValidIngredientMeasurementUnitsByIngredient(ctx
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error) {
+func (c *eatingServiceClient) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, in *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientMeasurementUnit)
+	out := new(messages.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientMeasurementUnitsByMeasurementUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2181,9 +2180,9 @@ func (c *eatingServiceClient) GetValidIngredientMeasurementUnitsByMeasurementUni
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientPreparation(ctx context.Context, in *messages.GetValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error) {
+func (c *eatingServiceClient) GetValidIngredientPreparation(ctx context.Context, in *messages.GetValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientPreparation)
+	out := new(messages.GetValidIngredientPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2191,9 +2190,9 @@ func (c *eatingServiceClient) GetValidIngredientPreparation(ctx context.Context,
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientPreparations(ctx context.Context, in *messages.GetValidIngredientPreparationsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error) {
+func (c *eatingServiceClient) GetValidIngredientPreparations(ctx context.Context, in *messages.GetValidIngredientPreparationsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientPreparationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientPreparation)
+	out := new(messages.GetValidIngredientPreparationsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientPreparations_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2201,9 +2200,9 @@ func (c *eatingServiceClient) GetValidIngredientPreparations(ctx context.Context
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientPreparationsByIngredient(ctx context.Context, in *messages.GetValidIngredientPreparationsByIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error) {
+func (c *eatingServiceClient) GetValidIngredientPreparationsByIngredient(ctx context.Context, in *messages.GetValidIngredientPreparationsByIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientPreparationsByIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientPreparation)
+	out := new(messages.GetValidIngredientPreparationsByIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientPreparationsByIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2211,9 +2210,9 @@ func (c *eatingServiceClient) GetValidIngredientPreparationsByIngredient(ctx con
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientPreparationsByPreparation(ctx context.Context, in *messages.GetValidIngredientPreparationsByPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error) {
+func (c *eatingServiceClient) GetValidIngredientPreparationsByPreparation(ctx context.Context, in *messages.GetValidIngredientPreparationsByPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientPreparationsByPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientPreparation)
+	out := new(messages.GetValidIngredientPreparationsByPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientPreparationsByPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2221,9 +2220,9 @@ func (c *eatingServiceClient) GetValidIngredientPreparationsByPreparation(ctx co
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientState(ctx context.Context, in *messages.GetValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error) {
+func (c *eatingServiceClient) GetValidIngredientState(ctx context.Context, in *messages.GetValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientState)
+	out := new(messages.GetValidIngredientStateResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientState_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2231,9 +2230,9 @@ func (c *eatingServiceClient) GetValidIngredientState(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientStateIngredient(ctx context.Context, in *messages.GetValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error) {
+func (c *eatingServiceClient) GetValidIngredientStateIngredient(ctx context.Context, in *messages.GetValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientStateIngredient)
+	out := new(messages.GetValidIngredientStateIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientStateIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2241,9 +2240,9 @@ func (c *eatingServiceClient) GetValidIngredientStateIngredient(ctx context.Cont
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientStateIngredients(ctx context.Context, in *messages.GetValidIngredientStateIngredientsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error) {
+func (c *eatingServiceClient) GetValidIngredientStateIngredients(ctx context.Context, in *messages.GetValidIngredientStateIngredientsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateIngredientsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientStateIngredient)
+	out := new(messages.GetValidIngredientStateIngredientsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientStateIngredients_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2251,9 +2250,9 @@ func (c *eatingServiceClient) GetValidIngredientStateIngredients(ctx context.Con
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientStateIngredientsByIngredient(ctx context.Context, in *messages.GetValidIngredientStateIngredientsByIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error) {
+func (c *eatingServiceClient) GetValidIngredientStateIngredientsByIngredient(ctx context.Context, in *messages.GetValidIngredientStateIngredientsByIngredientRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateIngredientsByIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientStateIngredient)
+	out := new(messages.GetValidIngredientStateIngredientsByIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientStateIngredientsByIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2261,9 +2260,9 @@ func (c *eatingServiceClient) GetValidIngredientStateIngredientsByIngredient(ctx
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientStateIngredientsByIngredientState(ctx context.Context, in *messages.GetValidIngredientStateIngredientsByIngredientStateRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error) {
+func (c *eatingServiceClient) GetValidIngredientStateIngredientsByIngredientState(ctx context.Context, in *messages.GetValidIngredientStateIngredientsByIngredientStateRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStateIngredientsByIngredientStateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientStateIngredient)
+	out := new(messages.GetValidIngredientStateIngredientsByIngredientStateResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientStateIngredientsByIngredientState_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2271,9 +2270,9 @@ func (c *eatingServiceClient) GetValidIngredientStateIngredientsByIngredientStat
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredientStates(ctx context.Context, in *messages.GetValidIngredientStatesRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error) {
+func (c *eatingServiceClient) GetValidIngredientStates(ctx context.Context, in *messages.GetValidIngredientStatesRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientStatesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientState)
+	out := new(messages.GetValidIngredientStatesResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredientStates_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2281,9 +2280,9 @@ func (c *eatingServiceClient) GetValidIngredientStates(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidIngredients(ctx context.Context, in *messages.GetValidIngredientsRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error) {
+func (c *eatingServiceClient) GetValidIngredients(ctx context.Context, in *messages.GetValidIngredientsRequest, opts ...grpc.CallOption) (*messages.GetValidIngredientsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredient)
+	out := new(messages.GetValidIngredientsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidIngredients_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2291,9 +2290,9 @@ func (c *eatingServiceClient) GetValidIngredients(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidInstrument(ctx context.Context, in *messages.GetValidInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error) {
+func (c *eatingServiceClient) GetValidInstrument(ctx context.Context, in *messages.GetValidInstrumentRequest, opts ...grpc.CallOption) (*messages.GetValidInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidInstrument)
+	out := new(messages.GetValidInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2301,9 +2300,9 @@ func (c *eatingServiceClient) GetValidInstrument(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidInstruments(ctx context.Context, in *messages.GetValidInstrumentsRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error) {
+func (c *eatingServiceClient) GetValidInstruments(ctx context.Context, in *messages.GetValidInstrumentsRequest, opts ...grpc.CallOption) (*messages.GetValidInstrumentsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidInstrument)
+	out := new(messages.GetValidInstrumentsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidInstruments_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2311,9 +2310,9 @@ func (c *eatingServiceClient) GetValidInstruments(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidMeasurementUnit(ctx context.Context, in *messages.GetValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error) {
+func (c *eatingServiceClient) GetValidMeasurementUnit(ctx context.Context, in *messages.GetValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnit)
+	out := new(messages.GetValidMeasurementUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidMeasurementUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2321,9 +2320,9 @@ func (c *eatingServiceClient) GetValidMeasurementUnit(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidMeasurementUnitConversion(ctx context.Context, in *messages.GetValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error) {
+func (c *eatingServiceClient) GetValidMeasurementUnitConversion(ctx context.Context, in *messages.GetValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitConversionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnitConversion)
+	out := new(messages.GetValidMeasurementUnitConversionResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidMeasurementUnitConversion_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2331,9 +2330,9 @@ func (c *eatingServiceClient) GetValidMeasurementUnitConversion(ctx context.Cont
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, in *messages.GetValidMeasurementUnitConversionsFromUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error) {
+func (c *eatingServiceClient) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, in *messages.GetValidMeasurementUnitConversionsFromUnitRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitConversionsFromUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnitConversion)
+	out := new(messages.GetValidMeasurementUnitConversionsFromUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidMeasurementUnitConversionsFromUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2341,9 +2340,9 @@ func (c *eatingServiceClient) GetValidMeasurementUnitConversionsFromUnit(ctx con
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, in *messages.GetValidMeasurementUnitConversionsToUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error) {
+func (c *eatingServiceClient) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, in *messages.GetValidMeasurementUnitConversionsToUnitRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitConversionsToUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnitConversion)
+	out := new(messages.GetValidMeasurementUnitConversionsToUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidMeasurementUnitConversionsToUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2351,9 +2350,9 @@ func (c *eatingServiceClient) GetValidMeasurementUnitConversionsToUnit(ctx conte
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidMeasurementUnits(ctx context.Context, in *messages.GetValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error) {
+func (c *eatingServiceClient) GetValidMeasurementUnits(ctx context.Context, in *messages.GetValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.GetValidMeasurementUnitsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnit)
+	out := new(messages.GetValidMeasurementUnitsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidMeasurementUnits_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2361,9 +2360,9 @@ func (c *eatingServiceClient) GetValidMeasurementUnits(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparation(ctx context.Context, in *messages.GetValidPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error) {
+func (c *eatingServiceClient) GetValidPreparation(ctx context.Context, in *messages.GetValidPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparation)
+	out := new(messages.GetValidPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2371,9 +2370,9 @@ func (c *eatingServiceClient) GetValidPreparation(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparationInstrument(ctx context.Context, in *messages.GetValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error) {
+func (c *eatingServiceClient) GetValidPreparationInstrument(ctx context.Context, in *messages.GetValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationInstrument)
+	out := new(messages.GetValidPreparationInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparationInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2381,9 +2380,9 @@ func (c *eatingServiceClient) GetValidPreparationInstrument(ctx context.Context,
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparationInstruments(ctx context.Context, in *messages.GetValidPreparationInstrumentsRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error) {
+func (c *eatingServiceClient) GetValidPreparationInstruments(ctx context.Context, in *messages.GetValidPreparationInstrumentsRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationInstrumentsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationInstrument)
+	out := new(messages.GetValidPreparationInstrumentsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparationInstruments_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2391,9 +2390,9 @@ func (c *eatingServiceClient) GetValidPreparationInstruments(ctx context.Context
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparationInstrumentsByInstrument(ctx context.Context, in *messages.GetValidPreparationInstrumentsByInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error) {
+func (c *eatingServiceClient) GetValidPreparationInstrumentsByInstrument(ctx context.Context, in *messages.GetValidPreparationInstrumentsByInstrumentRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationInstrumentsByInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationInstrument)
+	out := new(messages.GetValidPreparationInstrumentsByInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparationInstrumentsByInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2401,9 +2400,9 @@ func (c *eatingServiceClient) GetValidPreparationInstrumentsByInstrument(ctx con
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparationInstrumentsByPreparation(ctx context.Context, in *messages.GetValidPreparationInstrumentsByPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error) {
+func (c *eatingServiceClient) GetValidPreparationInstrumentsByPreparation(ctx context.Context, in *messages.GetValidPreparationInstrumentsByPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationInstrumentsByPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationInstrument)
+	out := new(messages.GetValidPreparationInstrumentsByPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparationInstrumentsByPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2411,9 +2410,9 @@ func (c *eatingServiceClient) GetValidPreparationInstrumentsByPreparation(ctx co
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparationVessel(ctx context.Context, in *messages.GetValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error) {
+func (c *eatingServiceClient) GetValidPreparationVessel(ctx context.Context, in *messages.GetValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationVessel)
+	out := new(messages.GetValidPreparationVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparationVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2421,9 +2420,9 @@ func (c *eatingServiceClient) GetValidPreparationVessel(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparationVessels(ctx context.Context, in *messages.GetValidPreparationVesselsRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error) {
+func (c *eatingServiceClient) GetValidPreparationVessels(ctx context.Context, in *messages.GetValidPreparationVesselsRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationVesselsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationVessel)
+	out := new(messages.GetValidPreparationVesselsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparationVessels_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2431,9 +2430,9 @@ func (c *eatingServiceClient) GetValidPreparationVessels(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparationVesselsByPreparation(ctx context.Context, in *messages.GetValidPreparationVesselsByPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error) {
+func (c *eatingServiceClient) GetValidPreparationVesselsByPreparation(ctx context.Context, in *messages.GetValidPreparationVesselsByPreparationRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationVesselsByPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationVessel)
+	out := new(messages.GetValidPreparationVesselsByPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparationVesselsByPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2441,9 +2440,9 @@ func (c *eatingServiceClient) GetValidPreparationVesselsByPreparation(ctx contex
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparationVesselsByVessel(ctx context.Context, in *messages.GetValidPreparationVesselsByVesselRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error) {
+func (c *eatingServiceClient) GetValidPreparationVesselsByVessel(ctx context.Context, in *messages.GetValidPreparationVesselsByVesselRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationVesselsByVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationVessel)
+	out := new(messages.GetValidPreparationVesselsByVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparationVesselsByVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2451,9 +2450,9 @@ func (c *eatingServiceClient) GetValidPreparationVesselsByVessel(ctx context.Con
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidPreparations(ctx context.Context, in *messages.GetValidPreparationsRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error) {
+func (c *eatingServiceClient) GetValidPreparations(ctx context.Context, in *messages.GetValidPreparationsRequest, opts ...grpc.CallOption) (*messages.GetValidPreparationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparation)
+	out := new(messages.GetValidPreparationsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidPreparations_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2461,9 +2460,9 @@ func (c *eatingServiceClient) GetValidPreparations(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidVessel(ctx context.Context, in *messages.GetValidVesselRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error) {
+func (c *eatingServiceClient) GetValidVessel(ctx context.Context, in *messages.GetValidVesselRequest, opts ...grpc.CallOption) (*messages.GetValidVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidVessel)
+	out := new(messages.GetValidVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2471,9 +2470,9 @@ func (c *eatingServiceClient) GetValidVessel(ctx context.Context, in *messages.G
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetValidVessels(ctx context.Context, in *messages.GetValidVesselsRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error) {
+func (c *eatingServiceClient) GetValidVessels(ctx context.Context, in *messages.GetValidVesselsRequest, opts ...grpc.CallOption) (*messages.GetValidVesselsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidVessel)
+	out := new(messages.GetValidVesselsResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetValidVessels_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2481,9 +2480,9 @@ func (c *eatingServiceClient) GetValidVessels(ctx context.Context, in *messages.
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetWebhook(ctx context.Context, in *messages.GetWebhookRequest, opts ...grpc.CallOption) (*messages.Webhook, error) {
+func (c *eatingServiceClient) GetWebhook(ctx context.Context, in *messages.GetWebhookRequest, opts ...grpc.CallOption) (*messages.GetWebhookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Webhook)
+	out := new(messages.GetWebhookResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetWebhook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2491,9 +2490,9 @@ func (c *eatingServiceClient) GetWebhook(ctx context.Context, in *messages.GetWe
 	return out, nil
 }
 
-func (c *eatingServiceClient) GetWebhooks(ctx context.Context, in *messages.GetWebhooksRequest, opts ...grpc.CallOption) (*messages.Webhook, error) {
+func (c *eatingServiceClient) GetWebhooks(ctx context.Context, in *messages.GetWebhooksRequest, opts ...grpc.CallOption) (*messages.GetWebhooksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Webhook)
+	out := new(messages.GetWebhooksResponse)
 	err := c.cc.Invoke(ctx, EatingService_GetWebhooks_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2501,9 +2500,9 @@ func (c *eatingServiceClient) GetWebhooks(ctx context.Context, in *messages.GetW
 	return out, nil
 }
 
-func (c *eatingServiceClient) LoginForToken(ctx context.Context, in *messages.UserLoginInput, opts ...grpc.CallOption) (*messages.TokenResponse, error) {
+func (c *eatingServiceClient) LoginForToken(ctx context.Context, in *messages.LoginForTokenRequest, opts ...grpc.CallOption) (*messages.LoginForTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.TokenResponse)
+	out := new(messages.LoginForTokenResponse)
 	err := c.cc.Invoke(ctx, EatingService_LoginForToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2511,9 +2510,9 @@ func (c *eatingServiceClient) LoginForToken(ctx context.Context, in *messages.Us
 	return out, nil
 }
 
-func (c *eatingServiceClient) PublishArbitraryQueueMessage(ctx context.Context, in *messages.ArbitraryQueueMessageRequestInput, opts ...grpc.CallOption) (*messages.ArbitraryQueueMessageResponse, error) {
+func (c *eatingServiceClient) PublishArbitraryQueueMessage(ctx context.Context, in *messages.PublishArbitraryQueueMessageRequest, opts ...grpc.CallOption) (*messages.PublishArbitraryQueueMessageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ArbitraryQueueMessageResponse)
+	out := new(messages.PublishArbitraryQueueMessageResponse)
 	err := c.cc.Invoke(ctx, EatingService_PublishArbitraryQueueMessage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2521,9 +2520,9 @@ func (c *eatingServiceClient) PublishArbitraryQueueMessage(ctx context.Context, 
 	return out, nil
 }
 
-func (c *eatingServiceClient) RedeemPasswordResetToken(ctx context.Context, in *messages.PasswordResetTokenRedemptionRequestInput, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) RedeemPasswordResetToken(ctx context.Context, in *messages.RedeemPasswordResetTokenRequest, opts ...grpc.CallOption) (*messages.RedeemPasswordResetTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.RedeemPasswordResetTokenResponse)
 	err := c.cc.Invoke(ctx, EatingService_RedeemPasswordResetToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2531,9 +2530,9 @@ func (c *eatingServiceClient) RedeemPasswordResetToken(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) RefreshTOTPSecret(ctx context.Context, in *messages.TOTPSecretRefreshInput, opts ...grpc.CallOption) (*messages.TOTPSecretRefreshResponse, error) {
+func (c *eatingServiceClient) RefreshTOTPSecret(ctx context.Context, in *messages.RefreshTOTPSecretRequest, opts ...grpc.CallOption) (*messages.RefreshTOTPSecretResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.TOTPSecretRefreshResponse)
+	out := new(messages.RefreshTOTPSecretResponse)
 	err := c.cc.Invoke(ctx, EatingService_RefreshTOTPSecret_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2541,9 +2540,9 @@ func (c *eatingServiceClient) RefreshTOTPSecret(ctx context.Context, in *message
 	return out, nil
 }
 
-func (c *eatingServiceClient) RejectHouseholdInvitation(ctx context.Context, in *messages.RejectHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.HouseholdInvitation, error) {
+func (c *eatingServiceClient) RejectHouseholdInvitation(ctx context.Context, in *messages.RejectHouseholdInvitationRequest, opts ...grpc.CallOption) (*messages.RejectHouseholdInvitationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInvitation)
+	out := new(messages.RejectHouseholdInvitationResponse)
 	err := c.cc.Invoke(ctx, EatingService_RejectHouseholdInvitation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2551,9 +2550,9 @@ func (c *eatingServiceClient) RejectHouseholdInvitation(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) RequestEmailVerificationEmail(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) RequestEmailVerificationEmail(ctx context.Context, in *messages.RequestEmailVerificationEmailRequest, opts ...grpc.CallOption) (*messages.RequestEmailVerificationEmailResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.RequestEmailVerificationEmailResponse)
 	err := c.cc.Invoke(ctx, EatingService_RequestEmailVerificationEmail_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2561,9 +2560,9 @@ func (c *eatingServiceClient) RequestEmailVerificationEmail(ctx context.Context,
 	return out, nil
 }
 
-func (c *eatingServiceClient) RequestPasswordResetToken(ctx context.Context, in *messages.PasswordResetTokenCreationRequestInput, opts ...grpc.CallOption) (*messages.PasswordResetToken, error) {
+func (c *eatingServiceClient) RequestPasswordResetToken(ctx context.Context, in *messages.RequestPasswordResetTokenRequest, opts ...grpc.CallOption) (*messages.RequestPasswordResetTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.PasswordResetToken)
+	out := new(messages.RequestPasswordResetTokenResponse)
 	err := c.cc.Invoke(ctx, EatingService_RequestPasswordResetToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2571,9 +2570,9 @@ func (c *eatingServiceClient) RequestPasswordResetToken(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) RequestUsernameReminder(ctx context.Context, in *messages.UsernameReminderRequestInput, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) RequestUsernameReminder(ctx context.Context, in *messages.RequestUsernameReminderRequest, opts ...grpc.CallOption) (*messages.RequestUsernameReminderResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.RequestUsernameReminderResponse)
 	err := c.cc.Invoke(ctx, EatingService_RequestUsernameReminder_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2581,9 +2580,9 @@ func (c *eatingServiceClient) RequestUsernameReminder(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) RunFinalizeMealPlanWorker(ctx context.Context, in *messages.FinalizeMealPlansRequest, opts ...grpc.CallOption) (*messages.FinalizeMealPlansResponse, error) {
+func (c *eatingServiceClient) RunFinalizeMealPlanWorker(ctx context.Context, in *messages.RunFinalizeMealPlanWorkerRequest, opts ...grpc.CallOption) (*messages.RunFinalizeMealPlanWorkerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.FinalizeMealPlansResponse)
+	out := new(messages.RunFinalizeMealPlanWorkerResponse)
 	err := c.cc.Invoke(ctx, EatingService_RunFinalizeMealPlanWorker_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2591,9 +2590,9 @@ func (c *eatingServiceClient) RunFinalizeMealPlanWorker(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) RunMealPlanGroceryListInitializerWorker(ctx context.Context, in *messages.InitializeMealPlanGroceryListRequest, opts ...grpc.CallOption) (*messages.InitializeMealPlanGroceryListResponse, error) {
+func (c *eatingServiceClient) RunMealPlanGroceryListInitializerWorker(ctx context.Context, in *messages.RunMealPlanGroceryListInitializerWorkerRequest, opts ...grpc.CallOption) (*messages.RunMealPlanGroceryListInitializerWorkerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.InitializeMealPlanGroceryListResponse)
+	out := new(messages.RunMealPlanGroceryListInitializerWorkerResponse)
 	err := c.cc.Invoke(ctx, EatingService_RunMealPlanGroceryListInitializerWorker_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2601,9 +2600,9 @@ func (c *eatingServiceClient) RunMealPlanGroceryListInitializerWorker(ctx contex
 	return out, nil
 }
 
-func (c *eatingServiceClient) RunMealPlanTaskCreatorWorker(ctx context.Context, in *messages.CreateMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.CreateMealPlanTasksResponse, error) {
+func (c *eatingServiceClient) RunMealPlanTaskCreatorWorker(ctx context.Context, in *messages.RunMealPlanTaskCreatorWorkerRequest, opts ...grpc.CallOption) (*messages.RunMealPlanTaskCreatorWorkerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.CreateMealPlanTasksResponse)
+	out := new(messages.RunMealPlanTaskCreatorWorkerResponse)
 	err := c.cc.Invoke(ctx, EatingService_RunMealPlanTaskCreatorWorker_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2611,9 +2610,9 @@ func (c *eatingServiceClient) RunMealPlanTaskCreatorWorker(ctx context.Context, 
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForMeals(ctx context.Context, in *messages.SearchForMealsRequest, opts ...grpc.CallOption) (*messages.Meal, error) {
+func (c *eatingServiceClient) SearchForMeals(ctx context.Context, in *messages.SearchForMealsRequest, opts ...grpc.CallOption) (*messages.SearchForMealsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Meal)
+	out := new(messages.SearchForMealsResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForMeals_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2621,9 +2620,9 @@ func (c *eatingServiceClient) SearchForMeals(ctx context.Context, in *messages.S
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForRecipes(ctx context.Context, in *messages.SearchForRecipesRequest, opts ...grpc.CallOption) (*messages.Recipe, error) {
+func (c *eatingServiceClient) SearchForRecipes(ctx context.Context, in *messages.SearchForRecipesRequest, opts ...grpc.CallOption) (*messages.SearchForRecipesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Recipe)
+	out := new(messages.SearchForRecipesResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForRecipes_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2631,9 +2630,9 @@ func (c *eatingServiceClient) SearchForRecipes(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForServiceSettings(ctx context.Context, in *messages.SearchForServiceSettingsRequest, opts ...grpc.CallOption) (*messages.ServiceSetting, error) {
+func (c *eatingServiceClient) SearchForServiceSettings(ctx context.Context, in *messages.SearchForServiceSettingsRequest, opts ...grpc.CallOption) (*messages.SearchForServiceSettingsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSetting)
+	out := new(messages.SearchForServiceSettingsResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForServiceSettings_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2641,9 +2640,9 @@ func (c *eatingServiceClient) SearchForServiceSettings(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForUsers(ctx context.Context, in *messages.SearchForUsersRequest, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) SearchForUsers(ctx context.Context, in *messages.SearchForUsersRequest, opts ...grpc.CallOption) (*messages.SearchForUsersResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.SearchForUsersResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForUsers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2651,9 +2650,9 @@ func (c *eatingServiceClient) SearchForUsers(ctx context.Context, in *messages.S
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForValidIngredientGroups(ctx context.Context, in *messages.SearchForValidIngredientGroupsRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error) {
+func (c *eatingServiceClient) SearchForValidIngredientGroups(ctx context.Context, in *messages.SearchForValidIngredientGroupsRequest, opts ...grpc.CallOption) (*messages.SearchForValidIngredientGroupsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientGroup)
+	out := new(messages.SearchForValidIngredientGroupsResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForValidIngredientGroups_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2661,9 +2660,9 @@ func (c *eatingServiceClient) SearchForValidIngredientGroups(ctx context.Context
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForValidIngredientStates(ctx context.Context, in *messages.SearchForValidIngredientStatesRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error) {
+func (c *eatingServiceClient) SearchForValidIngredientStates(ctx context.Context, in *messages.SearchForValidIngredientStatesRequest, opts ...grpc.CallOption) (*messages.SearchForValidIngredientStatesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientState)
+	out := new(messages.SearchForValidIngredientStatesResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForValidIngredientStates_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2671,9 +2670,9 @@ func (c *eatingServiceClient) SearchForValidIngredientStates(ctx context.Context
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForValidIngredients(ctx context.Context, in *messages.SearchForValidIngredientsRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error) {
+func (c *eatingServiceClient) SearchForValidIngredients(ctx context.Context, in *messages.SearchForValidIngredientsRequest, opts ...grpc.CallOption) (*messages.SearchForValidIngredientsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredient)
+	out := new(messages.SearchForValidIngredientsResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForValidIngredients_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2681,9 +2680,9 @@ func (c *eatingServiceClient) SearchForValidIngredients(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForValidInstruments(ctx context.Context, in *messages.SearchForValidInstrumentsRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error) {
+func (c *eatingServiceClient) SearchForValidInstruments(ctx context.Context, in *messages.SearchForValidInstrumentsRequest, opts ...grpc.CallOption) (*messages.SearchForValidInstrumentsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidInstrument)
+	out := new(messages.SearchForValidInstrumentsResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForValidInstruments_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2691,9 +2690,9 @@ func (c *eatingServiceClient) SearchForValidInstruments(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForValidMeasurementUnits(ctx context.Context, in *messages.SearchForValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error) {
+func (c *eatingServiceClient) SearchForValidMeasurementUnits(ctx context.Context, in *messages.SearchForValidMeasurementUnitsRequest, opts ...grpc.CallOption) (*messages.SearchForValidMeasurementUnitsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnit)
+	out := new(messages.SearchForValidMeasurementUnitsResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForValidMeasurementUnits_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2701,9 +2700,9 @@ func (c *eatingServiceClient) SearchForValidMeasurementUnits(ctx context.Context
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForValidPreparations(ctx context.Context, in *messages.SearchForValidPreparationsRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error) {
+func (c *eatingServiceClient) SearchForValidPreparations(ctx context.Context, in *messages.SearchForValidPreparationsRequest, opts ...grpc.CallOption) (*messages.SearchForValidPreparationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparation)
+	out := new(messages.SearchForValidPreparationsResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForValidPreparations_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2711,9 +2710,9 @@ func (c *eatingServiceClient) SearchForValidPreparations(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchForValidVessels(ctx context.Context, in *messages.SearchForValidVesselsRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error) {
+func (c *eatingServiceClient) SearchForValidVessels(ctx context.Context, in *messages.SearchForValidVesselsRequest, opts ...grpc.CallOption) (*messages.SearchForValidVesselsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidVessel)
+	out := new(messages.SearchForValidVesselsResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchForValidVessels_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2721,9 +2720,9 @@ func (c *eatingServiceClient) SearchForValidVessels(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchValidIngredientsByPreparation(ctx context.Context, in *messages.SearchValidIngredientsByPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error) {
+func (c *eatingServiceClient) SearchValidIngredientsByPreparation(ctx context.Context, in *messages.SearchValidIngredientsByPreparationRequest, opts ...grpc.CallOption) (*messages.SearchValidIngredientsByPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredient)
+	out := new(messages.SearchValidIngredientsByPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchValidIngredientsByPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2731,9 +2730,9 @@ func (c *eatingServiceClient) SearchValidIngredientsByPreparation(ctx context.Co
 	return out, nil
 }
 
-func (c *eatingServiceClient) SearchValidMeasurementUnitsByIngredient(ctx context.Context, in *messages.SearchValidMeasurementUnitsByIngredientRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error) {
+func (c *eatingServiceClient) SearchValidMeasurementUnitsByIngredient(ctx context.Context, in *messages.SearchValidMeasurementUnitsByIngredientRequest, opts ...grpc.CallOption) (*messages.SearchValidMeasurementUnitsByIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnit)
+	out := new(messages.SearchValidMeasurementUnitsByIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_SearchValidMeasurementUnitsByIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2741,9 +2740,9 @@ func (c *eatingServiceClient) SearchValidMeasurementUnitsByIngredient(ctx contex
 	return out, nil
 }
 
-func (c *eatingServiceClient) SetDefaultHousehold(ctx context.Context, in *messages.SetDefaultHouseholdRequest, opts ...grpc.CallOption) (*messages.Household, error) {
+func (c *eatingServiceClient) SetDefaultHousehold(ctx context.Context, in *messages.SetDefaultHouseholdRequest, opts ...grpc.CallOption) (*messages.SetDefaultHouseholdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Household)
+	out := new(messages.SetDefaultHouseholdResponse)
 	err := c.cc.Invoke(ctx, EatingService_SetDefaultHousehold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2751,9 +2750,9 @@ func (c *eatingServiceClient) SetDefaultHousehold(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) TransferHouseholdOwnership(ctx context.Context, in *messages.TransferHouseholdOwnershipRequest, opts ...grpc.CallOption) (*messages.Household, error) {
+func (c *eatingServiceClient) TransferHouseholdOwnership(ctx context.Context, in *messages.TransferHouseholdOwnershipRequest, opts ...grpc.CallOption) (*messages.TransferHouseholdOwnershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Household)
+	out := new(messages.TransferHouseholdOwnershipResponse)
 	err := c.cc.Invoke(ctx, EatingService_TransferHouseholdOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2761,9 +2760,9 @@ func (c *eatingServiceClient) TransferHouseholdOwnership(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateHousehold(ctx context.Context, in *messages.UpdateHouseholdRequest, opts ...grpc.CallOption) (*messages.Household, error) {
+func (c *eatingServiceClient) UpdateHousehold(ctx context.Context, in *messages.UpdateHouseholdRequest, opts ...grpc.CallOption) (*messages.UpdateHouseholdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Household)
+	out := new(messages.UpdateHouseholdResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateHousehold_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2771,9 +2770,9 @@ func (c *eatingServiceClient) UpdateHousehold(ctx context.Context, in *messages.
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateHouseholdInstrumentOwnership(ctx context.Context, in *messages.UpdateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.HouseholdInstrumentOwnership, error) {
+func (c *eatingServiceClient) UpdateHouseholdInstrumentOwnership(ctx context.Context, in *messages.UpdateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.UpdateHouseholdInstrumentOwnershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.HouseholdInstrumentOwnership)
+	out := new(messages.UpdateHouseholdInstrumentOwnershipResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateHouseholdInstrumentOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2781,9 +2780,9 @@ func (c *eatingServiceClient) UpdateHouseholdInstrumentOwnership(ctx context.Con
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateHouseholdMemberPermissions(ctx context.Context, in *messages.UpdateHouseholdMemberPermissionsRequest, opts ...grpc.CallOption) (*messages.UserPermissionsResponse, error) {
+func (c *eatingServiceClient) UpdateHouseholdMemberPermissions(ctx context.Context, in *messages.UpdateHouseholdMemberPermissionsRequest, opts ...grpc.CallOption) (*messages.UpdateHouseholdMemberPermissionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserPermissionsResponse)
+	out := new(messages.UpdateHouseholdMemberPermissionsResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateHouseholdMemberPermissions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2791,9 +2790,9 @@ func (c *eatingServiceClient) UpdateHouseholdMemberPermissions(ctx context.Conte
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateMealPlan(ctx context.Context, in *messages.UpdateMealPlanRequest, opts ...grpc.CallOption) (*messages.MealPlan, error) {
+func (c *eatingServiceClient) UpdateMealPlan(ctx context.Context, in *messages.UpdateMealPlanRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlan)
+	out := new(messages.UpdateMealPlanResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateMealPlan_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2801,9 +2800,9 @@ func (c *eatingServiceClient) UpdateMealPlan(ctx context.Context, in *messages.U
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateMealPlanEvent(ctx context.Context, in *messages.UpdateMealPlanEventRequest, opts ...grpc.CallOption) (*messages.MealPlanEvent, error) {
+func (c *eatingServiceClient) UpdateMealPlanEvent(ctx context.Context, in *messages.UpdateMealPlanEventRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanEventResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanEvent)
+	out := new(messages.UpdateMealPlanEventResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateMealPlanEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2811,9 +2810,9 @@ func (c *eatingServiceClient) UpdateMealPlanEvent(ctx context.Context, in *messa
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateMealPlanGroceryListItem(ctx context.Context, in *messages.UpdateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.MealPlanGroceryListItem, error) {
+func (c *eatingServiceClient) UpdateMealPlanGroceryListItem(ctx context.Context, in *messages.UpdateMealPlanGroceryListItemRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanGroceryListItemResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanGroceryListItem)
+	out := new(messages.UpdateMealPlanGroceryListItemResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateMealPlanGroceryListItem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2821,9 +2820,9 @@ func (c *eatingServiceClient) UpdateMealPlanGroceryListItem(ctx context.Context,
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateMealPlanOption(ctx context.Context, in *messages.UpdateMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.MealPlanOption, error) {
+func (c *eatingServiceClient) UpdateMealPlanOption(ctx context.Context, in *messages.UpdateMealPlanOptionRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanOptionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOption)
+	out := new(messages.UpdateMealPlanOptionResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateMealPlanOption_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2831,9 +2830,9 @@ func (c *eatingServiceClient) UpdateMealPlanOption(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateMealPlanOptionVote(ctx context.Context, in *messages.UpdateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.MealPlanOptionVote, error) {
+func (c *eatingServiceClient) UpdateMealPlanOptionVote(ctx context.Context, in *messages.UpdateMealPlanOptionVoteRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanOptionVoteResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanOptionVote)
+	out := new(messages.UpdateMealPlanOptionVoteResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateMealPlanOptionVote_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2841,9 +2840,9 @@ func (c *eatingServiceClient) UpdateMealPlanOptionVote(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateMealPlanTaskStatus(ctx context.Context, in *messages.UpdateMealPlanTaskStatusRequest, opts ...grpc.CallOption) (*messages.MealPlanTask, error) {
+func (c *eatingServiceClient) UpdateMealPlanTaskStatus(ctx context.Context, in *messages.UpdateMealPlanTaskStatusRequest, opts ...grpc.CallOption) (*messages.UpdateMealPlanTaskStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.MealPlanTask)
+	out := new(messages.UpdateMealPlanTaskStatusResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateMealPlanTaskStatus_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2851,9 +2850,9 @@ func (c *eatingServiceClient) UpdateMealPlanTaskStatus(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdatePassword(ctx context.Context, in *messages.PasswordUpdateInput, opts ...grpc.CallOption) (*messages.PasswordResetResponse, error) {
+func (c *eatingServiceClient) UpdatePassword(ctx context.Context, in *messages.UpdatePasswordRequest, opts ...grpc.CallOption) (*messages.UpdatePasswordResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.PasswordResetResponse)
+	out := new(messages.UpdatePasswordResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdatePassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2861,9 +2860,9 @@ func (c *eatingServiceClient) UpdatePassword(ctx context.Context, in *messages.P
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateRecipe(ctx context.Context, in *messages.UpdateRecipeRequest, opts ...grpc.CallOption) (*messages.Recipe, error) {
+func (c *eatingServiceClient) UpdateRecipe(ctx context.Context, in *messages.UpdateRecipeRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.Recipe)
+	out := new(messages.UpdateRecipeResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateRecipe_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2871,9 +2870,9 @@ func (c *eatingServiceClient) UpdateRecipe(ctx context.Context, in *messages.Upd
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateRecipePrepTask(ctx context.Context, in *messages.UpdateRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.RecipePrepTask, error) {
+func (c *eatingServiceClient) UpdateRecipePrepTask(ctx context.Context, in *messages.UpdateRecipePrepTaskRequest, opts ...grpc.CallOption) (*messages.UpdateRecipePrepTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipePrepTask)
+	out := new(messages.UpdateRecipePrepTaskResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateRecipePrepTask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2881,9 +2880,9 @@ func (c *eatingServiceClient) UpdateRecipePrepTask(ctx context.Context, in *mess
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateRecipeRating(ctx context.Context, in *messages.UpdateRecipeRatingRequest, opts ...grpc.CallOption) (*messages.RecipeRating, error) {
+func (c *eatingServiceClient) UpdateRecipeRating(ctx context.Context, in *messages.UpdateRecipeRatingRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeRatingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeRating)
+	out := new(messages.UpdateRecipeRatingResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateRecipeRating_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2891,9 +2890,9 @@ func (c *eatingServiceClient) UpdateRecipeRating(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateRecipeStep(ctx context.Context, in *messages.UpdateRecipeStepRequest, opts ...grpc.CallOption) (*messages.RecipeStep, error) {
+func (c *eatingServiceClient) UpdateRecipeStep(ctx context.Context, in *messages.UpdateRecipeStepRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStep)
+	out := new(messages.UpdateRecipeStepResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateRecipeStep_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2901,9 +2900,9 @@ func (c *eatingServiceClient) UpdateRecipeStep(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateRecipeStepCompletionCondition(ctx context.Context, in *messages.UpdateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.RecipeStepCompletionCondition, error) {
+func (c *eatingServiceClient) UpdateRecipeStepCompletionCondition(ctx context.Context, in *messages.UpdateRecipeStepCompletionConditionRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepCompletionConditionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepCompletionCondition)
+	out := new(messages.UpdateRecipeStepCompletionConditionResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateRecipeStepCompletionCondition_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2911,9 +2910,9 @@ func (c *eatingServiceClient) UpdateRecipeStepCompletionCondition(ctx context.Co
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateRecipeStepIngredient(ctx context.Context, in *messages.UpdateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.RecipeStepIngredient, error) {
+func (c *eatingServiceClient) UpdateRecipeStepIngredient(ctx context.Context, in *messages.UpdateRecipeStepIngredientRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepIngredient)
+	out := new(messages.UpdateRecipeStepIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateRecipeStepIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2921,9 +2920,9 @@ func (c *eatingServiceClient) UpdateRecipeStepIngredient(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateRecipeStepInstrument(ctx context.Context, in *messages.UpdateRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.RecipeStepInstrument, error) {
+func (c *eatingServiceClient) UpdateRecipeStepInstrument(ctx context.Context, in *messages.UpdateRecipeStepInstrumentRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepInstrument)
+	out := new(messages.UpdateRecipeStepInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateRecipeStepInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2931,9 +2930,9 @@ func (c *eatingServiceClient) UpdateRecipeStepInstrument(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateRecipeStepProduct(ctx context.Context, in *messages.UpdateRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.RecipeStepProduct, error) {
+func (c *eatingServiceClient) UpdateRecipeStepProduct(ctx context.Context, in *messages.UpdateRecipeStepProductRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepProductResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepProduct)
+	out := new(messages.UpdateRecipeStepProductResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateRecipeStepProduct_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2941,9 +2940,9 @@ func (c *eatingServiceClient) UpdateRecipeStepProduct(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateRecipeStepVessel(ctx context.Context, in *messages.UpdateRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.RecipeStepVessel, error) {
+func (c *eatingServiceClient) UpdateRecipeStepVessel(ctx context.Context, in *messages.UpdateRecipeStepVesselRequest, opts ...grpc.CallOption) (*messages.UpdateRecipeStepVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.RecipeStepVessel)
+	out := new(messages.UpdateRecipeStepVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateRecipeStepVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2951,9 +2950,9 @@ func (c *eatingServiceClient) UpdateRecipeStepVessel(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateServiceSettingConfiguration(ctx context.Context, in *messages.UpdateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.ServiceSettingConfiguration, error) {
+func (c *eatingServiceClient) UpdateServiceSettingConfiguration(ctx context.Context, in *messages.UpdateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*messages.UpdateServiceSettingConfigurationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ServiceSettingConfiguration)
+	out := new(messages.UpdateServiceSettingConfigurationResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateServiceSettingConfiguration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2961,9 +2960,9 @@ func (c *eatingServiceClient) UpdateServiceSettingConfiguration(ctx context.Cont
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateUserDetails(ctx context.Context, in *messages.UserDetailsUpdateRequestInput, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) UpdateUserDetails(ctx context.Context, in *messages.UpdateUserDetailsRequest, opts ...grpc.CallOption) (*messages.UpdateUserDetailsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.UpdateUserDetailsResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateUserDetails_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2971,9 +2970,9 @@ func (c *eatingServiceClient) UpdateUserDetails(ctx context.Context, in *message
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateUserEmailAddress(ctx context.Context, in *messages.UserEmailAddressUpdateInput, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) UpdateUserEmailAddress(ctx context.Context, in *messages.UpdateUserEmailAddressRequest, opts ...grpc.CallOption) (*messages.UpdateUserEmailAddressResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.UpdateUserEmailAddressResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateUserEmailAddress_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2981,9 +2980,9 @@ func (c *eatingServiceClient) UpdateUserEmailAddress(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateUserIngredientPreference(ctx context.Context, in *messages.UpdateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.UserIngredientPreference, error) {
+func (c *eatingServiceClient) UpdateUserIngredientPreference(ctx context.Context, in *messages.UpdateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.UpdateUserIngredientPreferenceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserIngredientPreference)
+	out := new(messages.UpdateUserIngredientPreferenceResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateUserIngredientPreference_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -2991,9 +2990,9 @@ func (c *eatingServiceClient) UpdateUserIngredientPreference(ctx context.Context
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateUserNotification(ctx context.Context, in *messages.UpdateUserNotificationRequest, opts ...grpc.CallOption) (*messages.UserNotification, error) {
+func (c *eatingServiceClient) UpdateUserNotification(ctx context.Context, in *messages.UpdateUserNotificationRequest, opts ...grpc.CallOption) (*messages.UpdateUserNotificationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UserNotification)
+	out := new(messages.UpdateUserNotificationResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateUserNotification_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3001,9 +3000,9 @@ func (c *eatingServiceClient) UpdateUserNotification(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateUserUsername(ctx context.Context, in *messages.UsernameUpdateInput, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) UpdateUserUsername(ctx context.Context, in *messages.UpdateUserUsernameRequest, opts ...grpc.CallOption) (*messages.UpdateUserUsernameResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.UpdateUserUsernameResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateUserUsername_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3011,9 +3010,9 @@ func (c *eatingServiceClient) UpdateUserUsername(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidIngredient(ctx context.Context, in *messages.UpdateValidIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredient, error) {
+func (c *eatingServiceClient) UpdateValidIngredient(ctx context.Context, in *messages.UpdateValidIngredientRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredient)
+	out := new(messages.UpdateValidIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3021,9 +3020,9 @@ func (c *eatingServiceClient) UpdateValidIngredient(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidIngredientGroup(ctx context.Context, in *messages.UpdateValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.ValidIngredientGroup, error) {
+func (c *eatingServiceClient) UpdateValidIngredientGroup(ctx context.Context, in *messages.UpdateValidIngredientGroupRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientGroupResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientGroup)
+	out := new(messages.UpdateValidIngredientGroupResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidIngredientGroup_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3031,9 +3030,9 @@ func (c *eatingServiceClient) UpdateValidIngredientGroup(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidIngredientMeasurementUnit(ctx context.Context, in *messages.UpdateValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidIngredientMeasurementUnit, error) {
+func (c *eatingServiceClient) UpdateValidIngredientMeasurementUnit(ctx context.Context, in *messages.UpdateValidIngredientMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientMeasurementUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientMeasurementUnit)
+	out := new(messages.UpdateValidIngredientMeasurementUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidIngredientMeasurementUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3041,9 +3040,9 @@ func (c *eatingServiceClient) UpdateValidIngredientMeasurementUnit(ctx context.C
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidIngredientPreparation(ctx context.Context, in *messages.UpdateValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.ValidIngredientPreparation, error) {
+func (c *eatingServiceClient) UpdateValidIngredientPreparation(ctx context.Context, in *messages.UpdateValidIngredientPreparationRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientPreparation)
+	out := new(messages.UpdateValidIngredientPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidIngredientPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3051,9 +3050,9 @@ func (c *eatingServiceClient) UpdateValidIngredientPreparation(ctx context.Conte
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidIngredientState(ctx context.Context, in *messages.UpdateValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.ValidIngredientState, error) {
+func (c *eatingServiceClient) UpdateValidIngredientState(ctx context.Context, in *messages.UpdateValidIngredientStateRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientStateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientState)
+	out := new(messages.UpdateValidIngredientStateResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidIngredientState_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3061,9 +3060,9 @@ func (c *eatingServiceClient) UpdateValidIngredientState(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidIngredientStateIngredient(ctx context.Context, in *messages.UpdateValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.ValidIngredientStateIngredient, error) {
+func (c *eatingServiceClient) UpdateValidIngredientStateIngredient(ctx context.Context, in *messages.UpdateValidIngredientStateIngredientRequest, opts ...grpc.CallOption) (*messages.UpdateValidIngredientStateIngredientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidIngredientStateIngredient)
+	out := new(messages.UpdateValidIngredientStateIngredientResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidIngredientStateIngredient_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3071,9 +3070,9 @@ func (c *eatingServiceClient) UpdateValidIngredientStateIngredient(ctx context.C
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidInstrument(ctx context.Context, in *messages.UpdateValidInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidInstrument, error) {
+func (c *eatingServiceClient) UpdateValidInstrument(ctx context.Context, in *messages.UpdateValidInstrumentRequest, opts ...grpc.CallOption) (*messages.UpdateValidInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidInstrument)
+	out := new(messages.UpdateValidInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3081,9 +3080,9 @@ func (c *eatingServiceClient) UpdateValidInstrument(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidMeasurementUnit(ctx context.Context, in *messages.UpdateValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnit, error) {
+func (c *eatingServiceClient) UpdateValidMeasurementUnit(ctx context.Context, in *messages.UpdateValidMeasurementUnitRequest, opts ...grpc.CallOption) (*messages.UpdateValidMeasurementUnitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnit)
+	out := new(messages.UpdateValidMeasurementUnitResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidMeasurementUnit_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3091,9 +3090,9 @@ func (c *eatingServiceClient) UpdateValidMeasurementUnit(ctx context.Context, in
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidMeasurementUnitConversion(ctx context.Context, in *messages.UpdateValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.ValidMeasurementUnitConversion, error) {
+func (c *eatingServiceClient) UpdateValidMeasurementUnitConversion(ctx context.Context, in *messages.UpdateValidMeasurementUnitConversionRequest, opts ...grpc.CallOption) (*messages.UpdateValidMeasurementUnitConversionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidMeasurementUnitConversion)
+	out := new(messages.UpdateValidMeasurementUnitConversionResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidMeasurementUnitConversion_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3101,9 +3100,9 @@ func (c *eatingServiceClient) UpdateValidMeasurementUnitConversion(ctx context.C
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidPreparation(ctx context.Context, in *messages.UpdateValidPreparationRequest, opts ...grpc.CallOption) (*messages.ValidPreparation, error) {
+func (c *eatingServiceClient) UpdateValidPreparation(ctx context.Context, in *messages.UpdateValidPreparationRequest, opts ...grpc.CallOption) (*messages.UpdateValidPreparationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparation)
+	out := new(messages.UpdateValidPreparationResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidPreparation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3111,9 +3110,9 @@ func (c *eatingServiceClient) UpdateValidPreparation(ctx context.Context, in *me
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidPreparationInstrument(ctx context.Context, in *messages.UpdateValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.ValidPreparationInstrument, error) {
+func (c *eatingServiceClient) UpdateValidPreparationInstrument(ctx context.Context, in *messages.UpdateValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.UpdateValidPreparationInstrumentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationInstrument)
+	out := new(messages.UpdateValidPreparationInstrumentResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidPreparationInstrument_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3121,9 +3120,9 @@ func (c *eatingServiceClient) UpdateValidPreparationInstrument(ctx context.Conte
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidPreparationVessel(ctx context.Context, in *messages.UpdateValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.ValidPreparationVessel, error) {
+func (c *eatingServiceClient) UpdateValidPreparationVessel(ctx context.Context, in *messages.UpdateValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.UpdateValidPreparationVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidPreparationVessel)
+	out := new(messages.UpdateValidPreparationVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidPreparationVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3131,9 +3130,9 @@ func (c *eatingServiceClient) UpdateValidPreparationVessel(ctx context.Context, 
 	return out, nil
 }
 
-func (c *eatingServiceClient) UpdateValidVessel(ctx context.Context, in *messages.UpdateValidVesselRequest, opts ...grpc.CallOption) (*messages.ValidVessel, error) {
+func (c *eatingServiceClient) UpdateValidVessel(ctx context.Context, in *messages.UpdateValidVesselRequest, opts ...grpc.CallOption) (*messages.UpdateValidVesselResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ValidVessel)
+	out := new(messages.UpdateValidVesselResponse)
 	err := c.cc.Invoke(ctx, EatingService_UpdateValidVessel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3141,9 +3140,9 @@ func (c *eatingServiceClient) UpdateValidVessel(ctx context.Context, in *message
 	return out, nil
 }
 
-func (c *eatingServiceClient) UploadUserAvatar(ctx context.Context, in *messages.AvatarUpdateInput, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) UploadUserAvatar(ctx context.Context, in *messages.UploadUserAvatarRequest, opts ...grpc.CallOption) (*messages.UploadUserAvatarResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.UploadUserAvatarResponse)
 	err := c.cc.Invoke(ctx, EatingService_UploadUserAvatar_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3151,9 +3150,9 @@ func (c *eatingServiceClient) UploadUserAvatar(ctx context.Context, in *messages
 	return out, nil
 }
 
-func (c *eatingServiceClient) VerifyEmailAddress(ctx context.Context, in *messages.EmailAddressVerificationRequestInput, opts ...grpc.CallOption) (*messages.User, error) {
+func (c *eatingServiceClient) VerifyEmailAddress(ctx context.Context, in *messages.VerifyEmailAddressRequest, opts ...grpc.CallOption) (*messages.VerifyEmailAddressResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.User)
+	out := new(messages.VerifyEmailAddressResponse)
 	err := c.cc.Invoke(ctx, EatingService_VerifyEmailAddress_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3161,9 +3160,9 @@ func (c *eatingServiceClient) VerifyEmailAddress(ctx context.Context, in *messag
 	return out, nil
 }
 
-func (c *eatingServiceClient) VerifyTOTPSecret(ctx context.Context, in *messages.TOTPSecretVerificationInput, opts ...grpc.CallOption) (*messages.TOTPSecretVerificationResponse, error) {
+func (c *eatingServiceClient) VerifyTOTPSecret(ctx context.Context, in *messages.VerifyTOTPSecretRequest, opts ...grpc.CallOption) (*messages.VerifyTOTPSecretResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.TOTPSecretVerificationResponse)
+	out := new(messages.VerifyTOTPSecretResponse)
 	err := c.cc.Invoke(ctx, EatingService_VerifyTOTPSecret_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -3175,267 +3174,267 @@ func (c *eatingServiceClient) VerifyTOTPSecret(ctx context.Context, in *messages
 // All implementations must embed UnimplementedEatingServiceServer
 // for forward compatibility.
 type EatingServiceServer interface {
-	Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
-	ExchangeToken(context.Context, *messages.ExchangeTokenRequest) (*messages.TokenResponse, error)
-	AcceptHouseholdInvitation(context.Context, *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error)
-	AdminLoginForToken(context.Context, *messages.UserLoginInput) (*messages.TokenResponse, error)
-	AdminUpdateUserStatus(context.Context, *messages.UserAccountStatusUpdateInput) (*messages.UserStatusResponse, error)
-	AggregateUserDataReport(context.Context, *emptypb.Empty) (*messages.UserDataCollectionResponse, error)
-	ArchiveHousehold(context.Context, *messages.ArchiveHouseholdRequest) (*messages.Household, error)
-	ArchiveHouseholdInstrumentOwnership(context.Context, *messages.ArchiveHouseholdInstrumentOwnershipRequest) (*messages.HouseholdInstrumentOwnership, error)
-	ArchiveMeal(context.Context, *messages.ArchiveMealRequest) (*messages.Meal, error)
-	ArchiveMealPlan(context.Context, *messages.ArchiveMealPlanRequest) (*messages.MealPlan, error)
-	ArchiveMealPlanEvent(context.Context, *messages.ArchiveMealPlanEventRequest) (*messages.MealPlanEvent, error)
-	ArchiveMealPlanGroceryListItem(context.Context, *messages.ArchiveMealPlanGroceryListItemRequest) (*messages.MealPlanGroceryListItem, error)
-	ArchiveMealPlanOption(context.Context, *messages.ArchiveMealPlanOptionRequest) (*messages.MealPlanOption, error)
-	ArchiveMealPlanOptionVote(context.Context, *messages.ArchiveMealPlanOptionVoteRequest) (*messages.MealPlanOptionVote, error)
-	ArchiveOAuth2Client(context.Context, *messages.ArchiveOAuth2ClientRequest) (*messages.OAuth2Client, error)
-	ArchiveRecipe(context.Context, *messages.ArchiveRecipeRequest) (*messages.Recipe, error)
-	ArchiveRecipePrepTask(context.Context, *messages.ArchiveRecipePrepTaskRequest) (*messages.RecipePrepTask, error)
-	ArchiveRecipeRating(context.Context, *messages.ArchiveRecipeRatingRequest) (*messages.RecipeRating, error)
-	ArchiveRecipeStep(context.Context, *messages.ArchiveRecipeStepRequest) (*messages.RecipeStep, error)
-	ArchiveRecipeStepCompletionCondition(context.Context, *messages.ArchiveRecipeStepCompletionConditionRequest) (*messages.RecipeStepCompletionCondition, error)
-	ArchiveRecipeStepIngredient(context.Context, *messages.ArchiveRecipeStepIngredientRequest) (*messages.RecipeStepIngredient, error)
-	ArchiveRecipeStepInstrument(context.Context, *messages.ArchiveRecipeStepInstrumentRequest) (*messages.RecipeStepInstrument, error)
-	ArchiveRecipeStepProduct(context.Context, *messages.ArchiveRecipeStepProductRequest) (*messages.RecipeStepProduct, error)
-	ArchiveRecipeStepVessel(context.Context, *messages.ArchiveRecipeStepVesselRequest) (*messages.RecipeStepVessel, error)
-	ArchiveServiceSetting(context.Context, *messages.ArchiveServiceSettingRequest) (*messages.ServiceSetting, error)
-	ArchiveServiceSettingConfiguration(context.Context, *messages.ArchiveServiceSettingConfigurationRequest) (*messages.ServiceSettingConfiguration, error)
-	ArchiveUser(context.Context, *messages.ArchiveUserRequest) (*messages.User, error)
-	ArchiveUserIngredientPreference(context.Context, *messages.ArchiveUserIngredientPreferenceRequest) (*messages.UserIngredientPreference, error)
-	ArchiveUserMembership(context.Context, *messages.ArchiveUserMembershipRequest) (*messages.HouseholdUserMembership, error)
-	ArchiveValidIngredient(context.Context, *messages.ArchiveValidIngredientRequest) (*messages.ValidIngredient, error)
-	ArchiveValidIngredientGroup(context.Context, *messages.ArchiveValidIngredientGroupRequest) (*messages.ValidIngredientGroup, error)
-	ArchiveValidIngredientMeasurementUnit(context.Context, *messages.ArchiveValidIngredientMeasurementUnitRequest) (*messages.ValidIngredientMeasurementUnit, error)
-	ArchiveValidIngredientPreparation(context.Context, *messages.ArchiveValidIngredientPreparationRequest) (*messages.ValidIngredientPreparation, error)
-	ArchiveValidIngredientState(context.Context, *messages.ArchiveValidIngredientStateRequest) (*messages.ValidIngredientState, error)
-	ArchiveValidIngredientStateIngredient(context.Context, *messages.ArchiveValidIngredientStateIngredientRequest) (*messages.ValidIngredientStateIngredient, error)
-	ArchiveValidInstrument(context.Context, *messages.ArchiveValidInstrumentRequest) (*messages.ValidInstrument, error)
-	ArchiveValidMeasurementUnit(context.Context, *messages.ArchiveValidMeasurementUnitRequest) (*messages.ValidMeasurementUnit, error)
-	ArchiveValidMeasurementUnitConversion(context.Context, *messages.ArchiveValidMeasurementUnitConversionRequest) (*messages.ValidMeasurementUnitConversion, error)
-	ArchiveValidPreparation(context.Context, *messages.ArchiveValidPreparationRequest) (*messages.ValidPreparation, error)
-	ArchiveValidPreparationInstrument(context.Context, *messages.ArchiveValidPreparationInstrumentRequest) (*messages.ValidPreparationInstrument, error)
-	ArchiveValidPreparationVessel(context.Context, *messages.ArchiveValidPreparationVesselRequest) (*messages.ValidPreparationVessel, error)
-	ArchiveValidVessel(context.Context, *messages.ArchiveValidVesselRequest) (*messages.ValidVessel, error)
-	ArchiveWebhook(context.Context, *messages.ArchiveWebhookRequest) (*messages.Webhook, error)
-	ArchiveWebhookTriggerEvent(context.Context, *messages.ArchiveWebhookTriggerEventRequest) (*messages.WebhookTriggerEvent, error)
-	CancelHouseholdInvitation(context.Context, *messages.CancelHouseholdInvitationRequest) (*messages.HouseholdInvitation, error)
-	CheckForReadiness(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
-	CheckPermissions(context.Context, *messages.UserPermissionsRequestInput) (*messages.UserPermissionsResponse, error)
-	CloneRecipe(context.Context, *messages.CloneRecipeRequest) (*messages.Recipe, error)
-	CreateHousehold(context.Context, *messages.HouseholdCreationRequestInput) (*messages.Household, error)
-	CreateHouseholdInstrumentOwnership(context.Context, *messages.HouseholdInstrumentOwnershipCreationRequestInput) (*messages.HouseholdInstrumentOwnership, error)
-	CreateHouseholdInvitation(context.Context, *messages.CreateHouseholdInvitationRequest) (*messages.HouseholdInvitation, error)
-	CreateMeal(context.Context, *messages.MealCreationRequestInput) (*messages.Meal, error)
-	CreateMealPlan(context.Context, *messages.MealPlanCreationRequestInput) (*messages.MealPlan, error)
-	CreateMealPlanEvent(context.Context, *messages.CreateMealPlanEventRequest) (*messages.MealPlanEvent, error)
-	CreateMealPlanGroceryListItem(context.Context, *messages.CreateMealPlanGroceryListItemRequest) (*messages.MealPlanGroceryListItem, error)
-	CreateMealPlanOption(context.Context, *messages.CreateMealPlanOptionRequest) (*messages.MealPlanOption, error)
-	CreateMealPlanOptionVote(context.Context, *messages.CreateMealPlanOptionVoteRequest) (*messages.MealPlanOptionVote, error)
-	CreateMealPlanTask(context.Context, *messages.CreateMealPlanTaskRequest) (*messages.MealPlanTask, error)
-	CreateOAuth2Client(context.Context, *messages.OAuth2ClientCreationRequestInput) (*messages.OAuth2ClientCreationResponse, error)
-	CreateRecipe(context.Context, *messages.RecipeCreationRequestInput) (*messages.Recipe, error)
-	CreateRecipePrepTask(context.Context, *messages.CreateRecipePrepTaskRequest) (*messages.RecipePrepTask, error)
-	CreateRecipeRating(context.Context, *messages.CreateRecipeRatingRequest) (*messages.RecipeRating, error)
-	CreateRecipeStep(context.Context, *messages.CreateRecipeStepRequest) (*messages.RecipeStep, error)
-	CreateRecipeStepCompletionCondition(context.Context, *messages.CreateRecipeStepCompletionConditionRequest) (*messages.RecipeStepCompletionCondition, error)
-	CreateRecipeStepIngredient(context.Context, *messages.CreateRecipeStepIngredientRequest) (*messages.RecipeStepIngredient, error)
-	CreateRecipeStepInstrument(context.Context, *messages.CreateRecipeStepInstrumentRequest) (*messages.RecipeStepInstrument, error)
-	CreateRecipeStepProduct(context.Context, *messages.CreateRecipeStepProductRequest) (*messages.RecipeStepProduct, error)
-	CreateRecipeStepVessel(context.Context, *messages.CreateRecipeStepVesselRequest) (*messages.RecipeStepVessel, error)
-	CreateServiceSetting(context.Context, *messages.ServiceSettingCreationRequestInput) (*messages.ServiceSetting, error)
-	CreateServiceSettingConfiguration(context.Context, *messages.ServiceSettingConfigurationCreationRequestInput) (*messages.ServiceSettingConfiguration, error)
-	CreateUser(context.Context, *messages.UserRegistrationInput) (*messages.UserCreationResponse, error)
-	CreateUserIngredientPreference(context.Context, *messages.UserIngredientPreferenceCreationRequestInput) (*messages.UserIngredientPreference, error)
-	CreateUserNotification(context.Context, *messages.UserNotificationCreationRequestInput) (*messages.UserNotification, error)
-	CreateValidIngredient(context.Context, *messages.ValidIngredientCreationRequestInput) (*messages.ValidIngredient, error)
-	CreateValidIngredientGroup(context.Context, *messages.ValidIngredientGroupCreationRequestInput) (*messages.ValidIngredientGroup, error)
-	CreateValidIngredientMeasurementUnit(context.Context, *messages.ValidIngredientMeasurementUnitCreationRequestInput) (*messages.ValidIngredientMeasurementUnit, error)
-	CreateValidIngredientPreparation(context.Context, *messages.ValidIngredientPreparationCreationRequestInput) (*messages.ValidIngredientPreparation, error)
-	CreateValidIngredientState(context.Context, *messages.ValidIngredientStateCreationRequestInput) (*messages.ValidIngredientState, error)
-	CreateValidIngredientStateIngredient(context.Context, *messages.ValidIngredientStateIngredientCreationRequestInput) (*messages.ValidIngredientStateIngredient, error)
-	CreateValidInstrument(context.Context, *messages.ValidInstrumentCreationRequestInput) (*messages.ValidInstrument, error)
-	CreateValidMeasurementUnit(context.Context, *messages.ValidMeasurementUnitCreationRequestInput) (*messages.ValidMeasurementUnit, error)
-	CreateValidMeasurementUnitConversion(context.Context, *messages.ValidMeasurementUnitConversionCreationRequestInput) (*messages.ValidMeasurementUnitConversion, error)
-	CreateValidPreparation(context.Context, *messages.ValidPreparationCreationRequestInput) (*messages.ValidPreparation, error)
-	CreateValidPreparationInstrument(context.Context, *messages.ValidPreparationInstrumentCreationRequestInput) (*messages.ValidPreparationInstrument, error)
-	CreateValidPreparationVessel(context.Context, *messages.ValidPreparationVesselCreationRequestInput) (*messages.ValidPreparationVessel, error)
-	CreateValidVessel(context.Context, *messages.ValidVesselCreationRequestInput) (*messages.ValidVessel, error)
-	CreateWebhook(context.Context, *messages.WebhookCreationRequestInput) (*messages.Webhook, error)
-	CreateWebhookTriggerEvent(context.Context, *messages.CreateWebhookTriggerEventRequest) (*messages.WebhookTriggerEvent, error)
-	DestroyAllUserData(context.Context, *emptypb.Empty) (*messages.DataDeletionResponse, error)
-	FetchUserDataReport(context.Context, *messages.FetchUserDataReportRequest) (*messages.UserDataCollection, error)
-	FinalizeMealPlan(context.Context, *messages.FinalizeMealPlanRequest) (*messages.FinalizeMealPlansResponse, error)
-	GetActiveHousehold(context.Context, *emptypb.Empty) (*messages.Household, error)
-	GetAuditLogEntriesForHousehold(context.Context, *messages.GetAuditLogEntriesForHouseholdRequest) (*messages.AuditLogEntry, error)
-	GetAuditLogEntriesForUser(context.Context, *messages.GetAuditLogEntriesForUserRequest) (*messages.AuditLogEntry, error)
-	GetAuditLogEntryByID(context.Context, *messages.GetAuditLogEntryByIDRequest) (*messages.AuditLogEntry, error)
-	GetAuthStatus(context.Context, *emptypb.Empty) (*messages.UserStatusResponse, error)
-	GetHousehold(context.Context, *messages.GetHouseholdRequest) (*messages.Household, error)
-	GetHouseholdInstrumentOwnership(context.Context, *messages.GetHouseholdInstrumentOwnershipRequest) (*messages.HouseholdInstrumentOwnership, error)
-	GetHouseholdInstrumentOwnerships(context.Context, *messages.GetHouseholdInstrumentOwnershipsRequest) (*messages.HouseholdInstrumentOwnership, error)
-	GetHouseholdInvitation(context.Context, *messages.GetHouseholdInvitationRequest) (*messages.HouseholdInvitation, error)
-	GetHouseholdInvitationByID(context.Context, *messages.GetHouseholdInvitationByIDRequest) (*messages.HouseholdInvitation, error)
-	GetHouseholds(context.Context, *messages.GetHouseholdsRequest) (*messages.Household, error)
-	GetMeal(context.Context, *messages.GetMealRequest) (*messages.Meal, error)
-	GetMealPlan(context.Context, *messages.GetMealPlanRequest) (*messages.MealPlan, error)
-	GetMealPlanEvent(context.Context, *messages.GetMealPlanEventRequest) (*messages.MealPlanEvent, error)
-	GetMealPlanEvents(context.Context, *messages.GetMealPlanEventsRequest) (*messages.MealPlanEvent, error)
-	GetMealPlanGroceryListItem(context.Context, *messages.GetMealPlanGroceryListItemRequest) (*messages.MealPlanGroceryListItem, error)
-	GetMealPlanGroceryListItemsForMealPlan(context.Context, *messages.GetMealPlanGroceryListItemsForMealPlanRequest) (*messages.MealPlanGroceryListItem, error)
-	GetMealPlanOption(context.Context, *messages.GetMealPlanOptionRequest) (*messages.MealPlanOption, error)
-	GetMealPlanOptionVote(context.Context, *messages.GetMealPlanOptionVoteRequest) (*messages.MealPlanOptionVote, error)
-	GetMealPlanOptionVotes(context.Context, *messages.GetMealPlanOptionVotesRequest) (*messages.MealPlanOptionVote, error)
-	GetMealPlanOptions(context.Context, *messages.GetMealPlanOptionsRequest) (*messages.MealPlanOption, error)
-	GetMealPlanTask(context.Context, *messages.GetMealPlanTaskRequest) (*messages.MealPlanTask, error)
-	GetMealPlanTasks(context.Context, *messages.GetMealPlanTasksRequest) (*messages.MealPlanTask, error)
-	GetMealPlansForHousehold(context.Context, *messages.GetMealPlansForHouseholdRequest) (*messages.MealPlan, error)
-	GetMeals(context.Context, *messages.GetMealsRequest) (*messages.Meal, error)
+	Ping(context.Context, *messages.PingRequest) (*messages.PingResponse, error)
+	ExchangeToken(context.Context, *messages.ExchangeTokenRequest) (*messages.ExchangeTokenResponse, error)
+	AcceptHouseholdInvitation(context.Context, *messages.AcceptHouseholdInvitationRequest) (*messages.AcceptHouseholdInvitationResponse, error)
+	AdminLoginForToken(context.Context, *messages.AdminLoginForTokenRequest) (*messages.AdminLoginForTokenResponse, error)
+	AdminUpdateUserStatus(context.Context, *messages.AdminUpdateUserStatusRequest) (*messages.AdminUpdateUserStatusResponse, error)
+	AggregateUserDataReport(context.Context, *messages.AggregateUserDataReportRequest) (*messages.AggregateUserDataReportResponse, error)
+	ArchiveHousehold(context.Context, *messages.ArchiveHouseholdRequest) (*messages.ArchiveHouseholdResponse, error)
+	ArchiveHouseholdInstrumentOwnership(context.Context, *messages.ArchiveHouseholdInstrumentOwnershipRequest) (*messages.ArchiveHouseholdInstrumentOwnershipResponse, error)
+	ArchiveMeal(context.Context, *messages.ArchiveMealRequest) (*messages.ArchiveMealResponse, error)
+	ArchiveMealPlan(context.Context, *messages.ArchiveMealPlanRequest) (*messages.ArchiveMealPlanResponse, error)
+	ArchiveMealPlanEvent(context.Context, *messages.ArchiveMealPlanEventRequest) (*messages.ArchiveMealPlanEventResponse, error)
+	ArchiveMealPlanGroceryListItem(context.Context, *messages.ArchiveMealPlanGroceryListItemRequest) (*messages.ArchiveMealPlanGroceryListItemResponse, error)
+	ArchiveMealPlanOption(context.Context, *messages.ArchiveMealPlanOptionRequest) (*messages.ArchiveMealPlanOptionResponse, error)
+	ArchiveMealPlanOptionVote(context.Context, *messages.ArchiveMealPlanOptionVoteRequest) (*messages.ArchiveMealPlanOptionVoteResponse, error)
+	ArchiveOAuth2Client(context.Context, *messages.ArchiveOAuth2ClientRequest) (*messages.ArchiveOAuth2ClientResponse, error)
+	ArchiveRecipe(context.Context, *messages.ArchiveRecipeRequest) (*messages.ArchiveRecipeResponse, error)
+	ArchiveRecipePrepTask(context.Context, *messages.ArchiveRecipePrepTaskRequest) (*messages.ArchiveRecipePrepTaskResponse, error)
+	ArchiveRecipeRating(context.Context, *messages.ArchiveRecipeRatingRequest) (*messages.ArchiveRecipeRatingResponse, error)
+	ArchiveRecipeStep(context.Context, *messages.ArchiveRecipeStepRequest) (*messages.ArchiveRecipeStepResponse, error)
+	ArchiveRecipeStepCompletionCondition(context.Context, *messages.ArchiveRecipeStepCompletionConditionRequest) (*messages.ArchiveRecipeStepCompletionConditionResponse, error)
+	ArchiveRecipeStepIngredient(context.Context, *messages.ArchiveRecipeStepIngredientRequest) (*messages.ArchiveRecipeStepIngredientResponse, error)
+	ArchiveRecipeStepInstrument(context.Context, *messages.ArchiveRecipeStepInstrumentRequest) (*messages.ArchiveRecipeStepInstrumentResponse, error)
+	ArchiveRecipeStepProduct(context.Context, *messages.ArchiveRecipeStepProductRequest) (*messages.ArchiveRecipeStepProductResponse, error)
+	ArchiveRecipeStepVessel(context.Context, *messages.ArchiveRecipeStepVesselRequest) (*messages.ArchiveRecipeStepVesselResponse, error)
+	ArchiveServiceSetting(context.Context, *messages.ArchiveServiceSettingRequest) (*messages.ArchiveServiceSettingResponse, error)
+	ArchiveServiceSettingConfiguration(context.Context, *messages.ArchiveServiceSettingConfigurationRequest) (*messages.ArchiveServiceSettingConfigurationResponse, error)
+	ArchiveUser(context.Context, *messages.ArchiveUserRequest) (*messages.ArchiveUserResponse, error)
+	ArchiveUserIngredientPreference(context.Context, *messages.ArchiveUserIngredientPreferenceRequest) (*messages.ArchiveUserIngredientPreferenceResponse, error)
+	ArchiveUserMembership(context.Context, *messages.ArchiveUserMembershipRequest) (*messages.ArchiveUserMembershipResponse, error)
+	ArchiveValidIngredient(context.Context, *messages.ArchiveValidIngredientRequest) (*messages.ArchiveValidIngredientResponse, error)
+	ArchiveValidIngredientGroup(context.Context, *messages.ArchiveValidIngredientGroupRequest) (*messages.ArchiveValidIngredientGroupResponse, error)
+	ArchiveValidIngredientMeasurementUnit(context.Context, *messages.ArchiveValidIngredientMeasurementUnitRequest) (*messages.ArchiveValidIngredientMeasurementUnitResponse, error)
+	ArchiveValidIngredientPreparation(context.Context, *messages.ArchiveValidIngredientPreparationRequest) (*messages.ArchiveValidIngredientPreparationResponse, error)
+	ArchiveValidIngredientState(context.Context, *messages.ArchiveValidIngredientStateRequest) (*messages.ArchiveValidIngredientStateResponse, error)
+	ArchiveValidIngredientStateIngredient(context.Context, *messages.ArchiveValidIngredientStateIngredientRequest) (*messages.ArchiveValidIngredientStateIngredientResponse, error)
+	ArchiveValidInstrument(context.Context, *messages.ArchiveValidInstrumentRequest) (*messages.ArchiveValidInstrumentResponse, error)
+	ArchiveValidMeasurementUnit(context.Context, *messages.ArchiveValidMeasurementUnitRequest) (*messages.ArchiveValidMeasurementUnitResponse, error)
+	ArchiveValidMeasurementUnitConversion(context.Context, *messages.ArchiveValidMeasurementUnitConversionRequest) (*messages.ArchiveValidMeasurementUnitConversionResponse, error)
+	ArchiveValidPreparation(context.Context, *messages.ArchiveValidPreparationRequest) (*messages.ArchiveValidPreparationResponse, error)
+	ArchiveValidPreparationInstrument(context.Context, *messages.ArchiveValidPreparationInstrumentRequest) (*messages.ArchiveValidPreparationInstrumentResponse, error)
+	ArchiveValidPreparationVessel(context.Context, *messages.ArchiveValidPreparationVesselRequest) (*messages.ArchiveValidPreparationVesselResponse, error)
+	ArchiveValidVessel(context.Context, *messages.ArchiveValidVesselRequest) (*messages.ArchiveValidVesselResponse, error)
+	ArchiveWebhook(context.Context, *messages.ArchiveWebhookRequest) (*messages.ArchiveWebhookResponse, error)
+	ArchiveWebhookTriggerEvent(context.Context, *messages.ArchiveWebhookTriggerEventRequest) (*messages.ArchiveWebhookTriggerEventResponse, error)
+	CancelHouseholdInvitation(context.Context, *messages.CancelHouseholdInvitationRequest) (*messages.CancelHouseholdInvitationResponse, error)
+	CheckForReadiness(context.Context, *messages.CheckForReadinessRequest) (*messages.CheckForReadinessResponse, error)
+	CheckPermissions(context.Context, *messages.CheckPermissionsRequest) (*messages.CheckPermissionsResponse, error)
+	CloneRecipe(context.Context, *messages.CloneRecipeRequest) (*messages.CloneRecipeResponse, error)
+	CreateHousehold(context.Context, *messages.CreateHouseholdRequest) (*messages.CreateHouseholdResponse, error)
+	CreateHouseholdInstrumentOwnership(context.Context, *messages.CreateHouseholdInstrumentOwnershipRequest) (*messages.CreateHouseholdInstrumentOwnershipResponse, error)
+	CreateHouseholdInvitation(context.Context, *messages.CreateHouseholdInvitationRequest) (*messages.CreateHouseholdInvitationResponse, error)
+	CreateMeal(context.Context, *messages.CreateMealRequest) (*messages.CreateMealResponse, error)
+	CreateMealPlan(context.Context, *messages.CreateMealPlanRequest) (*messages.CreateMealPlanResponse, error)
+	CreateMealPlanEvent(context.Context, *messages.CreateMealPlanEventRequest) (*messages.CreateMealPlanEventResponse, error)
+	CreateMealPlanGroceryListItem(context.Context, *messages.CreateMealPlanGroceryListItemRequest) (*messages.CreateMealPlanGroceryListItemResponse, error)
+	CreateMealPlanOption(context.Context, *messages.CreateMealPlanOptionRequest) (*messages.CreateMealPlanOptionResponse, error)
+	CreateMealPlanOptionVote(context.Context, *messages.CreateMealPlanOptionVoteRequest) (*messages.CreateMealPlanOptionVoteResponse, error)
+	CreateMealPlanTask(context.Context, *messages.CreateMealPlanTaskRequest) (*messages.CreateMealPlanTaskResponse, error)
+	CreateOAuth2Client(context.Context, *messages.CreateOAuth2ClientRequest) (*messages.CreateOAuth2ClientResponse, error)
+	CreateRecipe(context.Context, *messages.CreateRecipeRequest) (*messages.CreateRecipeResponse, error)
+	CreateRecipePrepTask(context.Context, *messages.CreateRecipePrepTaskRequest) (*messages.CreateRecipePrepTaskResponse, error)
+	CreateRecipeRating(context.Context, *messages.CreateRecipeRatingRequest) (*messages.CreateRecipeRatingResponse, error)
+	CreateRecipeStep(context.Context, *messages.CreateRecipeStepRequest) (*messages.CreateRecipeStepResponse, error)
+	CreateRecipeStepCompletionCondition(context.Context, *messages.CreateRecipeStepCompletionConditionRequest) (*messages.CreateRecipeStepCompletionConditionResponse, error)
+	CreateRecipeStepIngredient(context.Context, *messages.CreateRecipeStepIngredientRequest) (*messages.CreateRecipeStepIngredientResponse, error)
+	CreateRecipeStepInstrument(context.Context, *messages.CreateRecipeStepInstrumentRequest) (*messages.CreateRecipeStepInstrumentResponse, error)
+	CreateRecipeStepProduct(context.Context, *messages.CreateRecipeStepProductRequest) (*messages.CreateRecipeStepProductResponse, error)
+	CreateRecipeStepVessel(context.Context, *messages.CreateRecipeStepVesselRequest) (*messages.CreateRecipeStepVesselResponse, error)
+	CreateServiceSetting(context.Context, *messages.CreateServiceSettingRequest) (*messages.CreateServiceSettingResponse, error)
+	CreateServiceSettingConfiguration(context.Context, *messages.CreateServiceSettingConfigurationRequest) (*messages.CreateServiceSettingConfigurationResponse, error)
+	CreateUser(context.Context, *messages.CreateUserRequest) (*messages.CreateUserResponse, error)
+	CreateUserIngredientPreference(context.Context, *messages.CreateUserIngredientPreferenceRequest) (*messages.CreateUserIngredientPreferenceResponse, error)
+	CreateUserNotification(context.Context, *messages.CreateUserNotificationRequest) (*messages.CreateUserNotificationResponse, error)
+	CreateValidIngredient(context.Context, *messages.CreateValidIngredientRequest) (*messages.CreateValidIngredientResponse, error)
+	CreateValidIngredientGroup(context.Context, *messages.CreateValidIngredientGroupRequest) (*messages.CreateValidIngredientGroupResponse, error)
+	CreateValidIngredientMeasurementUnit(context.Context, *messages.CreateValidIngredientMeasurementUnitRequest) (*messages.CreateValidIngredientMeasurementUnitResponse, error)
+	CreateValidIngredientPreparation(context.Context, *messages.CreateValidIngredientPreparationRequest) (*messages.CreateValidIngredientPreparationResponse, error)
+	CreateValidIngredientState(context.Context, *messages.CreateValidIngredientStateRequest) (*messages.CreateValidIngredientStateResponse, error)
+	CreateValidIngredientStateIngredient(context.Context, *messages.CreateValidIngredientStateIngredientRequest) (*messages.CreateValidIngredientStateIngredientResponse, error)
+	CreateValidInstrument(context.Context, *messages.CreateValidInstrumentRequest) (*messages.CreateValidInstrumentResponse, error)
+	CreateValidMeasurementUnit(context.Context, *messages.CreateValidMeasurementUnitRequest) (*messages.CreateValidMeasurementUnitResponse, error)
+	CreateValidMeasurementUnitConversion(context.Context, *messages.CreateValidMeasurementUnitConversionRequest) (*messages.CreateValidMeasurementUnitConversionResponse, error)
+	CreateValidPreparation(context.Context, *messages.CreateValidPreparationRequest) (*messages.CreateValidPreparationResponse, error)
+	CreateValidPreparationInstrument(context.Context, *messages.CreateValidPreparationInstrumentRequest) (*messages.CreateValidPreparationInstrumentResponse, error)
+	CreateValidPreparationVessel(context.Context, *messages.CreateValidPreparationVesselRequest) (*messages.CreateValidPreparationVesselResponse, error)
+	CreateValidVessel(context.Context, *messages.CreateValidVesselRequest) (*messages.CreateValidVesselResponse, error)
+	CreateWebhook(context.Context, *messages.CreateWebhookRequest) (*messages.CreateWebhookResponse, error)
+	CreateWebhookTriggerEvent(context.Context, *messages.CreateWebhookTriggerEventRequest) (*messages.CreateWebhookTriggerEventResponse, error)
+	DestroyAllUserData(context.Context, *messages.DestroyAllUserDataRequest) (*messages.DestroyAllUserDataResponse, error)
+	FetchUserDataReport(context.Context, *messages.FetchUserDataReportRequest) (*messages.FetchUserDataReportResponse, error)
+	FinalizeMealPlan(context.Context, *messages.FinalizeMealPlanRequest) (*messages.FinalizeMealPlanResponse, error)
+	GetActiveHousehold(context.Context, *messages.GetActiveHouseholdRequest) (*messages.GetActiveHouseholdResponse, error)
+	GetAuditLogEntriesForHousehold(context.Context, *messages.GetAuditLogEntriesForHouseholdRequest) (*messages.GetAuditLogEntriesForHouseholdResponse, error)
+	GetAuditLogEntriesForUser(context.Context, *messages.GetAuditLogEntriesForUserRequest) (*messages.GetAuditLogEntriesForUserResponse, error)
+	GetAuditLogEntryByID(context.Context, *messages.GetAuditLogEntryByIDRequest) (*messages.GetAuditLogEntryByIDResponse, error)
+	GetAuthStatus(context.Context, *messages.GetAuthStatusRequest) (*messages.GetAuthStatusResponse, error)
+	GetHousehold(context.Context, *messages.GetHouseholdRequest) (*messages.GetHouseholdResponse, error)
+	GetHouseholdInstrumentOwnership(context.Context, *messages.GetHouseholdInstrumentOwnershipRequest) (*messages.GetHouseholdInstrumentOwnershipResponse, error)
+	GetHouseholdInstrumentOwnerships(context.Context, *messages.GetHouseholdInstrumentOwnershipsRequest) (*messages.GetHouseholdInstrumentOwnershipsResponse, error)
+	GetHouseholdInvitation(context.Context, *messages.GetHouseholdInvitationRequest) (*messages.GetHouseholdInvitationResponse, error)
+	GetHouseholdInvitationByID(context.Context, *messages.GetHouseholdInvitationByIDRequest) (*messages.GetHouseholdInvitationByIDResponse, error)
+	GetHouseholds(context.Context, *messages.GetHouseholdsRequest) (*messages.GetHouseholdsResponse, error)
+	GetMeal(context.Context, *messages.GetMealRequest) (*messages.GetMealResponse, error)
+	GetMealPlan(context.Context, *messages.GetMealPlanRequest) (*messages.GetMealPlanResponse, error)
+	GetMealPlanEvent(context.Context, *messages.GetMealPlanEventRequest) (*messages.GetMealPlanEventResponse, error)
+	GetMealPlanEvents(context.Context, *messages.GetMealPlanEventsRequest) (*messages.GetMealPlanEventsResponse, error)
+	GetMealPlanGroceryListItem(context.Context, *messages.GetMealPlanGroceryListItemRequest) (*messages.GetMealPlanGroceryListItemResponse, error)
+	GetMealPlanGroceryListItemsForMealPlan(context.Context, *messages.GetMealPlanGroceryListItemsForMealPlanRequest) (*messages.GetMealPlanGroceryListItemsForMealPlanResponse, error)
+	GetMealPlanOption(context.Context, *messages.GetMealPlanOptionRequest) (*messages.GetMealPlanOptionResponse, error)
+	GetMealPlanOptionVote(context.Context, *messages.GetMealPlanOptionVoteRequest) (*messages.GetMealPlanOptionVoteResponse, error)
+	GetMealPlanOptionVotes(context.Context, *messages.GetMealPlanOptionVotesRequest) (*messages.GetMealPlanOptionVotesResponse, error)
+	GetMealPlanOptions(context.Context, *messages.GetMealPlanOptionsRequest) (*messages.GetMealPlanOptionsResponse, error)
+	GetMealPlanTask(context.Context, *messages.GetMealPlanTaskRequest) (*messages.GetMealPlanTaskResponse, error)
+	GetMealPlanTasks(context.Context, *messages.GetMealPlanTasksRequest) (*messages.GetMealPlanTasksResponse, error)
+	GetMealPlansForHousehold(context.Context, *messages.GetMealPlansForHouseholdRequest) (*messages.GetMealPlansForHouseholdResponse, error)
+	GetMeals(context.Context, *messages.GetMealsRequest) (*messages.GetMealsResponse, error)
 	GetMermaidDiagramForRecipe(context.Context, *messages.GetMermaidDiagramForRecipeRequest) (*messages.GetMermaidDiagramForRecipeResponse, error)
-	GetOAuth2Client(context.Context, *messages.GetOAuth2ClientRequest) (*messages.OAuth2Client, error)
-	GetOAuth2Clients(context.Context, *messages.GetOAuth2ClientsRequest) (*messages.OAuth2Client, error)
-	GetRandomValidIngredient(context.Context, *emptypb.Empty) (*messages.ValidIngredient, error)
-	GetRandomValidInstrument(context.Context, *emptypb.Empty) (*messages.ValidInstrument, error)
-	GetRandomValidPreparation(context.Context, *emptypb.Empty) (*messages.ValidPreparation, error)
-	GetRandomValidVessel(context.Context, *emptypb.Empty) (*messages.ValidVessel, error)
-	GetReceivedHouseholdInvitations(context.Context, *messages.GetReceivedHouseholdInvitationsRequest) (*messages.HouseholdInvitation, error)
-	GetRecipe(context.Context, *messages.GetRecipeRequest) (*messages.Recipe, error)
-	GetRecipeMealPlanTasks(context.Context, *messages.GetRecipeMealPlanTasksRequest) (*messages.RecipePrepTaskStep, error)
-	GetRecipePrepTask(context.Context, *messages.GetRecipePrepTaskRequest) (*messages.RecipePrepTask, error)
-	GetRecipePrepTasks(context.Context, *messages.GetRecipePrepTasksRequest) (*messages.RecipePrepTask, error)
-	GetRecipeRating(context.Context, *messages.GetRecipeRatingRequest) (*messages.RecipeRating, error)
-	GetRecipeRatingsForRecipe(context.Context, *messages.GetRecipeRatingsForRecipeRequest) (*messages.RecipeRating, error)
-	GetRecipeStep(context.Context, *messages.GetRecipeStepRequest) (*messages.RecipeStep, error)
-	GetRecipeStepCompletionCondition(context.Context, *messages.GetRecipeStepCompletionConditionRequest) (*messages.RecipeStepCompletionCondition, error)
-	GetRecipeStepCompletionConditions(context.Context, *messages.GetRecipeStepCompletionConditionsRequest) (*messages.RecipeStepCompletionCondition, error)
-	GetRecipeStepIngredient(context.Context, *messages.GetRecipeStepIngredientRequest) (*messages.RecipeStepIngredient, error)
-	GetRecipeStepIngredients(context.Context, *messages.GetRecipeStepIngredientsRequest) (*messages.RecipeStepIngredient, error)
-	GetRecipeStepInstrument(context.Context, *messages.GetRecipeStepInstrumentRequest) (*messages.RecipeStepInstrument, error)
-	GetRecipeStepInstruments(context.Context, *messages.GetRecipeStepInstrumentsRequest) (*messages.RecipeStepInstrument, error)
-	GetRecipeStepProduct(context.Context, *messages.GetRecipeStepProductRequest) (*messages.RecipeStepProduct, error)
-	GetRecipeStepProducts(context.Context, *messages.GetRecipeStepProductsRequest) (*messages.RecipeStepProduct, error)
-	GetRecipeStepVessel(context.Context, *messages.GetRecipeStepVesselRequest) (*messages.RecipeStepVessel, error)
-	GetRecipeStepVessels(context.Context, *messages.GetRecipeStepVesselsRequest) (*messages.RecipeStepVessel, error)
-	GetRecipeSteps(context.Context, *messages.GetRecipeStepsRequest) (*messages.RecipeStep, error)
-	GetRecipes(context.Context, *messages.GetRecipesRequest) (*messages.Recipe, error)
-	GetSelf(context.Context, *emptypb.Empty) (*messages.User, error)
-	GetSentHouseholdInvitations(context.Context, *messages.GetSentHouseholdInvitationsRequest) (*messages.HouseholdInvitation, error)
-	GetServiceSetting(context.Context, *messages.GetServiceSettingRequest) (*messages.ServiceSetting, error)
-	GetServiceSettingConfigurationByName(context.Context, *messages.GetServiceSettingConfigurationByNameRequest) (*messages.ServiceSettingConfiguration, error)
-	GetServiceSettingConfigurationsForHousehold(context.Context, *messages.GetServiceSettingConfigurationsForHouseholdRequest) (*messages.ServiceSettingConfiguration, error)
-	GetServiceSettingConfigurationsForUser(context.Context, *messages.GetServiceSettingConfigurationsForUserRequest) (*messages.ServiceSettingConfiguration, error)
-	GetServiceSettings(context.Context, *messages.GetServiceSettingsRequest) (*messages.ServiceSetting, error)
-	GetUser(context.Context, *messages.GetUserRequest) (*messages.User, error)
-	GetUserIngredientPreferences(context.Context, *messages.GetUserIngredientPreferencesRequest) (*messages.UserIngredientPreference, error)
-	GetUserNotification(context.Context, *messages.GetUserNotificationRequest) (*messages.UserNotification, error)
-	GetUserNotifications(context.Context, *messages.GetUserNotificationsRequest) (*messages.UserNotification, error)
-	GetUsers(context.Context, *messages.GetUsersRequest) (*messages.User, error)
-	GetValidIngredient(context.Context, *messages.GetValidIngredientRequest) (*messages.ValidIngredient, error)
-	GetValidIngredientGroup(context.Context, *messages.GetValidIngredientGroupRequest) (*messages.ValidIngredientGroup, error)
-	GetValidIngredientGroups(context.Context, *messages.GetValidIngredientGroupsRequest) (*messages.ValidIngredientGroup, error)
-	GetValidIngredientMeasurementUnit(context.Context, *messages.GetValidIngredientMeasurementUnitRequest) (*messages.ValidIngredientMeasurementUnit, error)
-	GetValidIngredientMeasurementUnits(context.Context, *messages.GetValidIngredientMeasurementUnitsRequest) (*messages.ValidIngredientMeasurementUnit, error)
-	GetValidIngredientMeasurementUnitsByIngredient(context.Context, *messages.GetValidIngredientMeasurementUnitsByIngredientRequest) (*messages.ValidIngredientMeasurementUnit, error)
-	GetValidIngredientMeasurementUnitsByMeasurementUnit(context.Context, *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) (*messages.ValidIngredientMeasurementUnit, error)
-	GetValidIngredientPreparation(context.Context, *messages.GetValidIngredientPreparationRequest) (*messages.ValidIngredientPreparation, error)
-	GetValidIngredientPreparations(context.Context, *messages.GetValidIngredientPreparationsRequest) (*messages.ValidIngredientPreparation, error)
-	GetValidIngredientPreparationsByIngredient(context.Context, *messages.GetValidIngredientPreparationsByIngredientRequest) (*messages.ValidIngredientPreparation, error)
-	GetValidIngredientPreparationsByPreparation(context.Context, *messages.GetValidIngredientPreparationsByPreparationRequest) (*messages.ValidIngredientPreparation, error)
-	GetValidIngredientState(context.Context, *messages.GetValidIngredientStateRequest) (*messages.ValidIngredientState, error)
-	GetValidIngredientStateIngredient(context.Context, *messages.GetValidIngredientStateIngredientRequest) (*messages.ValidIngredientStateIngredient, error)
-	GetValidIngredientStateIngredients(context.Context, *messages.GetValidIngredientStateIngredientsRequest) (*messages.ValidIngredientStateIngredient, error)
-	GetValidIngredientStateIngredientsByIngredient(context.Context, *messages.GetValidIngredientStateIngredientsByIngredientRequest) (*messages.ValidIngredientStateIngredient, error)
-	GetValidIngredientStateIngredientsByIngredientState(context.Context, *messages.GetValidIngredientStateIngredientsByIngredientStateRequest) (*messages.ValidIngredientStateIngredient, error)
-	GetValidIngredientStates(context.Context, *messages.GetValidIngredientStatesRequest) (*messages.ValidIngredientState, error)
-	GetValidIngredients(context.Context, *messages.GetValidIngredientsRequest) (*messages.ValidIngredient, error)
-	GetValidInstrument(context.Context, *messages.GetValidInstrumentRequest) (*messages.ValidInstrument, error)
-	GetValidInstruments(context.Context, *messages.GetValidInstrumentsRequest) (*messages.ValidInstrument, error)
-	GetValidMeasurementUnit(context.Context, *messages.GetValidMeasurementUnitRequest) (*messages.ValidMeasurementUnit, error)
-	GetValidMeasurementUnitConversion(context.Context, *messages.GetValidMeasurementUnitConversionRequest) (*messages.ValidMeasurementUnitConversion, error)
-	GetValidMeasurementUnitConversionsFromUnit(context.Context, *messages.GetValidMeasurementUnitConversionsFromUnitRequest) (*messages.ValidMeasurementUnitConversion, error)
-	GetValidMeasurementUnitConversionsToUnit(context.Context, *messages.GetValidMeasurementUnitConversionsToUnitRequest) (*messages.ValidMeasurementUnitConversion, error)
-	GetValidMeasurementUnits(context.Context, *messages.GetValidMeasurementUnitsRequest) (*messages.ValidMeasurementUnit, error)
-	GetValidPreparation(context.Context, *messages.GetValidPreparationRequest) (*messages.ValidPreparation, error)
-	GetValidPreparationInstrument(context.Context, *messages.GetValidPreparationInstrumentRequest) (*messages.ValidPreparationInstrument, error)
-	GetValidPreparationInstruments(context.Context, *messages.GetValidPreparationInstrumentsRequest) (*messages.ValidPreparationInstrument, error)
-	GetValidPreparationInstrumentsByInstrument(context.Context, *messages.GetValidPreparationInstrumentsByInstrumentRequest) (*messages.ValidPreparationInstrument, error)
-	GetValidPreparationInstrumentsByPreparation(context.Context, *messages.GetValidPreparationInstrumentsByPreparationRequest) (*messages.ValidPreparationInstrument, error)
-	GetValidPreparationVessel(context.Context, *messages.GetValidPreparationVesselRequest) (*messages.ValidPreparationVessel, error)
-	GetValidPreparationVessels(context.Context, *messages.GetValidPreparationVesselsRequest) (*messages.ValidPreparationVessel, error)
-	GetValidPreparationVesselsByPreparation(context.Context, *messages.GetValidPreparationVesselsByPreparationRequest) (*messages.ValidPreparationVessel, error)
-	GetValidPreparationVesselsByVessel(context.Context, *messages.GetValidPreparationVesselsByVesselRequest) (*messages.ValidPreparationVessel, error)
-	GetValidPreparations(context.Context, *messages.GetValidPreparationsRequest) (*messages.ValidPreparation, error)
-	GetValidVessel(context.Context, *messages.GetValidVesselRequest) (*messages.ValidVessel, error)
-	GetValidVessels(context.Context, *messages.GetValidVesselsRequest) (*messages.ValidVessel, error)
-	GetWebhook(context.Context, *messages.GetWebhookRequest) (*messages.Webhook, error)
-	GetWebhooks(context.Context, *messages.GetWebhooksRequest) (*messages.Webhook, error)
-	LoginForToken(context.Context, *messages.UserLoginInput) (*messages.TokenResponse, error)
-	PublishArbitraryQueueMessage(context.Context, *messages.ArbitraryQueueMessageRequestInput) (*messages.ArbitraryQueueMessageResponse, error)
-	RedeemPasswordResetToken(context.Context, *messages.PasswordResetTokenRedemptionRequestInput) (*messages.User, error)
-	RefreshTOTPSecret(context.Context, *messages.TOTPSecretRefreshInput) (*messages.TOTPSecretRefreshResponse, error)
-	RejectHouseholdInvitation(context.Context, *messages.RejectHouseholdInvitationRequest) (*messages.HouseholdInvitation, error)
-	RequestEmailVerificationEmail(context.Context, *emptypb.Empty) (*messages.User, error)
-	RequestPasswordResetToken(context.Context, *messages.PasswordResetTokenCreationRequestInput) (*messages.PasswordResetToken, error)
-	RequestUsernameReminder(context.Context, *messages.UsernameReminderRequestInput) (*messages.User, error)
-	RunFinalizeMealPlanWorker(context.Context, *messages.FinalizeMealPlansRequest) (*messages.FinalizeMealPlansResponse, error)
-	RunMealPlanGroceryListInitializerWorker(context.Context, *messages.InitializeMealPlanGroceryListRequest) (*messages.InitializeMealPlanGroceryListResponse, error)
-	RunMealPlanTaskCreatorWorker(context.Context, *messages.CreateMealPlanTasksRequest) (*messages.CreateMealPlanTasksResponse, error)
-	SearchForMeals(context.Context, *messages.SearchForMealsRequest) (*messages.Meal, error)
-	SearchForRecipes(context.Context, *messages.SearchForRecipesRequest) (*messages.Recipe, error)
-	SearchForServiceSettings(context.Context, *messages.SearchForServiceSettingsRequest) (*messages.ServiceSetting, error)
-	SearchForUsers(context.Context, *messages.SearchForUsersRequest) (*messages.User, error)
-	SearchForValidIngredientGroups(context.Context, *messages.SearchForValidIngredientGroupsRequest) (*messages.ValidIngredientGroup, error)
-	SearchForValidIngredientStates(context.Context, *messages.SearchForValidIngredientStatesRequest) (*messages.ValidIngredientState, error)
-	SearchForValidIngredients(context.Context, *messages.SearchForValidIngredientsRequest) (*messages.ValidIngredient, error)
-	SearchForValidInstruments(context.Context, *messages.SearchForValidInstrumentsRequest) (*messages.ValidInstrument, error)
-	SearchForValidMeasurementUnits(context.Context, *messages.SearchForValidMeasurementUnitsRequest) (*messages.ValidMeasurementUnit, error)
-	SearchForValidPreparations(context.Context, *messages.SearchForValidPreparationsRequest) (*messages.ValidPreparation, error)
-	SearchForValidVessels(context.Context, *messages.SearchForValidVesselsRequest) (*messages.ValidVessel, error)
-	SearchValidIngredientsByPreparation(context.Context, *messages.SearchValidIngredientsByPreparationRequest) (*messages.ValidIngredient, error)
-	SearchValidMeasurementUnitsByIngredient(context.Context, *messages.SearchValidMeasurementUnitsByIngredientRequest) (*messages.ValidMeasurementUnit, error)
-	SetDefaultHousehold(context.Context, *messages.SetDefaultHouseholdRequest) (*messages.Household, error)
-	TransferHouseholdOwnership(context.Context, *messages.TransferHouseholdOwnershipRequest) (*messages.Household, error)
-	UpdateHousehold(context.Context, *messages.UpdateHouseholdRequest) (*messages.Household, error)
-	UpdateHouseholdInstrumentOwnership(context.Context, *messages.UpdateHouseholdInstrumentOwnershipRequest) (*messages.HouseholdInstrumentOwnership, error)
-	UpdateHouseholdMemberPermissions(context.Context, *messages.UpdateHouseholdMemberPermissionsRequest) (*messages.UserPermissionsResponse, error)
-	UpdateMealPlan(context.Context, *messages.UpdateMealPlanRequest) (*messages.MealPlan, error)
-	UpdateMealPlanEvent(context.Context, *messages.UpdateMealPlanEventRequest) (*messages.MealPlanEvent, error)
-	UpdateMealPlanGroceryListItem(context.Context, *messages.UpdateMealPlanGroceryListItemRequest) (*messages.MealPlanGroceryListItem, error)
-	UpdateMealPlanOption(context.Context, *messages.UpdateMealPlanOptionRequest) (*messages.MealPlanOption, error)
-	UpdateMealPlanOptionVote(context.Context, *messages.UpdateMealPlanOptionVoteRequest) (*messages.MealPlanOptionVote, error)
-	UpdateMealPlanTaskStatus(context.Context, *messages.UpdateMealPlanTaskStatusRequest) (*messages.MealPlanTask, error)
-	UpdatePassword(context.Context, *messages.PasswordUpdateInput) (*messages.PasswordResetResponse, error)
-	UpdateRecipe(context.Context, *messages.UpdateRecipeRequest) (*messages.Recipe, error)
-	UpdateRecipePrepTask(context.Context, *messages.UpdateRecipePrepTaskRequest) (*messages.RecipePrepTask, error)
-	UpdateRecipeRating(context.Context, *messages.UpdateRecipeRatingRequest) (*messages.RecipeRating, error)
-	UpdateRecipeStep(context.Context, *messages.UpdateRecipeStepRequest) (*messages.RecipeStep, error)
-	UpdateRecipeStepCompletionCondition(context.Context, *messages.UpdateRecipeStepCompletionConditionRequest) (*messages.RecipeStepCompletionCondition, error)
-	UpdateRecipeStepIngredient(context.Context, *messages.UpdateRecipeStepIngredientRequest) (*messages.RecipeStepIngredient, error)
-	UpdateRecipeStepInstrument(context.Context, *messages.UpdateRecipeStepInstrumentRequest) (*messages.RecipeStepInstrument, error)
-	UpdateRecipeStepProduct(context.Context, *messages.UpdateRecipeStepProductRequest) (*messages.RecipeStepProduct, error)
-	UpdateRecipeStepVessel(context.Context, *messages.UpdateRecipeStepVesselRequest) (*messages.RecipeStepVessel, error)
-	UpdateServiceSettingConfiguration(context.Context, *messages.UpdateServiceSettingConfigurationRequest) (*messages.ServiceSettingConfiguration, error)
-	UpdateUserDetails(context.Context, *messages.UserDetailsUpdateRequestInput) (*messages.User, error)
-	UpdateUserEmailAddress(context.Context, *messages.UserEmailAddressUpdateInput) (*messages.User, error)
-	UpdateUserIngredientPreference(context.Context, *messages.UpdateUserIngredientPreferenceRequest) (*messages.UserIngredientPreference, error)
-	UpdateUserNotification(context.Context, *messages.UpdateUserNotificationRequest) (*messages.UserNotification, error)
-	UpdateUserUsername(context.Context, *messages.UsernameUpdateInput) (*messages.User, error)
-	UpdateValidIngredient(context.Context, *messages.UpdateValidIngredientRequest) (*messages.ValidIngredient, error)
-	UpdateValidIngredientGroup(context.Context, *messages.UpdateValidIngredientGroupRequest) (*messages.ValidIngredientGroup, error)
-	UpdateValidIngredientMeasurementUnit(context.Context, *messages.UpdateValidIngredientMeasurementUnitRequest) (*messages.ValidIngredientMeasurementUnit, error)
-	UpdateValidIngredientPreparation(context.Context, *messages.UpdateValidIngredientPreparationRequest) (*messages.ValidIngredientPreparation, error)
-	UpdateValidIngredientState(context.Context, *messages.UpdateValidIngredientStateRequest) (*messages.ValidIngredientState, error)
-	UpdateValidIngredientStateIngredient(context.Context, *messages.UpdateValidIngredientStateIngredientRequest) (*messages.ValidIngredientStateIngredient, error)
-	UpdateValidInstrument(context.Context, *messages.UpdateValidInstrumentRequest) (*messages.ValidInstrument, error)
-	UpdateValidMeasurementUnit(context.Context, *messages.UpdateValidMeasurementUnitRequest) (*messages.ValidMeasurementUnit, error)
-	UpdateValidMeasurementUnitConversion(context.Context, *messages.UpdateValidMeasurementUnitConversionRequest) (*messages.ValidMeasurementUnitConversion, error)
-	UpdateValidPreparation(context.Context, *messages.UpdateValidPreparationRequest) (*messages.ValidPreparation, error)
-	UpdateValidPreparationInstrument(context.Context, *messages.UpdateValidPreparationInstrumentRequest) (*messages.ValidPreparationInstrument, error)
-	UpdateValidPreparationVessel(context.Context, *messages.UpdateValidPreparationVesselRequest) (*messages.ValidPreparationVessel, error)
-	UpdateValidVessel(context.Context, *messages.UpdateValidVesselRequest) (*messages.ValidVessel, error)
-	UploadUserAvatar(context.Context, *messages.AvatarUpdateInput) (*messages.User, error)
-	VerifyEmailAddress(context.Context, *messages.EmailAddressVerificationRequestInput) (*messages.User, error)
-	VerifyTOTPSecret(context.Context, *messages.TOTPSecretVerificationInput) (*messages.TOTPSecretVerificationResponse, error)
+	GetOAuth2Client(context.Context, *messages.GetOAuth2ClientRequest) (*messages.GetOAuth2ClientResponse, error)
+	GetOAuth2Clients(context.Context, *messages.GetOAuth2ClientsRequest) (*messages.GetOAuth2ClientsResponse, error)
+	GetRandomValidIngredient(context.Context, *messages.GetRandomValidIngredientRequest) (*messages.GetRandomValidIngredientResponse, error)
+	GetRandomValidInstrument(context.Context, *messages.GetRandomValidInstrumentRequest) (*messages.GetRandomValidInstrumentResponse, error)
+	GetRandomValidPreparation(context.Context, *messages.GetRandomValidPreparationRequest) (*messages.GetRandomValidPreparationResponse, error)
+	GetRandomValidVessel(context.Context, *messages.GetRandomValidVesselRequest) (*messages.GetRandomValidVesselResponse, error)
+	GetReceivedHouseholdInvitations(context.Context, *messages.GetReceivedHouseholdInvitationsRequest) (*messages.GetReceivedHouseholdInvitationsResponse, error)
+	GetRecipe(context.Context, *messages.GetRecipeRequest) (*messages.GetRecipeResponse, error)
+	GetRecipeMealPlanTasks(context.Context, *messages.GetRecipeMealPlanTasksRequest) (*messages.GetRecipeMealPlanTasksResponse, error)
+	GetRecipePrepTask(context.Context, *messages.GetRecipePrepTaskRequest) (*messages.GetRecipePrepTaskResponse, error)
+	GetRecipePrepTasks(context.Context, *messages.GetRecipePrepTasksRequest) (*messages.GetRecipePrepTasksResponse, error)
+	GetRecipeRating(context.Context, *messages.GetRecipeRatingRequest) (*messages.GetRecipeRatingResponse, error)
+	GetRecipeRatingsForRecipe(context.Context, *messages.GetRecipeRatingsForRecipeRequest) (*messages.GetRecipeRatingsForRecipeResponse, error)
+	GetRecipeStep(context.Context, *messages.GetRecipeStepRequest) (*messages.GetRecipeStepResponse, error)
+	GetRecipeStepCompletionCondition(context.Context, *messages.GetRecipeStepCompletionConditionRequest) (*messages.GetRecipeStepCompletionConditionResponse, error)
+	GetRecipeStepCompletionConditions(context.Context, *messages.GetRecipeStepCompletionConditionsRequest) (*messages.GetRecipeStepCompletionConditionsResponse, error)
+	GetRecipeStepIngredient(context.Context, *messages.GetRecipeStepIngredientRequest) (*messages.GetRecipeStepIngredientResponse, error)
+	GetRecipeStepIngredients(context.Context, *messages.GetRecipeStepIngredientsRequest) (*messages.GetRecipeStepIngredientsResponse, error)
+	GetRecipeStepInstrument(context.Context, *messages.GetRecipeStepInstrumentRequest) (*messages.GetRecipeStepInstrumentResponse, error)
+	GetRecipeStepInstruments(context.Context, *messages.GetRecipeStepInstrumentsRequest) (*messages.GetRecipeStepInstrumentsResponse, error)
+	GetRecipeStepProduct(context.Context, *messages.GetRecipeStepProductRequest) (*messages.GetRecipeStepProductResponse, error)
+	GetRecipeStepProducts(context.Context, *messages.GetRecipeStepProductsRequest) (*messages.GetRecipeStepProductsResponse, error)
+	GetRecipeStepVessel(context.Context, *messages.GetRecipeStepVesselRequest) (*messages.GetRecipeStepVesselResponse, error)
+	GetRecipeStepVessels(context.Context, *messages.GetRecipeStepVesselsRequest) (*messages.GetRecipeStepVesselsResponse, error)
+	GetRecipeSteps(context.Context, *messages.GetRecipeStepsRequest) (*messages.GetRecipeStepsResponse, error)
+	GetRecipes(context.Context, *messages.GetRecipesRequest) (*messages.GetRecipesResponse, error)
+	GetSelf(context.Context, *messages.GetSelfRequest) (*messages.GetSelfResponse, error)
+	GetSentHouseholdInvitations(context.Context, *messages.GetSentHouseholdInvitationsRequest) (*messages.GetSentHouseholdInvitationsResponse, error)
+	GetServiceSetting(context.Context, *messages.GetServiceSettingRequest) (*messages.GetServiceSettingResponse, error)
+	GetServiceSettingConfigurationByName(context.Context, *messages.GetServiceSettingConfigurationByNameRequest) (*messages.GetServiceSettingConfigurationByNameResponse, error)
+	GetServiceSettingConfigurationsForHousehold(context.Context, *messages.GetServiceSettingConfigurationsForHouseholdRequest) (*messages.GetServiceSettingConfigurationsForHouseholdResponse, error)
+	GetServiceSettingConfigurationsForUser(context.Context, *messages.GetServiceSettingConfigurationsForUserRequest) (*messages.GetServiceSettingConfigurationsForUserResponse, error)
+	GetServiceSettings(context.Context, *messages.GetServiceSettingsRequest) (*messages.GetServiceSettingsResponse, error)
+	GetUser(context.Context, *messages.GetUserRequest) (*messages.GetUserResponse, error)
+	GetUserIngredientPreferences(context.Context, *messages.GetUserIngredientPreferencesRequest) (*messages.GetUserIngredientPreferencesResponse, error)
+	GetUserNotification(context.Context, *messages.GetUserNotificationRequest) (*messages.GetUserNotificationResponse, error)
+	GetUserNotifications(context.Context, *messages.GetUserNotificationsRequest) (*messages.GetUserNotificationsResponse, error)
+	GetUsers(context.Context, *messages.GetUsersRequest) (*messages.GetUsersResponse, error)
+	GetValidIngredient(context.Context, *messages.GetValidIngredientRequest) (*messages.GetValidIngredientResponse, error)
+	GetValidIngredientGroup(context.Context, *messages.GetValidIngredientGroupRequest) (*messages.GetValidIngredientGroupResponse, error)
+	GetValidIngredientGroups(context.Context, *messages.GetValidIngredientGroupsRequest) (*messages.GetValidIngredientGroupsResponse, error)
+	GetValidIngredientMeasurementUnit(context.Context, *messages.GetValidIngredientMeasurementUnitRequest) (*messages.GetValidIngredientMeasurementUnitResponse, error)
+	GetValidIngredientMeasurementUnits(context.Context, *messages.GetValidIngredientMeasurementUnitsRequest) (*messages.GetValidIngredientMeasurementUnitsResponse, error)
+	GetValidIngredientMeasurementUnitsByIngredient(context.Context, *messages.GetValidIngredientMeasurementUnitsByIngredientRequest) (*messages.GetValidIngredientMeasurementUnitsByIngredientResponse, error)
+	GetValidIngredientMeasurementUnitsByMeasurementUnit(context.Context, *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) (*messages.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse, error)
+	GetValidIngredientPreparation(context.Context, *messages.GetValidIngredientPreparationRequest) (*messages.GetValidIngredientPreparationResponse, error)
+	GetValidIngredientPreparations(context.Context, *messages.GetValidIngredientPreparationsRequest) (*messages.GetValidIngredientPreparationsResponse, error)
+	GetValidIngredientPreparationsByIngredient(context.Context, *messages.GetValidIngredientPreparationsByIngredientRequest) (*messages.GetValidIngredientPreparationsByIngredientResponse, error)
+	GetValidIngredientPreparationsByPreparation(context.Context, *messages.GetValidIngredientPreparationsByPreparationRequest) (*messages.GetValidIngredientPreparationsByPreparationResponse, error)
+	GetValidIngredientState(context.Context, *messages.GetValidIngredientStateRequest) (*messages.GetValidIngredientStateResponse, error)
+	GetValidIngredientStateIngredient(context.Context, *messages.GetValidIngredientStateIngredientRequest) (*messages.GetValidIngredientStateIngredientResponse, error)
+	GetValidIngredientStateIngredients(context.Context, *messages.GetValidIngredientStateIngredientsRequest) (*messages.GetValidIngredientStateIngredientsResponse, error)
+	GetValidIngredientStateIngredientsByIngredient(context.Context, *messages.GetValidIngredientStateIngredientsByIngredientRequest) (*messages.GetValidIngredientStateIngredientsByIngredientResponse, error)
+	GetValidIngredientStateIngredientsByIngredientState(context.Context, *messages.GetValidIngredientStateIngredientsByIngredientStateRequest) (*messages.GetValidIngredientStateIngredientsByIngredientStateResponse, error)
+	GetValidIngredientStates(context.Context, *messages.GetValidIngredientStatesRequest) (*messages.GetValidIngredientStatesResponse, error)
+	GetValidIngredients(context.Context, *messages.GetValidIngredientsRequest) (*messages.GetValidIngredientsResponse, error)
+	GetValidInstrument(context.Context, *messages.GetValidInstrumentRequest) (*messages.GetValidInstrumentResponse, error)
+	GetValidInstruments(context.Context, *messages.GetValidInstrumentsRequest) (*messages.GetValidInstrumentsResponse, error)
+	GetValidMeasurementUnit(context.Context, *messages.GetValidMeasurementUnitRequest) (*messages.GetValidMeasurementUnitResponse, error)
+	GetValidMeasurementUnitConversion(context.Context, *messages.GetValidMeasurementUnitConversionRequest) (*messages.GetValidMeasurementUnitConversionResponse, error)
+	GetValidMeasurementUnitConversionsFromUnit(context.Context, *messages.GetValidMeasurementUnitConversionsFromUnitRequest) (*messages.GetValidMeasurementUnitConversionsFromUnitResponse, error)
+	GetValidMeasurementUnitConversionsToUnit(context.Context, *messages.GetValidMeasurementUnitConversionsToUnitRequest) (*messages.GetValidMeasurementUnitConversionsToUnitResponse, error)
+	GetValidMeasurementUnits(context.Context, *messages.GetValidMeasurementUnitsRequest) (*messages.GetValidMeasurementUnitsResponse, error)
+	GetValidPreparation(context.Context, *messages.GetValidPreparationRequest) (*messages.GetValidPreparationResponse, error)
+	GetValidPreparationInstrument(context.Context, *messages.GetValidPreparationInstrumentRequest) (*messages.GetValidPreparationInstrumentResponse, error)
+	GetValidPreparationInstruments(context.Context, *messages.GetValidPreparationInstrumentsRequest) (*messages.GetValidPreparationInstrumentsResponse, error)
+	GetValidPreparationInstrumentsByInstrument(context.Context, *messages.GetValidPreparationInstrumentsByInstrumentRequest) (*messages.GetValidPreparationInstrumentsByInstrumentResponse, error)
+	GetValidPreparationInstrumentsByPreparation(context.Context, *messages.GetValidPreparationInstrumentsByPreparationRequest) (*messages.GetValidPreparationInstrumentsByPreparationResponse, error)
+	GetValidPreparationVessel(context.Context, *messages.GetValidPreparationVesselRequest) (*messages.GetValidPreparationVesselResponse, error)
+	GetValidPreparationVessels(context.Context, *messages.GetValidPreparationVesselsRequest) (*messages.GetValidPreparationVesselsResponse, error)
+	GetValidPreparationVesselsByPreparation(context.Context, *messages.GetValidPreparationVesselsByPreparationRequest) (*messages.GetValidPreparationVesselsByPreparationResponse, error)
+	GetValidPreparationVesselsByVessel(context.Context, *messages.GetValidPreparationVesselsByVesselRequest) (*messages.GetValidPreparationVesselsByVesselResponse, error)
+	GetValidPreparations(context.Context, *messages.GetValidPreparationsRequest) (*messages.GetValidPreparationsResponse, error)
+	GetValidVessel(context.Context, *messages.GetValidVesselRequest) (*messages.GetValidVesselResponse, error)
+	GetValidVessels(context.Context, *messages.GetValidVesselsRequest) (*messages.GetValidVesselsResponse, error)
+	GetWebhook(context.Context, *messages.GetWebhookRequest) (*messages.GetWebhookResponse, error)
+	GetWebhooks(context.Context, *messages.GetWebhooksRequest) (*messages.GetWebhooksResponse, error)
+	LoginForToken(context.Context, *messages.LoginForTokenRequest) (*messages.LoginForTokenResponse, error)
+	PublishArbitraryQueueMessage(context.Context, *messages.PublishArbitraryQueueMessageRequest) (*messages.PublishArbitraryQueueMessageResponse, error)
+	RedeemPasswordResetToken(context.Context, *messages.RedeemPasswordResetTokenRequest) (*messages.RedeemPasswordResetTokenResponse, error)
+	RefreshTOTPSecret(context.Context, *messages.RefreshTOTPSecretRequest) (*messages.RefreshTOTPSecretResponse, error)
+	RejectHouseholdInvitation(context.Context, *messages.RejectHouseholdInvitationRequest) (*messages.RejectHouseholdInvitationResponse, error)
+	RequestEmailVerificationEmail(context.Context, *messages.RequestEmailVerificationEmailRequest) (*messages.RequestEmailVerificationEmailResponse, error)
+	RequestPasswordResetToken(context.Context, *messages.RequestPasswordResetTokenRequest) (*messages.RequestPasswordResetTokenResponse, error)
+	RequestUsernameReminder(context.Context, *messages.RequestUsernameReminderRequest) (*messages.RequestUsernameReminderResponse, error)
+	RunFinalizeMealPlanWorker(context.Context, *messages.RunFinalizeMealPlanWorkerRequest) (*messages.RunFinalizeMealPlanWorkerResponse, error)
+	RunMealPlanGroceryListInitializerWorker(context.Context, *messages.RunMealPlanGroceryListInitializerWorkerRequest) (*messages.RunMealPlanGroceryListInitializerWorkerResponse, error)
+	RunMealPlanTaskCreatorWorker(context.Context, *messages.RunMealPlanTaskCreatorWorkerRequest) (*messages.RunMealPlanTaskCreatorWorkerResponse, error)
+	SearchForMeals(context.Context, *messages.SearchForMealsRequest) (*messages.SearchForMealsResponse, error)
+	SearchForRecipes(context.Context, *messages.SearchForRecipesRequest) (*messages.SearchForRecipesResponse, error)
+	SearchForServiceSettings(context.Context, *messages.SearchForServiceSettingsRequest) (*messages.SearchForServiceSettingsResponse, error)
+	SearchForUsers(context.Context, *messages.SearchForUsersRequest) (*messages.SearchForUsersResponse, error)
+	SearchForValidIngredientGroups(context.Context, *messages.SearchForValidIngredientGroupsRequest) (*messages.SearchForValidIngredientGroupsResponse, error)
+	SearchForValidIngredientStates(context.Context, *messages.SearchForValidIngredientStatesRequest) (*messages.SearchForValidIngredientStatesResponse, error)
+	SearchForValidIngredients(context.Context, *messages.SearchForValidIngredientsRequest) (*messages.SearchForValidIngredientsResponse, error)
+	SearchForValidInstruments(context.Context, *messages.SearchForValidInstrumentsRequest) (*messages.SearchForValidInstrumentsResponse, error)
+	SearchForValidMeasurementUnits(context.Context, *messages.SearchForValidMeasurementUnitsRequest) (*messages.SearchForValidMeasurementUnitsResponse, error)
+	SearchForValidPreparations(context.Context, *messages.SearchForValidPreparationsRequest) (*messages.SearchForValidPreparationsResponse, error)
+	SearchForValidVessels(context.Context, *messages.SearchForValidVesselsRequest) (*messages.SearchForValidVesselsResponse, error)
+	SearchValidIngredientsByPreparation(context.Context, *messages.SearchValidIngredientsByPreparationRequest) (*messages.SearchValidIngredientsByPreparationResponse, error)
+	SearchValidMeasurementUnitsByIngredient(context.Context, *messages.SearchValidMeasurementUnitsByIngredientRequest) (*messages.SearchValidMeasurementUnitsByIngredientResponse, error)
+	SetDefaultHousehold(context.Context, *messages.SetDefaultHouseholdRequest) (*messages.SetDefaultHouseholdResponse, error)
+	TransferHouseholdOwnership(context.Context, *messages.TransferHouseholdOwnershipRequest) (*messages.TransferHouseholdOwnershipResponse, error)
+	UpdateHousehold(context.Context, *messages.UpdateHouseholdRequest) (*messages.UpdateHouseholdResponse, error)
+	UpdateHouseholdInstrumentOwnership(context.Context, *messages.UpdateHouseholdInstrumentOwnershipRequest) (*messages.UpdateHouseholdInstrumentOwnershipResponse, error)
+	UpdateHouseholdMemberPermissions(context.Context, *messages.UpdateHouseholdMemberPermissionsRequest) (*messages.UpdateHouseholdMemberPermissionsResponse, error)
+	UpdateMealPlan(context.Context, *messages.UpdateMealPlanRequest) (*messages.UpdateMealPlanResponse, error)
+	UpdateMealPlanEvent(context.Context, *messages.UpdateMealPlanEventRequest) (*messages.UpdateMealPlanEventResponse, error)
+	UpdateMealPlanGroceryListItem(context.Context, *messages.UpdateMealPlanGroceryListItemRequest) (*messages.UpdateMealPlanGroceryListItemResponse, error)
+	UpdateMealPlanOption(context.Context, *messages.UpdateMealPlanOptionRequest) (*messages.UpdateMealPlanOptionResponse, error)
+	UpdateMealPlanOptionVote(context.Context, *messages.UpdateMealPlanOptionVoteRequest) (*messages.UpdateMealPlanOptionVoteResponse, error)
+	UpdateMealPlanTaskStatus(context.Context, *messages.UpdateMealPlanTaskStatusRequest) (*messages.UpdateMealPlanTaskStatusResponse, error)
+	UpdatePassword(context.Context, *messages.UpdatePasswordRequest) (*messages.UpdatePasswordResponse, error)
+	UpdateRecipe(context.Context, *messages.UpdateRecipeRequest) (*messages.UpdateRecipeResponse, error)
+	UpdateRecipePrepTask(context.Context, *messages.UpdateRecipePrepTaskRequest) (*messages.UpdateRecipePrepTaskResponse, error)
+	UpdateRecipeRating(context.Context, *messages.UpdateRecipeRatingRequest) (*messages.UpdateRecipeRatingResponse, error)
+	UpdateRecipeStep(context.Context, *messages.UpdateRecipeStepRequest) (*messages.UpdateRecipeStepResponse, error)
+	UpdateRecipeStepCompletionCondition(context.Context, *messages.UpdateRecipeStepCompletionConditionRequest) (*messages.UpdateRecipeStepCompletionConditionResponse, error)
+	UpdateRecipeStepIngredient(context.Context, *messages.UpdateRecipeStepIngredientRequest) (*messages.UpdateRecipeStepIngredientResponse, error)
+	UpdateRecipeStepInstrument(context.Context, *messages.UpdateRecipeStepInstrumentRequest) (*messages.UpdateRecipeStepInstrumentResponse, error)
+	UpdateRecipeStepProduct(context.Context, *messages.UpdateRecipeStepProductRequest) (*messages.UpdateRecipeStepProductResponse, error)
+	UpdateRecipeStepVessel(context.Context, *messages.UpdateRecipeStepVesselRequest) (*messages.UpdateRecipeStepVesselResponse, error)
+	UpdateServiceSettingConfiguration(context.Context, *messages.UpdateServiceSettingConfigurationRequest) (*messages.UpdateServiceSettingConfigurationResponse, error)
+	UpdateUserDetails(context.Context, *messages.UpdateUserDetailsRequest) (*messages.UpdateUserDetailsResponse, error)
+	UpdateUserEmailAddress(context.Context, *messages.UpdateUserEmailAddressRequest) (*messages.UpdateUserEmailAddressResponse, error)
+	UpdateUserIngredientPreference(context.Context, *messages.UpdateUserIngredientPreferenceRequest) (*messages.UpdateUserIngredientPreferenceResponse, error)
+	UpdateUserNotification(context.Context, *messages.UpdateUserNotificationRequest) (*messages.UpdateUserNotificationResponse, error)
+	UpdateUserUsername(context.Context, *messages.UpdateUserUsernameRequest) (*messages.UpdateUserUsernameResponse, error)
+	UpdateValidIngredient(context.Context, *messages.UpdateValidIngredientRequest) (*messages.UpdateValidIngredientResponse, error)
+	UpdateValidIngredientGroup(context.Context, *messages.UpdateValidIngredientGroupRequest) (*messages.UpdateValidIngredientGroupResponse, error)
+	UpdateValidIngredientMeasurementUnit(context.Context, *messages.UpdateValidIngredientMeasurementUnitRequest) (*messages.UpdateValidIngredientMeasurementUnitResponse, error)
+	UpdateValidIngredientPreparation(context.Context, *messages.UpdateValidIngredientPreparationRequest) (*messages.UpdateValidIngredientPreparationResponse, error)
+	UpdateValidIngredientState(context.Context, *messages.UpdateValidIngredientStateRequest) (*messages.UpdateValidIngredientStateResponse, error)
+	UpdateValidIngredientStateIngredient(context.Context, *messages.UpdateValidIngredientStateIngredientRequest) (*messages.UpdateValidIngredientStateIngredientResponse, error)
+	UpdateValidInstrument(context.Context, *messages.UpdateValidInstrumentRequest) (*messages.UpdateValidInstrumentResponse, error)
+	UpdateValidMeasurementUnit(context.Context, *messages.UpdateValidMeasurementUnitRequest) (*messages.UpdateValidMeasurementUnitResponse, error)
+	UpdateValidMeasurementUnitConversion(context.Context, *messages.UpdateValidMeasurementUnitConversionRequest) (*messages.UpdateValidMeasurementUnitConversionResponse, error)
+	UpdateValidPreparation(context.Context, *messages.UpdateValidPreparationRequest) (*messages.UpdateValidPreparationResponse, error)
+	UpdateValidPreparationInstrument(context.Context, *messages.UpdateValidPreparationInstrumentRequest) (*messages.UpdateValidPreparationInstrumentResponse, error)
+	UpdateValidPreparationVessel(context.Context, *messages.UpdateValidPreparationVesselRequest) (*messages.UpdateValidPreparationVesselResponse, error)
+	UpdateValidVessel(context.Context, *messages.UpdateValidVesselRequest) (*messages.UpdateValidVesselResponse, error)
+	UploadUserAvatar(context.Context, *messages.UploadUserAvatarRequest) (*messages.UploadUserAvatarResponse, error)
+	VerifyEmailAddress(context.Context, *messages.VerifyEmailAddressRequest) (*messages.VerifyEmailAddressResponse, error)
+	VerifyTOTPSecret(context.Context, *messages.VerifyTOTPSecretRequest) (*messages.VerifyTOTPSecretResponse, error)
 	mustEmbedUnimplementedEatingServiceServer()
 }
 
@@ -3446,787 +3445,787 @@ type EatingServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedEatingServiceServer struct{}
 
-func (UnimplementedEatingServiceServer) Ping(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+func (UnimplementedEatingServiceServer) Ping(context.Context, *messages.PingRequest) (*messages.PingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
-func (UnimplementedEatingServiceServer) ExchangeToken(context.Context, *messages.ExchangeTokenRequest) (*messages.TokenResponse, error) {
+func (UnimplementedEatingServiceServer) ExchangeToken(context.Context, *messages.ExchangeTokenRequest) (*messages.ExchangeTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExchangeToken not implemented")
 }
-func (UnimplementedEatingServiceServer) AcceptHouseholdInvitation(context.Context, *messages.AcceptHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
+func (UnimplementedEatingServiceServer) AcceptHouseholdInvitation(context.Context, *messages.AcceptHouseholdInvitationRequest) (*messages.AcceptHouseholdInvitationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptHouseholdInvitation not implemented")
 }
-func (UnimplementedEatingServiceServer) AdminLoginForToken(context.Context, *messages.UserLoginInput) (*messages.TokenResponse, error) {
+func (UnimplementedEatingServiceServer) AdminLoginForToken(context.Context, *messages.AdminLoginForTokenRequest) (*messages.AdminLoginForTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminLoginForToken not implemented")
 }
-func (UnimplementedEatingServiceServer) AdminUpdateUserStatus(context.Context, *messages.UserAccountStatusUpdateInput) (*messages.UserStatusResponse, error) {
+func (UnimplementedEatingServiceServer) AdminUpdateUserStatus(context.Context, *messages.AdminUpdateUserStatusRequest) (*messages.AdminUpdateUserStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminUpdateUserStatus not implemented")
 }
-func (UnimplementedEatingServiceServer) AggregateUserDataReport(context.Context, *emptypb.Empty) (*messages.UserDataCollectionResponse, error) {
+func (UnimplementedEatingServiceServer) AggregateUserDataReport(context.Context, *messages.AggregateUserDataReportRequest) (*messages.AggregateUserDataReportResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AggregateUserDataReport not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveHousehold(context.Context, *messages.ArchiveHouseholdRequest) (*messages.Household, error) {
+func (UnimplementedEatingServiceServer) ArchiveHousehold(context.Context, *messages.ArchiveHouseholdRequest) (*messages.ArchiveHouseholdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveHousehold not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveHouseholdInstrumentOwnership(context.Context, *messages.ArchiveHouseholdInstrumentOwnershipRequest) (*messages.HouseholdInstrumentOwnership, error) {
+func (UnimplementedEatingServiceServer) ArchiveHouseholdInstrumentOwnership(context.Context, *messages.ArchiveHouseholdInstrumentOwnershipRequest) (*messages.ArchiveHouseholdInstrumentOwnershipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveHouseholdInstrumentOwnership not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveMeal(context.Context, *messages.ArchiveMealRequest) (*messages.Meal, error) {
+func (UnimplementedEatingServiceServer) ArchiveMeal(context.Context, *messages.ArchiveMealRequest) (*messages.ArchiveMealResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMeal not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveMealPlan(context.Context, *messages.ArchiveMealPlanRequest) (*messages.MealPlan, error) {
+func (UnimplementedEatingServiceServer) ArchiveMealPlan(context.Context, *messages.ArchiveMealPlanRequest) (*messages.ArchiveMealPlanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMealPlan not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveMealPlanEvent(context.Context, *messages.ArchiveMealPlanEventRequest) (*messages.MealPlanEvent, error) {
+func (UnimplementedEatingServiceServer) ArchiveMealPlanEvent(context.Context, *messages.ArchiveMealPlanEventRequest) (*messages.ArchiveMealPlanEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMealPlanEvent not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveMealPlanGroceryListItem(context.Context, *messages.ArchiveMealPlanGroceryListItemRequest) (*messages.MealPlanGroceryListItem, error) {
+func (UnimplementedEatingServiceServer) ArchiveMealPlanGroceryListItem(context.Context, *messages.ArchiveMealPlanGroceryListItemRequest) (*messages.ArchiveMealPlanGroceryListItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMealPlanGroceryListItem not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveMealPlanOption(context.Context, *messages.ArchiveMealPlanOptionRequest) (*messages.MealPlanOption, error) {
+func (UnimplementedEatingServiceServer) ArchiveMealPlanOption(context.Context, *messages.ArchiveMealPlanOptionRequest) (*messages.ArchiveMealPlanOptionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMealPlanOption not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveMealPlanOptionVote(context.Context, *messages.ArchiveMealPlanOptionVoteRequest) (*messages.MealPlanOptionVote, error) {
+func (UnimplementedEatingServiceServer) ArchiveMealPlanOptionVote(context.Context, *messages.ArchiveMealPlanOptionVoteRequest) (*messages.ArchiveMealPlanOptionVoteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveMealPlanOptionVote not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveOAuth2Client(context.Context, *messages.ArchiveOAuth2ClientRequest) (*messages.OAuth2Client, error) {
+func (UnimplementedEatingServiceServer) ArchiveOAuth2Client(context.Context, *messages.ArchiveOAuth2ClientRequest) (*messages.ArchiveOAuth2ClientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveOAuth2Client not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveRecipe(context.Context, *messages.ArchiveRecipeRequest) (*messages.Recipe, error) {
+func (UnimplementedEatingServiceServer) ArchiveRecipe(context.Context, *messages.ArchiveRecipeRequest) (*messages.ArchiveRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipe not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveRecipePrepTask(context.Context, *messages.ArchiveRecipePrepTaskRequest) (*messages.RecipePrepTask, error) {
+func (UnimplementedEatingServiceServer) ArchiveRecipePrepTask(context.Context, *messages.ArchiveRecipePrepTaskRequest) (*messages.ArchiveRecipePrepTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipePrepTask not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveRecipeRating(context.Context, *messages.ArchiveRecipeRatingRequest) (*messages.RecipeRating, error) {
+func (UnimplementedEatingServiceServer) ArchiveRecipeRating(context.Context, *messages.ArchiveRecipeRatingRequest) (*messages.ArchiveRecipeRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeRating not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveRecipeStep(context.Context, *messages.ArchiveRecipeStepRequest) (*messages.RecipeStep, error) {
+func (UnimplementedEatingServiceServer) ArchiveRecipeStep(context.Context, *messages.ArchiveRecipeStepRequest) (*messages.ArchiveRecipeStepResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeStep not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveRecipeStepCompletionCondition(context.Context, *messages.ArchiveRecipeStepCompletionConditionRequest) (*messages.RecipeStepCompletionCondition, error) {
+func (UnimplementedEatingServiceServer) ArchiveRecipeStepCompletionCondition(context.Context, *messages.ArchiveRecipeStepCompletionConditionRequest) (*messages.ArchiveRecipeStepCompletionConditionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeStepCompletionCondition not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveRecipeStepIngredient(context.Context, *messages.ArchiveRecipeStepIngredientRequest) (*messages.RecipeStepIngredient, error) {
+func (UnimplementedEatingServiceServer) ArchiveRecipeStepIngredient(context.Context, *messages.ArchiveRecipeStepIngredientRequest) (*messages.ArchiveRecipeStepIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeStepIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveRecipeStepInstrument(context.Context, *messages.ArchiveRecipeStepInstrumentRequest) (*messages.RecipeStepInstrument, error) {
+func (UnimplementedEatingServiceServer) ArchiveRecipeStepInstrument(context.Context, *messages.ArchiveRecipeStepInstrumentRequest) (*messages.ArchiveRecipeStepInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeStepInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveRecipeStepProduct(context.Context, *messages.ArchiveRecipeStepProductRequest) (*messages.RecipeStepProduct, error) {
+func (UnimplementedEatingServiceServer) ArchiveRecipeStepProduct(context.Context, *messages.ArchiveRecipeStepProductRequest) (*messages.ArchiveRecipeStepProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeStepProduct not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveRecipeStepVessel(context.Context, *messages.ArchiveRecipeStepVesselRequest) (*messages.RecipeStepVessel, error) {
+func (UnimplementedEatingServiceServer) ArchiveRecipeStepVessel(context.Context, *messages.ArchiveRecipeStepVesselRequest) (*messages.ArchiveRecipeStepVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveRecipeStepVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveServiceSetting(context.Context, *messages.ArchiveServiceSettingRequest) (*messages.ServiceSetting, error) {
+func (UnimplementedEatingServiceServer) ArchiveServiceSetting(context.Context, *messages.ArchiveServiceSettingRequest) (*messages.ArchiveServiceSettingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveServiceSetting not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveServiceSettingConfiguration(context.Context, *messages.ArchiveServiceSettingConfigurationRequest) (*messages.ServiceSettingConfiguration, error) {
+func (UnimplementedEatingServiceServer) ArchiveServiceSettingConfiguration(context.Context, *messages.ArchiveServiceSettingConfigurationRequest) (*messages.ArchiveServiceSettingConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveServiceSettingConfiguration not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveUser(context.Context, *messages.ArchiveUserRequest) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) ArchiveUser(context.Context, *messages.ArchiveUserRequest) (*messages.ArchiveUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveUser not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveUserIngredientPreference(context.Context, *messages.ArchiveUserIngredientPreferenceRequest) (*messages.UserIngredientPreference, error) {
+func (UnimplementedEatingServiceServer) ArchiveUserIngredientPreference(context.Context, *messages.ArchiveUserIngredientPreferenceRequest) (*messages.ArchiveUserIngredientPreferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveUserIngredientPreference not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveUserMembership(context.Context, *messages.ArchiveUserMembershipRequest) (*messages.HouseholdUserMembership, error) {
+func (UnimplementedEatingServiceServer) ArchiveUserMembership(context.Context, *messages.ArchiveUserMembershipRequest) (*messages.ArchiveUserMembershipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveUserMembership not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidIngredient(context.Context, *messages.ArchiveValidIngredientRequest) (*messages.ValidIngredient, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidIngredient(context.Context, *messages.ArchiveValidIngredientRequest) (*messages.ArchiveValidIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidIngredientGroup(context.Context, *messages.ArchiveValidIngredientGroupRequest) (*messages.ValidIngredientGroup, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidIngredientGroup(context.Context, *messages.ArchiveValidIngredientGroupRequest) (*messages.ArchiveValidIngredientGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredientGroup not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidIngredientMeasurementUnit(context.Context, *messages.ArchiveValidIngredientMeasurementUnitRequest) (*messages.ValidIngredientMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidIngredientMeasurementUnit(context.Context, *messages.ArchiveValidIngredientMeasurementUnitRequest) (*messages.ArchiveValidIngredientMeasurementUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredientMeasurementUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidIngredientPreparation(context.Context, *messages.ArchiveValidIngredientPreparationRequest) (*messages.ValidIngredientPreparation, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidIngredientPreparation(context.Context, *messages.ArchiveValidIngredientPreparationRequest) (*messages.ArchiveValidIngredientPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredientPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidIngredientState(context.Context, *messages.ArchiveValidIngredientStateRequest) (*messages.ValidIngredientState, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidIngredientState(context.Context, *messages.ArchiveValidIngredientStateRequest) (*messages.ArchiveValidIngredientStateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredientState not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidIngredientStateIngredient(context.Context, *messages.ArchiveValidIngredientStateIngredientRequest) (*messages.ValidIngredientStateIngredient, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidIngredientStateIngredient(context.Context, *messages.ArchiveValidIngredientStateIngredientRequest) (*messages.ArchiveValidIngredientStateIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidIngredientStateIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidInstrument(context.Context, *messages.ArchiveValidInstrumentRequest) (*messages.ValidInstrument, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidInstrument(context.Context, *messages.ArchiveValidInstrumentRequest) (*messages.ArchiveValidInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidMeasurementUnit(context.Context, *messages.ArchiveValidMeasurementUnitRequest) (*messages.ValidMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidMeasurementUnit(context.Context, *messages.ArchiveValidMeasurementUnitRequest) (*messages.ArchiveValidMeasurementUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidMeasurementUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidMeasurementUnitConversion(context.Context, *messages.ArchiveValidMeasurementUnitConversionRequest) (*messages.ValidMeasurementUnitConversion, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidMeasurementUnitConversion(context.Context, *messages.ArchiveValidMeasurementUnitConversionRequest) (*messages.ArchiveValidMeasurementUnitConversionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidMeasurementUnitConversion not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidPreparation(context.Context, *messages.ArchiveValidPreparationRequest) (*messages.ValidPreparation, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidPreparation(context.Context, *messages.ArchiveValidPreparationRequest) (*messages.ArchiveValidPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidPreparationInstrument(context.Context, *messages.ArchiveValidPreparationInstrumentRequest) (*messages.ValidPreparationInstrument, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidPreparationInstrument(context.Context, *messages.ArchiveValidPreparationInstrumentRequest) (*messages.ArchiveValidPreparationInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidPreparationInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidPreparationVessel(context.Context, *messages.ArchiveValidPreparationVesselRequest) (*messages.ValidPreparationVessel, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidPreparationVessel(context.Context, *messages.ArchiveValidPreparationVesselRequest) (*messages.ArchiveValidPreparationVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidPreparationVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveValidVessel(context.Context, *messages.ArchiveValidVesselRequest) (*messages.ValidVessel, error) {
+func (UnimplementedEatingServiceServer) ArchiveValidVessel(context.Context, *messages.ArchiveValidVesselRequest) (*messages.ArchiveValidVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveValidVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveWebhook(context.Context, *messages.ArchiveWebhookRequest) (*messages.Webhook, error) {
+func (UnimplementedEatingServiceServer) ArchiveWebhook(context.Context, *messages.ArchiveWebhookRequest) (*messages.ArchiveWebhookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveWebhook not implemented")
 }
-func (UnimplementedEatingServiceServer) ArchiveWebhookTriggerEvent(context.Context, *messages.ArchiveWebhookTriggerEventRequest) (*messages.WebhookTriggerEvent, error) {
+func (UnimplementedEatingServiceServer) ArchiveWebhookTriggerEvent(context.Context, *messages.ArchiveWebhookTriggerEventRequest) (*messages.ArchiveWebhookTriggerEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveWebhookTriggerEvent not implemented")
 }
-func (UnimplementedEatingServiceServer) CancelHouseholdInvitation(context.Context, *messages.CancelHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
+func (UnimplementedEatingServiceServer) CancelHouseholdInvitation(context.Context, *messages.CancelHouseholdInvitationRequest) (*messages.CancelHouseholdInvitationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelHouseholdInvitation not implemented")
 }
-func (UnimplementedEatingServiceServer) CheckForReadiness(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+func (UnimplementedEatingServiceServer) CheckForReadiness(context.Context, *messages.CheckForReadinessRequest) (*messages.CheckForReadinessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckForReadiness not implemented")
 }
-func (UnimplementedEatingServiceServer) CheckPermissions(context.Context, *messages.UserPermissionsRequestInput) (*messages.UserPermissionsResponse, error) {
+func (UnimplementedEatingServiceServer) CheckPermissions(context.Context, *messages.CheckPermissionsRequest) (*messages.CheckPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckPermissions not implemented")
 }
-func (UnimplementedEatingServiceServer) CloneRecipe(context.Context, *messages.CloneRecipeRequest) (*messages.Recipe, error) {
+func (UnimplementedEatingServiceServer) CloneRecipe(context.Context, *messages.CloneRecipeRequest) (*messages.CloneRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CloneRecipe not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateHousehold(context.Context, *messages.HouseholdCreationRequestInput) (*messages.Household, error) {
+func (UnimplementedEatingServiceServer) CreateHousehold(context.Context, *messages.CreateHouseholdRequest) (*messages.CreateHouseholdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateHousehold not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateHouseholdInstrumentOwnership(context.Context, *messages.HouseholdInstrumentOwnershipCreationRequestInput) (*messages.HouseholdInstrumentOwnership, error) {
+func (UnimplementedEatingServiceServer) CreateHouseholdInstrumentOwnership(context.Context, *messages.CreateHouseholdInstrumentOwnershipRequest) (*messages.CreateHouseholdInstrumentOwnershipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateHouseholdInstrumentOwnership not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateHouseholdInvitation(context.Context, *messages.CreateHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
+func (UnimplementedEatingServiceServer) CreateHouseholdInvitation(context.Context, *messages.CreateHouseholdInvitationRequest) (*messages.CreateHouseholdInvitationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateHouseholdInvitation not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateMeal(context.Context, *messages.MealCreationRequestInput) (*messages.Meal, error) {
+func (UnimplementedEatingServiceServer) CreateMeal(context.Context, *messages.CreateMealRequest) (*messages.CreateMealResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMeal not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateMealPlan(context.Context, *messages.MealPlanCreationRequestInput) (*messages.MealPlan, error) {
+func (UnimplementedEatingServiceServer) CreateMealPlan(context.Context, *messages.CreateMealPlanRequest) (*messages.CreateMealPlanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMealPlan not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateMealPlanEvent(context.Context, *messages.CreateMealPlanEventRequest) (*messages.MealPlanEvent, error) {
+func (UnimplementedEatingServiceServer) CreateMealPlanEvent(context.Context, *messages.CreateMealPlanEventRequest) (*messages.CreateMealPlanEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMealPlanEvent not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateMealPlanGroceryListItem(context.Context, *messages.CreateMealPlanGroceryListItemRequest) (*messages.MealPlanGroceryListItem, error) {
+func (UnimplementedEatingServiceServer) CreateMealPlanGroceryListItem(context.Context, *messages.CreateMealPlanGroceryListItemRequest) (*messages.CreateMealPlanGroceryListItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMealPlanGroceryListItem not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateMealPlanOption(context.Context, *messages.CreateMealPlanOptionRequest) (*messages.MealPlanOption, error) {
+func (UnimplementedEatingServiceServer) CreateMealPlanOption(context.Context, *messages.CreateMealPlanOptionRequest) (*messages.CreateMealPlanOptionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMealPlanOption not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateMealPlanOptionVote(context.Context, *messages.CreateMealPlanOptionVoteRequest) (*messages.MealPlanOptionVote, error) {
+func (UnimplementedEatingServiceServer) CreateMealPlanOptionVote(context.Context, *messages.CreateMealPlanOptionVoteRequest) (*messages.CreateMealPlanOptionVoteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMealPlanOptionVote not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateMealPlanTask(context.Context, *messages.CreateMealPlanTaskRequest) (*messages.MealPlanTask, error) {
+func (UnimplementedEatingServiceServer) CreateMealPlanTask(context.Context, *messages.CreateMealPlanTaskRequest) (*messages.CreateMealPlanTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMealPlanTask not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateOAuth2Client(context.Context, *messages.OAuth2ClientCreationRequestInput) (*messages.OAuth2ClientCreationResponse, error) {
+func (UnimplementedEatingServiceServer) CreateOAuth2Client(context.Context, *messages.CreateOAuth2ClientRequest) (*messages.CreateOAuth2ClientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateOAuth2Client not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateRecipe(context.Context, *messages.RecipeCreationRequestInput) (*messages.Recipe, error) {
+func (UnimplementedEatingServiceServer) CreateRecipe(context.Context, *messages.CreateRecipeRequest) (*messages.CreateRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipe not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateRecipePrepTask(context.Context, *messages.CreateRecipePrepTaskRequest) (*messages.RecipePrepTask, error) {
+func (UnimplementedEatingServiceServer) CreateRecipePrepTask(context.Context, *messages.CreateRecipePrepTaskRequest) (*messages.CreateRecipePrepTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipePrepTask not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateRecipeRating(context.Context, *messages.CreateRecipeRatingRequest) (*messages.RecipeRating, error) {
+func (UnimplementedEatingServiceServer) CreateRecipeRating(context.Context, *messages.CreateRecipeRatingRequest) (*messages.CreateRecipeRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeRating not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateRecipeStep(context.Context, *messages.CreateRecipeStepRequest) (*messages.RecipeStep, error) {
+func (UnimplementedEatingServiceServer) CreateRecipeStep(context.Context, *messages.CreateRecipeStepRequest) (*messages.CreateRecipeStepResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeStep not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateRecipeStepCompletionCondition(context.Context, *messages.CreateRecipeStepCompletionConditionRequest) (*messages.RecipeStepCompletionCondition, error) {
+func (UnimplementedEatingServiceServer) CreateRecipeStepCompletionCondition(context.Context, *messages.CreateRecipeStepCompletionConditionRequest) (*messages.CreateRecipeStepCompletionConditionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeStepCompletionCondition not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateRecipeStepIngredient(context.Context, *messages.CreateRecipeStepIngredientRequest) (*messages.RecipeStepIngredient, error) {
+func (UnimplementedEatingServiceServer) CreateRecipeStepIngredient(context.Context, *messages.CreateRecipeStepIngredientRequest) (*messages.CreateRecipeStepIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeStepIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateRecipeStepInstrument(context.Context, *messages.CreateRecipeStepInstrumentRequest) (*messages.RecipeStepInstrument, error) {
+func (UnimplementedEatingServiceServer) CreateRecipeStepInstrument(context.Context, *messages.CreateRecipeStepInstrumentRequest) (*messages.CreateRecipeStepInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeStepInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateRecipeStepProduct(context.Context, *messages.CreateRecipeStepProductRequest) (*messages.RecipeStepProduct, error) {
+func (UnimplementedEatingServiceServer) CreateRecipeStepProduct(context.Context, *messages.CreateRecipeStepProductRequest) (*messages.CreateRecipeStepProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeStepProduct not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateRecipeStepVessel(context.Context, *messages.CreateRecipeStepVesselRequest) (*messages.RecipeStepVessel, error) {
+func (UnimplementedEatingServiceServer) CreateRecipeStepVessel(context.Context, *messages.CreateRecipeStepVesselRequest) (*messages.CreateRecipeStepVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecipeStepVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateServiceSetting(context.Context, *messages.ServiceSettingCreationRequestInput) (*messages.ServiceSetting, error) {
+func (UnimplementedEatingServiceServer) CreateServiceSetting(context.Context, *messages.CreateServiceSettingRequest) (*messages.CreateServiceSettingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateServiceSetting not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateServiceSettingConfiguration(context.Context, *messages.ServiceSettingConfigurationCreationRequestInput) (*messages.ServiceSettingConfiguration, error) {
+func (UnimplementedEatingServiceServer) CreateServiceSettingConfiguration(context.Context, *messages.CreateServiceSettingConfigurationRequest) (*messages.CreateServiceSettingConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateServiceSettingConfiguration not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateUser(context.Context, *messages.UserRegistrationInput) (*messages.UserCreationResponse, error) {
+func (UnimplementedEatingServiceServer) CreateUser(context.Context, *messages.CreateUserRequest) (*messages.CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateUserIngredientPreference(context.Context, *messages.UserIngredientPreferenceCreationRequestInput) (*messages.UserIngredientPreference, error) {
+func (UnimplementedEatingServiceServer) CreateUserIngredientPreference(context.Context, *messages.CreateUserIngredientPreferenceRequest) (*messages.CreateUserIngredientPreferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUserIngredientPreference not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateUserNotification(context.Context, *messages.UserNotificationCreationRequestInput) (*messages.UserNotification, error) {
+func (UnimplementedEatingServiceServer) CreateUserNotification(context.Context, *messages.CreateUserNotificationRequest) (*messages.CreateUserNotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUserNotification not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidIngredient(context.Context, *messages.ValidIngredientCreationRequestInput) (*messages.ValidIngredient, error) {
+func (UnimplementedEatingServiceServer) CreateValidIngredient(context.Context, *messages.CreateValidIngredientRequest) (*messages.CreateValidIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidIngredientGroup(context.Context, *messages.ValidIngredientGroupCreationRequestInput) (*messages.ValidIngredientGroup, error) {
+func (UnimplementedEatingServiceServer) CreateValidIngredientGroup(context.Context, *messages.CreateValidIngredientGroupRequest) (*messages.CreateValidIngredientGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidIngredientGroup not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidIngredientMeasurementUnit(context.Context, *messages.ValidIngredientMeasurementUnitCreationRequestInput) (*messages.ValidIngredientMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) CreateValidIngredientMeasurementUnit(context.Context, *messages.CreateValidIngredientMeasurementUnitRequest) (*messages.CreateValidIngredientMeasurementUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidIngredientMeasurementUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidIngredientPreparation(context.Context, *messages.ValidIngredientPreparationCreationRequestInput) (*messages.ValidIngredientPreparation, error) {
+func (UnimplementedEatingServiceServer) CreateValidIngredientPreparation(context.Context, *messages.CreateValidIngredientPreparationRequest) (*messages.CreateValidIngredientPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidIngredientPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidIngredientState(context.Context, *messages.ValidIngredientStateCreationRequestInput) (*messages.ValidIngredientState, error) {
+func (UnimplementedEatingServiceServer) CreateValidIngredientState(context.Context, *messages.CreateValidIngredientStateRequest) (*messages.CreateValidIngredientStateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidIngredientState not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidIngredientStateIngredient(context.Context, *messages.ValidIngredientStateIngredientCreationRequestInput) (*messages.ValidIngredientStateIngredient, error) {
+func (UnimplementedEatingServiceServer) CreateValidIngredientStateIngredient(context.Context, *messages.CreateValidIngredientStateIngredientRequest) (*messages.CreateValidIngredientStateIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidIngredientStateIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidInstrument(context.Context, *messages.ValidInstrumentCreationRequestInput) (*messages.ValidInstrument, error) {
+func (UnimplementedEatingServiceServer) CreateValidInstrument(context.Context, *messages.CreateValidInstrumentRequest) (*messages.CreateValidInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidMeasurementUnit(context.Context, *messages.ValidMeasurementUnitCreationRequestInput) (*messages.ValidMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) CreateValidMeasurementUnit(context.Context, *messages.CreateValidMeasurementUnitRequest) (*messages.CreateValidMeasurementUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidMeasurementUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidMeasurementUnitConversion(context.Context, *messages.ValidMeasurementUnitConversionCreationRequestInput) (*messages.ValidMeasurementUnitConversion, error) {
+func (UnimplementedEatingServiceServer) CreateValidMeasurementUnitConversion(context.Context, *messages.CreateValidMeasurementUnitConversionRequest) (*messages.CreateValidMeasurementUnitConversionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidMeasurementUnitConversion not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidPreparation(context.Context, *messages.ValidPreparationCreationRequestInput) (*messages.ValidPreparation, error) {
+func (UnimplementedEatingServiceServer) CreateValidPreparation(context.Context, *messages.CreateValidPreparationRequest) (*messages.CreateValidPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidPreparationInstrument(context.Context, *messages.ValidPreparationInstrumentCreationRequestInput) (*messages.ValidPreparationInstrument, error) {
+func (UnimplementedEatingServiceServer) CreateValidPreparationInstrument(context.Context, *messages.CreateValidPreparationInstrumentRequest) (*messages.CreateValidPreparationInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidPreparationInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidPreparationVessel(context.Context, *messages.ValidPreparationVesselCreationRequestInput) (*messages.ValidPreparationVessel, error) {
+func (UnimplementedEatingServiceServer) CreateValidPreparationVessel(context.Context, *messages.CreateValidPreparationVesselRequest) (*messages.CreateValidPreparationVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidPreparationVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateValidVessel(context.Context, *messages.ValidVesselCreationRequestInput) (*messages.ValidVessel, error) {
+func (UnimplementedEatingServiceServer) CreateValidVessel(context.Context, *messages.CreateValidVesselRequest) (*messages.CreateValidVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateValidVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateWebhook(context.Context, *messages.WebhookCreationRequestInput) (*messages.Webhook, error) {
+func (UnimplementedEatingServiceServer) CreateWebhook(context.Context, *messages.CreateWebhookRequest) (*messages.CreateWebhookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWebhook not implemented")
 }
-func (UnimplementedEatingServiceServer) CreateWebhookTriggerEvent(context.Context, *messages.CreateWebhookTriggerEventRequest) (*messages.WebhookTriggerEvent, error) {
+func (UnimplementedEatingServiceServer) CreateWebhookTriggerEvent(context.Context, *messages.CreateWebhookTriggerEventRequest) (*messages.CreateWebhookTriggerEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWebhookTriggerEvent not implemented")
 }
-func (UnimplementedEatingServiceServer) DestroyAllUserData(context.Context, *emptypb.Empty) (*messages.DataDeletionResponse, error) {
+func (UnimplementedEatingServiceServer) DestroyAllUserData(context.Context, *messages.DestroyAllUserDataRequest) (*messages.DestroyAllUserDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DestroyAllUserData not implemented")
 }
-func (UnimplementedEatingServiceServer) FetchUserDataReport(context.Context, *messages.FetchUserDataReportRequest) (*messages.UserDataCollection, error) {
+func (UnimplementedEatingServiceServer) FetchUserDataReport(context.Context, *messages.FetchUserDataReportRequest) (*messages.FetchUserDataReportResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchUserDataReport not implemented")
 }
-func (UnimplementedEatingServiceServer) FinalizeMealPlan(context.Context, *messages.FinalizeMealPlanRequest) (*messages.FinalizeMealPlansResponse, error) {
+func (UnimplementedEatingServiceServer) FinalizeMealPlan(context.Context, *messages.FinalizeMealPlanRequest) (*messages.FinalizeMealPlanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinalizeMealPlan not implemented")
 }
-func (UnimplementedEatingServiceServer) GetActiveHousehold(context.Context, *emptypb.Empty) (*messages.Household, error) {
+func (UnimplementedEatingServiceServer) GetActiveHousehold(context.Context, *messages.GetActiveHouseholdRequest) (*messages.GetActiveHouseholdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActiveHousehold not implemented")
 }
-func (UnimplementedEatingServiceServer) GetAuditLogEntriesForHousehold(context.Context, *messages.GetAuditLogEntriesForHouseholdRequest) (*messages.AuditLogEntry, error) {
+func (UnimplementedEatingServiceServer) GetAuditLogEntriesForHousehold(context.Context, *messages.GetAuditLogEntriesForHouseholdRequest) (*messages.GetAuditLogEntriesForHouseholdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAuditLogEntriesForHousehold not implemented")
 }
-func (UnimplementedEatingServiceServer) GetAuditLogEntriesForUser(context.Context, *messages.GetAuditLogEntriesForUserRequest) (*messages.AuditLogEntry, error) {
+func (UnimplementedEatingServiceServer) GetAuditLogEntriesForUser(context.Context, *messages.GetAuditLogEntriesForUserRequest) (*messages.GetAuditLogEntriesForUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAuditLogEntriesForUser not implemented")
 }
-func (UnimplementedEatingServiceServer) GetAuditLogEntryByID(context.Context, *messages.GetAuditLogEntryByIDRequest) (*messages.AuditLogEntry, error) {
+func (UnimplementedEatingServiceServer) GetAuditLogEntryByID(context.Context, *messages.GetAuditLogEntryByIDRequest) (*messages.GetAuditLogEntryByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAuditLogEntryByID not implemented")
 }
-func (UnimplementedEatingServiceServer) GetAuthStatus(context.Context, *emptypb.Empty) (*messages.UserStatusResponse, error) {
+func (UnimplementedEatingServiceServer) GetAuthStatus(context.Context, *messages.GetAuthStatusRequest) (*messages.GetAuthStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAuthStatus not implemented")
 }
-func (UnimplementedEatingServiceServer) GetHousehold(context.Context, *messages.GetHouseholdRequest) (*messages.Household, error) {
+func (UnimplementedEatingServiceServer) GetHousehold(context.Context, *messages.GetHouseholdRequest) (*messages.GetHouseholdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHousehold not implemented")
 }
-func (UnimplementedEatingServiceServer) GetHouseholdInstrumentOwnership(context.Context, *messages.GetHouseholdInstrumentOwnershipRequest) (*messages.HouseholdInstrumentOwnership, error) {
+func (UnimplementedEatingServiceServer) GetHouseholdInstrumentOwnership(context.Context, *messages.GetHouseholdInstrumentOwnershipRequest) (*messages.GetHouseholdInstrumentOwnershipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHouseholdInstrumentOwnership not implemented")
 }
-func (UnimplementedEatingServiceServer) GetHouseholdInstrumentOwnerships(context.Context, *messages.GetHouseholdInstrumentOwnershipsRequest) (*messages.HouseholdInstrumentOwnership, error) {
+func (UnimplementedEatingServiceServer) GetHouseholdInstrumentOwnerships(context.Context, *messages.GetHouseholdInstrumentOwnershipsRequest) (*messages.GetHouseholdInstrumentOwnershipsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHouseholdInstrumentOwnerships not implemented")
 }
-func (UnimplementedEatingServiceServer) GetHouseholdInvitation(context.Context, *messages.GetHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
+func (UnimplementedEatingServiceServer) GetHouseholdInvitation(context.Context, *messages.GetHouseholdInvitationRequest) (*messages.GetHouseholdInvitationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHouseholdInvitation not implemented")
 }
-func (UnimplementedEatingServiceServer) GetHouseholdInvitationByID(context.Context, *messages.GetHouseholdInvitationByIDRequest) (*messages.HouseholdInvitation, error) {
+func (UnimplementedEatingServiceServer) GetHouseholdInvitationByID(context.Context, *messages.GetHouseholdInvitationByIDRequest) (*messages.GetHouseholdInvitationByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHouseholdInvitationByID not implemented")
 }
-func (UnimplementedEatingServiceServer) GetHouseholds(context.Context, *messages.GetHouseholdsRequest) (*messages.Household, error) {
+func (UnimplementedEatingServiceServer) GetHouseholds(context.Context, *messages.GetHouseholdsRequest) (*messages.GetHouseholdsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHouseholds not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMeal(context.Context, *messages.GetMealRequest) (*messages.Meal, error) {
+func (UnimplementedEatingServiceServer) GetMeal(context.Context, *messages.GetMealRequest) (*messages.GetMealResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMeal not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlan(context.Context, *messages.GetMealPlanRequest) (*messages.MealPlan, error) {
+func (UnimplementedEatingServiceServer) GetMealPlan(context.Context, *messages.GetMealPlanRequest) (*messages.GetMealPlanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlan not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanEvent(context.Context, *messages.GetMealPlanEventRequest) (*messages.MealPlanEvent, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanEvent(context.Context, *messages.GetMealPlanEventRequest) (*messages.GetMealPlanEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanEvent not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanEvents(context.Context, *messages.GetMealPlanEventsRequest) (*messages.MealPlanEvent, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanEvents(context.Context, *messages.GetMealPlanEventsRequest) (*messages.GetMealPlanEventsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanEvents not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanGroceryListItem(context.Context, *messages.GetMealPlanGroceryListItemRequest) (*messages.MealPlanGroceryListItem, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanGroceryListItem(context.Context, *messages.GetMealPlanGroceryListItemRequest) (*messages.GetMealPlanGroceryListItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanGroceryListItem not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanGroceryListItemsForMealPlan(context.Context, *messages.GetMealPlanGroceryListItemsForMealPlanRequest) (*messages.MealPlanGroceryListItem, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanGroceryListItemsForMealPlan(context.Context, *messages.GetMealPlanGroceryListItemsForMealPlanRequest) (*messages.GetMealPlanGroceryListItemsForMealPlanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanGroceryListItemsForMealPlan not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanOption(context.Context, *messages.GetMealPlanOptionRequest) (*messages.MealPlanOption, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanOption(context.Context, *messages.GetMealPlanOptionRequest) (*messages.GetMealPlanOptionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanOption not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanOptionVote(context.Context, *messages.GetMealPlanOptionVoteRequest) (*messages.MealPlanOptionVote, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanOptionVote(context.Context, *messages.GetMealPlanOptionVoteRequest) (*messages.GetMealPlanOptionVoteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanOptionVote not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanOptionVotes(context.Context, *messages.GetMealPlanOptionVotesRequest) (*messages.MealPlanOptionVote, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanOptionVotes(context.Context, *messages.GetMealPlanOptionVotesRequest) (*messages.GetMealPlanOptionVotesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanOptionVotes not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanOptions(context.Context, *messages.GetMealPlanOptionsRequest) (*messages.MealPlanOption, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanOptions(context.Context, *messages.GetMealPlanOptionsRequest) (*messages.GetMealPlanOptionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanOptions not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanTask(context.Context, *messages.GetMealPlanTaskRequest) (*messages.MealPlanTask, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanTask(context.Context, *messages.GetMealPlanTaskRequest) (*messages.GetMealPlanTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanTask not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlanTasks(context.Context, *messages.GetMealPlanTasksRequest) (*messages.MealPlanTask, error) {
+func (UnimplementedEatingServiceServer) GetMealPlanTasks(context.Context, *messages.GetMealPlanTasksRequest) (*messages.GetMealPlanTasksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanTasks not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMealPlansForHousehold(context.Context, *messages.GetMealPlansForHouseholdRequest) (*messages.MealPlan, error) {
+func (UnimplementedEatingServiceServer) GetMealPlansForHousehold(context.Context, *messages.GetMealPlansForHouseholdRequest) (*messages.GetMealPlansForHouseholdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlansForHousehold not implemented")
 }
-func (UnimplementedEatingServiceServer) GetMeals(context.Context, *messages.GetMealsRequest) (*messages.Meal, error) {
+func (UnimplementedEatingServiceServer) GetMeals(context.Context, *messages.GetMealsRequest) (*messages.GetMealsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMeals not implemented")
 }
 func (UnimplementedEatingServiceServer) GetMermaidDiagramForRecipe(context.Context, *messages.GetMermaidDiagramForRecipeRequest) (*messages.GetMermaidDiagramForRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMermaidDiagramForRecipe not implemented")
 }
-func (UnimplementedEatingServiceServer) GetOAuth2Client(context.Context, *messages.GetOAuth2ClientRequest) (*messages.OAuth2Client, error) {
+func (UnimplementedEatingServiceServer) GetOAuth2Client(context.Context, *messages.GetOAuth2ClientRequest) (*messages.GetOAuth2ClientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOAuth2Client not implemented")
 }
-func (UnimplementedEatingServiceServer) GetOAuth2Clients(context.Context, *messages.GetOAuth2ClientsRequest) (*messages.OAuth2Client, error) {
+func (UnimplementedEatingServiceServer) GetOAuth2Clients(context.Context, *messages.GetOAuth2ClientsRequest) (*messages.GetOAuth2ClientsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOAuth2Clients not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRandomValidIngredient(context.Context, *emptypb.Empty) (*messages.ValidIngredient, error) {
+func (UnimplementedEatingServiceServer) GetRandomValidIngredient(context.Context, *messages.GetRandomValidIngredientRequest) (*messages.GetRandomValidIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRandomValidIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRandomValidInstrument(context.Context, *emptypb.Empty) (*messages.ValidInstrument, error) {
+func (UnimplementedEatingServiceServer) GetRandomValidInstrument(context.Context, *messages.GetRandomValidInstrumentRequest) (*messages.GetRandomValidInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRandomValidInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRandomValidPreparation(context.Context, *emptypb.Empty) (*messages.ValidPreparation, error) {
+func (UnimplementedEatingServiceServer) GetRandomValidPreparation(context.Context, *messages.GetRandomValidPreparationRequest) (*messages.GetRandomValidPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRandomValidPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRandomValidVessel(context.Context, *emptypb.Empty) (*messages.ValidVessel, error) {
+func (UnimplementedEatingServiceServer) GetRandomValidVessel(context.Context, *messages.GetRandomValidVesselRequest) (*messages.GetRandomValidVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRandomValidVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) GetReceivedHouseholdInvitations(context.Context, *messages.GetReceivedHouseholdInvitationsRequest) (*messages.HouseholdInvitation, error) {
+func (UnimplementedEatingServiceServer) GetReceivedHouseholdInvitations(context.Context, *messages.GetReceivedHouseholdInvitationsRequest) (*messages.GetReceivedHouseholdInvitationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReceivedHouseholdInvitations not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipe(context.Context, *messages.GetRecipeRequest) (*messages.Recipe, error) {
+func (UnimplementedEatingServiceServer) GetRecipe(context.Context, *messages.GetRecipeRequest) (*messages.GetRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipe not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeMealPlanTasks(context.Context, *messages.GetRecipeMealPlanTasksRequest) (*messages.RecipePrepTaskStep, error) {
+func (UnimplementedEatingServiceServer) GetRecipeMealPlanTasks(context.Context, *messages.GetRecipeMealPlanTasksRequest) (*messages.GetRecipeMealPlanTasksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeMealPlanTasks not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipePrepTask(context.Context, *messages.GetRecipePrepTaskRequest) (*messages.RecipePrepTask, error) {
+func (UnimplementedEatingServiceServer) GetRecipePrepTask(context.Context, *messages.GetRecipePrepTaskRequest) (*messages.GetRecipePrepTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipePrepTask not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipePrepTasks(context.Context, *messages.GetRecipePrepTasksRequest) (*messages.RecipePrepTask, error) {
+func (UnimplementedEatingServiceServer) GetRecipePrepTasks(context.Context, *messages.GetRecipePrepTasksRequest) (*messages.GetRecipePrepTasksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipePrepTasks not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeRating(context.Context, *messages.GetRecipeRatingRequest) (*messages.RecipeRating, error) {
+func (UnimplementedEatingServiceServer) GetRecipeRating(context.Context, *messages.GetRecipeRatingRequest) (*messages.GetRecipeRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeRating not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeRatingsForRecipe(context.Context, *messages.GetRecipeRatingsForRecipeRequest) (*messages.RecipeRating, error) {
+func (UnimplementedEatingServiceServer) GetRecipeRatingsForRecipe(context.Context, *messages.GetRecipeRatingsForRecipeRequest) (*messages.GetRecipeRatingsForRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeRatingsForRecipe not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStep(context.Context, *messages.GetRecipeStepRequest) (*messages.RecipeStep, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStep(context.Context, *messages.GetRecipeStepRequest) (*messages.GetRecipeStepResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStep not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepCompletionCondition(context.Context, *messages.GetRecipeStepCompletionConditionRequest) (*messages.RecipeStepCompletionCondition, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepCompletionCondition(context.Context, *messages.GetRecipeStepCompletionConditionRequest) (*messages.GetRecipeStepCompletionConditionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepCompletionCondition not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepCompletionConditions(context.Context, *messages.GetRecipeStepCompletionConditionsRequest) (*messages.RecipeStepCompletionCondition, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepCompletionConditions(context.Context, *messages.GetRecipeStepCompletionConditionsRequest) (*messages.GetRecipeStepCompletionConditionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepCompletionConditions not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepIngredient(context.Context, *messages.GetRecipeStepIngredientRequest) (*messages.RecipeStepIngredient, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepIngredient(context.Context, *messages.GetRecipeStepIngredientRequest) (*messages.GetRecipeStepIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepIngredients(context.Context, *messages.GetRecipeStepIngredientsRequest) (*messages.RecipeStepIngredient, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepIngredients(context.Context, *messages.GetRecipeStepIngredientsRequest) (*messages.GetRecipeStepIngredientsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepIngredients not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepInstrument(context.Context, *messages.GetRecipeStepInstrumentRequest) (*messages.RecipeStepInstrument, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepInstrument(context.Context, *messages.GetRecipeStepInstrumentRequest) (*messages.GetRecipeStepInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepInstruments(context.Context, *messages.GetRecipeStepInstrumentsRequest) (*messages.RecipeStepInstrument, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepInstruments(context.Context, *messages.GetRecipeStepInstrumentsRequest) (*messages.GetRecipeStepInstrumentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepInstruments not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepProduct(context.Context, *messages.GetRecipeStepProductRequest) (*messages.RecipeStepProduct, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepProduct(context.Context, *messages.GetRecipeStepProductRequest) (*messages.GetRecipeStepProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepProduct not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepProducts(context.Context, *messages.GetRecipeStepProductsRequest) (*messages.RecipeStepProduct, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepProducts(context.Context, *messages.GetRecipeStepProductsRequest) (*messages.GetRecipeStepProductsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepProducts not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepVessel(context.Context, *messages.GetRecipeStepVesselRequest) (*messages.RecipeStepVessel, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepVessel(context.Context, *messages.GetRecipeStepVesselRequest) (*messages.GetRecipeStepVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeStepVessels(context.Context, *messages.GetRecipeStepVesselsRequest) (*messages.RecipeStepVessel, error) {
+func (UnimplementedEatingServiceServer) GetRecipeStepVessels(context.Context, *messages.GetRecipeStepVesselsRequest) (*messages.GetRecipeStepVesselsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeStepVessels not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipeSteps(context.Context, *messages.GetRecipeStepsRequest) (*messages.RecipeStep, error) {
+func (UnimplementedEatingServiceServer) GetRecipeSteps(context.Context, *messages.GetRecipeStepsRequest) (*messages.GetRecipeStepsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeSteps not implemented")
 }
-func (UnimplementedEatingServiceServer) GetRecipes(context.Context, *messages.GetRecipesRequest) (*messages.Recipe, error) {
+func (UnimplementedEatingServiceServer) GetRecipes(context.Context, *messages.GetRecipesRequest) (*messages.GetRecipesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipes not implemented")
 }
-func (UnimplementedEatingServiceServer) GetSelf(context.Context, *emptypb.Empty) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) GetSelf(context.Context, *messages.GetSelfRequest) (*messages.GetSelfResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSelf not implemented")
 }
-func (UnimplementedEatingServiceServer) GetSentHouseholdInvitations(context.Context, *messages.GetSentHouseholdInvitationsRequest) (*messages.HouseholdInvitation, error) {
+func (UnimplementedEatingServiceServer) GetSentHouseholdInvitations(context.Context, *messages.GetSentHouseholdInvitationsRequest) (*messages.GetSentHouseholdInvitationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSentHouseholdInvitations not implemented")
 }
-func (UnimplementedEatingServiceServer) GetServiceSetting(context.Context, *messages.GetServiceSettingRequest) (*messages.ServiceSetting, error) {
+func (UnimplementedEatingServiceServer) GetServiceSetting(context.Context, *messages.GetServiceSettingRequest) (*messages.GetServiceSettingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSetting not implemented")
 }
-func (UnimplementedEatingServiceServer) GetServiceSettingConfigurationByName(context.Context, *messages.GetServiceSettingConfigurationByNameRequest) (*messages.ServiceSettingConfiguration, error) {
+func (UnimplementedEatingServiceServer) GetServiceSettingConfigurationByName(context.Context, *messages.GetServiceSettingConfigurationByNameRequest) (*messages.GetServiceSettingConfigurationByNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSettingConfigurationByName not implemented")
 }
-func (UnimplementedEatingServiceServer) GetServiceSettingConfigurationsForHousehold(context.Context, *messages.GetServiceSettingConfigurationsForHouseholdRequest) (*messages.ServiceSettingConfiguration, error) {
+func (UnimplementedEatingServiceServer) GetServiceSettingConfigurationsForHousehold(context.Context, *messages.GetServiceSettingConfigurationsForHouseholdRequest) (*messages.GetServiceSettingConfigurationsForHouseholdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSettingConfigurationsForHousehold not implemented")
 }
-func (UnimplementedEatingServiceServer) GetServiceSettingConfigurationsForUser(context.Context, *messages.GetServiceSettingConfigurationsForUserRequest) (*messages.ServiceSettingConfiguration, error) {
+func (UnimplementedEatingServiceServer) GetServiceSettingConfigurationsForUser(context.Context, *messages.GetServiceSettingConfigurationsForUserRequest) (*messages.GetServiceSettingConfigurationsForUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSettingConfigurationsForUser not implemented")
 }
-func (UnimplementedEatingServiceServer) GetServiceSettings(context.Context, *messages.GetServiceSettingsRequest) (*messages.ServiceSetting, error) {
+func (UnimplementedEatingServiceServer) GetServiceSettings(context.Context, *messages.GetServiceSettingsRequest) (*messages.GetServiceSettingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSettings not implemented")
 }
-func (UnimplementedEatingServiceServer) GetUser(context.Context, *messages.GetUserRequest) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) GetUser(context.Context, *messages.GetUserRequest) (*messages.GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedEatingServiceServer) GetUserIngredientPreferences(context.Context, *messages.GetUserIngredientPreferencesRequest) (*messages.UserIngredientPreference, error) {
+func (UnimplementedEatingServiceServer) GetUserIngredientPreferences(context.Context, *messages.GetUserIngredientPreferencesRequest) (*messages.GetUserIngredientPreferencesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserIngredientPreferences not implemented")
 }
-func (UnimplementedEatingServiceServer) GetUserNotification(context.Context, *messages.GetUserNotificationRequest) (*messages.UserNotification, error) {
+func (UnimplementedEatingServiceServer) GetUserNotification(context.Context, *messages.GetUserNotificationRequest) (*messages.GetUserNotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserNotification not implemented")
 }
-func (UnimplementedEatingServiceServer) GetUserNotifications(context.Context, *messages.GetUserNotificationsRequest) (*messages.UserNotification, error) {
+func (UnimplementedEatingServiceServer) GetUserNotifications(context.Context, *messages.GetUserNotificationsRequest) (*messages.GetUserNotificationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserNotifications not implemented")
 }
-func (UnimplementedEatingServiceServer) GetUsers(context.Context, *messages.GetUsersRequest) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) GetUsers(context.Context, *messages.GetUsersRequest) (*messages.GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredient(context.Context, *messages.GetValidIngredientRequest) (*messages.ValidIngredient, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredient(context.Context, *messages.GetValidIngredientRequest) (*messages.GetValidIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientGroup(context.Context, *messages.GetValidIngredientGroupRequest) (*messages.ValidIngredientGroup, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientGroup(context.Context, *messages.GetValidIngredientGroupRequest) (*messages.GetValidIngredientGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientGroup not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientGroups(context.Context, *messages.GetValidIngredientGroupsRequest) (*messages.ValidIngredientGroup, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientGroups(context.Context, *messages.GetValidIngredientGroupsRequest) (*messages.GetValidIngredientGroupsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientGroups not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientMeasurementUnit(context.Context, *messages.GetValidIngredientMeasurementUnitRequest) (*messages.ValidIngredientMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientMeasurementUnit(context.Context, *messages.GetValidIngredientMeasurementUnitRequest) (*messages.GetValidIngredientMeasurementUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientMeasurementUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientMeasurementUnits(context.Context, *messages.GetValidIngredientMeasurementUnitsRequest) (*messages.ValidIngredientMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientMeasurementUnits(context.Context, *messages.GetValidIngredientMeasurementUnitsRequest) (*messages.GetValidIngredientMeasurementUnitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientMeasurementUnits not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientMeasurementUnitsByIngredient(context.Context, *messages.GetValidIngredientMeasurementUnitsByIngredientRequest) (*messages.ValidIngredientMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientMeasurementUnitsByIngredient(context.Context, *messages.GetValidIngredientMeasurementUnitsByIngredientRequest) (*messages.GetValidIngredientMeasurementUnitsByIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientMeasurementUnitsByIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientMeasurementUnitsByMeasurementUnit(context.Context, *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) (*messages.ValidIngredientMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientMeasurementUnitsByMeasurementUnit(context.Context, *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) (*messages.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientMeasurementUnitsByMeasurementUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientPreparation(context.Context, *messages.GetValidIngredientPreparationRequest) (*messages.ValidIngredientPreparation, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientPreparation(context.Context, *messages.GetValidIngredientPreparationRequest) (*messages.GetValidIngredientPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientPreparations(context.Context, *messages.GetValidIngredientPreparationsRequest) (*messages.ValidIngredientPreparation, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientPreparations(context.Context, *messages.GetValidIngredientPreparationsRequest) (*messages.GetValidIngredientPreparationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientPreparations not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientPreparationsByIngredient(context.Context, *messages.GetValidIngredientPreparationsByIngredientRequest) (*messages.ValidIngredientPreparation, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientPreparationsByIngredient(context.Context, *messages.GetValidIngredientPreparationsByIngredientRequest) (*messages.GetValidIngredientPreparationsByIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientPreparationsByIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientPreparationsByPreparation(context.Context, *messages.GetValidIngredientPreparationsByPreparationRequest) (*messages.ValidIngredientPreparation, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientPreparationsByPreparation(context.Context, *messages.GetValidIngredientPreparationsByPreparationRequest) (*messages.GetValidIngredientPreparationsByPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientPreparationsByPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientState(context.Context, *messages.GetValidIngredientStateRequest) (*messages.ValidIngredientState, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientState(context.Context, *messages.GetValidIngredientStateRequest) (*messages.GetValidIngredientStateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientState not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientStateIngredient(context.Context, *messages.GetValidIngredientStateIngredientRequest) (*messages.ValidIngredientStateIngredient, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientStateIngredient(context.Context, *messages.GetValidIngredientStateIngredientRequest) (*messages.GetValidIngredientStateIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientStateIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientStateIngredients(context.Context, *messages.GetValidIngredientStateIngredientsRequest) (*messages.ValidIngredientStateIngredient, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientStateIngredients(context.Context, *messages.GetValidIngredientStateIngredientsRequest) (*messages.GetValidIngredientStateIngredientsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientStateIngredients not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientStateIngredientsByIngredient(context.Context, *messages.GetValidIngredientStateIngredientsByIngredientRequest) (*messages.ValidIngredientStateIngredient, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientStateIngredientsByIngredient(context.Context, *messages.GetValidIngredientStateIngredientsByIngredientRequest) (*messages.GetValidIngredientStateIngredientsByIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientStateIngredientsByIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientStateIngredientsByIngredientState(context.Context, *messages.GetValidIngredientStateIngredientsByIngredientStateRequest) (*messages.ValidIngredientStateIngredient, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientStateIngredientsByIngredientState(context.Context, *messages.GetValidIngredientStateIngredientsByIngredientStateRequest) (*messages.GetValidIngredientStateIngredientsByIngredientStateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientStateIngredientsByIngredientState not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredientStates(context.Context, *messages.GetValidIngredientStatesRequest) (*messages.ValidIngredientState, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredientStates(context.Context, *messages.GetValidIngredientStatesRequest) (*messages.GetValidIngredientStatesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredientStates not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidIngredients(context.Context, *messages.GetValidIngredientsRequest) (*messages.ValidIngredient, error) {
+func (UnimplementedEatingServiceServer) GetValidIngredients(context.Context, *messages.GetValidIngredientsRequest) (*messages.GetValidIngredientsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidIngredients not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidInstrument(context.Context, *messages.GetValidInstrumentRequest) (*messages.ValidInstrument, error) {
+func (UnimplementedEatingServiceServer) GetValidInstrument(context.Context, *messages.GetValidInstrumentRequest) (*messages.GetValidInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidInstruments(context.Context, *messages.GetValidInstrumentsRequest) (*messages.ValidInstrument, error) {
+func (UnimplementedEatingServiceServer) GetValidInstruments(context.Context, *messages.GetValidInstrumentsRequest) (*messages.GetValidInstrumentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidInstruments not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidMeasurementUnit(context.Context, *messages.GetValidMeasurementUnitRequest) (*messages.ValidMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) GetValidMeasurementUnit(context.Context, *messages.GetValidMeasurementUnitRequest) (*messages.GetValidMeasurementUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidMeasurementUnitConversion(context.Context, *messages.GetValidMeasurementUnitConversionRequest) (*messages.ValidMeasurementUnitConversion, error) {
+func (UnimplementedEatingServiceServer) GetValidMeasurementUnitConversion(context.Context, *messages.GetValidMeasurementUnitConversionRequest) (*messages.GetValidMeasurementUnitConversionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnitConversion not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidMeasurementUnitConversionsFromUnit(context.Context, *messages.GetValidMeasurementUnitConversionsFromUnitRequest) (*messages.ValidMeasurementUnitConversion, error) {
+func (UnimplementedEatingServiceServer) GetValidMeasurementUnitConversionsFromUnit(context.Context, *messages.GetValidMeasurementUnitConversionsFromUnitRequest) (*messages.GetValidMeasurementUnitConversionsFromUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnitConversionsFromUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidMeasurementUnitConversionsToUnit(context.Context, *messages.GetValidMeasurementUnitConversionsToUnitRequest) (*messages.ValidMeasurementUnitConversion, error) {
+func (UnimplementedEatingServiceServer) GetValidMeasurementUnitConversionsToUnit(context.Context, *messages.GetValidMeasurementUnitConversionsToUnitRequest) (*messages.GetValidMeasurementUnitConversionsToUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnitConversionsToUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidMeasurementUnits(context.Context, *messages.GetValidMeasurementUnitsRequest) (*messages.ValidMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) GetValidMeasurementUnits(context.Context, *messages.GetValidMeasurementUnitsRequest) (*messages.GetValidMeasurementUnitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidMeasurementUnits not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparation(context.Context, *messages.GetValidPreparationRequest) (*messages.ValidPreparation, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparation(context.Context, *messages.GetValidPreparationRequest) (*messages.GetValidPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparationInstrument(context.Context, *messages.GetValidPreparationInstrumentRequest) (*messages.ValidPreparationInstrument, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparationInstrument(context.Context, *messages.GetValidPreparationInstrumentRequest) (*messages.GetValidPreparationInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparationInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparationInstruments(context.Context, *messages.GetValidPreparationInstrumentsRequest) (*messages.ValidPreparationInstrument, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparationInstruments(context.Context, *messages.GetValidPreparationInstrumentsRequest) (*messages.GetValidPreparationInstrumentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparationInstruments not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparationInstrumentsByInstrument(context.Context, *messages.GetValidPreparationInstrumentsByInstrumentRequest) (*messages.ValidPreparationInstrument, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparationInstrumentsByInstrument(context.Context, *messages.GetValidPreparationInstrumentsByInstrumentRequest) (*messages.GetValidPreparationInstrumentsByInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparationInstrumentsByInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparationInstrumentsByPreparation(context.Context, *messages.GetValidPreparationInstrumentsByPreparationRequest) (*messages.ValidPreparationInstrument, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparationInstrumentsByPreparation(context.Context, *messages.GetValidPreparationInstrumentsByPreparationRequest) (*messages.GetValidPreparationInstrumentsByPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparationInstrumentsByPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparationVessel(context.Context, *messages.GetValidPreparationVesselRequest) (*messages.ValidPreparationVessel, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparationVessel(context.Context, *messages.GetValidPreparationVesselRequest) (*messages.GetValidPreparationVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparationVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparationVessels(context.Context, *messages.GetValidPreparationVesselsRequest) (*messages.ValidPreparationVessel, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparationVessels(context.Context, *messages.GetValidPreparationVesselsRequest) (*messages.GetValidPreparationVesselsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparationVessels not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparationVesselsByPreparation(context.Context, *messages.GetValidPreparationVesselsByPreparationRequest) (*messages.ValidPreparationVessel, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparationVesselsByPreparation(context.Context, *messages.GetValidPreparationVesselsByPreparationRequest) (*messages.GetValidPreparationVesselsByPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparationVesselsByPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparationVesselsByVessel(context.Context, *messages.GetValidPreparationVesselsByVesselRequest) (*messages.ValidPreparationVessel, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparationVesselsByVessel(context.Context, *messages.GetValidPreparationVesselsByVesselRequest) (*messages.GetValidPreparationVesselsByVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparationVesselsByVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidPreparations(context.Context, *messages.GetValidPreparationsRequest) (*messages.ValidPreparation, error) {
+func (UnimplementedEatingServiceServer) GetValidPreparations(context.Context, *messages.GetValidPreparationsRequest) (*messages.GetValidPreparationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidPreparations not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidVessel(context.Context, *messages.GetValidVesselRequest) (*messages.ValidVessel, error) {
+func (UnimplementedEatingServiceServer) GetValidVessel(context.Context, *messages.GetValidVesselRequest) (*messages.GetValidVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) GetValidVessels(context.Context, *messages.GetValidVesselsRequest) (*messages.ValidVessel, error) {
+func (UnimplementedEatingServiceServer) GetValidVessels(context.Context, *messages.GetValidVesselsRequest) (*messages.GetValidVesselsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValidVessels not implemented")
 }
-func (UnimplementedEatingServiceServer) GetWebhook(context.Context, *messages.GetWebhookRequest) (*messages.Webhook, error) {
+func (UnimplementedEatingServiceServer) GetWebhook(context.Context, *messages.GetWebhookRequest) (*messages.GetWebhookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWebhook not implemented")
 }
-func (UnimplementedEatingServiceServer) GetWebhooks(context.Context, *messages.GetWebhooksRequest) (*messages.Webhook, error) {
+func (UnimplementedEatingServiceServer) GetWebhooks(context.Context, *messages.GetWebhooksRequest) (*messages.GetWebhooksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWebhooks not implemented")
 }
-func (UnimplementedEatingServiceServer) LoginForToken(context.Context, *messages.UserLoginInput) (*messages.TokenResponse, error) {
+func (UnimplementedEatingServiceServer) LoginForToken(context.Context, *messages.LoginForTokenRequest) (*messages.LoginForTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginForToken not implemented")
 }
-func (UnimplementedEatingServiceServer) PublishArbitraryQueueMessage(context.Context, *messages.ArbitraryQueueMessageRequestInput) (*messages.ArbitraryQueueMessageResponse, error) {
+func (UnimplementedEatingServiceServer) PublishArbitraryQueueMessage(context.Context, *messages.PublishArbitraryQueueMessageRequest) (*messages.PublishArbitraryQueueMessageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishArbitraryQueueMessage not implemented")
 }
-func (UnimplementedEatingServiceServer) RedeemPasswordResetToken(context.Context, *messages.PasswordResetTokenRedemptionRequestInput) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) RedeemPasswordResetToken(context.Context, *messages.RedeemPasswordResetTokenRequest) (*messages.RedeemPasswordResetTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RedeemPasswordResetToken not implemented")
 }
-func (UnimplementedEatingServiceServer) RefreshTOTPSecret(context.Context, *messages.TOTPSecretRefreshInput) (*messages.TOTPSecretRefreshResponse, error) {
+func (UnimplementedEatingServiceServer) RefreshTOTPSecret(context.Context, *messages.RefreshTOTPSecretRequest) (*messages.RefreshTOTPSecretResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshTOTPSecret not implemented")
 }
-func (UnimplementedEatingServiceServer) RejectHouseholdInvitation(context.Context, *messages.RejectHouseholdInvitationRequest) (*messages.HouseholdInvitation, error) {
+func (UnimplementedEatingServiceServer) RejectHouseholdInvitation(context.Context, *messages.RejectHouseholdInvitationRequest) (*messages.RejectHouseholdInvitationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RejectHouseholdInvitation not implemented")
 }
-func (UnimplementedEatingServiceServer) RequestEmailVerificationEmail(context.Context, *emptypb.Empty) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) RequestEmailVerificationEmail(context.Context, *messages.RequestEmailVerificationEmailRequest) (*messages.RequestEmailVerificationEmailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestEmailVerificationEmail not implemented")
 }
-func (UnimplementedEatingServiceServer) RequestPasswordResetToken(context.Context, *messages.PasswordResetTokenCreationRequestInput) (*messages.PasswordResetToken, error) {
+func (UnimplementedEatingServiceServer) RequestPasswordResetToken(context.Context, *messages.RequestPasswordResetTokenRequest) (*messages.RequestPasswordResetTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestPasswordResetToken not implemented")
 }
-func (UnimplementedEatingServiceServer) RequestUsernameReminder(context.Context, *messages.UsernameReminderRequestInput) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) RequestUsernameReminder(context.Context, *messages.RequestUsernameReminderRequest) (*messages.RequestUsernameReminderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestUsernameReminder not implemented")
 }
-func (UnimplementedEatingServiceServer) RunFinalizeMealPlanWorker(context.Context, *messages.FinalizeMealPlansRequest) (*messages.FinalizeMealPlansResponse, error) {
+func (UnimplementedEatingServiceServer) RunFinalizeMealPlanWorker(context.Context, *messages.RunFinalizeMealPlanWorkerRequest) (*messages.RunFinalizeMealPlanWorkerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunFinalizeMealPlanWorker not implemented")
 }
-func (UnimplementedEatingServiceServer) RunMealPlanGroceryListInitializerWorker(context.Context, *messages.InitializeMealPlanGroceryListRequest) (*messages.InitializeMealPlanGroceryListResponse, error) {
+func (UnimplementedEatingServiceServer) RunMealPlanGroceryListInitializerWorker(context.Context, *messages.RunMealPlanGroceryListInitializerWorkerRequest) (*messages.RunMealPlanGroceryListInitializerWorkerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunMealPlanGroceryListInitializerWorker not implemented")
 }
-func (UnimplementedEatingServiceServer) RunMealPlanTaskCreatorWorker(context.Context, *messages.CreateMealPlanTasksRequest) (*messages.CreateMealPlanTasksResponse, error) {
+func (UnimplementedEatingServiceServer) RunMealPlanTaskCreatorWorker(context.Context, *messages.RunMealPlanTaskCreatorWorkerRequest) (*messages.RunMealPlanTaskCreatorWorkerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunMealPlanTaskCreatorWorker not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForMeals(context.Context, *messages.SearchForMealsRequest) (*messages.Meal, error) {
+func (UnimplementedEatingServiceServer) SearchForMeals(context.Context, *messages.SearchForMealsRequest) (*messages.SearchForMealsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForMeals not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForRecipes(context.Context, *messages.SearchForRecipesRequest) (*messages.Recipe, error) {
+func (UnimplementedEatingServiceServer) SearchForRecipes(context.Context, *messages.SearchForRecipesRequest) (*messages.SearchForRecipesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForRecipes not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForServiceSettings(context.Context, *messages.SearchForServiceSettingsRequest) (*messages.ServiceSetting, error) {
+func (UnimplementedEatingServiceServer) SearchForServiceSettings(context.Context, *messages.SearchForServiceSettingsRequest) (*messages.SearchForServiceSettingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForServiceSettings not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForUsers(context.Context, *messages.SearchForUsersRequest) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) SearchForUsers(context.Context, *messages.SearchForUsersRequest) (*messages.SearchForUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForUsers not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForValidIngredientGroups(context.Context, *messages.SearchForValidIngredientGroupsRequest) (*messages.ValidIngredientGroup, error) {
+func (UnimplementedEatingServiceServer) SearchForValidIngredientGroups(context.Context, *messages.SearchForValidIngredientGroupsRequest) (*messages.SearchForValidIngredientGroupsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidIngredientGroups not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForValidIngredientStates(context.Context, *messages.SearchForValidIngredientStatesRequest) (*messages.ValidIngredientState, error) {
+func (UnimplementedEatingServiceServer) SearchForValidIngredientStates(context.Context, *messages.SearchForValidIngredientStatesRequest) (*messages.SearchForValidIngredientStatesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidIngredientStates not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForValidIngredients(context.Context, *messages.SearchForValidIngredientsRequest) (*messages.ValidIngredient, error) {
+func (UnimplementedEatingServiceServer) SearchForValidIngredients(context.Context, *messages.SearchForValidIngredientsRequest) (*messages.SearchForValidIngredientsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidIngredients not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForValidInstruments(context.Context, *messages.SearchForValidInstrumentsRequest) (*messages.ValidInstrument, error) {
+func (UnimplementedEatingServiceServer) SearchForValidInstruments(context.Context, *messages.SearchForValidInstrumentsRequest) (*messages.SearchForValidInstrumentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidInstruments not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForValidMeasurementUnits(context.Context, *messages.SearchForValidMeasurementUnitsRequest) (*messages.ValidMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) SearchForValidMeasurementUnits(context.Context, *messages.SearchForValidMeasurementUnitsRequest) (*messages.SearchForValidMeasurementUnitsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidMeasurementUnits not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForValidPreparations(context.Context, *messages.SearchForValidPreparationsRequest) (*messages.ValidPreparation, error) {
+func (UnimplementedEatingServiceServer) SearchForValidPreparations(context.Context, *messages.SearchForValidPreparationsRequest) (*messages.SearchForValidPreparationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidPreparations not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchForValidVessels(context.Context, *messages.SearchForValidVesselsRequest) (*messages.ValidVessel, error) {
+func (UnimplementedEatingServiceServer) SearchForValidVessels(context.Context, *messages.SearchForValidVesselsRequest) (*messages.SearchForValidVesselsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForValidVessels not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchValidIngredientsByPreparation(context.Context, *messages.SearchValidIngredientsByPreparationRequest) (*messages.ValidIngredient, error) {
+func (UnimplementedEatingServiceServer) SearchValidIngredientsByPreparation(context.Context, *messages.SearchValidIngredientsByPreparationRequest) (*messages.SearchValidIngredientsByPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchValidIngredientsByPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) SearchValidMeasurementUnitsByIngredient(context.Context, *messages.SearchValidMeasurementUnitsByIngredientRequest) (*messages.ValidMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) SearchValidMeasurementUnitsByIngredient(context.Context, *messages.SearchValidMeasurementUnitsByIngredientRequest) (*messages.SearchValidMeasurementUnitsByIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchValidMeasurementUnitsByIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) SetDefaultHousehold(context.Context, *messages.SetDefaultHouseholdRequest) (*messages.Household, error) {
+func (UnimplementedEatingServiceServer) SetDefaultHousehold(context.Context, *messages.SetDefaultHouseholdRequest) (*messages.SetDefaultHouseholdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetDefaultHousehold not implemented")
 }
-func (UnimplementedEatingServiceServer) TransferHouseholdOwnership(context.Context, *messages.TransferHouseholdOwnershipRequest) (*messages.Household, error) {
+func (UnimplementedEatingServiceServer) TransferHouseholdOwnership(context.Context, *messages.TransferHouseholdOwnershipRequest) (*messages.TransferHouseholdOwnershipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TransferHouseholdOwnership not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateHousehold(context.Context, *messages.UpdateHouseholdRequest) (*messages.Household, error) {
+func (UnimplementedEatingServiceServer) UpdateHousehold(context.Context, *messages.UpdateHouseholdRequest) (*messages.UpdateHouseholdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateHousehold not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateHouseholdInstrumentOwnership(context.Context, *messages.UpdateHouseholdInstrumentOwnershipRequest) (*messages.HouseholdInstrumentOwnership, error) {
+func (UnimplementedEatingServiceServer) UpdateHouseholdInstrumentOwnership(context.Context, *messages.UpdateHouseholdInstrumentOwnershipRequest) (*messages.UpdateHouseholdInstrumentOwnershipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateHouseholdInstrumentOwnership not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateHouseholdMemberPermissions(context.Context, *messages.UpdateHouseholdMemberPermissionsRequest) (*messages.UserPermissionsResponse, error) {
+func (UnimplementedEatingServiceServer) UpdateHouseholdMemberPermissions(context.Context, *messages.UpdateHouseholdMemberPermissionsRequest) (*messages.UpdateHouseholdMemberPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateHouseholdMemberPermissions not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateMealPlan(context.Context, *messages.UpdateMealPlanRequest) (*messages.MealPlan, error) {
+func (UnimplementedEatingServiceServer) UpdateMealPlan(context.Context, *messages.UpdateMealPlanRequest) (*messages.UpdateMealPlanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealPlan not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateMealPlanEvent(context.Context, *messages.UpdateMealPlanEventRequest) (*messages.MealPlanEvent, error) {
+func (UnimplementedEatingServiceServer) UpdateMealPlanEvent(context.Context, *messages.UpdateMealPlanEventRequest) (*messages.UpdateMealPlanEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealPlanEvent not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateMealPlanGroceryListItem(context.Context, *messages.UpdateMealPlanGroceryListItemRequest) (*messages.MealPlanGroceryListItem, error) {
+func (UnimplementedEatingServiceServer) UpdateMealPlanGroceryListItem(context.Context, *messages.UpdateMealPlanGroceryListItemRequest) (*messages.UpdateMealPlanGroceryListItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealPlanGroceryListItem not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateMealPlanOption(context.Context, *messages.UpdateMealPlanOptionRequest) (*messages.MealPlanOption, error) {
+func (UnimplementedEatingServiceServer) UpdateMealPlanOption(context.Context, *messages.UpdateMealPlanOptionRequest) (*messages.UpdateMealPlanOptionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealPlanOption not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateMealPlanOptionVote(context.Context, *messages.UpdateMealPlanOptionVoteRequest) (*messages.MealPlanOptionVote, error) {
+func (UnimplementedEatingServiceServer) UpdateMealPlanOptionVote(context.Context, *messages.UpdateMealPlanOptionVoteRequest) (*messages.UpdateMealPlanOptionVoteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealPlanOptionVote not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateMealPlanTaskStatus(context.Context, *messages.UpdateMealPlanTaskStatusRequest) (*messages.MealPlanTask, error) {
+func (UnimplementedEatingServiceServer) UpdateMealPlanTaskStatus(context.Context, *messages.UpdateMealPlanTaskStatusRequest) (*messages.UpdateMealPlanTaskStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMealPlanTaskStatus not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdatePassword(context.Context, *messages.PasswordUpdateInput) (*messages.PasswordResetResponse, error) {
+func (UnimplementedEatingServiceServer) UpdatePassword(context.Context, *messages.UpdatePasswordRequest) (*messages.UpdatePasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateRecipe(context.Context, *messages.UpdateRecipeRequest) (*messages.Recipe, error) {
+func (UnimplementedEatingServiceServer) UpdateRecipe(context.Context, *messages.UpdateRecipeRequest) (*messages.UpdateRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipe not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateRecipePrepTask(context.Context, *messages.UpdateRecipePrepTaskRequest) (*messages.RecipePrepTask, error) {
+func (UnimplementedEatingServiceServer) UpdateRecipePrepTask(context.Context, *messages.UpdateRecipePrepTaskRequest) (*messages.UpdateRecipePrepTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipePrepTask not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateRecipeRating(context.Context, *messages.UpdateRecipeRatingRequest) (*messages.RecipeRating, error) {
+func (UnimplementedEatingServiceServer) UpdateRecipeRating(context.Context, *messages.UpdateRecipeRatingRequest) (*messages.UpdateRecipeRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeRating not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateRecipeStep(context.Context, *messages.UpdateRecipeStepRequest) (*messages.RecipeStep, error) {
+func (UnimplementedEatingServiceServer) UpdateRecipeStep(context.Context, *messages.UpdateRecipeStepRequest) (*messages.UpdateRecipeStepResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeStep not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateRecipeStepCompletionCondition(context.Context, *messages.UpdateRecipeStepCompletionConditionRequest) (*messages.RecipeStepCompletionCondition, error) {
+func (UnimplementedEatingServiceServer) UpdateRecipeStepCompletionCondition(context.Context, *messages.UpdateRecipeStepCompletionConditionRequest) (*messages.UpdateRecipeStepCompletionConditionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeStepCompletionCondition not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateRecipeStepIngredient(context.Context, *messages.UpdateRecipeStepIngredientRequest) (*messages.RecipeStepIngredient, error) {
+func (UnimplementedEatingServiceServer) UpdateRecipeStepIngredient(context.Context, *messages.UpdateRecipeStepIngredientRequest) (*messages.UpdateRecipeStepIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeStepIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateRecipeStepInstrument(context.Context, *messages.UpdateRecipeStepInstrumentRequest) (*messages.RecipeStepInstrument, error) {
+func (UnimplementedEatingServiceServer) UpdateRecipeStepInstrument(context.Context, *messages.UpdateRecipeStepInstrumentRequest) (*messages.UpdateRecipeStepInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeStepInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateRecipeStepProduct(context.Context, *messages.UpdateRecipeStepProductRequest) (*messages.RecipeStepProduct, error) {
+func (UnimplementedEatingServiceServer) UpdateRecipeStepProduct(context.Context, *messages.UpdateRecipeStepProductRequest) (*messages.UpdateRecipeStepProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeStepProduct not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateRecipeStepVessel(context.Context, *messages.UpdateRecipeStepVesselRequest) (*messages.RecipeStepVessel, error) {
+func (UnimplementedEatingServiceServer) UpdateRecipeStepVessel(context.Context, *messages.UpdateRecipeStepVesselRequest) (*messages.UpdateRecipeStepVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecipeStepVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateServiceSettingConfiguration(context.Context, *messages.UpdateServiceSettingConfigurationRequest) (*messages.ServiceSettingConfiguration, error) {
+func (UnimplementedEatingServiceServer) UpdateServiceSettingConfiguration(context.Context, *messages.UpdateServiceSettingConfigurationRequest) (*messages.UpdateServiceSettingConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateServiceSettingConfiguration not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateUserDetails(context.Context, *messages.UserDetailsUpdateRequestInput) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) UpdateUserDetails(context.Context, *messages.UpdateUserDetailsRequest) (*messages.UpdateUserDetailsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserDetails not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateUserEmailAddress(context.Context, *messages.UserEmailAddressUpdateInput) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) UpdateUserEmailAddress(context.Context, *messages.UpdateUserEmailAddressRequest) (*messages.UpdateUserEmailAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserEmailAddress not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateUserIngredientPreference(context.Context, *messages.UpdateUserIngredientPreferenceRequest) (*messages.UserIngredientPreference, error) {
+func (UnimplementedEatingServiceServer) UpdateUserIngredientPreference(context.Context, *messages.UpdateUserIngredientPreferenceRequest) (*messages.UpdateUserIngredientPreferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserIngredientPreference not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateUserNotification(context.Context, *messages.UpdateUserNotificationRequest) (*messages.UserNotification, error) {
+func (UnimplementedEatingServiceServer) UpdateUserNotification(context.Context, *messages.UpdateUserNotificationRequest) (*messages.UpdateUserNotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserNotification not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateUserUsername(context.Context, *messages.UsernameUpdateInput) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) UpdateUserUsername(context.Context, *messages.UpdateUserUsernameRequest) (*messages.UpdateUserUsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserUsername not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidIngredient(context.Context, *messages.UpdateValidIngredientRequest) (*messages.ValidIngredient, error) {
+func (UnimplementedEatingServiceServer) UpdateValidIngredient(context.Context, *messages.UpdateValidIngredientRequest) (*messages.UpdateValidIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidIngredientGroup(context.Context, *messages.UpdateValidIngredientGroupRequest) (*messages.ValidIngredientGroup, error) {
+func (UnimplementedEatingServiceServer) UpdateValidIngredientGroup(context.Context, *messages.UpdateValidIngredientGroupRequest) (*messages.UpdateValidIngredientGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidIngredientGroup not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidIngredientMeasurementUnit(context.Context, *messages.UpdateValidIngredientMeasurementUnitRequest) (*messages.ValidIngredientMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) UpdateValidIngredientMeasurementUnit(context.Context, *messages.UpdateValidIngredientMeasurementUnitRequest) (*messages.UpdateValidIngredientMeasurementUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidIngredientMeasurementUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidIngredientPreparation(context.Context, *messages.UpdateValidIngredientPreparationRequest) (*messages.ValidIngredientPreparation, error) {
+func (UnimplementedEatingServiceServer) UpdateValidIngredientPreparation(context.Context, *messages.UpdateValidIngredientPreparationRequest) (*messages.UpdateValidIngredientPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidIngredientPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidIngredientState(context.Context, *messages.UpdateValidIngredientStateRequest) (*messages.ValidIngredientState, error) {
+func (UnimplementedEatingServiceServer) UpdateValidIngredientState(context.Context, *messages.UpdateValidIngredientStateRequest) (*messages.UpdateValidIngredientStateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidIngredientState not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidIngredientStateIngredient(context.Context, *messages.UpdateValidIngredientStateIngredientRequest) (*messages.ValidIngredientStateIngredient, error) {
+func (UnimplementedEatingServiceServer) UpdateValidIngredientStateIngredient(context.Context, *messages.UpdateValidIngredientStateIngredientRequest) (*messages.UpdateValidIngredientStateIngredientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidIngredientStateIngredient not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidInstrument(context.Context, *messages.UpdateValidInstrumentRequest) (*messages.ValidInstrument, error) {
+func (UnimplementedEatingServiceServer) UpdateValidInstrument(context.Context, *messages.UpdateValidInstrumentRequest) (*messages.UpdateValidInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidMeasurementUnit(context.Context, *messages.UpdateValidMeasurementUnitRequest) (*messages.ValidMeasurementUnit, error) {
+func (UnimplementedEatingServiceServer) UpdateValidMeasurementUnit(context.Context, *messages.UpdateValidMeasurementUnitRequest) (*messages.UpdateValidMeasurementUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidMeasurementUnit not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidMeasurementUnitConversion(context.Context, *messages.UpdateValidMeasurementUnitConversionRequest) (*messages.ValidMeasurementUnitConversion, error) {
+func (UnimplementedEatingServiceServer) UpdateValidMeasurementUnitConversion(context.Context, *messages.UpdateValidMeasurementUnitConversionRequest) (*messages.UpdateValidMeasurementUnitConversionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidMeasurementUnitConversion not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidPreparation(context.Context, *messages.UpdateValidPreparationRequest) (*messages.ValidPreparation, error) {
+func (UnimplementedEatingServiceServer) UpdateValidPreparation(context.Context, *messages.UpdateValidPreparationRequest) (*messages.UpdateValidPreparationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidPreparation not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidPreparationInstrument(context.Context, *messages.UpdateValidPreparationInstrumentRequest) (*messages.ValidPreparationInstrument, error) {
+func (UnimplementedEatingServiceServer) UpdateValidPreparationInstrument(context.Context, *messages.UpdateValidPreparationInstrumentRequest) (*messages.UpdateValidPreparationInstrumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidPreparationInstrument not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidPreparationVessel(context.Context, *messages.UpdateValidPreparationVesselRequest) (*messages.ValidPreparationVessel, error) {
+func (UnimplementedEatingServiceServer) UpdateValidPreparationVessel(context.Context, *messages.UpdateValidPreparationVesselRequest) (*messages.UpdateValidPreparationVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidPreparationVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) UpdateValidVessel(context.Context, *messages.UpdateValidVesselRequest) (*messages.ValidVessel, error) {
+func (UnimplementedEatingServiceServer) UpdateValidVessel(context.Context, *messages.UpdateValidVesselRequest) (*messages.UpdateValidVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidVessel not implemented")
 }
-func (UnimplementedEatingServiceServer) UploadUserAvatar(context.Context, *messages.AvatarUpdateInput) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) UploadUserAvatar(context.Context, *messages.UploadUserAvatarRequest) (*messages.UploadUserAvatarResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadUserAvatar not implemented")
 }
-func (UnimplementedEatingServiceServer) VerifyEmailAddress(context.Context, *messages.EmailAddressVerificationRequestInput) (*messages.User, error) {
+func (UnimplementedEatingServiceServer) VerifyEmailAddress(context.Context, *messages.VerifyEmailAddressRequest) (*messages.VerifyEmailAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyEmailAddress not implemented")
 }
-func (UnimplementedEatingServiceServer) VerifyTOTPSecret(context.Context, *messages.TOTPSecretVerificationInput) (*messages.TOTPSecretVerificationResponse, error) {
+func (UnimplementedEatingServiceServer) VerifyTOTPSecret(context.Context, *messages.VerifyTOTPSecretRequest) (*messages.VerifyTOTPSecretResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyTOTPSecret not implemented")
 }
 func (UnimplementedEatingServiceServer) mustEmbedUnimplementedEatingServiceServer() {}
@@ -4251,7 +4250,7 @@ func RegisterEatingServiceServer(s grpc.ServiceRegistrar, srv EatingServiceServe
 }
 
 func _EatingService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.PingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -4263,7 +4262,7 @@ func _EatingService_Ping_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: EatingService_Ping_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).Ping(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).Ping(ctx, req.(*messages.PingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4305,7 +4304,7 @@ func _EatingService_AcceptHouseholdInvitation_Handler(srv interface{}, ctx conte
 }
 
 func _EatingService_AdminLoginForToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UserLoginInput)
+	in := new(messages.AdminLoginForTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -4317,13 +4316,13 @@ func _EatingService_AdminLoginForToken_Handler(srv interface{}, ctx context.Cont
 		FullMethod: EatingService_AdminLoginForToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).AdminLoginForToken(ctx, req.(*messages.UserLoginInput))
+		return srv.(EatingServiceServer).AdminLoginForToken(ctx, req.(*messages.AdminLoginForTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_AdminUpdateUserStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UserAccountStatusUpdateInput)
+	in := new(messages.AdminUpdateUserStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -4335,13 +4334,13 @@ func _EatingService_AdminUpdateUserStatus_Handler(srv interface{}, ctx context.C
 		FullMethod: EatingService_AdminUpdateUserStatus_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).AdminUpdateUserStatus(ctx, req.(*messages.UserAccountStatusUpdateInput))
+		return srv.(EatingServiceServer).AdminUpdateUserStatus(ctx, req.(*messages.AdminUpdateUserStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_AggregateUserDataReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.AggregateUserDataReportRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -4353,7 +4352,7 @@ func _EatingService_AggregateUserDataReport_Handler(srv interface{}, ctx context
 		FullMethod: EatingService_AggregateUserDataReport_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).AggregateUserDataReport(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).AggregateUserDataReport(ctx, req.(*messages.AggregateUserDataReportRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5061,7 +5060,7 @@ func _EatingService_CancelHouseholdInvitation_Handler(srv interface{}, ctx conte
 }
 
 func _EatingService_CheckForReadiness_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.CheckForReadinessRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5073,13 +5072,13 @@ func _EatingService_CheckForReadiness_Handler(srv interface{}, ctx context.Conte
 		FullMethod: EatingService_CheckForReadiness_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CheckForReadiness(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).CheckForReadiness(ctx, req.(*messages.CheckForReadinessRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CheckPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UserPermissionsRequestInput)
+	in := new(messages.CheckPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5091,7 +5090,7 @@ func _EatingService_CheckPermissions_Handler(srv interface{}, ctx context.Contex
 		FullMethod: EatingService_CheckPermissions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CheckPermissions(ctx, req.(*messages.UserPermissionsRequestInput))
+		return srv.(EatingServiceServer).CheckPermissions(ctx, req.(*messages.CheckPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5115,7 +5114,7 @@ func _EatingService_CloneRecipe_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _EatingService_CreateHousehold_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.HouseholdCreationRequestInput)
+	in := new(messages.CreateHouseholdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5127,13 +5126,13 @@ func _EatingService_CreateHousehold_Handler(srv interface{}, ctx context.Context
 		FullMethod: EatingService_CreateHousehold_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateHousehold(ctx, req.(*messages.HouseholdCreationRequestInput))
+		return srv.(EatingServiceServer).CreateHousehold(ctx, req.(*messages.CreateHouseholdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateHouseholdInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.HouseholdInstrumentOwnershipCreationRequestInput)
+	in := new(messages.CreateHouseholdInstrumentOwnershipRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5145,7 +5144,7 @@ func _EatingService_CreateHouseholdInstrumentOwnership_Handler(srv interface{}, 
 		FullMethod: EatingService_CreateHouseholdInstrumentOwnership_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateHouseholdInstrumentOwnership(ctx, req.(*messages.HouseholdInstrumentOwnershipCreationRequestInput))
+		return srv.(EatingServiceServer).CreateHouseholdInstrumentOwnership(ctx, req.(*messages.CreateHouseholdInstrumentOwnershipRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5169,7 +5168,7 @@ func _EatingService_CreateHouseholdInvitation_Handler(srv interface{}, ctx conte
 }
 
 func _EatingService_CreateMeal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.MealCreationRequestInput)
+	in := new(messages.CreateMealRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5181,13 +5180,13 @@ func _EatingService_CreateMeal_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: EatingService_CreateMeal_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateMeal(ctx, req.(*messages.MealCreationRequestInput))
+		return srv.(EatingServiceServer).CreateMeal(ctx, req.(*messages.CreateMealRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateMealPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.MealPlanCreationRequestInput)
+	in := new(messages.CreateMealPlanRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5199,7 +5198,7 @@ func _EatingService_CreateMealPlan_Handler(srv interface{}, ctx context.Context,
 		FullMethod: EatingService_CreateMealPlan_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateMealPlan(ctx, req.(*messages.MealPlanCreationRequestInput))
+		return srv.(EatingServiceServer).CreateMealPlan(ctx, req.(*messages.CreateMealPlanRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5295,7 +5294,7 @@ func _EatingService_CreateMealPlanTask_Handler(srv interface{}, ctx context.Cont
 }
 
 func _EatingService_CreateOAuth2Client_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.OAuth2ClientCreationRequestInput)
+	in := new(messages.CreateOAuth2ClientRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5307,13 +5306,13 @@ func _EatingService_CreateOAuth2Client_Handler(srv interface{}, ctx context.Cont
 		FullMethod: EatingService_CreateOAuth2Client_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateOAuth2Client(ctx, req.(*messages.OAuth2ClientCreationRequestInput))
+		return srv.(EatingServiceServer).CreateOAuth2Client(ctx, req.(*messages.CreateOAuth2ClientRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateRecipe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.RecipeCreationRequestInput)
+	in := new(messages.CreateRecipeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5325,7 +5324,7 @@ func _EatingService_CreateRecipe_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: EatingService_CreateRecipe_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateRecipe(ctx, req.(*messages.RecipeCreationRequestInput))
+		return srv.(EatingServiceServer).CreateRecipe(ctx, req.(*messages.CreateRecipeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5475,7 +5474,7 @@ func _EatingService_CreateRecipeStepVessel_Handler(srv interface{}, ctx context.
 }
 
 func _EatingService_CreateServiceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ServiceSettingCreationRequestInput)
+	in := new(messages.CreateServiceSettingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5487,13 +5486,13 @@ func _EatingService_CreateServiceSetting_Handler(srv interface{}, ctx context.Co
 		FullMethod: EatingService_CreateServiceSetting_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateServiceSetting(ctx, req.(*messages.ServiceSettingCreationRequestInput))
+		return srv.(EatingServiceServer).CreateServiceSetting(ctx, req.(*messages.CreateServiceSettingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateServiceSettingConfiguration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ServiceSettingConfigurationCreationRequestInput)
+	in := new(messages.CreateServiceSettingConfigurationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5505,13 +5504,13 @@ func _EatingService_CreateServiceSettingConfiguration_Handler(srv interface{}, c
 		FullMethod: EatingService_CreateServiceSettingConfiguration_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateServiceSettingConfiguration(ctx, req.(*messages.ServiceSettingConfigurationCreationRequestInput))
+		return srv.(EatingServiceServer).CreateServiceSettingConfiguration(ctx, req.(*messages.CreateServiceSettingConfigurationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UserRegistrationInput)
+	in := new(messages.CreateUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5523,13 +5522,13 @@ func _EatingService_CreateUser_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: EatingService_CreateUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateUser(ctx, req.(*messages.UserRegistrationInput))
+		return srv.(EatingServiceServer).CreateUser(ctx, req.(*messages.CreateUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateUserIngredientPreference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UserIngredientPreferenceCreationRequestInput)
+	in := new(messages.CreateUserIngredientPreferenceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5541,13 +5540,13 @@ func _EatingService_CreateUserIngredientPreference_Handler(srv interface{}, ctx 
 		FullMethod: EatingService_CreateUserIngredientPreference_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateUserIngredientPreference(ctx, req.(*messages.UserIngredientPreferenceCreationRequestInput))
+		return srv.(EatingServiceServer).CreateUserIngredientPreference(ctx, req.(*messages.CreateUserIngredientPreferenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateUserNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UserNotificationCreationRequestInput)
+	in := new(messages.CreateUserNotificationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5559,13 +5558,13 @@ func _EatingService_CreateUserNotification_Handler(srv interface{}, ctx context.
 		FullMethod: EatingService_CreateUserNotification_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateUserNotification(ctx, req.(*messages.UserNotificationCreationRequestInput))
+		return srv.(EatingServiceServer).CreateUserNotification(ctx, req.(*messages.CreateUserNotificationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidIngredient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidIngredientCreationRequestInput)
+	in := new(messages.CreateValidIngredientRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5577,13 +5576,13 @@ func _EatingService_CreateValidIngredient_Handler(srv interface{}, ctx context.C
 		FullMethod: EatingService_CreateValidIngredient_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidIngredient(ctx, req.(*messages.ValidIngredientCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidIngredient(ctx, req.(*messages.CreateValidIngredientRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidIngredientGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidIngredientGroupCreationRequestInput)
+	in := new(messages.CreateValidIngredientGroupRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5595,13 +5594,13 @@ func _EatingService_CreateValidIngredientGroup_Handler(srv interface{}, ctx cont
 		FullMethod: EatingService_CreateValidIngredientGroup_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidIngredientGroup(ctx, req.(*messages.ValidIngredientGroupCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidIngredientGroup(ctx, req.(*messages.CreateValidIngredientGroupRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidIngredientMeasurementUnit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidIngredientMeasurementUnitCreationRequestInput)
+	in := new(messages.CreateValidIngredientMeasurementUnitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5613,13 +5612,13 @@ func _EatingService_CreateValidIngredientMeasurementUnit_Handler(srv interface{}
 		FullMethod: EatingService_CreateValidIngredientMeasurementUnit_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidIngredientMeasurementUnit(ctx, req.(*messages.ValidIngredientMeasurementUnitCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidIngredientMeasurementUnit(ctx, req.(*messages.CreateValidIngredientMeasurementUnitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidIngredientPreparation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidIngredientPreparationCreationRequestInput)
+	in := new(messages.CreateValidIngredientPreparationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5631,13 +5630,13 @@ func _EatingService_CreateValidIngredientPreparation_Handler(srv interface{}, ct
 		FullMethod: EatingService_CreateValidIngredientPreparation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidIngredientPreparation(ctx, req.(*messages.ValidIngredientPreparationCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidIngredientPreparation(ctx, req.(*messages.CreateValidIngredientPreparationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidIngredientState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidIngredientStateCreationRequestInput)
+	in := new(messages.CreateValidIngredientStateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5649,13 +5648,13 @@ func _EatingService_CreateValidIngredientState_Handler(srv interface{}, ctx cont
 		FullMethod: EatingService_CreateValidIngredientState_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidIngredientState(ctx, req.(*messages.ValidIngredientStateCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidIngredientState(ctx, req.(*messages.CreateValidIngredientStateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidIngredientStateIngredient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidIngredientStateIngredientCreationRequestInput)
+	in := new(messages.CreateValidIngredientStateIngredientRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5667,13 +5666,13 @@ func _EatingService_CreateValidIngredientStateIngredient_Handler(srv interface{}
 		FullMethod: EatingService_CreateValidIngredientStateIngredient_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidIngredientStateIngredient(ctx, req.(*messages.ValidIngredientStateIngredientCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidIngredientStateIngredient(ctx, req.(*messages.CreateValidIngredientStateIngredientRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidInstrument_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidInstrumentCreationRequestInput)
+	in := new(messages.CreateValidInstrumentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5685,13 +5684,13 @@ func _EatingService_CreateValidInstrument_Handler(srv interface{}, ctx context.C
 		FullMethod: EatingService_CreateValidInstrument_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidInstrument(ctx, req.(*messages.ValidInstrumentCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidInstrument(ctx, req.(*messages.CreateValidInstrumentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidMeasurementUnit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidMeasurementUnitCreationRequestInput)
+	in := new(messages.CreateValidMeasurementUnitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5703,13 +5702,13 @@ func _EatingService_CreateValidMeasurementUnit_Handler(srv interface{}, ctx cont
 		FullMethod: EatingService_CreateValidMeasurementUnit_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidMeasurementUnit(ctx, req.(*messages.ValidMeasurementUnitCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidMeasurementUnit(ctx, req.(*messages.CreateValidMeasurementUnitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidMeasurementUnitConversion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidMeasurementUnitConversionCreationRequestInput)
+	in := new(messages.CreateValidMeasurementUnitConversionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5721,13 +5720,13 @@ func _EatingService_CreateValidMeasurementUnitConversion_Handler(srv interface{}
 		FullMethod: EatingService_CreateValidMeasurementUnitConversion_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidMeasurementUnitConversion(ctx, req.(*messages.ValidMeasurementUnitConversionCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidMeasurementUnitConversion(ctx, req.(*messages.CreateValidMeasurementUnitConversionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidPreparation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidPreparationCreationRequestInput)
+	in := new(messages.CreateValidPreparationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5739,13 +5738,13 @@ func _EatingService_CreateValidPreparation_Handler(srv interface{}, ctx context.
 		FullMethod: EatingService_CreateValidPreparation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidPreparation(ctx, req.(*messages.ValidPreparationCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidPreparation(ctx, req.(*messages.CreateValidPreparationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidPreparationInstrument_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidPreparationInstrumentCreationRequestInput)
+	in := new(messages.CreateValidPreparationInstrumentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5757,13 +5756,13 @@ func _EatingService_CreateValidPreparationInstrument_Handler(srv interface{}, ct
 		FullMethod: EatingService_CreateValidPreparationInstrument_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidPreparationInstrument(ctx, req.(*messages.ValidPreparationInstrumentCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidPreparationInstrument(ctx, req.(*messages.CreateValidPreparationInstrumentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidPreparationVessel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidPreparationVesselCreationRequestInput)
+	in := new(messages.CreateValidPreparationVesselRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5775,13 +5774,13 @@ func _EatingService_CreateValidPreparationVessel_Handler(srv interface{}, ctx co
 		FullMethod: EatingService_CreateValidPreparationVessel_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidPreparationVessel(ctx, req.(*messages.ValidPreparationVesselCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidPreparationVessel(ctx, req.(*messages.CreateValidPreparationVesselRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateValidVessel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ValidVesselCreationRequestInput)
+	in := new(messages.CreateValidVesselRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5793,13 +5792,13 @@ func _EatingService_CreateValidVessel_Handler(srv interface{}, ctx context.Conte
 		FullMethod: EatingService_CreateValidVessel_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateValidVessel(ctx, req.(*messages.ValidVesselCreationRequestInput))
+		return srv.(EatingServiceServer).CreateValidVessel(ctx, req.(*messages.CreateValidVesselRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_CreateWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.WebhookCreationRequestInput)
+	in := new(messages.CreateWebhookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5811,7 +5810,7 @@ func _EatingService_CreateWebhook_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: EatingService_CreateWebhook_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).CreateWebhook(ctx, req.(*messages.WebhookCreationRequestInput))
+		return srv.(EatingServiceServer).CreateWebhook(ctx, req.(*messages.CreateWebhookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5835,7 +5834,7 @@ func _EatingService_CreateWebhookTriggerEvent_Handler(srv interface{}, ctx conte
 }
 
 func _EatingService_DestroyAllUserData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.DestroyAllUserDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5847,7 +5846,7 @@ func _EatingService_DestroyAllUserData_Handler(srv interface{}, ctx context.Cont
 		FullMethod: EatingService_DestroyAllUserData_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).DestroyAllUserData(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).DestroyAllUserData(ctx, req.(*messages.DestroyAllUserDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5889,7 +5888,7 @@ func _EatingService_FinalizeMealPlan_Handler(srv interface{}, ctx context.Contex
 }
 
 func _EatingService_GetActiveHousehold_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.GetActiveHouseholdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5901,7 +5900,7 @@ func _EatingService_GetActiveHousehold_Handler(srv interface{}, ctx context.Cont
 		FullMethod: EatingService_GetActiveHousehold_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).GetActiveHousehold(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).GetActiveHousehold(ctx, req.(*messages.GetActiveHouseholdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5961,7 +5960,7 @@ func _EatingService_GetAuditLogEntryByID_Handler(srv interface{}, ctx context.Co
 }
 
 func _EatingService_GetAuthStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.GetAuthStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5973,7 +5972,7 @@ func _EatingService_GetAuthStatus_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: EatingService_GetAuthStatus_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).GetAuthStatus(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).GetAuthStatus(ctx, req.(*messages.GetAuthStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6393,7 +6392,7 @@ func _EatingService_GetOAuth2Clients_Handler(srv interface{}, ctx context.Contex
 }
 
 func _EatingService_GetRandomValidIngredient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.GetRandomValidIngredientRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -6405,13 +6404,13 @@ func _EatingService_GetRandomValidIngredient_Handler(srv interface{}, ctx contex
 		FullMethod: EatingService_GetRandomValidIngredient_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).GetRandomValidIngredient(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).GetRandomValidIngredient(ctx, req.(*messages.GetRandomValidIngredientRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_GetRandomValidInstrument_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.GetRandomValidInstrumentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -6423,13 +6422,13 @@ func _EatingService_GetRandomValidInstrument_Handler(srv interface{}, ctx contex
 		FullMethod: EatingService_GetRandomValidInstrument_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).GetRandomValidInstrument(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).GetRandomValidInstrument(ctx, req.(*messages.GetRandomValidInstrumentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_GetRandomValidPreparation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.GetRandomValidPreparationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -6441,13 +6440,13 @@ func _EatingService_GetRandomValidPreparation_Handler(srv interface{}, ctx conte
 		FullMethod: EatingService_GetRandomValidPreparation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).GetRandomValidPreparation(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).GetRandomValidPreparation(ctx, req.(*messages.GetRandomValidPreparationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_GetRandomValidVessel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.GetRandomValidVesselRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -6459,7 +6458,7 @@ func _EatingService_GetRandomValidVessel_Handler(srv interface{}, ctx context.Co
 		FullMethod: EatingService_GetRandomValidVessel_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).GetRandomValidVessel(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).GetRandomValidVessel(ctx, req.(*messages.GetRandomValidVesselRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6825,7 +6824,7 @@ func _EatingService_GetRecipes_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _EatingService_GetSelf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.GetSelfRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -6837,7 +6836,7 @@ func _EatingService_GetSelf_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: EatingService_GetSelf_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).GetSelf(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).GetSelf(ctx, req.(*messages.GetSelfRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -7743,7 +7742,7 @@ func _EatingService_GetWebhooks_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _EatingService_LoginForToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UserLoginInput)
+	in := new(messages.LoginForTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7755,13 +7754,13 @@ func _EatingService_LoginForToken_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: EatingService_LoginForToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).LoginForToken(ctx, req.(*messages.UserLoginInput))
+		return srv.(EatingServiceServer).LoginForToken(ctx, req.(*messages.LoginForTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_PublishArbitraryQueueMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ArbitraryQueueMessageRequestInput)
+	in := new(messages.PublishArbitraryQueueMessageRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7773,13 +7772,13 @@ func _EatingService_PublishArbitraryQueueMessage_Handler(srv interface{}, ctx co
 		FullMethod: EatingService_PublishArbitraryQueueMessage_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).PublishArbitraryQueueMessage(ctx, req.(*messages.ArbitraryQueueMessageRequestInput))
+		return srv.(EatingServiceServer).PublishArbitraryQueueMessage(ctx, req.(*messages.PublishArbitraryQueueMessageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_RedeemPasswordResetToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.PasswordResetTokenRedemptionRequestInput)
+	in := new(messages.RedeemPasswordResetTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7791,13 +7790,13 @@ func _EatingService_RedeemPasswordResetToken_Handler(srv interface{}, ctx contex
 		FullMethod: EatingService_RedeemPasswordResetToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).RedeemPasswordResetToken(ctx, req.(*messages.PasswordResetTokenRedemptionRequestInput))
+		return srv.(EatingServiceServer).RedeemPasswordResetToken(ctx, req.(*messages.RedeemPasswordResetTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_RefreshTOTPSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.TOTPSecretRefreshInput)
+	in := new(messages.RefreshTOTPSecretRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7809,7 +7808,7 @@ func _EatingService_RefreshTOTPSecret_Handler(srv interface{}, ctx context.Conte
 		FullMethod: EatingService_RefreshTOTPSecret_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).RefreshTOTPSecret(ctx, req.(*messages.TOTPSecretRefreshInput))
+		return srv.(EatingServiceServer).RefreshTOTPSecret(ctx, req.(*messages.RefreshTOTPSecretRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -7833,7 +7832,7 @@ func _EatingService_RejectHouseholdInvitation_Handler(srv interface{}, ctx conte
 }
 
 func _EatingService_RequestEmailVerificationEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(messages.RequestEmailVerificationEmailRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7845,13 +7844,13 @@ func _EatingService_RequestEmailVerificationEmail_Handler(srv interface{}, ctx c
 		FullMethod: EatingService_RequestEmailVerificationEmail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).RequestEmailVerificationEmail(ctx, req.(*emptypb.Empty))
+		return srv.(EatingServiceServer).RequestEmailVerificationEmail(ctx, req.(*messages.RequestEmailVerificationEmailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_RequestPasswordResetToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.PasswordResetTokenCreationRequestInput)
+	in := new(messages.RequestPasswordResetTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7863,13 +7862,13 @@ func _EatingService_RequestPasswordResetToken_Handler(srv interface{}, ctx conte
 		FullMethod: EatingService_RequestPasswordResetToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).RequestPasswordResetToken(ctx, req.(*messages.PasswordResetTokenCreationRequestInput))
+		return srv.(EatingServiceServer).RequestPasswordResetToken(ctx, req.(*messages.RequestPasswordResetTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_RequestUsernameReminder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UsernameReminderRequestInput)
+	in := new(messages.RequestUsernameReminderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7881,13 +7880,13 @@ func _EatingService_RequestUsernameReminder_Handler(srv interface{}, ctx context
 		FullMethod: EatingService_RequestUsernameReminder_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).RequestUsernameReminder(ctx, req.(*messages.UsernameReminderRequestInput))
+		return srv.(EatingServiceServer).RequestUsernameReminder(ctx, req.(*messages.RequestUsernameReminderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_RunFinalizeMealPlanWorker_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.FinalizeMealPlansRequest)
+	in := new(messages.RunFinalizeMealPlanWorkerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7899,13 +7898,13 @@ func _EatingService_RunFinalizeMealPlanWorker_Handler(srv interface{}, ctx conte
 		FullMethod: EatingService_RunFinalizeMealPlanWorker_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).RunFinalizeMealPlanWorker(ctx, req.(*messages.FinalizeMealPlansRequest))
+		return srv.(EatingServiceServer).RunFinalizeMealPlanWorker(ctx, req.(*messages.RunFinalizeMealPlanWorkerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_RunMealPlanGroceryListInitializerWorker_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.InitializeMealPlanGroceryListRequest)
+	in := new(messages.RunMealPlanGroceryListInitializerWorkerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7917,13 +7916,13 @@ func _EatingService_RunMealPlanGroceryListInitializerWorker_Handler(srv interfac
 		FullMethod: EatingService_RunMealPlanGroceryListInitializerWorker_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).RunMealPlanGroceryListInitializerWorker(ctx, req.(*messages.InitializeMealPlanGroceryListRequest))
+		return srv.(EatingServiceServer).RunMealPlanGroceryListInitializerWorker(ctx, req.(*messages.RunMealPlanGroceryListInitializerWorkerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_RunMealPlanTaskCreatorWorker_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.CreateMealPlanTasksRequest)
+	in := new(messages.RunMealPlanTaskCreatorWorkerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -7935,7 +7934,7 @@ func _EatingService_RunMealPlanTaskCreatorWorker_Handler(srv interface{}, ctx co
 		FullMethod: EatingService_RunMealPlanTaskCreatorWorker_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).RunMealPlanTaskCreatorWorker(ctx, req.(*messages.CreateMealPlanTasksRequest))
+		return srv.(EatingServiceServer).RunMealPlanTaskCreatorWorker(ctx, req.(*messages.RunMealPlanTaskCreatorWorkerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -8373,7 +8372,7 @@ func _EatingService_UpdateMealPlanTaskStatus_Handler(srv interface{}, ctx contex
 }
 
 func _EatingService_UpdatePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.PasswordUpdateInput)
+	in := new(messages.UpdatePasswordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8385,7 +8384,7 @@ func _EatingService_UpdatePassword_Handler(srv interface{}, ctx context.Context,
 		FullMethod: EatingService_UpdatePassword_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).UpdatePassword(ctx, req.(*messages.PasswordUpdateInput))
+		return srv.(EatingServiceServer).UpdatePassword(ctx, req.(*messages.UpdatePasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -8571,7 +8570,7 @@ func _EatingService_UpdateServiceSettingConfiguration_Handler(srv interface{}, c
 }
 
 func _EatingService_UpdateUserDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UserDetailsUpdateRequestInput)
+	in := new(messages.UpdateUserDetailsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8583,13 +8582,13 @@ func _EatingService_UpdateUserDetails_Handler(srv interface{}, ctx context.Conte
 		FullMethod: EatingService_UpdateUserDetails_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).UpdateUserDetails(ctx, req.(*messages.UserDetailsUpdateRequestInput))
+		return srv.(EatingServiceServer).UpdateUserDetails(ctx, req.(*messages.UpdateUserDetailsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_UpdateUserEmailAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UserEmailAddressUpdateInput)
+	in := new(messages.UpdateUserEmailAddressRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8601,7 +8600,7 @@ func _EatingService_UpdateUserEmailAddress_Handler(srv interface{}, ctx context.
 		FullMethod: EatingService_UpdateUserEmailAddress_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).UpdateUserEmailAddress(ctx, req.(*messages.UserEmailAddressUpdateInput))
+		return srv.(EatingServiceServer).UpdateUserEmailAddress(ctx, req.(*messages.UpdateUserEmailAddressRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -8643,7 +8642,7 @@ func _EatingService_UpdateUserNotification_Handler(srv interface{}, ctx context.
 }
 
 func _EatingService_UpdateUserUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UsernameUpdateInput)
+	in := new(messages.UpdateUserUsernameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8655,7 +8654,7 @@ func _EatingService_UpdateUserUsername_Handler(srv interface{}, ctx context.Cont
 		FullMethod: EatingService_UpdateUserUsername_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).UpdateUserUsername(ctx, req.(*messages.UsernameUpdateInput))
+		return srv.(EatingServiceServer).UpdateUserUsername(ctx, req.(*messages.UpdateUserUsernameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -8895,7 +8894,7 @@ func _EatingService_UpdateValidVessel_Handler(srv interface{}, ctx context.Conte
 }
 
 func _EatingService_UploadUserAvatar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.AvatarUpdateInput)
+	in := new(messages.UploadUserAvatarRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8907,13 +8906,13 @@ func _EatingService_UploadUserAvatar_Handler(srv interface{}, ctx context.Contex
 		FullMethod: EatingService_UploadUserAvatar_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).UploadUserAvatar(ctx, req.(*messages.AvatarUpdateInput))
+		return srv.(EatingServiceServer).UploadUserAvatar(ctx, req.(*messages.UploadUserAvatarRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_VerifyEmailAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.EmailAddressVerificationRequestInput)
+	in := new(messages.VerifyEmailAddressRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8925,13 +8924,13 @@ func _EatingService_VerifyEmailAddress_Handler(srv interface{}, ctx context.Cont
 		FullMethod: EatingService_VerifyEmailAddress_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).VerifyEmailAddress(ctx, req.(*messages.EmailAddressVerificationRequestInput))
+		return srv.(EatingServiceServer).VerifyEmailAddress(ctx, req.(*messages.VerifyEmailAddressRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _EatingService_VerifyTOTPSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.TOTPSecretVerificationInput)
+	in := new(messages.VerifyTOTPSecretRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8943,7 +8942,7 @@ func _EatingService_VerifyTOTPSecret_Handler(srv interface{}, ctx context.Contex
 		FullMethod: EatingService_VerifyTOTPSecret_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServiceServer).VerifyTOTPSecret(ctx, req.(*messages.TOTPSecretVerificationInput))
+		return srv.(EatingServiceServer).VerifyTOTPSecret(ctx, req.(*messages.VerifyTOTPSecretRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

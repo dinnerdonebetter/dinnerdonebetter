@@ -3,12 +3,12 @@ package serverimpl
 import (
 	"context"
 
-	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
 )
 
-func (s *Server) Ping(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
+func (s *Server) Ping(ctx context.Context, _ *messages.PingRequest) (*messages.PingResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return &emptypb.Empty{}, nil
+	return &messages.PingResponse{Meta: &messages.ResponseMeta{TraceID: span.SpanContext().TraceID().String()}}, nil
 }

@@ -25,13 +25,12 @@ type (
 	}
 
 	Server struct {
-		logger                   logging.Logger
-		config                   *Config
-		grpcServer               *grpc.Server
-		unaryServerInterceptors  []grpc.UnaryServerInterceptor
-		streamServerInterceptors []grpc.StreamServerInterceptor
+		logger     logging.Logger
+		config     *Config
+		grpcServer *grpc.Server
 	}
 
+	// RegistrationFunc is i.e. protobuf.RegisterSomeExampleServiceServer(grpcServer, &exampleServiceServerImpl{}).
 	RegistrationFunc func(*grpc.Server)
 )
 
@@ -52,9 +51,7 @@ func NewGRPCServer(
 	}
 
 	grpcServer := grpc.NewServer(opts...)
-
 	for _, rf := range registrationFunctions {
-		// i.e. protobuf.RegisterSomeExampleServiceServer(grpcServer, &exampleServiceServerImpl{})
 		rf(grpcServer)
 	}
 
