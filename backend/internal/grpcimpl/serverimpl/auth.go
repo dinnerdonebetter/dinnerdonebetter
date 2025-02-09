@@ -161,3 +161,10 @@ func (s *Server) GetAuthStatus(ctx context.Context, request *messages.GetAuthSta
 
 	return nil, Unimplemented()
 }
+
+func (s *Server) GetSelf(ctx context.Context, request *messages.GetSelfRequest) (*messages.GetSelfResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}

@@ -55,6 +55,13 @@ func (s *Server) GetValidIngredient(ctx context.Context, request *messages.GetVa
 	return &messages.GetValidIngredientResponse{Result: output}, nil
 }
 
+func (s *Server) GetValidIngredients(ctx context.Context, request *messages.GetValidIngredientsRequest) (*messages.GetValidIngredientsResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
 func (s *Server) GetRandomValidIngredient(ctx context.Context, _ *messages.GetRandomValidIngredientRequest) (*messages.GetRandomValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

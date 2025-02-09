@@ -228,3 +228,150 @@ func (s *Server) VerifyTOTPSecret(ctx context.Context, input *messages.VerifyTOT
 
 	return output, nil
 }
+
+func (s *Server) SearchForUsers(ctx context.Context, request *messages.SearchForUsersRequest) (*messages.SearchForUsersResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) UpdateUserDetails(ctx context.Context, request *messages.UpdateUserDetailsRequest) (*messages.UpdateUserDetailsResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) UpdateUserEmailAddress(ctx context.Context, request *messages.UpdateUserEmailAddressRequest) (*messages.UpdateUserEmailAddressResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) UpdateUserIngredientPreference(ctx context.Context, request *messages.UpdateUserIngredientPreferenceRequest) (*messages.UpdateUserIngredientPreferenceResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) UpdateUserNotification(ctx context.Context, request *messages.UpdateUserNotificationRequest) (*messages.UpdateUserNotificationResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) UpdateUserUsername(ctx context.Context, request *messages.UpdateUserUsernameRequest) (*messages.UpdateUserUsernameResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) UploadUserAvatar(ctx context.Context, request *messages.UploadUserAvatarRequest) (*messages.UploadUserAvatarResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) VerifyEmailAddress(ctx context.Context, request *messages.VerifyEmailAddressRequest) (*messages.VerifyEmailAddressResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) UpdatePassword(ctx context.Context, request *messages.UpdatePasswordRequest) (*messages.UpdatePasswordResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) RedeemPasswordResetToken(ctx context.Context, request *messages.RedeemPasswordResetTokenRequest) (*messages.RedeemPasswordResetTokenResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) RefreshTOTPSecret(ctx context.Context, request *messages.RefreshTOTPSecretRequest) (*messages.RefreshTOTPSecretResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) RequestEmailVerificationEmail(ctx context.Context, request *messages.RequestEmailVerificationEmailRequest) (*messages.RequestEmailVerificationEmailResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) RequestPasswordResetToken(ctx context.Context, request *messages.RequestPasswordResetTokenRequest) (*messages.RequestPasswordResetTokenResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) RequestUsernameReminder(ctx context.Context, request *messages.RequestUsernameReminderRequest) (*messages.RequestUsernameReminderResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) GetUsers(ctx context.Context, request *messages.GetUsersRequest) (*messages.GetUsersResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) GetUser(ctx context.Context, request *messages.GetUserRequest) (*messages.GetUserResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) DestroyAllUserData(ctx context.Context, request *messages.DestroyAllUserDataRequest) (*messages.DestroyAllUserDataResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) FetchUserDataReport(ctx context.Context, request *messages.FetchUserDataReportRequest) (*messages.FetchUserDataReportResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) ArchiveUser(ctx context.Context, request *messages.ArchiveUserRequest) (*messages.ArchiveUserResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) AdminUpdateUserStatus(ctx context.Context, request *messages.AdminUpdateUserStatusRequest) (*messages.AdminUpdateUserStatusResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) AggregateUserDataReport(ctx context.Context, request *messages.AggregateUserDataReportRequest) (*messages.AggregateUserDataReportResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}

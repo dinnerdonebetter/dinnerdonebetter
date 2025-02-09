@@ -12,3 +12,17 @@ func (s *Server) Ping(ctx context.Context, _ *messages.PingRequest) (*messages.P
 
 	return &messages.PingResponse{Meta: &messages.ResponseMeta{TraceID: span.SpanContext().TraceID().String()}}, nil
 }
+
+func (s *Server) CheckForReadiness(ctx context.Context, request *messages.CheckForReadinessRequest) (*messages.CheckForReadinessResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
+
+func (s *Server) PublishArbitraryQueueMessage(ctx context.Context, request *messages.PublishArbitraryQueueMessageRequest) (*messages.PublishArbitraryQueueMessageResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	return nil, Unimplemented()
+}
