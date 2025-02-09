@@ -10,8 +10,8 @@ COVERAGE_OUT           := $(ARTIFACTS_DIR)/coverage.out
 ENVIRONMENTS_DIR       := deploy/environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-WIRE_TARGETS           := internal/build/services/grpc_api \
-	internal/build/services/api \
+WIRE_TARGETS           := internal/build/services/api/http \
+	internal/build/services/api/grpc \
 	internal/build/services/admin_webapp \
 	internal/build/jobs/db_cleaner \
 	internal/build/jobs/search_data_index_scheduler \

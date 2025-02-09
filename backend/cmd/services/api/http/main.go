@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/build/services/api"
+	"github.com/dinnerdonebetter/backend/internal/build/services/api/http"
 	"github.com/dinnerdonebetter/backend/internal/config"
 
 	_ "go.uber.org/automaxprocs"

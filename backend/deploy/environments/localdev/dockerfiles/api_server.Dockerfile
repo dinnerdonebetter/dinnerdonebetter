@@ -6,7 +6,7 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 COPY . .
 
 RUN go install github.com/go-delve/delve/cmd/dlv@v1.23.1
-RUN go build -trimpath -o /server github.com/dinnerdonebetter/backend/cmd/services/api/http
+RUN go build -trimpath -o /server github.com/dinnerdonebetter/backend/cmd/services/api
 
 # final stage
 FROM debian:bullseye

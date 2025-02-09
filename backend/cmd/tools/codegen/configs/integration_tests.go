@@ -90,11 +90,11 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 		},
 		HTTPServer: http.Config{
 			Debug:           false,
-			HTTPPort:        defaultPort,
+			HTTPPort:        defaultHTTPPort,
 			StartupDeadline: time.Minute,
 		},
 		GRPCServer: grpc.Config{
-			Port: defaultPort,
+			Port: defaultGRPCPort,
 		},
 		Database: databasecfg.Config{
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,

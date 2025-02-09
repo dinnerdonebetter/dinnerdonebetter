@@ -102,6 +102,7 @@ services:
       CONFIGURATION_FILEPATH: '/etc/config'
     ports:
       - '8000:8000'
+      - '8001:8001'
     build:
       context: '../../../'
       dockerfile: 'deploy/dockerfiles/api_server.Dockerfile'

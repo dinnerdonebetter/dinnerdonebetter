@@ -362,13 +362,6 @@ func (s *Server) ArchiveUser(ctx context.Context, request *messages.ArchiveUserR
 	return nil, Unimplemented()
 }
 
-func (s *Server) AdminUpdateUserStatus(ctx context.Context, request *messages.AdminUpdateUserStatusRequest) (*messages.AdminUpdateUserStatusResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	return nil, Unimplemented()
-}
-
 func (s *Server) AggregateUserDataReport(ctx context.Context, request *messages.AggregateUserDataReportRequest) (*messages.AggregateUserDataReportResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()

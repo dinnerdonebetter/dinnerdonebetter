@@ -96,7 +96,7 @@ func buildDevEnvironmentServerConfig() *config.APIServiceConfig {
 		},
 		HTTPServer: http.Config{
 			Debug:           true,
-			HTTPPort:        defaultPort,
+			HTTPPort:        defaultHTTPPort,
 			StartupDeadline: time.Minute,
 		},
 		TextSearch: textsearchcfg.Config{

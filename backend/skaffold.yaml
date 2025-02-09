@@ -22,7 +22,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/services/api/http
+            main: ./cmd/services/api
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-db-cleaner
@@ -122,7 +122,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/services/api/http
+            main: ./cmd/services/api
             fromImage: golang:1.23-bullseye
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner

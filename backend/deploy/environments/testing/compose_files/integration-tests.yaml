@@ -35,6 +35,7 @@ services:
       CONFIGURATION_FILEPATH: '/etc/config'
     ports:
       - '8000:8000'
+      - '8001:8001'
     build:
       context: '../../../../'
       dockerfile: 'deploy/environments/testing/dockerfiles/integration-server.Dockerfile'
@@ -44,7 +45,7 @@ services:
         type: 'bind'
   tests:
     environment:
-      TARGET_ADDRESS: 'api_server:8000'
+      TARGET_ADDRESS: 'api_server:8001'
       TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable'
     depends_on:
       - postgres
