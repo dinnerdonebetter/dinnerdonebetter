@@ -90,10 +90,10 @@ func (s *server) Serve() {
 		s.panicker.Panic(err)
 	}
 
-	if s.config.HTTPSCertificateFile != "" && s.config.HTTPSCertificateKeyFile != "" {
+	if s.config.TLSCertificateFile != "" && s.config.TLSCertificateKeyFile != "" {
 		s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTPS requests")
 		// returns ErrServerClosed on graceful close.
-		if err := s.httpServer.ListenAndServeTLS(s.config.HTTPSCertificateFile, s.config.HTTPSCertificateKeyFile); err != nil {
+		if err := s.httpServer.ListenAndServeTLS(s.config.TLSCertificateFile, s.config.TLSCertificateKeyFile); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				// NOTE: there is a chance that next line won't have time to run,
 				// as main() doesn't wait for this goroutine to stop.

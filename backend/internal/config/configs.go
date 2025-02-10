@@ -66,8 +66,8 @@ type (
 	// APIServiceConfig configures an instance of the service. It is composed of all the other setting structs.
 	APIServiceConfig struct {
 		_                struct{}               `json:"-"`
-		Auth             authcfg.Config         `envPrefix:"AUTH_"          json:"auth"`
 		Queues           msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		GRPCServer       grpc.Config            `envPrefix:"GRPC_SERVER_"   json:"grpcServer"`
 		Routing          routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
 		Encoding         encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
 		Events           msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
@@ -78,9 +78,9 @@ type (
 		TextSearch       textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
 		FeatureFlags     featureflagscfg.Config `envPrefix:"FEATURE_FLAGS_" json:"featureFlags"`
 		HTTPServer       http.Config            `envPrefix:"SERVER_"        json:"server"`
+		Auth             authcfg.Config         `envPrefix:"AUTH_"          json:"auth"`
 		Database         databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 		Services         ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
-		GRPCServer       grpc.Config            `envPrefix:"GRPC_SERVER_"   json:"grpcServer"`
 		validateServices bool
 	}
 

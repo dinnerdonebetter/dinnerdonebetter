@@ -356,10 +356,10 @@ const (
 	// ServerHTTPPortEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.HTTPPort`.
 	ServerHTTPPortEnvVarKey = "DINNER_DONE_BETTER_SERVER_HTTP_PORT"
 
-	// ServerHTTPSCertificateFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.HTTPSCertificateFile`.
+	// ServerHTTPSCertificateFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.TLSCertificateFile`.
 	ServerHTTPSCertificateFilepathEnvVarKey = "DINNER_DONE_BETTER_SERVER_HTTPS_CERTIFICATE_FILEPATH"
 
-	// ServerHTTPSCertificateKeyFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.HTTPSCertificateKeyFile`.
+	// ServerHTTPSCertificateKeyFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.TLSCertificateKeyFile`.
 	ServerHTTPSCertificateKeyFilepathEnvVarKey = "DINNER_DONE_BETTER_SERVER_HTTPS_CERTIFICATE_KEY_FILEPATH"
 
 	// ServerStartupDeadlineEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.StartupDeadline`.

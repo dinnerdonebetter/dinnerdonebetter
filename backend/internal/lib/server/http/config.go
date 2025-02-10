@@ -12,11 +12,11 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		HTTPSCertificateFile    string        `env:"HTTPS_CERTIFICATE_FILEPATH"     json:"httpsCertificate,omitempty"`
-		HTTPSCertificateKeyFile string        `env:"HTTPS_CERTIFICATE_KEY_FILEPATH" json:"httpsCertificateKey,omitempty"`
-		StartupDeadline         time.Duration `env:"STARTUP_DEADLINE"               json:"startupDeadline,omitempty"`
-		HTTPPort                uint16        `env:"HTTP_PORT"                      json:"httpPort"`
-		Debug                   bool          `env:"DEBUG"                          json:"debug"`
+		TLSCertificateFile    string        `env:"TLS_CERTIFICATE_FILEPATH"     json:"tlsCertificate,omitempty"`
+		TLSCertificateKeyFile string        `env:"TLS_CERTIFICATE_KEY_FILEPATH" json:"tlsCertificateKey,omitempty"`
+		StartupDeadline       time.Duration `env:"STARTUP_DEADLINE"             json:"startupDeadline,omitempty"`
+		HTTPPort              uint16        `env:"HTTP_PORT"                    json:"httpPort"`
+		Debug                 bool          `env:"DEBUG"                        json:"debug"`
 	}
 )
 

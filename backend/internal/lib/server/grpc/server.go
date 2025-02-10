@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log"
@@ -13,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 const (
@@ -21,7 +23,9 @@ const (
 
 type (
 	Config struct {
-		Port uint16 `env:"PORT" json:"port"`
+		HTTPSCertificateFile  string `env:"TLS_CERTIFICATE_FILEPATH"     json:"tlsCertificate,omitempty"`
+		TLSCertificateKeyFile string `env:"TLS_CERTIFICATE_KEY_FILEPATH" json:"tlsCertificateKey,omitempty"`
+		Port                  uint16 `env:"PORT"                         json:"port"`
 	}
 
 	Server struct {
@@ -48,6 +52,21 @@ func NewGRPCServer(
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(append([]grpc.UnaryServerInterceptor{LoggingInterceptor(logger)}, unaryServerInterceptors...)...),
 		grpc.ChainStreamInterceptor(streamServerInterceptors...),
+	}
+
+	if cfg.TLSCertificateKeyFile != "" && cfg.HTTPSCertificateFile != "" {
+		serverCert, err := tls.LoadX509KeyPair(cfg.HTTPSCertificateFile, cfg.TLSCertificateKeyFile)
+		if err != nil {
+			return nil, err
+		}
+
+		// Create the credentials and return it
+		config := &tls.Config{
+			Certificates: []tls.Certificate{serverCert},
+			ClientAuth:   tls.NoClientCert,
+		}
+
+		opts = append(opts, grpc.Creds(credentials.NewTLS(config)))
 	}
 
 	grpcServer := grpc.NewServer(opts...)
