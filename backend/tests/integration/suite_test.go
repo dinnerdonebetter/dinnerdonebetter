@@ -27,7 +27,10 @@ func TestIntegration(T *testing.T) {
 	T.Parallel()
 
 	s := new(TestSuite)
-	s.address = os.Getenv(serviceURLEnvVarKey) // it's this or global variables
+
+	// it's this or global variables
+	s.grpcAddress = os.Getenv(grpcServiceURLEnvVarKey)
+	s.httpAddress = os.Getenv(httpServiceURLEnvVarKey)
 
 	suite.Run(T, s)
 }
@@ -39,7 +42,8 @@ type TestSuite struct {
 	oauthedClient      service.EatingServiceClient
 	adminOAuthedClient service.EatingServiceClient
 	user               *types.User
-	address            string
+	grpcAddress        string
+	httpAddress        string
 }
 
 var _ suite.SetupTestSuite = (*TestSuite)(nil)
@@ -52,8 +56,8 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.oauthedClient = createUserAndClientForTest(s.ctx, t, s.address, nil)
-	s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, s.address, t)
+	s.user, s.oauthedClient = createUserAndClientForTest(s.ctx, t, s.httpAddress, s.grpcAddress, nil)
+	s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, s.httpAddress, s.grpcAddress, t)
 }
 
 /*

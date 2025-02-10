@@ -12,7 +12,7 @@ import (
 
 // DetermineServiceURL returns the url, if properly configured.
 func DetermineServiceURL() *url.URL {
-	ta := os.Getenv("TARGET_ADDRESS")
+	ta := os.Getenv("TARGET_HTTP_ADDRESS")
 	if ta == "" {
 		panic("must provide target address!")
 	}

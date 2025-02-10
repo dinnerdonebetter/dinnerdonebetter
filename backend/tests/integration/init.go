@@ -2,10 +2,12 @@ package integration
 
 import (
 	"context"
+	"crypto/tls"
 	"database/sql"
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"strings"
 	"time"
@@ -24,15 +26,15 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 )
 
 const (
 	debug         = true
 	nonexistentID = "_NOT_REAL_LOL_"
 
-	serviceURLEnvVarKey = "TARGET_ADDRESS"
+	grpcServiceURLEnvVarKey = "TARGET_GRPC_ADDRESS"
+	httpServiceURLEnvVarKey = "TARGET_HTTP_ADDRESS"
 )
 
 var (
@@ -58,14 +60,15 @@ func init() {
 		panic("could not create logger: " + err.Error())
 	}
 
-	urlToUse := os.Getenv(serviceURLEnvVarKey)
+	grpcServerAddress := os.Getenv(grpcServiceURLEnvVarKey)
+	httpServerAddress := os.Getenv(grpcServiceURLEnvVarKey)
 
-	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
-	ensureServerIsUp(ctx, urlToUse)
+	logger.WithValue(keys.URLKey, grpcServerAddress).Info("checking server")
+	ensureServerIsUp(ctx, grpcServerAddress)
 
 	dbAddr := os.Getenv("TARGET_DATABASE")
 	if dbAddr == "" {
-		panic("empty database address provided")
+		panic("empty database grpcAddress provided")
 	}
 
 	cfg := &databasecfg.Config{
@@ -138,7 +141,7 @@ func init() {
 		panic(err)
 	}
 
-	simpleClient := buildUnauthedGRPCClient(urlToUse)
+	simpleClient := buildUnauthedGRPCClient(grpcServerAddress)
 
 	code, err := generateTOTPTokenForUserWithoutTest(premadeAdminUser)
 	if err != nil {
@@ -156,36 +159,10 @@ func init() {
 		panic(err)
 	}
 
-	// TODO: replace with grpc-based API client builder
-
-	opts := []grpc.DialOption{
-		grpc.WithPerRPCCredentials(&tokenCreds{token: jwtRes.Result.AccessToken}),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}
-
-	conn, err := grpc.NewClient(urlToUse, opts...)
-	if err != nil {
-		panic(err)
-	}
-
-	premadeAdminClient = service.NewEatingServiceClient(conn)
+	premadeAdminClient = buildAuthedGRPCClient(ctx, []string{"household_admin"}, httpServerAddress, grpcServerAddress, jwtRes.Result.AccessToken)
 
 	fiftySpaces := strings.Repeat("\n", 50)
 	fmt.Printf("%s\tRunning tests%s", fiftySpaces, fiftySpaces)
-}
-
-type tokenCreds struct {
-	token string
-}
-
-func (t *tokenCreds) GetRequestMetadata(context.Context, ...string) (map[string]string, error) {
-	return map[string]string{
-		"Authorization": fmt.Sprintf("Bearer %s", t.token),
-	}, nil
-}
-
-func (t *tokenCreds) RequireTransportSecurity() bool {
-	return false
 }
 
 func ensureServerIsUp(ctx context.Context, address string) {
@@ -211,4 +188,51 @@ func ensureServerIsUp(ctx context.Context, address string) {
 			isDown = false
 		}
 	}
+}
+
+// fakeTLSCreds is a dummy TransportCredentials implementation that
+// simulates a TLS connection (even though it doesn’t perform any encryption).
+type fakeTLSCreds struct{}
+
+// ClientHandshake simply returns the underlying connection along with a fake TLSInfo.
+func (c fakeTLSCreds) ClientHandshake(ctx context.Context, authority string, conn net.Conn) (net.Conn, credentials.AuthInfo, error) {
+	// We’re not performing a real TLS handshake; we just return a fake TLSInfo.
+	fakeState := tls.ConnectionState{}
+	return conn, credentials.TLSInfo{State: fakeState}, nil
+}
+
+// ServerHandshake does the same on the server side.
+func (c fakeTLSCreds) ServerHandshake(conn net.Conn) (net.Conn, credentials.AuthInfo, error) {
+	fakeState := tls.ConnectionState{}
+	return conn, credentials.TLSInfo{State: fakeState}, nil
+}
+
+// Info returns a ProtocolInfo that advertises TLS.
+func (c fakeTLSCreds) Info() credentials.ProtocolInfo {
+	return credentials.ProtocolInfo{
+		// Advertise as TLS.
+		SecurityProtocol: "tls",
+		SecurityVersion:  "1.2", // you can set an appropriate version string
+	}
+}
+
+// Clone returns a new instance of fakeTLSCreds.
+func (c fakeTLSCreds) Clone() credentials.TransportCredentials {
+	return fakeTLSCreds{}
+}
+
+// OverrideServerName is a no-op for our fake TLS.
+func (c fakeTLSCreds) OverrideServerName(serverName string) error {
+	return nil
+}
+
+// RequireTransportSecurity indicates that this transport “requires” security.
+func (c fakeTLSCreds) RequireTransportSecurity() bool {
+	return true
+}
+
+// NewFakeTransportCredentials creates a new instance of our fake credentials
+// that wrap insecure credentials.
+func NewFakeTransportCredentials() credentials.TransportCredentials {
+	return fakeTLSCreds{}
 }
