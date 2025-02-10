@@ -2,12 +2,11 @@ package integration
 
 import (
 	"context"
-	"crypto/tls"
 	"database/sql"
 	"errors"
 	"fmt"
+	"golang.org/x/oauth2"
 	"log"
-	"net"
 	"os"
 	"strings"
 	"time"
@@ -25,14 +24,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"google.golang.org/grpc/credentials"
 )
 
 const (
 	debug         = true
 	nonexistentID = "_NOT_REAL_LOL_"
 
+	targetDatabaseEnvVarKey = "TARGET_DATABASE"
 	grpcServiceURLEnvVarKey = "TARGET_GRPC_ADDRESS"
 	httpServiceURLEnvVarKey = "TARGET_HTTP_ADDRESS"
 )
@@ -45,7 +43,7 @@ var (
 	premadeAdminUser = &types.User{
 		ID:              identifiers.New(),
 		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-		EmailAddress:    "integration_tests@dinnerdonebetter.email",
+		EmailAddress:    "integration_tests@whatever.gov",
 		Username:        "exampleUser",
 		HashedPassword:  "integration-tests-are-cool",
 	}
@@ -61,12 +59,12 @@ func init() {
 	}
 
 	grpcServerAddress := os.Getenv(grpcServiceURLEnvVarKey)
-	httpServerAddress := os.Getenv(grpcServiceURLEnvVarKey)
+	httpServerAddress := os.Getenv(httpServiceURLEnvVarKey)
 
 	logger.WithValue(keys.URLKey, grpcServerAddress).Info("checking server")
 	ensureServerIsUp(ctx, grpcServerAddress)
 
-	dbAddr := os.Getenv("TARGET_DATABASE")
+	dbAddr := os.Getenv(targetDatabaseEnvVarKey)
 	if dbAddr == "" {
 		panic("empty database grpcAddress provided")
 	}
@@ -75,7 +73,7 @@ func init() {
 		OAuth2TokenEncryptionKey: "                                ", // enough characters to validate
 		Debug:                    false,
 		RunMigrations:            false,
-		MaxPingAttempts:          500,
+		MaxPingAttempts:          50,
 	}
 	if err = cfg.LoadConnectionDetailsFromURL(dbAddr); err != nil {
 		panic(err)
@@ -141,7 +139,7 @@ func init() {
 		panic(err)
 	}
 
-	simpleClient := buildUnauthedGRPCClient(grpcServerAddress)
+	simpleClient := buildUnauthenticatedGRPCClient(grpcServerAddress)
 
 	code, err := generateTOTPTokenForUserWithoutTest(premadeAdminUser)
 	if err != nil {
@@ -160,13 +158,16 @@ func init() {
 	}
 
 	premadeAdminClient = buildAuthedGRPCClient(ctx, []string{"household_admin"}, httpServerAddress, grpcServerAddress, jwtRes.Result.AccessToken)
+	if _, err = premadeAdminClient.Ping(ctx, nil); err != nil {
+		panic(err)
+	}
 
 	fiftySpaces := strings.Repeat("\n", 50)
 	fmt.Printf("%s\tRunning tests%s", fiftySpaces, fiftySpaces)
 }
 
 func ensureServerIsUp(ctx context.Context, address string) {
-	c := buildUnauthedGRPCClient(address)
+	c := buildUnauthenticatedGRPCClient(address)
 
 	var (
 		isDown           = true
@@ -190,49 +191,20 @@ func ensureServerIsUp(ctx context.Context, address string) {
 	}
 }
 
-// fakeTLSCreds is a dummy TransportCredentials implementation that
-// simulates a TLS connection (even though it doesn’t perform any encryption).
-type fakeTLSCreds struct{}
-
-// ClientHandshake simply returns the underlying connection along with a fake TLSInfo.
-func (c fakeTLSCreds) ClientHandshake(ctx context.Context, authority string, conn net.Conn) (net.Conn, credentials.AuthInfo, error) {
-	// We’re not performing a real TLS handshake; we just return a fake TLSInfo.
-	fakeState := tls.ConnectionState{}
-	return conn, credentials.TLSInfo{State: fakeState}, nil
+// Custom insecure OAuth2 credentials that skip security checks
+type insecureOAuth struct {
+	TokenSource oauth2.TokenSource
 }
 
-// ServerHandshake does the same on the server side.
-func (c fakeTLSCreds) ServerHandshake(conn net.Conn) (net.Conn, credentials.AuthInfo, error) {
-	fakeState := tls.ConnectionState{}
-	return conn, credentials.TLSInfo{State: fakeState}, nil
-}
-
-// Info returns a ProtocolInfo that advertises TLS.
-func (c fakeTLSCreds) Info() credentials.ProtocolInfo {
-	return credentials.ProtocolInfo{
-		// Advertise as TLS.
-		SecurityProtocol: "tls",
-		SecurityVersion:  "1.2", // you can set an appropriate version string
+func (i *insecureOAuth) GetRequestMetadata(_ context.Context, _ ...string) (map[string]string, error) {
+	token, err := i.TokenSource.Token()
+	if err != nil {
+		return nil, err
 	}
+
+	return map[string]string{"authorization": token.Type() + " " + token.AccessToken}, nil
 }
 
-// Clone returns a new instance of fakeTLSCreds.
-func (c fakeTLSCreds) Clone() credentials.TransportCredentials {
-	return fakeTLSCreds{}
-}
-
-// OverrideServerName is a no-op for our fake TLS.
-func (c fakeTLSCreds) OverrideServerName(serverName string) error {
-	return nil
-}
-
-// RequireTransportSecurity indicates that this transport “requires” security.
-func (c fakeTLSCreds) RequireTransportSecurity() bool {
-	return true
-}
-
-// NewFakeTransportCredentials creates a new instance of our fake credentials
-// that wrap insecure credentials.
-func NewFakeTransportCredentials() credentials.TransportCredentials {
-	return fakeTLSCreds{}
+func (i *insecureOAuth) RequireTransportSecurity() bool {
+	return false // Explicitly allow insecure transport
 }

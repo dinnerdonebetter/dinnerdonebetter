@@ -6,6 +6,89 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+func ConvertValidIngredientToValidIngredientCreationInput(x *messages.ValidIngredient) *messages.CreateValidIngredientRequest {
+	return &messages.CreateValidIngredientRequest{
+		StorageTemperatureInCelsius: &messages.OptionalFloat32Range{
+			Min: x.StorageTemperatureInCelsius.Min,
+			Max: x.StorageTemperatureInCelsius.Max,
+		},
+		IconPath:               x.IconPath,
+		Warning:                x.Warning,
+		PluralName:             x.PluralName,
+		StorageInstructions:    x.StorageInstructions,
+		Name:                   x.Name,
+		Description:            x.Description,
+		Slug:                   x.Slug,
+		ShoppingSuggestions:    x.ShoppingSuggestions,
+		ContainsPeanut:         x.ContainsPeanut,
+		ContainsAlcohol:        x.ContainsAlcohol,
+		IsLiquid:               x.IsLiquid,
+		ContainsSoy:            x.ContainsSoy,
+		AnimalFlesh:            x.AnimalFlesh,
+		AnimalDerived:          x.AnimalDerived,
+		RestrictToPreparations: x.RestrictToPreparations,
+		ContainsDairy:          x.ContainsDairy,
+		ContainsSesame:         x.ContainsSesame,
+		ContainsTreeNut:        x.ContainsTreeNut,
+		ContainsWheat:          x.ContainsWheat,
+		ContainsEgg:            x.ContainsEgg,
+		ContainsGluten:         x.ContainsGluten,
+		IsStarch:               x.IsStarch,
+		IsProtein:              x.IsProtein,
+		IsGrain:                x.IsGrain,
+		IsFruit:                x.IsFruit,
+		IsSalt:                 x.IsSalt,
+		IsFat:                  x.IsFat,
+		IsAcid:                 x.IsAcid,
+		IsHeat:                 x.IsHeat,
+		ContainsShellfish:      x.ContainsShellfish,
+		ContainsFish:           x.ContainsFish,
+	}
+}
+
+func ConvertValidIngredientToValidIngredientUpdateInput(x *messages.ValidIngredient) *messages.UpdateValidIngredientRequest {
+	return &messages.UpdateValidIngredientRequest{
+		ValidIngredientID: x.ID,
+		Input: &messages.ValidIngredientUpdateRequestInput{
+			StorageTemperatureInCelsius: &messages.OptionalFloat32Range{
+				Min: x.StorageTemperatureInCelsius.Min,
+				Max: x.StorageTemperatureInCelsius.Max,
+			},
+			IconPath:               x.IconPath,
+			Warning:                x.Warning,
+			PluralName:             x.PluralName,
+			StorageInstructions:    x.StorageInstructions,
+			Name:                   x.Name,
+			Description:            x.Description,
+			Slug:                   x.Slug,
+			ShoppingSuggestions:    x.ShoppingSuggestions,
+			ContainsPeanut:         x.ContainsPeanut,
+			ContainsAlcohol:        x.ContainsAlcohol,
+			IsLiquid:               x.IsLiquid,
+			ContainsSoy:            x.ContainsSoy,
+			AnimalFlesh:            x.AnimalFlesh,
+			AnimalDerived:          x.AnimalDerived,
+			RestrictToPreparations: x.RestrictToPreparations,
+			ContainsDairy:          x.ContainsDairy,
+			ContainsSesame:         x.ContainsSesame,
+			ContainsTreeNut:        x.ContainsTreeNut,
+			ContainsWheat:          x.ContainsWheat,
+			ContainsEgg:            x.ContainsEgg,
+			ContainsGluten:         x.ContainsGluten,
+			IsStarch:               x.IsStarch,
+			IsProtein:              x.IsProtein,
+			IsGrain:                x.IsGrain,
+			IsFruit:                x.IsFruit,
+			IsSalt:                 x.IsSalt,
+			IsFat:                  x.IsFat,
+			IsAcid:                 x.IsAcid,
+			IsHeat:                 x.IsHeat,
+			ContainsShellfish:      x.ContainsShellfish,
+			ContainsFish:           x.ContainsFish,
+		},
+	}
+}
+
 func ConvertUpdateValidIngredientRequestToValidIngredient(req *messages.UpdateValidIngredientRequest) *types.ValidIngredient {
 	return &types.ValidIngredient{
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{

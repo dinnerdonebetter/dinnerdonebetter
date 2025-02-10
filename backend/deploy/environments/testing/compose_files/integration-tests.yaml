@@ -45,7 +45,7 @@ services:
         type: 'bind'
   tests:
     environment:
-      TARGET_HTTP_ADDRESS: 'api_server:8000'
+      TARGET_HTTP_ADDRESS: 'http://api_server:8000'
       TARGET_GRPC_ADDRESS: 'api_server:8001'
       TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable'
     depends_on:

@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	zuckModeUserHeader      = "X-DDB-Zuck-Mode-User"
-	zuckModeHouseholdHeader = "X-DDB-Zuck-Mode-Household"
+	zuckModeUserHeader      = "X-Zuck-Mode-User"
+	zuckModeHouseholdHeader = "X-Zuck-Mode-Household"
 )
 
 var (

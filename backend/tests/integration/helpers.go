@@ -2,9 +2,13 @@ package integration
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"hash/fnv"
+	"log"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -13,6 +17,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/service"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/random"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/pquerna/otp/totp"
@@ -20,7 +26,6 @@ import (
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	grpcoauth "google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -39,6 +44,18 @@ func hashStringToNumber(s string) uint64 {
 	}
 
 	return h.Sum64()
+}
+
+func assertJSONEquality[T1, T2 any](t *testing.T, expected T1, actual T2) {
+	t.Helper()
+
+	json1, err := json.Marshal(expected)
+	require.NoError(t, err)
+
+	json2, err := json.Marshal(actual)
+	require.NoError(t, err)
+
+	assert.JSONEq(t, string(json1), string(json2))
 }
 
 func createUserAndClientForTest(ctx context.Context, t *testing.T, httpServerAddress, grpcServerAddress string, input *messages.UserRegistrationInput) (user *types.User, oauthedClient service.EatingServiceClient) {
@@ -79,7 +96,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, httpServerAdd
 }
 
 func initializeOAuth2PoweredClient(ctx context.Context, httpServerAddress, grpcServerAddress string, input *messages.UserLoginInput) (service.EatingServiceClient, error) {
-	c := buildUnauthedGRPCClient(grpcServerAddress)
+	c := buildUnauthenticatedGRPCClient(grpcServerAddress)
 
 	tokenResponse, err := c.LoginForToken(ctx, &messages.LoginForTokenRequest{Input: input})
 	if err != nil {
@@ -129,7 +146,7 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, httpServerAddress, g
 	return oauthedClient
 }
 
-func buildUnauthedGRPCClient(address string) service.EatingServiceClient {
+func buildUnauthenticatedGRPCClient(address string) service.EatingServiceClient {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
@@ -143,6 +160,11 @@ func buildUnauthedGRPCClient(address string) service.EatingServiceClient {
 }
 
 func buildAuthedGRPCClient(ctx context.Context, scopes []string, httpServerAddress, grpcServerAddress, token string) service.EatingServiceClient {
+	state, err := random.GenerateBase64EncodedString(ctx, 32)
+	if err != nil {
+		panic(err)
+	}
+
 	oauth2Config := oauth2.Config{
 		ClientID:     createdClientID,
 		ClientSecret: createdClientSecret,
@@ -155,11 +177,62 @@ func buildAuthedGRPCClient(ctx context.Context, scopes []string, httpServerAddre
 		},
 	}
 
+	authCodeURL := oauth2Config.AuthCodeURL(
+		state,
+		oauth2.SetAuthURLParam("code_challenge_method", "plain"),
+	)
+
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodGet,
+		authCodeURL,
+		http.NoBody,
+	)
+	if err != nil {
+		panic(fmt.Errorf("failed to get oauth2 code: %w", err))
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	client := tracing.BuildTracedHTTPClient()
+	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		panic(fmt.Errorf("failed to get oauth2 code: %w", err))
+	}
+	defer func() {
+		if err = res.Body.Close(); err != nil {
+			log.Println("failed to close oauth2 response body", err)
+		}
+	}()
+
+	const (
+		codeKey = "code"
+	)
+
+	rl, err := res.Location()
+	if err != nil {
+		panic(err)
+	}
+
+	code := rl.Query().Get(codeKey)
+	if code == "" {
+		panic("code not returned from oauth2 redirect")
+	}
+
+	oauth2Token, err := oauth2Config.Exchange(ctx, code)
+	if err != nil {
+		panic(err)
+	}
+
 	opts := []grpc.DialOption{
-		grpc.WithPerRPCCredentials(grpcoauth.TokenSource{
-			TokenSource: oauth2Config.TokenSource(ctx, &oauth2.Token{AccessToken: token}),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithPerRPCCredentials(&insecureOAuth{
+			TokenSource: oauth2Config.TokenSource(ctx, oauth2Token),
 		}),
-		grpc.WithTransportCredentials(NewFakeTransportCredentials()),
 	}
 
 	conn, err := grpc.NewClient(grpcServerAddress, opts...)
@@ -172,7 +245,7 @@ func buildAuthedGRPCClient(ctx context.Context, scopes []string, httpServerAddre
 
 // createServiceUser creates a user.
 func createServiceUser(ctx context.Context, address string, in *messages.UserRegistrationInput) (*types.User, error) {
-	c := buildUnauthedGRPCClient(address)
+	c := buildUnauthenticatedGRPCClient(address)
 
 	ucr, err := c.CreateUser(ctx, &messages.CreateUserRequest{Input: in})
 	if err != nil {

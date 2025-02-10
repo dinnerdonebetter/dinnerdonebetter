@@ -18,7 +18,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
 	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+
+	oauth2server "github.com/go-oauth2/oauth2/v4/server"
 )
 
 const (
@@ -38,6 +41,7 @@ type Server struct {
 	config                     *config.APIServiceConfig
 	dataManager                database.DataManager
 	tokenIssuer                tokens.Issuer
+	oauth2Server               *oauth2server.Server
 	validIngredientSearchIndex textsearch.Index[eatingindexing.ValidIngredientSearchSubset]
 	authenticator              authentication.Authenticator
 	secretGenerator            random.Generator
@@ -68,8 +72,10 @@ func NewServer(
 		return nil, observability.PrepareError(err, nil, "initializing valid ingredient index manager")
 	}
 
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))
+
 	s := &Server{
-		tracer:                     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		tracer:                     tracer,
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
 		dataManager:                dataManager,
 		dataChangesPublisher:       dataChangesPublisher,
@@ -81,6 +87,7 @@ func NewServer(
 		tokenIssuer:                tokenIssuer,
 		authenticator:              authenticator,
 		secretGenerator:            secretGenerator,
+		oauth2Server:               authservice.ProvideOAuth2ServerImplementation(logger, tracer, &cfg.Services.Auth.OAuth2, dataManager, authenticator, tokenIssuer),
 	}
 
 	return s, nil

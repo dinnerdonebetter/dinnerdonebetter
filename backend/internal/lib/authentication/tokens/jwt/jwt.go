@@ -80,7 +80,7 @@ func (s *signer) ParseUserIDFromToken(ctx context.Context, token string) (string
 		return s.signingKey, nil
 	})
 	if err != nil {
-		s.logger.Error("parsing JWT", err)
+		s.logger.Error("parsing user ID from JWT", err)
 		return "", err
 	}
 

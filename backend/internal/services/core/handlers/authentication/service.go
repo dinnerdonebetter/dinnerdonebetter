@@ -21,7 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/routing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/go-oauth2/oauth2/v4/server"
+	oauth2server "github.com/go-oauth2/oauth2/v4/server"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/google"
 )
@@ -50,7 +50,7 @@ type (
 		authProviderFetcher        func(*http.Request) string
 		tracer                     tracing.Tracer
 		dataChangesPublisher       messagequeue.Publisher
-		oauth2Server               *server.Server
+		oauth2Server               *oauth2server.Server
 		tokenIssuer                tokens.Issuer
 		rejectedRequestCounter     metrics.Int64Counter
 	}
@@ -81,9 +81,9 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up %s data changes publisher: %w", serviceName, publisherProviderErr)
 	}
 
-	signer, err := cfg.Tokens.ProvideTokenIssuer(logger, tracerProvider)
+	tokenIssuer, err := cfg.Tokens.ProvideTokenIssuer(logger, tracerProvider)
 	if err != nil {
-		return nil, fmt.Errorf("creating json web token signer: %w", err)
+		return nil, fmt.Errorf("creating json web token tokenIssuer: %w", err)
 	}
 
 	rejectedRequestCounter, err := metricsProvider.NewInt64Counter(rejectedRequestCounterName)
@@ -105,10 +105,10 @@ func ProvideService(
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
 		analyticsReporter:          analyticsReporter,
-		tokenIssuer:                signer,
+		tokenIssuer:                tokenIssuer,
 		rejectedRequestCounter:     rejectedRequestCounter,
 		authProviderFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
-		oauth2Server:               ProvideOAuth2ServerImplementation(logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
+		oauth2Server:               ProvideOAuth2ServerImplementation(logger, tracer, &cfg.OAuth2, dataManager, authenticator, tokenIssuer),
 	}
 
 	useProvidersMutex.Lock()

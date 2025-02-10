@@ -85,7 +85,7 @@ func (s *signer) ParseUserIDFromToken(ctx context.Context, providedToken string)
 		footer      string
 	)
 	if err := paseto.NewV2().Decrypt(providedToken, s.signingKey, &parsedToken, &footer); err != nil {
-		s.logger.Error("parsing JWT", err)
+		s.logger.Error("parsing user ID from PASETO", err)
 		return "", err
 	}
 

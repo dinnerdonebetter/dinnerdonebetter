@@ -17,7 +17,7 @@ func (s *Server) CreateValidIngredient(ctx context.Context, request *messages.Cr
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.Clone()
+	logger := s.logger.WithSpan(span)
 
 	if err := validation.ValidateStructWithContext(
 		ctx,
@@ -42,7 +42,9 @@ func (s *Server) GetValidIngredient(ctx context.Context, request *messages.GetVa
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.ValidIngredientIDKey, request.ValidIngredientID)
+	logger := s.logger.WithSpan(span)
+
+	logger = logger.WithValue(keys.ValidIngredientIDKey, request.ValidIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientID)
 
 	validIngredient, err := s.dataManager.GetValidIngredient(ctx, request.ValidIngredientID)
@@ -56,19 +58,40 @@ func (s *Server) GetValidIngredient(ctx context.Context, request *messages.GetVa
 }
 
 func (s *Server) GetValidIngredients(ctx context.Context, request *messages.GetValidIngredientsRequest) (*messages.GetValidIngredientsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return nil, Unimplemented()
+	logger := s.logger.WithSpan(span)
+
+	validIngredients, err := s.dataManager.GetValidIngredients(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid ingredients")
+	}
+
+	outbound := &messages.GetValidIngredientsResponse{
+		Meta: &messages.ResponseMeta{
+			TraceID:            "",
+			CurrentHouseholdID: "",
+		},
+		Results: []*messages.ValidIngredient{},
+	}
+
+	for _, validIngredient := range validIngredients.Data {
+		outbound.Results = append(outbound.Results, converters.ConvertValidIngredientToProtobuf(validIngredient))
+	}
+
+	return outbound, nil
 }
 
 func (s *Server) GetRandomValidIngredient(ctx context.Context, _ *messages.GetRandomValidIngredientRequest) (*messages.GetRandomValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := s.logger.WithSpan(span)
+
 	ingredient, err := s.dataManager.GetRandomValidIngredient(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, s.logger, span, "getting random valid ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting random valid ingredient")
 	}
 
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredient.ID)
@@ -78,12 +101,13 @@ func (s *Server) GetRandomValidIngredient(ctx context.Context, _ *messages.GetRa
 }
 
 func (s *Server) SearchForValidIngredients(ctx context.Context, request *messages.SearchForValidIngredientsRequest) (*messages.SearchForValidIngredientsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query := request.Query
+	logger := s.logger.WithSpan(span)
 
-	logger := s.logger.WithValue(keys.SearchQueryKey, query)
+	query := request.Query
+	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	result := &messages.SearchForValidIngredientsResponse{
@@ -130,27 +154,38 @@ func (s *Server) SearchForValidIngredients(ctx context.Context, request *message
 }
 
 func (s *Server) SearchValidIngredientsByPreparation(ctx context.Context, request *messages.SearchValidIngredientsByPreparationRequest) (*messages.SearchValidIngredientsByPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	/*
-		logger := s.logger.WithValue(keys.SearchQueryKey, request.Query)
-		tracing.AttachToSpan(span, keys.SearchQueryKey, request.Query)
+	logger := s.logger.WithSpan(span)
 
-		validIngredients, err := s.dataManager.SearchForValidIngredientsForPreparation(ctx, request.ValidPreparationID, request.Q, nil)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "reading valid ingredients by IDs")
-		}
-	*/
+	logger = logger.WithValue(keys.SearchQueryKey, request.Query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, request.Query)
 
-	return nil, Unimplemented()
+	validIngredients, err := s.dataManager.SearchForValidIngredientsForPreparation(ctx, request.ValidPreparationID, request.Query, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "reading valid ingredients by IDs")
+	}
+
+	output := &messages.SearchValidIngredientsByPreparationResponse{
+		Meta:    s.buildResponseMeta(span),
+		Results: []*messages.ValidIngredient{},
+	}
+
+	for _, validIngredient := range validIngredients.Data {
+		output.Results = append(output.Results, converters.ConvertValidIngredientToProtobuf(validIngredient))
+	}
+
+	return output, nil
 }
 
 func (s *Server) UpdateValidIngredient(ctx context.Context, request *messages.UpdateValidIngredientRequest) (*messages.UpdateValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.ValidIngredientIDKey, request.ValidIngredientID)
+	logger := s.logger.WithSpan(span)
+
+	logger = logger.WithValue(keys.ValidIngredientIDKey, request.ValidIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientID)
 
 	updated := converters.ConvertUpdateValidIngredientRequestToValidIngredient(request)
@@ -165,7 +200,9 @@ func (s *Server) ArchiveValidIngredient(ctx context.Context, request *messages.A
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.ValidIngredientIDKey, request.ValidIngredientID)
+	logger := s.logger.WithSpan(span)
+
+	logger = logger.WithValue(keys.ValidIngredientIDKey, request.ValidIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientID)
 
 	if err := s.dataManager.ArchiveValidIngredient(ctx, request.ValidIngredientID); err != nil {
