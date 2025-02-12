@@ -1,11 +1,11 @@
 # build stage
-FROM golang:1.23-bullseye AS build-stage
+FROM golang:1.24-bullseye AS build-stage
 
 WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-RUN go install github.com/go-delve/delve/cmd/dlv@v1.23.1
+RUN go install github.com/go-delve/delve/cmd/dlv@v1.24.1
 RUN go build -trimpath -o /server github.com/dinnerdonebetter/backend/cmd/services/api
 
 # final stage

@@ -8,6 +8,8 @@ import (
 
 	"github.com/verygoodsoftwarenotvirus/typewizard/models"
 	"github.com/verygoodsoftwarenotvirus/typewizard/utils"
+	"github.com/yoheimuta/go-protoparser/v4"
+	"github.com/yoheimuta/go-protoparser/v4/parser"
 )
 
 var (
@@ -117,6 +119,24 @@ return output
 
 `
 )
+
+func parseProtoService() (*parser.Proto, error) {
+	reader, err := os.Open("internal/services/service.proto")
+	if err != nil {
+		return nil, fmt.Errorf("reading file: %w", err)
+	}
+
+	parsed, err := protoparser.Parse(reader)
+	if err != nil {
+		return nil, fmt.Errorf("parsing proto spec: %w", err)
+	}
+
+	if err = reader.Close(); err != nil {
+		return nil, fmt.Errorf("closing reader: %w", err)
+	}
+
+	return parsed, nil
+}
 
 func main() {
 	allTypes, err := utils.GetTypesForPackage("internal/grpc/messages", "messages", nil)
@@ -284,7 +304,15 @@ func GenerateConverter(source, target *models.Struct) string {
 			targetElem := fmt.Sprintf("%s.%s", targetField.TypePackage, baseType(targetField.Type))
 
 			if sourceElem != targetElem {
-				varName := "converted" + lowerFirst(targetField.Name)
+				varName := "converted" + targetField.Name
+
+				if sourceField.BasicType {
+					switch sourceField.Type {
+					default:
+						continue
+					}
+				}
+
 				converterFunc := fmt.Sprintf("Convert%sTo%s", baseType(sourceField.Type), baseType(targetField.Type))
 
 				loopCode := fmt.Sprintf("%s := make([]*%s, 0, len(input.%s))\n",

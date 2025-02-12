@@ -1,6 +1,6 @@
 module github.com/dinnerdonebetter/backend
 
-go 1.23.4
+go 1.24.0
 
 require (
 	cloud.google.com/go/pubsub v1.45.3
@@ -83,6 +83,7 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/redis v0.34.0
 	github.com/verygoodsoftwarenotvirus/typewizard v0.0.0-20250211234715-affd3f333299
 	github.com/wagslane/go-password-validator v0.3.0
+	github.com/yoheimuta/go-protoparser/v4 v4.14.0
 	go.opentelemetry.io/contrib/bridges/otelslog v0.9.0
 	go.opentelemetry.io/contrib/instrumentation/host v0.58.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.58.0
