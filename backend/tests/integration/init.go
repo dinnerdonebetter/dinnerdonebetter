@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"golang.org/x/oauth2"
 	"log"
 	"os"
 	"strings"
@@ -24,6 +23,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"golang.org/x/oauth2"
 )
 
 const (

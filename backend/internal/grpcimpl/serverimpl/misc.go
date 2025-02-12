@@ -2,10 +2,10 @@ package serverimpl
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 )
 
 func (s *Server) buildResponseMeta(span tracing.Span) *messages.ResponseMeta {

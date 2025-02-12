@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"hash/fnv"
 	"log"
 	"net/http"
@@ -22,6 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
