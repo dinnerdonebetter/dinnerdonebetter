@@ -2,16 +2,17 @@ package fakes
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
 
-// BuildFakeSessionContextData builds a faked SessionContextData.
-func BuildFakeSessionContextData() *types.SessionContextData {
-	return &types.SessionContextData{
+// BuildFakeSessionContextData builds a faked ContextData.
+func BuildFakeSessionContextData() *sessions.ContextData {
+	return &sessions.ContextData{
 		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{},
-		Requester: types.RequesterInfo{
+		Requester: sessions.RequesterInfo{
 			ServicePermissions:       nil,
 			AccountStatus:            string(types.GoodStandingUserAccountStatus),
 			AccountStatusExplanation: "fake",

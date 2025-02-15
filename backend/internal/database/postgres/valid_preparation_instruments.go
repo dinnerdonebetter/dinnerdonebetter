@@ -5,9 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -104,19 +105,19 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 }
 
 // GetValidPreparationInstruments fetches a list of valid preparation instruments from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
+func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
+	x = &filtering.QueryFilteredResult[types.ValidPreparationInstrument]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -195,7 +196,7 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 }
 
 // GetValidPreparationInstrumentsForPreparation fetches a list of valid preparation instruments from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
+func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -207,12 +208,12 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, preparationID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
+	x = &filtering.QueryFilteredResult[types.ValidPreparationInstrument]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -292,7 +293,7 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 }
 
 // GetValidPreparationInstrumentsForInstrument fetches a list of valid preparation instruments from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
+func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -304,12 +305,12 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, instrumentID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
+	x = &filtering.QueryFilteredResult[types.ValidPreparationInstrument]{
 		Pagination: filter.ToPagination(),
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)

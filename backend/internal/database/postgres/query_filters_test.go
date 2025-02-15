@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/pointer"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
@@ -24,14 +24,14 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		qf := &types.QueryFilter{
+		qf := &filtering.QueryFilter{
 			Page:          pointer.To(uint16(100)),
 			Limit:         pointer.To(uint8(50)),
 			CreatedAfter:  pointer.To(time.Now().Truncate(time.Second)),
 			CreatedBefore: pointer.To(time.Now().Truncate(time.Second)),
 			UpdatedAfter:  pointer.To(time.Now().Truncate(time.Second)),
 			UpdatedBefore: pointer.To(time.Now().Truncate(time.Second)),
-			SortBy:        types.SortDescending,
+			SortBy:        filtering.SortDescending,
 		}
 
 		sb := squirrel.StatementBuilder.Select("*").From("testing")
@@ -58,7 +58,7 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 	T.Run("basic usage", func(t *testing.T) {
 		t.Parallel()
 
-		qf := &types.QueryFilter{
+		qf := &filtering.QueryFilter{
 			Limit: pointer.To(uint8(15)),
 			Page:  pointer.To(uint16(2)),
 		}
@@ -75,7 +75,7 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 	T.Run("whole kit and kaboodle", func(t *testing.T) {
 		t.Parallel()
 
-		qf := &types.QueryFilter{
+		qf := &filtering.QueryFilter{
 			Limit:         pointer.To(uint8(20)),
 			Page:          pointer.To(uint16(6)),
 			CreatedAfter:  pointer.To(time.Now().Truncate(time.Second)),
@@ -96,7 +96,7 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 	T.Run("with zero limit", func(t *testing.T) {
 		t.Parallel()
 
-		qf := &types.QueryFilter{
+		qf := &filtering.QueryFilter{
 			Limit: pointer.To(uint8(0)),
 			Page:  pointer.To(uint16(1)),
 		}
@@ -118,14 +118,14 @@ func TestQueryFilter_ApplyFilterToSubCountQueryBuilder(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		qf := &types.QueryFilter{
+		qf := &filtering.QueryFilter{
 			Page:          pointer.To(uint16(100)),
 			Limit:         pointer.To(uint8(50)),
 			CreatedAfter:  pointer.To(time.Now().Truncate(time.Second)),
 			CreatedBefore: pointer.To(time.Now().Truncate(time.Second)),
 			UpdatedAfter:  pointer.To(time.Now().Truncate(time.Second)),
 			UpdatedBefore: pointer.To(time.Now().Truncate(time.Second)),
-			SortBy:        types.SortDescending,
+			SortBy:        filtering.SortDescending,
 		}
 
 		sb := squirrel.StatementBuilder.Select("*").From("testing")

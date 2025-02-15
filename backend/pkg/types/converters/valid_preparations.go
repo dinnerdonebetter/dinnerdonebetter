@@ -1,7 +1,7 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -128,15 +128,5 @@ func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPrepara
 		ConditionExpressionRequired: validPreparation.ConditionExpressionRequired,
 		ConsumesVessel:              validPreparation.ConsumesVessel,
 		OnlyForVessels:              validPreparation.OnlyForVessels,
-	}
-}
-
-// ConvertValidPreparationToValidPreparationSearchSubset converts a ValidPreparation to a ValidPreparationSearchSubset.
-func ConvertValidPreparationToValidPreparationSearchSubset(x *types.ValidPreparation) *types.ValidPreparationSearchSubset {
-	return &types.ValidPreparationSearchSubset{
-		ID:          x.ID,
-		Name:        x.Name,
-		PastTense:   x.PastTense,
-		Description: x.Description,
 	}
 }

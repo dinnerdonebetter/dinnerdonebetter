@@ -5,9 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -141,19 +142,19 @@ func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) (
 }
 
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
-func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidInstrument], err error) {
+func (q *Querier) GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidInstrument]{
+	x = &filtering.QueryFilteredResult[types.ValidInstrument]{
 		Pagination: filter.ToPagination(),
 	}
 

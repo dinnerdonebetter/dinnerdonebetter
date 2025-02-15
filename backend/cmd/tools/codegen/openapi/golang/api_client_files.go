@@ -10,7 +10,8 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 
 	"github.com/swaggest/openapi-go/openapi31"
 )
@@ -101,21 +102,21 @@ func paramsContainQueryFilter(params []openapi31.ParameterOrReference) (bool, []
 	outParams := []openapi31.ParameterOrReference{}
 	for _, p := range params {
 		switch p.Parameter.Name {
-		case types.QueryKeyLimit:
+		case filtering.QueryKeyLimit:
 			containsLimit = true
-		case types.QueryKeyPage:
+		case filtering.QueryKeyPage:
 			containsPage = true
-		case types.QueryKeyCreatedBefore:
+		case filtering.QueryKeyCreatedBefore:
 			containsCreatedBefore = true
-		case types.QueryKeyCreatedAfter:
+		case filtering.QueryKeyCreatedAfter:
 			containsCreatedAfter = true
-		case types.QueryKeyUpdatedBefore:
+		case filtering.QueryKeyUpdatedBefore:
 			containsUpdatedBefore = true
-		case types.QueryKeyUpdatedAfter:
+		case filtering.QueryKeyUpdatedAfter:
 			containsUpdatedAfter = true
-		case types.QueryKeyIncludeArchived:
+		case filtering.QueryKeyIncludeArchived:
 			containsIncludeArchived = true
-		case types.QueryKeySortBy:
+		case filtering.QueryKeySortBy:
 			containsSortBy = true
 		default:
 			outParams = append(outParams, p)
@@ -332,6 +333,16 @@ type functionResponseType struct {
 	IsArray          bool
 }
 
+func (f *APIClientFunction) containsSearchQuery() bool {
+	for _, z := range f.Params {
+		if z.Name == textsearch.QueryKeySearch {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (f *APIClientFunction) Render() (file string, imports []string, err error) {
 	var tmpl string
 	imports = []string{}
@@ -347,19 +358,18 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	ctx context.Context,
 	{{ range .Params }}{{ .Name }} {{ .Type }},
 	{{ end -}}
-	filter *types.QueryFilter,
+	filter *QueryFilter,
 	reqMods ...RequestModifier,
-) (*types.QueryFilteredResult[types.{{ .ResponseType.TypeName }}], error) {
+) (*QueryFilteredResult[{{ .ResponseType.TypeName }}], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = DefaultQueryFilter()
 	}
-	logger = filter.AttachToLogger(logger)
-	tracing.AttachQueryFilterToSpan(span, filter)
+	// tracing.AttachQueryFilterToSpan(span, filter)
 
 {{ range .Params }}	{{ if ne .Name "q" }}if {{ .Name }} == "" {
 		return nil, buildInvalidIDError("{{ replace .Name "ID" "" }}")
@@ -372,7 +382,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 
 	values := filter.ToValues()
 	{{ if paramsContain .Params "q" -}}
-	values.Set(types.QueryKeySearch, q)
+	values.Set(textsearch.QueryKeySearch, q)
 	{{- end }}
 
 	u := c.BuildURL(ctx, values, {{ if shouldFormatPath }}fmt.Sprintf({{ end }}"{{ .PathTemplate }}"{{if shouldFormatPath }} {{ range .Params }}{{ if ne .Name "q" }}, {{ .Name }}{{ end }}{{ end }}){{ end }})
@@ -385,7 +395,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 		mod(req)
 	}
 	
-	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}[]*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
+	var apiResponse *{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}[]*{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of {{ .ResponseType.TypeName }}")
 	}
@@ -394,7 +404,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 		return nil, err
 	}
 
-	result := &types.QueryFilteredResult[types.{{ .ResponseType.TypeName }}]{
+	result := &QueryFilteredResult[{{ .ResponseType.TypeName }}]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}
@@ -402,14 +412,27 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	return result, nil
 }`
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability",
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability",
 			)
+
+			if (!f.containsSearchQuery() && len(f.Params) > 0) || (f.containsSearchQuery() && len(f.Params) > 1) {
+				imports = append(imports,
+					"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				)
+			}
+
+			for _, z := range f.Params {
+				if z.Name == textsearch.QueryKeySearch {
+					imports = append(imports,
+						"github.com/dinnerdonebetter/backend/internal/lib/search/text",
+					)
+				}
+			}
 
 			if shouldFormatPath {
 				imports = append(imports,
 					"fmt",
-					"github.com/dinnerdonebetter/backend/internal/observability/keys")
+					"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 			}
 		} else {
 			// GET routes that don't return lists
@@ -417,7 +440,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	ctx context.Context,
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}} reqMods ...RequestModifier,
-) ({{ if notNative .ResponseType.TypeName }} *types.{{ end }}{{ .ResponseType.TypeName }}, error) {
+) ({{ if notNative .ResponseType.TypeName }} *{{ end }}{{ .ResponseType.TypeName }}, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -441,7 +464,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 		mod(req)
 	}
 
-	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}{{ if notNative .ResponseType.TypeName }} *types.{{ end }}{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
+	var apiResponse *{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}{{ if notNative .ResponseType.TypeName }} *{{ end }}{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return {{ if notNative .ResponseType.TypeName }}nil{{ else }} {{ nativeDefault .ResponseType.TypeName }}{{ end }}, observability.PrepareAndLogError(err, logger, span, "loading {{ .ResponseType.TypeName }} response")
 	}
@@ -454,15 +477,15 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	return apiResponse.Data, nil
 }`
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability",
 			)
 			if shouldFormatPath {
 				imports = append(imports, "fmt")
 			}
 			if len(f.Params) > 0 {
 				imports = append(imports,
-					"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-					"github.com/dinnerdonebetter/backend/internal/observability/keys")
+					"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+					"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 			}
 		}
 	case http.MethodPost:
@@ -470,9 +493,9 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	ctx context.Context,
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}}
-	{{ if ne .InputType.Type "" }}input *types.{{ .InputType.Type }},{{ end }}
+	{{ if ne .InputType.Type "" }}input *{{ .InputType.Type }},{{ end }}
 	reqMods ...RequestModifier,
-) ({{ if .ReturnsList }}[]{{ end }}*types.{{ .ResponseType.TypeName }}, error) {
+) ({{ if .ReturnsList }}[]{{ end }}*{{ .ResponseType.TypeName }}, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -481,10 +504,6 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 {{ if ne .InputType.Type "" }}
 	if input == nil {
 		return nil, ErrNilInputProvided
-	}
-
-	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, span, "validating input")
 	}
 {{ end }}
 {{ range .Params }}	{{ if ne .Name "q" }}if {{ .Name }} == "" {
@@ -506,7 +525,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 		mod(req)
 	}
 
-	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}{{ if .ReturnsList }}[]{{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
+	var apiResponse *{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}{{ if .ReturnsList }}[]{{ end }}*{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "loading {{ .ResponseType.TypeName }} creation response")
 	}
@@ -519,15 +538,15 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 }`
 
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/observability",
+			"github.com/dinnerdonebetter/backend/internal/lib/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 		}
 
 	case http.MethodPut:
@@ -535,7 +554,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	ctx context.Context,
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}}
-input *types.{{ .InputType.Type }},
+input *{{ .InputType.Type }},
 reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
@@ -561,7 +580,7 @@ reqMods ...RequestModifier,
 		mod(req)
 	}
 
-	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
+	var apiResponse *{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "loading {{ .ResponseType.TypeName }} creation response")
 	}
@@ -573,15 +592,15 @@ reqMods ...RequestModifier,
 	return nil
 }`
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/observability",
+			"github.com/dinnerdonebetter/backend/internal/lib/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 		}
 
 	case http.MethodPatch:
@@ -589,7 +608,7 @@ reqMods ...RequestModifier,
 	ctx context.Context,
 {{ range .Params }}{{ .Name }} {{ .Type }},
 {{ end -}}
-input *types.{{ .InputType.Type }},
+input *{{ .InputType.Type }},
 reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
@@ -615,7 +634,7 @@ reqMods ...RequestModifier,
 		mod(req)
 	}
 
-	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
+	var apiResponse *{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "loading {{ .ResponseType.TypeName }} creation response")
 	}
@@ -627,15 +646,15 @@ reqMods ...RequestModifier,
 	return nil
 }`
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/observability",
+			"github.com/dinnerdonebetter/backend/internal/lib/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 		}
 
 	case http.MethodDelete:
@@ -668,7 +687,7 @@ reqMods ...RequestModifier,
 		mod(req)
 	}
 
-	var apiResponse *types.{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*types.{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
+	var apiResponse *{{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }}[ {{ end }}*{{ .ResponseType.TypeName }}{{ if ne .ResponseType.GenericContainer "" }}]{{ end }}
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return  observability.PrepareAndLogError(err, logger, span, "loading {{ .ResponseType.TypeName }} creation response")
 	}
@@ -680,15 +699,15 @@ reqMods ...RequestModifier,
 	return  nil
 }`
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/observability",
+			"github.com/dinnerdonebetter/backend/internal/lib/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
 		}
 	}
 
@@ -696,7 +715,7 @@ reqMods ...RequestModifier,
 		panic("Unknown template")
 	}
 
-	t := template.Must(template.New("function").Funcs(map[string]any{
+	t, err := template.New("function").Funcs(map[string]any{
 		"lowercase": strings.ToLower,
 		"contains":  strings.Contains,
 		"title": func(s string) string {
@@ -734,14 +753,18 @@ reqMods ...RequestModifier,
 		},
 		"paramsContain": func(x []functionParam, y string) bool {
 			for _, z := range x {
-				if z.Name == types.QueryKeySearch {
+				if z.Name == textsearch.QueryKeySearch {
 					return true
 				}
 			}
 
 			return false
 		},
-	}).Parse(tmpl))
+	}).Parse(tmpl)
+
+	if err != nil {
+		return "", nil, err
+	}
 
 	var b bytes.Buffer
 	if err = t.Execute(&b, f); err != nil {
@@ -784,49 +807,33 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
-		list := fakes.BuildFake{{ pluralize (uppercaseFirstLetter .ResponseType.TypeName) }}sList()
-		{{- if eq (uppercaseFirstLetter .ResponseType.TypeName) "User" }}
-		for i := range list.Data {
-			// the hashed passwords is never transmitted over the wire.
-			list.Data[i].HashedPassword = ""
-			// the two factor secret is transmitted over the wire only on creation.
-			list.Data[i].TwoFactorSecret = ""
-			// the two factor secret validation is never transmitted over the wire.
-			list.Data[i].TwoFactorSecretVerifiedAt = nil
+		list := []*{{ .ResponseType.TypeName }}{}
+		exampleResponse := &APIResponse[{{ if notNative .ResponseType.TypeName }}[]*{{ end }}{{ .ResponseType.TypeName }}]{
+			Pagination: fake.BuildFakeForTest[*Pagination](t),
+			Data:       list,
 		}
-		{{ else if eq (uppercaseFirstLetter .ResponseType.TypeName) "Household" }} 
-		for i := range list.Data {
-			list.Data[i].WebhookEncryptionKey = ""
-		}
-		{{ else if or (eq (uppercaseFirstLetter .ResponseType.TypeName) "HouseholdInvitation") }} 
-		for i := range list.Data {
-			list.Data[i].DestinationHousehold.WebhookEncryptionKey = ""
-			list.Data[i].FromUser.TwoFactorSecret = ""
-		}
-		{{- end }}
-
-		expected := &types.APIResponse[{{ if notNative .ResponseType.TypeName }}[]*types.{{ end }}{{ .ResponseType.TypeName }}]{
-			Pagination: &list.Pagination,
-			Data:       list.Data,
+		expected := &QueryFilteredResult[{{ .ResponseType.TypeName }}]{
+			Pagination: *exampleResponse.Pagination,
+			Data:       list,
 		}
 
 		spec := newRequestSpec(true, http.Method{{ title .Method }},  {{ if isSearchOp }}fmt.Sprintf("limit=50&page=1&q=%s&sortBy=asc", q){{ else }}"limit=50&page=1&sortBy=asc"{{ end }}, expectedPathFormat, {{ range .Params }}{{ if ne .Name "q" }}{{.Name }},{{ end }}{{ end }})
-		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleResponse)
 		actual, err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }}, {{ end }} nil)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, list, actual)
+		assert.Equal(t, expected, actual)
 	})
 
 	{{ range $i, $p := .Params }} {{ if ne $p.Name "q" }}
 	T.Run("with empty {{ replace $p.Name "ID" ""  }} ID",  func(t *testing.T) {
 		t.Parallel()
 
-		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fakes.BuildFakeID(){{ end }}
+		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fake.BuildFakeID(){{ end }}
 		{{ end }}
 
 		ctx := context.Background()
@@ -842,7 +849,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
 		c := buildTestClientWithInvalidURL(t)
@@ -856,7 +863,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
 		spec := newRequestSpec(true, http.MethodGet, {{ if isSearchOp }}fmt.Sprintf("limit=50&page=1&q=%s&sortBy=asc", q){{ else }}"limit=50&page=1&sortBy=asc"{{ end }}, expectedPathFormat, {{ range .Params }}{{ if ne .Name "q" }}{{.Name }},{{ end }}{{ end }})
@@ -873,8 +880,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 				"net/http",
 				"github.com/stretchr/testify/assert",
 				"github.com/stretchr/testify/require",
-				"github.com/dinnerdonebetter/backend/pkg/types",
-				"github.com/dinnerdonebetter/backend/pkg/types/fakes",
+				"github.com/dinnerdonebetter/backend/internal/lib/fake",
 			)
 
 			if isSearchOp {
@@ -893,43 +899,13 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
-		data := fakes.BuildFake{{ uppercaseFirstLetter .ResponseType.TypeName }}()
-		{{- if eq (uppercaseFirstLetter .ResponseType.TypeName) "User" }}
-		// the hashed passwords is never transmitted over the wire.
-		data.HashedPassword = ""
-		// the two factor secret is transmitted over the wire only on creation.
-		data.TwoFactorSecret = ""
-		// the two factor secret validation is never transmitted over the wire.
-		data.TwoFactorSecretVerifiedAt = nil
-		{{ else if eq .Name "FetchUserDataReport" }} 
-		data.User.TwoFactorSecret = ""
-		data.User.HashedPassword = ""
-		data.User.TwoFactorSecretVerifiedAt = nil
-		for i := range data.Households {
-			data.Households[i].WebhookEncryptionKey = ""
-		}
-		for i := range data.SentInvites {
-			data.SentInvites[i].DestinationHousehold.WebhookEncryptionKey = ""
-			data.SentInvites[i].FromUser.TwoFactorSecret = ""
-			data.SentInvites[i].FromUser.HashedPassword = ""
-			data.SentInvites[i].FromUser.TwoFactorSecretVerifiedAt = nil
-		}
-		for i := range data.ReceivedInvites {
-			data.ReceivedInvites[i].DestinationHousehold.WebhookEncryptionKey = ""
-			data.ReceivedInvites[i].FromUser.TwoFactorSecret = ""
-			data.ReceivedInvites[i].FromUser.HashedPassword = ""
-			data.ReceivedInvites[i].FromUser.TwoFactorSecretVerifiedAt = nil
-		}
-		{{ else if eq (uppercaseFirstLetter .ResponseType.TypeName) "Household" }} 
-		data.WebhookEncryptionKey = ""
-		{{ else if or (eq (uppercaseFirstLetter .ResponseType.TypeName) "HouseholdInvitation") }} 
-		data.DestinationHousehold.WebhookEncryptionKey = ""
-		data.FromUser.TwoFactorSecret = ""
-		{{- end }}
-		expected := &types.APIResponse[{{ if notNative .ResponseType.TypeName }}*types.{{ end }}{{ .ResponseType.TypeName }}]{
+		{{ if ne .ResponseType.TypeName "string" }}data := &{{ .ResponseType.TypeName }}{}{{ else }}
+		data := ""
+		{{ end }}
+		expected := &APIResponse[{{ if notNative .ResponseType.TypeName }}*{{ end }}{{ .ResponseType.TypeName }}]{
 			Data: data,
 		}
 
@@ -946,7 +922,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 	T.Run("with invalid {{ replace $p.Name "ID" "" }} ID",  func(t *testing.T) {
 		t.Parallel()
 
-		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fakes.BuildFakeID(){{ end }}
+		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fake.BuildFakeID(){{ end }}
 		{{ end }}
 
 		ctx := context.Background()
@@ -962,7 +938,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
 		c := buildTestClientWithInvalidURL(t)
@@ -976,7 +952,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
@@ -994,8 +970,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 				"net/http",
 				"github.com/stretchr/testify/assert",
 				"github.com/stretchr/testify/require",
-				"github.com/dinnerdonebetter/backend/pkg/types",
-				"github.com/dinnerdonebetter/backend/pkg/types/fakes",
+				"github.com/dinnerdonebetter/backend/internal/lib/fake",
 			)
 		}
 
@@ -1011,28 +986,17 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
-		data := {{ if .ReturnsList }}[]*types.{{ .ResponseType.TypeName }} { {{ end }}fakes.BuildFake{{ uppercaseFirstLetter .ResponseType.TypeName }}(){{ if .ReturnsList }}}{{ end }}
-		{{- if eq (uppercaseFirstLetter .ResponseType.TypeName) "User" }}
-		// the hashed passwords is never transmitted over the wire.
-		data.HashedPassword = ""
-		// the two factor secret is transmitted over the wire only on creation.
-		data.TwoFactorSecret = ""
-		// the two factor secret validation is never transmitted over the wire.
-		data.TwoFactorSecretVerifiedAt = nil
-		{{ else if eq (uppercaseFirstLetter .ResponseType.TypeName) "Household" }} 
-		data.WebhookEncryptionKey = ""
-		{{ else if or (eq (uppercaseFirstLetter .ResponseType.TypeName) "HouseholdInvitation") }} 
-		data.DestinationHousehold.WebhookEncryptionKey = ""
-		data.FromUser.TwoFactorSecret = ""
-		{{- end }}
-		expected := &types.APIResponse[{{ if notNative .ResponseType.TypeName }}{{ if .ReturnsList }}[]{{ end }}*types.{{ end }}{{ .ResponseType.TypeName }}]{
+		{{ if ne .ResponseType.TypeName "string" }}data := {{ if .ReturnsList }}[]*{{ else }}&{{ end }}{{ .ResponseType.TypeName }}{}{{ else }}
+		data := ""
+		{{ end }}
+		expected := &APIResponse[{{ if notNative .ResponseType.TypeName }}{{ if .ReturnsList }}[]{{ end }}*{{ end }}{{ .ResponseType.TypeName }}]{
 			Data: data,
 		}
 
-		{{ if ne .InputType.Type "" }}exampleInput := fakes.BuildFake{{ .InputType.Type }}({{ if eq .Name "VerifyTOTPSecret" }}data{{ end }}){{ end }}
+		{{ if ne .InputType.Type "" }}exampleInput := &{{ .InputType.Type }}{}{{ end }}
 
 		spec := newRequestSpec(false, http.Method{{ title .Method }}, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
@@ -1047,11 +1011,10 @@ func TestClient_{{ .Name }}(T *testing.T) {
 	T.Run("with invalid {{ replace $p.Name "ID" "" }} ID",  func(t *testing.T) {
 		t.Parallel()
 
-		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fakes.BuildFakeID(){{ end }}
+		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fake.BuildFakeID(){{ end }}
 		{{ end }}
 
-		{{ if eq $.Name "VerifyTOTPSecret" }}data := fakes.BuildFakeUser(){{ end }}
-		{{ if ne $.InputType.Type "" }}exampleInput := fakes.BuildFake{{ $.InputType.Type }}({{ if eq .Name "VerifyTOTPSecret" }}data{{ end }}){{ end }}
+		{{ if ne $.InputType.Type "" }}exampleInput := &{{ $.InputType.Type }}{}{{ end }}
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
@@ -1066,11 +1029,10 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
-		{{ if eq .Name "VerifyTOTPSecret" }}data := fakes.BuildFakeUser(){{ end }}
-		{{ if ne .InputType.Type "" }}exampleInput := fakes.BuildFake{{ .InputType.Type }}({{ if eq .Name "VerifyTOTPSecret" }}data{{ end }}){{ end }}
+		{{ if ne .InputType.Type "" }}exampleInput := &{{ .InputType.Type }}{}{{ end }}
 
 		c := buildTestClientWithInvalidURL(t)
 		{{ if (and (ne .Method "PUT") (ne .Method "PATCH")) }}actual,{{ end }} err := c.{{ .Name }}(ctx, {{ range .Params }}{{.Name }},{{ end }} {{ if ne .InputType.Type "" }} exampleInput {{ end }})
@@ -1083,11 +1045,10 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		{{ range .Params }}{{ .Name }} := fakes.BuildFakeID()
+		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
-		{{ if eq .Name "VerifyTOTPSecret" }}data := fakes.BuildFakeUser(){{ end }}
-		{{ if ne .InputType.Type "" }}exampleInput := fakes.BuildFake{{ .InputType.Type }}({{ if eq .Name "VerifyTOTPSecret" }}data{{ end }}){{ end }}
+		{{ if ne .InputType.Type "" }}exampleInput := &{{ .InputType.Type }}{}{{ end }}
 
 		spec := newRequestSpec(false, http.Method{{ title .Method }}, "", expectedPathFormat, {{ range .Params }}{{.Name }},{{ end }})
 		c := buildTestClientWithInvalidResponse(t, spec)
@@ -1103,8 +1064,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 			"context",
 			"net/http",
 			"github.com/stretchr/testify/assert",
-			"github.com/dinnerdonebetter/backend/pkg/types",
-			"github.com/dinnerdonebetter/backend/pkg/types/fakes",
+			"github.com/dinnerdonebetter/backend/internal/lib/fake",
 		)
 
 		if f.Method != http.MethodPut && f.Method != http.MethodPatch {
@@ -1120,10 +1080,10 @@ func TestClient_{{ .Name }}(T *testing.T) {
 	}
 
 	if tmpl == "" {
-		return "", nil, nil
+		panic("aaaaa")
 	}
 
-	t := template.Must(template.New(f.Name).Funcs(map[string]any{
+	t, err := template.New(f.Name).Funcs(map[string]any{
 		"lowercase": strings.ToLower,
 		"contains":  strings.Contains,
 		"title": func(s string) string {
@@ -1174,17 +1134,28 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		},
 		"paramsContain": func(x []functionParam, y string) bool {
 			for _, z := range x {
-				if z.Name == types.QueryKeySearch {
+				if z.Name == textsearch.QueryKeySearch {
 					return true
 				}
 			}
 
 			return false
 		},
+		"responseTypeHasMap": func() bool {
+			switch f.ResponseType.TypeName {
+			case "UserDataCollection", "UserPermissionsResponse":
+				return true
+			default:
+				return false
+			}
+		},
 		"isSearchOp": func() bool {
 			return isSearchOp
 		},
-	}).Parse(tmpl))
+	}).Parse(tmpl)
+	if err != nil {
+		return "", nil, err
+	}
 
 	var b bytes.Buffer
 	if err = t.Execute(&b, f); err != nil {

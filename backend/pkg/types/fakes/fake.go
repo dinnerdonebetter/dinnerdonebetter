@@ -5,8 +5,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"

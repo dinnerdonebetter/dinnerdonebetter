@@ -10,7 +10,13 @@ COVERAGE_OUT           := $(ARTIFACTS_DIR)/coverage.out
 ENVIRONMENTS_DIR       := deploy/environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-WIRE_TARGETS           := internal/build/api internal/build/admin_webapp
+WIRE_TARGETS           := internal/build/services/api \
+	internal/build/services/admin_webapp \
+	internal/build/jobs/db_cleaner \
+	internal/build/jobs/search_data_index_scheduler \
+	internal/build/jobs/meal_plan_finalizer \
+	internal/build/jobs/meal_plan_grocery_list_initializer \
+	internal/build/jobs/meal_plan_task_creator
 
 # COMPUTED
 TOTAL_PACKAGE_LIST    := `go list $(THIS)/...`
@@ -41,7 +47,7 @@ $(ARTIFACTS_DIR):
 clean-$(ARTIFACTS_DIR):
 	@rm -rf $(ARTIFACTS_DIR)
 
-## prerequisites
+## PREREQUISITES
 
 .PHONY: ensure_scc_installed
 ensure_scc_installed:
@@ -79,20 +85,20 @@ ifeq (, $(shell which sqlc))
 	$(shell go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0)
 endif
 
-.PHONY: ensure_yamlfmt_installed
-ensure_yamlfmt_installed:
-ifeq (, $(shell which yamlfmt))
-	$(shell go install github.com/google/yamlfmt/cmd/yamlfmt@v0.14.0)
-endif
-
 .PHONY: ensure_air_installed
 ensure_air_installed:
 ifeq (, $(shell which air))
 	$(shell go install github.com/air-verse/air@v1.61.5)
 endif
 
+.PHONY: ensure_goimports_installed
+ensure_goimports_installed:
+ifeq (, $(shell which goimports))
+	$(shell go install golang.org/x/tools/cmd/goimports@v0.29.0)
+endif
+
 .PHONY: setup
-setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed ensure_yamlfmt_installed
+setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed
 
 .PHONY: clean_vendor
 clean_vendor:
@@ -106,7 +112,7 @@ vendor:
 .PHONY: revendor
 revendor: clean_vendor vendor
 
-## dependency injection
+## DEPENDENCY INJECTION
 
 .PHONY: rewire
 rewire: ensure_wire_installed
@@ -114,17 +120,23 @@ rewire: ensure_wire_installed
 		rm -f $(THIS)/$$tgt/wire_gen.go && wire gen $(THIS)/$$tgt; \
 	done
 
-## formatting
-
-.PHONY: format_golang
-format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
-	@until fieldalignment -fix ./...; do true; done > /dev/null
-	@until tagalign -fix -sort -order "env,envDefault,envPrefix,json,mapstructure,toml,yaml" ./...; do true; done > /dev/null
-	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
+## FORMATTING
 
 .PHONY: format_imports
 format_imports: ensure_gci_installed
 	gci write --section standard --section "prefix($(THIS))" --section "prefix($(dir $(THIS)))" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
+
+.PHONY: format_go_fieldalignment
+format_go_fieldalignment: ensure_fieldalignment_installed
+	@until fieldalignment -fix ./...; do true; done > /dev/null
+
+.PHONY: format_go_tag_alignment
+format_go_tag_alignment: ensure_tagalign_installed
+	@until tagalign -fix -sort -order "env,envDefault,envPrefix,json,mapstructure,toml,yaml" ./...; do true; done > /dev/null
+
+.PHONY: format_golang
+format_golang: goimports format_imports format_go_fieldalignment # format_go_tag_alignment
+	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: terraformat
 terraformat:
@@ -136,11 +148,11 @@ format: format_golang terraformat
 .PHONY: fmt
 fmt: format
 
-.PHONY: format_yaml
-format_yaml: ensure_yamlfmt_installed
-	yamlfmt -conf .yamlfmt.yaml
+.PHONY: goimports
+goimports: ensure_goimports_installed
+	goimports -w .
 
-## Linting
+## LINTING
 
 .PHONY: lint_containers
 lint_containers:
@@ -154,7 +166,7 @@ queries_lint:
 	$(SQL_GENERATOR) vet --no-remote
 
 .PHONY: golang_lint
-golang_lint: sqlc_struct_check
+golang_lint: check_lib_for_types sqlc_struct_check
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
 	$(LINTER) run --config=.golangci.yml --timeout 15m ./...
 
@@ -174,15 +186,12 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 	@$(GO_TEST) -coverprofile=$(COVERAGE_OUT) -covermode=atomic $(TESTABLE_PACKAGE_LIST) > /dev/null
 	@go tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
 
-.PHONY: build
-build:
-	go build $(TOTAL_PACKAGE_LIST)
+.PHONY: check_lib_for_types
+check_lib_for_types:
+	@! grep -r 'pkg/types"' internal/lib/
+	@! grep -r 'pkg/types/fakes"' internal/lib/
 
-.PHONY: test
-test: $(ARTIFACTS_DIR) vendor build
-	$(GO_TEST) -failfast $(TESTABLE_PACKAGE_LIST)
-
-## Generated files
+## GENERATED FILES
 
 .PHONY: configs
 configs:
@@ -217,13 +226,14 @@ sqlc_struct_check:
 .PHONY: openapi
 openapi:
 	go run $(THIS)/cmd/tools/codegen/openapi_spec
+	(cd .. && $(MAKE) format_yaml)
 
 .PHONY: env_vars
 env_vars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars
 	gofmt -s -w internal/config/envvars/*.go
 
-## Integration tests
+## INTEGRATION TESTING
 
 .PHONY: integration-tests
 integration-tests: integration_tests
@@ -247,7 +257,15 @@ integration_tests_postgres:
 	--attach api_server \
 	--attach tests
 
-## Running
+## EXECUTION
+
+.PHONY: build
+build:
+	go build $(TOTAL_PACKAGE_LIST)
+
+.PHONY: test
+test: $(ARTIFACTS_DIR) vendor build
+	$(GO_TEST) -failfast $(TESTABLE_PACKAGE_LIST)
 
 .PHONY: dev
 dev: $(ARTIFACTS_DIR)
@@ -273,12 +291,7 @@ dev: $(ARTIFACTS_DIR)
 run_admin_app: ensure_air_installed
 	(cd cmd/services/admin_webapp && CONFIGURATION_FILEPATH="../../../$(ENVIRONMENTS_DIR)/localdev/config_files/admin_webapp_config.json" air -c .air.toml)
 
-## misc
-
-.PHONY: tree
-tree:
-	# there are no long args for tree, but d means "directories only" and I means "ignore pattern"
-	tree -d -I vendor
+## MISC
 
 .PHONY: line_count
 line_count: ensure_scc_installed
@@ -286,11 +299,13 @@ line_count: ensure_scc_installed
 
 # OPERATIONS
 
+GCP_DEV_PROJECT_NAME := dinner-done-better-dev
+
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
 .PHONY: proxy_dev_db
 proxy_dev_db:
-	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434 --gcloud-auth
+	cloud_sql_proxy $(GCP_DEV_PROJECT_NAME):us-central1:dev --port 5434 --gcloud-auth
 
 .PHONY: deploy_dev
 deploy_dev:
-	skaffold run --filename=skaffold.yaml --build-concurrency 2 --profile dev
+	skaffold run --filename=skaffold.yaml --build-concurrency 3 --profile dev

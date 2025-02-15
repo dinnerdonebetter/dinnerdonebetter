@@ -7,16 +7,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ValidIngredientGroupCreatedServiceEventType indicates a valid ingredient group was created.
-	ValidIngredientGroupCreatedServiceEventType ServiceEventType = "valid_ingredient_group_created"
+	ValidIngredientGroupCreatedServiceEventType = "valid_ingredient_group_created"
 	// ValidIngredientGroupUpdatedServiceEventType indicates a valid ingredient group was updated.
-	ValidIngredientGroupUpdatedServiceEventType ServiceEventType = "valid_ingredient_group_updated"
+	ValidIngredientGroupUpdatedServiceEventType = "valid_ingredient_group_updated"
 	// ValidIngredientGroupArchivedServiceEventType indicates a valid ingredient group was archived.
-	ValidIngredientGroupArchivedServiceEventType ServiceEventType = "valid_ingredient_group_archived"
+	ValidIngredientGroupArchivedServiceEventType = "valid_ingredient_group_archived"
 )
 
 func init() {
@@ -100,8 +102,8 @@ type (
 	ValidIngredientGroupDataManager interface {
 		ValidIngredientGroupExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredientGroup(ctx context.Context, validIngredientID string) (*ValidIngredientGroup, error)
-		GetValidIngredientGroups(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientGroup], error)
-		SearchForValidIngredientGroups(ctx context.Context, query string, filter *QueryFilter) ([]*ValidIngredientGroup, error)
+		GetValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientGroup], error)
+		SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*ValidIngredientGroup, error)
 		CreateValidIngredientGroup(ctx context.Context, input *ValidIngredientGroupDatabaseCreationInput) (*ValidIngredientGroup, error)
 		UpdateValidIngredientGroup(ctx context.Context, updated *ValidIngredientGroup) error
 		ArchiveValidIngredientGroup(ctx context.Context, validIngredientID string) error

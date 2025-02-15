@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -40,9 +41,9 @@ func (m *ValidVesselDataManagerMock) SearchForValidVessels(ctx context.Context, 
 }
 
 // GetValidVessels is a mock function.
-func (m *ValidVesselDataManagerMock) GetValidVessels(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidVessel], error) {
+func (m *ValidVesselDataManagerMock) GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidVessel], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidVessel]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidVessel]), returnValues.Error(1)
 }
 
 // CreateValidVessel is a mock function.

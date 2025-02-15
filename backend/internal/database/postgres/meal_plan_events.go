@@ -5,9 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -140,7 +141,7 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 }
 
 // GetMealPlanEvents fetches a list of meal plan events from the database that meet a particular filter.
-func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlanEvent], err error) {
+func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.MealPlanEvent], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -153,12 +154,12 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.MealPlanEvent]{
+	x = &filtering.QueryFilteredResult[types.MealPlanEvent]{
 		Pagination: filter.ToPagination(),
 	}
 

@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

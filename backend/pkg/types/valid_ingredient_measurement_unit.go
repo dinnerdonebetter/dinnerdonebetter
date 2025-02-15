@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ValidIngredientMeasurementUnitCreatedServiceEventType indicates a valid ingredient measurement unit was created.
-	ValidIngredientMeasurementUnitCreatedServiceEventType ServiceEventType = "valid_ingredient_measurement_unit_created"
+	ValidIngredientMeasurementUnitCreatedServiceEventType = "valid_ingredient_measurement_unit_created"
 	// ValidIngredientMeasurementUnitUpdatedServiceEventType indicates a valid ingredient measurement unit was updated.
-	ValidIngredientMeasurementUnitUpdatedServiceEventType ServiceEventType = "valid_ingredient_measurement_unit_updated"
+	ValidIngredientMeasurementUnitUpdatedServiceEventType = "valid_ingredient_measurement_unit_updated"
 	// ValidIngredientMeasurementUnitArchivedServiceEventType indicates a valid ingredient measurement unit was archived.
-	ValidIngredientMeasurementUnitArchivedServiceEventType ServiceEventType = "valid_ingredient_measurement_unit_archived"
+	ValidIngredientMeasurementUnitArchivedServiceEventType = "valid_ingredient_measurement_unit_archived"
 )
 
 func init() {
@@ -74,9 +76,9 @@ type (
 	ValidIngredientMeasurementUnitDataManager interface {
 		ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (bool, error)
 		GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*ValidIngredientMeasurementUnit, error)
-		GetValidIngredientMeasurementUnits(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientMeasurementUnit], error)
-		GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientMeasurementUnit], error)
-		GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, ingredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientMeasurementUnit], error)
+		GetValidIngredientMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientMeasurementUnit], error)
+		GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientMeasurementUnit], error)
+		GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientMeasurementUnit], error)
 		CreateValidIngredientMeasurementUnit(ctx context.Context, input *ValidIngredientMeasurementUnitDatabaseCreationInput) (*ValidIngredientMeasurementUnit, error)
 		UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *ValidIngredientMeasurementUnit) error
 		ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error

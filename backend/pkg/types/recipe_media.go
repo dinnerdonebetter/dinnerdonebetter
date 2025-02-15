@@ -10,7 +10,7 @@ import (
 
 const (
 	// RecipeMediaCreatedServiceEventType indicates recipe media was created.
-	RecipeMediaCreatedServiceEventType ServiceEventType = "recipe_media_created"
+	RecipeMediaCreatedServiceEventType = "recipe_media_created"
 )
 
 func init() {

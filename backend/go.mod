@@ -28,6 +28,7 @@ require (
 	github.com/fatih/structtag v1.2.0
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/go-chi/cors v1.2.1
+	github.com/go-faker/faker/v4 v4.5.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/go-redis/redis/v8 v8.11.5

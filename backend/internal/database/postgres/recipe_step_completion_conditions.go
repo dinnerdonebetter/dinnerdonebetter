@@ -7,9 +7,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -197,7 +198,7 @@ func (q *Querier) getRecipeStepCompletionConditionsForRecipe(ctx context.Context
 }
 
 // GetRecipeStepCompletionConditions fetches a list of recipe step completion conditions from the database that meet a particular filter.
-func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.RecipeStepCompletionCondition], err error) {
+func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.RecipeStepCompletionCondition], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -216,12 +217,12 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.RecipeStepCompletionCondition]{
+	x = &filtering.QueryFilteredResult[types.RecipeStepCompletionCondition]{
 		Pagination: filter.ToPagination(),
 	}
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -208,7 +209,7 @@ func TestQuerier_GetMealPlanOptionVotes(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		filter := types.DefaultQueryFilter()
+		filter := filtering.DefaultQueryFilter()
 		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
@@ -223,7 +224,7 @@ func TestQuerier_GetMealPlanOptionVotes(T *testing.T) {
 	T.Run("with invalid meal plan option ID", func(t *testing.T) {
 		t.Parallel()
 
-		filter := types.DefaultQueryFilter()
+		filter := filtering.DefaultQueryFilter()
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEventID := fakes.BuildFakeID()
 

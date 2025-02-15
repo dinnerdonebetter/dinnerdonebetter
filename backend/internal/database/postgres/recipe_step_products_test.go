@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -237,7 +238,7 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		filter := types.DefaultQueryFilter()
+		filter := filtering.DefaultQueryFilter()
 		exampleRecipeStepID := fakes.BuildFakeID()
 
 		ctx := context.Background()
@@ -251,7 +252,7 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 	T.Run("with invalid recipe step ID", func(t *testing.T) {
 		t.Parallel()
 
-		filter := types.DefaultQueryFilter()
+		filter := filtering.DefaultQueryFilter()
 		exampleRecipeID := fakes.BuildFakeID()
 
 		ctx := context.Background()

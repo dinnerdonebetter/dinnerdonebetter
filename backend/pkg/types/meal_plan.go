@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -16,13 +18,13 @@ const (
 	MealPlanElectionMethodInstantRunoff = "instant-runoff"
 
 	// MealPlanCreatedServiceEventType indicates a meal plan was created.
-	MealPlanCreatedServiceEventType ServiceEventType = "meal_plan_created"
+	MealPlanCreatedServiceEventType = "meal_plan_created"
 	// MealPlanUpdatedServiceEventType indicates a meal plan was updated.
-	MealPlanUpdatedServiceEventType ServiceEventType = "meal_plan_updated"
+	MealPlanUpdatedServiceEventType = "meal_plan_updated"
 	// MealPlanArchivedServiceEventType indicates a meal plan was archived.
-	MealPlanArchivedServiceEventType ServiceEventType = "meal_plan_archived"
+	MealPlanArchivedServiceEventType = "meal_plan_archived"
 	// MealPlanFinalizedServiceEventType indicates a meal plan was finalized.
-	MealPlanFinalizedServiceEventType ServiceEventType = "meal_plan_finalized"
+	MealPlanFinalizedServiceEventType = "meal_plan_finalized"
 
 	// MealPlanStatusAwaitingVotes indicates a household invitation is pending.
 	MealPlanStatusAwaitingVotes MealPlanStatus = "awaiting_votes"
@@ -104,7 +106,7 @@ type (
 	MealPlanDataManager interface {
 		MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error)
 		GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*MealPlan, error)
-		GetMealPlansForHousehold(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[MealPlan], error)
+		GetMealPlansForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlan], error)
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error

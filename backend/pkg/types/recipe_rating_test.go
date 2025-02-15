@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"

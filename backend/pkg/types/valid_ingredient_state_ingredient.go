@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ValidIngredientStateIngredientCreatedServiceEventType indicates a valid ingredient state ingredient was created.
-	ValidIngredientStateIngredientCreatedServiceEventType ServiceEventType = "valid_ingredient_state_ingredient_created"
+	ValidIngredientStateIngredientCreatedServiceEventType = "valid_ingredient_state_ingredient_created"
 	// ValidIngredientStateIngredientUpdatedServiceEventType indicates a valid ingredient state ingredient was updated.
-	ValidIngredientStateIngredientUpdatedServiceEventType ServiceEventType = "valid_ingredient_state_ingredient_updated"
+	ValidIngredientStateIngredientUpdatedServiceEventType = "valid_ingredient_state_ingredient_updated"
 	// ValidIngredientStateIngredientArchivedServiceEventType indicates a valid ingredient state ingredient was archived.
-	ValidIngredientStateIngredientArchivedServiceEventType ServiceEventType = "valid_ingredient_state_ingredient_archived"
+	ValidIngredientStateIngredientArchivedServiceEventType = "valid_ingredient_state_ingredient_archived"
 )
 
 func init() {
@@ -70,9 +72,9 @@ type (
 	ValidIngredientStateIngredientDataManager interface {
 		ValidIngredientStateIngredientExists(ctx context.Context, validIngredientPreparationID string) (bool, error)
 		GetValidIngredientStateIngredient(ctx context.Context, validIngredientPreparationID string) (*ValidIngredientStateIngredient, error)
-		GetValidIngredientStateIngredients(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientStateIngredient], error)
-		GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientStateIngredient], error)
-		GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientStateIngredient], error)
+		GetValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientStateIngredient], error)
+		GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientStateIngredient], error)
+		GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientStateIngredient], error)
 		CreateValidIngredientStateIngredient(ctx context.Context, input *ValidIngredientStateIngredientDatabaseCreationInput) (*ValidIngredientStateIngredient, error)
 		UpdateValidIngredientStateIngredient(ctx context.Context, updated *ValidIngredientStateIngredient) error
 		ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientPreparationID string) error

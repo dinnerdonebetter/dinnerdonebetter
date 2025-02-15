@@ -3,8 +3,8 @@ package pages
 import (
 	"net/url"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 )
 
 type Builder struct {
@@ -22,7 +22,7 @@ func NewPageBuilder(
 	s := &Builder{
 		tracer:         tracing.NewTracer(tracerProvider.Tracer("admin-page-builder")),
 		tracerProvider: tracerProvider,
-		logger:         logger,
+		logger:         logging.EnsureLogger(logger),
 		apiServerURL:   apiServerURL,
 	}
 

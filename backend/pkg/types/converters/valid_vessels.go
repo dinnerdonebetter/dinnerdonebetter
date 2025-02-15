@@ -1,7 +1,7 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -152,14 +152,4 @@ func ConvertValidVesselToValidVesselDatabaseCreationInput(x *types.ValidVessel) 
 	}
 
 	return v
-}
-
-// ConvertValidVesselToValidVesselSearchSubset converts a ValidVessel to a ValidVesselSearchSubset.
-func ConvertValidVesselToValidVesselSearchSubset(x *types.ValidVessel) *types.ValidVesselSearchSubset {
-	return &types.ValidVesselSearchSubset{
-		ID:          x.ID,
-		Name:        x.Name,
-		PluralName:  x.PluralName,
-		Description: x.Description,
-	}
 }

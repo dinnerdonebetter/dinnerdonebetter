@@ -511,7 +511,4 @@ const (
 
 	// ServiceWebhooksDebugEnvVarKey is the environment variable name to set in order to override `config.Services.Webhooks.Debug`.
 	ServiceWebhooksDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_WEBHOOKS_DEBUG"
-
-	// ServiceWorkersDataChangesTopicNameEnvVarKey is the environment variable name to set in order to override `config.Services.Workers.DataChangesTopicName`.
-	ServiceWorkersDataChangesTopicNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_WORKERS_DATA_CHANGES_TOPIC_NAME"
 )

@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -66,7 +68,7 @@ type (
 
 	// HouseholdUserMembershipDataManager describes a structure capable of storing householdUserMemberships permanently.
 	HouseholdUserMembershipDataManager interface {
-		BuildSessionContextDataForUser(ctx context.Context, userID string) (*SessionContextData, error)
+		BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error)
 		GetDefaultHouseholdIDForUser(ctx context.Context, userID string) (string, error)
 		MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID string) error
 		UserIsMemberOfHousehold(ctx context.Context, userID, householdID string) (bool, error)

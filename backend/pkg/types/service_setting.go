@@ -7,15 +7,17 @@ import (
 	"slices"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
 
 const (
 	// ServiceSettingCreatedServiceEventType indicates a service setting was created.
-	ServiceSettingCreatedServiceEventType ServiceEventType = "service_setting_created"
+	ServiceSettingCreatedServiceEventType = "service_setting_created"
 	// ServiceSettingArchivedServiceEventType indicates a service setting was archived.
-	ServiceSettingArchivedServiceEventType ServiceEventType = "service_setting_archived"
+	ServiceSettingArchivedServiceEventType = "service_setting_archived"
 )
 
 func init() {
@@ -70,7 +72,7 @@ type (
 		CreateServiceSetting(ctx context.Context, input *ServiceSettingDatabaseCreationInput) (*ServiceSetting, error)
 		ServiceSettingExists(ctx context.Context, serviceSettingID string) (bool, error)
 		GetServiceSetting(ctx context.Context, serviceSettingID string) (*ServiceSetting, error)
-		GetServiceSettings(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ServiceSetting], error)
+		GetServiceSettings(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSetting], error)
 		SearchForServiceSettings(ctx context.Context, query string) ([]*ServiceSetting, error)
 		ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error
 	}

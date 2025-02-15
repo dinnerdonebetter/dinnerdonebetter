@@ -6,22 +6,24 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// HouseholdCreatedServiceEventType indicates a household was created.
-	HouseholdCreatedServiceEventType ServiceEventType = "household_created"
+	HouseholdCreatedServiceEventType = "household_created"
 	// HouseholdUpdatedServiceEventType indicates a household was updated.
-	HouseholdUpdatedServiceEventType ServiceEventType = "household_updated"
+	HouseholdUpdatedServiceEventType = "household_updated"
 	// HouseholdArchivedServiceEventType indicates a household was archived.
-	HouseholdArchivedServiceEventType ServiceEventType = "household_archived"
+	HouseholdArchivedServiceEventType = "household_archived"
 	// HouseholdMemberRemovedServiceEventType indicates a household member was removed.
-	HouseholdMemberRemovedServiceEventType ServiceEventType = "household_member_removed"
+	HouseholdMemberRemovedServiceEventType = "household_member_removed"
 	// HouseholdMembershipPermissionsUpdatedServiceEventType indicates a household member's permissions were modified.
-	HouseholdMembershipPermissionsUpdatedServiceEventType ServiceEventType = "household_membership_permissions_updated"
+	HouseholdMembershipPermissionsUpdatedServiceEventType = "household_membership_permissions_updated"
 	// HouseholdOwnershipTransferredServiceEventType indicates a household was transferred to another owner.
-	HouseholdOwnershipTransferredServiceEventType ServiceEventType = "household_ownership_transferred"
+	HouseholdOwnershipTransferredServiceEventType = "household_ownership_transferred"
 
 	// UnpaidHouseholdBillingStatus indicates a household is not paid.
 	UnpaidHouseholdBillingStatus = "unpaid"
@@ -109,7 +111,7 @@ type (
 	// HouseholdDataManager describes a structure capable of storing households permanently.
 	HouseholdDataManager interface {
 		GetHousehold(ctx context.Context, householdID string) (*Household, error)
-		GetHouseholds(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Household], error)
+		GetHouseholds(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Household], error)
 		CreateHousehold(ctx context.Context, input *HouseholdDatabaseCreationInput) (*Household, error)
 		UpdateHousehold(ctx context.Context, updated *Household) error
 		ArchiveHousehold(ctx context.Context, householdID string, userID string) error

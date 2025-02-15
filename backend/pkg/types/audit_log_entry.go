@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 	"time"
+
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 )
 
 const (
@@ -52,10 +54,10 @@ type (
 	// AuditLogEntryDataManager describes a structure capable of storing audit log entries.
 	AuditLogEntryDataManager interface {
 		GetAuditLogEntry(ctx context.Context, auditLogID string) (*AuditLogEntry, error)
-		GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
-		GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID string, resourceTypes []string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
-		GetAuditLogEntriesForHousehold(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
-		GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID string, resourceTypes []string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
+		GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AuditLogEntry], error)
+		GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AuditLogEntry], error)
+		GetAuditLogEntriesForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AuditLogEntry], error)
+		GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AuditLogEntry], error)
 	}
 
 	// AuditLogEntryDataService describes a structure capable of serving traffic related to audit log entries.

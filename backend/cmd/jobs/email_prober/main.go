@@ -5,22 +5,21 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"os"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/email"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/email"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/lib/email/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	_ "go.uber.org/automaxprocs"
 )
 
-func doTheThing() error {
-	ctx := context.Background()
-
+// I'm not going to bother with turning this into a proper worker because it probably just should not exist.
+func doTheThing(ctx context.Context) error {
 	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
-		return nil
+		os.Exit(0)
 	}
 
 	cfg, err := config.LoadConfigFromEnvironment[config.EmailProberConfig]()
@@ -37,25 +36,28 @@ func doTheThing() error {
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("email_prober_job")).StartSpan(ctx)
 	defer span.End()
 
+	//nolint:contextcheck // the context it's complaining about is irrelevant.
 	emailer, err := emailcfg.ProvideEmailer(&cfg.Email, logger, tracerProvider, metricsProvider, tracing.BuildTracedHTTPClient())
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
+		return fmt.Errorf("could not establish observability pillars: %w", err)
 	}
 
-	return emailer.SendEmail(ctx, &email.OutboundEmailMessage{
+	if err = emailer.SendEmail(ctx, &email.OutboundEmailMessage{
 		ToAddress:   "verygoodsoftwarenotvirus@protonmail.com",
 		ToName:      "Jeffrey",
 		FromAddress: "email@dinnerdonebetter.dev",
 		FromName:    "Testing",
 		Subject:     "Testing",
 		HTMLContent: "Hi",
-	})
+	}); err != nil {
+		return fmt.Errorf("could not send email: %w", err)
+	}
+
+	return nil
 }
 
 func main() {
-	log.Println("doing the thing")
-	if err := doTheThing(); err != nil {
+	if err := doTheThing(context.Background()); err != nil {
 		log.Fatal(err)
 	}
-	log.Println("the thing is done")
 }

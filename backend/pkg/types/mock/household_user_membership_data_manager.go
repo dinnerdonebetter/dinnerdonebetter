@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -16,10 +17,10 @@ type HouseholdUserMembershipDataManagerMock struct {
 }
 
 // BuildSessionContextDataForUser satisfies our interface contract.
-func (m *HouseholdUserMembershipDataManagerMock) BuildSessionContextDataForUser(ctx context.Context, userID string) (*types.SessionContextData, error) {
+func (m *HouseholdUserMembershipDataManagerMock) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
 	returnValues := m.Called(ctx, userID)
 
-	return returnValues.Get(0).(*types.SessionContextData), returnValues.Error(1)
+	return returnValues.Get(0).(*sessions.ContextData), returnValues.Error(1)
 }
 
 // GetDefaultHouseholdIDForUser satisfies our interface contract.

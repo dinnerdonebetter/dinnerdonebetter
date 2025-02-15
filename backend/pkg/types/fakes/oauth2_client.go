@@ -3,6 +3,7 @@ package fakes
 import (
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -52,14 +53,14 @@ func BuildFakeOAuth2ClientCreationResponse() *types.OAuth2ClientCreationResponse
 }
 
 // BuildFakeOAuth2ClientsList builds a faked OAuth2ClientList.
-func BuildFakeOAuth2ClientsList() *types.QueryFilteredResult[types.OAuth2Client] {
+func BuildFakeOAuth2ClientsList() *filtering.QueryFilteredResult[types.OAuth2Client] {
 	var examples []*types.OAuth2Client
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeOAuth2Client())
 	}
 
-	return &types.QueryFilteredResult[types.OAuth2Client]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.OAuth2Client]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

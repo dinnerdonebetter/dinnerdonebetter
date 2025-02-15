@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
-	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -24,14 +24,12 @@ func (s *Server) handleLoginSubmission(res http.ResponseWriter, req *http.Reques
 
 	logger := s.logger.WithRequest(req)
 
-	var x types.UserLoginInput
+	var x apiclient.UserLoginInput
 	if err := json.NewDecoder(req.Body).Decode(&x); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "decoding json")
 	}
 
-	if err := x.ValidateWithContext(ctx); err != nil {
-		return nil, err
-	}
+	// TODO: validate
 
 	client, err := apiclient.NewClient(s.apiServerURL, s.tracerProvider)
 	if err != nil {
@@ -137,7 +135,7 @@ func (s *Server) renderUsersPage(_ http.ResponseWriter, req *http.Request) (gomp
 		return nil, errors.New("missing api client")
 	}
 
-	users, err := client.GetUsers(ctx, types.ExtractQueryFilterFromRequest(req))
+	users, err := client.GetUsers(ctx, apiclient.ExtractQueryFilterFromRequest(req))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +157,7 @@ func (s *Server) renderValidIngredientsPage(_ http.ResponseWriter, req *http.Req
 		return nil, errors.New("missing api client")
 	}
 
-	validIngredients, err := client.GetValidIngredients(ctx, types.ExtractQueryFilterFromRequest(req))
+	validIngredients, err := client.GetValidIngredients(ctx, apiclient.ExtractQueryFilterFromRequest(req))
 	if err != nil {
 		return nil, err
 	}
@@ -234,7 +232,7 @@ func (s *Server) handleValidIngredientSubmission(res http.ResponseWriter, req *h
 		return nil, errors.New("missing api client")
 	}
 
-	var x *types.ValidIngredientCreationRequestInput
+	var x *apiclient.ValidIngredientCreationRequestInput
 	if err := json.NewDecoder(req.Body).Decode(&x); err != nil {
 		return nil, err
 	}

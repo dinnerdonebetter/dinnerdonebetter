@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// RecipeStepVesselCreatedServiceEventType indicates a recipe step instrument was created.
-	RecipeStepVesselCreatedServiceEventType ServiceEventType = "recipe_step_vessel_created"
+	RecipeStepVesselCreatedServiceEventType = "recipe_step_vessel_created"
 	// RecipeStepVesselUpdatedServiceEventType indicates a recipe step instrument was updated.
-	RecipeStepVesselUpdatedServiceEventType ServiceEventType = "recipe_step_vessel_updated"
+	RecipeStepVesselUpdatedServiceEventType = "recipe_step_vessel_updated"
 	// RecipeStepVesselArchivedServiceEventType indicates a recipe step instrument was archived.
-	RecipeStepVesselArchivedServiceEventType ServiceEventType = "recipe_step_vessel_archived"
+	RecipeStepVesselArchivedServiceEventType = "recipe_step_vessel_archived"
 )
 
 func init() {
@@ -93,7 +95,7 @@ type (
 	RecipeStepVesselDataManager interface {
 		RecipeStepVesselExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (bool, error)
 		GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*RecipeStepVessel, error)
-		GetRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*QueryFilteredResult[RecipeStepVessel], error)
+		GetRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipeStepVessel], error)
 		CreateRecipeStepVessel(ctx context.Context, input *RecipeStepVesselDatabaseCreationInput) (*RecipeStepVessel, error)
 		UpdateRecipeStepVessel(ctx context.Context, updated *RecipeStepVessel) error
 		ArchiveRecipeStepVessel(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error

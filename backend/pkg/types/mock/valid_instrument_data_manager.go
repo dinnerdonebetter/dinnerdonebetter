@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -40,9 +41,9 @@ func (m *ValidInstrumentDataManagerMock) SearchForValidInstruments(ctx context.C
 }
 
 // GetValidInstruments is a mock function.
-func (m *ValidInstrumentDataManagerMock) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidInstrument], error) {
+func (m *ValidInstrumentDataManagerMock) GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidInstrument], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidInstrument]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidInstrument]), returnValues.Error(1)
 }
 
 // CreateValidInstrument is a mock function.

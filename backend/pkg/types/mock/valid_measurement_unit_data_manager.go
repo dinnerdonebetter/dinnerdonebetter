@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -16,9 +17,9 @@ type ValidMeasurementUnitDataManagerMock struct {
 }
 
 // ValidMeasurementUnitsForIngredientID is a mock function.
-func (m *ValidMeasurementUnitDataManagerMock) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
+func (m *ValidMeasurementUnitDataManagerMock) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	returnValues := m.Called(ctx, validIngredientID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidMeasurementUnit]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidMeasurementUnit]), returnValues.Error(1)
 }
 
 // ValidMeasurementUnitExists is a mock function.
@@ -40,9 +41,9 @@ func (m *ValidMeasurementUnitDataManagerMock) SearchForValidMeasurementUnits(ctx
 }
 
 // GetValidMeasurementUnits is a mock function.
-func (m *ValidMeasurementUnitDataManagerMock) GetValidMeasurementUnits(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
+func (m *ValidMeasurementUnitDataManagerMock) GetValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidMeasurementUnit]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidMeasurementUnit]), returnValues.Error(1)
 }
 
 // CreateValidMeasurementUnit is a mock function.

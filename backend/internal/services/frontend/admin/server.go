@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/internalerrors"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	cookies "github.com/dinnerdonebetter/backend/internal/lib/authentication/cookies"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/frontend/admin/pages"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 

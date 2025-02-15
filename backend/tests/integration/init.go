@@ -9,17 +9,17 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/random"
-	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/random"
+	serverutils "github.com/dinnerdonebetter/backend/internal/lib/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -150,10 +150,10 @@ func init() {
 		panic(err)
 	}
 
-	jwtRes, err := simpleClient.AdminLoginForToken(ctx, &types.UserLoginInput{
+	jwtRes, err := simpleClient.AdminLoginForToken(ctx, &apiclient.UserLoginInput{
 		Username:  premadeAdminUser.Username,
 		Password:  premadeAdminUser.HashedPassword,
-		TOTPToken: code,
+		TotpToken: code,
 	})
 	if err != nil {
 		panic(err)

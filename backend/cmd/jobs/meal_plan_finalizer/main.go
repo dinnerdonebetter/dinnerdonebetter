@@ -5,24 +5,18 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"time"
+	"os"
 
+	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_finalizer"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/workers"
 
 	_ "go.uber.org/automaxprocs"
 )
 
-func doTheThing() error {
-	ctx := context.Background()
-
+func doTheThing(ctx context.Context) error {
 	if config.ShouldCeaseOperation() {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
-		return nil
+		os.Exit(0)
 	}
 
 	cfg, err := config.LoadConfigFromEnvironment[config.MealPlanFinalizerConfig]()
@@ -31,65 +25,20 @@ func doTheThing() error {
 	}
 	cfg.Database.RunMigrations = false
 
-	logger, tracerProvider, metricsProvider, err := cfg.Observability.ProvideThreePillars(ctx)
+	worker, err := mealplanfinalizer.Build(ctx, cfg)
 	if err != nil {
-		return fmt.Errorf("could not establish observability pillars: %w", err)
+		return fmt.Errorf("error building mealplantaskcreator: %w", err)
 	}
 
-	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("meal_plan_finalizer_job")).StartSpan(ctx)
-	defer span.End()
-
-	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
-	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
-	if err != nil {
-		cancel()
-		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
-	}
-
-	cancel()
-	defer dataManager.Close()
-
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
-	}
-
-	defer publisherProvider.Close()
-
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.Queues.DataChangesTopicName)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "configuring data changes publisher")
-	}
-
-	defer dataChangesPublisher.Stop()
-
-	mealPlanFinalizationWorker, err := workers.ProvideMealPlanFinalizationWorker(
-		logger,
-		dataManager,
-		dataChangesPublisher,
-		tracerProvider,
-		metricsProvider,
-	)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "initializing meal plan worker")
-	}
-
-	changedCount, err := mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "finalizing meal plans")
-	}
-
-	if changedCount > 0 {
-		logger.WithValue("count", changedCount).Info("finalized meal plans")
+	if _, err = worker.Work(ctx); err != nil {
+		return fmt.Errorf("error building mealplantaskcreator: %w", err)
 	}
 
 	return nil
 }
 
 func main() {
-	log.Println("doing the thing")
-	if err := doTheThing(); err != nil {
+	if err := doTheThing(context.Background()); err != nil {
 		log.Fatal(err)
 	}
-	log.Println("the thing is done")
 }

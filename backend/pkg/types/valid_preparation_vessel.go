@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ValidPreparationVesselCreatedServiceEventType indicates a valid preparation instrument was created.
-	ValidPreparationVesselCreatedServiceEventType ServiceEventType = "valid_preparation_instrument_created"
+	ValidPreparationVesselCreatedServiceEventType = "valid_preparation_instrument_created"
 	// ValidPreparationVesselUpdatedServiceEventType indicates a valid preparation instrument was updated.
-	ValidPreparationVesselUpdatedServiceEventType ServiceEventType = "valid_preparation_instrument_updated"
+	ValidPreparationVesselUpdatedServiceEventType = "valid_preparation_instrument_updated"
 	// ValidPreparationVesselArchivedServiceEventType indicates a valid preparation instrument was archived.
-	ValidPreparationVesselArchivedServiceEventType ServiceEventType = "valid_preparation_instrument_archived"
+	ValidPreparationVesselArchivedServiceEventType = "valid_preparation_instrument_archived"
 )
 
 func init() {
@@ -70,9 +72,9 @@ type (
 	ValidPreparationVesselDataManager interface {
 		ValidPreparationVesselExists(ctx context.Context, validPreparationVesselID string) (bool, error)
 		GetValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*ValidPreparationVessel, error)
-		GetValidPreparationVessels(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidPreparationVessel], error)
-		GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *QueryFilter) (*QueryFilteredResult[ValidPreparationVessel], error)
-		GetValidPreparationVesselsForVessel(ctx context.Context, instrumentID string, filter *QueryFilter) (*QueryFilteredResult[ValidPreparationVessel], error)
+		GetValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationVessel], error)
+		GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationVessel], error)
+		GetValidPreparationVesselsForVessel(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationVessel], error)
 		CreateValidPreparationVessel(ctx context.Context, input *ValidPreparationVesselDatabaseCreationInput) (*ValidPreparationVessel, error)
 		UpdateValidPreparationVessel(ctx context.Context, updated *ValidPreparationVessel) error
 		ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error

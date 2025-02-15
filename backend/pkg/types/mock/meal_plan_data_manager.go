@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -28,9 +29,9 @@ func (m *MealPlanDataManagerMock) GetMealPlan(ctx context.Context, mealPlanID, h
 }
 
 // GetMealPlans is a mock function.
-func (m *MealPlanDataManagerMock) GetMealPlansForHousehold(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.MealPlan], error) {
+func (m *MealPlanDataManagerMock) GetMealPlansForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error) {
 	returnValues := m.Called(ctx, householdID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.MealPlan]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.MealPlan]), returnValues.Error(1)
 }
 
 // CreateMealPlan is a mock function.

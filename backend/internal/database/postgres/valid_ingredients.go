@@ -5,9 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -155,7 +156,7 @@ func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIng
 }
 
 // SearchForValidIngredients fetches a valid ingredient from the database.
-func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
+func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -168,10 +169,10 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, f
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, query)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 
-	x := &types.QueryFilteredResult[types.ValidIngredient]{
+	x := &filtering.QueryFilteredResult[types.ValidIngredient]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -230,7 +231,7 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, f
 }
 
 // SearchForValidIngredientsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredient], err error) {
+func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -249,12 +250,12 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	x = &types.QueryFilteredResult[types.ValidIngredient]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredient]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -316,19 +317,19 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 }
 
 // GetValidIngredients fetches a list of valid ingredients from the database that meet a particular filter.
-func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredient], err error) {
+func (q *Querier) GetValidIngredients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidIngredient]{
+	x = &filtering.QueryFilteredResult[types.ValidIngredient]{
 		Pagination: filter.ToPagination(),
 	}
 

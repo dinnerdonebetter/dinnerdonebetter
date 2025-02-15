@@ -153,15 +153,12 @@ jobs:
         with:
           go-version: '${{ matrix.go-version }}'
 
-      - name: install yamlfmt
-        run: go install github.com/google/yamlfmt/cmd/yamlfmt@v0.14.0
-
       - name: Ensure openapi spec can be generated
         working-directory: backend
         run: make openapi
 
       - name: Format
-        run: yamlfmt -conf .yamlfmt.yaml
+        run: make format_yaml
 
       - name: Check for changes
         run: git diff --exit-code

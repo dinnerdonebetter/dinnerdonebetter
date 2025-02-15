@@ -6,12 +6,12 @@ import (
 )
 
 var (
-	//go:embed statics/*.go
+	//go:embed statics/*.go.template
 	staticFiles embed.FS
 )
 
 func fetchStaticFile(name string) string {
-	file, err := staticFiles.ReadFile(fmt.Sprintf("statics/%s.go", name))
+	file, err := staticFiles.ReadFile(fmt.Sprintf("statics/%s.go.template", name))
 	if err != nil {
 		panic(err)
 	}
@@ -24,6 +24,8 @@ func init() {
 }
 
 var baseFiles = map[string]string{
+	"api_response":             fetchStaticFile("api_response"),
+	"query_filters":            fetchStaticFile("query_filters"),
 	"client":                   fetchStaticFile("client"),
 	"client_test":              fetchStaticFile("client_test"),
 	"client_options":           fetchStaticFile("client_options"),

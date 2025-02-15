@@ -8,10 +8,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -105,7 +106,7 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 }
 
 // getHouseholdsForUser fetches a list of households from the database that meet a particular filter.
-func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQLQueryExecutor, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Household], err error) {
+func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQLQueryExecutor, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Household], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -118,12 +119,12 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.Household]{
+	x = &filtering.QueryFilteredResult[types.Household]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -176,7 +177,7 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 }
 
 // GetHouseholds fetches a list of households from the database that meet a particular filter.
-func (q *Querier) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Household], err error) {
+func (q *Querier) GetHouseholds(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Household], err error) {
 	return q.getHouseholdsForUser(ctx, q.db, userID, filter)
 }
 

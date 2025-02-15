@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 )
 
 // DeleteExpiredOAuth2ClientTokens deletes expired oauth2 client tokens.

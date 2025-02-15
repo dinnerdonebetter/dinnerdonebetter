@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// UserIngredientPreferenceCreatedServiceEventType indicates a user ingredient preference was created.
-	UserIngredientPreferenceCreatedServiceEventType ServiceEventType = "user_ingredient_preference_created"
+	UserIngredientPreferenceCreatedServiceEventType = "user_ingredient_preference_created"
 	// UserIngredientPreferenceUpdatedServiceEventType indicates a user ingredient preference was updated.
-	UserIngredientPreferenceUpdatedServiceEventType ServiceEventType = "user_ingredient_preference_updated"
+	UserIngredientPreferenceUpdatedServiceEventType = "user_ingredient_preference_updated"
 	// UserIngredientPreferenceArchivedServiceEventType indicates a user ingredient preference was archived.
-	UserIngredientPreferenceArchivedServiceEventType ServiceEventType = "user_ingredient_preference_archived"
+	UserIngredientPreferenceArchivedServiceEventType = "user_ingredient_preference_archived"
 
 	minRating int8 = -10
 	maxRating int8 = 10
@@ -80,7 +82,7 @@ type (
 	UserIngredientPreferenceDataManager interface {
 		UserIngredientPreferenceExists(ctx context.Context, userIngredientPreferenceID, userID string) (bool, error)
 		GetUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) (*UserIngredientPreference, error)
-		GetUserIngredientPreferences(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[UserIngredientPreference], error)
+		GetUserIngredientPreferences(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[UserIngredientPreference], error)
 		CreateUserIngredientPreference(ctx context.Context, input *UserIngredientPreferenceDatabaseCreationInput) ([]*UserIngredientPreference, error)
 		UpdateUserIngredientPreference(ctx context.Context, updated *UserIngredientPreference) error
 		ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error

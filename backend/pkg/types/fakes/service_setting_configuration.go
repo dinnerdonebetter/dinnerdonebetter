@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
@@ -19,14 +20,14 @@ func BuildFakeServiceSettingConfiguration() *types.ServiceSettingConfiguration {
 }
 
 // BuildFakeServiceSettingConfigurationsList builds a faked ServiceSettingConfigurationList.
-func BuildFakeServiceSettingConfigurationsList() *types.QueryFilteredResult[types.ServiceSettingConfiguration] {
+func BuildFakeServiceSettingConfigurationsList() *filtering.QueryFilteredResult[types.ServiceSettingConfiguration] {
 	var examples []*types.ServiceSettingConfiguration
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeServiceSettingConfiguration())
 	}
 
-	return &types.QueryFilteredResult[types.ServiceSettingConfiguration]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.ServiceSettingConfiguration]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

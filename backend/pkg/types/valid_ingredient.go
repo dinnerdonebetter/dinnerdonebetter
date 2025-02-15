@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ValidIngredientCreatedServiceEventType indicates a valid ingredient was created.
-	ValidIngredientCreatedServiceEventType ServiceEventType = "valid_ingredient_created"
+	ValidIngredientCreatedServiceEventType = "valid_ingredient_created"
 	// ValidIngredientUpdatedServiceEventType indicates a valid ingredient was updated.
-	ValidIngredientUpdatedServiceEventType ServiceEventType = "valid_ingredient_updated"
+	ValidIngredientUpdatedServiceEventType = "valid_ingredient_updated"
 	// ValidIngredientArchivedServiceEventType indicates a valid ingredient was archived.
-	ValidIngredientArchivedServiceEventType ServiceEventType = "valid_ingredient_archived"
+	ValidIngredientArchivedServiceEventType = "valid_ingredient_archived"
 )
 
 func init() {
@@ -224,25 +226,14 @@ type (
 		IsHeat                      *bool                `json:"isHeat"`
 	}
 
-	// ValidIngredientSearchSubset represents the subset of values suitable to index for search.
-	ValidIngredientSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		PluralName          string `json:"pluralName,omitempty"`
-		Name                string `json:"name,omitempty"`
-		ID                  string `json:"id,omitempty"`
-		Description         string `json:"description,omitempty"`
-		ShoppingSuggestions string `json:"shoppingSuggestions,omitempty"`
-	}
-
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
 	ValidIngredientDataManager interface {
 		ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error)
 		GetValidIngredient(ctx context.Context, validIngredientID string) (*ValidIngredient, error)
 		GetRandomValidIngredient(ctx context.Context) (*ValidIngredient, error)
-		GetValidIngredients(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredient], error)
-		SearchForValidIngredients(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[ValidIngredient], error)
-		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *QueryFilter) (x *QueryFilteredResult[ValidIngredient], err error)
+		GetValidIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredient], error)
+		SearchForValidIngredients(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredient], error)
+		SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[ValidIngredient], err error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
 		MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error

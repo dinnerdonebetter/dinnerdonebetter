@@ -13,24 +13,26 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/email"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
-	"github.com/dinnerdonebetter/backend/internal/messagequeue"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/routing/chi"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/search/text/indexing"
-	"github.com/dinnerdonebetter/backend/internal/uploads"
-	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/email"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/lib/email/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/routing/chi"
+	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
+	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
+	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "go.uber.org/automaxprocs"
@@ -39,7 +41,7 @@ import (
 var (
 	errRequiredDataIsNil = errors.New("required data is nil")
 
-	nonWebhookEventTypes = []types.ServiceEventType{
+	nonWebhookEventTypes = []string{
 		types.UserSignedUpServiceEventType,
 		types.UserArchivedServiceEventType,
 		types.TwoFactorSecretVerifiedServiceEventType,
@@ -332,7 +334,6 @@ func doTheThing(
 		buildOutboundEmailsEventHandler(
 			logger,
 			tracer,
-			dataManager,
 			emailer,
 			analyticsEventReporter,
 			outboundEmailsExecutionTimeHistogram,
@@ -429,7 +430,6 @@ func buildDataChangesEventHandler(
 func buildOutboundEmailsEventHandler(
 	logger logging.Logger,
 	tracer tracing.Tracer,
-	dataManager database.DataManager,
 	emailer email.Emailer,
 	analyticsEventReporter analytics.EventReporter,
 	executionTimestampHistogram metrics.Float64Histogram,
@@ -440,12 +440,12 @@ func buildOutboundEmailsEventHandler(
 
 		start := time.Now()
 
-		var emailMessage email.DeliveryRequest
+		var emailMessage email.OutboundEmailMessage
 		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&emailMessage); err != nil {
 			return fmt.Errorf("decoding JSON body: %w", err)
 		}
 
-		if err := handleEmailRequest(ctx, logger, tracer, dataManager, emailer, analyticsEventReporter, &emailMessage); err != nil {
+		if err := handleEmailRequest(ctx, logger, tracer, emailer, analyticsEventReporter, &emailMessage); err != nil {
 			return fmt.Errorf("handling outbound email request: %w", err)
 		}
 
@@ -470,14 +470,30 @@ func buildSearchIndexRequestsEventHandler(
 
 		start := time.Now()
 
-		var searchIndexRequest indexing.IndexRequest
+		var searchIndexRequest textsearch.IndexRequest
 		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&searchIndexRequest); err != nil {
 			return fmt.Errorf("decoding JSON body: %w", err)
 		}
 
-		// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
-		if err := indexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, searchCfg, dataManager, &searchIndexRequest); err != nil {
-			return fmt.Errorf("handling search indexing request: %w", err)
+		switch searchIndexRequest.IndexType {
+		case eatingindexing.IndexTypeRecipes,
+			eatingindexing.IndexTypeMeals,
+			eatingindexing.IndexTypeValidIngredients,
+			eatingindexing.IndexTypeValidInstruments,
+			eatingindexing.IndexTypeValidMeasurementUnits,
+			eatingindexing.IndexTypeValidPreparations,
+			eatingindexing.IndexTypeValidIngredientStates,
+			eatingindexing.IndexTypeValidVessels:
+			// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
+			if err := eatingindexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, searchCfg, dataManager, &searchIndexRequest); err != nil {
+				return fmt.Errorf("handling search indexing request: %w", err)
+			}
+
+		case coreindexing.IndexTypeUsers:
+			// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
+			if err := coreindexing.HandleIndexRequest(ctx, logger, tracerProvider, metricsProvider, searchCfg, dataManager, &searchIndexRequest); err != nil {
+				return fmt.Errorf("handling search indexing request: %w", err)
+			}
 		}
 
 		executionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))

@@ -6,10 +6,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -110,7 +111,7 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 }
 
 // GetWebhooks fetches a list of webhooks from the database that meet a particular filter.
-func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Webhook], error) {
+func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -123,11 +124,11 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &types.QueryFilteredResult[types.Webhook]{
+	x := &filtering.QueryFilteredResult[types.Webhook]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -166,7 +167,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 }
 
 // GetWebhooksForHouseholdAndEvent fetches a list of webhooks from the database that meet a particular filter.
-func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType types.ServiceEventType) ([]*types.Webhook, error) {
+func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID, eventType string) ([]*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

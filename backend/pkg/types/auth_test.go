@@ -5,7 +5,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -31,8 +32,8 @@ func TestSessionContextData_AttachToLogger(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &SessionContextData{
-			Requester: RequesterInfo{ServicePermissions: authorization.NewServiceRolePermissionChecker(t.Name())},
+		x := &sessions.ContextData{
+			Requester: sessions.RequesterInfo{ServicePermissions: authorization.NewServiceRolePermissionChecker(t.Name())},
 		}
 
 		assert.NotNil(t, x.AttachToLogger(logging.NewNoopLogger()))
@@ -45,7 +46,7 @@ func TestSessionContextData_HouseholdRolePermissionsChecker(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &SessionContextData{
+		x := &sessions.ContextData{
 			ActiveHouseholdID: t.Name(),
 			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 				t.Name(): authorization.NewHouseholdRolePermissionChecker(t.Name()),
@@ -62,9 +63,9 @@ func TestSessionContextData_ServiceRolePermissionChecker(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &SessionContextData{
+		x := &sessions.ContextData{
 			ActiveHouseholdID: t.Name(),
-			Requester: RequesterInfo{
+			Requester: sessions.RequesterInfo{
 				ServicePermissions: authorization.NewServiceRolePermissionChecker(t.Name()),
 			},
 		}

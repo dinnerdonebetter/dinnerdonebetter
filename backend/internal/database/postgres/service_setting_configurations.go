@@ -6,10 +6,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -214,7 +215,7 @@ func (q *Querier) GetServiceSettingConfigurationForHouseholdByName(ctx context.C
 }
 
 // GetServiceSettingConfigurationsForUser fetches a list of service setting configurations from the database that meet a particular filter.
-func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -227,12 +228,12 @@ func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, us
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 	filter.AttachToLogger(logger)
 
-	x := &types.QueryFilteredResult[types.ServiceSettingConfiguration]{
+	x := &filtering.QueryFilteredResult[types.ServiceSettingConfiguration]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -280,7 +281,7 @@ func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, us
 }
 
 // GetServiceSettingConfigurationsForHousehold fetches a list of service setting configurations from the database that meet a particular filter.
-func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -293,12 +294,12 @@ func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 	filter.AttachToLogger(logger)
 
-	x := &types.QueryFilteredResult[types.ServiceSettingConfiguration]{
+	x := &filtering.QueryFilteredResult[types.ServiceSettingConfiguration]{
 		Pagination: filter.ToPagination(),
 	}
 

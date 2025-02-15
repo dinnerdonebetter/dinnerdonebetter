@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// HouseholdInstrumentOwnershipCreatedServiceEventType indicates a household instrument ownership was created.
-	HouseholdInstrumentOwnershipCreatedServiceEventType ServiceEventType = "household_instrument_ownership_created"
+	HouseholdInstrumentOwnershipCreatedServiceEventType = "household_instrument_ownership_created"
 	// HouseholdInstrumentOwnershipUpdatedServiceEventType indicates a household instrument ownership was updated.
-	HouseholdInstrumentOwnershipUpdatedServiceEventType ServiceEventType = "household_instrument_ownership_updated"
+	HouseholdInstrumentOwnershipUpdatedServiceEventType = "household_instrument_ownership_updated"
 	// HouseholdInstrumentOwnershipArchivedServiceEventType indicates a household instrument ownership was archived.
-	HouseholdInstrumentOwnershipArchivedServiceEventType ServiceEventType = "household_instrument_ownership_archived"
+	HouseholdInstrumentOwnershipArchivedServiceEventType = "household_instrument_ownership_archived"
 )
 
 func init() {
@@ -73,7 +75,7 @@ type (
 	HouseholdInstrumentOwnershipDataManager interface {
 		HouseholdInstrumentOwnershipExists(ctx context.Context, householdInstrumentOwnershipID, householdID string) (bool, error)
 		GetHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) (*HouseholdInstrumentOwnership, error)
-		GetHouseholdInstrumentOwnerships(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[HouseholdInstrumentOwnership], error)
+		GetHouseholdInstrumentOwnerships(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[HouseholdInstrumentOwnership], error)
 		CreateHouseholdInstrumentOwnership(ctx context.Context, input *HouseholdInstrumentOwnershipDatabaseCreationInput) (*HouseholdInstrumentOwnership, error)
 		UpdateHouseholdInstrumentOwnership(ctx context.Context, updated *HouseholdInstrumentOwnership) error
 		ArchiveHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) error

@@ -7,7 +7,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/cookies"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"

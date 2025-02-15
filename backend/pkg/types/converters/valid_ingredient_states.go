@@ -1,7 +1,7 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -56,16 +56,5 @@ func ConvertValidIngredientStateToValidIngredientStateDatabaseCreationInput(vali
 		Slug:          validIngredientState.Slug,
 		PastTense:     validIngredientState.PastTense,
 		AttributeType: validIngredientState.AttributeType,
-	}
-}
-
-// ConvertValidIngredientStateToValidIngredientStateSearchSubset converts a ValidIngredientState to a ValidIngredientStateSearchSubset.
-func ConvertValidIngredientStateToValidIngredientStateSearchSubset(x *types.ValidIngredientState) *types.ValidIngredientStateSearchSubset {
-	return &types.ValidIngredientStateSearchSubset{
-		ID:            x.ID,
-		Name:          x.Name,
-		PastTense:     x.PastTense,
-		Description:   x.Description,
-		AttributeType: x.AttributeType,
 	}
 }

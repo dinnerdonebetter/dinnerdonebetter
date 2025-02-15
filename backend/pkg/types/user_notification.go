@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// UserNotificationCreatedServiceEventType indicates a user notification was created.
-	UserNotificationCreatedServiceEventType ServiceEventType = "user_notification_created"
+	UserNotificationCreatedServiceEventType = "user_notification_created"
 	// UserNotificationUpdatedServiceEventType indicates a user notification was updated.
-	UserNotificationUpdatedServiceEventType ServiceEventType = "user_notification_updated"
+	UserNotificationUpdatedServiceEventType = "user_notification_updated"
 	// UserNotificationArchivedServiceEventType indicates a user notification was archived.
-	UserNotificationArchivedServiceEventType ServiceEventType = "user_notification_archived"
+	UserNotificationArchivedServiceEventType = "user_notification_archived"
 
 	// UserNotificationStatusTypeUnread represents the user notification status type for unread.
 	UserNotificationStatusTypeUnread = "unread"
@@ -73,7 +75,7 @@ type (
 	UserNotificationDataManager interface {
 		UserNotificationExists(ctx context.Context, userID, userNotificationID string) (bool, error)
 		GetUserNotification(ctx context.Context, userID, userNotificationID string) (*UserNotification, error)
-		GetUserNotifications(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[UserNotification], error)
+		GetUserNotifications(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[UserNotification], error)
 		CreateUserNotification(ctx context.Context, input *UserNotificationDatabaseCreationInput) (*UserNotification, error)
 		UpdateUserNotification(ctx context.Context, updated *UserNotification) error
 	}

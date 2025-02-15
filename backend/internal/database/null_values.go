@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 )
 
 func TimePointerFromNullTime(nt sql.NullTime) *time.Time {

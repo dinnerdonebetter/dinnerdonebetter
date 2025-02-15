@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -28,21 +29,21 @@ func (m *ValidIngredientStateIngredientDataManagerMock) GetValidIngredientStateI
 }
 
 // GetValidIngredientStateIngredients is a mock function.
-func (m *ValidIngredientStateIngredientDataManagerMock) GetValidIngredientStateIngredients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
+func (m *ValidIngredientStateIngredientDataManagerMock) GetValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientStateIngredient]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient]), returnValues.Error(1)
 }
 
 // GetValidIngredientStateIngredientsForIngredient is a mock function.
-func (m *ValidIngredientStateIngredientDataManagerMock) GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
+func (m *ValidIngredientStateIngredientDataManagerMock) GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
 	returnValues := m.Called(ctx, ingredientID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientStateIngredient]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient]), returnValues.Error(1)
 }
 
 // GetValidIngredientStateIngredientsForIngredientState is a mock function.
-func (m *ValidIngredientStateIngredientDataManagerMock) GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
+func (m *ValidIngredientStateIngredientDataManagerMock) GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient], error) {
 	returnValues := m.Called(ctx, ingredientStateID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientStateIngredient]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredientStateIngredient]), returnValues.Error(1)
 }
 
 // CreateValidIngredientStateIngredient is a mock function.

@@ -6,10 +6,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -103,19 +104,19 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 }
 
 // GetMeals fetches a list of meals from the database that meet a particular filter.
-func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
+func (q *Querier) GetMeals(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.Meal]{
+	x = &filtering.QueryFilteredResult[types.Meal]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -157,19 +158,19 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 }
 
 // GetMealsCreatedByUser fetches a list of meals from the database that meet a particular filter.
-func (q *Querier) GetMealsCreatedByUser(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
+func (q *Querier) GetMealsCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.Meal]{
+	x = &filtering.QueryFilteredResult[types.Meal]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -251,19 +252,19 @@ func (q *Querier) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]strin
 }
 
 // SearchForMeals fetches a list of recipes from the database that match a query.
-func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
+func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.Meal]{
+	x = &filtering.QueryFilteredResult[types.Meal]{
 		Pagination: filter.ToPagination(),
 	}
 

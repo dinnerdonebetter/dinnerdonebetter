@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -28,31 +28,35 @@ func BuildFakeUserDataCollection() *types.UserDataCollection {
 	householdInstrumentOwnerships := BuildFakeHouseholdInstrumentOwnershipsList().Data
 
 	return &types.UserDataCollection{
-		ReportID:                         BuildFakeID(),
-		User:                             *user,
-		RecipeRatings:                    pointer.DereferenceSlice(recipeRatings),
-		Recipes:                          pointer.DereferenceSlice(recipes),
-		Meals:                            pointer.DereferenceSlice(meals),
-		ReceivedInvites:                  pointer.DereferenceSlice(receivedHouseholdInvitations),
-		UserIngredientPreferences:        pointer.DereferenceSlice(userIngredientPreferences),
-		SentInvites:                      pointer.DereferenceSlice(sentHouseholdInvitations),
-		UserServiceSettingConfigurations: pointer.DereferenceSlice(serviceSettingConfigurations),
-		UserAuditLogEntries:              pointer.DereferenceSlice(auditLogEntries),
-		Households:                       []types.Household{*household},
-		Webhooks: map[string][]types.Webhook{
-			household.ID: pointer.DereferenceSlice(webhooks),
+		ReportID: BuildFakeID(),
+		User:     *user,
+		Core: types.CoreUserDataCollection{
+			ReceivedInvites:                  pointer.DereferenceSlice(receivedHouseholdInvitations),
+			SentInvites:                      pointer.DereferenceSlice(sentHouseholdInvitations),
+			UserServiceSettingConfigurations: pointer.DereferenceSlice(serviceSettingConfigurations),
+			UserAuditLogEntries:              pointer.DereferenceSlice(auditLogEntries),
+			Households:                       []types.Household{*household},
+			Webhooks: map[string][]types.Webhook{
+				household.ID: pointer.DereferenceSlice(webhooks),
+			},
+			ServiceSettingConfigurations: map[string][]types.ServiceSettingConfiguration{
+				household.ID: pointer.DereferenceSlice(serviceSettingConfigurations),
+			},
+			AuditLogEntries: map[string][]types.AuditLogEntry{
+				household.ID: pointer.DereferenceSlice(auditLogEntries),
+			},
 		},
-		ServiceSettingConfigurations: map[string][]types.ServiceSettingConfiguration{
-			household.ID: pointer.DereferenceSlice(serviceSettingConfigurations),
-		},
-		HouseholdInstrumentOwnerships: map[string][]types.HouseholdInstrumentOwnership{
-			household.ID: pointer.DereferenceSlice(householdInstrumentOwnerships),
-		},
-		AuditLogEntries: map[string][]types.AuditLogEntry{
-			household.ID: pointer.DereferenceSlice(auditLogEntries),
-		},
-		MealPlans: map[string][]types.MealPlan{
-			household.ID: pointer.DereferenceSlice(mealPlans),
+		Eating: types.EatingUserDataCollection{
+			RecipeRatings:             pointer.DereferenceSlice(recipeRatings),
+			Recipes:                   pointer.DereferenceSlice(recipes),
+			Meals:                     pointer.DereferenceSlice(meals),
+			UserIngredientPreferences: pointer.DereferenceSlice(userIngredientPreferences),
+			HouseholdInstrumentOwnerships: map[string][]types.HouseholdInstrumentOwnership{
+				household.ID: pointer.DereferenceSlice(householdInstrumentOwnerships),
+			},
+			MealPlans: map[string][]types.MealPlan{
+				household.ID: pointer.DereferenceSlice(mealPlans),
+			},
 		},
 	}
 }

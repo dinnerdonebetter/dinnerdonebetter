@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
@@ -14,11 +16,11 @@ const (
 	maxIngredientsPerStep = 100
 
 	// RecipeStepCreatedServiceEventType indicates a recipe step was created.
-	RecipeStepCreatedServiceEventType ServiceEventType = "recipe_step_created"
+	RecipeStepCreatedServiceEventType = "recipe_step_created"
 	// RecipeStepUpdatedServiceEventType indicates a recipe step was updated.
-	RecipeStepUpdatedServiceEventType ServiceEventType = "recipe_step_updated"
+	RecipeStepUpdatedServiceEventType = "recipe_step_updated"
 	// RecipeStepArchivedServiceEventType indicates a recipe step was archived.
-	RecipeStepArchivedServiceEventType ServiceEventType = "recipe_step_archived"
+	RecipeStepArchivedServiceEventType = "recipe_step_archived"
 )
 
 func init() {
@@ -115,21 +117,11 @@ type (
 		BelongsToRecipe         string               `json:"belongsToRecipe"`
 	}
 
-	// RecipeStepSearchSubset represents the subset of values suitable to index for search.
-	RecipeStepSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		Preparation string    `json:"preparation,omitempty"`
-		Ingredients []NamedID `json:"ingredients,omitempty"`
-		Instruments []NamedID `json:"instruments,omitempty"`
-		Vessels     []NamedID `json:"vessels,omitempty"`
-	}
-
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.
 	RecipeStepDataManager interface {
 		RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (bool, error)
 		GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*RecipeStep, error)
-		GetRecipeSteps(ctx context.Context, recipeID string, filter *QueryFilter) (*QueryFilteredResult[RecipeStep], error)
+		GetRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipeStep], error)
 		CreateRecipeStep(ctx context.Context, input *RecipeStepDatabaseCreationInput) (*RecipeStep, error)
 		UpdateRecipeStep(ctx context.Context, updated *RecipeStep) error
 		ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error

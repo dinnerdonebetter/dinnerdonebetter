@@ -2,34 +2,24 @@ package integration
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"hash/fnv"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
-	"github.com/dinnerdonebetter/backend/internal/testutils"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	serverutils "github.com/dinnerdonebetter/backend/internal/lib/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/require"
 )
-
-func logJSON(t *testing.T, x any) {
-	t.Helper()
-
-	rawBytes, err := json.Marshal(x)
-	require.NoError(t, err)
-
-	t.Log(string(rawBytes))
-}
 
 func requireNotNilAndNoProblems(t *testing.T, i any, err error) {
 	t.Helper()
@@ -38,14 +28,39 @@ func requireNotNilAndNoProblems(t *testing.T, i any, err error) {
 	require.NotNil(t, i)
 }
 
-func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, oauthedClient *apiclient.Client) {
+func hashStringToNumber(s string) uint64 {
+	// Create a new FNV-1a 64-bit hash object
+	h := fnv.New64a()
+
+	// Write the bytes of the string into the hash object
+	_, err := h.Write([]byte(s))
+	if err != nil {
+		// Handle error if necessary
+		panic(err)
+	}
+
+	// Return the resulting hash value as a number (uint64)
+	return h.Sum64()
+}
+
+func createUserAndClientForTest(ctx context.Context, t *testing.T, input *apiclient.UserRegistrationInput) (user *types.User, oauthedClient *apiclient.Client) {
 	t.Helper()
 
 	if input == nil {
-		input = fakes.BuildFakeUserRegistrationInput()
+		input = &apiclient.UserRegistrationInput{
+			Birthday:              time.Now().Format(time.RFC3339),
+			EmailAddress:          fmt.Sprintf("test+%d@whatever.com", hashStringToNumber(t.Name())),
+			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+			HouseholdName:         fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+			LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+			AcceptedPrivacyPolicy: true,
+			AcceptedTos:           true,
+		}
 	}
 
-	user, err := testutils.CreateServiceUser(ctx, urlToUse, input)
+	user, err := createServiceUser(ctx, urlToUse, input)
 	require.NoError(t, err)
 
 	t.Logf("created user %s", user.ID)
@@ -53,10 +68,10 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
 
-	loginInput := &types.UserLoginInput{
+	loginInput := &apiclient.UserLoginInput{
 		Username:  user.Username,
 		Password:  user.HashedPassword,
-		TOTPToken: code,
+		TotpToken: code,
 	}
 
 	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
@@ -65,7 +80,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	return user, oauthedClient
 }
 
-func initializeOAuth2PoweredClient(ctx context.Context, input *types.UserLoginInput) (*apiclient.Client, error) {
+func initializeOAuth2PoweredClient(ctx context.Context, input *apiclient.UserLoginInput) (*apiclient.Client, error) {
 	if parsedURLToUse == nil {
 		panic("url not set!")
 	}
@@ -151,14 +166,70 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (oauth
 	adminCode, err := totp.GenerateCode(strings.ToUpper(premadeAdminUser.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
 
-	loginInput := &types.UserLoginInput{
+	loginInput := &apiclient.UserLoginInput{
 		Username:  premadeAdminUser.Username,
 		Password:  premadeAdminUser.HashedPassword,
-		TOTPToken: adminCode,
+		TotpToken: adminCode,
 	}
 
 	oauthedClient, err = initializeOAuth2PoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
 	return oauthedClient
+}
+
+// createServiceUser creates a user.
+func createServiceUser(ctx context.Context, address string, in *apiclient.UserRegistrationInput) (*types.User, error) {
+	if address == "" {
+		return nil, errors.New("empty address not allowed")
+	}
+
+	parsedAddress, err := url.Parse(address)
+	if err != nil {
+		return nil, err
+	}
+
+	c, err := apiclient.NewClient(
+		parsedAddress,
+		tracing.NewNoopTracerProvider(),
+		apiclient.UsingTracerProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingURL(address),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("initializing client: %w", err)
+	}
+
+	ucr, err := c.CreateUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	token, tokenErr := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
+	if tokenErr != nil {
+		return nil, fmt.Errorf("generating totp code: %w", tokenErr)
+	}
+
+	if _, validationErr := c.VerifyTOTPSecret(ctx, &apiclient.TOTPSecretVerificationInput{
+		TotpToken: token,
+		UserID:    ucr.CreatedUserID,
+	}); validationErr != nil {
+		return nil, fmt.Errorf("verifying totp code: %w", validationErr)
+	}
+
+	parsedTime, err := time.Parse(time.RFC3339, ucr.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	u := &types.User{
+		ID:              ucr.CreatedUserID,
+		Username:        ucr.Username,
+		EmailAddress:    ucr.EmailAddress,
+		TwoFactorSecret: ucr.TwoFactorSecret,
+		CreatedAt:       parsedTime,
+		// this is a dirty trick to reuse most of this model,
+		HashedPassword: in.Password,
+	}
+
+	return u, nil
 }

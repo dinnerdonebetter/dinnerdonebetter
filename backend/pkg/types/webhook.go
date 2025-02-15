@@ -5,19 +5,21 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
 const (
 	// WebhookCreatedServiceEventType indicates a webhook was created.
-	WebhookCreatedServiceEventType ServiceEventType = "webhook_created"
+	WebhookCreatedServiceEventType = "webhook_created"
 	// WebhookArchivedServiceEventType indicates a webhook was archived.
-	WebhookArchivedServiceEventType ServiceEventType = "webhook_archived"
+	WebhookArchivedServiceEventType = "webhook_archived"
 	// WebhookTriggerEventCreatedServiceEventType indicates a webhook was created.
-	WebhookTriggerEventCreatedServiceEventType ServiceEventType = "webhook_trigger_event_created"
+	WebhookTriggerEventCreatedServiceEventType = "webhook_trigger_event_created"
 	// WebhookTriggerEventArchivedServiceEventType indicates a webhook was archived.
-	WebhookTriggerEventArchivedServiceEventType ServiceEventType = "webhook_trigger_event_archived"
+	WebhookTriggerEventArchivedServiceEventType = "webhook_trigger_event_archived"
 )
 
 type (
@@ -104,8 +106,8 @@ type (
 	WebhookDataManager interface {
 		WebhookExists(ctx context.Context, webhookID, householdID string) (bool, error)
 		GetWebhook(ctx context.Context, webhookID, householdID string) (*Webhook, error)
-		GetWebhooks(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[Webhook], error)
-		GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType ServiceEventType) ([]*Webhook, error)
+		GetWebhooks(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Webhook], error)
+		GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID, eventType string) ([]*Webhook, error)
 		CreateWebhook(ctx context.Context, input *WebhookDatabaseCreationInput) (*Webhook, error)
 		ArchiveWebhook(ctx context.Context, webhookID, householdID string) error
 		AddWebhookTriggerEvent(ctx context.Context, householdID string, input *WebhookTriggerEventDatabaseCreationInput) (*WebhookTriggerEvent, error)

@@ -5,18 +5,20 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// HouseholdInvitationCreatedServiceEventType indicates a household invitation was created.
-	HouseholdInvitationCreatedServiceEventType ServiceEventType = "household_invitation_created"
+	HouseholdInvitationCreatedServiceEventType = "household_invitation_created"
 	// HouseholdInvitationCanceledServiceEventType indicates a household invitation was created.
-	HouseholdInvitationCanceledServiceEventType ServiceEventType = "household_invitation_canceled"
+	HouseholdInvitationCanceledServiceEventType = "household_invitation_canceled"
 	// HouseholdInvitationAcceptedServiceEventType indicates a household invitation was created.
-	HouseholdInvitationAcceptedServiceEventType ServiceEventType = "household_invitation_accepted"
+	HouseholdInvitationAcceptedServiceEventType = "household_invitation_accepted"
 	// HouseholdInvitationRejectedServiceEventType indicates a household invitation was created.
-	HouseholdInvitationRejectedServiceEventType ServiceEventType = "household_invitation_rejected"
+	HouseholdInvitationRejectedServiceEventType = "household_invitation_rejected"
 
 	// PendingHouseholdInvitationStatus indicates a household invitation is pending.
 	PendingHouseholdInvitationStatus HouseholdInvitationStatus = "pending"
@@ -89,8 +91,8 @@ type (
 		GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*HouseholdInvitation, error)
 		GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*HouseholdInvitation, error)
 		GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*HouseholdInvitation, error)
-		GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[HouseholdInvitation], error)
-		GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[HouseholdInvitation], error)
+		GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[HouseholdInvitation], error)
+		GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[HouseholdInvitation], error)
 		CreateHouseholdInvitation(ctx context.Context, input *HouseholdInvitationDatabaseCreationInput) (*HouseholdInvitation, error)
 		CancelHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error
 		AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error

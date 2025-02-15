@@ -5,14 +5,16 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// OAuth2ClientCreatedServiceEventType indicates an OAuth2 client was created.
-	OAuth2ClientCreatedServiceEventType ServiceEventType = "oauth2_client_created"
+	OAuth2ClientCreatedServiceEventType = "oauth2_client_created"
 	// OAuth2ClientArchivedServiceEventType indicates an OAuth2 client was archived.
-	OAuth2ClientArchivedServiceEventType ServiceEventType = "oauth2_client_archived"
+	OAuth2ClientArchivedServiceEventType = "oauth2_client_archived"
 )
 
 type (
@@ -63,7 +65,7 @@ type (
 	OAuth2ClientDataManager interface {
 		GetOAuth2ClientByClientID(ctx context.Context, clientID string) (*OAuth2Client, error)
 		GetOAuth2ClientByDatabaseID(ctx context.Context, id string) (*OAuth2Client, error)
-		GetOAuth2Clients(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[OAuth2Client], error)
+		GetOAuth2Clients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[OAuth2Client], error)
 		CreateOAuth2Client(ctx context.Context, input *OAuth2ClientDatabaseCreationInput) (*OAuth2Client, error)
 		ArchiveOAuth2Client(ctx context.Context, clientID string) error
 	}

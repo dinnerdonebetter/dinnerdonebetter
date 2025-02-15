@@ -2,9 +2,12 @@ package types
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"net/http"
 	"time"
+
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -12,13 +15,13 @@ import (
 
 const (
 	// UserSignedUpServiceEventType indicates a user signed up.
-	UserSignedUpServiceEventType ServiceEventType = "user_signed_up"
+	UserSignedUpServiceEventType = "user_signed_up"
 	// UserArchivedServiceEventType indicates a user archived their account.
-	UserArchivedServiceEventType ServiceEventType = "user_archived"
+	UserArchivedServiceEventType = "user_archived"
 	// UserDataDestroyedServiceEventType indicates a user destroyed their data.
-	UserDataDestroyedServiceEventType ServiceEventType = "user_data_destroyed"
+	UserDataDestroyedServiceEventType = "user_data_destroyed"
 	// UserDataAggregationRequestServiceEventType indicates a user requested their data be aggregated.
-	UserDataAggregationRequestServiceEventType ServiceEventType = "user_data_aggregation_requested"
+	UserDataAggregationRequestServiceEventType = "user_data_aggregation_requested"
 
 	// GoodStandingUserAccountStatus indicates a User's household is in good standing.
 	GoodStandingUserAccountStatus userAccountStatus = "good"
@@ -64,17 +67,6 @@ type (
 		EmailAddressVerifiedAt     *time.Time `json:"emailAddressVerifiedAt"`
 		ServiceRole                string     `json:"serviceRoles"`
 		RequiresPasswordChange     bool       `json:"requiresPasswordChange"`
-	}
-
-	// UserSearchSubset represents the subset of values suitable to index for search.
-	UserSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID           string `json:"id,omitempty"`
-		Username     string `json:"username,omitempty"`
-		FirstName    string `json:"firstName,omitempty"`
-		LastName     string `json:"lastName,omitempty"`
-		EmailAddress string `json:"emailAddress,omitempty"`
 	}
 
 	// UserRegistrationInput represents the input required from users to register an account.
@@ -242,7 +234,7 @@ type (
 		GetUser(ctx context.Context, userID string) (*User, error)
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
-		GetUsers(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[User], error)
+		GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
 		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
@@ -418,4 +410,45 @@ func (i *AvatarUpdateInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.Base64EncodedData, validation.Required),
 	)
+}
+
+// begin obligatory getter implementations
+
+// GetID fetches the User's ID value.
+func (u *User) GetID() string {
+	return u.ID
+}
+
+// GetEmail fetches the User's EmailAddress value.
+func (u *User) GetEmail() string {
+	return u.EmailAddress
+}
+
+// GetUsername fetches the User's Username value.
+func (u *User) GetUsername() string {
+	return u.Username
+}
+
+// GetFirstName fetches the User's FirstName value.
+func (u *User) GetFirstName() string {
+	return u.FirstName
+}
+
+// GetLastName fetches the User's LastName value.
+func (u *User) GetLastName() string {
+	return u.LastName
+}
+
+// FullName tries to construct the user's full name.
+func (u *User) FullName() string {
+	out := ""
+	if u.FirstName != "" {
+		out = u.FirstName
+	}
+
+	if u.LastName != "" {
+		out += fmt.Sprintf(" %s", u.LastName)
+	}
+
+	return out
 }

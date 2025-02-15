@@ -1,7 +1,7 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -82,15 +82,5 @@ func ConvertValidInstrumentToValidInstrumentDatabaseCreationInput(validInstrumen
 		Slug:                           validInstrument.Slug,
 		DisplayInSummaryLists:          validInstrument.DisplayInSummaryLists,
 		IncludeInGeneratedInstructions: validInstrument.IncludeInGeneratedInstructions,
-	}
-}
-
-// ConvertValidInstrumentToValidInstrumentSearchSubset converts a ValidInstrument to a ValidInstrumentSearchSubset.
-func ConvertValidInstrumentToValidInstrumentSearchSubset(x *types.ValidInstrument) *types.ValidInstrumentSearchSubset {
-	return &types.ValidInstrumentSearchSubset{
-		ID:          x.ID,
-		Name:        x.Name,
-		PluralName:  x.PluralName,
-		Description: x.Description,
 	}
 }

@@ -6,17 +6,19 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
 
 const (
 	// RecipeRatingCreatedServiceEventType indicates a recipe rating was created.
-	RecipeRatingCreatedServiceEventType ServiceEventType = "recipe_rating_created"
+	RecipeRatingCreatedServiceEventType = "recipe_rating_created"
 	// RecipeRatingUpdatedServiceEventType indicates a recipe rating was updated.
-	RecipeRatingUpdatedServiceEventType ServiceEventType = "recipe_rating_updated"
+	RecipeRatingUpdatedServiceEventType = "recipe_rating_updated"
 	// RecipeRatingArchivedServiceEventType indicates a recipe rating was archived.
-	RecipeRatingArchivedServiceEventType ServiceEventType = "recipe_rating_archived"
+	RecipeRatingArchivedServiceEventType = "recipe_rating_archived"
 )
 
 func init() {
@@ -91,8 +93,8 @@ type (
 	RecipeRatingDataManager interface {
 		RecipeRatingExists(ctx context.Context, recipeID, recipeRatingID string) (bool, error)
 		GetRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*RecipeRating, error)
-		GetRecipeRatingsForRecipe(ctx context.Context, recipeID string, filter *QueryFilter) (*QueryFilteredResult[RecipeRating], error)
-		GetRecipeRatingsForUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[RecipeRating], error)
+		GetRecipeRatingsForRecipe(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipeRating], error)
+		GetRecipeRatingsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipeRating], error)
 		CreateRecipeRating(ctx context.Context, input *RecipeRatingDatabaseCreationInput) (*RecipeRating, error)
 		UpdateRecipeRating(ctx context.Context, updated *RecipeRating) error
 		ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error

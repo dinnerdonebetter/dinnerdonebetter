@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )

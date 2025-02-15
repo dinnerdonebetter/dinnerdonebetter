@@ -7,9 +7,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -80,19 +81,19 @@ func (q *Querier) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID stri
 }
 
 // GetOAuth2Clients gets a list of OAuth2 clients.
-func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.OAuth2Client], err error) {
+func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.OAuth2Client], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.OAuth2Client]{
+	x = &filtering.QueryFilteredResult[types.OAuth2Client]{
 		Pagination: filter.ToPagination(),
 	}
 

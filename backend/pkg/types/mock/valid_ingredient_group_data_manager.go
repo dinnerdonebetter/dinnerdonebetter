@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -30,14 +31,14 @@ func (m *ValidIngredientGroupDataManagerMock) GetValidIngredientGroup(ctx contex
 }
 
 // GetValidIngredientGroups is a mock method.
-func (m *ValidIngredientGroupDataManagerMock) GetValidIngredientGroups(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredientGroup], error) {
+func (m *ValidIngredientGroupDataManagerMock) GetValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientGroup], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ValidIngredientGroup]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ValidIngredientGroup]), returnValues.Error(1)
 }
 
 // SearchForValidIngredientGroups is a mock method.
-func (m *ValidIngredientGroupDataManagerMock) SearchForValidIngredientGroups(ctx context.Context, query string, filter *types.QueryFilter) ([]*types.ValidIngredientGroup, error) {
+func (m *ValidIngredientGroupDataManagerMock) SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error) {
 	returnValues := m.Called(ctx, query, filter)
 
 	return returnValues.Get(0).([]*types.ValidIngredientGroup), returnValues.Error(1)

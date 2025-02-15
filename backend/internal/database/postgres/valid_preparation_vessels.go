@@ -6,9 +6,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -125,19 +126,19 @@ func (q *Querier) GetValidPreparationVessel(ctx context.Context, validPreparatio
 }
 
 // GetValidPreparationVessels fetches a list of valid preparation vessels from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationVessel], err error) {
+func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
+	x = &filtering.QueryFilteredResult[types.ValidPreparationVessel]{
 		Pagination: filter.ToPagination(),
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -244,7 +245,7 @@ func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *types.
 }
 
 // GetValidPreparationVesselsForPreparation fetches a list of valid preparation vessels from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationVessel], err error) {
+func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -257,12 +258,12 @@ func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, preparationID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
+	x = &filtering.QueryFilteredResult[types.ValidPreparationVessel]{
 		Pagination: filter.ToPagination(),
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
@@ -370,7 +371,7 @@ func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 }
 
 // GetValidPreparationVesselsForVessel fetches a list of valid preparation vessels from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationVessel], err error) {
+func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -383,12 +384,12 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 	logger = logger.WithValue(keys.ValidVesselIDKey, vesselID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
+	x = &filtering.QueryFilteredResult[types.ValidPreparationVessel]{
 		Pagination: filter.ToPagination(),
 	}
 

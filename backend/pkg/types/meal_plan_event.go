@@ -6,17 +6,19 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// MealPlanEventCreatedServiceEventType indicates a meal plan was created.
-	MealPlanEventCreatedServiceEventType ServiceEventType = "meal_plan_event_created"
+	MealPlanEventCreatedServiceEventType = "meal_plan_event_created"
 	// MealPlanEventUpdatedServiceEventType indicates a meal plan was updated.
-	MealPlanEventUpdatedServiceEventType ServiceEventType = "meal_plan_event_updated"
+	MealPlanEventUpdatedServiceEventType = "meal_plan_event_updated"
 	// MealPlanEventArchivedServiceEventType indicates a meal plan was archived.
 	/* #nosec G101 */
-	MealPlanEventArchivedServiceEventType ServiceEventType = "meal_plan_event_archived"
+	MealPlanEventArchivedServiceEventType = "meal_plan_event_archived"
 
 	// BreakfastMealName represents breakfast.
 	BreakfastMealName = "breakfast"
@@ -94,7 +96,7 @@ type (
 	MealPlanEventDataManager interface {
 		MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error)
 		GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*MealPlanEvent, error)
-		GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *QueryFilter) (*QueryFilteredResult[MealPlanEvent], error)
+		GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlanEvent], error)
 		MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error)
 		CreateMealPlanEvent(ctx context.Context, input *MealPlanEventDatabaseCreationInput) (*MealPlanEvent, error)
 		UpdateMealPlanEvent(ctx context.Context, updated *MealPlanEvent) error

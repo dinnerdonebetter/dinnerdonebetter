@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ValidPreparationCreatedServiceEventType indicates a valid preparation was created.
-	ValidPreparationCreatedServiceEventType ServiceEventType = "valid_preparation_created"
+	ValidPreparationCreatedServiceEventType = "valid_preparation_created"
 	// ValidPreparationUpdatedServiceEventType indicates a valid preparation was updated.
-	ValidPreparationUpdatedServiceEventType ServiceEventType = "valid_preparation_updated"
+	ValidPreparationUpdatedServiceEventType = "valid_preparation_updated"
 	// ValidPreparationArchivedServiceEventType indicates a valid preparation was archived.
-	ValidPreparationArchivedServiceEventType ServiceEventType = "valid_preparation_archived"
+	ValidPreparationArchivedServiceEventType = "valid_preparation_archived"
 )
 
 func init() {
@@ -114,22 +116,12 @@ type (
 		OnlyForVessels              *bool                                        `json:"onlyForVessels,omitempty"`
 	}
 
-	// ValidPreparationSearchSubset represents the subset of values suitable to index for search.
-	ValidPreparationSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		PastTense   string `json:"pastTense,omitempty"`
-		ID          string `json:"id,omitempty"`
-		Name        string `json:"name,omitempty"`
-		Description string `json:"description,omitempty"`
-	}
-
 	// ValidPreparationDataManager describes a structure capable of storing valid preparations permanently.
 	ValidPreparationDataManager interface {
 		ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error)
 		GetValidPreparation(ctx context.Context, validPreparationID string) (*ValidPreparation, error)
 		GetRandomValidPreparation(ctx context.Context) (*ValidPreparation, error)
-		GetValidPreparations(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidPreparation], error)
+		GetValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparation], error)
 		SearchForValidPreparations(ctx context.Context, query string) ([]*ValidPreparation, error)
 		CreateValidPreparation(ctx context.Context, input *ValidPreparationDatabaseCreationInput) (*ValidPreparation, error)
 		UpdateValidPreparation(ctx context.Context, updated *ValidPreparation) error

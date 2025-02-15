@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -28,9 +29,9 @@ func (m *OAuth2ClientDataManagerMock) GetOAuth2ClientByDatabaseID(ctx context.Co
 }
 
 // GetOAuth2Clients is a mock function.
-func (m *OAuth2ClientDataManagerMock) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.OAuth2Client], error) {
+func (m *OAuth2ClientDataManagerMock) GetOAuth2Clients(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.OAuth2Client], error) {
 	returnValues := m.Called(ctx, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.OAuth2Client]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.OAuth2Client]), returnValues.Error(1)
 }
 
 // CreateOAuth2Client is a mock function.

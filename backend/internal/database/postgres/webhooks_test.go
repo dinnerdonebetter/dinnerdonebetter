@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -91,14 +92,14 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	assert.Equal(t, len(createdWebhooks), len(webhooks.Data))
 
 	// fetch as list
-	webhooksByHouseholdAndEvent, err := dbc.GetWebhooksForHouseholdAndEvent(ctx, householdID, types.ServiceEventType(createdWebhooks[0].Events[0].TriggerEvent))
+	webhooksByHouseholdAndEvent, err := dbc.GetWebhooksForHouseholdAndEvent(ctx, householdID, createdWebhooks[0].Events[0].TriggerEvent)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, webhooksByHouseholdAndEvent)
 
 	createdEvent, err := dbc.AddWebhookTriggerEvent(ctx, householdID, &types.WebhookTriggerEventDatabaseCreationInput{
 		ID:               identifiers.New(),
 		BelongsToWebhook: createdWebhooks[0].ID,
-		TriggerEvent:     string(types.WebhookArchivedServiceEventType),
+		TriggerEvent:     types.WebhookArchivedServiceEventType,
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, createdEvent)
@@ -197,7 +198,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
+		filter := filtering.DefaultQueryFilter()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetWebhooks(ctx, "", filter)

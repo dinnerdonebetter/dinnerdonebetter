@@ -6,14 +6,14 @@ import (
 	"os"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/messagequeue/pubsub"
-	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
-	"github.com/dinnerdonebetter/backend/internal/messagequeue/sqs"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/pubsub"
+	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/redis"
+	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/sqs"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 
 	"github.com/spf13/pflag"
 )

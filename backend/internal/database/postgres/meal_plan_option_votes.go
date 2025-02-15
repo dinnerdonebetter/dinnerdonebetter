@@ -5,9 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -162,7 +163,7 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 }
 
 // GetMealPlanOptionVotes fetches a list of meal plan option votes from the database that meet a particular filter.
-func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlanOptionVote], err error) {
+func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.MealPlanOptionVote], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -187,12 +188,12 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.MealPlanOptionVote]{
+	x = &filtering.QueryFilteredResult[types.MealPlanOptionVote]{
 		Pagination: filter.ToPagination(),
 	}
 

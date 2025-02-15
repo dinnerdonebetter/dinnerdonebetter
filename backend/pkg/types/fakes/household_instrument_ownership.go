@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
@@ -18,14 +19,14 @@ func BuildFakeHouseholdInstrumentOwnership() *types.HouseholdInstrumentOwnership
 }
 
 // BuildFakeHouseholdInstrumentOwnershipsList builds a faked HouseholdInstrumentOwnershipList.
-func BuildFakeHouseholdInstrumentOwnershipsList() *types.QueryFilteredResult[types.HouseholdInstrumentOwnership] {
+func BuildFakeHouseholdInstrumentOwnershipsList() *filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership] {
 	var examples []*types.HouseholdInstrumentOwnership
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeHouseholdInstrumentOwnership())
 	}
 
-	return &types.QueryFilteredResult[types.HouseholdInstrumentOwnership]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

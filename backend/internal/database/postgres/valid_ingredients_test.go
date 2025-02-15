@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -182,7 +183,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
-		filter := types.DefaultQueryFilter()
+		filter := filtering.DefaultQueryFilter()
 
 		actual, err := c.SearchForValidIngredients(ctx, "", filter)
 		assert.Error(t, err)

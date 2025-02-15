@@ -6,18 +6,20 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// MealPlanOptionCreatedServiceEventType indicates a meal plan option was created.
-	MealPlanOptionCreatedServiceEventType ServiceEventType = "meal_plan_option_created"
+	MealPlanOptionCreatedServiceEventType = "meal_plan_option_created"
 	// MealPlanOptionUpdatedServiceEventType indicates a meal plan option was updated.
-	MealPlanOptionUpdatedServiceEventType ServiceEventType = "meal_plan_option_updated"
+	MealPlanOptionUpdatedServiceEventType = "meal_plan_option_updated"
 	// MealPlanOptionArchivedServiceEventType indicates a meal plan option was archived.
-	MealPlanOptionArchivedServiceEventType ServiceEventType = "meal_plan_option_archived"
+	MealPlanOptionArchivedServiceEventType = "meal_plan_option_archived"
 	// MealPlanOptionFinalizedCreatedServiceEventType indicates a meal plan option was created.
-	MealPlanOptionFinalizedCreatedServiceEventType ServiceEventType = "meal_plan_option_finalized"
+	MealPlanOptionFinalizedCreatedServiceEventType = "meal_plan_option_finalized"
 )
 
 func init() {
@@ -86,7 +88,7 @@ type (
 	MealPlanOptionDataManager interface {
 		MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (bool, error)
 		GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*MealPlanOption, error)
-		GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *QueryFilter) (*QueryFilteredResult[MealPlanOption], error)
+		GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlanOption], error)
 		CreateMealPlanOption(ctx context.Context, input *MealPlanOptionDatabaseCreationInput) (*MealPlanOption, error)
 		UpdateMealPlanOption(ctx context.Context, updated *MealPlanOption) error
 		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error

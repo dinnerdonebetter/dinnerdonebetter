@@ -3,6 +3,7 @@ package mocktypes
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
@@ -28,15 +29,15 @@ func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurat
 }
 
 // GetServiceSettingConfigurationsForUser is a mock function.
-func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
 	returnValues := m.Called(ctx, userID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ServiceSettingConfiguration]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ServiceSettingConfiguration]), returnValues.Error(1)
 }
 
 // GetServiceSettingConfigurationsForHousehold is a mock function.
-func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
 	returnValues := m.Called(ctx, householdID, filter)
-	return returnValues.Get(0).(*types.QueryFilteredResult[types.ServiceSettingConfiguration]), returnValues.Error(1)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ServiceSettingConfiguration]), returnValues.Error(1)
 }
 
 // ServiceSettingConfigurationExists is a mock function.

@@ -11,18 +11,18 @@ import (
 	"runtime/debug"
 	"time"
 
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
-	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/routing/config"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/server/http"
-	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/cookies"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/lib/email/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
+	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -101,7 +101,8 @@ type (
 
 	// MealPlanFinalizerConfig configures an instance of the meal plan finalizer job.
 	MealPlanFinalizerConfig struct {
-		_             struct{}               `json:"-"`
+		_ struct{} `json:"-"`
+
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
 		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
@@ -110,7 +111,8 @@ type (
 
 	// MealPlanGroceryListInitializerConfig configures an instance of the meal plan grocery list initializer job.
 	MealPlanGroceryListInitializerConfig struct {
-		_             struct{}               `json:"-"`
+		_ struct{} `json:"-"`
+
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
 		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
@@ -120,7 +122,8 @@ type (
 
 	// MealPlanTaskCreatorConfig configures an instance of the meal plan task creator job.
 	MealPlanTaskCreatorConfig struct {
-		_             struct{}               `json:"-"`
+		_ struct{} `json:"-"`
+
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
 		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
@@ -130,7 +133,8 @@ type (
 
 	// SearchDataIndexSchedulerConfig configures an instance of the search data index scheduler job.
 	SearchDataIndexSchedulerConfig struct {
-		_             struct{}               `json:"-"`
+		_ struct{} `json:"-"`
+
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
 		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
@@ -152,19 +156,24 @@ type (
 	}
 
 	APIServiceOAuth2ConnectionConfig struct {
+		_ struct{} `json:"-"`
+
 		APIServerURL          string `env:"API_SERVER_URL"           json:"apiServerURL"`
 		OAuth2APIClientID     string `env:"OAUTH2_API_CLIENT_ID"     json:"oauth2APIClientID"`
 		OAuth2APIClientSecret string `env:"OAUTH2_API_CLIENT_SECRET" json:"oauth2APIClientSecret"`
 	}
 
 	NamedCacheConfig struct {
+		_ struct{} `json:"-"`
+
 		CacheCapacity uint64        `env:"CACHE_CAPACITY" json:"cacheCapacity"`
 		CacheTTL      time.Duration `env:"CACHE_TTL"      json:"cacheTTL"`
 	}
 
 	// AdminWebappConfig configures an instance of the service. It is composed of all the other setting structs.
 	AdminWebappConfig struct {
-		_                    struct{}                         `json:"-"`
+		_ struct{} `json:"-"`
+
 		Cookies              cookies.Config                   `env:"init"                    envPrefix:"COOKIES_"    json:"cookies"`
 		APIServiceConnection APIServiceOAuth2ConnectionConfig `envPrefix:"API_SERVICE_"      json:"apiServiceConfig"`
 		Routing              routingcfg.Config                `envPrefix:"ROUTING_"          json:"routing"`

@@ -3,6 +3,7 @@ package fakes
 import (
 	"math"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -22,14 +23,14 @@ func BuildFakeMealPlanOptionVote() *types.MealPlanOptionVote {
 }
 
 // BuildFakeMealPlanOptionVotesList builds a faked MealPlanOptionVoteList.
-func BuildFakeMealPlanOptionVotesList() *types.QueryFilteredResult[types.MealPlanOptionVote] {
+func BuildFakeMealPlanOptionVotesList() *filtering.QueryFilteredResult[types.MealPlanOptionVote] {
 	var examples []*types.MealPlanOptionVote
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanOptionVote())
 	}
 
-	return &types.QueryFilteredResult[types.MealPlanOptionVote]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.MealPlanOptionVote]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

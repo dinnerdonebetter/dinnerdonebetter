@@ -9,10 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -358,17 +359,17 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 }
 
 // GetPendingHouseholdInvitationsFromUser fetches pending household invitations sent from a given user.
-func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
+func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	x := &types.QueryFilteredResult[types.HouseholdInvitation]{
+	x := &filtering.QueryFilteredResult[types.HouseholdInvitation]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -455,17 +456,17 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 }
 
 // GetPendingHouseholdInvitationsForUser fetches pending household invitations sent to a given user.
-func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
+func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	x := &types.QueryFilteredResult[types.HouseholdInvitation]{
+	x := &filtering.QueryFilteredResult[types.HouseholdInvitation]{
 		Pagination: filter.ToPagination(),
 	}
 

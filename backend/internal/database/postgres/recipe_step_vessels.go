@@ -5,9 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -149,7 +150,7 @@ func (q *Querier) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepI
 }
 
 // GetRecipeStepVessels fetches a list of recipe step vessels from the database that meet a particular filter.
-func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.RecipeStepVessel], err error) {
+func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.RecipeStepVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -168,12 +169,12 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if filter == nil {
-		filter = types.DefaultQueryFilter()
+		filter = filtering.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &types.QueryFilteredResult[types.RecipeStepVessel]{
+	x = &filtering.QueryFilteredResult[types.RecipeStepVessel]{
 		Pagination: filter.ToPagination(),
 	}
 

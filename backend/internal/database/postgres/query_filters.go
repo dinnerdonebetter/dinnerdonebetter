@@ -3,13 +3,13 @@ package postgres
 import (
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 
 	"github.com/Masterminds/squirrel"
 )
 
 // applyFilterToQueryBuilder applies the query filter to a query builder.
-func applyFilterToQueryBuilder(qf *types.QueryFilter, tableName string, queryBuilder squirrel.SelectBuilder) squirrel.SelectBuilder {
+func applyFilterToQueryBuilder(qf *filtering.QueryFilter, tableName string, queryBuilder squirrel.SelectBuilder) squirrel.SelectBuilder {
 	if qf == nil {
 		return queryBuilder
 	}
@@ -23,7 +23,7 @@ func applyFilterToQueryBuilder(qf *types.QueryFilter, tableName string, queryBui
 	if qf.Limit != nil && *qf.Limit != 0 {
 		queryBuilder = queryBuilder.Limit(uint64(*qf.Limit))
 	} else {
-		queryBuilder = queryBuilder.Limit(types.MaxQueryFilterLimit)
+		queryBuilder = queryBuilder.Limit(filtering.MaxQueryFilterLimit)
 	}
 
 	if qf.CreatedAfter != nil {
@@ -46,7 +46,7 @@ func applyFilterToQueryBuilder(qf *types.QueryFilter, tableName string, queryBui
 }
 
 // applyFilterToSubCountQueryBuilder applies the query filter to a query builder.
-func applyFilterToSubCountQueryBuilder(qf *types.QueryFilter, tableName string, queryBuilder squirrel.SelectBuilder) squirrel.SelectBuilder {
+func applyFilterToSubCountQueryBuilder(qf *filtering.QueryFilter, tableName string, queryBuilder squirrel.SelectBuilder) squirrel.SelectBuilder {
 	if qf == nil {
 		return queryBuilder
 	}

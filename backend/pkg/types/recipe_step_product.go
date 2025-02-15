@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -18,11 +20,11 @@ const (
 	RecipeStepProductVesselType = "vessel"
 
 	// RecipeStepProductCreatedServiceEventType indicates a recipe step product was created.
-	RecipeStepProductCreatedServiceEventType ServiceEventType = "recipe_step_product_created"
+	RecipeStepProductCreatedServiceEventType = "recipe_step_product_created"
 	// RecipeStepProductUpdatedServiceEventType indicates a recipe step product was updated.
-	RecipeStepProductUpdatedServiceEventType ServiceEventType = "recipe_step_product_updated"
+	RecipeStepProductUpdatedServiceEventType = "recipe_step_product_updated"
 	// RecipeStepProductArchivedServiceEventType indicates a recipe step product was archived.
-	RecipeStepProductArchivedServiceEventType ServiceEventType = "recipe_step_product_archived"
+	RecipeStepProductArchivedServiceEventType = "recipe_step_product_archived"
 )
 
 func init() {
@@ -120,7 +122,7 @@ type (
 	RecipeStepProductDataManager interface {
 		RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (bool, error)
 		GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*RecipeStepProduct, error)
-		GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *QueryFilter) (*QueryFilteredResult[RecipeStepProduct], error)
+		GetRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[RecipeStepProduct], error)
 		CreateRecipeStepProduct(ctx context.Context, input *RecipeStepProductDatabaseCreationInput) (*RecipeStepProduct, error)
 		UpdateRecipeStepProduct(ctx context.Context, updated *RecipeStepProduct) error
 		ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error

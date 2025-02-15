@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/pointer"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"

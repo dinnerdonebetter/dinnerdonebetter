@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ValidIngredientStateCreatedServiceEventType indicates a valid ingredient state was created.
-	ValidIngredientStateCreatedServiceEventType ServiceEventType = "valid_ingredient_state_created"
+	ValidIngredientStateCreatedServiceEventType = "valid_ingredient_state_created"
 	// ValidIngredientStateUpdatedServiceEventType indicates a valid ingredient state was updated.
-	ValidIngredientStateUpdatedServiceEventType ServiceEventType = "valid_ingredient_state_updated"
+	ValidIngredientStateUpdatedServiceEventType = "valid_ingredient_state_updated"
 	// ValidIngredientStateArchivedServiceEventType indicates a valid ingredient state was archived.
-	ValidIngredientStateArchivedServiceEventType ServiceEventType = "valid_ingredient_state_archived"
+	ValidIngredientStateArchivedServiceEventType = "valid_ingredient_state_archived"
 
 	// ValidIngredientStateAttributeTypeTexture represents the ingredient attribute type for texture.
 	ValidIngredientStateAttributeTypeTexture = "texture"
@@ -97,22 +99,11 @@ type (
 		IconPath      *string `json:"iconPath,omitempty"`
 	}
 
-	// ValidIngredientStateSearchSubset represents the subset of values suitable to index for search.
-	ValidIngredientStateSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID            string `json:"id,omitempty"`
-		PastTense     string `json:"pastTense,omitempty"`
-		Description   string `json:"description,omitempty"`
-		Name          string `json:"name,omitempty"`
-		AttributeType string `json:"attributeType,omitempty"`
-	}
-
 	// ValidIngredientStateDataManager describes a structure capable of storing valid ingredient states permanently.
 	ValidIngredientStateDataManager interface {
 		ValidIngredientStateExists(ctx context.Context, validIngredientState string) (bool, error)
 		GetValidIngredientState(ctx context.Context, validIngredientState string) (*ValidIngredientState, error)
-		GetValidIngredientStates(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidIngredientState], error)
+		GetValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientState], error)
 		SearchForValidIngredientStates(ctx context.Context, query string) ([]*ValidIngredientState, error)
 		CreateValidIngredientState(ctx context.Context, input *ValidIngredientStateDatabaseCreationInput) (*ValidIngredientState, error)
 		UpdateValidIngredientState(ctx context.Context, updated *ValidIngredientState) error

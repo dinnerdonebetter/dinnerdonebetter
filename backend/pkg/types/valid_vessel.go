@@ -6,16 +6,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
 	// ValidVesselCreatedServiceEventType indicates a valid vessel was created.
-	ValidVesselCreatedServiceEventType ServiceEventType = "valid_vessel_created"
+	ValidVesselCreatedServiceEventType = "valid_vessel_created"
 	// ValidVesselUpdatedServiceEventType indicates a valid vessel was updated.
-	ValidVesselUpdatedServiceEventType ServiceEventType = "valid_vessel_updated"
+	ValidVesselUpdatedServiceEventType = "valid_vessel_updated"
 	// ValidVesselArchivedServiceEventType indicates a valid vessel was archived.
-	ValidVesselArchivedServiceEventType ServiceEventType = "valid_vessel_archived"
+	ValidVesselArchivedServiceEventType = "valid_vessel_archived"
 )
 
 func init() {
@@ -134,24 +136,12 @@ type (
 		Shape                          *string  `json:"shape"`
 	}
 
-	// ValidVesselSearchSubset represents the subset of values suitable to index for search.
-	ValidVesselSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID               string  `json:"id,omitempty"`
-		Name             string  `json:"name,omitempty"`
-		PluralName       string  `json:"pluralName,omitempty"`
-		Description      string  `json:"description,omitempty"`
-		CapacityUnitName string  `json:"capacityUnitName"`
-		Capacity         float32 `json:"capacity,omitempty"`
-	}
-
 	// ValidVesselDataManager describes a structure capable of storing valid vessels permanently.
 	ValidVesselDataManager interface {
 		ValidVesselExists(ctx context.Context, validVesselID string) (bool, error)
 		GetValidVessel(ctx context.Context, validVesselID string) (*ValidVessel, error)
 		GetRandomValidVessel(ctx context.Context) (*ValidVessel, error)
-		GetValidVessels(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidVessel], error)
+		GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidVessel], error)
 		SearchForValidVessels(ctx context.Context, query string) ([]*ValidVessel, error)
 		CreateValidVessel(ctx context.Context, input *ValidVesselDatabaseCreationInput) (*ValidVessel, error)
 		UpdateValidVessel(ctx context.Context, updated *ValidVessel) error

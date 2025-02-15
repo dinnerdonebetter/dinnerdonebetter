@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
@@ -17,14 +18,14 @@ func BuildFakeUserNotification() *types.UserNotification {
 }
 
 // BuildFakeUserNotificationsList builds a faked UserNotificationList.
-func BuildFakeUserNotificationsList() *types.QueryFilteredResult[types.UserNotification] {
+func BuildFakeUserNotificationsList() *filtering.QueryFilteredResult[types.UserNotification] {
 	var notifications []*types.UserNotification
 	for i := 0; i < exampleQuantity; i++ {
 		notifications = append(notifications, BuildFakeUserNotification())
 	}
 
-	return &types.QueryFilteredResult[types.UserNotification]{
-		Pagination: types.Pagination{
+	return &filtering.QueryFilteredResult[types.UserNotification]{
+		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
 			FilteredCount: exampleQuantity / 2,

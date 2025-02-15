@@ -1,7 +1,7 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -130,18 +130,4 @@ func ConvertRecipeToRecipeDatabaseCreationInput(input *types.Recipe) *types.Reci
 		EligibleForMeals:    input.EligibleForMeals,
 		YieldsComponentType: input.YieldsComponentType,
 	}
-}
-
-func ConvertRecipeToRecipeSearchSubset(r *types.Recipe) *types.RecipeSearchSubset {
-	x := &types.RecipeSearchSubset{
-		ID:          r.ID,
-		Name:        r.Name,
-		Description: r.Description,
-	}
-
-	for _, step := range r.Steps {
-		x.Steps = append(x.Steps, ConvertRecipeStepToRecipeStepSearchSubset(step))
-	}
-
-	return x
 }

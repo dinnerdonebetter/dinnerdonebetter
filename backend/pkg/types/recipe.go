@@ -7,19 +7,21 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
 )
 
 const (
 	// RecipeCreatedServiceEventType indicates a recipe was created.
-	RecipeCreatedServiceEventType ServiceEventType = "recipe_created"
+	RecipeCreatedServiceEventType = "recipe_created"
 	// RecipeUpdatedServiceEventType indicates a recipe was updated.
-	RecipeUpdatedServiceEventType ServiceEventType = "recipe_updated"
+	RecipeUpdatedServiceEventType = "recipe_updated"
 	// RecipeArchivedServiceEventType indicates a recipe was archived.
-	RecipeArchivedServiceEventType ServiceEventType = "recipe_archived"
+	RecipeArchivedServiceEventType = "recipe_archived"
 	// RecipeClonedServiceEventType indicates a recipe was cloned.
-	RecipeClonedServiceEventType ServiceEventType = "recipe_cloned"
+	RecipeClonedServiceEventType = "recipe_cloned"
 )
 
 func init() {
@@ -114,23 +116,13 @@ type (
 		YieldsComponentType *string                                       `json:"yieldsComponentType"`
 	}
 
-	// RecipeSearchSubset represents the subset of values suitable to index for search.
-	RecipeSearchSubset struct {
-		_ struct{} `json:"-"`
-
-		ID          string                    `json:"id,omitempty"`
-		Name        string                    `json:"name,omitempty"`
-		Description string                    `json:"description,omitempty"`
-		Steps       []*RecipeStepSearchSubset `json:"steps,omitempty"`
-	}
-
 	// RecipeDataManager describes a structure capable of storing recipes permanently.
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
-		GetRecipes(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
-		GetRecipesCreatedByUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
-		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
+		GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
+		GetRecipesCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
+		SearchForRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)
 		UpdateRecipe(ctx context.Context, updated *Recipe) error
 		MarkRecipeAsIndexed(ctx context.Context, recipeID string) error
