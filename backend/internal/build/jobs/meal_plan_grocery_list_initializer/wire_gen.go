@@ -10,12 +10,12 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_grocery_list_initializer"
+	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_grocery_list_initializer"
 )
 
 // Injectors from build.go:
