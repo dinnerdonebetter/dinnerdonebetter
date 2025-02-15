@@ -37,53 +37,40 @@ resource "google_container_cluster" "primary" {
   name     = local.environment
   location = local.gcp_region
 
-  # We can't create a cluster with no node pool defined, but we want to only use
-  # separately managed node pools. So we create the smallest possible default
-  # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
   deletion_protection      = false
 
   network = google_compute_network.private_network.name
-  # subnetwork = google_compute_subnetwork.subnet.name
 }
 
-# Separately Managed Node Pool
 resource "google_container_node_pool" "primary_nodes" {
   location   = local.gcp_region
   name       = google_container_cluster.primary.name
   cluster    = google_container_cluster.primary.name
-  node_count = 1
 
-  node_locations = [
-    local.gcp_main_zone,
-  ]
+  # Removed node_count since autoscaling manages this
+  node_locations = [local.gcp_main_zone]
 
   autoscaling {
-    total_max_node_count = 1
-    location_policy = "BALANCED"
+    min_node_count = 1
+    max_node_count = 3
   }
 
   management {
-    auto_repair = true
+    auto_repair  = true
     auto_upgrade = true
   }
 
-  network_config {
-    
-  }
-
   node_config {
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform",
-    ]
+    oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
 
     labels = {
       env = local.project_id
     }
 
-    preemptible  = true
-    machine_type = "e2-standard-4"
+    preemptible   = true
+    machine_type = "e2-standard-2"
     tags         = ["gke-node", local.environment]
     metadata = {
       disable-legacy-endpoints = "true"

@@ -35,6 +35,13 @@ spec:
           ports:
             - containerPort: 8000
               name: http
+          resources:
+            requests:
+              cpu: "128m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
           livenessProbe:
             httpGet:
               path: "/_ops_/live"
