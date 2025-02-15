@@ -85,12 +85,6 @@ ifeq (, $(shell which sqlc))
 	$(shell go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0)
 endif
 
-.PHONY: ensure_yamlfmt_installed
-ensure_yamlfmt_installed:
-ifeq (, $(shell which yamlfmt))
-	$(shell go install github.com/google/yamlfmt/cmd/yamlfmt@v0.14.0)
-endif
-
 .PHONY: ensure_air_installed
 ensure_air_installed:
 ifeq (, $(shell which air))
@@ -104,7 +98,7 @@ ifeq (, $(shell which goimports))
 endif
 
 .PHONY: setup
-setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed ensure_yamlfmt_installed
+setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed
 
 .PHONY: clean_vendor
 clean_vendor:
@@ -153,10 +147,6 @@ format: format_golang terraformat
 
 .PHONY: fmt
 fmt: format
-
-.PHONY: format_yaml
-format_yaml: ensure_yamlfmt_installed
-	yamlfmt -conf .yamlfmt.yaml
 
 .PHONY: goimports
 goimports: ensure_goimports_installed
