@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
@@ -26,6 +27,7 @@ func Build(
 	wire.Build(
 		mealplangrocerylistinitializer.ProvidersMealPlanGroceryListInitializer,
 		tracingcfg.ProvidersTracingConfig,
+		postgres.ProvidersPostgres,
 		observability.ProvidersObservability,
 		msgconfig.MessageQueueProviders,
 		loggingcfg.ProvidersLogConfig,

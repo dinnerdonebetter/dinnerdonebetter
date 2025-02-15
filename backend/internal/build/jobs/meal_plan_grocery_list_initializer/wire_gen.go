@@ -10,6 +10,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
@@ -44,8 +45,14 @@ func Build(ctx context.Context, cfg *config.MealPlanGroceryListInitializerConfig
 		return nil, err
 	}
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
+	databasecfgConfig := &cfg.Database
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	mealplangrocerylistinitializerDataManager := mealplangrocerylistinitializer.ProvideMealPlanGroceryListInitializerDataManager(dataManager)
 	queuesConfig := &cfg.Queues
-	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
+	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, mealplangrocerylistinitializerDataManager, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

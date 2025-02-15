@@ -161,7 +161,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
-	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
+	mealplangrocerylistinitializerDataManager := mealplangrocerylistinitializer.ProvideMealPlanGroceryListInitializerDataManager(dataManager)
+	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, mealplangrocerylistinitializerDataManager, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

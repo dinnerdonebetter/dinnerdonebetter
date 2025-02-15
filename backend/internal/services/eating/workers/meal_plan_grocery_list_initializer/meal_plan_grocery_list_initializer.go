@@ -3,7 +3,6 @@ package mealplangrocerylistinitializer
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
@@ -24,10 +23,15 @@ const (
 
 var _ workers.Worker = (*Worker)(nil)
 
+type dataManager interface {
+	types.MealPlanDataManager
+	types.MealPlanGroceryListItemDataManager
+}
+
 type Worker struct {
 	logger                  logging.Logger
 	tracer                  tracing.Tracer
-	dataManager             database.DataManager // TODO: make this less potent
+	dataManager             dataManager
 	postUpdatesPublisher    messagequeue.Publisher
 	recordsProcessedCounter metrics.Int64Counter
 	groceryListCreator      grocerylistpreparation.GroceryListCreator
@@ -38,6 +42,7 @@ func NewMealPlanGroceryListInitializer(logger logging.Logger,
 	metricsProvider metrics.Provider,
 	publisherProvider messagequeue.PublisherProvider,
 	groceryListCreator grocerylistpreparation.GroceryListCreator,
+	dm dataManager,
 	cfg *msgconfig.QueuesConfig,
 ) (*Worker, error) {
 	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
@@ -54,6 +59,7 @@ func NewMealPlanGroceryListInitializer(logger logging.Logger,
 		recordsProcessedCounter: recordsProcessedCounter,
 		postUpdatesPublisher:    postUpdatesPublisher,
 		groceryListCreator:      groceryListCreator,
+		dataManager:             dm,
 		logger:                  logging.EnsureLogger(logger).WithName(serviceName),
 		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}, nil
