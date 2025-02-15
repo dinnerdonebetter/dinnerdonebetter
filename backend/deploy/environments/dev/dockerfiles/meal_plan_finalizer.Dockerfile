@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.23-bullseye AS build-stage
+FROM golang:1.24-bullseye AS build-stage
 
 WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
