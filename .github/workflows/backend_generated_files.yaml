@@ -161,7 +161,7 @@ jobs:
         run: make openapi
 
       - name: Format
-        run: yamlfmt -conf .yamlfmt.yaml
+        run: make format_yaml
 
       - name: Check for changes
         run: git diff --exit-code
