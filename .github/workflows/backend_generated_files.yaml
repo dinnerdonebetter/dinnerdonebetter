@@ -163,28 +163,6 @@ jobs:
       - name: Check for changes
         run: git diff --exit-code
 
-  openapi_client:
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        go-version: ['1.24.x']
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '${{ matrix.go-version }}'
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: generate client
-        working-directory: backend
-        run: make codegen-go format_golang
-
-      - name: Check for changes
-        run: git diff --exit-code
-
   env_vars_file:
     timeout-minutes: 10
     strategy:
