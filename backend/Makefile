@@ -141,7 +141,7 @@ format_go_tag_alignment: ensure_tagalign_installed
 	@until tagalign -fix -sort -order "env,envDefault,envPrefix,json,mapstructure,toml,yaml" ./...; do true; done > /dev/null
 
 .PHONY: format_golang
-format_golang: format_imports format_go_fieldalignment # format_go_tag_alignment
+format_golang: goimports format_imports format_go_fieldalignment # format_go_tag_alignment
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: terraformat
@@ -219,7 +219,7 @@ codegen-ts:
 .PHONY: codegen-go
 codegen-go:
 	go run $(THIS)/cmd/tools/codegen/openapi --golang
-	@$(MAKE) goimports format_golang
+	@$(MAKE) format_golang
 
 .PHONY: codegen
 codegen: codegen-ts codegen-go
