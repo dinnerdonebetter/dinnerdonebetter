@@ -9,8 +9,8 @@ type (
 		Description                 string                                       `json:"description"`
 		IconPath                    string                                       `json:"iconPath"`
 		PastTense                   string                                       `json:"pastTense"`
-		InstrumentCount             Uint16RangeWithOptionalMaxUpdateRequestInput `json:"instrumentCount"`
 		IngredientCount             Uint16RangeWithOptionalMaxUpdateRequestInput `json:"ingredientCount"`
+		InstrumentCount             Uint16RangeWithOptionalMaxUpdateRequestInput `json:"instrumentCount"`
 		VesselCount                 Uint16RangeWithOptionalMaxUpdateRequestInput `json:"vesselCount"`
 		ConsumesVessel              bool                                         `json:"consumesVessel"`
 		ConditionExpressionRequired bool                                         `json:"conditionExpressionRequired"`
