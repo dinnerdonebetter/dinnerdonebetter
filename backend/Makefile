@@ -128,15 +128,21 @@ rewire: ensure_wire_installed
 
 ## FORMATTING
 
-.PHONY: format_golang
-format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
-	@until fieldalignment -fix ./...; do true; done > /dev/null
-	@until tagalign -fix -sort -order "env,envDefault,envPrefix,json,mapstructure,toml,yaml" ./...; do true; done > /dev/null
-	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
-
 .PHONY: format_imports
 format_imports: ensure_gci_installed
 	gci write --section standard --section "prefix($(THIS))" --section "prefix($(dir $(THIS)))" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
+
+.PHONY: format_go_fieldalignment
+format_go_fieldalignment: ensure_fieldalignment_installed
+	@until fieldalignment -fix ./...; do true; done > /dev/null
+
+.PHONY: format_go_tag_alignment
+format_go_tag_alignment: ensure_tagalign_installed
+	@until tagalign -fix -sort -order "env,envDefault,envPrefix,json,mapstructure,toml,yaml" ./...; do true; done > /dev/null
+
+.PHONY: format_golang
+format_golang: format_imports format_go_fieldalignment # format_go_tag_alignment
+	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: terraformat
 terraformat:

@@ -3,13 +3,13 @@ package integration
 import (
 	"net/http"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/dinnerdonebetter/backend/internal/lib/fake"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func (s *TestSuite) TestAdmin_Returns404WhenModifyingUserAccountStatus() {
