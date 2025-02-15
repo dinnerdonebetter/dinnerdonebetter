@@ -25,7 +25,7 @@ TESTABLE_PACKAGE_LIST := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|
 # CONTAINER VERSIONS
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
-LINTER_IMAGE           := golangci/golangci-lint:v1.61.0
+LINTER_IMAGE           := golangci/golangci-lint:v1.64.5
 
 # COMMANDS
 GO_FORMAT             := gofmt -s -w
