@@ -33,7 +33,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/db_cleaner
+            main: ./cmd/jobs`/db_cleaner
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-email-prober
@@ -44,7 +44,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/email_prober
+            main: ./cmd/jobs`/email_prober
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-meal-plan-finalizer
@@ -55,7 +55,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/meal_plan_finalizer
+            main: ./cmd/jobs`/meal_plan_finalizer
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-meal-plan-grocery-list-init
@@ -66,7 +66,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/meal_plan_grocery_list_initializer
+            main: ./cmd/jobs`/meal_plan_grocery_list_initializer
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-meal-plan-task-creator
@@ -77,7 +77,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/meal_plan_task_creator
+            main: ./cmd/jobs`/meal_plan_task_creator
             fromImage: golang:1.23-bullseye
 
         - image: dinner-done-better-job-search-data-index-scheduler
@@ -88,7 +88,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/search_data_index_scheduler
+            main: ./cmd/jobs`/search_data_index_scheduler
             fromImage: golang:1.23-bullseye
 
           # NOTE: no cmd/functions here
@@ -133,7 +133,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/db_cleaner
+            main: ./cmd/jobs`/db_cleaner
             fromImage: golang:1.23-bullseye
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober
@@ -144,7 +144,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/email_prober
+            main: ./cmd/jobs`/email_prober
             fromImage: golang:1.23-bullseye
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer
@@ -155,7 +155,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/meal_plan_finalizer
+            main: ./cmd/jobs`/meal_plan_finalizer
             fromImage: golang:1.23-bullseye
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init
@@ -166,7 +166,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/meal_plan_grocery_list_initializer
+            main: ./cmd/jobs`/meal_plan_grocery_list_initializer
             fromImage: golang:1.23-bullseye
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator
@@ -177,7 +177,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/meal_plan_task_creator
+            main: ./cmd/jobs`/meal_plan_task_creator
             fromImage: golang:1.23-bullseye
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
@@ -188,7 +188,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/search_data_index_scheduler
+            main: ./cmd/jobs`/search_data_index_scheduler
             fromImage: golang:1.23-bullseye
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler
