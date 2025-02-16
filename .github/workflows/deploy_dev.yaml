@@ -401,9 +401,6 @@ jobs:
       - name: setup Skaffold
         run: gcloud components update && gcloud components install skaffold
 
-      - name: attempt to pull image
-        run: docker pull '${{ matrix.container-registry }}/dinner-donebetter-dev/containers/${{ matrix.artifact }}'
-
       - name: Skaffold build
         working-directory: backend
         run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev
@@ -416,17 +413,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # go-version: ['1.24.x']
         container-registry: ['us-central1-docker.pkg.dev']
         artifact:
-          - 'dinner-done-better-service-api'
-          - 'dinner-done-better-job-db-cleaner'
-          - 'dinner-done-better-job-email-prober'
-          - 'dinner-done-better-job-meal-plan-finalizer'
-          - 'dinner-done-better-job-meal-plan-grocery-list-init'
-          - 'dinner-done-better-job-meal-plan-task-creator'
-          - 'dinner-done-better-job-search-data-index-scheduler'
-          - 'dinner-done-better-async-message-handler'
+          - 'dinner-done-better-webapp'
+          - 'dinner-done-better-admin-app'
+          - 'dinner-done-better-landing'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -446,11 +437,8 @@ jobs:
       - name: setup Skaffold
         run: gcloud components update && gcloud components install skaffold
 
-      - name: attempt to pull image
-        run: docker pull '${{ matrix.container-registry }}/dinner-donebetter-dev/containers/${{ matrix.artifact }}'
-
       - name: Skaffold build
-        working-directory: backend
+        working-directory: frontend
         run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev
 
   applications:
