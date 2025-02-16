@@ -7,7 +7,7 @@ on: [pull_request]
 #    branches:
 #      - dev
 
-name: deploy dev
+name: deploy (dev)
 jobs:
   changes:
     permissions:
@@ -362,6 +362,50 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: frontend/deploy/environments/dev/webapp/terraform
+
+  build_containers:
+    if: always() && !failure() && !cancelled()
+    needs:
+      - backend-infra
+      - webapp-infra
+      - admin-webapp-infra
+      - landing-infra
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # go-version: ['1.24.x']
+        container-registry: ['us-central1-docker.pkg.dev']
+        artifact:
+          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api'
+          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner'
+          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober'
+          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer'
+          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init'
+          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator'
+          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler'
+          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.container-registry }}
+
+      - name: setup Skaffold
+        run: gcloud components update && gcloud components install skaffold
+
+      - name: Skaffold build
+        run: skaffold build --push=true --artifact=${{ matrix.artifact }} --profile=dev
 
   applications:
     if: always() && !failure() && !cancelled()
