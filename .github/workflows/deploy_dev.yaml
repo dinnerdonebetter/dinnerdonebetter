@@ -364,13 +364,10 @@ jobs:
         working-directory: frontend/deploy/environments/dev/webapp/terraform
 
   build_containers:
-    if: always() && !failure() && !cancelled()
     needs:
-      - backend-infra
-      - webapp-infra
-      - admin-webapp-infra
-      - landing-infra
+      - changes
     timeout-minutes: 90
+    if: ${{ needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend_webapp == 'true' || needs.changes.outputs.frontend_landing == 'true' || needs.changes.outputs.frontend_admin == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -414,6 +411,7 @@ jobs:
       - webapp-infra
       - admin-webapp-infra
       - landing-infra
+      - build_containers
     timeout-minutes: 90
     runs-on: ubuntu-latest
     strategy:
