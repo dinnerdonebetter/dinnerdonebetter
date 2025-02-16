@@ -363,11 +363,11 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: frontend/deploy/environments/dev/webapp/terraform
 
-  build_containers:
+  backend_containers:
     needs:
       - changes
     timeout-minutes: 90
-    if: ${{ needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend_webapp == 'true' || needs.changes.outputs.frontend_landing == 'true' || needs.changes.outputs.frontend_admin == 'true' }}
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -401,6 +401,54 @@ jobs:
       - name: setup Skaffold
         run: gcloud components update && gcloud components install skaffold
 
+      - name: attempt to pull image
+        run: docker pull '${{ matrix.container-registry }}/dinner-donebetter-dev/containers/${{ matrix.artifact }}'
+
+      - name: Skaffold build
+        working-directory: backend
+        run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev
+
+  frontend_containers:
+    needs:
+      - changes
+    timeout-minutes: 90
+    if: ${{ needs.changes.outputs.frontend_webapp == 'true' || needs.changes.outputs.frontend_landing == 'true' || needs.changes.outputs.frontend_admin == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # go-version: ['1.24.x']
+        container-registry: ['us-central1-docker.pkg.dev']
+        artifact:
+          - 'dinner-done-better-service-api'
+          - 'dinner-done-better-job-db-cleaner'
+          - 'dinner-done-better-job-email-prober'
+          - 'dinner-done-better-job-meal-plan-finalizer'
+          - 'dinner-done-better-job-meal-plan-grocery-list-init'
+          - 'dinner-done-better-job-meal-plan-task-creator'
+          - 'dinner-done-better-job-search-data-index-scheduler'
+          - 'dinner-done-better-async-message-handler'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.container-registry }}
+
+      - name: setup Skaffold
+        run: gcloud components update && gcloud components install skaffold
+
+      - name: attempt to pull image
+        run: docker pull '${{ matrix.container-registry }}/dinner-donebetter-dev/containers/${{ matrix.artifact }}'
+
       - name: Skaffold build
         working-directory: backend
         run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev
@@ -412,7 +460,8 @@ jobs:
       - webapp-infra
       - admin-webapp-infra
       - landing-infra
-      - build_containers
+      - backend_containers
+      - frontend_containers
     timeout-minutes: 90
     runs-on: ubuntu-latest
     strategy:

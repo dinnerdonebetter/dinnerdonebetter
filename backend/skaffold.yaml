@@ -111,7 +111,7 @@ profiles:
   - name: dev
     build:
       tagPolicy:
-        sha256: {}
+        inputDigest: {}
       artifacts:
         # backend artifacts (ko)
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api
