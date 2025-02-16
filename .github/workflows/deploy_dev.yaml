@@ -398,11 +398,14 @@ jobs:
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker ${{ matrix.container-registry }}
 
+      - name: setup docker push
+        run: gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{ matrix.container-registry }}
+
       - name: setup Skaffold
         run: gcloud components update && gcloud components install skaffold
 
       - name: attempt to pull image
-        run: docker pull '${{ matrix.container-registry }}/dinner-donebetter-dev/containers/${{ matrix.artifact }}:latest'
+        run: docker pull '${{ matrix.container-registry }}/dinner-donebetter-dev/containers/${{ matrix.artifact }}'
 
       - name: Skaffold build
         working-directory: backend
@@ -436,9 +439,6 @@ jobs:
 
       - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker ${{ matrix.container-registry }}
-
-      - name: setup docker push
-        run: gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{ matrix.container-registry }}
 
       - name: setup Skaffold
         run: gcloud components update && gcloud components install skaffold
