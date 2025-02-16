@@ -21,7 +21,7 @@ spec:
       containers:
         - name: dinner-done-better-admin-app
           image: dinner-done-better-admin-app
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"

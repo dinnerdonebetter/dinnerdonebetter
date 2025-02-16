@@ -20,7 +20,7 @@ spec:
       containers:
         - name: dinner-done-better-webapp
           image: dinner-done-better-webapp
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"

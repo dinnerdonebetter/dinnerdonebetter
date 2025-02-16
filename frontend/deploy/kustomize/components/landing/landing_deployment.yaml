@@ -21,7 +21,7 @@ spec:
       containers:
         - name: dinner-done-better-landing
           image: dinner-done-better-landing
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: "RUNNING_IN_KUBERNETES"
               value: "true"
