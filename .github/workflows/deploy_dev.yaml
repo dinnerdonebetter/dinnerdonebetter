@@ -374,14 +374,14 @@ jobs:
         # go-version: ['1.24.x']
         container-registry: ['us-central1-docker.pkg.dev']
         artifact:
-          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api'
-          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner'
-          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober'
-          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer'
-          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init'
-          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator'
-          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler'
-          - 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler'
+          - 'dinner-done-better-service-api'
+          - 'dinner-done-better-job-db-cleaner'
+          - 'dinner-done-better-job-email-prober'
+          - 'dinner-done-better-job-meal-plan-finalizer'
+          - 'dinner-done-better-job-meal-plan-grocery-list-init'
+          - 'dinner-done-better-job-meal-plan-task-creator'
+          - 'dinner-done-better-job-search-data-index-scheduler'
+          - 'dinner-done-better-async-message-handler'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -402,7 +402,8 @@ jobs:
         run: gcloud components update && gcloud components install skaffold
 
       - name: Skaffold build
-        run: skaffold build --push=true --artifact=${{ matrix.artifact }} --profile=dev
+        working-directory: backend
+        run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev
 
   applications:
     if: always() && !failure() && !cancelled()
