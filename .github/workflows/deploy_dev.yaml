@@ -396,10 +396,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker ${{ matrix.container-registry }}
-
-      - name: setup docker push
-        run: gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{ matrix.container-registry }}
+        run: gcloud auth configure-docker pkg.dev
 
       - name: setup Skaffold
         run: gcloud components update && gcloud components install skaffold
