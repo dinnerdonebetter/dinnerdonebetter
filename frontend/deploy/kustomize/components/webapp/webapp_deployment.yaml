@@ -36,7 +36,7 @@ spec:
               path: "/api/_ops_/live"
               port: 9000
             initialDelaySeconds: 15
-            periodSeconds: 52
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: "/api/_ops_/ready"
@@ -49,7 +49,7 @@ spec:
               memory: "128Mi"
             limits:
               cpu: "256m"
-              memory: "256Gi"
+              memory: "256Mi"
       volumes:
         # this volume contains the configuration file for the API service
         - name: "config"
