@@ -405,7 +405,7 @@ jobs:
 
       - name: Skaffold build
         working-directory: backend
-        run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev --file-output=build.json
+        run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev --file-output=build-${{ matrix.artifact }}.json
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
