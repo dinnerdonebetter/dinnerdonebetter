@@ -115,10 +115,8 @@ revendor: clean_vendor vendor
 ## DEPENDENCY INJECTION
 
 .PHONY: rewire
-rewire: ensure_wire_installed
-	for tgt in $(WIRE_TARGETS); do \
-		rm -f $(THIS)/$$tgt/wire_gen.go && wire gen $(THIS)/$$tgt; \
-	done
+rewire:
+	./scripts/rewire.sh
 
 ## FORMATTING
 
