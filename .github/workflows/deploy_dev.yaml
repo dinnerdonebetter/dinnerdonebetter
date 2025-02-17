@@ -408,7 +408,7 @@ jobs:
         run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev --file-output=build.json
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: skaffold-builds
           path: build-${{ matrix.artifact }}.json
@@ -459,7 +459,7 @@ jobs:
         run: gcloud components update && gcloud components install skaffold
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: skaffold-builds
           path: skaffold_builds
