@@ -363,6 +363,56 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: frontend/deploy/environments/dev/webapp/terraform
 
+  build_containers:
+    needs:
+      - changes
+    timeout-minutes: 60
+    if: ${{ needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend_admin == 'true' || needs.changes.outputs.frontend_landing == 'true' || needs.changes.outputs.frontend_webapp == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container-registry: ['us-central1-docker.pkg.dev']
+        artifact:
+          - 'dinner-done-better-service-api'
+          - 'dinner-done-better-job-db-cleaner'
+          - 'dinner-done-better-job-email-prober'
+          - 'dinner-done-better-job-meal-plan-finalizer'
+          - 'dinner-done-better-job-meal-plan-grocery-list-init'
+          - 'dinner-done-better-job-meal-plan-task-creator'
+          - 'dinner-done-better-job-search-data-index-scheduler'
+          - 'dinner-done-better-async-message-handler'
+          - 'dinner-done-better-webapp'
+          - 'dinner-done-better-admin-app'
+          - 'dinner-done-better-landing'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker pkg.dev
+
+      - name: setup Skaffold
+        run: gcloud components update && gcloud components install skaffold
+
+      - name: Skaffold build
+        working-directory: backend
+        run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev --file-output=build.json
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: skaffold-builds
+          path: build-${{ matrix.artifact }}.json
+
   applications:
     if: always() && !failure() && !cancelled()
     needs:
@@ -370,7 +420,8 @@ jobs:
       - webapp-infra
       - admin-webapp-infra
       - landing-infra
-    timeout-minutes: 90
+      - build_containers
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -407,9 +458,26 @@ jobs:
       - name: setup Skaffold
         run: gcloud components update && gcloud components install skaffold
 
-      - name: Skaffold deploy
-        run: make deploy_dev
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: skaffold-builds
+          path: skaffold_builds
 
-      - name: remove kubernetes config
+      - name: Combine JSON files with jq
+        run: |
+          # Merge all build-*.json into a single combined-build.json
+          jq -n '{ builds: [inputs.builds] | add }' skaffold_builds/build-*.json > combined-build.json
+
+      - name: deploy kubernetes prerequisites
+        run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+
+      - name: deploy services
+        run: skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile $(DEV_NAMESPACE) --build-artifacts=combined-build.json
+
+      - name: remove kubernetes config # so it doesn't end up in any post-Action zip folders or whatever
+        run: rm -f skaffold_builds
+
+      - name: remove kubernetes config # so it doesn't end up in any post-Action zip folders or whatever
         working-directory: backend/deploy/environments/dev
-        run: rm -f ${{ env.KUBECONFIG }}
+        run: rm -f ${{ env.KUBECONFIG }} skaffold_builds

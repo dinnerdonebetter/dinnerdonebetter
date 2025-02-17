@@ -60,8 +60,4 @@ regit:
 .PHONY: deploy_dev
 deploy_dev:
 	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
-	skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile $(DEV_NAMESPACE)
-
-.PHONY: nuke_dev
-nuke_dev:
-	kubectl delete deployments,cronjobs,configmaps,services,secrets --namespace $(DEV_NAMESPACE) --selector='managed_by!=terraform'
+	skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile $(DEV_NAMESPACE)
