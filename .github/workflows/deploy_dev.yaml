@@ -465,7 +465,7 @@ jobs:
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
       - name: deploy services
-        run: skaffold run --skip-build --filename=skaffold.yaml --build-concurrency 1 --profile $(DEV_NAMESPACE)
+        run: skaffold deploy --filename=skaffold.yaml --profile dev --build-artifacts=combined-build.json --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-webapp --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-app --image us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-landing
 
       # remove some files so they don't end up in any post-Action zip folders or whatever
 
