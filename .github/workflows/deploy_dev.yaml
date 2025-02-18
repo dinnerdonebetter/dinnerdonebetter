@@ -470,7 +470,7 @@ jobs:
       # remove some files so they don't end up in any post-Action zip folders or whatever
 
       - name: remove skaffold builds
-        run: rm -f skaffold_builds
+        run: rm -rf skaffold_builds
 
       - name: remove kubernetes config
         working-directory: backend/deploy/environments/dev
