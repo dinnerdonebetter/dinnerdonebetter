@@ -504,14 +504,17 @@ jobs:
       - name: deploy kubernetes prerequisites
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
+#      - name: deploy services
+#        run: |
+#          IMAGES=$(jq -r '.builds[].imageName' combined-build.json | xargs)
+#          echo "Deploying with images: $IMAGES"
+#          # Construct --images flags for each image
+#          IMAGE_FLAGS=$(for img in $IMAGES; do echo -n "--images $img "; done)
+#          echo "skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS"
+#          skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS
+
       - name: deploy services
-        run: |
-          IMAGES=$(jq -r '.builds[].imageName' combined-build.json | xargs)
-          echo "Deploying with images: $IMAGES"
-          # Construct --images flags for each image
-          IMAGE_FLAGS=$(for img in $IMAGES; do echo -n "--images $img "; done)
-          echo "skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS"
-          skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json --images dinner-done-better-async-message-handler --images dinner-done-better-job-db-cleaner --images dinner-done-better-job-email-prober --images dinner-done-better-job-meal-plan-finalizer --images dinner-done-better-job-meal-plan-grocery-list-init --images dinner-done-better-job-meal-plan-task-creator --images dinner-done-better-job-search-data-index-scheduler --images dinner-done-better-service-api 
+        run: skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json --images dinner-done-better-async-message-handler --images dinner-done-better-job-db-cleaner --images dinner-done-better-job-email-prober --images dinner-done-better-job-meal-plan-finalizer --images dinner-done-better-job-meal-plan-grocery-list-init --images dinner-done-better-job-meal-plan-task-creator --images dinner-done-better-job-search-data-index-scheduler --images dinner-done-better-service-api
 
       # remove some files so they don't end up in any post-Action zip folders or whatever
 
