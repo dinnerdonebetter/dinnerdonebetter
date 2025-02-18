@@ -465,13 +465,7 @@ jobs:
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
       - name: deploy services
-        run: |
-          IMAGES=$(jq -r '.builds[].imageName' combined-build.json | xargs)
-          echo "Deploying with images: $IMAGES"
-          # Construct --images flags for each image
-          IMAGE_FLAGS=$(for img in $IMAGES; do echo -n "--images $img "; done)
-          echo "skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS"
-          skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS
+        run: skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json
 
       # remove some files so they don't end up in any post-Action zip folders or whatever
 
