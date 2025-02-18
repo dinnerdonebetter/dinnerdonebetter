@@ -465,7 +465,19 @@ jobs:
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
       - name: deploy services
-        run: skaffold deploy --filename=skaffold.yaml --profile dev --build-artifacts=combined-build.json --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-webapp --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-app --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-landing
+        run: |
+          skaffold deploy --filename=skaffold.yaml --profile dev --build-artifacts=combined-build.json \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-webapp \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-app \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-landing
 
       # remove some files so they don't end up in any post-Action zip folders or whatever
 
