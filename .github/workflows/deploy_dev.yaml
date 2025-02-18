@@ -498,6 +498,9 @@ jobs:
           # Merge all build-*.json into a single combined-build.json
           jq -n '{ builds: [inputs.builds] | add }' skaffold_builds/build-*.json > combined-build.json
 
+      - name: debug
+        run: cat combined-build.json
+
       - name: deploy kubernetes prerequisites
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
@@ -507,7 +510,8 @@ jobs:
           echo "Deploying with images: $IMAGES"
           # Construct --images flags for each image
           IMAGE_FLAGS=$(for img in $IMAGES; do echo -n "--images $img "; done)
-          skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS      
+          echo "skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS"
+          skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS
 
       # remove some files so they don't end up in any post-Action zip folders or whatever
 
