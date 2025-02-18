@@ -407,10 +407,87 @@ jobs:
           name: skaffold-builds-${{ matrix.artifact }}
           path: backend/build-${{ matrix.artifact }}.json
 
-  applications:
-    if: always() && !failure() && !cancelled()
+  backend:
+    if: always() && !failure() && !cancelled() && needs.changes.outputs.backend == 'true'
     needs:
+      - changes
       - backend-infra
+      - build_containers
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container-registry: ['us-central1-docker.pkg.dev']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      # Setup gcloud CLI
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker push to pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.container-registry }}
+
+      - name: get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: 'dev'
+          context_name: 'dev_context'
+          location: 'us-central1'
+
+      - name: setup Skaffold
+        run: gcloud components update && gcloud components install skaffold
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          pattern: skaffold-builds-*
+          path: skaffold_builds
+
+      - name: Combine build files with jq
+        run: |
+          # Merge all build-*.json into a single combined-build.json
+          jq -n '{ builds: [inputs.builds] | add }' skaffold_builds/build-*.json > combined-build.json
+
+      - name: debug
+        run: cat combined-build.json
+
+      - name: deploy kubernetes prerequisites
+        run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+
+      - name: deploy services
+        working-directory: backend
+        run: |
+          skaffold deploy --filename=skaffold.yaml --profile dev --build-artifacts=combined-build.json \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler \
+            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler 
+
+      # remove some files so they don't end up in any post-Action zip folders or whatever
+
+      - name: remove skaffold builds
+        run: rm -rf skaffold_builds
+
+      - name: remove kubernetes config
+        working-directory: backend/deploy/environments/dev
+        run: rm -f ${{ env.KUBECONFIG }} skaffold_builds
+
+  frontend:
+    if: always() && !failure() && !cancelled() && needs.changes.outputs.frontend_admin == 'true' || needs.changes.outputs.frontend_landing == 'true' || needs.changes.outputs.frontend_webapp == 'true'
+    needs:
+      - changes
       - webapp-infra
       - admin-webapp-infra
       - landing-infra
@@ -465,16 +542,9 @@ jobs:
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
       - name: deploy services
+        working-directory: frontend
         run: |
           skaffold deploy --filename=skaffold.yaml --profile dev --build-artifacts=combined-build.json \
-            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-service-api \
-            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-db-cleaner \
-            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-email-prober \
-            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-finalizer \
-            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-grocery-list-init \
-            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-meal-plan-task-creator \
-            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler \
-            --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler \
             --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-webapp \
             --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-admin-app \
             --images us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-landing
