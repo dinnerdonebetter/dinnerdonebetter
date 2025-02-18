@@ -504,6 +504,12 @@ jobs:
           merge-multiple: true
           path: skaffold_builds
 
+      - name: debug ls
+        run: ls -Alh
+
+      - name: debug ls
+        run: ls -Alh skaffold_builds
+
       - name: Combine JSON files with jq
         run: |
           # Merge all build-*.json into a single combined-build.json
