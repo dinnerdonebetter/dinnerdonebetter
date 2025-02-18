@@ -35,13 +35,6 @@ spec:
             - name: "config"
               mountPath: "/etc/service-config.json"
               subPath: "config.json"
-          resources:
-            requests:
-              cpu: "128m"
-              memory: "256Mi"
-            limits:
-              cpu: "256m"
-              memory: "512Mi"
       volumes:
         - name: "config"
           configMap:
