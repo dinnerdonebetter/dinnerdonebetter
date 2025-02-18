@@ -407,7 +407,7 @@ jobs:
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: skaffold-builds
+          name: skaffold-builds-${{ matrix.artifact }}
           path: backend/build-${{ matrix.artifact }}.json
 
   build_frontend_containers:
@@ -449,7 +449,7 @@ jobs:
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: skaffold-builds
+          name: skaffold-builds-${{ matrix.artifact }}
           path: frontend/build-${{ matrix.artifact }}.json
 
   applications:
@@ -502,6 +502,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
+          pattern: skaffold-builds-*
           path: skaffold_builds
 
       - name: debug ls
