@@ -357,11 +357,11 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: frontend/deploy/environments/dev/webapp/terraform
 
-  build_backend_containers:
+  build_containers:
     needs:
       - changes
     timeout-minutes: 60
-    if: ${{ needs.changes.outputs.backend == 'true' }}
+    if: ${{ needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend_admin == 'true' || needs.changes.outputs.frontend_landing == 'true' || needs.changes.outputs.frontend_webapp == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -375,6 +375,9 @@ jobs:
           - 'dinner-done-better-job-meal-plan-task-creator'
           - 'dinner-done-better-job-search-data-index-scheduler'
           - 'dinner-done-better-async-message-handler'
+          - 'dinner-done-better-webapp'
+          - 'dinner-done-better-admin-app'
+          - 'dinner-done-better-landing'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -404,48 +407,6 @@ jobs:
           name: skaffold-builds-${{ matrix.artifact }}
           path: backend/build-${{ matrix.artifact }}.json
 
-  build_frontend_containers:
-    needs:
-      - changes
-    timeout-minutes: 60
-    if: ${{ needs.changes.outputs.frontend_admin == 'true' || needs.changes.outputs.frontend_landing == 'true' || needs.changes.outputs.frontend_webapp == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        container-registry: ['us-central1-docker.pkg.dev']
-        artifact:
-          - 'dinner-done-better-webapp'
-          - 'dinner-done-better-admin-app'
-          - 'dinner-done-better-landing'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: authenticate with GCP
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
-
-      # Setup gcloud CLI
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker pkg.dev
-
-      - name: setup Skaffold
-        run: gcloud components update && gcloud components install skaffold
-
-      - name: Skaffold build
-        working-directory: frontend
-        run: skaffold build --push=true --build-image=${{ matrix.artifact }} --profile=dev --file-output=build-${{ matrix.artifact }}.json
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: skaffold-builds-${{ matrix.artifact }}
-          path: frontend/build-${{ matrix.artifact }}.json
-
   applications:
     if: always() && !failure() && !cancelled()
     needs:
@@ -453,8 +414,7 @@ jobs:
       - webapp-infra
       - admin-webapp-infra
       - landing-infra
-      - build_backend_containers
-      - build_frontend_containers
+      - build_containers
     timeout-minutes: 60
     runs-on: ubuntu-latest
     strategy:
@@ -504,17 +464,14 @@ jobs:
       - name: deploy kubernetes prerequisites
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
-#      - name: deploy services
-#        run: |
-#          IMAGES=$(jq -r '.builds[].imageName' combined-build.json | xargs)
-#          echo "Deploying with images: $IMAGES"
-#          # Construct --images flags for each image
-#          IMAGE_FLAGS=$(for img in $IMAGES; do echo -n "--images $img "; done)
-#          echo "skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS"
-#          skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS
-
       - name: deploy services
-        run: skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json --images dinner-done-better-async-message-handler --images dinner-done-better-job-db-cleaner --images dinner-done-better-job-email-prober --images dinner-done-better-job-meal-plan-finalizer --images dinner-done-better-job-meal-plan-grocery-list-init --images dinner-done-better-job-meal-plan-task-creator --images dinner-done-better-job-search-data-index-scheduler --images dinner-done-better-service-api
+        run: |
+          IMAGES=$(jq -r '.builds[].imageName' combined-build.json | xargs)
+          echo "Deploying with images: $IMAGES"
+          # Construct --images flags for each image
+          IMAGE_FLAGS=$(for img in $IMAGES; do echo -n "--images $img "; done)
+          echo "skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS"
+          skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json $IMAGE_FLAGS
 
       # remove some files so they don't end up in any post-Action zip folders or whatever
 
