@@ -465,7 +465,7 @@ jobs:
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
       - name: deploy services
-        run: skaffold deploy --filename=skaffold.yaml --build-concurrency 1 --profile dev --build-artifacts=combined-build.json
+        run: skaffold run --skip-build --filename=skaffold.yaml --build-concurrency 1 --profile $(DEV_NAMESPACE)
 
       # remove some files so they don't end up in any post-Action zip folders or whatever
 
