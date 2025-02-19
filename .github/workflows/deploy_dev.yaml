@@ -2,10 +2,10 @@
 concurrency:
   group: ${{ github.ref }}
 
-on: [pull_request]
-#  push:
-#    branches:
-#      - dev
+on: # [pull_request]
+  push:
+    branches:
+      - dev
 
 name: deploy dev
 jobs:
@@ -126,7 +126,7 @@ jobs:
     if: ${{ needs.changes.outputs.backend == 'true' }}
     strategy:
       matrix:
-        go-version: ['1.23.x']
+        go-version: ['1.24.x']
         container-registry: ['us-central1-docker.pkg.dev']
     steps:
       - name: Install Go
@@ -374,7 +374,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: ['1.23.x']
+        go-version: ['1.24.x']
         container-registry: ['us-central1-docker.pkg.dev']
     steps:
       - name: Install Go
