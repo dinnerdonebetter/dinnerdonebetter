@@ -177,7 +177,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/meal_plan_task_creator
+            main: ./cmd/jobs/meal_plan_task_creator
             fromImage: golang:1.23-bullseye
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-job-search-data-index-scheduler
@@ -188,7 +188,7 @@ profiles:
             ldflags:
               - -s -w
               - -extldflags "-static"
-            main: ./cmd/workers/search_data_index_scheduler
+            main: ./cmd/jobs/search_data_index_scheduler
             fromImage: golang:1.23-bullseye
 
         - image: us-central1-docker.pkg.dev/dinner-done-better-dev/containers/dinner-done-better-async-message-handler
