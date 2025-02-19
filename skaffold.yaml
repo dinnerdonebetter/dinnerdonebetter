@@ -17,4 +17,3 @@ requires:
     path: ./backend/skaffold.yaml
     activeProfiles:
       - name: dev
----

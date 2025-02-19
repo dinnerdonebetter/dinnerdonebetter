@@ -13,7 +13,6 @@ output_format: "default"
 formatter:
   indent: 2
   include_document_start: true
-  include_document_end: true
   line_ending: "lf"
   retain_line_breaks_single: true
   disallow_anchors: true
