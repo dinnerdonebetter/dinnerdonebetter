@@ -28,16 +28,4 @@ spec:
           ports:
             - containerPort: 10000
               name: http
-#        livenessProbe:
-#          httpGet:
-#            path: "/api/_ops_/live"
-#            port: 60000
-#          initialDelaySeconds: 15
-#          periodSeconds: 32
-#        readinessProbe:
-#          httpGet:
-#            path: "/api/_ops_/ready"
-#            port: 60000
-#          initialDelaySeconds: 15
-#          periodSeconds: 3
 ---

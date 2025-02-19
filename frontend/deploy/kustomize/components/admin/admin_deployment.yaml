@@ -37,7 +37,7 @@ spec:
               path: "/api/_ops_/live"
               port: 7000
             initialDelaySeconds: 15
-            periodSeconds: 52
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: "/api/_ops_/ready"
