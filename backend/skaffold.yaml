@@ -208,6 +208,6 @@ profiles:
           - deploy/environments/dev/kustomize
 
     deploy:
-      statusCheckDeadlineSeconds: 1200
+      statusCheckDeadlineSeconds: 2400
       kubectl:
         defaultNamespace: dev
