@@ -7,6 +7,7 @@ metadata:
     app: dinner-done-better-landing
     app.kubernetes.io/name: dinner-done-better-landing-app
 spec:
+  progressDeadlineSeconds: 1200
   selector:
     matchLabels:
       app: dinner-done-better-landing
@@ -28,16 +29,4 @@ spec:
           ports:
             - containerPort: 10000
               name: http
-#        livenessProbe:
-#          httpGet:
-#            path: "/api/_ops_/live"
-#            port: 60000
-#          initialDelaySeconds: 15
-#          periodSeconds: 32
-#        readinessProbe:
-#          httpGet:
-#            path: "/api/_ops_/ready"
-#            port: 60000
-#          initialDelaySeconds: 15
-#          periodSeconds: 3
 ---

@@ -6,6 +6,7 @@ metadata:
   labels:
     app: dinner-done-better-webapp
 spec:
+  progressDeadlineSeconds: 1200
   selector:
     matchLabels:
       app: dinner-done-better-webapp
@@ -36,7 +37,7 @@ spec:
               path: "/api/_ops_/live"
               port: 9000
             initialDelaySeconds: 15
-            periodSeconds: 52
+            periodSeconds: 5
           readinessProbe:
             httpGet:
               path: "/api/_ops_/ready"

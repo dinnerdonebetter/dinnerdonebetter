@@ -2,10 +2,10 @@
 concurrency:
   group: ${{ github.ref }}
 
-on: # [pull_request]
-  push:
-    branches:
-      - dev
+on: [pull_request]
+#  push:
+#    branches:
+#      - dev
 
 name: deploy dev
 jobs:
@@ -407,8 +407,11 @@ jobs:
       - name: setup Skaffold
         run: gcloud components update && gcloud components install skaffold
 
+      - name: deploy kubernetes deps
+        run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+
       - name: Skaffold deploy
-        run: make deploy_dev
+        run: skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile dev
 
       - name: remove kubernetes config
         working-directory: backend/deploy/environments/dev

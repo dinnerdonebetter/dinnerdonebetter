@@ -6,17 +6,14 @@ requires:
   - configs: ["dinner-done-better-infra"]
     path: ./infra/skaffold.yaml
     activeProfiles:
-      # - name: localdev
       - name: dev
 
   - configs: ["dinner-done-better-frontend"]
     path: ./frontend/skaffold.yaml
     activeProfiles:
-      # - name: localdev
       - name: dev
 
   - configs: ["dinner-done-better-backend"]
     path: ./backend/skaffold.yaml
     activeProfiles:
-      # - name: localdev
       - name: dev
