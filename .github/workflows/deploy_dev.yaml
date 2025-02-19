@@ -411,8 +411,7 @@ jobs:
         run: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 
       - name: Skaffold deploy
-        run: skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile $(DEV_NAMESPACE)
-
+        run: skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile dev
 
       - name: remove kubernetes config
         working-directory: backend/deploy/environments/dev
