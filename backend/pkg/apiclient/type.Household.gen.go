@@ -5,17 +5,17 @@ package apiclient
 type (
 	Household struct {
 		CreatedAt                string                            `json:"createdAt"`
-		ZipCode                  string                            `json:"zipCode"`
-		AddressLine1             string                            `json:"addressLine1"`
-		BelongsToUser            string                            `json:"belongsToUser"`
+		LastUpdatedAt            string                            `json:"lastUpdatedAt"`
+		ArchivedAt               string                            `json:"archivedAt"`
+		ID                       string                            `json:"id"`
 		BillingStatus            string                            `json:"billingStatus"`
 		City                     string                            `json:"city"`
 		ContactPhone             string                            `json:"contactPhone"`
 		Country                  string                            `json:"country"`
-		ArchivedAt               string                            `json:"archivedAt"`
 		AddressLine2             string                            `json:"addressLine2"`
-		ID                       string                            `json:"id"`
-		LastUpdatedAt            string                            `json:"lastUpdatedAt"`
+		AddressLine1             string                            `json:"addressLine1"`
+		BelongsToUser            string                            `json:"belongsToUser"`
+		ZipCode                  string                            `json:"zipCode"`
 		SubscriptionPlanID       string                            `json:"subscriptionPlanID"`
 		State                    string                            `json:"state"`
 		Name                     string                            `json:"name"`

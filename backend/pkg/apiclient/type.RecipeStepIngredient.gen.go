@@ -4,23 +4,23 @@ package apiclient
 
 type (
 	RecipeStepIngredient struct {
-		ProductOfRecipeID      string                      `json:"productOfRecipeID"`
-		IngredientNotes        string                      `json:"ingredientNotes"`
-		ID                     string                      `json:"id"`
-		CreatedAt              string                      `json:"createdAt"`
-		BelongsToRecipeStep    string                      `json:"belongsToRecipeStep"`
-		QuantityNotes          string                      `json:"quantityNotes"`
-		LastUpdatedAt          string                      `json:"lastUpdatedAt"`
 		ArchivedAt             string                      `json:"archivedAt"`
+		ProductOfRecipeID      string                      `json:"productOfRecipeID"`
+		QuantityNotes          string                      `json:"quantityNotes"`
+		ID                     string                      `json:"id"`
+		BelongsToRecipeStep    string                      `json:"belongsToRecipeStep"`
+		IngredientNotes        string                      `json:"ingredientNotes"`
+		LastUpdatedAt          string                      `json:"lastUpdatedAt"`
 		RecipeStepProductID    string                      `json:"recipeStepProductID"`
 		Name                   string                      `json:"name"`
+		CreatedAt              string                      `json:"createdAt"`
 		MeasurementUnit        ValidMeasurementUnit        `json:"measurementUnit"`
 		Ingredient             ValidIngredient             `json:"ingredient"`
 		Quantity               Float32RangeWithOptionalMax `json:"quantity"`
-		ProductPercentageToUse float64                     `json:"productPercentageToUse"`
 		OptionIndex            uint64                      `json:"optionIndex"`
+		ProductPercentageToUse float64                     `json:"productPercentageToUse"`
 		VesselIndex            uint64                      `json:"vesselIndex"`
-		ToTaste                bool                        `json:"toTaste"`
 		Optional               bool                        `json:"optional"`
+		ToTaste                bool                        `json:"toTaste"`
 	}
 )
