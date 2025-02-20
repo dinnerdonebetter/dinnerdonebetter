@@ -342,7 +342,7 @@ func (i *UserLoginInput) ValidateWithContext(ctx context.Context) error {
 // ValidateWithContext ensures our provided PasswordUpdateInput meets expectations.
 func (i *PasswordUpdateInput) ValidateWithContext(ctx context.Context, minPasswordLength uint8) error {
 	if i.CurrentPassword == i.NewPassword {
-		return errNewPasswordSameAsOld
+		return ErrNewPasswordSameAsOld
 	}
 
 	return validation.ValidateStructWithContext(ctx, i,

@@ -185,7 +185,7 @@ func (x *ValidMeasurementUnitCreationRequestInput) ValidateWithContext(ctx conte
 	result := &multierror.Error{}
 
 	if (x.Metric && x.Imperial) || (!x.Metric && !x.Imperial) {
-		result = multierror.Append(result, errMustBeEitherMetricOrImperial)
+		result = multierror.Append(result, ErrMustBeEitherMetricOrImperial)
 	}
 
 	if err := validation.ValidateStructWithContext(
@@ -206,7 +206,7 @@ func (x *ValidMeasurementUnitDatabaseCreationInput) ValidateWithContext(ctx cont
 	result := &multierror.Error{}
 
 	if (x.Metric && x.Imperial) || (!x.Metric && !x.Imperial) {
-		result = multierror.Append(result, errMustBeEitherMetricOrImperial)
+		result = multierror.Append(result, ErrMustBeEitherMetricOrImperial)
 	}
 
 	if err := validation.ValidateStructWithContext(

@@ -902,7 +902,7 @@ var routeInfoMap = map[string]routeDetails{
 	},
 	"GET /api/v1/user_ingredient_preferences/": {
 		ID:           "GetUserIngredientPreferences",
-		Description:  "Fetches a UserIngredientPreferences",
+		Description:  "Fetches a IngredientPreferences",
 		ResponseType: &types.UserIngredientPreference{},
 		ListRoute:    true,
 		OAuth2Scopes: []string{householdMember},

@@ -148,7 +148,7 @@ func (x *RecipeRatingCreationRequestInput) ValidateWithContext(ctx context.Conte
 	errs := &multierror.Error{}
 
 	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
-		errs = multierror.Append(errs, errAtLeastOneRatingRequired)
+		errs = multierror.Append(errs, ErrAtLeastOneRatingRequired)
 	}
 
 	if err := validation.ValidateStructWithContext(
@@ -169,7 +169,7 @@ func (x *RecipeRatingDatabaseCreationInput) ValidateWithContext(ctx context.Cont
 	errs := &multierror.Error{}
 
 	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
-		errs = multierror.Append(errs, errAtLeastOneRatingRequired)
+		errs = multierror.Append(errs, ErrAtLeastOneRatingRequired)
 	}
 
 	if err := validation.ValidateStructWithContext(

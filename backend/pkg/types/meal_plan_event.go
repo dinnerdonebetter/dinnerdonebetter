@@ -137,7 +137,7 @@ var _ validation.ValidatableWithContext = (*MealPlanEventCreationRequestInput)(n
 // ValidateWithContext validates a MealPlanEventCreationRequestInput.
 func (x *MealPlanEventCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	if x.StartsAt == x.EndsAt || x.StartsAt.After(x.EndsAt) {
-		return errStartsAfterItEnds
+		return ErrStartsAfterItEnds
 	}
 
 	return validation.ValidateStructWithContext(

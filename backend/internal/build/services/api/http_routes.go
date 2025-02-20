@@ -215,7 +215,7 @@ func ProvideAPIRouter(
 				})
 			})
 
-			// HouseholdInstrumentOwnerships
+			// InstrumentOwnerships
 			householdInstrumentOwnershipsRouteWithPrefix := "/instruments"
 			householdInstrumentOwnershipIDRouteParam := buildURLVarChunk(mealplanningservice.HouseholdInstrumentOwnershipIDURIParamKey)
 			householdsRouter.Route(householdInstrumentOwnershipsRouteWithPrefix, func(householdInstrumentOwnershipsRouter routing.Router) {
@@ -477,7 +477,7 @@ func ProvideAPIRouter(
 			})
 		})
 
-		// UserIngredientPreferences
+		// IngredientPreferences
 		userIngredientPreferencesPath := "user_ingredient_preferences"
 		userIngredientPreferencesRouteWithPrefix := fmt.Sprintf("/%s", userIngredientPreferencesPath)
 		userIngredientPreferencesIDRouteParam := buildURLVarChunk(mealplanningservice.UserIngredientPreferenceIDURIParamKey)

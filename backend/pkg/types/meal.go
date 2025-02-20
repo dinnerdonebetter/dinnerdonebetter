@@ -215,7 +215,7 @@ func (x *MealCreationRequestInput) ValidateWithContext(ctx context.Context) erro
 	}
 
 	if !atLeastOneMain {
-		result = multierror.Append(result, errOneMainMinimumRequired)
+		result = multierror.Append(result, ErrOneMainMinimumRequired)
 	}
 
 	if validationErr := validation.ValidateStructWithContext(
