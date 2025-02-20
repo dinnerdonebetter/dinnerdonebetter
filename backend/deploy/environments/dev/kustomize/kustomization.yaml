@@ -6,7 +6,7 @@ kind: Kustomization
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
   - ../../../kustomize/components/api_server
-  - ../../../kustomize/components/jobs
+  - ../../../kustomize/components/workers
   - ../../../kustomize/components/async_functions
 
 images:
@@ -719,11 +719,6 @@ configMapGenerator:
     namespace: dev
     files:
       - config.json=./configs/job_db_cleaner_config.json
-
-  - name: dinner-done-better-job-email-prober-config
-    namespace: dev
-    files:
-      - config.json=./configs/job_email_prober_config.json
 
   - name: dinner-done-better-job-meal-plan-finalizer-config
     namespace: dev

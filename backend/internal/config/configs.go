@@ -52,7 +52,6 @@ type (
 	configurations interface {
 		APIServiceConfig |
 			DBCleanerConfig |
-			EmailProberConfig |
 			MealPlanFinalizerConfig |
 			MealPlanGroceryListInitializerConfig |
 			MealPlanTaskCreatorConfig |
@@ -86,15 +85,6 @@ type (
 	DBCleanerConfig struct {
 		_ struct{} `json:"-"`
 
-		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
-		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
-	}
-
-	// EmailProberConfig configures an instance of the email prober job.
-	EmailProberConfig struct {
-		_ struct{} `json:"-"`
-
-		Email         emailcfg.Config      `envPrefix:"EMAIL_"         json:"email"`
 		Observability observability.Config `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Database      databasecfg.Config   `envPrefix:"DATABASE_"      json:"database"`
 	}
@@ -254,27 +244,6 @@ func (cfg *DBCleanerConfig) ValidateWithContext(ctx context.Context) error {
 	validators := map[string]func(context.Context) error{
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Database":      cfg.Database.ValidateWithContext,
-	}
-
-	for name, validator := range validators {
-		if err := validator(ctx); err != nil {
-			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
-		}
-	}
-
-	return result.ErrorOrNil()
-}
-
-var _ validation.ValidatableWithContext = (*EmailProberConfig)(nil)
-
-// ValidateWithContext validates a EmailProberConfig struct.
-func (cfg *EmailProberConfig) ValidateWithContext(ctx context.Context) error {
-	result := &multierror.Error{}
-
-	validators := map[string]func(context.Context) error{
-		"Observability": cfg.Observability.ValidateWithContext,
-		"Database":      cfg.Database.ValidateWithContext,
-		"Email":         cfg.Email.ValidateWithContext,
 	}
 
 	for name, validator := range validators {
