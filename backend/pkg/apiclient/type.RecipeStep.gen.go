@@ -5,18 +5,18 @@ package apiclient
 type (
 	RecipeStep struct {
 		ExplicitInstructions    string                          `json:"explicitInstructions"`
-		ArchivedAt              string                          `json:"archivedAt"`
+		BelongsToRecipe         string                          `json:"belongsToRecipe"`
 		Notes                   string                          `json:"notes"`
 		ConditionExpression     string                          `json:"conditionExpression"`
 		CreatedAt               string                          `json:"createdAt"`
-		LastUpdatedAt           string                          `json:"lastUpdatedAt"`
-		BelongsToRecipe         string                          `json:"belongsToRecipe"`
 		ID                      string                          `json:"id"`
-		Instruments             []RecipeStepInstrument          `json:"instruments"`
+		LastUpdatedAt           string                          `json:"lastUpdatedAt"`
+		ArchivedAt              string                          `json:"archivedAt"`
+		Media                   []RecipeMedia                   `json:"media"`
 		Ingredients             []RecipeStepIngredient          `json:"ingredients"`
+		Instruments             []RecipeStepInstrument          `json:"instruments"`
 		Products                []RecipeStepProduct             `json:"products"`
 		Vessels                 []RecipeStepVessel              `json:"vessels"`
-		Media                   []RecipeMedia                   `json:"media"`
 		CompletionConditions    []RecipeStepCompletionCondition `json:"completionConditions"`
 		Preparation             ValidPreparation                `json:"preparation"`
 		TemperatureInCelsius    OptionalFloat32Range            `json:"temperatureInCelsius"`

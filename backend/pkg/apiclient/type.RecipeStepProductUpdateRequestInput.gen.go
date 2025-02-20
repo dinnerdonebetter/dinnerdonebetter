@@ -5,14 +5,14 @@ package apiclient
 type (
 	RecipeStepProductUpdateRequestInput struct {
 		QuantityNotes               string               `json:"quantityNotes"`
-		MeasurementUnitID           string               `json:"measurementUnitID"`
-		Type                        string               `json:"type"`
-		StorageInstructions         string               `json:"storageInstructions"`
-		Name                        string               `json:"name"`
 		BelongsToRecipeStep         string               `json:"belongsToRecipeStep"`
-		Quantity                    OptionalFloat32Range `json:"quantity"`
+		Type                        string               `json:"type"`
+		Name                        string               `json:"name"`
+		StorageInstructions         string               `json:"storageInstructions"`
+		MeasurementUnitID           string               `json:"measurementUnitID"`
 		StorageDurationInSeconds    OptionalUint32Range  `json:"storageDurationInSeconds"`
 		StorageTemperatureInCelsius OptionalFloat32Range `json:"storageTemperatureInCelsius"`
+		Quantity                    OptionalFloat32Range `json:"quantity"`
 		Index                       uint64               `json:"index"`
 		ContainedInVesselIndex      uint64               `json:"containedInVesselIndex"`
 		Compostable                 bool                 `json:"compostable"`

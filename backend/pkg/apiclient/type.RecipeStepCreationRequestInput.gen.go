@@ -8,15 +8,15 @@ type (
 		ExplicitInstructions    string                                              `json:"explicitInstructions"`
 		Notes                   string                                              `json:"notes"`
 		ConditionExpression     string                                              `json:"conditionExpression"`
-		Ingredients             []RecipeStepIngredientCreationRequestInput          `json:"ingredients"`
-		Instruments             []RecipeStepInstrumentCreationRequestInput          `json:"instruments"`
-		Products                []RecipeStepProductCreationRequestInput             `json:"products"`
 		CompletionConditions    []RecipeStepCompletionConditionCreationRequestInput `json:"completionConditions"`
 		Vessels                 []RecipeStepVesselCreationRequestInput              `json:"vessels"`
+		Ingredients             []RecipeStepIngredientCreationRequestInput          `json:"ingredients"`
+		Products                []RecipeStepProductCreationRequestInput             `json:"products"`
+		Instruments             []RecipeStepInstrumentCreationRequestInput          `json:"instruments"`
 		TemperatureInCelsius    OptionalFloat32Range                                `json:"temperatureInCelsius"`
 		EstimatedTimeInSeconds  OptionalUint32Range                                 `json:"estimatedTimeInSeconds"`
 		Index                   uint64                                              `json:"index"`
-		StartTimerAutomatically bool                                                `json:"startTimerAutomatically"`
 		Optional                bool                                                `json:"optional"`
+		StartTimerAutomatically bool                                                `json:"startTimerAutomatically"`
 	}
 )

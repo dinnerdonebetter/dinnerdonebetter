@@ -5,23 +5,23 @@ package apiclient
 type (
 	ValidPreparation struct {
 		PastTense                   string                     `json:"pastTense"`
-		ArchivedAt                  string                     `json:"archivedAt"`
-		CreatedAt                   string                     `json:"createdAt"`
+		Name                        string                     `json:"name"`
+		Slug                        string                     `json:"slug"`
+		LastUpdatedAt               string                     `json:"lastUpdatedAt"`
 		Description                 string                     `json:"description"`
 		IconPath                    string                     `json:"iconPath"`
 		ID                          string                     `json:"id"`
-		LastUpdatedAt               string                     `json:"lastUpdatedAt"`
-		Slug                        string                     `json:"slug"`
-		Name                        string                     `json:"name"`
+		ArchivedAt                  string                     `json:"archivedAt"`
+		CreatedAt                   string                     `json:"createdAt"`
 		InstrumentCount             Uint16RangeWithOptionalMax `json:"instrumentCount"`
 		IngredientCount             Uint16RangeWithOptionalMax `json:"ingredientCount"`
 		VesselCount                 Uint16RangeWithOptionalMax `json:"vesselCount"`
-		YieldsNothing               bool                       `json:"yieldsNothing"`
-		RestrictToIngredients       bool                       `json:"restrictToIngredients"`
+		ConditionExpressionRequired bool                       `json:"conditionExpressionRequired"`
 		OnlyForVessels              bool                       `json:"onlyForVessels"`
+		RestrictToIngredients       bool                       `json:"restrictToIngredients"`
+		ConsumesVessel              bool                       `json:"consumesVessel"`
 		TemperatureRequired         bool                       `json:"temperatureRequired"`
 		TimeEstimateRequired        bool                       `json:"timeEstimateRequired"`
-		ConditionExpressionRequired bool                       `json:"conditionExpressionRequired"`
-		ConsumesVessel              bool                       `json:"consumesVessel"`
+		YieldsNothing               bool                       `json:"yieldsNothing"`
 	}
 )

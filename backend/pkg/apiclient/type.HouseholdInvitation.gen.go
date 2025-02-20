@@ -5,16 +5,16 @@ package apiclient
 type (
 	HouseholdInvitation struct {
 		LastUpdatedAt        string    `json:"lastUpdatedAt"`
-		Status               string    `json:"status"`
+		ToEmail              string    `json:"toEmail"`
 		Token                string    `json:"token"`
 		ExpiresAt            string    `json:"expiresAt"`
-		ToUser               string    `json:"toUser"`
-		ID                   string    `json:"id"`
-		CreatedAt            string    `json:"createdAt"`
-		ArchivedAt           string    `json:"archivedAt"`
-		ToEmail              string    `json:"toEmail"`
-		StatusNote           string    `json:"statusNote"`
 		Note                 string    `json:"note"`
+		ID                   string    `json:"id"`
+		Status               string    `json:"status"`
+		ToUser               string    `json:"toUser"`
+		CreatedAt            string    `json:"createdAt"`
+		StatusNote           string    `json:"statusNote"`
+		ArchivedAt           string    `json:"archivedAt"`
 		ToName               string    `json:"toName"`
 		FromUser             User      `json:"fromUser"`
 		DestinationHousehold Household `json:"destinationHousehold"`

@@ -10,6 +10,8 @@ COVERAGE_OUT           := $(ARTIFACTS_DIR)/coverage.out
 ENVIRONMENTS_DIR       := deploy/environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
+PROTO_FILES_PATH       := proto/*.proto
+PROTO_OUTPUT_PATH      := internal/grpc
 WIRE_TARGETS           := internal/build/services/api \
 	internal/build/services/admin_webapp \
 	internal/build/jobs/db_cleaner \
@@ -95,6 +97,18 @@ endif
 ensure_goimports_installed:
 ifeq (, $(shell which goimports))
 	$(shell go install golang.org/x/tools/cmd/goimports@v0.29.0)
+endif
+
+.PHONY: ensure_protoc-gen-go_installed
+ensure_protoc-gen-go_installed:
+ifeq (, $(shell which protoc-gen-go-grpc))
+	$(shell go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.4)
+endif
+
+.PHONY: ensure_protoc-gen-go-grpc_installed
+ensure_protoc-gen-go-grpc_installed:
+ifeq (, $(shell which protoc-gen-go-grpc))
+	$(shell go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1)
 endif
 
 .PHONY: setup
@@ -232,6 +246,18 @@ openapi:
 env_vars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars
 	gofmt -s -w internal/config/envvars/*.go
+
+.PHONY: proto
+proto: ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
+	rm -rf $(PROTO_OUTPUT_PATH)
+	mkdir -p $(PROTO_OUTPUT_PATH)
+	protoc --go_out=. \
+		--go-grpc_out=. \
+		--go_opt=module=$(THIS) \
+		--go-grpc_opt=module=$(THIS) \
+		-I internal/services/ \
+		$(PROTO_FILES_PATH)
+	$(MAKE) format_golang
 
 ## INTEGRATION TESTING
 
