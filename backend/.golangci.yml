@@ -332,6 +332,7 @@ issues:
       linters:
         - mnd
         - forcetypeassert
+        - errcheck
 
     - path: cmd/tools/codegen/queries
       linters:
