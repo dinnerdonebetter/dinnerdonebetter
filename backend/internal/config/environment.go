@@ -18,7 +18,6 @@ type EnvironmentConfigSet struct {
 	RootConfig                               *APIServiceConfig
 	APIServiceConfigPath                     string
 	DBCleanerConfigPath                      string
-	EmailProberConfigPath                    string
 	MealPlanFinalizerConfigPath              string
 	MealPlanGroceryListInitializerConfigPath string
 	MealPlanTaskCreatorConfigPath            string
@@ -59,7 +58,6 @@ func writeFile(p string, content []byte) error {
 
 const (
 	dbcConfigObservabilityServiceName   = "db_cleaner"
-	empConfigObservabilityServiceName   = "email_prober"
 	mpfConfigObservabilityServiceName   = "meal_plan_finalizer"
 	mpgliConfigObservabilityServiceName = "meal_plan_grocery_list_initializer"
 	mptcConfigObservabilityServiceName  = "meal_plan_task_creator"
@@ -89,15 +87,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	dbcConfig.Observability.Tracing.ServiceName = dbcConfigObservabilityServiceName
 	dbcConfig.Observability.Metrics.ServiceName = dbcConfigObservabilityServiceName
 	dbcConfig.Observability.Logging.ServiceName = dbcConfigObservabilityServiceName
-
-	empConfig := &EmailProberConfig{
-		Observability: s.RootConfig.Observability,
-		Email:         s.RootConfig.Email,
-		Database:      s.RootConfig.Database,
-	}
-	empConfig.Observability.Tracing.ServiceName = empConfigObservabilityServiceName
-	empConfig.Observability.Metrics.ServiceName = empConfigObservabilityServiceName
-	empConfig.Observability.Logging.ServiceName = empConfigObservabilityServiceName
 
 	mpfConfig := &MealPlanFinalizerConfig{
 		Observability: s.RootConfig.Observability,
@@ -179,7 +168,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 		allConfigs := []validation.ValidatableWithContext{
 			s.RootConfig,
 			dbcConfig,
-			empConfig,
 			mpfConfig,
 			mpgliConfig,
 			mptcConfig,
@@ -201,7 +189,6 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 
 	pathToConfigMap := map[string][]byte{
 		path.Join(outputDir, stringOrDefault(s.DBCleanerConfigPath, "job_db_cleaner_config.json")):                                              renderJSON(dbcConfig, pretty),
-		path.Join(outputDir, stringOrDefault(s.EmailProberConfigPath, "job_email_prober_config.json")):                                          renderJSON(empConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.MealPlanFinalizerConfigPath, "job_meal_plan_finalizer_config.json")):                             renderJSON(mpfConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.MealPlanGroceryListInitializerConfigPath, "job_meal_plan_grocery_list_initializer_config.json")): renderJSON(mpgliConfig, pretty),
 		path.Join(outputDir, stringOrDefault(s.MealPlanTaskCreatorConfigPath, "job_meal_plan_task_creator_config.json")):                        renderJSON(mptcConfig, pretty),

@@ -6,13 +6,8 @@ kind: Kustomization
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/resource/
 resources:
   - namespace.yaml
-  - ../../components/api_server
-  - ../../components/workers/db_cleaner
-  - ../../components/workers/email_prober
-  - ../../components/workers/meal_plan_finalizer
-  - ../../components/workers/meal_plan_grocery_list_initializer
-  - ../../components/workers/meal_plan_task_creator
-  - ../../components/workers/search_data_index_scheduler
+  - ../../../kustomize/components/api_server
+  - ../../../kustomize/components/workers
 
 # See: https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/patches/
 patches: []
@@ -32,11 +27,6 @@ configMapGenerator:
     namespace: localdev
     files:
       - config.json=configs/job_db_cleaner_config.json
-
-  - name: dinner-done-better-job-email-prober-config
-    namespace: localdev
-    files:
-      - config.json=configs/job_email_prober_config.json
 
   - name: dinner-done-better-job-meal-plan-finalizer-config
     namespace: localdev
