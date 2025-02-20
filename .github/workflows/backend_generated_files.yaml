@@ -12,7 +12,7 @@ concurrency:
 
 name: backend - generated files
 jobs:
-  queries:
+  dependency_injection:
     timeout-minutes: 10
     strategy:
       matrix:
@@ -27,9 +27,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Ensure queries and querier can be generated
+      - name: Install wire
+        run: go install github.com/google/wire/cmd/wire@latest
+
+      - name: Ensure dependency injection code can be generated
         working-directory: backend
-        run: make queries sqlc_struct_check format_golang
+        run: make rewire format_golang
 
       - name: Check for changes
         run: git diff --exit-code
@@ -56,7 +59,7 @@ jobs:
       - name: Check for changes
         run: git diff --exit-code
 
-  dependency_injection:
+  queries:
     timeout-minutes: 10
     strategy:
       matrix:
@@ -71,12 +74,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install wire
-        run: go install github.com/google/wire/cmd/wire@latest
-
-      - name: Ensure dependency injection code can be generated
+      - name: Ensure queries and querier can be generated
         working-directory: backend
-        run: make rewire format_golang
+        run: make queries sqlc_struct_check format_golang
+
+      - name: Check for changes
+        run: git diff --exit-code
+
+  openapi:
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        go-version: ['1.24.x']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codeformat
+        uses: actions/checkout@v4
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '${{ matrix.go-version }}'
+
+      - name: Ensure openapi spec can be generated
+        working-directory: backend
+        run: make openapi
+
+      - name: Format
+        run: make format_yaml
 
       - name: Check for changes
         run: git diff --exit-code
@@ -132,53 +157,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Ensure code can be generated
-        working-directory: backend
-        run: make codegen-go format_golang
-
-      - name: Check for changes
-        run: git diff --exit-code
-
-  openapi:
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        go-version: ['1.24.x']
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout codeformat
-        uses: actions/checkout@v4
-
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '${{ matrix.go-version }}'
-
-      - name: Ensure openapi spec can be generated
-        working-directory: backend
-        run: make openapi
-
-      - name: Format
-        run: make format_yaml
-
-      - name: Check for changes
-        run: git diff --exit-code
-
-  openapi_client:
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        go-version: ['1.24.x']
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '${{ matrix.go-version }}'
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: generate client
         working-directory: backend
         run: make codegen-go format_golang
 
