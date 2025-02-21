@@ -83,7 +83,7 @@ func (s *service) CreateValidIngredientGroupHandler(res http.ResponseWriter, req
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientGroup]{
 		Details: responseDetails,
@@ -336,7 +336,7 @@ func (s *service) UpdateValidIngredientGroupHandler(res http.ResponseWriter, req
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientGroup]{
 		Details: responseDetails,
@@ -408,7 +408,7 @@ func (s *service) ArchiveValidIngredientGroupHandler(res http.ResponseWriter, re
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientGroup]{
 		Details: responseDetails,

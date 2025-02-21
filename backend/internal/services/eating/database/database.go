@@ -6,7 +6,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
 )
 
 var (
@@ -58,13 +58,6 @@ type (
 		IsReady(ctx context.Context) (ready bool)
 
 		types.MealPlanTaskDataManager
-		types.AdminUserDataManager
-		types.HouseholdDataManager
-		types.HouseholdInvitationDataManager
-		types.HouseholdUserMembershipDataManager
-		types.UserDataManager
-		types.PasswordResetTokenDataManager
-		types.WebhookDataManager
 		types.ValidInstrumentDataManager
 		types.ValidIngredientDataManager
 		types.ValidPreparationDataManager
@@ -90,19 +83,11 @@ type (
 		types.RecipeStepCompletionConditionDataManager
 		types.ValidIngredientStateIngredientDataManager
 		types.RecipeStepVesselDataManager
-		types.ServiceSettingDataManager
-		types.ServiceSettingConfigurationDataManager
 		types.ValidIngredientGroupDataManager
-		types.UserIngredientPreferenceDataManager
 		types.RecipeRatingDataManager
-		types.HouseholdInstrumentOwnershipDataManager
-		types.OAuth2ClientDataManager
-		types.OAuth2ClientTokenDataManager
 		types.ValidVesselDataManager
 		types.ValidPreparationVesselDataManager
-		types.UserNotificationDataManager
-		types.AuditLogEntryDataManager
-		types.MaintenanceDataManager
-		types.DataPrivacyDataManager
+		types.IngredientPreferenceDataManager
+		types.InstrumentOwnershipDataManager
 	}
 )

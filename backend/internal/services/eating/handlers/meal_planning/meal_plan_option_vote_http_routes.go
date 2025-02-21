@@ -111,7 +111,7 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 			UserID:               sessionCtxData.Requester.UserID,
 		}
 
-		go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+		s.dataChangesPublisher.PublishAsync(ctx, dcm)
 	}
 
 	if len(mealPlanOptionVotes) > 0 {
@@ -140,7 +140,7 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 				UserID:               sessionCtxData.Requester.UserID,
 			}
 
-			go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+			s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 			mealPlanFinalized, finalizationErr := s.mealPlanningDataManager.AttemptToFinalizeMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
 			if finalizationErr != nil {
@@ -163,7 +163,7 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 					UserID:               sessionCtxData.Requester.UserID,
 				}
 
-				go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+				s.dataChangesPublisher.PublishAsync(ctx, dcm)
 			}
 		}
 	}
@@ -411,7 +411,7 @@ func (s *service) UpdateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanOptionVote]{
 		Details: responseDetails,
@@ -498,7 +498,7 @@ func (s *service) ArchiveMealPlanOptionVoteHandler(res http.ResponseWriter, req 
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanOptionVote]{
 		Details: responseDetails,

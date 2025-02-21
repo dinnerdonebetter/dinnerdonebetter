@@ -49,7 +49,20 @@ func (p *redisPublisher) Stop() {
 
 // Publish implements the Publisher interface.
 func (p *redisPublisher) Publish(ctx context.Context, data any) error {
-	_, span := p.tracer.StartSpan(ctx)
+	return p.publish(ctx, data)
+}
+
+// PublishAsync implements the Publisher interface.
+func (p *redisPublisher) PublishAsync(ctx context.Context, data any) {
+	go func() {
+		if err := p.publish(ctx, data); err != nil {
+			p.logger.Error("publishing message", err)
+		}
+	}()
+}
+
+func (p *redisPublisher) publish(ctx context.Context, data any) error {
+	ctx, span := p.tracer.StartSpan(ctx)
 	defer span.End()
 
 	var b bytes.Buffer
@@ -58,17 +71,6 @@ func (p *redisPublisher) Publish(ctx context.Context, data any) error {
 	}
 
 	return p.publisher.Publish(ctx, p.topic, b.Bytes()).Err()
-}
-
-// PublishAsync implements the Publisher interface.
-func (p *redisPublisher) PublishAsync(ctx context.Context, data any) {
-	_, span := p.tracer.StartSpan(ctx)
-	defer span.End()
-
-	var b bytes.Buffer
-	if err := p.encoder.Encode(ctx, &b, data); err != nil {
-		observability.AcknowledgeError(err, p.logger, span, "encoding topic message")
-	}
 }
 
 // provideRedisPublisher provides a redis-backed Publisher.

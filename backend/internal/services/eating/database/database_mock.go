@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
+	mocktypes "github.com/dinnerdonebetter/backend/internal/services/eating/types/mock"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -14,9 +14,6 @@ var _ DataManager = (*MockDatabase)(nil)
 // NewMockDatabase builds a mock database.
 func NewMockDatabase() *MockDatabase {
 	return &MockDatabase{
-		HouseholdDataManagerMock:                      &mocktypes.HouseholdDataManagerMock{},
-		HouseholdInvitationDataManagerMock:            &mocktypes.HouseholdInvitationDataManagerMock{},
-		HouseholdUserMembershipDataManagerMock:        &mocktypes.HouseholdUserMembershipDataManagerMock{},
 		ValidInstrumentDataManagerMock:                &mocktypes.ValidInstrumentDataManagerMock{},
 		ValidIngredientDataManagerMock:                &mocktypes.ValidIngredientDataManagerMock{},
 		ValidIngredientGroupDataManagerMock:           &mocktypes.ValidIngredientGroupDataManagerMock{},
@@ -31,10 +28,6 @@ func NewMockDatabase() *MockDatabase {
 		MealPlanDataManagerMock:                       &mocktypes.MealPlanDataManagerMock{},
 		MealPlanOptionDataManagerMock:                 &mocktypes.MealPlanOptionDataManagerMock{},
 		MealPlanOptionVoteDataManagerMock:             &mocktypes.MealPlanOptionVoteDataManagerMock{},
-		UserDataManagerMock:                           &mocktypes.UserDataManagerMock{},
-		AdminUserDataManagerMock:                      &mocktypes.AdminUserDataManagerMock{},
-		PasswordResetTokenDataManagerMock:             &mocktypes.PasswordResetTokenDataManagerMock{},
-		WebhookDataManagerMock:                        &mocktypes.WebhookDataManagerMock{},
 		ValidMeasurementUnitDataManagerMock:           &mocktypes.ValidMeasurementUnitDataManagerMock{},
 		ValidPreparationInstrumentDataManagerMock:     &mocktypes.ValidPreparationInstrumentDataManagerMock{},
 		ValidIngredientMeasurementUnitDataManagerMock: &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{},
@@ -48,38 +41,18 @@ func NewMockDatabase() *MockDatabase {
 		ValidIngredientStateIngredientDataManagerMock: &mocktypes.ValidIngredientStateIngredientDataManagerMock{},
 		RecipeStepCompletionConditionDataManagerMock:  &mocktypes.RecipeStepCompletionConditionDataManagerMock{},
 		RecipeStepVesselDataManagerMock:               &mocktypes.RecipeStepVesselDataManagerMock{},
-		ServiceSettingDataManagerMock:                 &mocktypes.ServiceSettingDataManagerMock{},
-		ServiceSettingConfigurationDataManagerMock:    &mocktypes.ServiceSettingConfigurationDataManagerMock{},
-		UserIngredientPreferenceDataManagerMock:       &mocktypes.UserIngredientPreferenceDataManagerMock{},
-		HouseholdInstrumentOwnershipDataManagerMock:   &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{},
+		IngredientPreferenceDataManagerMock:           &mocktypes.IngredientPreferenceDataManagerMock{},
+		InstrumentOwnershipDataManagerMock:            &mocktypes.InstrumentOwnershipDataManagerMock{},
 		RecipeRatingDataManagerMock:                   &mocktypes.RecipeRatingDataManagerMock{},
-		OAuth2ClientDataManagerMock:                   &mocktypes.OAuth2ClientDataManagerMock{},
 		ValidVesselDataManagerMock:                    &mocktypes.ValidVesselDataManagerMock{},
 		ValidPreparationVesselDataManagerMock:         &mocktypes.ValidPreparationVesselDataManagerMock{},
-		UserNotificationDataManagerMock:               &mocktypes.UserNotificationDataManagerMock{},
-		AuditLogEntryDataManagerMock:                  &mocktypes.AuditLogEntryDataManagerMock{},
-		MaintenanceDataManagerMock:                    &mocktypes.MaintenanceDataManagerMock{},
-		DataPrivacyDataManagerMock:                    &mocktypes.DataPrivacyDataManagerMock{},
 	}
 }
 
 // MockDatabase is our mock database structure. Note, when using this in tests, you must directly access the type name of all the implicit fields.
 // So `mockDB.On("GetUserByUsername"...)` is destined to fail, whereas `mockDB.UserDataManagerMock.On("GetUserByUsername"...)` would do what you want it to do.
 type MockDatabase struct {
-	*mocktypes.OAuth2ClientDataManagerMock
-	*mocktypes.OAuth2ClientTokenDataManagerMock
-	*mocktypes.UserNotificationDataManagerMock
-	*mocktypes.AuditLogEntryDataManagerMock
-	*mocktypes.MaintenanceDataManagerMock
-	*mocktypes.DataPrivacyDataManagerMock
-	*mocktypes.UserDataManagerMock
-	*mocktypes.PasswordResetTokenDataManagerMock
-	*mocktypes.WebhookDataManagerMock
-	*mocktypes.HouseholdDataManagerMock
-	*mocktypes.HouseholdInvitationDataManagerMock
-	*mocktypes.AdminUserDataManagerMock
 	*mocktypes.ValidIngredientStateDataManagerMock
-	*mocktypes.HouseholdUserMembershipDataManagerMock
 	*mocktypes.ValidInstrumentDataManagerMock
 	*mocktypes.ValidIngredientDataManagerMock
 	*mocktypes.ValidIngredientGroupDataManagerMock
@@ -106,10 +79,8 @@ type MockDatabase struct {
 	*mocktypes.RecipeStepCompletionConditionDataManagerMock
 	*mocktypes.ValidIngredientStateIngredientDataManagerMock
 	*mocktypes.RecipeStepVesselDataManagerMock
-	*mocktypes.ServiceSettingDataManagerMock
-	*mocktypes.ServiceSettingConfigurationDataManagerMock
-	*mocktypes.UserIngredientPreferenceDataManagerMock
-	*mocktypes.HouseholdInstrumentOwnershipDataManagerMock
+	*mocktypes.IngredientPreferenceDataManagerMock
+	*mocktypes.InstrumentOwnershipDataManagerMock
 	*mocktypes.RecipeRatingDataManagerMock
 	*mocktypes.ValidVesselDataManagerMock
 	*mocktypes.ValidPreparationVesselDataManagerMock

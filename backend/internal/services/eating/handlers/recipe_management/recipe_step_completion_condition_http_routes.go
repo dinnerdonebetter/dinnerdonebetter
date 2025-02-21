@@ -93,7 +93,7 @@ func (s *service) CreateRecipeStepCompletionConditionHandler(res http.ResponseWr
 		UserID:                        sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepCompletionCondition]{
 		Details: responseDetails,
@@ -322,7 +322,7 @@ func (s *service) UpdateRecipeStepCompletionConditionHandler(res http.ResponseWr
 		UserID:                        sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepCompletionCondition]{
 		Details: responseDetails,
@@ -405,7 +405,7 @@ func (s *service) ArchiveRecipeStepCompletionConditionHandler(res http.ResponseW
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepCompletionCondition]{
 		Details: responseDetails,

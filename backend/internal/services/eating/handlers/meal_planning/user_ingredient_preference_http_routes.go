@@ -78,7 +78,7 @@ func (s *service) CreateUserIngredientPreferenceHandler(res http.ResponseWriter,
 		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[[]*types.UserIngredientPreference]{
 		Details: responseDetails,
@@ -221,7 +221,7 @@ func (s *service) UpdateUserIngredientPreferenceHandler(res http.ResponseWriter,
 		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.UserIngredientPreference]{
 		Details: responseDetails,
@@ -293,7 +293,7 @@ func (s *service) ArchiveUserIngredientPreferenceHandler(res http.ResponseWriter
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.UserIngredientPreference]{
 		Details: responseDetails,

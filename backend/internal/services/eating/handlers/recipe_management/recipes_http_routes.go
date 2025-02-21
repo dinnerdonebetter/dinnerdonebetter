@@ -94,7 +94,7 @@ func (s *service) CreateRecipeHandler(res http.ResponseWriter, req *http.Request
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Recipe]{
 		Details: responseDetails,
@@ -395,7 +395,7 @@ func (s *service) UpdateRecipeHandler(res http.ResponseWriter, req *http.Request
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Recipe]{
 		Details: responseDetails,
@@ -469,7 +469,7 @@ func (s *service) ArchiveRecipeHandler(res http.ResponseWriter, req *http.Reques
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Recipe]{
 		Details: responseDetails,
@@ -648,7 +648,7 @@ func (s *service) RecipeImageUploadHandler(res http.ResponseWriter, req *http.Re
 			UserID:        sessionCtxData.Requester.UserID,
 		}
 
-		go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+		s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 		logger.Info("image info saved in database")
 	}
@@ -863,7 +863,7 @@ func (s *service) CloneRecipeHandler(res http.ResponseWriter, req *http.Request)
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Recipe]{
 		Details: responseDetails,

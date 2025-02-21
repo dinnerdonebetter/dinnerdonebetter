@@ -88,7 +88,7 @@ func (s *service) CreateRecipeStepProductHandler(res http.ResponseWriter, req *h
 		UserID:            sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepProduct]{
 		Details: responseDetails,
@@ -323,7 +323,7 @@ func (s *service) UpdateRecipeStepProductHandler(res http.ResponseWriter, req *h
 		UserID:            sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepProduct]{
 		Details: responseDetails,
@@ -406,7 +406,7 @@ func (s *service) ArchiveRecipeStepProductHandler(res http.ResponseWriter, req *
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepProduct]{
 		Details: responseDetails,

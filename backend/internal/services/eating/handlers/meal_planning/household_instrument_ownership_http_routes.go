@@ -82,7 +82,7 @@ func (s *service) CreateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 		UserID:                       sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
 		Details: responseDetails,
@@ -280,7 +280,7 @@ func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 		UserID:                       sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
 		Details: responseDetails,
@@ -352,7 +352,7 @@ func (s *service) ArchiveHouseholdInstrumentOwnershipHandler(res http.ResponseWr
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
 		Details: responseDetails,

@@ -81,7 +81,7 @@ func (s *service) CreateValidPreparationInstrumentHandler(res http.ResponseWrite
 		UserID:                     sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparationInstrument]{
 		Details: responseDetails,
@@ -279,7 +279,7 @@ func (s *service) UpdateValidPreparationInstrumentHandler(res http.ResponseWrite
 		UserID:                     sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparationInstrument]{
 		Details: responseDetails,
@@ -351,7 +351,7 @@ func (s *service) ArchiveValidPreparationInstrumentHandler(res http.ResponseWrit
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparationInstrument]{
 		Details: responseDetails,

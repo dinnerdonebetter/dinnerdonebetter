@@ -84,7 +84,7 @@ func (s *service) CreateValidInstrumentHandler(res http.ResponseWriter, req *htt
 		UserID:          sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidInstrument]{
 		Details: responseDetails,
@@ -367,7 +367,7 @@ func (s *service) UpdateValidInstrumentHandler(res http.ResponseWriter, req *htt
 		UserID:          sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidInstrument]{
 		Details: responseDetails,
@@ -439,7 +439,7 @@ func (s *service) ArchiveValidInstrumentHandler(res http.ResponseWriter, req *ht
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidInstrument]{
 		Details: responseDetails,

@@ -91,7 +91,7 @@ func (s *service) CreateMealPlanGroceryListItemHandler(res http.ResponseWriter, 
 		UserID:                  sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanGroceryListItem]{
 		Details: responseDetails,
@@ -304,7 +304,7 @@ func (s *service) UpdateMealPlanGroceryListItemHandler(res http.ResponseWriter, 
 		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanGroceryListItem]{
 		Details: responseDetails,
@@ -385,7 +385,7 @@ func (s *service) ArchiveMealPlanGroceryListItemHandler(res http.ResponseWriter,
 		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanGroceryListItem]{
 		Details: responseDetails,

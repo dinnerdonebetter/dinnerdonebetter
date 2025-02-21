@@ -81,7 +81,7 @@ func (s *service) CreateValidPreparationVesselHandler(res http.ResponseWriter, r
 		UserID:                 sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
 		Details: responseDetails,
@@ -279,7 +279,7 @@ func (s *service) UpdateValidPreparationVesselHandler(res http.ResponseWriter, r
 		UserID:                 sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
 		Details: responseDetails,
@@ -350,7 +350,7 @@ func (s *service) ArchiveValidPreparationVesselHandler(res http.ResponseWriter, 
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
 		Details: responseDetails,

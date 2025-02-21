@@ -81,7 +81,7 @@ func (s *service) CreateValidIngredientMeasurementUnitHandler(res http.ResponseW
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientMeasurementUnit]{
 		Details: responseDetails,
@@ -280,7 +280,7 @@ func (s *service) UpdateValidIngredientMeasurementUnitHandler(res http.ResponseW
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientMeasurementUnit]{
 		Details: responseDetails,
@@ -351,7 +351,7 @@ func (s *service) ArchiveValidIngredientMeasurementUnitHandler(res http.Response
 		EventType: types.ValidIngredientMeasurementUnitArchivedServiceEventType,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientMeasurementUnit]{
 		Details: responseDetails,

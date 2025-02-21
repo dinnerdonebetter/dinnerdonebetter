@@ -82,7 +82,7 @@ func (s *service) CreateRecipeRatingHandler(res http.ResponseWriter, req *http.R
 		UserID:       sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeRating]{
 		Details: responseDetails,
@@ -301,7 +301,7 @@ func (s *service) UpdateRecipeRatingHandler(res http.ResponseWriter, req *http.R
 		UserID:       sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeRating]{
 		Details: responseDetails,
@@ -378,7 +378,7 @@ func (s *service) ArchiveRecipeRatingHandler(res http.ResponseWriter, req *http.
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeRating]{
 		Details: responseDetails,
