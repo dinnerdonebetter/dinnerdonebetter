@@ -18,7 +18,7 @@ func TestUserIngredientPreference_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &IngredientPreference{}
-		input := &UserIngredientPreferenceUpdateRequestInput{}
+		input := &IngredientPreferenceUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
 
@@ -33,7 +33,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 		t.Parallel()
 
 		ctx := context.Background()
-		input := &UserIngredientPreferenceCreationRequestInput{
+		input := &IngredientPreferenceCreationRequestInput{
 			ValidIngredientID: t.Name(),
 			Rating:            1,
 		}
@@ -45,7 +45,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 		t.Parallel()
 
 		ctx := context.Background()
-		input := &UserIngredientPreferenceCreationRequestInput{
+		input := &IngredientPreferenceCreationRequestInput{
 			ValidIngredientID: t.Name(),
 			Rating:            math.MaxInt8,
 		}
@@ -57,7 +57,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 		t.Parallel()
 
 		ctx := context.Background()
-		input := &UserIngredientPreferenceCreationRequestInput{
+		input := &IngredientPreferenceCreationRequestInput{
 			ValidIngredientGroupID: t.Name(),
 			Rating:                 1,
 		}
@@ -72,7 +72,7 @@ func TestUserIngredientPreferenceDatabaseCreationInput_Validate(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &UserIngredientPreferenceDatabaseCreationInput{
+		x := &IngredientPreferenceDatabaseCreationInput{
 			ValidIngredientID: t.Name(),
 			Rating:            minRating,
 			BelongsToUser:     t.Name(),
@@ -85,7 +85,7 @@ func TestUserIngredientPreferenceDatabaseCreationInput_Validate(T *testing.T) {
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
-		x := &UserIngredientPreferenceDatabaseCreationInput{}
+		x := &IngredientPreferenceDatabaseCreationInput{}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)
@@ -98,7 +98,7 @@ func TestUserIngredientPreferenceUpdateRequestInput_Validate(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &UserIngredientPreferenceUpdateRequestInput{
+		x := &IngredientPreferenceUpdateRequestInput{
 			IngredientID: pointer.To(t.Name()),
 			Rating:       pointer.To(minRating),
 		}
@@ -110,7 +110,7 @@ func TestUserIngredientPreferenceUpdateRequestInput_Validate(T *testing.T) {
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
-		x := &UserIngredientPreferenceUpdateRequestInput{}
+		x := &IngredientPreferenceUpdateRequestInput{}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)

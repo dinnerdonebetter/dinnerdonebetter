@@ -2,7 +2,6 @@ package types
 
 import (
 	"context"
-	"encoding/gob"
 	"net/http"
 	"time"
 
@@ -16,14 +15,8 @@ const (
 	maxRating int8 = 10
 )
 
-func init() {
-	gob.Register(new(IngredientPreference))
-	gob.Register(new(UserIngredientPreferenceCreationRequestInput))
-	gob.Register(new(UserIngredientPreferenceUpdateRequestInput))
-}
-
 type (
-	// IngredientPreference represents a user ingredient preference.
+	// IngredientPreference represents an ingredient preference.
 	IngredientPreference struct {
 		_ struct{} `json:"-"`
 
@@ -38,8 +31,8 @@ type (
 		Allergy       bool            `json:"allergy"`
 	}
 
-	// UserIngredientPreferenceCreationRequestInput represents what a user could set as input for creating user ingredient preferences.
-	UserIngredientPreferenceCreationRequestInput struct {
+	// IngredientPreferenceCreationRequestInput represents what a user could set as input for creating user ingredient preferences.
+	IngredientPreferenceCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
 		ValidIngredientGroupID string `json:"validIngredientGroupID"`
@@ -49,8 +42,8 @@ type (
 		Allergy                bool   `json:"allergy"`
 	}
 
-	// UserIngredientPreferenceDatabaseCreationInput represents what a user could set as input for creating user ingredient preferences.
-	UserIngredientPreferenceDatabaseCreationInput struct {
+	// IngredientPreferenceDatabaseCreationInput represents what a user could set as input for creating user ingredient preferences.
+	IngredientPreferenceDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
 		ValidIngredientGroupID string `json:"-"`
@@ -61,8 +54,8 @@ type (
 		Allergy                bool   `json:"-"`
 	}
 
-	// UserIngredientPreferenceUpdateRequestInput represents what a user could set as input for updating user ingredient preferences.
-	UserIngredientPreferenceUpdateRequestInput struct {
+	// IngredientPreferenceUpdateRequestInput represents what a user could set as input for updating user ingredient preferences.
+	IngredientPreferenceUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
 		Notes        *string `json:"notes,omitempty"`
@@ -71,27 +64,27 @@ type (
 		Allergy      *bool   `json:"allergy"`
 	}
 
-	// UserIngredientPreferenceDataManager describes a structure capable of storing user ingredient preferences permanently.
-	UserIngredientPreferenceDataManager interface {
-		UserIngredientPreferenceExists(ctx context.Context, userIngredientPreferenceID, userID string) (bool, error)
-		GetUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) (*IngredientPreference, error)
-		GetUserIngredientPreferences(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[IngredientPreference], error)
-		CreateUserIngredientPreference(ctx context.Context, input *UserIngredientPreferenceDatabaseCreationInput) ([]*IngredientPreference, error)
-		UpdateUserIngredientPreference(ctx context.Context, updated *IngredientPreference) error
-		ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error
+	// IngredientPreferenceDataManager describes a structure capable of storing user ingredient preferences permanently.
+	IngredientPreferenceDataManager interface {
+		IngredientPreferenceExists(ctx context.Context, userIngredientPreferenceID, userID string) (bool, error)
+		GetIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) (*IngredientPreference, error)
+		GetIngredientPreferences(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[IngredientPreference], error)
+		CreateIngredientPreference(ctx context.Context, input *IngredientPreferenceDatabaseCreationInput) ([]*IngredientPreference, error)
+		UpdateIngredientPreference(ctx context.Context, updated *IngredientPreference) error
+		ArchiveIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error
 	}
 
-	// UserIngredientPreferenceDataService describes a structure capable of serving traffic related to user ingredient preferences.
-	UserIngredientPreferenceDataService interface {
-		ListUserIngredientPreferencesHandler(http.ResponseWriter, *http.Request)
-		CreateUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
-		UpdateUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
-		ArchiveUserIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
+	// IngredientPreferenceDataService describes a structure capable of serving traffic related to user ingredient preferences.
+	IngredientPreferenceDataService interface {
+		ListIngredientPreferencesHandler(http.ResponseWriter, *http.Request)
+		CreateIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
+		UpdateIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
+		ArchiveIngredientPreferenceHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
-// Update merges an UserIngredientPreferenceUpdateRequestInput with a user ingredient preference.
-func (x *IngredientPreference) Update(input *UserIngredientPreferenceUpdateRequestInput) {
+// Update merges an IngredientPreferenceUpdateRequestInput with a ingredient preference.
+func (x *IngredientPreference) Update(input *IngredientPreferenceUpdateRequestInput) {
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes
 	}
@@ -109,10 +102,10 @@ func (x *IngredientPreference) Update(input *UserIngredientPreferenceUpdateReque
 	}
 }
 
-var _ validation.ValidatableWithContext = (*UserIngredientPreferenceCreationRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*IngredientPreferenceCreationRequestInput)(nil)
 
-// ValidateWithContext validates a UserIngredientPreferenceCreationRequestInput.
-func (x *UserIngredientPreferenceCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a IngredientPreferenceCreationRequestInput.
+func (x *IngredientPreferenceCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
@@ -122,10 +115,10 @@ func (x *UserIngredientPreferenceCreationRequestInput) ValidateWithContext(ctx c
 	)
 }
 
-var _ validation.ValidatableWithContext = (*UserIngredientPreferenceDatabaseCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*IngredientPreferenceDatabaseCreationInput)(nil)
 
-// ValidateWithContext validates a UserIngredientPreferenceDatabaseCreationInput.
-func (x *UserIngredientPreferenceDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a IngredientPreferenceDatabaseCreationInput.
+func (x *IngredientPreferenceDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
@@ -135,10 +128,10 @@ func (x *UserIngredientPreferenceDatabaseCreationInput) ValidateWithContext(ctx 
 	)
 }
 
-var _ validation.ValidatableWithContext = (*UserIngredientPreferenceUpdateRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*IngredientPreferenceUpdateRequestInput)(nil)
 
-// ValidateWithContext validates a UserIngredientPreferenceUpdateRequestInput.
-func (x *UserIngredientPreferenceUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a IngredientPreferenceUpdateRequestInput.
+func (x *IngredientPreferenceUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

@@ -17,7 +17,7 @@ func TestHouseholdInstrumentOwnership_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &InstrumentOwnership{}
-		input := &HouseholdInstrumentOwnershipUpdateRequestInput{}
+		input := &InstrumentOwnershipUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
 
@@ -32,7 +32,7 @@ func TestHouseholdInstrumentOwnershipCreationRequestInput_ValidateWithContext(T 
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdInstrumentOwnershipCreationRequestInput{
+		x := &InstrumentOwnershipCreationRequestInput{
 			Quantity:          1,
 			ValidInstrumentID: t.Name(),
 		}
@@ -48,7 +48,7 @@ func TestHouseholdInstrumentOwnershipDatabaseCreationInput_ValidateWithContext(T
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdInstrumentOwnershipDatabaseCreationInput{
+		x := &InstrumentOwnershipDatabaseCreationInput{
 			ID:                t.Name(),
 			Quantity:          1,
 			ValidInstrumentID: t.Name(),
@@ -65,7 +65,7 @@ func TestHouseholdInstrumentOwnershipUpdateRequestInput_ValidateWithContext(T *t
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdInstrumentOwnershipUpdateRequestInput{
+		x := &InstrumentOwnershipUpdateRequestInput{
 			Quantity:          pointer.To[uint16](1),
 			ValidInstrumentID: pointer.To(t.Name()),
 		}

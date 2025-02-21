@@ -1,0 +1,264 @@
+package postgres
+
+import (
+	"context"
+
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
+)
+
+var (
+	_ types.InstrumentOwnershipDataManager = (*Querier)(nil)
+)
+
+// InstrumentOwnershipExists fetches whether a household instrument ownership exists from the database.
+func (q *Querier) InstrumentOwnershipExists(ctx context.Context, householdInstrumentOwnershipID, householdID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if householdInstrumentOwnershipID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+
+	if householdID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+
+	result, err := q.generatedQuerier.CheckHouseholdInstrumentOwnershipExistence(ctx, q.db, &generated.CheckHouseholdInstrumentOwnershipExistenceParams{
+		ID:                 householdInstrumentOwnershipID,
+		BelongsToHousehold: householdID,
+	})
+	if err != nil {
+		return false, observability.PrepareAndLogError(err, logger, span, "performing household instrument ownership existence check")
+	}
+
+	return result, nil
+}
+
+// GetInstrumentOwnership fetches a household instrument ownership from the database.
+func (q *Querier) GetInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) (*types.InstrumentOwnership, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if householdInstrumentOwnershipID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+
+	if householdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+
+	result, err := q.generatedQuerier.GetHouseholdInstrumentOwnership(ctx, q.db, &generated.GetHouseholdInstrumentOwnershipParams{
+		ID:                 householdInstrumentOwnershipID,
+		BelongsToHousehold: householdID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household instrument ownership")
+	}
+
+	householdInstrumentOwnership := &types.InstrumentOwnership{
+		CreatedAt:          result.CreatedAt,
+		ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ID:                 result.ID,
+		Notes:              result.Notes,
+		BelongsToHousehold: result.BelongsToHousehold,
+		Quantity:           uint16(result.Quantity),
+		Instrument: types.ValidInstrument{
+			CreatedAt:                      result.ValidInstrumentCreatedAt,
+			LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+			ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
+			IconPath:                       result.ValidInstrumentIconPath,
+			ID:                             result.ValidInstrumentID,
+			Name:                           result.ValidInstrumentName,
+			PluralName:                     result.ValidInstrumentPluralName,
+			Description:                    result.ValidInstrumentDescription,
+			Slug:                           result.ValidInstrumentSlug,
+			DisplayInSummaryLists:          result.ValidInstrumentDisplayInSummaryLists,
+			IncludeInGeneratedInstructions: result.ValidInstrumentIncludeInGeneratedInstructions,
+			UsableForStorage:               result.ValidInstrumentUsableForStorage,
+		},
+	}
+
+	return householdInstrumentOwnership, nil
+}
+
+// GetInstrumentOwnerships fetches a list of household instrument ownerships from the database that meet a particular filter.
+func (q *Querier) GetInstrumentOwnerships(ctx context.Context, householdID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.InstrumentOwnership], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x = &filtering.QueryFilteredResult[types.InstrumentOwnership]{
+		Pagination: filter.ToPagination(),
+	}
+
+	if householdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+
+	results, err := q.generatedQuerier.GetHouseholdInstrumentOwnerships(ctx, q.db, &generated.GetHouseholdInstrumentOwnershipsParams{
+		HouseholdID:     householdID,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household instrument ownerships")
+	}
+
+	for _, result := range results {
+		householdInstrumentOwnership := &types.InstrumentOwnership{
+			CreatedAt:          result.CreatedAt,
+			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ID:                 result.ID,
+			Notes:              result.Notes,
+			BelongsToHousehold: result.BelongsToHousehold,
+			Quantity:           uint16(result.Quantity),
+			Instrument: types.ValidInstrument{
+				CreatedAt:                      result.ValidInstrumentCreatedAt,
+				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
+				IconPath:                       result.ValidInstrumentIconPath,
+				ID:                             result.ValidInstrumentID,
+				Name:                           result.ValidInstrumentName,
+				PluralName:                     result.ValidInstrumentPluralName,
+				Description:                    result.ValidInstrumentDescription,
+				Slug:                           result.ValidInstrumentSlug,
+				DisplayInSummaryLists:          result.ValidInstrumentDisplayInSummaryLists,
+				IncludeInGeneratedInstructions: result.ValidInstrumentIncludeInGeneratedInstructions,
+				UsableForStorage:               result.ValidInstrumentUsableForStorage,
+			},
+		}
+
+		x.Data = append(x.Data, householdInstrumentOwnership)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
+	}
+
+	return x, nil
+}
+
+// CreateInstrumentOwnership creates a household instrument ownership in the database.
+func (q *Querier) CreateInstrumentOwnership(ctx context.Context, input *types.InstrumentOwnershipDatabaseCreationInput) (*types.InstrumentOwnership, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, input.ID)
+	logger := q.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, input.ID)
+
+	// create the household instrument ownership.
+	if err := q.generatedQuerier.CreateHouseholdInstrumentOwnership(ctx, q.db, &generated.CreateHouseholdInstrumentOwnershipParams{
+		ID:                 input.ID,
+		Notes:              input.Notes,
+		ValidInstrumentID:  input.ValidInstrumentID,
+		BelongsToHousehold: input.BelongsToHousehold,
+		Quantity:           int32(input.Quantity),
+	}); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing household instrument ownership creation query")
+	}
+
+	x := &types.InstrumentOwnership{
+		ID:                 input.ID,
+		Notes:              input.Notes,
+		Quantity:           input.Quantity,
+		Instrument:         types.ValidInstrument{ID: input.ValidInstrumentID},
+		BelongsToHousehold: input.BelongsToHousehold,
+		CreatedAt:          q.currentTime(),
+	}
+
+	logger.Info("household instrument ownership created")
+
+	return x, nil
+}
+
+// UpdateInstrumentOwnership updates a particular household instrument ownership.
+func (q *Querier) UpdateInstrumentOwnership(ctx context.Context, updated *types.InstrumentOwnership) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if updated == nil {
+		return ErrNilInputProvided
+	}
+	logger := q.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, updated.ID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, updated.ID)
+
+	if _, err := q.generatedQuerier.UpdateHouseholdInstrumentOwnership(ctx, q.db, &generated.UpdateHouseholdInstrumentOwnershipParams{
+		Notes:              updated.Notes,
+		ValidInstrumentID:  updated.Instrument.ID,
+		ID:                 updated.ID,
+		BelongsToHousehold: updated.BelongsToHousehold,
+		Quantity:           int32(updated.Quantity),
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership")
+	}
+
+	logger.Info("household instrument ownership updated")
+
+	return nil
+}
+
+// ArchiveInstrumentOwnership archives a household instrument ownership from the database by its ID.
+func (q *Querier) ArchiveInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if householdInstrumentOwnershipID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+
+	if householdID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+
+	if _, err := q.generatedQuerier.ArchiveHouseholdInstrumentOwnership(ctx, q.db, &generated.ArchiveHouseholdInstrumentOwnershipParams{
+		ID:                 householdInstrumentOwnershipID,
+		BelongsToHousehold: householdID,
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving household instrument ownership")
+	}
+
+	logger.Info("household instrument ownership archived")
+
+	return nil
+}
