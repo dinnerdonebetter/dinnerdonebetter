@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
@@ -26,9 +27,10 @@ TODO List:
 - [x] all relevant input params are accounted for in logs
 - [x] all relevant input params are accounted for in traces
 - [x] no more references to `GetUnfinalizedMealPlansWithExpiredVotingPeriods`
-- [ ] all pointer inputs have nil checks
-- [ ] all query filters are defaulted when nil
+- [x] all pointer inputs have nil checks
+- [x] all query filters are defaulted when nil
 - [ ] all CUD functions fire a data change event
+- [ ] unit tests lol
 
 */
 
@@ -92,7 +94,16 @@ func (m *mealPlanningManager) buildDataChangeMessageFromContext(ctx context.Cont
 
 func (m *mealPlanningManager) ListMeals(ctx context.Context, filter *filtering.QueryFilter) ([]*types.Meal, string, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
 	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
 
 	results, err := m.db.GetMeals(ctx, filter)
 	if err != nil {
@@ -105,6 +116,10 @@ func (m *mealPlanningManager) ListMeals(ctx context.Context, filter *filtering.Q
 func (m *mealPlanningManager) CreateMeal(ctx context.Context, input *types.MealCreationRequestInput) (*types.Meal, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
 
 	convertedInput := converters.ConvertMealCreationRequestInputToMealDatabaseCreationInput(input)
 	logger := m.logger.WithValue(keys.MealIDKey, convertedInput.ID)
@@ -140,6 +155,10 @@ func (m *mealPlanningManager) ReadMeal(ctx context.Context, mealID string) (*typ
 func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.Meal, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
 
 	logger := m.logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
@@ -178,6 +197,10 @@ func (m *mealPlanningManager) ListMealPlans(ctx context.Context, ownerID string,
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
 	logger := m.logger.WithValue(keys.HouseholdIDKey, ownerID)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, ownerID)
 
@@ -192,6 +215,10 @@ func (m *mealPlanningManager) ListMealPlans(ctx context.Context, ownerID string,
 func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
 
 	convertedInput := converters.ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input)
 	logger := m.logger.WithValue(keys.MealPlanIDKey, convertedInput.ID)
@@ -227,6 +254,10 @@ func (m *mealPlanningManager) ReadMealPlan(ctx context.Context, mealPlanID, owne
 func (m *mealPlanningManager) UpdateMealPlan(ctx context.Context, mealPlanID, ownerID string, input *types.MealPlanUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
 
 	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
@@ -294,6 +325,10 @@ func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
 	logger := m.logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
@@ -308,6 +343,10 @@ func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID
 func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, input *types.MealPlanEventCreationRequestInput) (*types.MealPlanEvent, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
 
 	convertedInput := converters.ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(input)
 	logger := m.logger.WithValue(keys.MealPlanEventIDKey, convertedInput.ID)
@@ -343,6 +382,10 @@ func (m *mealPlanningManager) ReadMealPlanEvent(ctx context.Context, mealPlanID,
 func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string, input *types.MealPlanEventUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
 
 	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
@@ -386,6 +429,10 @@ func (m *mealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanI
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
 	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
 		keys.MealPlanEventIDKey: mealPlanEventID,
@@ -404,6 +451,10 @@ func (m *mealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanI
 func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
 
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
 	logger := m.logger.WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)
@@ -441,6 +492,10 @@ func (m *mealPlanningManager) ReadMealPlanOption(ctx context.Context, mealPlanID
 func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, input *types.MealPlanOptionUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
 
 	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
@@ -488,6 +543,10 @@ func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealP
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
 	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
 		keys.MealPlanEventIDKey:  mealPlanEventID,
@@ -508,6 +567,10 @@ func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealP
 func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
 
 	convertedInput := converters.ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteDatabaseCreationInput(input)
 	logger := m.logger.WithValue("vote_count", len(input.Votes))
@@ -547,6 +610,10 @@ func (m *mealPlanningManager) ReadMealPlanOptionVote(ctx context.Context, mealPl
 func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string, input *types.MealPlanOptionVoteUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
 
 	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:           mealPlanID,
@@ -620,17 +687,21 @@ func (m *mealPlanningManager) ReadMealPlanTask(ctx context.Context, mealPlanID, 
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 
-	_, err := m.db.GetMealPlanTask(ctx, mealPlanID, mealPlanTaskID)
+	result, err := m.db.GetMealPlanTask(ctx, mealPlanID, mealPlanTaskID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan task")
 	}
 
-	return &types.MealPlanTask{}, nil
+	return result, nil
 }
 
 func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *types.MealPlanTaskCreationRequestInput) (*types.MealPlanTask, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
 
 	convertedInput := converters.ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput(input)
 	logger := m.logger.WithValue(keys.MealPlanTaskIDKey, convertedInput.ID)
@@ -677,6 +748,10 @@ func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context,
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
+
 	convertedInput := converters.ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemDatabaseCreationInput(input)
 	logger := m.logger.WithValue(keys.MealPlanGroceryListItemIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, convertedInput.ID)
@@ -711,6 +786,10 @@ func (m *mealPlanningManager) ReadMealPlanGroceryListItem(ctx context.Context, m
 func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string, input *types.MealPlanGroceryListItemUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
 
 	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:                mealPlanID,
@@ -754,6 +833,10 @@ func (m *mealPlanningManager) ListIngredientPreferences(ctx context.Context, own
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
 	logger := m.logger.WithValue(keys.UserIDKey, ownerID)
 	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
 
@@ -768,6 +851,10 @@ func (m *mealPlanningManager) ListIngredientPreferences(ctx context.Context, own
 func (m *mealPlanningManager) CreateIngredientPreference(ctx context.Context, input *types.IngredientPreferenceCreationRequestInput) ([]*types.IngredientPreference, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
 
 	logger := m.logger.WithValues(map[string]any{
 		keys.ValidIngredientGroupIDKey: input.ValidIngredientGroupID,
@@ -789,6 +876,10 @@ func (m *mealPlanningManager) CreateIngredientPreference(ctx context.Context, in
 func (m *mealPlanningManager) UpdateIngredientPreference(ctx context.Context, ingredientPreferenceID, ownerID string, input *types.IngredientPreferenceUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
 
 	logger := m.logger.WithValues(map[string]any{
 		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
@@ -831,6 +922,10 @@ func (m *mealPlanningManager) ArchiveIngredientPreference(ctx context.Context, o
 func (m *mealPlanningManager) ListInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.InstrumentOwnership, string, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
 
 	logger := m.logger.WithValue(keys.HouseholdIDKey, ownerID)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, ownerID)
@@ -881,6 +976,10 @@ func (m *mealPlanningManager) ReadInstrumentOwnership(ctx context.Context, owner
 func (m *mealPlanningManager) UpdateInstrumentOwnership(ctx context.Context, instrumentOwnershipID, ownerID string, input *types.InstrumentOwnershipUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
 
 	logger := m.logger.WithValues(map[string]any{
 		keys.HouseholdIDKey:                    ownerID,
