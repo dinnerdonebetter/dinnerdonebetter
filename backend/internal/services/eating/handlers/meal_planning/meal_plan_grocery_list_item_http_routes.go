@@ -369,7 +369,7 @@ func (s *service) ArchiveMealPlanGroceryListItemHandler(res http.ResponseWriter,
 
 	// fetch meal plan grocery list item from database.
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	err = s.mealPlanningDataManager.ArchiveMealPlanGroceryListItem(ctx, mealPlanGroceryListItemID)
+	err = s.mealPlanningDataManager.ArchiveMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan grocery list item")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

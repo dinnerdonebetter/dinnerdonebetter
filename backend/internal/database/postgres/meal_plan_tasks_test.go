@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createMealPlanTaskForTest(t *testing.T, ctx context.Context, exampleMealPlanTask *types.MealPlanTask, dbc *Querier) *types.MealPlanTask {
+func createMealPlanTaskForTest(t *testing.T, ctx context.Context, mealPlanID string, exampleMealPlanTask *types.MealPlanTask, dbc *Querier) *types.MealPlanTask {
 	t.Helper()
 
 	// create
@@ -31,7 +31,7 @@ func createMealPlanTaskForTest(t *testing.T, ctx context.Context, exampleMealPla
 	exampleMealPlanTask.MealPlanOption = created.MealPlanOption
 	assert.Equal(t, exampleMealPlanTask, created)
 
-	mealPlanTask, err := dbc.GetMealPlanTask(ctx, created.ID)
+	mealPlanTask, err := dbc.GetMealPlanTask(ctx, mealPlanID, created.ID)
 	require.NoError(t, err)
 
 	exampleMealPlanTask.CreatedAt = mealPlanTask.CreatedAt
@@ -82,7 +82,7 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 
 	// create
 	createdMealPlanTasks := []*types.MealPlanTask{}
-	createdMealPlanTasks = append(createdMealPlanTasks, createMealPlanTaskForTest(t, ctx, exampleMealPlanTask, dbc))
+	createdMealPlanTasks = append(createdMealPlanTasks, createMealPlanTaskForTest(t, ctx, mealPlan.ID, exampleMealPlanTask, dbc))
 
 	// fetch as list
 	mealPlanTasks, err := dbc.GetMealPlanTasksForMealPlan(ctx, mealPlan.ID)
@@ -145,7 +145,7 @@ func TestQuerier_MealPlanTaskExists(T *testing.T) {
 func TestQuerier_GetMealPlanTask(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan ID", func(t *testing.T) {
+	T.Run("with invalid meal plan task ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanTaskID := fakes.BuildFakeID()
@@ -153,7 +153,9 @@ func TestQuerier_GetMealPlanTask(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		actual, err := c.GetMealPlanTask(ctx, exampleMealPlanTaskID)
+		mealPlanID := fakes.BuildFakeID()
+
+		actual, err := c.GetMealPlanTask(ctx, mealPlanID, exampleMealPlanTaskID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -166,7 +168,9 @@ func TestQuerier_GetMealPlanTask(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		actual, err := c.GetMealPlanTask(ctx, "")
+		mealPlanID := fakes.BuildFakeID()
+
+		actual, err := c.GetMealPlanTask(ctx, mealPlanID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

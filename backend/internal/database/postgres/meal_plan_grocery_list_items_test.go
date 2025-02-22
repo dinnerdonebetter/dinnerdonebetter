@@ -105,7 +105,7 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 
 	// delete
 	for _, mealPlanGroceryListItem := range createdMealPlanGroceryListItems {
-		assert.NoError(t, dbc.ArchiveMealPlanGroceryListItem(ctx, mealPlanGroceryListItem.ID))
+		assert.NoError(t, dbc.ArchiveMealPlanGroceryListItem(ctx, mealPlan.ID, mealPlanGroceryListItem.ID))
 
 		var exists bool
 		exists, err = dbc.MealPlanGroceryListItemExists(ctx, mealPlanGroceryListItem.ID, householdID)
@@ -223,6 +223,8 @@ func TestQuerier_ArchiveMealPlanGroceryListItem(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveMealPlanGroceryListItem(ctx, ""))
+		mealPlanID := fakes.BuildFakeID()
+
+		assert.Error(t, c.ArchiveMealPlanGroceryListItem(ctx, mealPlanID, ""))
 	})
 }
