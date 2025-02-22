@@ -23,7 +23,10 @@ import (
 TODO List:
 
 - [ ] all returned errors have description strings
-- [ ] all relevant input params are accounted for in logs and traces
+- [x] all relevant input params are accounted for in logs
+- [ ] all relevant input params are accounted for in traces
+- [ ] all pointer inputs have nil checks
+- [ ] all query filters are defaulted when nil
 - [ ] all CUD functions fire a data change event
 - [x] no more references to `GetUnfinalizedMealPlansWithExpiredVotingPeriods`
 
@@ -150,7 +153,10 @@ func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID s
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithValue(keys.MealIDKey, mealID).WithValue(keys.UserIDKey, ownerID)
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealIDKey: mealID,
+		keys.UserIDKey: ownerID,
+	})
 
 	if err := m.db.ArchiveMeal(ctx, mealID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal")
@@ -196,7 +202,10 @@ func (m *mealPlanningManager) ReadMealPlan(ctx context.Context, mealPlanID, owne
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey: mealPlanID,
+		keys.UserIDKey:     ownerID,
+	})
 
 	mealPlan, err := m.db.GetMealPlan(ctx, mealPlanID, ownerID)
 	if err != nil {
@@ -210,7 +219,10 @@ func (m *mealPlanningManager) UpdateMealPlan(ctx context.Context, mealPlanID, ow
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithValue(keys.MealPlanIDKey, mealPlanID).WithValue(keys.UserIDKey, ownerID)
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey: mealPlanID,
+		keys.UserIDKey:     ownerID,
+	})
 
 	existingMealPlan, err := m.db.GetMealPlan(ctx, mealPlanID, ownerID)
 	if err != nil {
@@ -234,7 +246,10 @@ func (m *mealPlanningManager) ArchiveMealPlan(ctx context.Context, mealPlanID, o
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey: mealPlanID,
+		keys.UserIDKey:     ownerID,
+	})
 
 	if err := m.db.ArchiveMealPlan(ctx, mealPlanID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan")
@@ -247,7 +262,10 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey: mealPlanID,
+		keys.UserIDKey:     ownerID,
+	})
 
 	finalized, err := m.db.AttemptToFinalizeMealPlan(ctx, mealPlanID, ownerID)
 	if err != nil {
@@ -261,7 +279,7 @@ func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	mealPlanEvents, err := m.db.GetMealPlanEvents(ctx, mealPlanID, filter)
 	if err != nil {
@@ -275,9 +293,8 @@ func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, input *ty
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
-
 	convertedInput := converters.ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(input)
+	logger := m.logger.WithValue(keys.MealPlanEventIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanEvent(ctx, convertedInput)
 	if err != nil {
@@ -291,7 +308,10 @@ func (m *mealPlanningManager) ReadMealPlanEvent(ctx context.Context, mealPlanID,
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:      mealPlanID,
+		keys.MealPlanEventIDKey: mealPlanEventID,
+	})
 
 	mealPlanEvent, err := m.db.GetMealPlanEvent(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
@@ -305,7 +325,10 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:      mealPlanID,
+		keys.MealPlanEventIDKey: mealPlanEventID,
+	})
 
 	existingMealPlanEvent, err := m.db.GetMealPlanEvent(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
@@ -324,7 +347,10 @@ func (m *mealPlanningManager) ArchiveMealPlanEvent(ctx context.Context, mealPlan
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:      mealPlanID,
+		keys.MealPlanEventIDKey: mealPlanEventID,
+	})
 
 	if err := m.db.ArchiveMealPlanEvent(ctx, mealPlanID, mealPlanEventID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan event")
@@ -337,7 +363,10 @@ func (m *mealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanI
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:      mealPlanID,
+		keys.MealPlanEventIDKey: mealPlanEventID,
+	})
 
 	results, err := m.db.GetMealPlanOptions(ctx, mealPlanID, mealPlanEventID, filter)
 	if err != nil {
@@ -351,9 +380,8 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
-
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
+	logger := m.logger.WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanOption(ctx, convertedInput)
 	if err != nil {
@@ -367,7 +395,11 @@ func (m *mealPlanningManager) ReadMealPlanOption(ctx context.Context, mealPlanID
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:       mealPlanID,
+		keys.MealPlanEventIDKey:  mealPlanEventID,
+		keys.MealPlanOptionIDKey: mealPlanOptionID,
+	})
 
 	mealPlanOption, err := m.db.GetMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
@@ -381,7 +413,11 @@ func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlan
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:       mealPlanID,
+		keys.MealPlanEventIDKey:  mealPlanEventID,
+		keys.MealPlanOptionIDKey: mealPlanOptionID,
+	})
 
 	existingMealPlanOption, err := m.db.GetMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
@@ -400,7 +436,11 @@ func (m *mealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mealPla
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:       mealPlanID,
+		keys.MealPlanEventIDKey:  mealPlanEventID,
+		keys.MealPlanOptionIDKey: mealPlanOptionID,
+	})
 
 	if err := m.db.ArchiveMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "")
@@ -413,7 +453,11 @@ func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealP
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:       mealPlanID,
+		keys.MealPlanEventIDKey:  mealPlanEventID,
+		keys.MealPlanOptionIDKey: mealPlanOptionID,
+	})
 
 	results, err := m.db.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 	if err != nil {
@@ -427,9 +471,8 @@ func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, inp
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
-
 	convertedInput := converters.ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteDatabaseCreationInput(input)
+	logger := m.logger.WithValue("vote_count", len(input.Votes))
 
 	created, err := m.db.CreateMealPlanOptionVote(ctx, convertedInput)
 	if err != nil {
@@ -443,7 +486,12 @@ func (m *mealPlanningManager) ReadMealPlanOptionVote(ctx context.Context, mealPl
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:           mealPlanID,
+		keys.MealPlanEventIDKey:      mealPlanEventID,
+		keys.MealPlanOptionIDKey:     mealPlanOptionID,
+		keys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
+	})
 
 	mealPlanOptionVote, err := m.db.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
@@ -457,7 +505,12 @@ func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, meal
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:           mealPlanID,
+		keys.MealPlanEventIDKey:      mealPlanEventID,
+		keys.MealPlanOptionIDKey:     mealPlanOptionID,
+		keys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
+	})
 
 	existingMealPlanOptionVote, err := m.db.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
@@ -476,7 +529,12 @@ func (m *mealPlanningManager) ArchiveMealPlanOptionVote(ctx context.Context, mea
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:           mealPlanID,
+		keys.MealPlanEventIDKey:      mealPlanEventID,
+		keys.MealPlanOptionIDKey:     mealPlanOptionID,
+		keys.MealPlanOptionVoteIDKey: mealPlanOptionVoteID,
+	})
 
 	if err := m.db.ArchiveMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option vote")
@@ -489,7 +547,7 @@ func (m *mealPlanningManager) ListMealPlanTasksByMealPlan(ctx context.Context, m
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	results, err := m.db.GetMealPlanTasksForMealPlan(ctx, mealPlanID)
 	if err != nil {
@@ -503,7 +561,10 @@ func (m *mealPlanningManager) ReadMealPlanTask(ctx context.Context, mealPlanID, 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:     mealPlanID,
+		keys.MealPlanTaskIDKey: mealPlanTaskID,
+	})
 
 	_, err := m.db.GetMealPlanTask(ctx, mealPlanID, mealPlanTaskID)
 	if err != nil {
@@ -517,9 +578,8 @@ func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *typ
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
-
 	convertedInput := converters.ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput(input)
+	logger := m.logger.WithValue(keys.MealPlanTaskIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanTask(ctx, convertedInput)
 	if err != nil {
@@ -533,7 +593,7 @@ func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, inpu
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 
 	if err := m.db.ChangeMealPlanTaskStatus(ctx, input); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "")
@@ -546,7 +606,7 @@ func (m *mealPlanningManager) ListMealPlanGroceryListItemsByMealPlan(ctx context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	results, err := m.db.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID)
 	if err != nil {
@@ -560,9 +620,8 @@ func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context,
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
-
 	convertedInput := converters.ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemDatabaseCreationInput(input)
+	logger := m.logger.WithValue(keys.MealPlanGroceryListItemIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanGroceryListItem(ctx, convertedInput)
 	if err != nil {
@@ -576,7 +635,10 @@ func (m *mealPlanningManager) ReadMealPlanGroceryListItem(ctx context.Context, m
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:                mealPlanID,
+		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
+	})
 
 	result, err := m.db.GetMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
@@ -590,7 +652,10 @@ func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context,
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:                mealPlanID,
+		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
+	})
 
 	existingMealPlanGroceryListItem, err := m.db.GetMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
@@ -609,7 +674,10 @@ func (m *mealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.MealPlanIDKey:                mealPlanID,
+		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
+	})
 
 	if err := m.db.ArchiveMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "")
@@ -622,7 +690,7 @@ func (m *mealPlanningManager) ListIngredientPreferences(ctx context.Context, own
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValue(keys.UserIDKey, ownerID)
 
 	results, err := m.db.GetIngredientPreferences(ctx, ownerID, filter)
 	if err != nil {
@@ -636,7 +704,10 @@ func (m *mealPlanningManager) CreateIngredientPreference(ctx context.Context, in
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.ValidIngredientGroupIDKey: input.ValidIngredientGroupID,
+		keys.ValidIngredientIDKey:      input.ValidIngredientID,
+	})
 
 	convertedInput := converters.ConvertIngredientPreferenceCreationRequestInputToIngredientPreferenceDatabaseCreationInput(input)
 
@@ -652,7 +723,10 @@ func (m *mealPlanningManager) UpdateIngredientPreference(ctx context.Context, in
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
+		keys.UserIDKey:                     ownerID,
+	})
 
 	existingIngredientPreference, err := m.db.GetIngredientPreference(ctx, ingredientPreferenceID, ownerID)
 	if err != nil {
@@ -671,7 +745,10 @@ func (m *mealPlanningManager) ArchiveIngredientPreference(ctx context.Context, o
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
+		keys.UserIDKey:                     ownerID,
+	})
 
 	if err := m.db.ArchiveIngredientPreference(ctx, ownerID, ingredientPreferenceID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "")
@@ -684,7 +761,7 @@ func (m *mealPlanningManager) ListInstrumentOwnerships(ctx context.Context, owne
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValue(keys.HouseholdIDKey, ownerID)
 
 	results, err := m.db.GetInstrumentOwnerships(ctx, ownerID, filter)
 	if err != nil {
@@ -698,9 +775,8 @@ func (m *mealPlanningManager) CreateInstrumentOwnership(ctx context.Context, inp
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
-
 	convertedInput := converters.ConvertInstrumentOwnershipCreationRequestInputToInstrumentOwnershipDatabaseCreationInput(input)
+	logger := m.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateInstrumentOwnership(ctx, convertedInput)
 	if err != nil {
@@ -714,7 +790,10 @@ func (m *mealPlanningManager) ReadInstrumentOwnership(ctx context.Context, owner
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.HouseholdIDKey:                    ownerID,
+		keys.HouseholdInstrumentOwnershipIDKey: instrumentOwnershipID,
+	})
 
 	result, err := m.db.GetInstrumentOwnership(ctx, instrumentOwnershipID, ownerID)
 	if err != nil {
@@ -728,7 +807,10 @@ func (m *mealPlanningManager) UpdateInstrumentOwnership(ctx context.Context, ins
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.HouseholdIDKey:                    ownerID,
+		keys.HouseholdInstrumentOwnershipIDKey: instrumentOwnershipID,
+	})
 
 	existingInstrumentOwnership, err := m.db.GetInstrumentOwnership(ctx, instrumentOwnershipID, ownerID)
 	if err != nil {
@@ -747,7 +829,10 @@ func (m *mealPlanningManager) ArchiveInstrumentOwnership(ctx context.Context, ow
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.Clone()
+	logger := m.logger.WithValues(map[string]any{
+		keys.HouseholdIDKey:                    ownerID,
+		keys.HouseholdInstrumentOwnershipIDKey: instrumentOwnershipID,
+	})
 
 	if err := m.db.ArchiveInstrumentOwnership(ctx, instrumentOwnershipID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving instrument ownership")
