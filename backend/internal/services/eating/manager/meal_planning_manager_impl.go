@@ -22,7 +22,7 @@ import (
 
 TODO List:
 
-- [ ] all returned errors have description strings
+- [x] all returned errors have description strings
 - [x] all relevant input params are accounted for in logs
 - [ ] all relevant input params are accounted for in traces
 - [ ] all pointer inputs have nil checks
@@ -231,7 +231,7 @@ func (m *mealPlanningManager) UpdateMealPlan(ctx context.Context, mealPlanID, ow
 
 	existingMealPlan.Update(input)
 	if err = m.db.UpdateMealPlan(ctx, existingMealPlan); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanUpdated, map[string]any{
@@ -315,7 +315,7 @@ func (m *mealPlanningManager) ReadMealPlanEvent(ctx context.Context, mealPlanID,
 
 	mealPlanEvent, err := m.db.GetMealPlanEvent(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan event")
 	}
 
 	return mealPlanEvent, nil
@@ -370,7 +370,7 @@ func (m *mealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanI
 
 	results, err := m.db.GetMealPlanOptions(ctx, mealPlanID, mealPlanEventID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
+		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching meal plan options")
 	}
 
 	return results.Data, "", nil
@@ -385,7 +385,7 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 
 	created, err := m.db.CreateMealPlanOption(ctx, convertedInput)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "created meal plan option")
 	}
 
 	return created, nil
@@ -403,7 +403,7 @@ func (m *mealPlanningManager) ReadMealPlanOption(ctx context.Context, mealPlanID
 
 	mealPlanOption, err := m.db.GetMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan option")
 	}
 
 	return mealPlanOption, nil
@@ -421,12 +421,12 @@ func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlan
 
 	existingMealPlanOption, err := m.db.GetMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "fetching MealPlanOption to update")
+		return observability.PrepareAndLogError(err, logger, span, "fetching meal plan option to update")
 	}
 
 	existingMealPlanOption.Update(input)
 	if err = m.db.UpdateMealPlanOption(ctx, existingMealPlanOption); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
 
 	return nil
@@ -443,7 +443,7 @@ func (m *mealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mealPla
 	})
 
 	if err := m.db.ArchiveMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option")
 	}
 
 	return nil
@@ -461,7 +461,7 @@ func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealP
 
 	results, err := m.db.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
+		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching meal plan option votes")
 	}
 
 	return results.Data, "", nil
@@ -476,7 +476,7 @@ func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, inp
 
 	created, err := m.db.CreateMealPlanOptionVote(ctx, convertedInput)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "created meal plan option votes")
 	}
 
 	return created, nil
@@ -495,7 +495,7 @@ func (m *mealPlanningManager) ReadMealPlanOptionVote(ctx context.Context, mealPl
 
 	mealPlanOptionVote, err := m.db.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan option vote")
 	}
 
 	return mealPlanOptionVote, nil
@@ -514,12 +514,12 @@ func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, meal
 
 	existingMealPlanOptionVote, err := m.db.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "fetching MealPlanOptionVote to update")
+		return observability.PrepareAndLogError(err, logger, span, "fetching meal plan option vote to update")
 	}
 
 	existingMealPlanOptionVote.Update(input)
 	if err = m.db.UpdateMealPlanOptionVote(ctx, existingMealPlanOptionVote); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option vote")
 	}
 
 	return nil
@@ -568,7 +568,7 @@ func (m *mealPlanningManager) ReadMealPlanTask(ctx context.Context, mealPlanID, 
 
 	_, err := m.db.GetMealPlanTask(ctx, mealPlanID, mealPlanTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan task")
 	}
 
 	return &types.MealPlanTask{}, nil
@@ -583,7 +583,7 @@ func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *typ
 
 	created, err := m.db.CreateMealPlanTask(ctx, convertedInput)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
 
 	return created, nil
@@ -596,7 +596,7 @@ func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, inpu
 	logger := m.logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 
 	if err := m.db.ChangeMealPlanTaskStatus(ctx, input); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "changing meal plan task status")
 	}
 
 	return nil
@@ -610,7 +610,7 @@ func (m *mealPlanningManager) ListMealPlanGroceryListItemsByMealPlan(ctx context
 
 	results, err := m.db.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
+		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching meal plan grocery list items for meal plan")
 	}
 
 	return results, "", nil
@@ -625,7 +625,7 @@ func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context,
 
 	created, err := m.db.CreateMealPlanGroceryListItem(ctx, convertedInput)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan grocery list item")
 	}
 
 	return created, nil
@@ -642,7 +642,7 @@ func (m *mealPlanningManager) ReadMealPlanGroceryListItem(ctx context.Context, m
 
 	result, err := m.db.GetMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan grocery list item")
 	}
 
 	return result, nil
@@ -659,12 +659,12 @@ func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context,
 
 	existingMealPlanGroceryListItem, err := m.db.GetMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "fetching MealPlanGroceryListItem to update")
+		return observability.PrepareAndLogError(err, logger, span, "fetching meal plan grocery list item to update")
 	}
 
 	existingMealPlanGroceryListItem.Update(input)
 	if err = m.db.UpdateMealPlanGroceryListItem(ctx, existingMealPlanGroceryListItem); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "updating meal plan grocery list item")
 	}
 
 	return nil
@@ -680,7 +680,7 @@ func (m *mealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Context
 	})
 
 	if err := m.db.ArchiveMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan grocery list item")
 	}
 
 	return nil
@@ -694,7 +694,7 @@ func (m *mealPlanningManager) ListIngredientPreferences(ctx context.Context, own
 
 	results, err := m.db.GetIngredientPreferences(ctx, ownerID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
+		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching ingredient preferences")
 	}
 
 	return results.Data, "", nil
@@ -713,7 +713,7 @@ func (m *mealPlanningManager) CreateIngredientPreference(ctx context.Context, in
 
 	created, err := m.db.CreateIngredientPreference(ctx, convertedInput)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating ingredient preference")
 	}
 
 	return created, nil
@@ -735,7 +735,7 @@ func (m *mealPlanningManager) UpdateIngredientPreference(ctx context.Context, in
 
 	existingIngredientPreference.Update(input)
 	if err = m.db.UpdateIngredientPreference(ctx, existingIngredientPreference); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "updating ingredient preference")
 	}
 
 	return nil
@@ -751,7 +751,7 @@ func (m *mealPlanningManager) ArchiveIngredientPreference(ctx context.Context, o
 	})
 
 	if err := m.db.ArchiveIngredientPreference(ctx, ownerID, ingredientPreferenceID); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "archiving ingredient preference")
 	}
 
 	return nil
@@ -765,7 +765,7 @@ func (m *mealPlanningManager) ListInstrumentOwnerships(ctx context.Context, owne
 
 	results, err := m.db.GetInstrumentOwnerships(ctx, ownerID, filter)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
+		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching instrument ownerships")
 	}
 
 	return results.Data, "", nil
@@ -780,7 +780,7 @@ func (m *mealPlanningManager) CreateInstrumentOwnership(ctx context.Context, inp
 
 	created, err := m.db.CreateInstrumentOwnership(ctx, convertedInput)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating instrument ownership")
 	}
 
 	return created, nil
@@ -797,7 +797,7 @@ func (m *mealPlanningManager) ReadInstrumentOwnership(ctx context.Context, owner
 
 	result, err := m.db.GetInstrumentOwnership(ctx, instrumentOwnershipID, ownerID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching instrument ownership")
 	}
 
 	return result, nil
@@ -814,12 +814,12 @@ func (m *mealPlanningManager) UpdateInstrumentOwnership(ctx context.Context, ins
 
 	existingInstrumentOwnership, err := m.db.GetInstrumentOwnership(ctx, instrumentOwnershipID, ownerID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "fetching InstrumentOwnership to update")
+		return observability.PrepareAndLogError(err, logger, span, "fetching instrument ownership to update")
 	}
 
 	existingInstrumentOwnership.Update(input)
 	if err = m.db.UpdateInstrumentOwnership(ctx, existingInstrumentOwnership); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+		return observability.PrepareAndLogError(err, logger, span, "updating instrument ownership")
 	}
 
 	return nil
