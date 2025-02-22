@@ -1,6 +1,54 @@
 package manager
 
-import "testing"
+import (
+	"context"
+	"testing"
+
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
+	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/types/fakes"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+)
+
+func matchesEventType(eventType string) any {
+	return mock.MatchedBy(func(message *types.DataChangeMessage) bool {
+		return message.EventType == eventType
+	})
+}
+
+func buildMealPlanManagerForTest(t *testing.T) *mealPlanningManager {
+	t.Helper()
+
+	queueCfg := &msgconfig.QueuesConfig{
+		DataChangesTopicName: "data_changes",
+	}
+
+	mpp := &mockpublishers.PublisherProvider{}
+	mpp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+
+	m, err := NewMealPlanningManager(
+		logging.NewNoopLogger(),
+		tracing.NewNoopTracerProvider(),
+		database.NewMockDatabase(),
+		queueCfg,
+		mpp,
+	)
+	require.NoError(t, err)
+
+	mock.AssertExpectationsForObjects(t, mpp)
+
+	return m.(*mealPlanningManager)
+}
 
 func TestMealPlanningManager_buildDataChangeMessageFromContext(T *testing.T) {
 	T.Parallel()
@@ -8,7 +56,28 @@ func TestMealPlanningManager_buildDataChangeMessageFromContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		sessionContextData := &sessions.ContextData{
+			Requester:         sessions.RequesterInfo{UserID: fakes.BuildFakeID()},
+			ActiveHouseholdID: fakes.BuildFakeID(),
+		}
+		ctx = context.WithValue(ctx, sessions.SessionContextDataKey, sessionContextData)
+
+		expected := &types.DataChangeMessage{
+			EventType: events.MealCreated,
+			Context: map[string]any{
+				"things": "sftuff",
+			},
+			UserID:      sessionContextData.Requester.UserID,
+			HouseholdID: sessionContextData.ActiveHouseholdID,
+		}
+
+		actual := mpm.buildDataChangeMessageFromContext(ctx, expected.EventType, expected.Context)
+
+		assert.Equal(t, expected, actual)
+
 	})
 }
 
@@ -18,7 +87,21 @@ func TestMealPlanningManager_ListMeals(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		expected := fakes.BuildFakeMealsList()
+
+		db := database.NewMockDatabase()
+		db.MealDataManagerMock.On("GetMeals", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+		mpm.db = db
+
+		actual, cursor, err := mpm.ListMeals(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -28,7 +111,25 @@ func TestMealPlanningManager_CreateMeal(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		expected := fakes.BuildFakeMeal()
+		fakeInput := fakes.BuildFakeMealCreationRequestInput()
+
+		db := database.NewMockDatabase()
+		db.MealDataManagerMock.On("CreateMeal", testutils.ContextMatcher, testutils.MatchType[*types.MealDatabaseCreationInput]()).Return(expected, nil)
+		mpm.db = db
+
+		mp := &mockpublishers.Publisher{}
+		mp.On("PublishAsync", testutils.ContextMatcher, matchesEventType(events.MealCreated)).Return()
+		mpm.dataChangesPublisher = mp
+
+		actual, err := mpm.CreateMeal(ctx, fakeInput)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, db, mp)
 	})
 }
 
@@ -38,7 +139,20 @@ func TestMealPlanningManager_ReadMeal(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		expected := fakes.BuildFakeMeal()
+
+		db := database.NewMockDatabase()
+		db.MealDataManagerMock.On("GetMeal", testutils.ContextMatcher, expected.ID).Return(expected, nil)
+		mpm.db = db
+
+		actual, err := mpm.ReadMeal(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -48,7 +162,7 @@ func TestMealPlanningManager_SearchMeals(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -58,7 +172,7 @@ func TestMealPlanningManager_ArchiveMeal(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -68,7 +182,7 @@ func TestMealPlanningManager_ListMealPlans(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -78,7 +192,7 @@ func TestMealPlanningManager_CreateMealPlan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -88,7 +202,7 @@ func TestMealPlanningManager_ReadMealPlan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -98,7 +212,7 @@ func TestMealPlanningManager_UpdateMealPlan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -108,7 +222,7 @@ func TestMealPlanningManager_ArchiveMealPlan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -118,7 +232,7 @@ func TestMealPlanningManager_FinalizeMealPlan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -128,7 +242,7 @@ func TestMealPlanningManager_ListMealPlanEvents(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -138,7 +252,7 @@ func TestMealPlanningManager_CreateMealPlanEvent(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -148,7 +262,7 @@ func TestMealPlanningManager_ReadMealPlanEvent(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -158,7 +272,7 @@ func TestMealPlanningManager_UpdateMealPlanEvent(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -168,7 +282,7 @@ func TestMealPlanningManager_ArchiveMealPlanEvent(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -178,7 +292,7 @@ func TestMealPlanningManager_ListMealPlanOptions(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -188,7 +302,7 @@ func TestMealPlanningManager_CreateMealPlanOption(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -198,7 +312,7 @@ func TestMealPlanningManager_ReadMealPlanOption(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -208,7 +322,7 @@ func TestMealPlanningManager_UpdateMealPlanOption(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -218,7 +332,7 @@ func TestMealPlanningManager_ArchiveMealPlanOption(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -228,7 +342,7 @@ func TestMealPlanningManager_ListMealPlanOptionVotes(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -238,7 +352,7 @@ func TestMealPlanningManager_CreateMealPlanOptionVotes(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -248,7 +362,7 @@ func TestMealPlanningManager_ReadMealPlanOptionVote(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -258,7 +372,7 @@ func TestMealPlanningManager_UpdateMealPlanOptionVote(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -268,7 +382,7 @@ func TestMealPlanningManager_ArchiveMealPlanOptionVote(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -278,7 +392,7 @@ func TestMealPlanningManager_ListMealPlanTasksByMealPlan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -288,7 +402,7 @@ func TestMealPlanningManager_ReadMealPlanTask(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -298,7 +412,7 @@ func TestMealPlanningManager_CreateMealPlanTask(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -308,7 +422,7 @@ func TestMealPlanningManager_MealPlanTaskStatusChange(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -318,7 +432,7 @@ func TestMealPlanningManager_ListMealPlanGroceryListItemsByMealPlan(T *testing.T
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -328,7 +442,7 @@ func TestMealPlanningManager_CreateMealPlanGroceryListItem(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -338,7 +452,7 @@ func TestMealPlanningManager_ReadMealPlanGroceryListItem(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -348,7 +462,7 @@ func TestMealPlanningManager_UpdateMealPlanGroceryListItem(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -358,7 +472,7 @@ func TestMealPlanningManager_ArchiveMealPlanGroceryListItem(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -368,7 +482,7 @@ func TestMealPlanningManager_ListIngredientPreferences(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -378,7 +492,7 @@ func TestMealPlanningManager_CreateIngredientPreference(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -388,7 +502,7 @@ func TestMealPlanningManager_UpdateIngredientPreference(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -398,7 +512,7 @@ func TestMealPlanningManager_ArchiveIngredientPreference(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -408,7 +522,7 @@ func TestMealPlanningManager_ListInstrumentOwnerships(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -418,7 +532,7 @@ func TestMealPlanningManager_CreateInstrumentOwnership(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -428,7 +542,7 @@ func TestMealPlanningManager_ReadInstrumentOwnership(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -438,7 +552,7 @@ func TestMealPlanningManager_UpdateInstrumentOwnership(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }
 
@@ -448,6 +562,6 @@ func TestMealPlanningManager_ArchiveInstrumentOwnership(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: write test
+		t.SkipNow()
 	})
 }

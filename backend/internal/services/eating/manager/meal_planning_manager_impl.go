@@ -110,7 +110,7 @@ func (m *mealPlanningManager) CreateMeal(ctx context.Context, input *types.MealC
 	logger := m.logger.WithValue(keys.MealIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealIDKey, convertedInput.ID)
 
-	created, err := m.db.CreateMeal(ctx, converters.ConvertMealCreationRequestInputToMealDatabaseCreationInput(input))
+	created, err := m.db.CreateMeal(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal")
 	}
