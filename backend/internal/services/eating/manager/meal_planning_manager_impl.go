@@ -25,8 +25,7 @@ TODO List:
 - [ ] all returned errors have description strings
 - [ ] all relevant input params are accounted for in logs and traces
 - [ ] all CUD functions fire a data change event
-
-// no more references to `GetUnfinalizedMealPlansWithExpiredVotingPeriods`
+- [x] no more references to `GetUnfinalizedMealPlansWithExpiredVotingPeriods`
 
 */
 
@@ -397,32 +396,31 @@ func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlan
 	return nil
 }
 
-func (m *mealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanOptionID string) error {
+func (m *mealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-	if err != nil {
+	if err := m.db.ArchiveMealPlanOption(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "")
 	}
 
 	return nil
 }
 
-func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanOptionVote, string, error) {
+func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) ([]*types.MealPlanOptionVote, string, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	results, err := m.db.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 	if err != nil {
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
 	}
 
-	return []*types.MealPlanOptionVote{}, "", nil
+	return results.Data, "", nil
 }
 
 func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error) {
@@ -441,18 +439,18 @@ func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, inp
 	return created, nil
 }
 
-func (m *mealPlanningManager) ReadMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
+func (m *mealPlanningManager) ReadMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	mealPlanOptionVote, err := m.db.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "")
 	}
 
-	return &types.MealPlanOptionVote{}, nil
+	return mealPlanOptionVote, nil
 }
 
 func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string, input *types.MealPlanOptionVoteUpdateRequestInput) error {
@@ -474,32 +472,31 @@ func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, meal
 	return nil
 }
 
-func (m *mealPlanningManager) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanOptionVoteID string) error {
+func (m *mealPlanningManager) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+	if err := m.db.ArchiveMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option vote")
 	}
 
 	return nil
 }
 
-func (m *mealPlanningManager) ListMealPlanTasksByMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanTask, string, error) {
+func (m *mealPlanningManager) ListMealPlanTasksByMealPlan(ctx context.Context, mealPlanID string, _ *filtering.QueryFilter) ([]*types.MealPlanTask, string, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	results, err := m.db.GetMealPlanTasksForMealPlan(ctx, mealPlanID)
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
+		return nil, "", observability.PrepareAndLogError(err, logger, span, "getting meal plan tasks for meal plan")
 	}
 
-	return []*types.MealPlanTask{}, "", nil
+	return results, "", nil
 }
 
 func (m *mealPlanningManager) ReadMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID string) (*types.MealPlanTask, error) {
@@ -508,7 +505,7 @@ func (m *mealPlanningManager) ReadMealPlanTask(ctx context.Context, mealPlanID, 
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	_, err := m.db.GetMealPlanTask(ctx, mealPlanID, mealPlanTaskID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "")
 	}
@@ -538,26 +535,25 @@ func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, inpu
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-	if err != nil {
+	if err := m.db.ChangeMealPlanTaskStatus(ctx, input); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "")
 	}
 
 	return nil
 }
 
-func (m *mealPlanningManager) ListMealPlanGroceryListItemsByMealPlan(ctx context.Context, filter *filtering.QueryFilter) ([]*types.MealPlanGroceryListItem, string, error) {
+func (m *mealPlanningManager) ListMealPlanGroceryListItemsByMealPlan(ctx context.Context, mealPlanID string, _ *filtering.QueryFilter) ([]*types.MealPlanGroceryListItem, string, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	results, err := m.db.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID)
 	if err != nil {
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
 	}
 
-	return []*types.MealPlanGroceryListItem{}, "", nil
+	return results, "", nil
 }
 
 func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context, input *types.MealPlanGroceryListItemCreationRequestInput) (*types.MealPlanGroceryListItem, error) {
@@ -582,12 +578,12 @@ func (m *mealPlanningManager) ReadMealPlanGroceryListItem(ctx context.Context, m
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	result, err := m.db.GetMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "")
 	}
 
-	return &types.MealPlanGroceryListItem{}, nil
+	return result, nil
 }
 
 func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string, input *types.MealPlanGroceryListItemUpdateRequestInput) error {
@@ -615,8 +611,7 @@ func (m *mealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Context
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-	if err != nil {
+	if err := m.db.ArchiveMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "")
 	}
 
@@ -629,12 +624,12 @@ func (m *mealPlanningManager) ListIngredientPreferences(ctx context.Context, own
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	results, err := m.db.GetIngredientPreferences(ctx, ownerID, filter)
 	if err != nil {
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
 	}
 
-	return []*types.IngredientPreference{}, "", nil
+	return results.Data, "", nil
 }
 
 func (m *mealPlanningManager) CreateIngredientPreference(ctx context.Context, input *types.IngredientPreferenceCreationRequestInput) ([]*types.IngredientPreference, error) {
@@ -678,8 +673,7 @@ func (m *mealPlanningManager) ArchiveIngredientPreference(ctx context.Context, o
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-	if err != nil {
+	if err := m.db.ArchiveIngredientPreference(ctx, ownerID, ingredientPreferenceID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "")
 	}
 
@@ -692,12 +686,12 @@ func (m *mealPlanningManager) ListInstrumentOwnerships(ctx context.Context, owne
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	results, err := m.db.GetInstrumentOwnerships(ctx, ownerID, filter)
 	if err != nil {
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "")
 	}
 
-	return []*types.InstrumentOwnership{}, "", nil
+	return results.Data, "", nil
 }
 
 func (m *mealPlanningManager) CreateInstrumentOwnership(ctx context.Context, input *types.InstrumentOwnershipCreationRequestInput) (*types.InstrumentOwnership, error) {
@@ -722,12 +716,12 @@ func (m *mealPlanningManager) ReadInstrumentOwnership(ctx context.Context, owner
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	result, err := m.db.GetInstrumentOwnership(ctx, instrumentOwnershipID, ownerID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "")
 	}
 
-	return &types.InstrumentOwnership{}, nil
+	return result, nil
 }
 
 func (m *mealPlanningManager) UpdateInstrumentOwnership(ctx context.Context, instrumentOwnershipID, ownerID string, input *types.InstrumentOwnershipUpdateRequestInput) error {
@@ -755,9 +749,8 @@ func (m *mealPlanningManager) ArchiveInstrumentOwnership(ctx context.Context, ow
 
 	logger := m.logger.Clone()
 
-	_, err := m.db.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "")
+	if err := m.db.ArchiveInstrumentOwnership(ctx, instrumentOwnershipID, ownerID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving instrument ownership")
 	}
 
 	return nil

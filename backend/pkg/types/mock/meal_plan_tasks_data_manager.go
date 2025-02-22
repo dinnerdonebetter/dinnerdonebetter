@@ -27,8 +27,8 @@ func (m *MealPlanTaskDataManagerMock) MealPlanTaskExists(ctx context.Context, me
 }
 
 // GetMealPlanTask is a mock function.
-func (m *MealPlanTaskDataManagerMock) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTask, error) {
-	returnValues := m.Called(ctx, mealPlanTaskID)
+func (m *MealPlanTaskDataManagerMock) GetMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID string) (*types.MealPlanTask, error) {
+	returnValues := m.Called(ctx, mealPlanID, mealPlanTaskID)
 	return returnValues.Get(0).(*types.MealPlanTask), returnValues.Error(1)
 }
 

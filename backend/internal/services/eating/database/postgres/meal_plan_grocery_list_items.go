@@ -418,11 +418,17 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 }
 
 // ArchiveMealPlanGroceryListItem archives a meal plan grocery list from the database by its ID.
-func (q *Querier) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error {
+func (q *Querier) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if mealPlanID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanGroceryListItemID == "" {
 		return ErrInvalidIDProvided

@@ -46,7 +46,7 @@ func (m *MealPlanGroceryListItemDataManagerMock) UpdateMealPlanGroceryListItem(c
 }
 
 // ArchiveMealPlanGroceryListItem is a mock function.
-func (m *MealPlanGroceryListItemDataManagerMock) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error {
-	returnValues := m.Called(ctx, mealPlanGroceryListItemID)
+func (m *MealPlanGroceryListItemDataManagerMock) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) error {
+	returnValues := m.Called(ctx, mealPlanID, mealPlanGroceryListItemID)
 	return returnValues.Error(0)
 }
