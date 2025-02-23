@@ -36,7 +36,7 @@ func eventMatches(eventType string, keys []string) any {
 func setupExpectations(
 	manager *mealPlanningManager,
 	dbSetupFunc func(db *database.MockDatabase),
-	eventTypes map[string][]string,
+	eventTypeMaps ...map[string][]string,
 ) []any {
 	db := database.NewMockDatabase()
 	if dbSetupFunc != nil {
@@ -45,8 +45,10 @@ func setupExpectations(
 	manager.db = db
 
 	mp := &mockpublishers.Publisher{}
-	for eventType, payload := range eventTypes {
-		mp.On("PublishAsync", testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
+	for _, eventTypeMap := range eventTypeMaps {
+		for eventType, payload := range eventTypeMap {
+			mp.On("PublishAsync", testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
+		}
 	}
 	manager.dataChangesPublisher = mp
 
@@ -123,7 +125,6 @@ func TestMealPlanningManager_ListMeals(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.MealDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMeals), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
-			nil,
 		)
 
 		actual, cursor, err := mpm.ListMeals(ctx, nil)
@@ -181,7 +182,6 @@ func TestMealPlanningManager_ReadMeal(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.MealDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMeal), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
-			nil,
 		)
 
 		actual, err := mpm.ReadMeal(ctx, expected.ID)
@@ -209,7 +209,6 @@ func TestMealPlanningManager_SearchMeals(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.MealDataManagerMock.On(testutils.GetMethodName(mpm.db.SearchForMeals), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
-			nil,
 		)
 
 		actual, err := mpm.SearchMeals(ctx, exampleQuery, nil)
@@ -265,7 +264,6 @@ func TestMealPlanningManager_ListMealPlans(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.MealPlanDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlansForHousehold), testutils.ContextMatcher, exampleOwnerID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
-			nil,
 		)
 
 		actual, cursor, err := mpm.ListMealPlans(ctx, exampleOwnerID, nil)
@@ -293,7 +291,24 @@ func TestMealPlanningManager_ReadMealPlan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		exampleMealPlanID := fakes.BuildFakeID()
+		expected := fakes.BuildFakeMealPlan()
+
+		expectations := setupExpectations(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.MealPlanDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlan), testutils.ContextMatcher, exampleMealPlanID, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.ReadMealPlan(ctx, exampleMealPlanID, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -344,7 +359,6 @@ func TestMealPlanningManager_ListMealPlanEvents(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.MealPlanEventDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanEvents), testutils.ContextMatcher, exampleMealPlanID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
-			nil,
 		)
 
 		actual, cursor, err := mpm.ListMealPlanEvents(ctx, exampleMealPlanID, nil)
@@ -372,7 +386,24 @@ func TestMealPlanningManager_ReadMealPlanEvent(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		exampleMealPlanID := fakes.BuildFakeID()
+		expected := fakes.BuildFakeMealPlanEvent()
+
+		expectations := setupExpectations(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.MealPlanEventDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanEvent), testutils.ContextMatcher, exampleMealPlanID, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.ReadMealPlanEvent(ctx, exampleMealPlanID, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -414,7 +445,6 @@ func TestMealPlanningManager_ListMealPlanOptions(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.MealPlanOptionDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanOptions), testutils.ContextMatcher, exampleMealPlanID, exampleMealPlanEventID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
-			nil,
 		)
 
 		actual, cursor, err := mpm.ListMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, nil)
@@ -442,7 +472,25 @@ func TestMealPlanningManager_ReadMealPlanOption(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
+		expected := fakes.BuildFakeMealPlanOption()
+
+		expectations := setupExpectations(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.MealPlanOptionDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanOption), testutils.ContextMatcher, exampleMealPlanID, exampleMealPlanEventID, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.ReadMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -485,7 +533,6 @@ func TestMealPlanningManager_ListMealPlanOptionVotes(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.MealPlanOptionVoteDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanOptionVotes), testutils.ContextMatcher, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
-			nil,
 		)
 
 		actual, cursor, err := mpm.ListMealPlanOptionVotes(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, nil)
@@ -513,7 +560,26 @@ func TestMealPlanningManager_ReadMealPlanOptionVote(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanEventID := fakes.BuildFakeID()
+		exampleMealPlanOptionID := fakes.BuildFakeID()
+		expected := fakes.BuildFakeMealPlanOptionVote()
+
+		expectations := setupExpectations(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.MealPlanOptionVoteDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanOptionVote), testutils.ContextMatcher, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.ReadMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -554,7 +620,6 @@ func TestMealPlanningManager_ListMealPlanTasksByMealPlan(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.MealPlanTaskDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanTasksForMealPlan), testutils.ContextMatcher, exampleMealPlanID).Return(expected.Data, nil)
 			},
-			nil,
 		)
 
 		actual, cursor, err := mpm.ListMealPlanTasksByMealPlan(ctx, exampleMealPlanID, nil)
@@ -572,7 +637,24 @@ func TestMealPlanningManager_ReadMealPlanTask(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		exampleMealPlanID := fakes.BuildFakeID()
+		expected := fakes.BuildFakeMealPlanTask()
+
+		expectations := setupExpectations(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.MealPlanTaskDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanTask), testutils.ContextMatcher, exampleMealPlanID, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.ReadMealPlanTask(ctx, exampleMealPlanID, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -613,7 +695,6 @@ func TestMealPlanningManager_ListMealPlanGroceryListItemsByMealPlan(T *testing.T
 			func(db *database.MockDatabase) {
 				db.MealPlanGroceryListItemDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanGroceryListItemsForMealPlan), testutils.ContextMatcher, exampleMealPlanID).Return(expected.Data, nil)
 			},
-			nil,
 		)
 
 		actual, cursor, err := mpm.ListMealPlanGroceryListItemsByMealPlan(ctx, exampleMealPlanID, nil)
@@ -641,7 +722,24 @@ func TestMealPlanningManager_ReadMealPlanGroceryListItem(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		exampleMealPlanID := fakes.BuildFakeID()
+		expected := fakes.BuildFakeMealPlanGroceryListItem()
+
+		expectations := setupExpectations(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.MealPlanGroceryListItemDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanGroceryListItem), testutils.ContextMatcher, exampleMealPlanID, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.ReadMealPlanGroceryListItem(ctx, exampleMealPlanID, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -682,7 +780,6 @@ func TestMealPlanningManager_ListIngredientPreferences(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.IngredientPreferenceDataManagerMock.On(testutils.GetMethodName(mpm.db.GetIngredientPreferences), testutils.ContextMatcher, exampleOwnerID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
-			nil,
 		)
 
 		actual, cursor, err := mpm.ListIngredientPreferences(ctx, exampleOwnerID, nil)
@@ -741,7 +838,6 @@ func TestMealPlanningManager_ListInstrumentOwnerships(T *testing.T) {
 			func(db *database.MockDatabase) {
 				db.InstrumentOwnershipDataManagerMock.On(testutils.GetMethodName(mpm.db.GetInstrumentOwnerships), testutils.ContextMatcher, exampleOwnerID, testutils.QueryFilterMatcher).Return(expected, nil)
 			},
-			nil,
 		)
 
 		actual, cursor, err := mpm.ListInstrumentOwnerships(ctx, exampleOwnerID, nil)
@@ -769,7 +865,24 @@ func TestMealPlanningManager_ReadInstrumentOwnership(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		ownerID := fakes.BuildFakeID()
+		expected := fakes.BuildFakeInstrumentOwnership()
+
+		expectations := setupExpectations(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.InstrumentOwnershipDataManagerMock.On(testutils.GetMethodName(mpm.db.GetInstrumentOwnership), testutils.ContextMatcher, expected.ID, ownerID).Return(expected, nil)
+			},
+		)
+
+		actual, err := mpm.ReadInstrumentOwnership(ctx, ownerID, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
