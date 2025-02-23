@@ -26,8 +26,8 @@ func (c *Client) UpdateHouseholdInstrumentOwnership(
 	if householdInstrumentOwnershipID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	logger = logger.WithValue(keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/households/instruments/%s", householdInstrumentOwnershipID))
 	req, err := c.buildDataRequest(ctx, http.MethodPut, u, input)

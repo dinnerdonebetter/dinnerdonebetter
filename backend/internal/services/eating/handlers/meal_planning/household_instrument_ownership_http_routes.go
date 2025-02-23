@@ -64,7 +64,7 @@ func (s *service) CreateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 	input.ID = identifiers.New()
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, input.ID)
 
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
 	householdInstrumentOwnership, err := s.mealPlanningDataManager.CreateHouseholdInstrumentOwnership(ctx, input)
@@ -122,8 +122,8 @@ func (s *service) ReadHouseholdInstrumentOwnershipHandler(res http.ResponseWrite
 
 	// determine household instrument ownership ID.
 	householdInstrumentOwnershipID := s.householdInstrumentOwnershipIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	logger = logger.WithValue(keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	// fetch household instrument ownership from database.
 	x, err := s.mealPlanningDataManager.GetHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, householdID)
@@ -246,8 +246,8 @@ func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 
 	// determine household instrument ownership ID.
 	householdInstrumentOwnershipID := s.householdInstrumentOwnershipIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	logger = logger.WithValue(keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	// fetch household instrument ownership from database.
 	householdInstrumentOwnership, err := s.mealPlanningDataManager.GetHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, householdID)
@@ -321,8 +321,8 @@ func (s *service) ArchiveHouseholdInstrumentOwnershipHandler(res http.ResponseWr
 
 	// determine household instrument ownership ID.
 	householdInstrumentOwnershipID := s.householdInstrumentOwnershipIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	logger = logger.WithValue(keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
 	exists, err := s.mealPlanningDataManager.HouseholdInstrumentOwnershipExists(ctx, householdInstrumentOwnershipID, householdID)

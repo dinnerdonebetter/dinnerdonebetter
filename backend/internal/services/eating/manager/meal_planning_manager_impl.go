@@ -951,10 +951,10 @@ func (m *mealPlanningManager) UpdateIngredientPreference(ctx context.Context, in
 	}
 
 	logger := m.logger.WithValues(map[string]any{
-		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
-		keys.UserIDKey:                     ownerID,
+		keys.IngredientPreferenceIDKey: ingredientPreferenceID,
+		keys.UserIDKey:                 ownerID,
 	})
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, ingredientPreferenceID)
+	tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, ingredientPreferenceID)
 	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
 
 	existingIngredientPreference, err := m.db.GetIngredientPreference(ctx, ingredientPreferenceID, ownerID)
@@ -968,7 +968,7 @@ func (m *mealPlanningManager) UpdateIngredientPreference(ctx context.Context, in
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.IngredientPreferenceUpdated, map[string]any{
-		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
+		keys.IngredientPreferenceIDKey: ingredientPreferenceID,
 	}))
 
 	return nil
@@ -979,10 +979,10 @@ func (m *mealPlanningManager) ArchiveIngredientPreference(ctx context.Context, o
 	defer span.End()
 
 	logger := m.logger.WithValues(map[string]any{
-		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
-		keys.UserIDKey:                     ownerID,
+		keys.IngredientPreferenceIDKey: ingredientPreferenceID,
+		keys.UserIDKey:                 ownerID,
 	})
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, ingredientPreferenceID)
+	tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, ingredientPreferenceID)
 	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
 
 	if err := m.db.ArchiveIngredientPreference(ctx, ownerID, ingredientPreferenceID); err != nil {
@@ -990,7 +990,7 @@ func (m *mealPlanningManager) ArchiveIngredientPreference(ctx context.Context, o
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.IngredientPreferenceArchived, map[string]any{
-		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
+		keys.IngredientPreferenceIDKey: ingredientPreferenceID,
 	}))
 
 	return nil
@@ -1020,8 +1020,8 @@ func (m *mealPlanningManager) CreateInstrumentOwnership(ctx context.Context, inp
 	defer span.End()
 
 	convertedInput := converters.ConvertInstrumentOwnershipCreationRequestInputToInstrumentOwnershipDatabaseCreationInput(input)
-	logger := m.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, convertedInput.ID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, convertedInput.ID)
+	logger := m.logger.WithValue(keys.InstrumentOwnershipIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateInstrumentOwnership(ctx, convertedInput)
 	if err != nil {
@@ -1029,7 +1029,7 @@ func (m *mealPlanningManager) CreateInstrumentOwnership(ctx context.Context, inp
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.InstrumentOwnershipCreated, map[string]any{
-		keys.HouseholdInstrumentOwnershipIDKey: convertedInput.ID,
+		keys.InstrumentOwnershipIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1040,11 +1040,11 @@ func (m *mealPlanningManager) ReadInstrumentOwnership(ctx context.Context, owner
 	defer span.End()
 
 	logger := m.logger.WithValues(map[string]any{
-		keys.HouseholdIDKey:                    ownerID,
-		keys.HouseholdInstrumentOwnershipIDKey: instrumentOwnershipID,
+		keys.HouseholdIDKey:           ownerID,
+		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	})
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, instrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, instrumentOwnershipID)
 
 	result, err := m.db.GetInstrumentOwnership(ctx, instrumentOwnershipID, ownerID)
 	if err != nil {
@@ -1063,11 +1063,11 @@ func (m *mealPlanningManager) UpdateInstrumentOwnership(ctx context.Context, ins
 	}
 
 	logger := m.logger.WithValues(map[string]any{
-		keys.HouseholdIDKey:                    ownerID,
-		keys.HouseholdInstrumentOwnershipIDKey: instrumentOwnershipID,
+		keys.HouseholdIDKey:           ownerID,
+		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	})
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, instrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, instrumentOwnershipID)
 
 	existingInstrumentOwnership, err := m.db.GetInstrumentOwnership(ctx, instrumentOwnershipID, ownerID)
 	if err != nil {
@@ -1080,7 +1080,7 @@ func (m *mealPlanningManager) UpdateInstrumentOwnership(ctx context.Context, ins
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.InstrumentOwnershipUpdated, map[string]any{
-		keys.HouseholdInstrumentOwnershipIDKey: instrumentOwnershipID,
+		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	}))
 
 	return nil
@@ -1091,18 +1091,18 @@ func (m *mealPlanningManager) ArchiveInstrumentOwnership(ctx context.Context, ow
 	defer span.End()
 
 	logger := m.logger.WithValues(map[string]any{
-		keys.HouseholdIDKey:                    ownerID,
-		keys.HouseholdInstrumentOwnershipIDKey: instrumentOwnershipID,
+		keys.HouseholdIDKey:           ownerID,
+		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	})
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, ownerID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, instrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, instrumentOwnershipID)
 
 	if err := m.db.ArchiveInstrumentOwnership(ctx, instrumentOwnershipID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving instrument ownership")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.InstrumentOwnershipArchived, map[string]any{
-		keys.HouseholdInstrumentOwnershipIDKey: instrumentOwnershipID,
+		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	}))
 
 	return nil

@@ -25,8 +25,8 @@ func (c *Client) ArchiveUserIngredientPreference(
 	if userIngredientPreferenceID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
+	logger = logger.WithValue(keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/user_ingredient_preferences/%s", userIngredientPreferenceID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, http.NoBody)

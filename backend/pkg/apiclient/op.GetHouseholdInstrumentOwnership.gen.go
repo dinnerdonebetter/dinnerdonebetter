@@ -25,8 +25,8 @@ func (c *Client) GetHouseholdInstrumentOwnership(
 	if householdInstrumentOwnershipID == "" {
 		return nil, buildInvalidIDError("householdInstrumentOwnership")
 	}
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	logger = logger.WithValue(keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/households/instruments/%s", householdInstrumentOwnershipID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
