@@ -47,7 +47,7 @@ func TestQuerier_Integration_ValidMeasurementUnitConversions(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -109,7 +109,7 @@ func TestQuerier_ValidMeasurementUnitConversionExists(T *testing.T) {
 	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -125,7 +125,7 @@ func TestQuerier_GetValidMeasurementUnitConversion(T *testing.T) {
 	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidMeasurementUnitConversion(ctx, "")
@@ -140,7 +140,7 @@ func TestQuerier_CreateValidMeasurementUnitConversion(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidMeasurementUnitConversion(ctx, nil)
@@ -155,7 +155,7 @@ func TestQuerier_UpdateValidMeasurementUnitConversion(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidMeasurementUnitConversion(ctx, nil))
@@ -168,7 +168,7 @@ func TestQuerier_ArchiveValidMeasurementUnitConversion(T *testing.T) {
 	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidMeasurementUnitConversion(ctx, ""))

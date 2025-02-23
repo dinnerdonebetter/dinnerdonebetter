@@ -1,7 +1,6 @@
 package slog
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/url"
@@ -140,7 +139,7 @@ func Test_zerologLogger_WithSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		l := NewSlogLogger(logging.DebugLevel)
 
 		span := trace.SpanFromContext(ctx)

@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +19,7 @@ func TestClient_UpdateHousehold(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		householdID := fake.BuildFakeID()
 
 		data := &Household{}
@@ -43,7 +42,7 @@ func TestClient_UpdateHousehold(T *testing.T) {
 
 		exampleInput := &HouseholdUpdateRequestInput{}
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateHousehold(ctx, "", exampleInput)
 
@@ -53,7 +52,7 @@ func TestClient_UpdateHousehold(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		householdID := fake.BuildFakeID()
 
 		exampleInput := &HouseholdUpdateRequestInput{}
@@ -67,7 +66,7 @@ func TestClient_UpdateHousehold(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		householdID := fake.BuildFakeID()
 
 		exampleInput := &HouseholdUpdateRequestInput{}

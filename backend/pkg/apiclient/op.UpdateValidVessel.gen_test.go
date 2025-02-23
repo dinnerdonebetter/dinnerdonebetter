@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +19,7 @@ func TestClient_UpdateValidVessel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		validVesselID := fake.BuildFakeID()
 
 		data := &ValidVessel{}
@@ -43,7 +42,7 @@ func TestClient_UpdateValidVessel(T *testing.T) {
 
 		exampleInput := &ValidVesselUpdateRequestInput{}
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateValidVessel(ctx, "", exampleInput)
 
@@ -53,7 +52,7 @@ func TestClient_UpdateValidVessel(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		validVesselID := fake.BuildFakeID()
 
 		exampleInput := &ValidVesselUpdateRequestInput{}
@@ -67,7 +66,7 @@ func TestClient_UpdateValidVessel(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		validVesselID := fake.BuildFakeID()
 
 		exampleInput := &ValidVesselUpdateRequestInput{}

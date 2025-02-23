@@ -64,7 +64,7 @@ func TestQuerier_Integration_MealPlanOptions(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -131,7 +131,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
@@ -145,7 +145,7 @@ func TestQuerier_MealPlanOptionExists(T *testing.T) {
 	T.Run("with invalid meal plan option ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEventID := fakes.BuildFakeID()
@@ -166,7 +166,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetMealPlanOption(ctx, "", "", exampleMealPlanOption.ID)
@@ -180,7 +180,7 @@ func TestQuerier_GetMealPlanOption(T *testing.T) {
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, "")
@@ -195,7 +195,7 @@ func TestQuerier_getMealPlanOptionByID(T *testing.T) {
 	T.Run("with invalid meal plan option ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.getMealPlanOptionByID(ctx, "")
@@ -212,7 +212,7 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 
 		filter := filtering.DefaultQueryFilter()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetMealPlanOptions(ctx, "", "", filter)
@@ -227,7 +227,7 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateMealPlanOption(ctx, nil)
@@ -242,7 +242,7 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateMealPlanOption(ctx, nil))
@@ -257,7 +257,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 
 		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveMealPlanOption(ctx, "", "", exampleMealPlanOption.ID))
@@ -269,7 +269,7 @@ func TestQuerier_ArchiveMealPlanOption(T *testing.T) {
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, ""))
@@ -347,7 +347,7 @@ func Test_decideOptionWinner(T *testing.T) {
 	T.Run("with clear winner", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		expected := optionA
@@ -439,7 +439,7 @@ func Test_decideOptionWinner(T *testing.T) {
 	T.Run("with tie", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		exampleOptions := []*types.MealPlanOption{
@@ -474,7 +474,7 @@ func Test_decideOptionWinner(T *testing.T) {
 	T.Run("without enough votes", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		exampleOptions := []*types.MealPlanOption{

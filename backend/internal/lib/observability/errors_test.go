@@ -1,7 +1,6 @@
 package observability
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -17,7 +16,7 @@ func TestPrepareError(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		descriptionFmt, descriptionArgs := "things and %s", "stuff"
 		err := errors.New("blah")
 
@@ -33,7 +32,7 @@ func TestAcknowledgeError(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		descriptionFmt, descriptionArgs := "things and %s", "stuff"
 		err := errors.New("blah")
 		logger := logging.NewNoopLogger()

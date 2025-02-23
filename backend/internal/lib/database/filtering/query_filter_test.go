@@ -1,7 +1,6 @@
 package filtering
 
 import (
-	"context"
 	"math"
 	"net/http"
 	"net/url"
@@ -201,7 +200,7 @@ func TestExtractQueryFilter(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		tt, err := time.Parse(time.RFC3339Nano, time.Now().UTC().Truncate(time.Second).Format(time.RFC3339Nano))
 		require.NoError(t, err)
@@ -239,7 +238,7 @@ func TestExtractQueryFilter(T *testing.T) {
 	T.Run("with missing values", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		expected := &QueryFilter{
 			Page:   pointer.To(uint16(1)),

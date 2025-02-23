@@ -1,7 +1,6 @@
 package dataprivacy
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -35,7 +34,7 @@ func TestProvideService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		cfg := &Config{
@@ -87,7 +86,7 @@ func TestProvideService(T *testing.T) {
 	T.Run("with error providing data changes producer", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		cfg := &Config{
@@ -133,7 +132,7 @@ func TestProvideService(T *testing.T) {
 	T.Run("with error providing user data aggregation producer", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		cfg := &Config{

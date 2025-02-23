@@ -1,7 +1,6 @@
 package types
 
 import (
-	"context"
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -29,7 +28,7 @@ func TestRecipeMediaCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &RecipeMediaCreationRequestInput{}
 		fake.Struct(&x)
 
@@ -43,7 +42,7 @@ func TestRecipeMediaDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &RecipeMediaDatabaseCreationInput{}
 		fake.Struct(&x)
 

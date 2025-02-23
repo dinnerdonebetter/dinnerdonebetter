@@ -42,7 +42,7 @@ func TestQuerier_Integration_ServiceSettings(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -101,7 +101,7 @@ func TestQuerier_ServiceSettingExists(T *testing.T) {
 	T.Run("with invalid service setting ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -117,7 +117,7 @@ func TestQuerier_GetServiceSetting(T *testing.T) {
 	T.Run("with invalid service setting ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetServiceSetting(ctx, "")
@@ -132,7 +132,7 @@ func TestQuerier_SearchForServiceSettings(T *testing.T) {
 	T.Run("with invalid query", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.SearchForServiceSettings(ctx, "")
@@ -147,7 +147,7 @@ func TestQuerier_CreateServiceSetting(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateServiceSetting(ctx, nil)
@@ -162,7 +162,7 @@ func TestQuerier_ArchiveServiceSetting(T *testing.T) {
 	T.Run("with invalid service setting ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveServiceSetting(ctx, ""))

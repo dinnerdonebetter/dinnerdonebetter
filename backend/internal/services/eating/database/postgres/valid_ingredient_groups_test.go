@@ -55,7 +55,7 @@ func TestQuerier_Integration_ValidIngredientGroups(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -120,7 +120,7 @@ func TestQuerier_ValidIngredientGroupExists(T *testing.T) {
 	T.Run("with invalid valid ingredient group ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -136,7 +136,7 @@ func TestQuerier_GetValidIngredientGroup(T *testing.T) {
 	T.Run("with invalid valid ingredient group ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidIngredientGroup(ctx, "")
@@ -151,7 +151,7 @@ func TestQuerier_SearchForValidIngredientGroups(T *testing.T) {
 	T.Run("with invalid valid ingredient group ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 		filter := filtering.DefaultQueryFilter()
 
@@ -167,7 +167,7 @@ func TestQuerier_CreateValidIngredientGroup(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidIngredientGroup(ctx, nil)
@@ -182,7 +182,7 @@ func TestQuerier_UpdateValidIngredientGroup(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidIngredientGroup(ctx, nil))
@@ -195,7 +195,7 @@ func TestQuerier_ArchiveValidIngredientGroup(T *testing.T) {
 	T.Run("with invalid valid ingredient group ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidIngredientGroup(ctx, ""))

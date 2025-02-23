@@ -1,7 +1,6 @@
 package mealplantaskcreator
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -53,7 +52,7 @@ func TestWorker_Work(T *testing.T) {
 		w := buildNewMealPlanTaskCreatorForTest(t)
 		assert.NotNil(t, w)
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		mdm := database.NewMockDatabase()
 		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
@@ -70,7 +69,7 @@ func TestWorker_Work(T *testing.T) {
 		w := buildNewMealPlanTaskCreatorForTest(t)
 		assert.NotNil(t, w)
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMealPlan := fakes.BuildFakeMealPlan()

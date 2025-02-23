@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -21,7 +20,7 @@ func TestClient_GetValidPreparationInstrumentsByInstrument(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		validInstrumentID := fake.BuildFakeID()
 
 		list := []*ValidPreparationInstrument{}
@@ -46,7 +45,7 @@ func TestClient_GetValidPreparationInstrumentsByInstrument(T *testing.T) {
 	T.Run("with empty validInstrument ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetValidPreparationInstrumentsByInstrument(ctx, "", nil)
 
@@ -57,7 +56,7 @@ func TestClient_GetValidPreparationInstrumentsByInstrument(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		validInstrumentID := fake.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
@@ -70,7 +69,7 @@ func TestClient_GetValidPreparationInstrumentsByInstrument(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		validInstrumentID := fake.BuildFakeID()
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, validInstrumentID)

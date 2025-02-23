@@ -43,7 +43,7 @@ func TestQuerier_Integration_ValidPreparations(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -127,7 +127,7 @@ func TestQuerier_ValidPreparationExists(T *testing.T) {
 	T.Run("with invalid valid preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -143,7 +143,7 @@ func TestQuerier_GetValidPreparation(T *testing.T) {
 	T.Run("with invalid valid preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidPreparation(ctx, "")
@@ -158,7 +158,7 @@ func TestQuerier_SearchForValidPreparations(T *testing.T) {
 	T.Run("with invalid valid preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.SearchForValidPreparations(ctx, "")
@@ -173,7 +173,7 @@ func TestQuerier_GetValidPreparationsWithIDs(T *testing.T) {
 	T.Run("with nil IDs", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		actual, err := c.GetValidPreparationsWithIDs(ctx, nil)
@@ -190,7 +190,7 @@ func TestQuerier_CreateValidPreparation(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidPreparation(ctx, nil)
@@ -205,7 +205,7 @@ func TestQuerier_UpdateValidPreparation(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidPreparation(ctx, nil))
@@ -218,7 +218,7 @@ func TestQuerier_ArchiveValidPreparation(T *testing.T) {
 	T.Run("with invalid valid preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidPreparation(ctx, ""))
@@ -231,7 +231,7 @@ func TestQuerier_MarkValidPreparationAsIndexed(T *testing.T) {
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.MarkValidPreparationAsIndexed(ctx, ""))

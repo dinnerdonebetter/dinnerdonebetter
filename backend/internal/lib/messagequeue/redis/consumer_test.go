@@ -33,7 +33,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
 		defer func() {
@@ -61,7 +61,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 	T.Run("with error handling message", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
 		defer func() {
@@ -105,7 +105,7 @@ func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 		conPro := ProvideRedisConsumerProvider(logger, cfg)
 		require.NotNil(t, conPro)
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		actual, err := conPro.ProvideConsumer(ctx, t.Name(), nil)
 		assert.NoError(t, err)
@@ -123,7 +123,7 @@ func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 		conPro := ProvideRedisConsumerProvider(logger, cfg)
 		require.NotNil(t, conPro)
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		actual, err := conPro.ProvideConsumer(ctx, t.Name(), nil)
 		assert.NoError(t, err)

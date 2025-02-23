@@ -130,7 +130,7 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -205,7 +205,7 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleHouseholdID := fakes.BuildFakeID()
 		c, _ := buildTestClient(t)
@@ -218,7 +218,7 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanID := fakes.BuildFakeID()
 		c, _ := buildTestClient(t)
@@ -236,7 +236,7 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		t.Parallel()
 
 		exampleHouseholdID := fakes.BuildFakeID()
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetMealPlan(ctx, "", exampleHouseholdID)
@@ -248,7 +248,7 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetMealPlan(ctx, exampleMealPlanID, "")
@@ -263,7 +263,7 @@ func TestQuerier_CreateMealPlan(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateMealPlan(ctx, nil)
@@ -278,7 +278,7 @@ func TestQuerier_UpdateMealPlan(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateMealPlan(ctx, nil))
@@ -293,7 +293,7 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveMealPlan(ctx, "", exampleAccountID))
@@ -304,7 +304,7 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveMealPlan(ctx, exampleMealPlan.ID, ""))
@@ -318,7 +318,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 		t.Parallel()
 
 		exampleHousehold := corefakes.BuildFakeHousehold()
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -331,7 +331,7 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 		t.Parallel()
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -347,7 +347,7 @@ func TestQuerier_FetchMissingVotesForMealPlan(T *testing.T) {
 	T.Run("with missing meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 		exampleHousehold := corefakes.BuildFakeHousehold()
 
@@ -361,7 +361,7 @@ func TestQuerier_FetchMissingVotesForMealPlan(T *testing.T) {
 	T.Run("with missing household ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 

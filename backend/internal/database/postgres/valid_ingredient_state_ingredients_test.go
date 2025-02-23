@@ -49,7 +49,7 @@ func TestQuerier_Integration_ValidIngredientStateIngredients(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -123,7 +123,7 @@ func TestQuerier_ValidIngredientStateIngredientExists(T *testing.T) {
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -139,7 +139,7 @@ func TestQuerier_GetValidIngredientStateIngredient(T *testing.T) {
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidIngredientStateIngredient(ctx, "")
@@ -154,7 +154,7 @@ func TestQuerier_CreateValidIngredientStateIngredient(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidIngredientStateIngredient(ctx, nil)
@@ -169,7 +169,7 @@ func TestQuerier_UpdateValidIngredientStateIngredient(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidIngredientStateIngredient(ctx, nil))
@@ -182,7 +182,7 @@ func TestQuerier_ArchiveValidIngredientStateIngredient(T *testing.T) {
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidIngredientStateIngredient(ctx, ""))

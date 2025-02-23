@@ -1,7 +1,6 @@
 package types
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -17,7 +16,7 @@ func TestMealPlanEventCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &MealPlanEventCreationRequestInput{
 			MealName: SecondBreakfastMealName,
 			StartsAt: time.Now(),
@@ -30,7 +29,7 @@ func TestMealPlanEventCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid time", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		tt := time.Now()
 		x := &MealPlanEventCreationRequestInput{
 			MealName: SecondBreakfastMealName,
@@ -48,7 +47,7 @@ func TestMealPlanEventDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &MealPlanEventDatabaseCreationInput{
 			ID:                t.Name(),
 			BelongsToMealPlan: t.Name(),
@@ -67,7 +66,7 @@ func TestMealPlanEventUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &MealPlanEventUpdateRequestInput{
 			MealName: pointer.To(SecondBreakfastMealName),
 			StartsAt: pointer.To(time.Now()),

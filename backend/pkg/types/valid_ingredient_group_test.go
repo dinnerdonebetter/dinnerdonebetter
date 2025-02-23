@@ -67,7 +67,7 @@ func TestValidIngredientGroupCreationRequestInput_ValidateWithContext(T *testing
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidIngredientGroupCreationRequestInput{
 			Name: t.Name(),
 		}
@@ -82,7 +82,7 @@ func TestValidIngredientGroupDatabaseCreationInput_ValidateWithContext(T *testin
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidIngredientGroupDatabaseCreationInput{
 			ID:   t.Name(),
 			Name: t.Name(),
@@ -98,7 +98,7 @@ func TestValidIngredientGroupUpdateRequestInput_ValidateWithContext(T *testing.T
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidIngredientGroupUpdateRequestInput{
 			Name: pointer.To(t.Name()),
 		}

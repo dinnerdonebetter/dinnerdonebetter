@@ -1,7 +1,6 @@
 package types
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
@@ -17,7 +16,7 @@ func TestChangeActiveHouseholdInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ChangeActiveHouseholdInput{
 			HouseholdID: "123",
 		}

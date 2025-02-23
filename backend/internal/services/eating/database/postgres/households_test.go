@@ -53,7 +53,7 @@ func TestQuerier_Integration_Households(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -116,7 +116,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleUserID := fakes.BuildFakeID()
 		exampleHousehold := fakes.BuildFakeHousehold()
@@ -132,7 +132,7 @@ func TestQuerier_GetHousehold(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleUserID := fakes.BuildFakeID()
 		exampleHousehold := fakes.BuildFakeHousehold()
@@ -154,7 +154,7 @@ func TestQuerier_GetHouseholds(T *testing.T) {
 
 		filter := filtering.DefaultQueryFilter()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetHouseholds(ctx, "", filter)
@@ -169,7 +169,7 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateHousehold(ctx, nil)
@@ -188,7 +188,7 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 		exampleHousehold := fakes.BuildFakeHousehold()
 		exampleHousehold.BelongsToUser = exampleUserID
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateHousehold(ctx, nil))
@@ -203,7 +203,7 @@ func TestQuerier_ArchiveHousehold(T *testing.T) {
 
 		exampleUserID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveHousehold(ctx, "", exampleUserID))
@@ -214,7 +214,7 @@ func TestQuerier_ArchiveHousehold(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveHousehold(ctx, exampleHouseholdID, ""))

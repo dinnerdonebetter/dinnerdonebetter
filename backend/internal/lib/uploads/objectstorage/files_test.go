@@ -1,7 +1,6 @@
 package objectstorage
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -24,7 +23,7 @@ func TestUploader_ReadFile(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleFilename := "hello_world.txt"
 
 		b := memblob.OpenBucket(&memblob.Options{})
@@ -47,7 +46,7 @@ func TestUploader_ReadFile(T *testing.T) {
 	T.Run("with invalid file", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleFilename := "hello_world.txt"
 
 		u := &Uploader{
@@ -74,7 +73,7 @@ func TestUploader_SaveFile(T *testing.T) {
 		tempFile, err := os.CreateTemp("", "")
 		require.NoError(t, err)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		u := &Uploader{
 			bucket: memblob.OpenBucket(&memblob.Options{}),
 			logger: logging.NewNoopLogger(),
@@ -94,7 +93,7 @@ func TestUploader_ServeFiles(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleFilename := "hello_world.txt"
 
 		b := memblob.OpenBucket(&memblob.Options{})
@@ -142,7 +141,7 @@ func TestUploader_ServeFiles(T *testing.T) {
 	T.Run("with error writing file content", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleFilename := "hello_world.txt"
 
 		b := memblob.OpenBucket(&memblob.Options{})

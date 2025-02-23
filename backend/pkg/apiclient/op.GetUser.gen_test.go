@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -21,7 +20,7 @@ func TestClient_GetUser(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		userID := fake.BuildFakeID()
 
 		data := &User{}
@@ -41,7 +40,7 @@ func TestClient_GetUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetUser(ctx, "")
 
@@ -52,7 +51,7 @@ func TestClient_GetUser(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		userID := fake.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
@@ -65,7 +64,7 @@ func TestClient_GetUser(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		userID := fake.BuildFakeID()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, userID)

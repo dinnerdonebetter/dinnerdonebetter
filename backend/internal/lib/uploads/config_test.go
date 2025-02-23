@@ -1,7 +1,6 @@
 package uploads
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
@@ -15,7 +14,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg := &Config{
 			Storage: objectstorage.Config{
 				FilesystemConfig:  &objectstorage.FilesystemConfig{RootDirectory: "/blah"},

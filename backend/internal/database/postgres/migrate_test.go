@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -24,7 +23,7 @@ func TestQuerier_Migrate(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		c.timeFunc = func() time.Time {

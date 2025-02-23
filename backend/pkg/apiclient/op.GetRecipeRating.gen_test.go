@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -21,7 +20,7 @@ func TestClient_GetRecipeRating(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		recipeID := fake.BuildFakeID()
 		recipeRatingID := fake.BuildFakeID()
 
@@ -44,7 +43,7 @@ func TestClient_GetRecipeRating(T *testing.T) {
 
 		recipeRatingID := fake.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipeRating(ctx, "", recipeRatingID)
 
@@ -57,7 +56,7 @@ func TestClient_GetRecipeRating(T *testing.T) {
 
 		recipeID := fake.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipeRating(ctx, recipeID, "")
 
@@ -68,7 +67,7 @@ func TestClient_GetRecipeRating(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		recipeID := fake.BuildFakeID()
 		recipeRatingID := fake.BuildFakeID()
 
@@ -82,7 +81,7 @@ func TestClient_GetRecipeRating(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		recipeID := fake.BuildFakeID()
 		recipeRatingID := fake.BuildFakeID()
 

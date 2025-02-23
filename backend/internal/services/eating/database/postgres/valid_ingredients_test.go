@@ -43,7 +43,7 @@ func TestQuerier_Integration_ValidIngredients(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -150,7 +150,7 @@ func TestQuerier_ValidIngredientExists(T *testing.T) {
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -166,7 +166,7 @@ func TestQuerier_GetValidIngredient(T *testing.T) {
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidIngredient(ctx, "")
@@ -181,7 +181,7 @@ func TestQuerier_SearchForValidIngredients(T *testing.T) {
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 		filter := filtering.DefaultQueryFilter()
 
@@ -200,7 +200,7 @@ func TestQuerier_SearchForValidIngredientsForPreparation(T *testing.T) {
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.SearchForValidIngredientsForPreparation(ctx, exampleValidPreparation.ID, exampleValidIngredient.Name, nil)
@@ -215,7 +215,7 @@ func TestQuerier_CreateValidIngredient(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidIngredient(ctx, nil)
@@ -230,7 +230,7 @@ func TestQuerier_UpdateValidIngredient(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidIngredient(ctx, nil))
@@ -243,7 +243,7 @@ func TestQuerier_ArchiveValidIngredient(T *testing.T) {
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidIngredient(ctx, ""))
@@ -256,7 +256,7 @@ func TestQuerier_MarkValidIngredientAsIndexed(T *testing.T) {
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.MarkValidIngredientAsIndexed(ctx, ""))

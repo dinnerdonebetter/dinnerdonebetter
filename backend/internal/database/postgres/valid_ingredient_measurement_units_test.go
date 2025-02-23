@@ -51,7 +51,7 @@ func TestQuerier_Integration_ValidIngredientMeasurementUnits(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -125,7 +125,7 @@ func TestQuerier_ValidIngredientMeasurementUnitExists(T *testing.T) {
 	T.Run("with invalid valid ingredient measurement unit ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -141,7 +141,7 @@ func TestQuerier_GetValidIngredientMeasurementUnit(T *testing.T) {
 	T.Run("with invalid valid ingredient measurement unit ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidIngredientMeasurementUnit(ctx, "")
@@ -156,7 +156,7 @@ func TestQuerier_CreateValidIngredientMeasurementUnit(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidIngredientMeasurementUnit(ctx, nil)
@@ -171,7 +171,7 @@ func TestQuerier_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidIngredientMeasurementUnit(ctx, nil))
@@ -184,7 +184,7 @@ func TestQuerier_ArchiveValidIngredientMeasurementUnit(T *testing.T) {
 	T.Run("with invalid valid ingredient measurement unit ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidIngredientMeasurementUnit(ctx, ""))

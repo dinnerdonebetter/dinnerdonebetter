@@ -1,7 +1,6 @@
 package stripe
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +12,7 @@ func TestStripeConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg := &Config{
 			APIKey: "blah",
 		}
@@ -24,7 +23,7 @@ func TestStripeConfig_ValidateWithContext(T *testing.T) {
 	T.Run("with missing API key", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg := &Config{
 			APIKey: "",
 		}

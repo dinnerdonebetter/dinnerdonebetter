@@ -2,7 +2,6 @@ package images
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"fmt"
 	"image/gif"
@@ -27,7 +26,7 @@ import (
 func newAvatarUploadRequest(t *testing.T, filename string, avatar io.Reader) *http.Request {
 	t.Helper()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -193,7 +192,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		p := NewImageUploadProcessor(nil, tracing.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
@@ -212,7 +211,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 	T.Run("with missing form file", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		p := NewImageUploadProcessor(nil, tracing.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
@@ -227,7 +226,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 	T.Run("with error decoding image", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		p := NewImageUploadProcessor(nil, tracing.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 

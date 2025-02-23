@@ -1,7 +1,6 @@
 package paseto
 
 import (
-	"context"
 	"crypto/ed25519"
 	"testing"
 	"time"
@@ -33,7 +32,7 @@ func Test_signer_IssueToken(T *testing.T) {
 		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		user := authentication.NewMockUser()
 		user.On("GetID").Return("user_id").Times(2)
 
@@ -57,7 +56,7 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		user := authentication.NewMockUser()
 		user.On("GetID").Return("user_id").Times(2)
 
@@ -80,7 +79,7 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 		tokenString, err := token.SignedString(cryptoSigner)
 		require.NoError(t, err)
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		s, err := NewPASETOSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
@@ -98,7 +97,7 @@ func Test_signer_ParseUserIDFromToken(T *testing.T) {
 
 		s.(*signer).signingKey = nil
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		actual, err := s.ParseUserIDFromToken(ctx, exampleToken)
 		assert.Error(t, err)

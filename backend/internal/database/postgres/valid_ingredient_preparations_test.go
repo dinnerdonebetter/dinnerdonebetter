@@ -50,7 +50,7 @@ func TestQuerier_Integration_ValidIngredientPreparations(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -124,7 +124,7 @@ func TestQuerier_ValidIngredientPreparationExists(T *testing.T) {
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -140,7 +140,7 @@ func TestQuerier_GetValidIngredientPreparation(T *testing.T) {
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidIngredientPreparation(ctx, "")
@@ -157,7 +157,7 @@ func TestQuerier_GetValidIngredientPreparationsForIngredient(T *testing.T) {
 
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidIngredientPreparationsForIngredient(ctx, exampleValidIngredient.ID, nil)
@@ -174,7 +174,7 @@ func TestQuerier_GetValidIngredientPreparationsForPreparation(T *testing.T) {
 
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidIngredientPreparationsForPreparation(ctx, exampleValidPreparation.ID, nil)
@@ -189,7 +189,7 @@ func TestQuerier_CreateValidIngredientPreparation(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidIngredientPreparation(ctx, nil)
@@ -204,7 +204,7 @@ func TestQuerier_UpdateValidIngredientPreparation(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidIngredientPreparation(ctx, nil))
@@ -217,7 +217,7 @@ func TestQuerier_ArchiveValidIngredientPreparation(T *testing.T) {
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidIngredientPreparation(ctx, ""))

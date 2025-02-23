@@ -47,7 +47,7 @@ func TestQuerier_Integration_HouseholdInstrumentOwnerships(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -117,7 +117,7 @@ func TestQuerier_HouseholdInstrumentOwnershipExists(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.HouseholdInstrumentOwnershipExists(ctx, "", exampleHouseholdID)
@@ -134,7 +134,7 @@ func TestQuerier_GetHouseholdInstrumentOwnership(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetHouseholdInstrumentOwnership(ctx, "", exampleHouseholdID)
@@ -149,7 +149,7 @@ func TestQuerier_CreateHouseholdInstrumentOwnership(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateHouseholdInstrumentOwnership(ctx, nil)
@@ -164,7 +164,7 @@ func TestQuerier_UpdateHouseholdInstrumentOwnership(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateHouseholdInstrumentOwnership(ctx, nil))
@@ -179,7 +179,7 @@ func TestQuerier_ArchiveHouseholdInstrumentOwnership(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveHouseholdInstrumentOwnership(ctx, "", exampleHouseholdID))

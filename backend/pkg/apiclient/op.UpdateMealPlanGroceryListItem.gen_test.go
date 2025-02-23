@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +19,7 @@ func TestClient_UpdateMealPlanGroceryListItem(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanGroceryListItemID := fake.BuildFakeID()
 
@@ -46,7 +45,7 @@ func TestClient_UpdateMealPlanGroceryListItem(T *testing.T) {
 
 		exampleInput := &MealPlanGroceryListItemUpdateRequestInput{}
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateMealPlanGroceryListItem(ctx, "", mealPlanGroceryListItemID, exampleInput)
 
@@ -60,7 +59,7 @@ func TestClient_UpdateMealPlanGroceryListItem(T *testing.T) {
 
 		exampleInput := &MealPlanGroceryListItemUpdateRequestInput{}
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateMealPlanGroceryListItem(ctx, mealPlanID, "", exampleInput)
 
@@ -70,7 +69,7 @@ func TestClient_UpdateMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanGroceryListItemID := fake.BuildFakeID()
 
@@ -85,7 +84,7 @@ func TestClient_UpdateMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanGroceryListItemID := fake.BuildFakeID()
 

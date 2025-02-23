@@ -1,7 +1,6 @@
 package types
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
@@ -31,7 +30,7 @@ func TestRecipeRatingCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &RecipeRatingCreationRequestInput{
 			RecipeID:   t.Name(),
 			Difficulty: 1.0,
@@ -43,7 +42,7 @@ func TestRecipeRatingCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &RecipeRatingCreationRequestInput{}
 
 		assert.Error(t, x.ValidateWithContext(ctx))
@@ -56,7 +55,7 @@ func TestRecipeRatingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &RecipeRatingDatabaseCreationInput{
 			ID:         t.Name(),
 			RecipeID:   t.Name(),
@@ -70,7 +69,7 @@ func TestRecipeRatingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &RecipeRatingDatabaseCreationInput{}
 
 		assert.Error(t, x.ValidateWithContext(ctx))
@@ -83,7 +82,7 @@ func TestRecipeRatingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &RecipeRatingUpdateRequestInput{
 			ByUser:     pointer.To(t.Name()),
 			RecipeID:   pointer.To(t.Name()),
@@ -96,7 +95,7 @@ func TestRecipeRatingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &RecipeRatingUpdateRequestInput{}
 
 		assert.Error(t, x.ValidateWithContext(ctx))

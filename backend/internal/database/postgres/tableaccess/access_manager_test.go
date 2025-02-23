@@ -126,7 +126,7 @@ func TestNewManager(T *testing.T) {
 		t.SkipNow() // experimental
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		adminDB, container := buildDatabaseConnectionForTest(t, ctx)
 		defer container.Stop(ctx, pointer.To(10*time.Second))

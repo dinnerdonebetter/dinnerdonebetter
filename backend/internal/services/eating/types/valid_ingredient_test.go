@@ -1,7 +1,6 @@
 package types
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
@@ -54,7 +53,7 @@ func TestValidIngredientCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidIngredientCreationRequestInput{
 			Name: t.Name(),
 		}
@@ -69,7 +68,7 @@ func TestValidIngredientDatabaseCreationInput_ValidateWithContext(T *testing.T) 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidIngredientDatabaseCreationInput{
 			ID:   t.Name(),
 			Name: t.Name(),
@@ -85,7 +84,7 @@ func TestValidIngredientUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidIngredientUpdateRequestInput{
 			Name: pointer.To(t.Name()),
 		}

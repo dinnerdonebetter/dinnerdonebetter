@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -19,7 +18,7 @@ func TestClient_RequestPasswordResetToken(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		data := &PasswordResetToken{}
 		expected := &APIResponse[*PasswordResetToken]{
@@ -40,7 +39,7 @@ func TestClient_RequestPasswordResetToken(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleInput := &PasswordResetTokenCreationRequestInput{}
 
@@ -54,7 +53,7 @@ func TestClient_RequestPasswordResetToken(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleInput := &PasswordResetTokenCreationRequestInput{}
 

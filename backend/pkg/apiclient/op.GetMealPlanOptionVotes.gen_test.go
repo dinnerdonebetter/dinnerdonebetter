@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -21,7 +20,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 		mealPlanOptionID := fake.BuildFakeID()
@@ -51,7 +50,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 		mealPlanEventID := fake.BuildFakeID()
 		mealPlanOptionID := fake.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetMealPlanOptionVotes(ctx, "", mealPlanEventID, mealPlanOptionID, nil)
 
@@ -66,7 +65,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 
 		mealPlanOptionID := fake.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetMealPlanOptionVotes(ctx, mealPlanID, "", mealPlanOptionID, nil)
 
@@ -80,7 +79,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanEventID, "", nil)
 
@@ -91,7 +90,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 		mealPlanOptionID := fake.BuildFakeID()
@@ -106,7 +105,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 		mealPlanOptionID := fake.BuildFakeID()

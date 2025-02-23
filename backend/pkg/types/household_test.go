@@ -1,7 +1,6 @@
 package types
 
 import (
-	"context"
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -29,7 +28,7 @@ func TestHouseholdCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &HouseholdCreationRequestInput{
 			Name: t.Name(),
 		}
@@ -44,7 +43,7 @@ func TestHouseholdUpdateInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		name := t.Name()
 
 		x := &HouseholdUpdateRequestInput{

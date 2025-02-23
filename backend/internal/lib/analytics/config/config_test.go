@@ -1,7 +1,6 @@
 package analyticscfg
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/analytics/posthog"
@@ -21,7 +20,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg := &Config{
 			Provider: ProviderSegment,
 			Segment:  &segment.Config{APIToken: t.Name()},
@@ -33,7 +32,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg := &Config{
 			Provider: ProviderSegment,
 		}

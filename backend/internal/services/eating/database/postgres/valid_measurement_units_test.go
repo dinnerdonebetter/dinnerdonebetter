@@ -43,7 +43,7 @@ func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -139,7 +139,7 @@ func TestQuerier_ValidMeasurementUnitExists(T *testing.T) {
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -155,7 +155,7 @@ func TestQuerier_GetValidMeasurementUnit(T *testing.T) {
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidMeasurementUnit(ctx, "")
@@ -170,7 +170,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.SearchForValidMeasurementUnits(ctx, "")
@@ -185,7 +185,7 @@ func TestQuerier_ValidMeasurementUnitsForIngredientID(T *testing.T) {
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		filter := filtering.DefaultQueryFilter()
 		c, _ := buildTestClient(t)
 
@@ -201,7 +201,7 @@ func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidMeasurementUnit(ctx, nil)
@@ -216,7 +216,7 @@ func TestQuerier_UpdateValidMeasurementUnit(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidMeasurementUnit(ctx, nil))
@@ -229,7 +229,7 @@ func TestQuerier_ArchiveValidMeasurementUnit(T *testing.T) {
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidMeasurementUnit(ctx, ""))
@@ -242,7 +242,7 @@ func TestQuerier_MarkValidMeasurementUnitAsIndexed(T *testing.T) {
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.MarkValidMeasurementUnitAsIndexed(ctx, ""))

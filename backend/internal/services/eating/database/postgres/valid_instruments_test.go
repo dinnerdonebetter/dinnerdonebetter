@@ -42,7 +42,7 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -125,7 +125,7 @@ func TestQuerier_ValidInstrumentExists(T *testing.T) {
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -141,7 +141,7 @@ func TestQuerier_GetValidInstrument(T *testing.T) {
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidInstrument(ctx, "")
@@ -156,7 +156,7 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.SearchForValidInstruments(ctx, "")
@@ -171,7 +171,7 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidInstrument(ctx, nil)
@@ -186,7 +186,7 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidInstrument(ctx, nil))
@@ -199,7 +199,7 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 	T.Run("with invalid valid instrument ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidInstrument(ctx, ""))
@@ -212,7 +212,7 @@ func TestQuerier_MarkValidInstrumentAsIndexed(T *testing.T) {
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.MarkValidInstrumentAsIndexed(ctx, ""))

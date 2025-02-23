@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -21,7 +20,7 @@ func TestClient_CreateMealPlanTask(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		mealPlanID := fake.BuildFakeID()
 
 		data := &MealPlanTask{}
@@ -45,7 +44,7 @@ func TestClient_CreateMealPlanTask(T *testing.T) {
 
 		exampleInput := &MealPlanTaskCreationRequestInput{}
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.CreateMealPlanTask(ctx, "", exampleInput)
 
@@ -56,7 +55,7 @@ func TestClient_CreateMealPlanTask(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		mealPlanID := fake.BuildFakeID()
 
 		exampleInput := &MealPlanTaskCreationRequestInput{}
@@ -71,7 +70,7 @@ func TestClient_CreateMealPlanTask(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		mealPlanID := fake.BuildFakeID()
 
 		exampleInput := &MealPlanTaskCreationRequestInput{}

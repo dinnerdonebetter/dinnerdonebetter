@@ -1,7 +1,6 @@
 package posthog
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
@@ -61,7 +60,7 @@ func TestSegmentEventReporter_AddUser(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{APIKey: t.Name()}
 		exampleUserID := identifiers.New()
@@ -83,7 +82,7 @@ func TestSegmentEventReporter_EventOccurred(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{APIKey: t.Name()}
 		exampleUserID := identifiers.New()

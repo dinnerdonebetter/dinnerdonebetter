@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -19,7 +18,7 @@ func TestClient_GetAuthStatus(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		data := &UserStatusResponse{}
 		expected := &APIResponse[*UserStatusResponse]{
@@ -38,7 +37,7 @@ func TestClient_GetAuthStatus(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetAuthStatus(ctx)
@@ -50,7 +49,7 @@ func TestClient_GetAuthStatus(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)

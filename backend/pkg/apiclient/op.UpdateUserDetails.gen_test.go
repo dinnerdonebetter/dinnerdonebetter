@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -18,7 +17,7 @@ func TestClient_UpdateUserDetails(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		data := &User{}
 		expected := &APIResponse[*User]{
@@ -38,7 +37,7 @@ func TestClient_UpdateUserDetails(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleInput := &UserDetailsUpdateRequestInput{}
 
@@ -51,7 +50,7 @@ func TestClient_UpdateUserDetails(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleInput := &UserDetailsUpdateRequestInput{}
 

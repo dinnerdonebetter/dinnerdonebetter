@@ -47,7 +47,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -116,7 +116,7 @@ func TestQuerier_UserIngredientPreferenceExists(T *testing.T) {
 	T.Run("with invalid user ingredient preference ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
@@ -129,7 +129,7 @@ func TestQuerier_UserIngredientPreferenceExists(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserIngredientPreferenceID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
@@ -146,7 +146,7 @@ func TestQuerier_GetUserIngredientPreference(T *testing.T) {
 	T.Run("with invalid user ingredient preference ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 		c, _ := buildTestClient(t)
 
@@ -162,7 +162,7 @@ func TestQuerier_CreateUserIngredientPreference(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateUserIngredientPreference(ctx, nil)
@@ -177,7 +177,7 @@ func TestQuerier_UpdateUserIngredientPreference(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateUserIngredientPreference(ctx, nil))
@@ -190,7 +190,7 @@ func TestQuerier_ArchiveUserIngredientPreference(T *testing.T) {
 	T.Run("with invalid user ingredient preference ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 		c, _ := buildTestClient(t)
 

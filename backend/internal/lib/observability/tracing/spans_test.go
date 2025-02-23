@@ -1,7 +1,6 @@
 package tracing
 
 import (
-	"context"
 	"net/http"
 	"net/url"
 	"testing"
@@ -15,7 +14,7 @@ func TestStartCustomSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		StartCustomSpan(ctx, "blah")
 	})
@@ -34,7 +33,7 @@ func TestStartSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		StartSpan(ctx)
 	})

@@ -3,7 +3,6 @@
 package apiclient
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -22,7 +21,7 @@ func TestClient_SearchForMeals(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		q := fake.BuildFakeID()
 
 		list := []*Meal{}
@@ -47,7 +46,7 @@ func TestClient_SearchForMeals(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		q := fake.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
@@ -60,7 +59,7 @@ func TestClient_SearchForMeals(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		q := fake.BuildFakeID()
 
 		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=50&page=1&q=%s&sortBy=asc", q), expectedPathFormat)
