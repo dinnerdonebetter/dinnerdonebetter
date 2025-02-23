@@ -402,7 +402,26 @@ func TestMealPlanningManager_FinalizeMealPlan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		expected := fakes.BuildFakeMealPlan()
+
+		expectations := setupExpectations(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.MealPlanDataManagerMock.On(testutils.GetMethodName(mpm.db.AttemptToFinalizeMealPlan), testutils.ContextMatcher, expected.ID, expected.CreatedByUser).Return(true, nil)
+			},
+			map[string][]string{
+				events.MealPlanFinalized: {keys.MealPlanIDKey},
+			},
+		)
+
+		finalized, err := mpm.FinalizeMealPlan(ctx, expected.ID, expected.CreatedByUser)
+		assert.True(t, finalized)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -810,27 +829,29 @@ func TestMealPlanningManager_UpdateMealPlanOptionVote(T *testing.T) {
 		ctx := t.Context()
 		mpm := buildMealPlanManagerForTest(t)
 
-		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
+		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 		exampleMealPlanID := fakes.BuildFakeID()
+		exampleMealPlanOptionID := fakes.BuildFakeID()
 		exampleMealPlanEventID := fakes.BuildFakeID()
-		exampleInput := fakes.BuildFakeMealPlanOptionUpdateRequestInput()
+		exampleInput := fakes.BuildFakeMealPlanOptionVoteUpdateRequestInput()
 
 		expectations := setupExpectations(
 			mpm,
 			func(db *database.MockDatabase) {
-				db.MealPlanOptionDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanOption), testutils.ContextMatcher, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOption.ID).Return(exampleMealPlanOption, nil)
-				db.MealPlanOptionDataManagerMock.On(testutils.GetMethodName(mpm.db.UpdateMealPlanOption), testutils.ContextMatcher, testutils.MatchType[*types.MealPlanOption]()).Return(nil)
+				db.MealPlanOptionVoteDataManagerMock.On(testutils.GetMethodName(mpm.db.GetMealPlanOptionVote), testutils.ContextMatcher, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID).Return(exampleMealPlanOptionVote, nil)
+				db.MealPlanOptionVoteDataManagerMock.On(testutils.GetMethodName(mpm.db.UpdateMealPlanOptionVote), testutils.ContextMatcher, testutils.MatchType[*types.MealPlanOptionVote]()).Return(nil)
 			},
 			map[string][]string{
-				events.MealPlanOptionUpdated: {
+				events.MealPlanOptionVoteUpdated: {
 					keys.MealPlanIDKey,
 					keys.MealPlanEventIDKey,
 					keys.MealPlanOptionIDKey,
+					keys.MealPlanOptionVoteIDKey,
 				},
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateMealPlanOption(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOption.ID, exampleInput))
+		assert.NoError(t, mpm.UpdateMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID, exampleInput))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -963,7 +984,26 @@ func TestMealPlanningManager_MealPlanTaskStatusChange(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildMealPlanManagerForTest(t)
+
+		exampleInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
+
+		expectations := setupExpectations(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.MealPlanTaskDataManagerMock.On(testutils.GetMethodName(mpm.db.ChangeMealPlanTaskStatus), testutils.ContextMatcher, exampleInput).Return(nil)
+			},
+			map[string][]string{
+				events.MealPlanTaskStatusChanged: {
+					keys.MealPlanTaskIDKey,
+				},
+			},
+		)
+
+		assert.NoError(t, mpm.MealPlanTaskStatusChange(ctx, exampleInput))
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 

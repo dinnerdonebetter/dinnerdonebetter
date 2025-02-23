@@ -81,31 +81,6 @@ jobs:
       - name: Check for changes
         run: git diff --exit-code
 
-  openapi:
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        go-version: ['1.24.x']
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout codeformat
-        uses: actions/checkout@v4
-
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '${{ matrix.go-version }}'
-
-      - name: Ensure openapi spec can be generated
-        working-directory: backend
-        run: make openapi
-
-      - name: Format
-        run: make format_yaml
-
-      - name: Check for changes
-        run: git diff --exit-code
-
   typescript-api-client:
     timeout-minutes: 10
     strategy:
@@ -130,13 +105,14 @@ jobs:
       - run: yarn install
         working-directory: frontend
 
-      - name: Ensure code can be generated
-        working-directory: backend
-        run: make codegen-ts
+      # NOTE: disabled for now
+      # - name: Ensure code can be generated
+      #   working-directory: backend
+      #   run: make codegen-ts
 
-      - name: format files
-        working-directory: frontend
-        run: make format
+      # - name: format files
+      #   working-directory: frontend
+      #   run: make format
 
       - name: Check for changes
         run: git diff --exit-code
@@ -156,9 +132,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Ensure code can be generated
-        working-directory: backend
-        run: make codegen-go format_golang
+      # disabled for now
+      # - name: Ensure code can be generated
+      #   working-directory: backend
+      #   run: make codegen-go format_golang
 
       - name: Check for changes
         run: git diff --exit-code

@@ -310,6 +310,10 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 		return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanFinalized, map[string]any{
+		keys.MealPlanIDKey: mealPlanID,
+	}))
+
 	return finalized, nil
 }
 
@@ -763,6 +767,10 @@ func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *typ
 func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if input == nil {
+		return internalerrors.ErrNilInputParameter
+	}
 
 	logger := m.logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, input.ID)
