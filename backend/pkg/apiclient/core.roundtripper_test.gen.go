@@ -1,7 +1,6 @@
 package apiclient
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -30,7 +29,7 @@ func Test_defaultRoundTripper_RoundTrip(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		ts := httptest.NewServer(http.HandlerFunc(
 			func(res http.ResponseWriter, req *http.Request) {
@@ -84,7 +83,7 @@ func Test_buildCheckRetryFunc(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		f := buildCheckRetryFunc(tracing.NewTracerForTest(t.Name()))
 
 		actual, err := f(ctx, &http.Response{}, nil)

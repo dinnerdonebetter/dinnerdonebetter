@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestClient_GetRecipeStepVessel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 		recipeStepVesselID := fake.BuildFakeID()
@@ -45,7 +46,7 @@ func TestClient_GetRecipeStepVessel(T *testing.T) {
 		recipeStepID := fake.BuildFakeID()
 		recipeStepVesselID := fake.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipeStepVessel(ctx, "", recipeStepID, recipeStepVesselID)
 
@@ -60,7 +61,7 @@ func TestClient_GetRecipeStepVessel(T *testing.T) {
 
 		recipeStepVesselID := fake.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipeStepVessel(ctx, recipeID, "", recipeStepVesselID)
 
@@ -74,7 +75,7 @@ func TestClient_GetRecipeStepVessel(T *testing.T) {
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipeStepVessel(ctx, recipeID, recipeStepID, "")
 
@@ -85,7 +86,7 @@ func TestClient_GetRecipeStepVessel(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 		recipeStepVesselID := fake.BuildFakeID()
@@ -100,7 +101,7 @@ func TestClient_GetRecipeStepVessel(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 		recipeStepVesselID := fake.BuildFakeID()

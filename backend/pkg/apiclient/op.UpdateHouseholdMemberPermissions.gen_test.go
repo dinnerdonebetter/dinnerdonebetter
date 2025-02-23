@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -19,7 +20,7 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		householdID := fake.BuildFakeID()
 		userID := fake.BuildFakeID()
 
@@ -45,7 +46,7 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 
 		exampleInput := &ModifyUserPermissionsInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateHouseholdMemberPermissions(ctx, "", userID, exampleInput)
 
@@ -59,7 +60,7 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 
 		exampleInput := &ModifyUserPermissionsInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateHouseholdMemberPermissions(ctx, householdID, "", exampleInput)
 
@@ -69,7 +70,7 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		householdID := fake.BuildFakeID()
 		userID := fake.BuildFakeID()
 
@@ -84,7 +85,7 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		householdID := fake.BuildFakeID()
 		userID := fake.BuildFakeID()
 

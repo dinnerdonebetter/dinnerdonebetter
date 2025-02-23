@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -60,7 +61,7 @@ func TestClient_SearchValidIngredientsByPreparation(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		q := fake.BuildFakeID()
 		validPreparationID := fake.BuildFakeID()
 
@@ -74,7 +75,7 @@ func TestClient_SearchValidIngredientsByPreparation(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		q := fake.BuildFakeID()
 		validPreparationID := fake.BuildFakeID()
 

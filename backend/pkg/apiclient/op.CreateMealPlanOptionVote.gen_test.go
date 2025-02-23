@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestClient_CreateMealPlanOptionVote(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 
@@ -47,7 +48,7 @@ func TestClient_CreateMealPlanOptionVote(T *testing.T) {
 
 		exampleInput := &MealPlanOptionVoteCreationRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.CreateMealPlanOptionVote(ctx, "", mealPlanEventID, exampleInput)
 
@@ -62,7 +63,7 @@ func TestClient_CreateMealPlanOptionVote(T *testing.T) {
 
 		exampleInput := &MealPlanOptionVoteCreationRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.CreateMealPlanOptionVote(ctx, mealPlanID, "", exampleInput)
 
@@ -73,7 +74,7 @@ func TestClient_CreateMealPlanOptionVote(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 
@@ -89,7 +90,7 @@ func TestClient_CreateMealPlanOptionVote(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 

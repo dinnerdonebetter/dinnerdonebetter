@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -19,7 +20,7 @@ func TestClient_UpdateRecipeStepCompletionCondition(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 		recipeStepCompletionConditionID := fake.BuildFakeID()
@@ -47,7 +48,7 @@ func TestClient_UpdateRecipeStepCompletionCondition(T *testing.T) {
 
 		exampleInput := &RecipeStepCompletionConditionUpdateRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateRecipeStepCompletionCondition(ctx, "", recipeStepID, recipeStepCompletionConditionID, exampleInput)
 
@@ -63,7 +64,7 @@ func TestClient_UpdateRecipeStepCompletionCondition(T *testing.T) {
 
 		exampleInput := &RecipeStepCompletionConditionUpdateRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateRecipeStepCompletionCondition(ctx, recipeID, "", recipeStepCompletionConditionID, exampleInput)
 
@@ -78,7 +79,7 @@ func TestClient_UpdateRecipeStepCompletionCondition(T *testing.T) {
 
 		exampleInput := &RecipeStepCompletionConditionUpdateRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateRecipeStepCompletionCondition(ctx, recipeID, recipeStepID, "", exampleInput)
 
@@ -88,7 +89,7 @@ func TestClient_UpdateRecipeStepCompletionCondition(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 		recipeStepCompletionConditionID := fake.BuildFakeID()
@@ -104,7 +105,7 @@ func TestClient_UpdateRecipeStepCompletionCondition(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 		recipeStepCompletionConditionID := fake.BuildFakeID()

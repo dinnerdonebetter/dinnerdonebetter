@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestClient_GetValidIngredientGroup(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		validIngredientGroupID := fake.BuildFakeID()
 
 		data := &ValidIngredientGroup{}
@@ -40,7 +41,7 @@ func TestClient_GetValidIngredientGroup(T *testing.T) {
 	T.Run("with invalid validIngredientGroup ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetValidIngredientGroup(ctx, "")
 
@@ -51,7 +52,7 @@ func TestClient_GetValidIngredientGroup(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		validIngredientGroupID := fake.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
@@ -64,7 +65,7 @@ func TestClient_GetValidIngredientGroup(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		validIngredientGroupID := fake.BuildFakeID()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, validIngredientGroupID)

@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestClient_CreateHouseholdInvitation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		householdID := fake.BuildFakeID()
 
 		data := &HouseholdInvitation{}
@@ -44,7 +45,7 @@ func TestClient_CreateHouseholdInvitation(T *testing.T) {
 
 		exampleInput := &HouseholdInvitationCreationRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.CreateHouseholdInvitation(ctx, "", exampleInput)
 
@@ -55,7 +56,7 @@ func TestClient_CreateHouseholdInvitation(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		householdID := fake.BuildFakeID()
 
 		exampleInput := &HouseholdInvitationCreationRequestInput{}
@@ -70,7 +71,7 @@ func TestClient_CreateHouseholdInvitation(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		householdID := fake.BuildFakeID()
 
 		exampleInput := &HouseholdInvitationCreationRequestInput{}

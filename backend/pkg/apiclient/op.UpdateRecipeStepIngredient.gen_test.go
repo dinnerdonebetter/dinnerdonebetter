@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -19,7 +20,7 @@ func TestClient_UpdateRecipeStepIngredient(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 		recipeStepIngredientID := fake.BuildFakeID()
@@ -47,7 +48,7 @@ func TestClient_UpdateRecipeStepIngredient(T *testing.T) {
 
 		exampleInput := &RecipeStepIngredientUpdateRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateRecipeStepIngredient(ctx, "", recipeStepID, recipeStepIngredientID, exampleInput)
 
@@ -63,7 +64,7 @@ func TestClient_UpdateRecipeStepIngredient(T *testing.T) {
 
 		exampleInput := &RecipeStepIngredientUpdateRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateRecipeStepIngredient(ctx, recipeID, "", recipeStepIngredientID, exampleInput)
 
@@ -78,7 +79,7 @@ func TestClient_UpdateRecipeStepIngredient(T *testing.T) {
 
 		exampleInput := &RecipeStepIngredientUpdateRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateRecipeStepIngredient(ctx, recipeID, recipeStepID, "", exampleInput)
 
@@ -88,7 +89,7 @@ func TestClient_UpdateRecipeStepIngredient(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 		recipeStepIngredientID := fake.BuildFakeID()
@@ -104,7 +105,7 @@ func TestClient_UpdateRecipeStepIngredient(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 		recipeStepID := fake.BuildFakeID()
 		recipeStepIngredientID := fake.BuildFakeID()

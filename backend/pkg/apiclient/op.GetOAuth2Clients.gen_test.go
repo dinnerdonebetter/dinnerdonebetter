@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -44,7 +45,7 @@ func TestClient_GetOAuth2Clients(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetOAuth2Clients(ctx, nil)
@@ -56,7 +57,7 @@ func TestClient_GetOAuth2Clients(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)

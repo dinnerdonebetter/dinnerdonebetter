@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestClient_GetMeal(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealID := fake.BuildFakeID()
 
 		data := &Meal{}
@@ -40,7 +41,7 @@ func TestClient_GetMeal(T *testing.T) {
 	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetMeal(ctx, "")
 
@@ -51,7 +52,7 @@ func TestClient_GetMeal(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealID := fake.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
@@ -64,7 +65,7 @@ func TestClient_GetMeal(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealID := fake.BuildFakeID()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, mealID)

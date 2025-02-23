@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -18,7 +19,7 @@ func TestClient_GetRandomValidVessel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		data := &ValidVessel{}
 		expected := &APIResponse[*ValidVessel]{
@@ -37,7 +38,7 @@ func TestClient_GetRandomValidVessel(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetRandomValidVessel(ctx)
@@ -49,7 +50,7 @@ func TestClient_GetRandomValidVessel(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)

@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestClient_GetUserNotification(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		userNotificationID := fake.BuildFakeID()
 
 		data := &UserNotification{}
@@ -40,7 +41,7 @@ func TestClient_GetUserNotification(T *testing.T) {
 	T.Run("with invalid userNotification ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetUserNotification(ctx, "")
 
@@ -51,7 +52,7 @@ func TestClient_GetUserNotification(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		userNotificationID := fake.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
@@ -64,7 +65,7 @@ func TestClient_GetUserNotification(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		userNotificationID := fake.BuildFakeID()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, userNotificationID)

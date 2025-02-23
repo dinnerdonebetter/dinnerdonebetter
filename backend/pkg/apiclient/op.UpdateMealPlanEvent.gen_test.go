@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -19,7 +20,7 @@ func TestClient_UpdateMealPlanEvent(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 
@@ -45,7 +46,7 @@ func TestClient_UpdateMealPlanEvent(T *testing.T) {
 
 		exampleInput := &MealPlanEventUpdateRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateMealPlanEvent(ctx, "", mealPlanEventID, exampleInput)
 
@@ -59,7 +60,7 @@ func TestClient_UpdateMealPlanEvent(T *testing.T) {
 
 		exampleInput := &MealPlanEventUpdateRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateMealPlanEvent(ctx, mealPlanID, "", exampleInput)
 
@@ -69,7 +70,7 @@ func TestClient_UpdateMealPlanEvent(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 
@@ -84,7 +85,7 @@ func TestClient_UpdateMealPlanEvent(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 

@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -56,7 +57,7 @@ func TestClient_GetMealPlanEvents(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
@@ -69,7 +70,7 @@ func TestClient_GetMealPlanEvents(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, mealPlanID)

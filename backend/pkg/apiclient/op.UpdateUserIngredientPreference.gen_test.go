@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -19,7 +20,7 @@ func TestClient_UpdateUserIngredientPreference(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		userIngredientPreferenceID := fake.BuildFakeID()
 
 		data := &UserIngredientPreference{}
@@ -42,7 +43,7 @@ func TestClient_UpdateUserIngredientPreference(T *testing.T) {
 
 		exampleInput := &UserIngredientPreferenceUpdateRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		err := c.UpdateUserIngredientPreference(ctx, "", exampleInput)
 
@@ -52,7 +53,7 @@ func TestClient_UpdateUserIngredientPreference(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		userIngredientPreferenceID := fake.BuildFakeID()
 
 		exampleInput := &UserIngredientPreferenceUpdateRequestInput{}
@@ -66,7 +67,7 @@ func TestClient_UpdateUserIngredientPreference(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		userIngredientPreferenceID := fake.BuildFakeID()
 
 		exampleInput := &UserIngredientPreferenceUpdateRequestInput{}

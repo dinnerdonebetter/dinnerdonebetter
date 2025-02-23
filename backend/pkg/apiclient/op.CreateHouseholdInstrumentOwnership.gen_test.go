@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -18,7 +19,7 @@ func TestClient_CreateHouseholdInstrumentOwnership(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		data := &HouseholdInstrumentOwnership{}
 		expected := &APIResponse[*HouseholdInstrumentOwnership]{
@@ -39,7 +40,7 @@ func TestClient_CreateHouseholdInstrumentOwnership(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		exampleInput := &HouseholdInstrumentOwnershipCreationRequestInput{}
 
@@ -53,7 +54,7 @@ func TestClient_CreateHouseholdInstrumentOwnership(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		exampleInput := &HouseholdInstrumentOwnershipCreationRequestInput{}
 

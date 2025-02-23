@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -90,7 +91,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 		mealPlanOptionID := fake.BuildFakeID()
@@ -105,7 +106,7 @@ func TestClient_GetMealPlanOptionVotes(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mealPlanID := fake.BuildFakeID()
 		mealPlanEventID := fake.BuildFakeID()
 		mealPlanOptionID := fake.BuildFakeID()

@@ -3,6 +3,7 @@
 package apiclient
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestClient_CreateRecipeStep(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 
 		data := &RecipeStep{}
@@ -44,7 +45,7 @@ func TestClient_CreateRecipeStep(T *testing.T) {
 
 		exampleInput := &RecipeStepCreationRequestInput{}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.CreateRecipeStep(ctx, "", exampleInput)
 
@@ -55,7 +56,7 @@ func TestClient_CreateRecipeStep(T *testing.T) {
 	T.Run("with error building request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 
 		exampleInput := &RecipeStepCreationRequestInput{}
@@ -70,7 +71,7 @@ func TestClient_CreateRecipeStep(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		recipeID := fake.BuildFakeID()
 
 		exampleInput := &RecipeStepCreationRequestInput{}
