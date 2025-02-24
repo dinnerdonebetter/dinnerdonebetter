@@ -1,4 +1,4 @@
-package manager
+package managers
 
 import (
 	"context"
@@ -10,7 +10,9 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
@@ -72,11 +74,14 @@ func buildMealPlanManagerForTest(t *testing.T) *mealPlanningManager {
 	mpp.On("ProvidePublisher", queueCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	m, err := NewMealPlanningManager(
+		t.Context(),
 		logging.NewNoopLogger(),
 		tracing.NewNoopTracerProvider(),
 		database.NewMockDatabase(),
 		queueCfg,
 		mpp,
+		&textsearchcfg.Config{},
+		metrics.NewNoopMetricsProvider(),
 	)
 	require.NoError(t, err)
 
@@ -217,7 +222,7 @@ func TestMealPlanningManager_SearchMeals(T *testing.T) {
 			},
 		)
 
-		actual, err := mpm.SearchMeals(ctx, exampleQuery, nil)
+		actual, err := mpm.SearchMeals(ctx, exampleQuery, true, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected.Data, actual)
 
