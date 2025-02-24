@@ -425,7 +425,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(mealSearchSubsets, nil)
-		helper.service.searchIndex = searchIndex
+		helper.service.mealsSearchIndex = searchIndex
 
 		mealDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealDataManager.MealDataManagerMock.On(

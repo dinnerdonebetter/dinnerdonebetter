@@ -257,7 +257,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 		meals, err = s.mealPlanningDataManager.SearchForMeals(ctx, query, filter)
 	} else {
 		var mealSubsets []*indexing.MealSearchSubset
-		mealSubsets, err = s.searchIndex.Search(ctx, query)
+		mealSubsets, err = s.mealsSearchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for meals")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
