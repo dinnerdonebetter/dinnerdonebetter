@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createMealPlanTaskForTest(t *testing.T, ctx context.Context, exampleMealPlanTask *types.MealPlanTask, dbc *Querier) *types.MealPlanTask {
+func createMealPlanTaskForTest(t *testing.T, ctx context.Context, mealPlanID string, exampleMealPlanTask *types.MealPlanTask, dbc *Querier) *types.MealPlanTask {
 	t.Helper()
 
 	// create
@@ -31,7 +31,7 @@ func createMealPlanTaskForTest(t *testing.T, ctx context.Context, exampleMealPla
 	exampleMealPlanTask.MealPlanOption = created.MealPlanOption
 	assert.Equal(t, exampleMealPlanTask, created)
 
-	mealPlanTask, err := dbc.GetMealPlanTask(ctx, created.ID)
+	mealPlanTask, err := dbc.GetMealPlanTask(ctx, mealPlanID, created.ID)
 	require.NoError(t, err)
 
 	exampleMealPlanTask.CreatedAt = mealPlanTask.CreatedAt
@@ -52,7 +52,7 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -82,7 +82,7 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 
 	// create
 	createdMealPlanTasks := []*types.MealPlanTask{}
-	createdMealPlanTasks = append(createdMealPlanTasks, createMealPlanTaskForTest(t, ctx, exampleMealPlanTask, dbc))
+	createdMealPlanTasks = append(createdMealPlanTasks, createMealPlanTaskForTest(t, ctx, mealPlan.ID, exampleMealPlanTask, dbc))
 
 	// fetch as list
 	mealPlanTasks, err := dbc.GetMealPlanTasksForMealPlan(ctx, mealPlan.ID)
@@ -112,7 +112,7 @@ func TestQuerier_MealPlanTaskExists(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanTaskID := fakes.BuildFakeID()
 
@@ -128,7 +128,7 @@ func TestQuerier_MealPlanTaskExists(T *testing.T) {
 	T.Run("with invalid meal plan task ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanID := fakes.BuildFakeID()
 
@@ -145,15 +145,17 @@ func TestQuerier_MealPlanTaskExists(T *testing.T) {
 func TestQuerier_GetMealPlanTask(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid meal plan ID", func(t *testing.T) {
+	T.Run("with invalid meal plan task ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanTaskID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
-		actual, err := c.GetMealPlanTask(ctx, exampleMealPlanTaskID)
+		mealPlanID := fakes.BuildFakeID()
+
+		actual, err := c.GetMealPlanTask(ctx, mealPlanID, exampleMealPlanTaskID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -163,10 +165,12 @@ func TestQuerier_GetMealPlanTask(T *testing.T) {
 	T.Run("with invalid meal plan task ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
-		actual, err := c.GetMealPlanTask(ctx, "")
+		mealPlanID := fakes.BuildFakeID()
+
+		actual, err := c.GetMealPlanTask(ctx, mealPlanID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -180,7 +184,7 @@ func TestQuerier_createMealPlanTask(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin()
@@ -202,7 +206,7 @@ func TestQuerier_CreateMealPlanTask(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		actual, err := c.CreateMealPlanTask(ctx, nil)
@@ -219,7 +223,7 @@ func TestQuerier_GetMealPlanTasksForMealPlan(T *testing.T) {
 	T.Run("with missing meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		actual, err := c.GetMealPlanTasksForMealPlan(ctx, "")
@@ -236,7 +240,7 @@ func TestQuerier_MarkMealPlanAsHavingTasksCreated(T *testing.T) {
 	T.Run("with empty meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		assert.Error(t, c.MarkMealPlanAsHavingTasksCreated(ctx, ""))
@@ -251,7 +255,7 @@ func TestQuerier_MarkMealPlanAsHavingGroceryListInitialized(T *testing.T) {
 	T.Run("with empty meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		assert.Error(t, c.MarkMealPlanAsHavingGroceryListInitialized(ctx, ""))
@@ -266,7 +270,7 @@ func TestQuerier_ChangeMealPlanTaskStatus(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ChangeMealPlanTaskStatus(ctx, nil))

@@ -1,0 +1,129 @@
+package types
+
+import (
+	"context"
+	"net/http"
+	"time"
+
+	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+)
+
+type (
+	// ValidPreparationInstrument represents a valid preparation instrument.
+	ValidPreparationInstrument struct {
+		_ struct{} `json:"-"`
+
+		CreatedAt     time.Time        `json:"createdAt"`
+		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time       `json:"archivedAt"`
+		ID            string           `json:"id"`
+		Notes         string           `json:"notes"`
+		Instrument    ValidInstrument  `json:"instrument"`
+		Preparation   ValidPreparation `json:"preparation"`
+	}
+
+	// ValidPreparationInstrumentCreationRequestInput represents what a user could set as input for creating valid preparation instruments.
+	ValidPreparationInstrumentCreationRequestInput struct {
+		_ struct{} `json:"-"`
+
+		Notes              string `json:"notes"`
+		ValidPreparationID string `json:"validPreparationID"`
+		ValidInstrumentID  string `json:"validInstrumentID"`
+	}
+
+	// ValidPreparationInstrumentDatabaseCreationInput represents what a user could set as input for creating valid preparation instruments.
+	ValidPreparationInstrumentDatabaseCreationInput struct {
+		_ struct{} `json:"-"`
+
+		ID                 string `json:"-"`
+		Notes              string `json:"-"`
+		ValidPreparationID string `json:"-"`
+		ValidInstrumentID  string `json:"-"`
+	}
+
+	// ValidPreparationInstrumentUpdateRequestInput represents what a user could set as input for updating valid preparation instruments.
+	ValidPreparationInstrumentUpdateRequestInput struct {
+		_ struct{} `json:"-"`
+
+		Notes              *string `json:"notes,omitempty"`
+		ValidPreparationID *string `json:"validPreparationID,omitempty"`
+		ValidInstrumentID  *string `json:"validInstrumentID,omitempty"`
+	}
+
+	// ValidPreparationInstrumentDataManager describes a structure capable of storing valid preparation instruments permanently.
+	ValidPreparationInstrumentDataManager interface {
+		ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (bool, error)
+		GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*ValidPreparationInstrument, error)
+		GetValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationInstrument], error)
+		GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationInstrument], error)
+		GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidPreparationInstrument], error)
+		CreateValidPreparationInstrument(ctx context.Context, input *ValidPreparationInstrumentDatabaseCreationInput) (*ValidPreparationInstrument, error)
+		UpdateValidPreparationInstrument(ctx context.Context, updated *ValidPreparationInstrument) error
+		ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error
+	}
+
+	// ValidPreparationInstrumentDataService describes a structure capable of serving traffic related to valid preparation instruments.
+	ValidPreparationInstrumentDataService interface {
+		ListValidPreparationInstrumentsHandler(http.ResponseWriter, *http.Request)
+		CreateValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
+		ReadValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
+		UpdateValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
+		ArchiveValidPreparationInstrumentHandler(http.ResponseWriter, *http.Request)
+		SearchValidPreparationInstrumentsByPreparationHandler(http.ResponseWriter, *http.Request)
+		SearchValidPreparationInstrumentsByInstrumentHandler(http.ResponseWriter, *http.Request)
+	}
+)
+
+// Update merges an ValidPreparationInstrumentUpdateRequestInput with a valid preparation instrument.
+func (x *ValidPreparationInstrument) Update(input *ValidPreparationInstrumentUpdateRequestInput) {
+	if input.Notes != nil && *input.Notes != x.Notes {
+		x.Notes = *input.Notes
+	}
+
+	if input.ValidPreparationID != nil && *input.ValidPreparationID != x.Preparation.ID {
+		x.Preparation.ID = *input.ValidPreparationID
+	}
+
+	if input.ValidInstrumentID != nil && *input.ValidInstrumentID != x.Instrument.ID {
+		x.Instrument.ID = *input.ValidInstrumentID
+	}
+}
+
+var _ validation.ValidatableWithContext = (*ValidPreparationInstrumentCreationRequestInput)(nil)
+
+// ValidateWithContext validates a ValidPreparationInstrumentCreationRequestInput.
+func (x *ValidPreparationInstrumentCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.ValidPreparationID, validation.Required),
+		validation.Field(&x.ValidInstrumentID, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*ValidPreparationInstrumentDatabaseCreationInput)(nil)
+
+// ValidateWithContext validates a ValidPreparationInstrumentDatabaseCreationInput.
+func (x *ValidPreparationInstrumentDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.ValidPreparationID, validation.Required),
+		validation.Field(&x.ValidInstrumentID, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*ValidPreparationInstrumentUpdateRequestInput)(nil)
+
+// ValidateWithContext validates a ValidPreparationInstrumentUpdateRequestInput.
+func (x *ValidPreparationInstrumentUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(
+		ctx,
+		x,
+		validation.Field(&x.ValidPreparationID, validation.Required),
+		validation.Field(&x.ValidInstrumentID, validation.Required),
+	)
+}

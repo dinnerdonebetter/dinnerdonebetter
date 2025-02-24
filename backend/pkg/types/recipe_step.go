@@ -202,7 +202,7 @@ func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context
 	err := &multierror.Error{}
 
 	if len(x.Instruments) == 0 && len(x.Vessels) == 0 {
-		err = multierror.Append(err, errOneInstrumentOrVesselRequired)
+		err = multierror.Append(err, ErrOneInstrumentOrVesselRequired)
 	}
 
 	validationErr := validation.ValidateStructWithContext(

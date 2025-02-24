@@ -76,7 +76,7 @@ func TestWebhookCreationRequestInput_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		name := t.Name()
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &WebhookCreationRequestInput{
 			Name:        name,
 			ContentType: "application/json",
@@ -96,7 +96,7 @@ func TestWebhookDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		name := t.Name()
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &WebhookDatabaseCreationInput{
 			ID:          name,
 			Name:        name,

@@ -27,8 +27,8 @@ func (q *Querier) UserIngredientPreferenceExists(ctx context.Context, userIngred
 	if userIngredientPreferenceID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
+	logger = logger.WithValue(keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	if userID == "" {
 		return false, ErrInvalidIDProvided
@@ -57,8 +57,8 @@ func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredien
 	if userIngredientPreferenceID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
+	logger = logger.WithValue(keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	if userID == "" {
 		return nil, ErrInvalidIDProvided
@@ -267,7 +267,7 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *typ
 		}
 
 		id := identifiers.New()
-		tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, id)
+		tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, id)
 
 		// create the user ingredient preference.
 		if err = q.generatedQuerier.CreateUserIngredientPreference(ctx, tx, &generated.CreateUserIngredientPreferenceParams{
@@ -312,8 +312,8 @@ func (q *Querier) UpdateUserIngredientPreference(ctx context.Context, updated *t
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.UserIngredientPreferenceIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.IngredientPreferenceIDKey, updated.ID)
+	tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateUserIngredientPreference(ctx, q.db, &generated.UpdateUserIngredientPreferenceParams{
 		Ingredient:    updated.Ingredient.ID,
@@ -347,8 +347,8 @@ func (q *Querier) ArchiveUserIngredientPreference(ctx context.Context, userIngre
 	if userIngredientPreferenceID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
+	logger = logger.WithValue(keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	if _, err := q.generatedQuerier.ArchiveUserIngredientPreference(ctx, q.db, &generated.ArchiveUserIngredientPreferenceParams{
 		ID:            userIngredientPreferenceID,

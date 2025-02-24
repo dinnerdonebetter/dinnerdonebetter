@@ -93,7 +93,7 @@ type (
 	MealPlanTaskDataManager interface {
 		MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error)
 		CreateMealPlanTask(ctx context.Context, input *MealPlanTaskDatabaseCreationInput) (*MealPlanTask, error)
-		GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*MealPlanTask, error)
+		GetMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID string) (*MealPlanTask, error)
 		GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) ([]*MealPlanTask, error)
 		CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*MealPlanTaskDatabaseCreationInput) ([]*MealPlanTask, error)
 		ChangeMealPlanTaskStatus(ctx context.Context, input *MealPlanTaskStatusChangeRequestInput) error

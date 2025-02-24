@@ -47,7 +47,7 @@ func Test_redisCacheImpl_Get(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
 		defer func() {
@@ -70,7 +70,7 @@ func Test_redisCacheImpl_Set(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
 		defer func() {
@@ -89,7 +89,7 @@ func Test_redisCacheImpl_Delete(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
 		defer func() {

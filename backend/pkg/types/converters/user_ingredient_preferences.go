@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput creates a UserIngredientPreferenceUpdateRequestInput from a UserIngredientPreferences.
+// ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput creates a UserIngredientPreferenceUpdateRequestInput from a IngredientPreferences.
 func ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput(input *types.UserIngredientPreference) *types.UserIngredientPreferenceUpdateRequestInput {
 	x := &types.UserIngredientPreferenceUpdateRequestInput{
 		Notes:        &input.Notes,
@@ -29,7 +29,7 @@ func ConvertUserIngredientPreferenceCreationRequestInputToUserIngredientPreferen
 	return x
 }
 
-// ConvertUserIngredientPreferenceToUserIngredientPreferenceCreationRequestInput builds a UserIngredientPreferenceCreationRequestInput from a UserIngredientPreferences.
+// ConvertUserIngredientPreferenceToUserIngredientPreferenceCreationRequestInput builds a UserIngredientPreferenceCreationRequestInput from a IngredientPreferences.
 func ConvertUserIngredientPreferenceToUserIngredientPreferenceCreationRequestInput(x *types.UserIngredientPreference) *types.UserIngredientPreferenceCreationRequestInput {
 	return &types.UserIngredientPreferenceCreationRequestInput{
 		ValidIngredientID: x.Ingredient.ID,
@@ -39,7 +39,7 @@ func ConvertUserIngredientPreferenceToUserIngredientPreferenceCreationRequestInp
 	}
 }
 
-// ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationInput builds a UserIngredientPreferenceDatabaseCreationInput from a UserIngredientPreferences.
+// ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationInput builds a UserIngredientPreferenceDatabaseCreationInput from a IngredientPreferences.
 func ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationInput(x *types.UserIngredientPreference) *types.UserIngredientPreferenceDatabaseCreationInput {
 	return &types.UserIngredientPreferenceDatabaseCreationInput{
 		ValidIngredientID: x.Ingredient.ID,

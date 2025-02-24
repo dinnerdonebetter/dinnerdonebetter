@@ -1,7 +1,6 @@
 package grocerylistpreparation
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -191,7 +190,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 			},
 		}
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		expectedMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{
 			onion.ID: {
@@ -360,7 +359,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 			},
 		}
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		expectedMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{
 			onion.ID: {

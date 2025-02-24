@@ -158,7 +158,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -228,7 +228,7 @@ func TestQuerier_RecipeExists(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -244,7 +244,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateRecipe(ctx, nil)
@@ -259,7 +259,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipe(ctx, nil))
@@ -274,7 +274,7 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveRecipe(ctx, "", exampleHouseholdID))
@@ -285,7 +285,7 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveRecipe(ctx, exampleRecipe.ID, ""))
@@ -597,7 +597,7 @@ func TestQuerier_MarkRecipeAsIndexed(T *testing.T) {
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.MarkRecipeAsIndexed(ctx, ""))

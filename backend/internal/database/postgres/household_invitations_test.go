@@ -60,7 +60,7 @@ func TestQuerier_Integration_HouseholdInvitations(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -147,7 +147,7 @@ func TestQuerier_HouseholdInvitationExists(T *testing.T) {
 	T.Run("with invalid household invitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		actual, err := c.HouseholdInvitationExists(ctx, "")
@@ -166,7 +166,7 @@ func TestQuerier_GetHouseholdInvitationByTokenAndID(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetHouseholdInvitationByTokenAndID(ctx, "", exampleHouseholdID)
@@ -179,7 +179,7 @@ func TestQuerier_GetHouseholdInvitationByTokenAndID(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetHouseholdInvitationByTokenAndID(ctx, exampleHouseholdID, "")
@@ -196,7 +196,7 @@ func TestQuerier_GetHouseholdInvitationByHouseholdAndID(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetHouseholdInvitationByHouseholdAndID(ctx, "", exampleHouseholdID)
@@ -209,7 +209,7 @@ func TestQuerier_GetHouseholdInvitationByHouseholdAndID(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetHouseholdInvitationByHouseholdAndID(ctx, exampleHouseholdID, "")
@@ -226,7 +226,7 @@ func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetHouseholdInvitationByEmailAndToken(ctx, "", exampleHouseholdID)
@@ -239,7 +239,7 @@ func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetHouseholdInvitationByEmailAndToken(ctx, exampleHouseholdID, "")
@@ -254,7 +254,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateHouseholdInvitation(ctx, nil)
@@ -269,7 +269,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 	T.Run("with invalid household invitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 
 		c, _ := buildTestClient(t)
@@ -285,7 +285,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 	T.Run("with invalid invitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleToken := fakes.BuildFakeID()
 
 		c, db := buildTestClient(t)
@@ -299,7 +299,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 	T.Run("with invalid token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
 
 		c, db := buildTestClient(t)
@@ -317,7 +317,7 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 	T.Run("with invalid email address", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUser := fakes.BuildFakeUser()
 
 		c, db := buildTestClient(t)
@@ -331,7 +331,7 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUser := fakes.BuildFakeUser()
 
 		c, db := buildTestClient(t)

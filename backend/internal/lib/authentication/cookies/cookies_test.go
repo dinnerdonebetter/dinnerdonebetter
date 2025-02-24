@@ -1,7 +1,6 @@
 package cookies
 
 import (
-	"context"
 	"encoding/base64"
 	"testing"
 
@@ -44,7 +43,7 @@ func Test_manager_Encode(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		m, err := NewCookieManager(buildConfigForTest(), tracing.NewNoopTracerProvider())
 		require.NoError(t, err)
@@ -62,7 +61,7 @@ func Test_manager_Decode(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		m, err := NewCookieManager(buildConfigForTest(), tracing.NewNoopTracerProvider())
 		require.NoError(t, err)

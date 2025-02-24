@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -19,7 +18,7 @@ func TestQuerier_Integration_HouseholdUserMemberships(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -98,7 +97,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.BuildSessionContextDataForUser(ctx, "")
@@ -113,7 +112,7 @@ func TestQuerier_GetDefaultHouseholdIDForUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetDefaultHouseholdIDForUser(ctx, "")
@@ -128,7 +127,7 @@ func TestQuerier_MarkHouseholdAsUserDefault(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleHousehold := fakes.BuildFakeHousehold()
 
 		c, _ := buildTestClient(t)
@@ -139,7 +138,7 @@ func TestQuerier_MarkHouseholdAsUserDefault(T *testing.T) {
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUser := fakes.BuildFakeUser()
 
 		c, _ := buildTestClient(t)
@@ -154,7 +153,7 @@ func TestQuerier_UserIsMemberOfHousehold(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleHouseholdID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
@@ -167,7 +166,7 @@ func TestQuerier_UserIsMemberOfHousehold(T *testing.T) {
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
@@ -184,7 +183,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 	T.Run("with invalid household id", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 
@@ -196,7 +195,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdID := fakes.BuildFakeID()
 
@@ -212,7 +211,7 @@ func TestSQLQuerier_addUserToHousehold(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, db := buildTestClient(t)
 
@@ -229,7 +228,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleHousehold := fakes.BuildFakeHousehold()
 
 		c, _ := buildTestClient(t)
@@ -240,7 +239,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUser := fakes.BuildFakeUser()
 
 		c, _ := buildTestClient(t)
@@ -251,7 +250,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 	T.Run("with error creating transaction", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdID := fakes.BuildFakeID()
 

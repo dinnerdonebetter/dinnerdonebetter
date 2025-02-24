@@ -94,7 +94,7 @@ func (s *service) CreateMealPlanOptionHandler(res http.ResponseWriter, req *http
 		UserID:         sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanOption]{
 		Details: responseDetails,
@@ -332,7 +332,7 @@ func (s *service) UpdateMealPlanOptionHandler(res http.ResponseWriter, req *http
 		UserID:         sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanOption]{
 		Details: responseDetails,
@@ -417,7 +417,7 @@ func (s *service) ArchiveMealPlanOptionHandler(res http.ResponseWriter, req *htt
 		UserID:           sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanOption]{
 		Details: responseDetails,

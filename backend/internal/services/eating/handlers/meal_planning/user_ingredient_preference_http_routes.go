@@ -78,7 +78,7 @@ func (s *service) CreateUserIngredientPreferenceHandler(res http.ResponseWriter,
 		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[[]*types.UserIngredientPreference]{
 		Details: responseDetails,
@@ -187,8 +187,8 @@ func (s *service) UpdateUserIngredientPreferenceHandler(res http.ResponseWriter,
 
 	// determine user ingredient preference ID.
 	userIngredientPreferenceID := s.userIngredientPreferenceIDFetcher(req)
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
-	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
+	logger = logger.WithValue(keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	// fetch user ingredient preference from database.
 	userIngredientPreference, err := s.mealPlanningDataManager.GetUserIngredientPreference(ctx, userIngredientPreferenceID, requester)
@@ -221,7 +221,7 @@ func (s *service) UpdateUserIngredientPreferenceHandler(res http.ResponseWriter,
 		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.UserIngredientPreference]{
 		Details: responseDetails,
@@ -262,8 +262,8 @@ func (s *service) ArchiveUserIngredientPreferenceHandler(res http.ResponseWriter
 
 	// determine user ingredient preference ID.
 	userIngredientPreferenceID := s.userIngredientPreferenceIDFetcher(req)
-	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
-	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
+	logger = logger.WithValue(keys.IngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
 	exists, err := s.mealPlanningDataManager.UserIngredientPreferenceExists(ctx, userIngredientPreferenceID, requester)
@@ -293,7 +293,7 @@ func (s *service) ArchiveUserIngredientPreferenceHandler(res http.ResponseWriter
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.UserIngredientPreference]{
 		Details: responseDetails,

@@ -56,7 +56,7 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -105,7 +105,7 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 
 	// delete
 	for _, mealPlanGroceryListItem := range createdMealPlanGroceryListItems {
-		assert.NoError(t, dbc.ArchiveMealPlanGroceryListItem(ctx, mealPlanGroceryListItem.ID))
+		assert.NoError(t, dbc.ArchiveMealPlanGroceryListItem(ctx, mealPlan.ID, mealPlanGroceryListItem.ID))
 
 		var exists bool
 		exists, err = dbc.MealPlanGroceryListItemExists(ctx, mealPlanGroceryListItem.ID, householdID)
@@ -120,7 +120,7 @@ func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		c, _ := buildTestClient(t)
@@ -137,7 +137,7 @@ func TestQuerier_fleshOutMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		actual, err := c.fleshOutMealPlanGroceryListItem(ctx, nil)
@@ -154,7 +154,7 @@ func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		c, _ := buildTestClient(t)
 
@@ -170,7 +170,7 @@ func TestQuerier_createMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin()
@@ -192,7 +192,7 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateMealPlanGroceryListItem(ctx, nil)
@@ -207,7 +207,7 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateMealPlanGroceryListItem(ctx, nil))
@@ -220,9 +220,11 @@ func TestQuerier_ArchiveMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveMealPlanGroceryListItem(ctx, ""))
+		mealPlanID := fakes.BuildFakeID()
+
+		assert.Error(t, c.ArchiveMealPlanGroceryListItem(ctx, mealPlanID, ""))
 	})
 }

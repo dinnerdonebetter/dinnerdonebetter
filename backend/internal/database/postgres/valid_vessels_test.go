@@ -49,7 +49,7 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -153,7 +153,7 @@ func TestQuerier_ValidVesselExists(T *testing.T) {
 	T.Run("with invalid valid vessel ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c, _ := buildTestClient(t)
 
@@ -169,7 +169,7 @@ func TestQuerier_GetValidVessel(T *testing.T) {
 	T.Run("with invalid valid vessel ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetValidVessel(ctx, "")
@@ -184,7 +184,7 @@ func TestQuerier_SearchForValidVessels(T *testing.T) {
 	T.Run("with invalid query", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.SearchForValidVessels(ctx, "")
@@ -199,7 +199,7 @@ func TestQuerier_GetValidVesselsWithIDs(T *testing.T) {
 	T.Run("with empty IDs list", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		actual, err := c.GetValidVesselsWithIDs(ctx, nil)
@@ -228,7 +228,7 @@ func TestQuerier_CreateValidVessel(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateValidVessel(ctx, nil)
@@ -243,7 +243,7 @@ func TestQuerier_UpdateValidVessel(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidVessel(ctx, nil))
@@ -256,7 +256,7 @@ func TestQuerier_ArchiveValidVessel(T *testing.T) {
 	T.Run("with invalid valid vessel ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidVessel(ctx, ""))
@@ -269,7 +269,7 @@ func TestQuerier_MarkValidVesselAsIndexed(T *testing.T) {
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.MarkValidVesselAsIndexed(ctx, ""))

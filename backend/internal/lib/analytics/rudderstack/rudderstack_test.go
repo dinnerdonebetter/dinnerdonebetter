@@ -1,7 +1,6 @@
 package rudderstack
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
@@ -94,7 +93,7 @@ func TestRudderstackEventReporter_AddUser(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		exampleUserID := identifiers.New()
 		properties := map[string]any{
@@ -120,7 +119,7 @@ func TestRudderstackEventReporter_EventOccurred(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		exampleUserID := identifiers.New()
 		properties := map[string]any{

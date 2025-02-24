@@ -94,7 +94,7 @@ func (x *ServiceSettingCreationRequestInput) ValidateWithContext(ctx context.Con
 	result := &multierror.Error{}
 
 	if x.DefaultValue != nil && !slices.Contains(x.Enumeration, *x.DefaultValue) {
-		result = multierror.Append(result, errDefaultValueMustBeEnumerationValue)
+		result = multierror.Append(result, ErrDefaultValueMustBeEnumerationValue)
 	}
 
 	if err := validation.ValidateStructWithContext(

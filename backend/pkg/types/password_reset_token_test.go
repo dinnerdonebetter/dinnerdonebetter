@@ -1,7 +1,6 @@
 package types
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -14,7 +13,7 @@ func TestPasswordResetTokenCreationRequestInput_ValidateWithContext(T *testing.T
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &PasswordResetTokenCreationRequestInput{
 			EmailAddress: t.Name(),
 		}
@@ -29,7 +28,7 @@ func TestPasswordResetTokenDatabaseCreationInput_ValidateWithContext(T *testing.
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &PasswordResetTokenDatabaseCreationInput{
 			ID:            t.Name(),
 			Token:         t.Name(),
@@ -47,7 +46,7 @@ func TestPasswordResetTokenRedemptionRequestInput_ValidateWithContext(T *testing
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &PasswordResetTokenRedemptionRequestInput{
 			Token:       t.Name(),
 			NewPassword: t.Name(),
@@ -63,7 +62,7 @@ func TestUsernameReminderRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &UsernameReminderRequestInput{
 			EmailAddress: t.Name(),
 		}

@@ -84,7 +84,7 @@ func (s *service) CreateValidMeasurementUnitHandler(res http.ResponseWriter, req
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
 		Details: responseDetails,
@@ -433,7 +433,7 @@ func (s *service) UpdateValidMeasurementUnitHandler(res http.ResponseWriter, req
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
 		Details: responseDetails,
@@ -505,7 +505,7 @@ func (s *service) ArchiveValidMeasurementUnitHandler(res http.ResponseWriter, re
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
 		Details: responseDetails,

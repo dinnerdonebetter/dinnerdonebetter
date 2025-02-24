@@ -176,7 +176,7 @@ func TestQuerier_IsReady(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
@@ -188,7 +188,7 @@ func TestQuerier_IsReady(T *testing.T) {
 	T.Run("with error pinging database", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
@@ -218,7 +218,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleConfig := &databasecfg.Config{
 			Debug:                    true,
@@ -269,7 +269,7 @@ func TestQuerier_rollbackTransaction(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin()
@@ -288,7 +288,7 @@ func TestQuerier_handleRows(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		mockRows := &database.MockResultIterator{}
 		mockRows.On("Err").Return(nil)
@@ -303,7 +303,7 @@ func TestQuerier_handleRows(T *testing.T) {
 	T.Run("with row error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		expected := errors.New("blah")
 
 		mockRows := &database.MockResultIterator{}
@@ -319,7 +319,7 @@ func TestQuerier_handleRows(T *testing.T) {
 	T.Run("with close error", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		expected := errors.New("blah")
 
 		mockRows := &database.MockResultIterator{}

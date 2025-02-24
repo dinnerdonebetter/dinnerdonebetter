@@ -1,7 +1,6 @@
 package posthog
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -73,7 +72,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.SkipNow()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUsername := "username"
 
 		flagName := t.Name()
@@ -117,7 +116,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 	})
 
 	T.Run("with error executing request", func(t *testing.T) {
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUsername := "username"
 
 		cfg := &Config{ProjectAPIKey: t.Name(), PersonalAPIKey: t.Name()}
@@ -140,7 +139,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 
 func TestFeatureFlagManager_Identify(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
-		ctx := context.Background()
+		ctx := t.Context()
 
 		user := authentication.NewMockUser()
 		user.On("GetID").Return("ID").Twice()
@@ -166,7 +165,7 @@ func TestFeatureFlagManager_Identify(T *testing.T) {
 	})
 
 	T.Run("with nil user", func(t *testing.T) {
-		ctx := context.Background()
+		ctx := t.Context()
 
 		cfg := &Config{ProjectAPIKey: t.Name(), PersonalAPIKey: t.Name()}
 

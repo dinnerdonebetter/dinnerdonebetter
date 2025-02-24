@@ -88,7 +88,7 @@ func (s *service) CreateRecipeStepVesselHandler(res http.ResponseWriter, req *ht
 		UserID:           sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepVessel]{
 		Details: responseDetails,
@@ -323,7 +323,7 @@ func (s *service) UpdateRecipeStepVesselHandler(res http.ResponseWriter, req *ht
 		UserID:           sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepVessel]{
 		Details: responseDetails,
@@ -406,7 +406,7 @@ func (s *service) ArchiveRecipeStepVesselHandler(res http.ResponseWriter, req *h
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.RecipeStepVessel]{
 		Details: responseDetails,

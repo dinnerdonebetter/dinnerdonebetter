@@ -1,7 +1,6 @@
 package indexing
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -24,7 +23,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
@@ -46,7 +45,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 

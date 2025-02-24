@@ -1,7 +1,6 @@
 package tokenscfg
 
 import (
-	"context"
 	"encoding/base64"
 	"testing"
 
@@ -19,7 +18,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg := &Config{
 			Provider:                ProviderJWT,
 			Audience:                t.Name(),
@@ -32,7 +31,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("with missing key", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg := &Config{
 			Provider: ProviderJWT,
 		}
@@ -47,7 +46,7 @@ func TestConfig_ProvideTokenIssuer(T *testing.T) {
 	T.Run("with SendGrid", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{
 			Provider:                ProviderJWT,

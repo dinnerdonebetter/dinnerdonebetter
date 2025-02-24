@@ -806,7 +806,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		{{ range .Params }}{{ .Name }} := fake.BuildFakeID()
 		{{ end }}
 
@@ -836,7 +836,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 		{{ range $j, $p2 := $.Params}}{{ if ne $j $i}}{{ .Name }} := fake.BuildFakeID(){{ end }}
 		{{ end }}
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.{{ $.Name }}(ctx, {{ range $j, $p2 := $.Params}}{{ if eq $j $i}}""{{ else }} {{ .Name }} {{ end }}, {{ end }} nil)
 

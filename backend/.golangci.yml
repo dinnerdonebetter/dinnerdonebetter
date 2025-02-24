@@ -362,6 +362,10 @@ issues:
       linters:
         - paralleltest
 
+    - path: internal/services/eating/database/postgres
+      linters:
+        - paralleltest
+
     - path: cmd/tools/codegen/openapi/golang/statics
       linters:
         - unused

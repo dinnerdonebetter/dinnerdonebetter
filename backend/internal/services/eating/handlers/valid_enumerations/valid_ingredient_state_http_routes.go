@@ -84,7 +84,7 @@ func (s *service) CreateValidIngredientStateHandler(res http.ResponseWriter, req
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientState]{
 		Details: responseDetails,
@@ -357,7 +357,7 @@ func (s *service) UpdateValidIngredientStateHandler(res http.ResponseWriter, req
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientState]{
 		Details: responseDetails,
@@ -429,7 +429,7 @@ func (s *service) ArchiveValidIngredientStateHandler(res http.ResponseWriter, re
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.ValidIngredientState]{
 		Details: responseDetails,

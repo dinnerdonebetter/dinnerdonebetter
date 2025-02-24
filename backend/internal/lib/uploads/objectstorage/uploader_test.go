@@ -1,7 +1,6 @@
 package objectstorage
 
 import (
-	"context"
 	"net/http"
 	"os"
 	"testing"
@@ -20,7 +19,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg := &Config{
 			BucketName:       t.Name(),
 			Provider:         FilesystemProvider,
@@ -37,7 +36,7 @@ func TestNewUploadManager(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		l := logging.NewNoopLogger()
 		cfg := &Config{
 			BucketName: t.Name(),
@@ -56,7 +55,7 @@ func TestNewUploadManager(T *testing.T) {
 	T.Run("with nil config", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		l := logging.NewNoopLogger()
 		rpm := &mockrouting.RouteParamManager{}
 
@@ -70,7 +69,7 @@ func TestNewUploadManager(T *testing.T) {
 	T.Run("with invalid config", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		l := logging.NewNoopLogger()
 		cfg := &Config{}
 		rpm := &mockrouting.RouteParamManager{}
@@ -90,7 +89,7 @@ func TestUploader_selectBucket(T *testing.T) {
 	T.Run("s3 happy path", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		u := &Uploader{}
 		cfg := &Config{
 			Provider: S3Provider,
@@ -105,7 +104,7 @@ func TestUploader_selectBucket(T *testing.T) {
 	T.Run("s3 with nil config", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		u := &Uploader{}
 		cfg := &Config{
 			Provider: S3Provider,
@@ -118,7 +117,7 @@ func TestUploader_selectBucket(T *testing.T) {
 	T.Run("memory provider", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		u := &Uploader{}
 		cfg := &Config{
 			Provider: MemoryProvider,
@@ -132,7 +131,7 @@ func TestUploader_selectBucket(T *testing.T) {
 
 		tempDir := os.TempDir()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		u := &Uploader{}
 		cfg := &Config{
 			Provider: FilesystemProvider,
@@ -147,7 +146,7 @@ func TestUploader_selectBucket(T *testing.T) {
 	T.Run("filesystem with nil config", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		u := &Uploader{}
 		cfg := &Config{
 			Provider:         FilesystemProvider,

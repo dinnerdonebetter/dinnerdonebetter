@@ -90,7 +90,7 @@ func (s *service) CreateMealPlanTaskHandler(res http.ResponseWriter, req *http.R
 		UserID:       sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanTask]{
 		Details: responseDetails,
@@ -140,7 +140,7 @@ func (s *service) ReadMealPlanTaskHandler(res http.ResponseWriter, req *http.Req
 
 	// fetch meal plan task from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.mealPlanningDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
+	x, err := s.mealPlanningDataManager.GetMealPlanTask(ctx, mealPlanID, mealPlanTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -278,7 +278,7 @@ func (s *service) MealPlanTaskStatusChangeHandler(res http.ResponseWriter, req *
 	}
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	mealPlanTask, err := s.mealPlanningDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
+	mealPlanTask, err := s.mealPlanningDataManager.GetMealPlanTask(ctx, mealPlanID, mealPlanTaskID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		observability.AcknowledgeError(err, logger, span, "checking meal plan task existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -308,7 +308,7 @@ func (s *service) MealPlanTaskStatusChangeHandler(res http.ResponseWriter, req *
 		UserID:         sessionCtxData.Requester.UserID,
 	}
 
-	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.MealPlanTask]{
 		Details: responseDetails,
