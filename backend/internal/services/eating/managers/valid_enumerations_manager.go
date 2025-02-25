@@ -835,9 +835,29 @@ func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Contex
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
 
-	results, err := m.db.SearchForValidIngredientStates(ctx, query)
+	var (
+		results []*types.ValidIngredientState
+		err     error
+	)
+	if useDatabase {
+		results, err = m.db.SearchForValidIngredientStates(ctx, query)
+	} else {
+		var validIngredientStateSubsets []*indexing.ValidIngredientStateSearchSubset
+		validIngredientStateSubsets, err = m.validIngredientStatesSearchIndex.Search(ctx, query)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "searching valid ingredient states")
+		}
+
+		ids := []string{}
+		for _, validIngredientStateSubset := range validIngredientStateSubsets {
+			ids = append(ids, validIngredientStateSubset.ID)
+		}
+
+		results, err = m.db.GetValidIngredientStatesWithIDs(ctx, ids)
+	}
+
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid ingredient states")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient states")
 	}
 
 	return results, nil
@@ -946,9 +966,29 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
 
-	results, err := m.db.SearchForValidMeasurementUnits(ctx, query)
+	var (
+		results []*types.ValidMeasurementUnit
+		err     error
+	)
+	if useDatabase {
+		results, err = m.db.SearchForValidMeasurementUnits(ctx, query)
+	} else {
+		var validMeasurementUnitSubsets []*indexing.ValidMeasurementUnitSearchSubset
+		validMeasurementUnitSubsets, err = m.validMeasurementUnitSearchIndex.Search(ctx, query)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid measurement units")
+		}
+
+		ids := []string{}
+		for _, validMeasurementUnitSubset := range validMeasurementUnitSubsets {
+			ids = append(ids, validMeasurementUnitSubset.ID)
+		}
+
+		results, err = m.db.GetValidMeasurementUnitsWithIDs(ctx, ids)
+	}
+
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid measurement units")
+		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid measurement units")
 	}
 
 	return results, nil
@@ -1077,9 +1117,29 @@ func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, qu
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
 
-	results, err := m.db.SearchForValidInstruments(ctx, query)
+	var (
+		results []*types.ValidInstrument
+		err     error
+	)
+	if useDatabase {
+		results, err = m.db.SearchForValidInstruments(ctx, query)
+	} else {
+		var validInstrumentSubsets []*indexing.ValidInstrumentSearchSubset
+		validInstrumentSubsets, err = m.validInstrumentSearchIndex.Search(ctx, query)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid instruments")
+		}
+
+		ids := []string{}
+		for _, validInstrumentSubset := range validInstrumentSubsets {
+			ids = append(ids, validInstrumentSubset.ID)
+		}
+
+		results, err = m.db.GetValidInstrumentsWithIDs(ctx, ids)
+	}
+
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid instruments")
+		return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid instruments")
 	}
 
 	return results, nil
@@ -1428,10 +1488,31 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
 
-	results, err := m.db.SearchForValidPreparations(ctx, query)
+	var (
+		results []*types.ValidPreparation
+		err     error
+	)
+	if useDatabase {
+		results, err = m.db.SearchForValidPreparations(ctx, query)
+	} else {
+		var validPreparationSubsets []*indexing.ValidPreparationSearchSubset
+		validPreparationSubsets, err = m.validPreparationsSearchIndex.Search(ctx, query)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "searching valid preparations")
+		}
+
+		ids := []string{}
+		for _, validPreparationSubset := range validPreparationSubsets {
+			ids = append(ids, validPreparationSubset.ID)
+		}
+
+		results, err = m.db.GetValidPreparationsWithIDs(ctx, ids)
+	}
+
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "searching valid preparations")
 	}
