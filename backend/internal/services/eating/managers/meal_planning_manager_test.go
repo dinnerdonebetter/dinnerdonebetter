@@ -1,16 +1,15 @@
 package managers
 
 import (
+	"testing"
+
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
-	"github.com/stretchr/testify/require"
-	"testing"
-
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
@@ -19,6 +18,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func buildMealPlanManagerForTest(t *testing.T) *mealPlanningManager {

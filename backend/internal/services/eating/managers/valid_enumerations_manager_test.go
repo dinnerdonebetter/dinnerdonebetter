@@ -1,19 +1,24 @@
 package managers
 
 import (
+	"testing"
+
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types/fakes"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func buildValidEnumerationsManagerForTest(t *testing.T) *validEnumerationManager {
@@ -86,7 +91,27 @@ func TestValidEnumerationManager_CreateValidIngredientGroup(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientGroup()
+		fakeInput := fakes.BuildFakeValidIngredientGroupCreationRequestInput()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientGroupDataManagerMock.On(testutils.GetMethodName(vem.db.CreateValidIngredientGroup), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientGroupDatabaseCreationInput]()).Return(expected, nil)
+			},
+			map[string][]string{
+				events.ValidIngredientGroupCreated: {keys.ValidIngredientGroupIDKey},
+			},
+		)
+
+		actual, err := vem.CreateValidIngredientGroup(ctx, fakeInput)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -96,7 +121,23 @@ func TestValidEnumerationManager_ReadValidIngredientGroup(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientGroup()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientGroupDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredientGroup), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidIngredientGroup(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -106,7 +147,26 @@ func TestValidEnumerationManager_UpdateValidIngredientGroup(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		mpm := buildValidEnumerationsManagerForTest(t)
+
+		exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
+		exampleInput := fakes.BuildFakeValidIngredientGroupUpdateRequestInput()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			mpm,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientGroupDataManagerMock.On(testutils.GetMethodName(mpm.db.GetValidIngredientGroup), testutils.ContextMatcher, exampleValidIngredientGroup.ID).Return(exampleValidIngredientGroup, nil)
+				db.ValidIngredientGroupDataManagerMock.On(testutils.GetMethodName(mpm.db.UpdateValidIngredientGroup), testutils.ContextMatcher, testutils.MatchType[*types.ValidIngredientGroup]()).Return(nil)
+			},
+			map[string][]string{
+				events.ValidIngredientGroupUpdated: {keys.ValidIngredientGroupIDKey},
+			},
+		)
+
+		assert.NoError(t, mpm.UpdateValidIngredientGroup(ctx, exampleValidIngredientGroup.ID, exampleInput))
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -116,7 +176,25 @@ func TestValidEnumerationManager_ArchiveValidIngredientGroup(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientGroup()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientGroupDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientGroup), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidIngredientGroupArchived: {keys.ValidIngredientGroupIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidIngredientGroup(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 

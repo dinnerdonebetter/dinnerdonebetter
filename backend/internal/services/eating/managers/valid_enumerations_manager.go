@@ -3,7 +3,6 @@ package managers
 import (
 	"context"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
@@ -16,8 +15,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types/converters"
@@ -154,12 +153,12 @@ type (
 		tracer                           tracing.Tracer
 		db                               types.ValidEnumerationDataManager
 		dataChangesPublisher             messagequeue.Publisher
-		validIngredientStatesSearchIndex textsearch.IndexSearcher[indexing.ValidIngredientStateSearchSubset]
-		validInstrumentSearchIndex       textsearch.IndexSearcher[indexing.ValidInstrumentSearchSubset]
-		validMeasurementUnitSearchIndex  textsearch.IndexSearcher[indexing.ValidMeasurementUnitSearchSubset]
-		validIngredientSearchIndex       textsearch.IndexSearcher[indexing.ValidIngredientSearchSubset]
-		validPreparationsSearchIndex     textsearch.IndexSearcher[indexing.ValidPreparationSearchSubset]
-		validVesselsSearchIndex          textsearch.IndexSearcher[indexing.ValidVesselSearchSubset]
+		validIngredientStatesSearchIndex textsearch.IndexSearcher[eatingindexing.ValidIngredientStateSearchSubset]
+		validInstrumentSearchIndex       textsearch.IndexSearcher[eatingindexing.ValidInstrumentSearchSubset]
+		validMeasurementUnitSearchIndex  textsearch.IndexSearcher[eatingindexing.ValidMeasurementUnitSearchSubset]
+		validIngredientSearchIndex       textsearch.IndexSearcher[eatingindexing.ValidIngredientSearchSubset]
+		validPreparationsSearchIndex     textsearch.IndexSearcher[eatingindexing.ValidPreparationSearchSubset]
+		validVesselsSearchIndex          textsearch.IndexSearcher[eatingindexing.ValidVesselSearchSubset]
 	}
 )
 
@@ -328,13 +327,12 @@ func (m *validEnumerationManager) UpdateValidIngredientGroup(ctx context.Context
 	}
 
 	existingValidIngredientGroup.Update(input)
-
 	if err = m.db.UpdateValidIngredientGroup(ctx, existingValidIngredientGroup); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient group")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientGroupCreated, map[string]any{
-		keys.MealIDKey: existingValidIngredientGroup.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientGroupUpdated, map[string]any{
+		keys.ValidIngredientGroupIDKey: existingValidIngredientGroup.ID,
 	}))
 
 	return nil
@@ -352,7 +350,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientGroup(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientGroupCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientGroupArchived, map[string]any{
 		keys.ValidIngredientGroupIDKey: validIngredientGroupID,
 	}))
 
@@ -437,13 +435,12 @@ func (m *validEnumerationManager) UpdateValidIngredientMeasurementUnit(ctx conte
 	}
 
 	existingValidIngredientMeasurementUnit.Update(input)
-
 	if err = m.db.UpdateValidIngredientMeasurementUnit(ctx, existingValidIngredientMeasurementUnit); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientMeasurementUnitCreated, map[string]any{
-		keys.MealIDKey: existingValidIngredientMeasurementUnit.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientMeasurementUnitUpdated, map[string]any{
+		keys.ValidIngredientMeasurementUnitIDKey: existingValidIngredientMeasurementUnit.ID,
 	}))
 
 	return nil
@@ -461,7 +458,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientMeasurementUnit(ctx cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientMeasurementUnitCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientMeasurementUnitArchived, map[string]any{
 		keys.ValidIngredientMeasurementUnitIDKey: validIngredientMeasurementUnitID,
 	}))
 
@@ -588,13 +585,12 @@ func (m *validEnumerationManager) UpdateValidIngredientPreparation(ctx context.C
 	}
 
 	existingValidIngredientPreparation.Update(input)
-
 	if err = m.db.UpdateValidIngredientPreparation(ctx, existingValidIngredientPreparation); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientPreparationCreated, map[string]any{
-		keys.MealIDKey: existingValidIngredientPreparation.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientPreparationUpdated, map[string]any{
+		keys.ValidIngredientPreparationIDKey: existingValidIngredientPreparation.ID,
 	}))
 
 	return nil
@@ -612,7 +608,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientPreparation(ctx context.
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientPreparationCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientPreparationArchived, map[string]any{
 		keys.ValidIngredientPreparationIDKey: validIngredientPreparationID,
 	}))
 
@@ -686,7 +682,7 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 
 		results = rawResults.Data
 	} else {
-		var validIngredientSubsets []*indexing.ValidIngredientSearchSubset
+		var validIngredientSubsets []*eatingindexing.ValidIngredientSearchSubset
 		validIngredientSubsets, err := m.validIngredientSearchIndex.Search(ctx, query)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching valid ingredient search index for valid ingredients")
@@ -799,13 +795,12 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 	}
 
 	existingValidIngredient.Update(input)
-
 	if err = m.db.UpdateValidIngredient(ctx, existingValidIngredient); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientCreated, map[string]any{
-		keys.MealIDKey: existingValidIngredient.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientUpdated, map[string]any{
+		keys.ValidIngredientIDKey: existingValidIngredient.ID,
 	}))
 
 	return nil
@@ -823,7 +818,7 @@ func (m *validEnumerationManager) ArchiveValidIngredient(ctx context.Context, va
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientArchived, map[string]any{
 		keys.ValidIngredientIDKey: validIngredientID,
 	}))
 
@@ -930,13 +925,12 @@ func (m *validEnumerationManager) UpdateValidIngredientStateIngredient(ctx conte
 	}
 
 	existingValidIngredientStateIngredient.Update(input)
-
 	if err = m.db.UpdateValidIngredientStateIngredient(ctx, existingValidIngredientStateIngredient); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateIngredientCreated, map[string]any{
-		keys.MealIDKey: existingValidIngredientStateIngredient.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateIngredientUpdated, map[string]any{
+		keys.ValidIngredientStateIDKey: existingValidIngredientStateIngredient.ID,
 	}))
 
 	return nil
@@ -954,7 +948,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientStateIngredient(ctx cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateIngredientCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateIngredientArchived, map[string]any{
 		keys.ValidIngredientStateIngredientIDKey: validIngredientStateIngredientID,
 	}))
 
@@ -1024,7 +1018,7 @@ func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Contex
 	if useDatabase {
 		results, err = m.db.SearchForValidIngredientStates(ctx, query)
 	} else {
-		var validIngredientStateSubsets []*indexing.ValidIngredientStateSearchSubset
+		var validIngredientStateSubsets []*eatingindexing.ValidIngredientStateSearchSubset
 		validIngredientStateSubsets, err = m.validIngredientStatesSearchIndex.Search(ctx, query)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching valid ingredient states")
@@ -1123,13 +1117,12 @@ func (m *validEnumerationManager) UpdateValidIngredientState(ctx context.Context
 	}
 
 	existingValidIngredientState.Update(input)
-
 	if err = m.db.UpdateValidIngredientState(ctx, existingValidIngredientState); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateCreated, map[string]any{
-		keys.MealIDKey: existingValidIngredientState.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateUpdated, map[string]any{
+		keys.ValidIngredientStateIDKey: existingValidIngredientState.ID,
 	}))
 
 	return nil
@@ -1147,7 +1140,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientState(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateArchived, map[string]any{
 		keys.ValidIngredientStateIDKey: validIngredientStateID,
 	}))
 
@@ -1175,7 +1168,7 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 	if useDatabase {
 		results, err = m.db.SearchForValidMeasurementUnits(ctx, query)
 	} else {
-		var validMeasurementUnitSubsets []*indexing.ValidMeasurementUnitSearchSubset
+		var validMeasurementUnitSubsets []*eatingindexing.ValidMeasurementUnitSearchSubset
 		validMeasurementUnitSubsets, err = m.validMeasurementUnitSearchIndex.Search(ctx, query)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid measurement units")
@@ -1294,13 +1287,12 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnit(ctx context.Context
 	}
 
 	existingValidMeasurementUnit.Update(input)
-
 	if err = m.db.UpdateValidMeasurementUnit(ctx, existingValidMeasurementUnit); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitCreated, map[string]any{
-		keys.MealIDKey: existingValidMeasurementUnit.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitUpdated, map[string]any{
+		keys.ValidMeasurementUnitIDKey: existingValidMeasurementUnit.ID,
 	}))
 
 	return nil
@@ -1318,7 +1310,7 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnit(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitArchived, map[string]any{
 		keys.ValidMeasurementUnitIDKey: validMeasurementUnitID,
 	}))
 
@@ -1346,7 +1338,7 @@ func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, qu
 	if useDatabase {
 		results, err = m.db.SearchForValidInstruments(ctx, query)
 	} else {
-		var validInstrumentSubsets []*indexing.ValidInstrumentSearchSubset
+		var validInstrumentSubsets []*eatingindexing.ValidInstrumentSearchSubset
 		validInstrumentSubsets, err = m.validInstrumentSearchIndex.Search(ctx, query)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching for valid instruments")
@@ -1459,13 +1451,12 @@ func (m *validEnumerationManager) UpdateValidInstrument(ctx context.Context, val
 	}
 
 	existingValidInstrument.Update(input)
-
 	if err = m.db.UpdateValidInstrument(ctx, existingValidInstrument); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidInstrumentCreated, map[string]any{
-		keys.MealIDKey: existingValidInstrument.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidInstrumentUpdated, map[string]any{
+		keys.ValidInstrumentIDKey: existingValidInstrument.ID,
 	}))
 
 	return nil
@@ -1483,7 +1474,7 @@ func (m *validEnumerationManager) ArchiveValidInstrument(ctx context.Context, va
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidInstrumentCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidInstrumentArchived, map[string]any{
 		keys.ValidInstrumentIDKey: validInstrumentID,
 	}))
 
@@ -1584,7 +1575,7 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnitConversion(ctx conte
 		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit conversion")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitConversionCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitConversionUpdated, map[string]any{
 		keys.ValidMeasurementUnitConversionIDKey: existingValidMeasurementUnitConversion.ID,
 	}))
 
@@ -1603,7 +1594,7 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnitConversion(ctx cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit conversion")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitConversionCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitConversionArchived, map[string]any{
 		keys.ValidMeasurementUnitConversionIDKey: validMeasurementUnitConversionID,
 	}))
 
@@ -1688,13 +1679,12 @@ func (m *validEnumerationManager) UpdateValidPreparationInstrument(ctx context.C
 	}
 
 	existingValidPreparationInstrument.Update(input)
-
 	if err = m.db.UpdateValidPreparationInstrument(ctx, existingValidPreparationInstrument); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationInstrumentCreated, map[string]any{
-		keys.MealIDKey: existingValidPreparationInstrument.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationInstrumentUpdated, map[string]any{
+		keys.ValidPreparationInstrumentIDKey: existingValidPreparationInstrument.ID,
 	}))
 
 	return nil
@@ -1712,7 +1702,7 @@ func (m *validEnumerationManager) ArchiveValidPreparationInstrument(ctx context.
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationInstrumentCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationInstrumentArchived, map[string]any{
 		keys.ValidPreparationInstrumentIDKey: validPreparationInstrumentID,
 	}))
 
@@ -1782,7 +1772,7 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 	if useDatabase {
 		results, err = m.db.SearchForValidPreparations(ctx, query)
 	} else {
-		var validPreparationSubsets []*indexing.ValidPreparationSearchSubset
+		var validPreparationSubsets []*eatingindexing.ValidPreparationSearchSubset
 		validPreparationSubsets, err = m.validPreparationsSearchIndex.Search(ctx, query)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching valid preparations")
@@ -1895,14 +1885,11 @@ func (m *validEnumerationManager) UpdateValidPreparation(ctx context.Context, va
 	}
 
 	existingValidPreparation.Update(input)
-
 	if err = m.db.UpdateValidPreparation(ctx, existingValidPreparation); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationCreated, map[string]any{
-		keys.ValidPreparationIDKey: existingValidPreparation.ID,
-	}))
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationUpdated, map[string]any{keys.ValidPreparationIDKey: existingValidPreparation.ID}))
 
 	return nil
 }
@@ -1919,7 +1906,7 @@ func (m *validEnumerationManager) ArchiveValidPreparation(ctx context.Context, v
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationArchived, map[string]any{
 		keys.ValidPreparationIDKey: validPreparationID,
 	}))
 
@@ -2004,13 +1991,12 @@ func (m *validEnumerationManager) UpdateValidPreparationVessel(ctx context.Conte
 	}
 
 	existingValidPreparationVessel.Update(input)
-
 	if err = m.db.UpdateValidPreparationVessel(ctx, existingValidPreparationVessel); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationVesselCreated, map[string]any{
-		keys.MealIDKey: existingValidPreparationVessel.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationVesselUpdated, map[string]any{
+		keys.ValidPreparationVesselIDKey: existingValidPreparationVessel.ID,
 	}))
 
 	return nil
@@ -2028,7 +2014,7 @@ func (m *validEnumerationManager) ArchiveValidPreparationVessel(ctx context.Cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationVesselCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationVesselArchived, map[string]any{
 		keys.ValidPreparationVesselIDKey: validPreparationVesselID,
 	}))
 
@@ -2098,7 +2084,7 @@ func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query 
 	if useDatabase {
 		validVessels, err = m.db.SearchForValidVessels(ctx, query)
 	} else {
-		var validVesselSubsets []*indexing.ValidVesselSearchSubset
+		var validVesselSubsets []*eatingindexing.ValidVesselSearchSubset
 		validVesselSubsets, err = m.validVesselsSearchIndex.Search(ctx, query)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching index for valid vessels")
@@ -2211,13 +2197,12 @@ func (m *validEnumerationManager) UpdateValidVessel(ctx context.Context, validVe
 	}
 
 	existingValidVessel.Update(input)
-
 	if err = m.db.UpdateValidVessel(ctx, existingValidVessel); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidVesselCreated, map[string]any{
-		keys.MealIDKey: existingValidVessel.ID,
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidVesselUpdated, map[string]any{
+		keys.ValidVesselIDKey: existingValidVessel.ID,
 	}))
 
 	return nil
@@ -2235,7 +2220,7 @@ func (m *validEnumerationManager) ArchiveValidVessel(ctx context.Context, validV
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidVesselCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidVesselArchived, map[string]any{
 		keys.ValidVesselIDKey: validVesselID,
 	}))
 
