@@ -5,11 +5,13 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types/converters"
@@ -25,7 +27,7 @@ TODO:
 - [x] all relevant input params are accounted for in traces
 - [x] all pointer inputs have nil checks
 - [x] all query filters are defaulted when nil
-- [ ] all CUD functions fire a data change event
+- [x] all CUD functions fire a data change event
 - [x] list routes
 - [x] read routes
 - [x] search routes
@@ -145,6 +147,7 @@ type (
 		logger                           logging.Logger
 		tracer                           tracing.Tracer
 		db                               types.ValidEnumerationDataManager
+		dataChangesPublisher             messagequeue.Publisher
 		validIngredientStatesSearchIndex textsearch.IndexSearcher[indexing.ValidIngredientStateSearchSubset]
 		validInstrumentSearchIndex       textsearch.IndexSearcher[indexing.ValidInstrumentSearchSubset]
 		validMeasurementUnitSearchIndex  textsearch.IndexSearcher[indexing.ValidMeasurementUnitSearchSubset]
@@ -158,6 +161,7 @@ var (
 	_ ValidEnumerationsManager = (*validEnumerationManager)(nil)
 )
 
+// SearchValidIngredientGroups implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientGroups(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -179,6 +183,7 @@ func (m *validEnumerationManager) SearchValidIngredientGroups(ctx context.Contex
 	return results, nil
 }
 
+// ListValidIngredientGroups implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -198,6 +203,7 @@ func (m *validEnumerationManager) ListValidIngredientGroups(ctx context.Context,
 	return results.Data, nil
 }
 
+// CreateValidIngredientGroup implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidIngredientGroup(ctx context.Context, input *types.ValidIngredientGroupCreationRequestInput) (*types.ValidIngredientGroup, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -209,14 +215,19 @@ func (m *validEnumerationManager) CreateValidIngredientGroup(ctx context.Context
 	}
 
 	convertedInput := converters.ConvertValidIngredientGroupCreationRequestInputToValidIngredientGroupDatabaseCreationInput(input)
-	result, err := m.db.CreateValidIngredientGroup(ctx, convertedInput)
+	created, err := m.db.CreateValidIngredientGroup(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient group")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientGroupCreated, map[string]any{
+		keys.ValidIngredientGroupIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidIngredientGroup implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidIngredientGroup(ctx context.Context, validIngredientGroupID string) (*types.ValidIngredientGroup, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -232,6 +243,7 @@ func (m *validEnumerationManager) ReadValidIngredientGroup(ctx context.Context, 
 	return result, nil
 }
 
+// UpdateValidIngredientGroup implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidIngredientGroup(ctx context.Context, validIngredientGroupID string, input *types.ValidIngredientGroupUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -254,9 +266,14 @@ func (m *validEnumerationManager) UpdateValidIngredientGroup(ctx context.Context
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient group")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientGroupCreated, map[string]any{
+		keys.MealIDKey: existingValidIngredientGroup.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidIngredientGroup implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidIngredientGroup(ctx context.Context, validIngredientGroupID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -268,9 +285,14 @@ func (m *validEnumerationManager) ArchiveValidIngredientGroup(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientGroupCreated, map[string]any{
+		keys.ValidIngredientGroupIDKey: validIngredientGroupID,
+	}))
+
 	return nil
 }
 
+// ListValidIngredientMeasurementUnits implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidIngredientMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidIngredientMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -290,6 +312,7 @@ func (m *validEnumerationManager) ListValidIngredientMeasurementUnits(ctx contex
 	return results.Data, nil
 }
 
+// CreateValidIngredientMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidIngredientMeasurementUnit(ctx context.Context, input *types.ValidIngredientMeasurementUnitCreationRequestInput) (*types.ValidIngredientMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -301,14 +324,19 @@ func (m *validEnumerationManager) CreateValidIngredientMeasurementUnit(ctx conte
 	}
 
 	convertedInput := converters.ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientMeasurementUnitDatabaseCreationInput(input)
-	result, err := m.db.CreateValidIngredientMeasurementUnit(ctx, convertedInput)
+	created, err := m.db.CreateValidIngredientMeasurementUnit(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient measurement unit")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientMeasurementUnitCreated, map[string]any{
+		keys.ValidIngredientMeasurementUnitIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidIngredientMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*types.ValidIngredientMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -324,6 +352,7 @@ func (m *validEnumerationManager) ReadValidIngredientMeasurementUnit(ctx context
 	return result, nil
 }
 
+// UpdateValidIngredientMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string, input *types.ValidIngredientMeasurementUnitUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -346,9 +375,14 @@ func (m *validEnumerationManager) UpdateValidIngredientMeasurementUnit(ctx conte
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient measurement unit")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientMeasurementUnitCreated, map[string]any{
+		keys.MealIDKey: existingValidIngredientMeasurementUnit.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidIngredientMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -360,9 +394,14 @@ func (m *validEnumerationManager) ArchiveValidIngredientMeasurementUnit(ctx cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient measurement unit")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientMeasurementUnitCreated, map[string]any{
+		keys.ValidIngredientMeasurementUnitIDKey: validIngredientMeasurementUnitID,
+	}))
+
 	return nil
 }
 
+// SearchValidIngredientMeasurementUnitsByIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -383,6 +422,7 @@ func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByIngredi
 	return results.Data, nil
 }
 
+// SearchValidIngredientMeasurementUnitsByMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -403,6 +443,7 @@ func (m *validEnumerationManager) SearchValidIngredientMeasurementUnitsByMeasure
 	return results.Data, nil
 }
 
+// ListValidIngredientPreparations implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidIngredientPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -422,6 +463,7 @@ func (m *validEnumerationManager) ListValidIngredientPreparations(ctx context.Co
 	return results.Data, nil
 }
 
+// CreateValidIngredientPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidIngredientPreparation(ctx context.Context, input *types.ValidIngredientPreparationCreationRequestInput) (*types.ValidIngredientPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -433,14 +475,19 @@ func (m *validEnumerationManager) CreateValidIngredientPreparation(ctx context.C
 	}
 
 	convertedInput := converters.ConvertValidIngredientPreparationCreationRequestInputToValidIngredientPreparationDatabaseCreationInput(input)
-	result, err := m.db.CreateValidIngredientPreparation(ctx, convertedInput)
+	created, err := m.db.CreateValidIngredientPreparation(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient preparation")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientPreparationCreated, map[string]any{
+		keys.ValidIngredientPreparationIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidIngredientPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*types.ValidIngredientPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -456,6 +503,7 @@ func (m *validEnumerationManager) ReadValidIngredientPreparation(ctx context.Con
 	return result, nil
 }
 
+// UpdateValidIngredientPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string, input *types.ValidIngredientPreparationUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -478,9 +526,14 @@ func (m *validEnumerationManager) UpdateValidIngredientPreparation(ctx context.C
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientPreparationCreated, map[string]any{
+		keys.MealIDKey: existingValidIngredientPreparation.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidIngredientPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -492,9 +545,14 @@ func (m *validEnumerationManager) ArchiveValidIngredientPreparation(ctx context.
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientPreparationCreated, map[string]any{
+		keys.ValidIngredientPreparationIDKey: validIngredientPreparationID,
+	}))
+
 	return nil
 }
 
+// SearchValidIngredientPreparationsByIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientPreparationsByIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -515,6 +573,7 @@ func (m *validEnumerationManager) SearchValidIngredientPreparationsByIngredient(
 	return results.Data, nil
 }
 
+// SearchValidIngredientPreparationsByPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientPreparationsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -535,6 +594,7 @@ func (m *validEnumerationManager) SearchValidIngredientPreparationsByPreparation
 	return results.Data, nil
 }
 
+// SearchValidIngredients implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -579,6 +639,7 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 	return results, nil
 }
 
+// ListValidIngredients implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidIngredients(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -598,6 +659,7 @@ func (m *validEnumerationManager) ListValidIngredients(ctx context.Context, filt
 	return results.Data, nil
 }
 
+// CreateValidIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientCreationRequestInput) (*types.ValidIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -609,14 +671,19 @@ func (m *validEnumerationManager) CreateValidIngredient(ctx context.Context, inp
 	}
 
 	convertedInput := converters.ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(input)
-	result, err := m.db.CreateValidIngredient(ctx, convertedInput)
+	created, err := m.db.CreateValidIngredient(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientCreated, map[string]any{
+		keys.ValidIngredientIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -632,6 +699,7 @@ func (m *validEnumerationManager) ReadValidIngredient(ctx context.Context, valid
 	return result, nil
 }
 
+// RandomValidIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) RandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -646,6 +714,7 @@ func (m *validEnumerationManager) RandomValidIngredient(ctx context.Context) (*t
 	return result, nil
 }
 
+// UpdateValidIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, validIngredientID string, input *types.ValidIngredientUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -668,9 +737,14 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientCreated, map[string]any{
+		keys.MealIDKey: existingValidIngredient.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -682,9 +756,14 @@ func (m *validEnumerationManager) ArchiveValidIngredient(ctx context.Context, va
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientCreated, map[string]any{
+		keys.ValidIngredientIDKey: validIngredientID,
+	}))
+
 	return nil
 }
 
+// SearchValidIngredientsByPreparationAndIngredientName implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, validPreparationID, query string, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -706,6 +785,7 @@ func (m *validEnumerationManager) SearchValidIngredientsByPreparationAndIngredie
 	return validIngredients.Data, nil
 }
 
+// ListValidIngredientStateIngredients implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidIngredientStateIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -725,6 +805,7 @@ func (m *validEnumerationManager) ListValidIngredientStateIngredients(ctx contex
 	return results.Data, nil
 }
 
+// CreateValidIngredientStateIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidIngredientStateIngredient(ctx context.Context, input *types.ValidIngredientStateIngredientCreationRequestInput) (*types.ValidIngredientStateIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -736,14 +817,19 @@ func (m *validEnumerationManager) CreateValidIngredientStateIngredient(ctx conte
 	}
 
 	convertedInput := converters.ConvertValidIngredientStateIngredientCreationRequestInputToValidIngredientStateIngredientDatabaseCreationInput(input)
-	result, err := m.db.CreateValidIngredientStateIngredient(ctx, convertedInput)
+	created, err := m.db.CreateValidIngredientStateIngredient(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient state ingredient")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateIngredientCreated, map[string]any{
+		keys.ValidIngredientStateIngredientIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidIngredientStateIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) (*types.ValidIngredientStateIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -759,6 +845,7 @@ func (m *validEnumerationManager) ReadValidIngredientStateIngredient(ctx context
 	return result, nil
 }
 
+// UpdateValidIngredientStateIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string, input *types.ValidIngredientStateIngredientUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -781,9 +868,14 @@ func (m *validEnumerationManager) UpdateValidIngredientStateIngredient(ctx conte
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state ingredient")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateIngredientCreated, map[string]any{
+		keys.MealIDKey: existingValidIngredientStateIngredient.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidIngredientStateIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -795,9 +887,14 @@ func (m *validEnumerationManager) ArchiveValidIngredientStateIngredient(ctx cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateIngredientCreated, map[string]any{
+		keys.ValidIngredientStateIngredientIDKey: validIngredientStateIngredientID,
+	}))
+
 	return nil
 }
 
+// SearchValidIngredientStateIngredientsByIngredient implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientStateIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -818,6 +915,7 @@ func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredi
 	return results.Data, nil
 }
 
+// SearchValidIngredientStateIngredientsByIngredientState implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredientState(ctx context.Context, validIngredientStateID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientStateIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -838,6 +936,7 @@ func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredi
 	return results.Data, nil
 }
 
+// SearchValidIngredientStates implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -879,6 +978,7 @@ func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Contex
 	return results, nil
 }
 
+// ListValidIngredientStates implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -898,6 +998,7 @@ func (m *validEnumerationManager) ListValidIngredientStates(ctx context.Context,
 	return results.Data, nil
 }
 
+// CreateValidIngredientState implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidIngredientState(ctx context.Context, input *types.ValidIngredientStateCreationRequestInput) (*types.ValidIngredientState, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -909,14 +1010,19 @@ func (m *validEnumerationManager) CreateValidIngredientState(ctx context.Context
 	}
 
 	convertedInput := converters.ConvertValidIngredientStateCreationRequestInputToValidIngredientStateDatabaseCreationInput(input)
-	result, err := m.db.CreateValidIngredientState(ctx, convertedInput)
+	created, err := m.db.CreateValidIngredientState(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient state")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateCreated, map[string]any{
+		keys.ValidIngredientStateIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidIngredientState implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidIngredientState(ctx context.Context, validIngredientStateID string) (*types.ValidIngredientState, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -932,6 +1038,7 @@ func (m *validEnumerationManager) ReadValidIngredientState(ctx context.Context, 
 	return result, nil
 }
 
+// UpdateValidIngredientState implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidIngredientState(ctx context.Context, validIngredientStateID string, input *types.ValidIngredientStateUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -954,9 +1061,14 @@ func (m *validEnumerationManager) UpdateValidIngredientState(ctx context.Context
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateCreated, map[string]any{
+		keys.MealIDKey: existingValidIngredientState.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidIngredientState implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidIngredientState(ctx context.Context, validIngredientStateID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -968,9 +1080,14 @@ func (m *validEnumerationManager) ArchiveValidIngredientState(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateCreated, map[string]any{
+		keys.ValidIngredientStateIDKey: validIngredientStateID,
+	}))
+
 	return nil
 }
 
+// SearchValidMeasurementUnits implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1012,6 +1129,7 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 	return results, nil
 }
 
+// SearchValidMeasurementUnitsByIngredientID implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1032,6 +1150,7 @@ func (m *validEnumerationManager) SearchValidMeasurementUnitsByIngredientID(ctx 
 	return validMeasurementUnits.Data, nil
 }
 
+// ListValidMeasurementUnits implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1051,6 +1170,7 @@ func (m *validEnumerationManager) ListValidMeasurementUnits(ctx context.Context,
 	return results.Data, nil
 }
 
+// CreateValidMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitCreationRequestInput) (*types.ValidMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1062,14 +1182,19 @@ func (m *validEnumerationManager) CreateValidMeasurementUnit(ctx context.Context
 	}
 
 	convertedInput := converters.ConvertValidMeasurementUnitCreationRequestInputToValidMeasurementUnitDatabaseCreationInput(input)
-	result, err := m.db.CreateValidMeasurementUnit(ctx, convertedInput)
+	created, err := m.db.CreateValidMeasurementUnit(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid measurement unit")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitCreated, map[string]any{
+		keys.ValidMeasurementUnitIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1084,6 +1209,7 @@ func (m *validEnumerationManager) ReadValidMeasurementUnit(ctx context.Context, 
 	return result, nil
 }
 
+// UpdateValidMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string, input *types.ValidMeasurementUnitUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1106,9 +1232,14 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnit(ctx context.Context
 		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitCreated, map[string]any{
+		keys.MealIDKey: existingValidMeasurementUnit.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1120,9 +1251,14 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnit(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitCreated, map[string]any{
+		keys.ValidMeasurementUnitIDKey: validMeasurementUnitID,
+	}))
+
 	return nil
 }
 
+// SearchValidInstruments implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1164,6 +1300,7 @@ func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, qu
 	return results, nil
 }
 
+// ListValidInstruments implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidInstruments(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1183,6 +1320,7 @@ func (m *validEnumerationManager) ListValidInstruments(ctx context.Context, filt
 	return results.Data, nil
 }
 
+// CreateValidInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentCreationRequestInput) (*types.ValidInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1194,14 +1332,19 @@ func (m *validEnumerationManager) CreateValidInstrument(ctx context.Context, inp
 	}
 
 	convertedInput := converters.ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreationInput(input)
-	result, err := m.db.CreateValidInstrument(ctx, convertedInput)
+	created, err := m.db.CreateValidInstrument(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid instrument")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidInstrumentCreated, map[string]any{
+		keys.ValidInstrumentIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1216,6 +1359,7 @@ func (m *validEnumerationManager) ReadValidInstrument(ctx context.Context, valid
 	return result, nil
 }
 
+// RandomValidInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) RandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1230,6 +1374,7 @@ func (m *validEnumerationManager) RandomValidInstrument(ctx context.Context) (*t
 	return result, nil
 }
 
+// UpdateValidInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidInstrument(ctx context.Context, validInstrumentID string, input *types.ValidInstrumentUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1252,9 +1397,14 @@ func (m *validEnumerationManager) UpdateValidInstrument(ctx context.Context, val
 		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidInstrumentCreated, map[string]any{
+		keys.MealIDKey: existingValidInstrument.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1266,9 +1416,14 @@ func (m *validEnumerationManager) ArchiveValidInstrument(ctx context.Context, va
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidInstrumentCreated, map[string]any{
+		keys.ValidInstrumentIDKey: validInstrumentID,
+	}))
+
 	return nil
 }
 
+// ValidMeasurementUnitConversionsFromMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1284,6 +1439,7 @@ func (m *validEnumerationManager) ValidMeasurementUnitConversionsFromMeasurement
 	return results, nil
 }
 
+// ValidMeasurementUnitConversionsToMeasurementUnit implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1299,6 +1455,7 @@ func (m *validEnumerationManager) ValidMeasurementUnitConversionsToMeasurementUn
 	return results, nil
 }
 
+// CreateValidMeasurementUnitConversion implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidMeasurementUnitConversion(ctx context.Context, input *types.ValidMeasurementUnitConversionCreationRequestInput) (*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1310,14 +1467,19 @@ func (m *validEnumerationManager) CreateValidMeasurementUnitConversion(ctx conte
 	}
 
 	convertedInput := converters.ConvertValidMeasurementUnitConversionCreationRequestInputToValidMeasurementUnitConversionDatabaseCreationInput(input)
-	result, err := m.db.CreateValidMeasurementUnitConversion(ctx, convertedInput)
+	created, err := m.db.CreateValidMeasurementUnitConversion(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid measurement unit conversion")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitConversionCreated, map[string]any{
+		keys.ValidMeasurementUnitConversionIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidMeasurementUnitConversion implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) (*types.ValidMeasurementUnitConversion, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1333,6 +1495,7 @@ func (m *validEnumerationManager) ReadValidMeasurementUnitConversion(ctx context
 	return result, nil
 }
 
+// UpdateValidMeasurementUnitConversion implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string, input *types.ValidMeasurementUnitConversionUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1354,9 +1517,14 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnitConversion(ctx conte
 		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit conversion")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitConversionCreated, map[string]any{
+		keys.ValidMeasurementUnitConversionIDKey: existingValidMeasurementUnitConversion.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidMeasurementUnitConversion implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1368,9 +1536,14 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnitConversion(ctx cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit conversion")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidMeasurementUnitConversionCreated, map[string]any{
+		keys.ValidMeasurementUnitConversionIDKey: validMeasurementUnitConversionID,
+	}))
+
 	return nil
 }
 
+// ListValidPreparationInstruments implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidPreparationInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1390,6 +1563,7 @@ func (m *validEnumerationManager) ListValidPreparationInstruments(ctx context.Co
 	return results.Data, nil
 }
 
+// CreateValidPreparationInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidPreparationInstrument(ctx context.Context, input *types.ValidPreparationInstrumentCreationRequestInput) (*types.ValidPreparationInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1401,14 +1575,19 @@ func (m *validEnumerationManager) CreateValidPreparationInstrument(ctx context.C
 	}
 
 	convertedInput := converters.ConvertValidPreparationInstrumentCreationRequestInputToValidPreparationInstrumentDatabaseCreationInput(input)
-	result, err := m.db.CreateValidPreparationInstrument(ctx, convertedInput)
+	created, err := m.db.CreateValidPreparationInstrument(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation instrument")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationInstrumentCreated, map[string]any{
+		keys.ValidPreparationInstrumentIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidPreparationInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*types.ValidPreparationInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1424,6 +1603,7 @@ func (m *validEnumerationManager) ReadValidPreparationInstrument(ctx context.Con
 	return result, nil
 }
 
+// UpdateValidPreparationInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string, input *types.ValidPreparationInstrumentUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1446,9 +1626,14 @@ func (m *validEnumerationManager) UpdateValidPreparationInstrument(ctx context.C
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation instrument")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationInstrumentCreated, map[string]any{
+		keys.MealIDKey: existingValidPreparationInstrument.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidPreparationInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1460,9 +1645,14 @@ func (m *validEnumerationManager) ArchiveValidPreparationInstrument(ctx context.
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation instrument")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationInstrumentCreated, map[string]any{
+		keys.ValidPreparationInstrumentIDKey: validPreparationInstrumentID,
+	}))
+
 	return nil
 }
 
+// SearchValidPreparationInstrumentsByPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidPreparationInstrumentsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1483,6 +1673,7 @@ func (m *validEnumerationManager) SearchValidPreparationInstrumentsByPreparation
 	return validPreparationInstruments.Data, nil
 }
 
+// SearchValidPreparationInstrumentsByInstrument implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidPreparationInstrumentsByInstrument(ctx context.Context, validInstrumentID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1503,6 +1694,7 @@ func (m *validEnumerationManager) SearchValidPreparationInstrumentsByInstrument(
 	return validPreparationInstruments.Data, nil
 }
 
+// SearchValidPreparations implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1544,6 +1736,7 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 	return results, nil
 }
 
+// ListValidPreparations implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidPreparations(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1563,6 +1756,7 @@ func (m *validEnumerationManager) ListValidPreparations(ctx context.Context, fil
 	return results.Data, nil
 }
 
+// CreateValidPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationCreationRequestInput) (*types.ValidPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1574,14 +1768,19 @@ func (m *validEnumerationManager) CreateValidPreparation(ctx context.Context, in
 	}
 
 	convertedInput := converters.ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreationInput(input)
-	result, err := m.db.CreateValidPreparation(ctx, convertedInput)
+	created, err := m.db.CreateValidPreparation(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationCreated, map[string]any{
+		keys.ValidPreparationIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1597,6 +1796,7 @@ func (m *validEnumerationManager) ReadValidPreparation(ctx context.Context, vali
 	return result, nil
 }
 
+// RandomValidPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) RandomValidPreparation(ctx context.Context) (*types.ValidPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1611,6 +1811,7 @@ func (m *validEnumerationManager) RandomValidPreparation(ctx context.Context) (*
 	return result, nil
 }
 
+// UpdateValidPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidPreparation(ctx context.Context, validPreparationID string, input *types.ValidPreparationUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1632,9 +1833,14 @@ func (m *validEnumerationManager) UpdateValidPreparation(ctx context.Context, va
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationCreated, map[string]any{
+		keys.ValidPreparationIDKey: existingValidPreparation.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1646,9 +1852,14 @@ func (m *validEnumerationManager) ArchiveValidPreparation(ctx context.Context, v
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationCreated, map[string]any{
+		keys.ValidPreparationIDKey: validPreparationID,
+	}))
+
 	return nil
 }
 
+// ListValidPreparationVessels implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidPreparationVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1668,6 +1879,7 @@ func (m *validEnumerationManager) ListValidPreparationVessels(ctx context.Contex
 	return results.Data, nil
 }
 
+// CreateValidPreparationVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidPreparationVessel(ctx context.Context, input *types.ValidPreparationVesselCreationRequestInput) (*types.ValidPreparationVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1679,14 +1891,19 @@ func (m *validEnumerationManager) CreateValidPreparationVessel(ctx context.Conte
 	}
 
 	convertedInput := converters.ConvertValidPreparationVesselCreationRequestInputToValidPreparationVesselDatabaseCreationInput(input)
-	result, err := m.db.CreateValidPreparationVessel(ctx, convertedInput)
+	created, err := m.db.CreateValidPreparationVessel(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation vessel")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationVesselCreated, map[string]any{
+		keys.ValidPreparationVesselIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidPreparationVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*types.ValidPreparationVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1702,6 +1919,7 @@ func (m *validEnumerationManager) ReadValidPreparationVessel(ctx context.Context
 	return result, nil
 }
 
+// UpdateValidPreparationVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidPreparationVessel(ctx context.Context, validPreparationVesselID string, input *types.ValidPreparationVesselUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1724,9 +1942,14 @@ func (m *validEnumerationManager) UpdateValidPreparationVessel(ctx context.Conte
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationVesselCreated, map[string]any{
+		keys.MealIDKey: existingValidPreparationVessel.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidPreparationVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1738,9 +1961,14 @@ func (m *validEnumerationManager) ArchiveValidPreparationVessel(ctx context.Cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation vessel")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidPreparationVesselCreated, map[string]any{
+		keys.ValidPreparationVesselIDKey: validPreparationVesselID,
+	}))
+
 	return nil
 }
 
+// SearchValidPreparationVesselsByPreparation implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidPreparationVesselsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1761,6 +1989,7 @@ func (m *validEnumerationManager) SearchValidPreparationVesselsByPreparation(ctx
 	return validPreparationVessels.Data, nil
 }
 
+// SearchValidPreparationVesselsByVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidPreparationVesselsByVessel(ctx context.Context, validVesselID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1781,6 +2010,7 @@ func (m *validEnumerationManager) SearchValidPreparationVesselsByVessel(ctx cont
 	return validPreparationVessels.Data, nil
 }
 
+// SearchValidVessels implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1821,6 +2051,7 @@ func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query 
 	return validVessels, nil
 }
 
+// ListValidVessels implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ListValidVessels(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1840,6 +2071,7 @@ func (m *validEnumerationManager) ListValidVessels(ctx context.Context, filter *
 	return results.Data, nil
 }
 
+// CreateValidVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) CreateValidVessel(ctx context.Context, input *types.ValidVesselCreationRequestInput) (*types.ValidVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1851,14 +2083,19 @@ func (m *validEnumerationManager) CreateValidVessel(ctx context.Context, input *
 	}
 
 	convertedInput := converters.ConvertValidVesselCreationRequestInputToValidVesselDatabaseCreationInput(input)
-	result, err := m.db.CreateValidVessel(ctx, convertedInput)
+	created, err := m.db.CreateValidVessel(ctx, convertedInput)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid vessel")
 	}
 
-	return result, nil
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidVesselCreated, map[string]any{
+		keys.ValidVesselIDKey: created.ID,
+	}))
+
+	return created, nil
 }
 
+// ReadValidVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ReadValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1874,6 +2111,7 @@ func (m *validEnumerationManager) ReadValidVessel(ctx context.Context, validVess
 	return result, nil
 }
 
+// RandomValidVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) RandomValidVessel(ctx context.Context) (*types.ValidVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1888,6 +2126,7 @@ func (m *validEnumerationManager) RandomValidVessel(ctx context.Context) (*types
 	return result, nil
 }
 
+// UpdateValidVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) UpdateValidVessel(ctx context.Context, validVesselID string, input *types.ValidVesselUpdateRequestInput) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1910,9 +2149,14 @@ func (m *validEnumerationManager) UpdateValidVessel(ctx context.Context, validVe
 		return observability.PrepareAndLogError(err, logger, span, "updating valid vessel")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidVesselCreated, map[string]any{
+		keys.MealIDKey: existingValidVessel.ID,
+	}))
+
 	return nil
 }
 
+// ArchiveValidVessel implements the ValidEnumerationsManager interface.
 func (m *validEnumerationManager) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1923,6 +2167,10 @@ func (m *validEnumerationManager) ArchiveValidVessel(ctx context.Context, validV
 	if err := m.db.ArchiveValidVessel(ctx, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidVesselCreated, map[string]any{
+		keys.ValidVesselIDKey: validVesselID,
+	}))
 
 	return nil
 }

@@ -1,10 +1,8 @@
 package managers
 
 import (
-	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
@@ -15,36 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
-
-func TestMealPlanningManager_buildDataChangeMessageFromContext(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := t.Context()
-		mpm := buildMealPlanManagerForTest(t)
-
-		sessionContextData := &sessions.ContextData{
-			Requester:         sessions.RequesterInfo{UserID: fakes.BuildFakeID()},
-			ActiveHouseholdID: fakes.BuildFakeID(),
-		}
-		ctx = context.WithValue(ctx, sessions.SessionContextDataKey, sessionContextData)
-
-		expected := &types.DataChangeMessage{
-			EventType: events.MealCreated,
-			Context: map[string]any{
-				"things": "stuff",
-			},
-			UserID:      sessionContextData.Requester.UserID,
-			HouseholdID: sessionContextData.ActiveHouseholdID,
-		}
-
-		actual := mpm.buildDataChangeMessageFromContext(ctx, expected.EventType, expected.Context)
-
-		assert.Equal(t, expected, actual)
-	})
-}
 
 func TestMealPlanningManager_ListMeals(T *testing.T) {
 	T.Parallel()
