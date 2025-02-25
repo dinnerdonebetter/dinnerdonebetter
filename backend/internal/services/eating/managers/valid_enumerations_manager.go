@@ -19,19 +19,19 @@ import (
 
 TODO:
 - [x] all loggers are instantiated from spans
-- [ ] all returned errors have description strings
-- [ ] all relevant input params are accounted for in logs
-- [ ] all relevant input params are accounted for in traces
-- [ ] no more references to `GetUnfinalizedMealPlansWithExpiredVotingPeriods`
-- [ ] all pointer inputs have nil checks
-- [ ] all query filters are defaulted when nil
+- [x] no more references to `GetUnfinalizedMealPlansWithExpiredVotingPeriods`
+- [x] all returned errors have description strings
+- [x] all relevant input params are accounted for in logs
+- [x] all relevant input params are accounted for in traces
+- [x] all pointer inputs have nil checks
+- [x] all query filters are defaulted when nil
 - [ ] all CUD functions fire a data change event
-- [ ] list routes
-- [ ] read routes
-- [ ] search routes
-- [ ] create routes
-- [ ] update routes
-- [ ] archive routes
+- [x] list routes
+- [x] read routes
+- [x] search routes
+- [x] create routes
+- [x] update routes
+- [x] archive routes
 - [ ] unit tests lmfao
 
 */
@@ -222,6 +222,7 @@ func (m *validEnumerationManager) ReadValidIngredientGroup(ctx context.Context, 
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	result, err := m.db.GetValidIngredientGroup(ctx, validIngredientGroupID)
 	if err != nil {
@@ -261,6 +262,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientGroup(ctx context.Contex
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	if err := m.db.ArchiveValidIngredientGroup(ctx, validIngredientGroupID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")
@@ -312,6 +314,7 @@ func (m *validEnumerationManager) ReadValidIngredientMeasurementUnit(ctx context
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	result, err := m.db.GetValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID)
 	if err != nil {
@@ -351,6 +354,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientMeasurementUnit(ctx cont
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	if err := m.db.ArchiveValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient measurement unit")
@@ -442,6 +446,7 @@ func (m *validEnumerationManager) ReadValidIngredientPreparation(ctx context.Con
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	result, err := m.db.GetValidIngredientPreparation(ctx, validIngredientPreparationID)
 	if err != nil {
@@ -481,6 +486,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientPreparation(ctx context.
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	if err := m.db.ArchiveValidIngredientPreparation(ctx, validIngredientPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation")
@@ -540,6 +546,7 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 
 	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
 
 	var (
 		results []*types.ValidIngredient
@@ -615,6 +622,7 @@ func (m *validEnumerationManager) ReadValidIngredient(ctx context.Context, valid
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	result, err := m.db.GetValidIngredient(ctx, validIngredientID)
 	if err != nil {
@@ -668,6 +676,7 @@ func (m *validEnumerationManager) ArchiveValidIngredient(ctx context.Context, va
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	if err := m.db.ArchiveValidIngredient(ctx, validIngredientID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
@@ -679,6 +688,11 @@ func (m *validEnumerationManager) ArchiveValidIngredient(ctx context.Context, va
 func (m *validEnumerationManager) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, validPreparationID, query string, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
@@ -735,6 +749,7 @@ func (m *validEnumerationManager) ReadValidIngredientStateIngredient(ctx context
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	result, err := m.db.GetValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
 	if err != nil {
@@ -774,6 +789,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientStateIngredient(ctx cont
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	if err := m.db.ArchiveValidIngredientStateIngredient(ctx, validIngredientStateIngredientID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient")
@@ -906,6 +922,7 @@ func (m *validEnumerationManager) ReadValidIngredientState(ctx context.Context, 
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	result, err := m.db.GetValidIngredientState(ctx, validIngredientStateID)
 	if err != nil {
@@ -945,6 +962,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientState(ctx context.Contex
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	if err := m.db.ArchiveValidIngredientState(ctx, validIngredientStateID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state")
@@ -1096,6 +1114,7 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnit(ctx context.Contex
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	if err := m.db.ArchiveValidMeasurementUnit(ctx, validMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
@@ -1241,6 +1260,7 @@ func (m *validEnumerationManager) ArchiveValidInstrument(ctx context.Context, va
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	if err := m.db.ArchiveValidInstrument(ctx, validInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")
@@ -1303,6 +1323,7 @@ func (m *validEnumerationManager) ReadValidMeasurementUnitConversion(ctx context
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	result, err := m.db.GetValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
 	if err != nil {
@@ -1341,6 +1362,7 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnitConversion(ctx cont
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	if err := m.db.ArchiveValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit conversion")
@@ -1392,6 +1414,7 @@ func (m *validEnumerationManager) ReadValidPreparationInstrument(ctx context.Con
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	result, err := m.db.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
 	if err != nil {
@@ -1431,6 +1454,7 @@ func (m *validEnumerationManager) ArchiveValidPreparationInstrument(ctx context.
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	if err := m.db.ArchiveValidPreparationInstrument(ctx, validPreparationInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation instrument")
@@ -1563,6 +1587,7 @@ func (m *validEnumerationManager) ReadValidPreparation(ctx context.Context, vali
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	result, err := m.db.GetValidPreparation(ctx, validPreparationID)
 	if err != nil {
@@ -1615,6 +1640,7 @@ func (m *validEnumerationManager) ArchiveValidPreparation(ctx context.Context, v
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	if err := m.db.ArchiveValidPreparation(ctx, validPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation")
@@ -1666,6 +1692,7 @@ func (m *validEnumerationManager) ReadValidPreparationVessel(ctx context.Context
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	result, err := m.db.GetValidPreparationVessel(ctx, validPreparationVesselID)
 	if err != nil {
@@ -1680,6 +1707,7 @@ func (m *validEnumerationManager) UpdateValidPreparationVessel(ctx context.Conte
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	if input == nil {
 		return internalerrors.ErrNilInputParameter
@@ -1704,6 +1732,7 @@ func (m *validEnumerationManager) ArchiveValidPreparationVessel(ctx context.Cont
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	if err := m.db.ArchiveValidPreparationVessel(ctx, validPreparationVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation vessel")
@@ -1835,6 +1864,7 @@ func (m *validEnumerationManager) ReadValidVessel(ctx context.Context, validVess
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
 	result, err := m.db.GetValidVessel(ctx, validVesselID)
 	if err != nil {
@@ -1888,6 +1918,7 @@ func (m *validEnumerationManager) ArchiveValidVessel(ctx context.Context, validV
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, validVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
 	if err := m.db.ArchiveValidVessel(ctx, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
