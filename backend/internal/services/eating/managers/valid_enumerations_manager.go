@@ -930,7 +930,7 @@ func (m *validEnumerationManager) UpdateValidIngredientStateIngredient(ctx conte
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.ValidIngredientStateIngredientUpdated, map[string]any{
-		keys.ValidIngredientStateIDKey: existingValidIngredientStateIngredient.ID,
+		keys.ValidIngredientStateIngredientIDKey: existingValidIngredientStateIngredient.ID,
 	}))
 
 	return nil
