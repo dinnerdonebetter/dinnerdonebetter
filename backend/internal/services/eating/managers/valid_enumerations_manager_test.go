@@ -241,7 +241,23 @@ func TestValidEnumerationManager_ReadValidIngredientMeasurementUnit(T *testing.T
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientMeasurementUnit()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientMeasurementUnitDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredientMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidIngredientMeasurementUnit(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -261,7 +277,25 @@ func TestValidEnumerationManager_ArchiveValidIngredientMeasurementUnit(T *testin
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientMeasurementUnit()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientMeasurementUnitDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidIngredientMeasurementUnitArchived: {keys.ValidIngredientMeasurementUnitIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidIngredientMeasurementUnit(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -291,7 +325,24 @@ func TestValidEnumerationManager_ListValidIngredientPreparations(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientPreparationsList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientPreparationDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredientPreparations), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidIngredientPreparations(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -311,7 +362,23 @@ func TestValidEnumerationManager_ReadValidIngredientPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientPreparation()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientPreparationDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredientPreparation), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidIngredientPreparation(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -331,7 +398,25 @@ func TestValidEnumerationManager_ArchiveValidIngredientPreparation(T *testing.T)
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientPreparation()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientPreparationDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientPreparation), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidIngredientPreparationArchived: {keys.ValidIngredientPreparationIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidIngredientPreparation(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -371,7 +456,24 @@ func TestValidEnumerationManager_ListValidIngredients(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientsList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredients), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidIngredients(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -391,7 +493,23 @@ func TestValidEnumerationManager_ReadValidIngredient(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredient()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredient), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidIngredient(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -421,7 +539,25 @@ func TestValidEnumerationManager_ArchiveValidIngredient(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredient()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidIngredient), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidIngredientArchived: {keys.ValidIngredientIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidIngredient(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -441,7 +577,24 @@ func TestValidEnumerationManager_ListValidIngredientStateIngredients(T *testing.
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientStateIngredientsList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientStateIngredientDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredientStateIngredients), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidIngredientStateIngredients(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -461,7 +614,23 @@ func TestValidEnumerationManager_ReadValidIngredientStateIngredient(T *testing.T
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientStateIngredient()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientStateIngredientDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredientStateIngredient), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidIngredientStateIngredient(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -481,7 +650,25 @@ func TestValidEnumerationManager_ArchiveValidIngredientStateIngredient(T *testin
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientStateIngredient()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientStateIngredientDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientStateIngredient), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidIngredientStateIngredientArchived: {keys.ValidIngredientStateIngredientIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidIngredientStateIngredient(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -521,7 +708,24 @@ func TestValidEnumerationManager_ListValidIngredientStates(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientStatesList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientStateDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredientStates), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidIngredientStates(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -541,7 +745,23 @@ func TestValidEnumerationManager_ReadValidIngredientState(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientState()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientStateDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidIngredientState), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidIngredientState(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -561,7 +781,25 @@ func TestValidEnumerationManager_ArchiveValidIngredientState(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidIngredientState()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidIngredientStateDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidIngredientState), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidIngredientStateArchived: {keys.ValidIngredientStateIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidIngredientState(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -591,7 +829,24 @@ func TestValidEnumerationManager_ListValidMeasurementUnits(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidMeasurementUnitsList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidMeasurementUnitDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidMeasurementUnits), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidMeasurementUnits(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -611,7 +866,23 @@ func TestValidEnumerationManager_ReadValidMeasurementUnit(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidMeasurementUnit()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidMeasurementUnitDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidMeasurementUnit(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -631,7 +902,25 @@ func TestValidEnumerationManager_ArchiveValidMeasurementUnit(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidMeasurementUnit()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidMeasurementUnitDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidMeasurementUnit), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidMeasurementUnitArchived: {keys.ValidMeasurementUnitIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidMeasurementUnit(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -651,7 +940,24 @@ func TestValidEnumerationManager_ListValidInstruments(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidInstrumentsList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidInstrumentDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidInstruments), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidInstruments(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -671,7 +977,23 @@ func TestValidEnumerationManager_ReadValidInstrument(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidInstrument()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidInstrumentDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidInstrument), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidInstrument(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -701,7 +1023,25 @@ func TestValidEnumerationManager_ArchiveValidInstrument(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidInstrument()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidInstrumentDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidInstrument), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidInstrumentArchived: {keys.ValidInstrumentIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidInstrument(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -741,7 +1081,23 @@ func TestValidEnumerationManager_ReadValidMeasurementUnitConversion(T *testing.T
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidMeasurementUnitConversion()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidMeasurementUnitConversionDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidMeasurementUnitConversion), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidMeasurementUnitConversion(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -761,7 +1117,25 @@ func TestValidEnumerationManager_ArchiveValidMeasurementUnitConversion(T *testin
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidMeasurementUnitConversion()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidMeasurementUnitConversionDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidMeasurementUnitConversion), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidMeasurementUnitConversionArchived: {keys.ValidMeasurementUnitConversionIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidMeasurementUnitConversion(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -771,7 +1145,24 @@ func TestValidEnumerationManager_ListValidPreparationInstruments(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidPreparationInstrumentsList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidPreparationInstrumentDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidPreparationInstruments), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidPreparationInstruments(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -791,7 +1182,23 @@ func TestValidEnumerationManager_ReadValidPreparationInstrument(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidPreparationInstrument()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidPreparationInstrumentDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidPreparationInstrument), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidPreparationInstrument(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -811,7 +1218,25 @@ func TestValidEnumerationManager_ArchiveValidPreparationInstrument(T *testing.T)
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidPreparationInstrument()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidPreparationInstrumentDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidPreparationInstrument), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidPreparationInstrumentArchived: {keys.ValidPreparationInstrumentIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidPreparationInstrument(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -851,7 +1276,24 @@ func TestValidEnumerationManager_ListValidPreparations(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidPreparationsList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidPreparationDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidPreparations), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidPreparations(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -871,7 +1313,23 @@ func TestValidEnumerationManager_ReadValidPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidPreparation()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidPreparationDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidPreparation), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidPreparation(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -901,7 +1359,25 @@ func TestValidEnumerationManager_ArchiveValidPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidPreparation()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidPreparationDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidPreparation), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidPreparationArchived: {keys.ValidPreparationIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidPreparation(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -911,7 +1387,24 @@ func TestValidEnumerationManager_ListValidPreparationVessels(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidPreparationVesselsList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidPreparationVesselDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidPreparationVessels), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidPreparationVessels(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -931,7 +1424,23 @@ func TestValidEnumerationManager_ReadValidPreparationVessel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidPreparationVessel()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidPreparationVesselDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidPreparationVessel), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidPreparationVessel(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -951,7 +1460,25 @@ func TestValidEnumerationManager_ArchiveValidPreparationVessel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidPreparationVessel()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidPreparationVesselDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidPreparationVessel), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidPreparationVesselArchived: {keys.ValidPreparationVesselIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidPreparationVessel(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -991,7 +1518,24 @@ func TestValidEnumerationManager_ListValidVessels(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidVesselsList()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidVesselDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidVessels), testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(expected, nil)
+			},
+		)
+
+		actual, cursor, err := vem.ListValidVessels(ctx, nil)
+		assert.NoError(t, err)
+		assert.Empty(t, cursor)
+		assert.Equal(t, expected.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -1011,7 +1555,23 @@ func TestValidEnumerationManager_ReadValidVessel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidVessel()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidVesselDataManagerMock.On(testutils.GetMethodName(vem.db.GetValidVessel), testutils.ContextMatcher, expected.ID).Return(expected, nil)
+			},
+		)
+
+		actual, err := vem.ReadValidVessel(ctx, expected.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
 
@@ -1041,6 +1601,24 @@ func TestValidEnumerationManager_ArchiveValidVessel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		t.SkipNow()
+		ctx := t.Context()
+		vem := buildValidEnumerationsManagerForTest(t)
+
+		expected := fakes.BuildFakeValidVessel()
+
+		expectations := setupExpectationsForValidEnumerationManager(
+			vem,
+			func(db *database.MockDatabase) {
+				db.ValidVesselDataManagerMock.On(testutils.GetMethodName(vem.db.ArchiveValidVessel), testutils.ContextMatcher, expected.ID).Return(nil)
+			},
+			map[string][]string{
+				events.ValidVesselArchived: {keys.ValidVesselIDKey},
+			},
+		)
+
+		err := vem.ArchiveValidVessel(ctx, expected.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, expectations...)
 	})
 }
