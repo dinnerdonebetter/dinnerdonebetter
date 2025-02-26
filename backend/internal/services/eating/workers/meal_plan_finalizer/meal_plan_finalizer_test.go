@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -63,7 +64,7 @@ func TestWorker_Work(T *testing.T) {
 				mealPlan.BelongsToHousehold,
 			).Return(true, nil)
 
-			pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*types.DataChangeMessage")).Return(nil)
+			pup.On("Publish", testutils.ContextMatcher, testutils.MatchType[*types.DataChangeMessage]()).Return(nil)
 		}
 
 		worker := buildNewMealPlanFinalizerForTest(t)

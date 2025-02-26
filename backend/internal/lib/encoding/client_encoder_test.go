@@ -9,9 +9,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestProvideClientEncoder(T *testing.T) {
@@ -105,7 +105,7 @@ func Test_clientEncoder_Encode(T *testing.T) {
 			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct)
 
 			mw := &mockWriter{}
-			mw.On("Write", mock.Anything).Return(0, errors.New("blah"))
+			mw.On("Write", testutils.MatchType[[]byte]()).Return(0, errors.New("blah"))
 
 			assert.Error(t, e.Encode(ctx, mw, &example{Name: t.Name()}))
 		})

@@ -274,7 +274,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		for _, inputs := range expectedInputSets {
 			for _, input := range inputs {
 				mdm.MealPlanGroceryListItemDataManagerMock.On("CreateMealPlanGroceryListItem", testutils.ContextMatcher, input).Return(fakes.BuildFakeMealPlanGroceryListItem(), nil)
-				pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*types.DataChangeMessage")).Return(nil)
+				pup.On("Publish", testutils.ContextMatcher, testutils.MatchType[*types.DataChangeMessage]()).Return(nil)
 			}
 		}
 
