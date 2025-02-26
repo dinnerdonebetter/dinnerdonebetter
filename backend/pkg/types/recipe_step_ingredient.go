@@ -106,7 +106,7 @@ type (
 		QuantityNotes             *string                                       `json:"quantityNotes,omitempty"`
 		IngredientNotes           *string                                       `json:"ingredientNotes,omitempty"`
 		BelongsToRecipeStep       *string                                       `json:"belongsToRecipeStep,omitempty"`
-		Quantity                  Float32RangeWithOptionalMaxUpdateRequestInput `json:"quantity,omitempty"`
+		Quantity                  Float32RangeWithOptionalMaxUpdateRequestInput `json:"quantity"`
 		OptionIndex               *uint16                                       `json:"optionIndex,omitempty"`
 		VesselIndex               *uint16                                       `json:"vesselIndex,omitempty"`
 		ToTaste                   *bool                                         `json:"toTaste,omitempty"`

@@ -81,7 +81,7 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 	createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, dbc.db, exampleAuditLogEntry, user, household, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		input := fakes.BuildFakeAuditLogEntry()
 		createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, dbc.db, input, user, household, dbc))
 	}

@@ -70,7 +70,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	createdUsers = append(createdUsers, createUserForTest(t, ctx, exampleUser, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeUser()
 		input.Username = fmt.Sprintf("%s_%d", exampleUser.Username, i)
 		createdUsers = append(createdUsers, createUserForTest(t, ctx, input, dbc))

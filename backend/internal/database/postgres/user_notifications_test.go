@@ -75,7 +75,7 @@ func TestQuerier_Integration_UserNotifications(t *testing.T) {
 	createdUserNotifications[0] = updatedUserNotification
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeUserNotification()
 		input.Content = fmt.Sprintf("%s %d", updatedUserNotification.Content, i)
 		createdUserNotifications = append(createdUserNotifications, createUserNotificationForTest(t, ctx, user.ID, input, dbc))

@@ -12,7 +12,7 @@ func BuildFakeRecipe() *types.Recipe {
 	recipeID := BuildFakeID()
 
 	var steps []*types.RecipeStep
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		step := BuildFakeRecipeStep()
 		step.Index = uint32(i)
 		step.BelongsToRecipe = recipeID
@@ -57,7 +57,7 @@ func BuildFakeRecipe() *types.Recipe {
 // BuildFakeRecipesList builds a faked RecipeList.
 func BuildFakeRecipesList() *filtering.QueryFilteredResult[types.Recipe] {
 	var examples []*types.Recipe
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeRecipe())
 	}
 

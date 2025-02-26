@@ -29,7 +29,7 @@ func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
 // BuildFakeHouseholdInvitationsList builds a faked HouseholdInvitationList.
 func BuildFakeHouseholdInvitationsList() *filtering.QueryFilteredResult[types.HouseholdInvitation] {
 	var examples []*types.HouseholdInvitation
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeHouseholdInvitation())
 	}
 

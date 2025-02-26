@@ -62,7 +62,7 @@ func (q *Querier) GetServiceSettingConfiguration(ctx context.Context, serviceSet
 	}
 
 	usableEnumeration := []string{}
-	for _, x := range strings.Split(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
+	for x := range strings.SplitSeq(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
 		if strings.TrimSpace(x) != "" {
 			usableEnumeration = append(usableEnumeration, x)
 		}
@@ -122,7 +122,7 @@ func (q *Querier) GetServiceSettingConfigurationForUserByName(ctx context.Contex
 	}
 
 	usableEnumeration := []string{}
-	for _, x := range strings.Split(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
+	for x := range strings.SplitSeq(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
 		if strings.TrimSpace(x) != "" {
 			usableEnumeration = append(usableEnumeration, x)
 		}
@@ -182,7 +182,7 @@ func (q *Querier) GetServiceSettingConfigurationForHouseholdByName(ctx context.C
 	}
 
 	usableEnumeration := []string{}
-	for _, x := range strings.Split(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
+	for x := range strings.SplitSeq(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
 		if strings.TrimSpace(x) != "" {
 			usableEnumeration = append(usableEnumeration, x)
 		}
@@ -245,7 +245,7 @@ func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, us
 
 	for _, result := range results {
 		usableEnumeration := []string{}
-		for _, x := range strings.Split(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
+		for x := range strings.SplitSeq(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
 			if strings.TrimSpace(x) != "" {
 				usableEnumeration = append(usableEnumeration, x)
 			}
@@ -311,7 +311,7 @@ func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 
 	for _, result := range results {
 		usableEnumeration := []string{}
-		for _, x := range strings.Split(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
+		for x := range strings.SplitSeq(result.ServiceSettingEnumeration, serviceSettingsEnumDelimiter) {
 			if strings.TrimSpace(x) != "" {
 				usableEnumeration = append(usableEnumeration, x)
 			}

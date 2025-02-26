@@ -66,7 +66,7 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidInstrument(ctx, updatedValidInstrument))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeValidInstrument()
 		input.Name = fmt.Sprintf("%s %d", updatedValidInstrument.Name, i)
 		createdValidInstruments = append(createdValidInstruments, createValidInstrumentForTest(t, ctx, input, dbc))

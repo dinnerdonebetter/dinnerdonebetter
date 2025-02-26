@@ -3,6 +3,7 @@ package stripe
 import (
 	"bytes"
 	"encoding/json"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -30,7 +31,7 @@ func (m *mockBackend) AnticipateCall(t *testing.T, v any) {
 
 func (m *mockBackend) Call(method, path, key string, params stripe.ParamsContainer, v stripe.LastResponseSetter) error {
 	b := m.anticipatedReturns[0]
-	m.anticipatedReturns = append(m.anticipatedReturns[:0], m.anticipatedReturns[1:]...)
+	m.anticipatedReturns = slices.Delete(m.anticipatedReturns, 0, 1)
 
 	if err := json.Unmarshal(b, v); err != nil {
 		panic(err)
@@ -41,7 +42,7 @@ func (m *mockBackend) Call(method, path, key string, params stripe.ParamsContain
 
 func (m *mockBackend) CallRaw(method, path, key string, body *form.Values, params *stripe.Params, v stripe.LastResponseSetter) error {
 	b := m.anticipatedReturns[0]
-	m.anticipatedReturns = append(m.anticipatedReturns[:0], m.anticipatedReturns[1:]...)
+	m.anticipatedReturns = slices.Delete(m.anticipatedReturns, 0, 1)
 
 	if err := json.Unmarshal(b, v); err != nil {
 		panic(err)
@@ -52,7 +53,7 @@ func (m *mockBackend) CallRaw(method, path, key string, body *form.Values, param
 
 func (m *mockBackend) CallStreaming(method, path, key string, params stripe.ParamsContainer, v stripe.StreamingLastResponseSetter) error {
 	b := m.anticipatedReturns[0]
-	m.anticipatedReturns = append(m.anticipatedReturns[:0], m.anticipatedReturns[1:]...)
+	m.anticipatedReturns = slices.Delete(m.anticipatedReturns, 0, 1)
 
 	if err := json.Unmarshal(b, v); err != nil {
 		panic(err)
@@ -63,7 +64,7 @@ func (m *mockBackend) CallStreaming(method, path, key string, params stripe.Para
 
 func (m *mockBackend) CallMultipart(method, path, key, boundary string, body *bytes.Buffer, params *stripe.Params, v stripe.LastResponseSetter) error {
 	b := m.anticipatedReturns[0]
-	m.anticipatedReturns = append(m.anticipatedReturns[:0], m.anticipatedReturns[1:]...)
+	m.anticipatedReturns = slices.Delete(m.anticipatedReturns, 0, 1)
 
 	if err := json.Unmarshal(b, v); err != nil {
 		panic(err)

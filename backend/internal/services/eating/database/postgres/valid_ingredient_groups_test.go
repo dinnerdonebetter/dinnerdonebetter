@@ -69,7 +69,7 @@ func TestQuerier_Integration_ValidIngredientGroups(t *testing.T) {
 
 	exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
 	exampleValidIngredientGroup.Members = []*types.ValidIngredientGroupMember{}
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		exampleValidIngredientGroup.Members = append(exampleValidIngredientGroup.Members, &types.ValidIngredientGroupMember{
 			ID:              identifiers.New(),
 			BelongsToGroup:  exampleValidIngredientGroup.ID,

@@ -157,7 +157,7 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	createdMealPlans = append(createdMealPlans, createMealPlanForTest(t, ctx, exampleMealPlan, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		input := buildMealPlanForIntegrationTest(user.ID, meal)
 		input.BelongsToHousehold = householdID
 		createdMealPlans = append(createdMealPlans, createMealPlanForTest(t, ctx, input, dbc))

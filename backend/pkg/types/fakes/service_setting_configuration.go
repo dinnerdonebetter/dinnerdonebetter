@@ -22,7 +22,7 @@ func BuildFakeServiceSettingConfiguration() *types.ServiceSettingConfiguration {
 // BuildFakeServiceSettingConfigurationsList builds a faked ServiceSettingConfigurationList.
 func BuildFakeServiceSettingConfigurationsList() *filtering.QueryFilteredResult[types.ServiceSettingConfiguration] {
 	var examples []*types.ServiceSettingConfiguration
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeServiceSettingConfiguration())
 	}
 

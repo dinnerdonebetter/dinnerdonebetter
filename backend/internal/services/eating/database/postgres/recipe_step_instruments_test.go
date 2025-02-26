@@ -90,7 +90,7 @@ func TestQuerier_Integration_RecipeStepInstruments(t *testing.T) {
 	createdRecipeStepInstruments = append(createdRecipeStepInstruments, createRecipeStepInstrumentForTest(t, ctx, exampleRecipe.ID, exampleRecipeStepInstrument, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		validInstrument = createValidInstrumentForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeRecipeStepInstrument()
 		input.Instrument = validInstrument

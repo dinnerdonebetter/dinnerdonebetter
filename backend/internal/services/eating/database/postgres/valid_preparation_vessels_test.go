@@ -79,7 +79,7 @@ func TestQuerier_Integration_ValidPreparationVessels(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidPreparationVessel(ctx, updatedValidPreparationVessel))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		input := fakes.BuildFakeValidPreparationVessel()
 		input.Preparation = createdValidPreparationVessels[0].Preparation
 		input.Vessel = createdValidPreparationVessels[0].Vessel

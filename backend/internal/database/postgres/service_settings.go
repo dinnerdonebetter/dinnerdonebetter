@@ -63,7 +63,7 @@ func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string
 	}
 
 	usableEnumeration := []string{}
-	for _, x := range strings.Split(result.Enumeration, serviceSettingsEnumDelimiter) {
+	for x := range strings.SplitSeq(result.Enumeration, serviceSettingsEnumDelimiter) {
 		if strings.TrimSpace(x) != "" {
 			usableEnumeration = append(usableEnumeration, x)
 		}

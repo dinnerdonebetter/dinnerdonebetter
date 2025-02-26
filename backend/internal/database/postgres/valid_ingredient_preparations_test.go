@@ -80,7 +80,7 @@ func TestQuerier_Integration_ValidIngredientPreparations(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidIngredientPreparation(ctx, updatedValidIngredientPreparation))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		input := fakes.BuildFakeValidIngredientPreparation()
 		input.Preparation = createdValidIngredientPreparations[0].Preparation
 		input.Ingredient = createdValidIngredientPreparations[0].Ingredient

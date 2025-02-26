@@ -14,7 +14,7 @@ func BuildFakeHousehold() *types.Household {
 	householdID := BuildFakeID()
 
 	var memberships []*types.HouseholdUserMembershipWithUser
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		membership := BuildFakeHouseholdUserMembershipWithUser()
 		membership.BelongsToHousehold = householdID
 		memberships = append(memberships, membership)
@@ -47,7 +47,7 @@ func BuildFakeHousehold() *types.Household {
 // BuildFakeHouseholdsList builds a faked HouseholdList.
 func BuildFakeHouseholdsList() *filtering.QueryFilteredResult[types.Household] {
 	var examples []*types.Household
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeHousehold())
 	}
 

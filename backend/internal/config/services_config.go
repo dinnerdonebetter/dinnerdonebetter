@@ -27,20 +27,20 @@ type (
 	ServicesConfig struct {
 		_ struct{} `json:"-"`
 
-		AuditLogEntries              auditlogentries.Config              `envPrefix:"AUDIT_LOG_ENTRIES_"              json:"auditLogEntries,omitempty"`
-		ServiceSettingConfigurations servicesettingconfigurations.Config `envPrefix:"SERVICE_SETTING_CONFIGURATIONS_" json:"serviceSettingConfigurations,omitempty"`
-		UserNotifications            usernotifications.Config            `envPrefix:"USER_NOTIFICATIONS_"             json:"userNotifications,omitempty"`
-		Households                   households.Config                   `envPrefix:"HOUSEHOLDS_"                     json:"households,omitempty"`
-		ServiceSettings              servicesettings.Config              `envPrefix:"SERVICE_SETTINGS_"               json:"serviceSettings,omitempty"`
-		Users                        users.Config                        `envPrefix:"USERS_"                          json:"users,omitempty"`
-		DataPrivacy                  dataprivacy.Config                  `envPrefix:"DATA_PRIVACY_"                   json:"dataPrivacy,omitempty"`
-		Recipes                      recipemanagement.Config             `envPrefix:"RECIPES_"                        json:"recipes,omitempty"`
-		Auth                         authentication.Config               `envPrefix:"AUTH_"                           json:"auth,omitempty"`
-		OAuth2Clients                oauth2clients.Config                `envPrefix:"OAUTH2_CLIENTS_"                 json:"oauth2Clients,omitempty"`
-		MealPlanning                 mealplanning.Config                 `envPrefix:"MEAL_PLANNING_"                  json:"meals,omitempty"`
-		Webhooks                     webhooks.Config                     `envPrefix:"WEBHOOKS_"                       json:"webhooks,omitempty"`
-		HouseholdInvitations         householdinvitations.Config         `envPrefix:"HOUSEHOLD_INVITATIONS_"          json:"householdInvitations,omitempty"`
-		ValidEnumerations            validenumerations.Config            `envPrefix:"VALID_ENUMERATIONS_"             json:"validEnumerations,omitempty"`
+		AuditLogEntries              auditlogentries.Config              `envPrefix:"AUDIT_LOG_ENTRIES_"              json:"auditLogEntries"`
+		ServiceSettingConfigurations servicesettingconfigurations.Config `envPrefix:"SERVICE_SETTING_CONFIGURATIONS_" json:"serviceSettingConfigurations"`
+		UserNotifications            usernotifications.Config            `envPrefix:"USER_NOTIFICATIONS_"             json:"userNotifications"`
+		Households                   households.Config                   `envPrefix:"HOUSEHOLDS_"                     json:"households"`
+		ServiceSettings              servicesettings.Config              `envPrefix:"SERVICE_SETTINGS_"               json:"serviceSettings"`
+		Users                        users.Config                        `envPrefix:"USERS_"                          json:"users"`
+		DataPrivacy                  dataprivacy.Config                  `envPrefix:"DATA_PRIVACY_"                   json:"dataPrivacy"`
+		Recipes                      recipemanagement.Config             `envPrefix:"RECIPES_"                        json:"recipes"`
+		Auth                         authentication.Config               `envPrefix:"AUTH_"                           json:"auth"`
+		OAuth2Clients                oauth2clients.Config                `envPrefix:"OAUTH2_CLIENTS_"                 json:"oauth2Clients"`
+		MealPlanning                 mealplanning.Config                 `envPrefix:"MEAL_PLANNING_"                  json:"meals"`
+		Webhooks                     webhooks.Config                     `envPrefix:"WEBHOOKS_"                       json:"webhooks"`
+		HouseholdInvitations         householdinvitations.Config         `envPrefix:"HOUSEHOLD_INVITATIONS_"          json:"householdInvitations"`
+		ValidEnumerations            validenumerations.Config            `envPrefix:"VALID_ENUMERATIONS_"             json:"validEnumerations"`
 	}
 )
 

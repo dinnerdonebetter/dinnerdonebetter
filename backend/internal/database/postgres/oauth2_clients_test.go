@@ -62,7 +62,7 @@ func TestQuerier_Integration_OAuth2Clients(t *testing.T) {
 	createdOAuth2Clients = append(createdOAuth2Clients, createOAuth2ClientForTest(t, ctx, exampleOAuth2Client, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeOAuth2Client()
 		input.Name = fmt.Sprintf("%s %d", exampleOAuth2Client.Name, i)
 		createdOAuth2Clients = append(createdOAuth2Clients, createOAuth2ClientForTest(t, ctx, input, dbc))

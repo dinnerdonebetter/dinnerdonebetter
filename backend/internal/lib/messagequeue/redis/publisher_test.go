@@ -79,7 +79,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 			"Publish",
 			testutils.ContextMatcher,
 			actual.topic,
-			[]byte(fmt.Sprintf(`{"name":%q}%s`, t.Name(), string(byte(10)))),
+			fmt.Appendf(nil, `{"name":%q}%s`, t.Name(), string(byte(10))),
 		).Return(&redis.IntCmd{})
 
 		actual.publisher = mmp

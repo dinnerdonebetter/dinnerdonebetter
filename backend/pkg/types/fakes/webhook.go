@@ -34,7 +34,7 @@ func BuildFakeWebhook() *types.Webhook {
 // BuildFakeWebhooksList builds a faked WebhookList.
 func BuildFakeWebhooksList() *filtering.QueryFilteredResult[types.Webhook] {
 	var examples []*types.Webhook
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeWebhook())
 	}
 
@@ -63,7 +63,7 @@ func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
 // BuildFakeWebhookTriggerEventList builds a faked WebhookList.
 func BuildFakeWebhookTriggerEventList() *filtering.QueryFilteredResult[types.WebhookTriggerEvent] {
 	var examples []*types.WebhookTriggerEvent
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeWebhookTriggerEvent())
 	}
 

@@ -86,7 +86,7 @@ func TestQuerier_Integration_Meals(t *testing.T) {
 	createdMeals = append(createdMeals, createMealForTest(t, ctx, exampleMeal, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := buildMealForIntegrationTest(user.ID, recipe)
 		input.Name = fmt.Sprintf("%s %d", exampleMeal.Name, i)
 		createdMeals = append(createdMeals, createMealForTest(t, ctx, input, dbc))

@@ -61,7 +61,7 @@ func TestQuerier_Integration_ServiceSettings(t *testing.T) {
 	createdServiceSettings = append(createdServiceSettings, createServiceSettingForTest(t, ctx, exampleServiceSetting, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeServiceSetting()
 		input.Name = fmt.Sprintf("%s %d", exampleServiceSetting.Name, i)
 		createdServiceSettings = append(createdServiceSettings, createServiceSettingForTest(t, ctx, input, dbc))

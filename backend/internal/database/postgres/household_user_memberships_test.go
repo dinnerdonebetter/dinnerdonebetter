@@ -41,7 +41,7 @@ func TestQuerier_Integration_HouseholdUserMemberships(t *testing.T) {
 
 	memberUserIDs := []string{exampleUser.ID}
 
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		newMember := createUserForTest(t, ctx, nil, dbc)
 		assert.NoError(t, dbc.addUserToHousehold(ctx, dbc.db, &types.HouseholdUserMembershipDatabaseCreationInput{
 			ID:            identifiers.New(),

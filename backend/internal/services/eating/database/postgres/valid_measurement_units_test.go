@@ -67,7 +67,7 @@ func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidMeasurementUnit(ctx, updatedValidMeasurementUnit))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeValidMeasurementUnit()
 		input.Name = fmt.Sprintf("%s %d", updatedValidMeasurementUnit.Name, i)
 		createdValidMeasurementUnits = append(createdValidMeasurementUnits, createValidMeasurementUnitForTest(t, ctx, input, dbc))

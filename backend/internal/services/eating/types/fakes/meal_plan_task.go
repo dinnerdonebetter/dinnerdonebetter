@@ -31,7 +31,7 @@ func BuildFakeMealPlanTaskCreationRequestInput() *types.MealPlanTaskCreationRequ
 // BuildFakeMealPlanTasksList builds a faked MealPlanTaskList.
 func BuildFakeMealPlanTasksList() *filtering.QueryFilteredResult[types.MealPlanTask] {
 	var examples []*types.MealPlanTask
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeMealPlanTask())
 	}
 
@@ -49,7 +49,7 @@ func BuildFakeMealPlanTasksList() *filtering.QueryFilteredResult[types.MealPlanT
 // BuildFakeMealPlanTaskDatabaseCreationInputs builds a faked MealPlanTaskList.
 func BuildFakeMealPlanTaskDatabaseCreationInputs() []*types.MealPlanTaskDatabaseCreationInput {
 	var examples []*types.MealPlanTaskDatabaseCreationInput
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, &types.MealPlanTaskDatabaseCreationInput{
 			MealPlanOptionID:    "",
 			ID:                  BuildFakeID(),

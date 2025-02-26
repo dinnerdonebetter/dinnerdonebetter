@@ -78,7 +78,7 @@ func TestQuerier_Integration_HouseholdInstrumentOwnerships(t *testing.T) {
 	assert.NoError(t, dbc.UpdateHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnerships[0]))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		newInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeHouseholdInstrumentOwnership()
 		input.BelongsToHousehold = householdID
