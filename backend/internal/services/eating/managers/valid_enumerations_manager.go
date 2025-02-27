@@ -22,27 +22,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types/converters"
 )
 
-/*
-
-TODO:
-- [x] all loggers are instantiated from spans
-- [x] no more references to `GetUnfinalizedMealPlansWithExpiredVotingPeriods`
-- [x] all returned errors have description strings
-- [x] all relevant input params are accounted for in logs
-- [x] all relevant input params are accounted for in traces
-- [x] all pointer inputs have nil checks
-- [x] all query filters are defaulted when nil
-- [x] all CUD functions fire a data change event
-- [x] list routes
-- [x] read routes
-- [x] search routes
-- [x] create routes
-- [x] update routes
-- [x] archive routes
-- [ ] unit tests lmfao
-
-*/
-
 type (
 	ValidEnumerationsManager interface {
 		SearchValidIngredientGroups(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error)
