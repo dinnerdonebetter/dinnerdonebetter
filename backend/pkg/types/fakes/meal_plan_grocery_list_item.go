@@ -25,7 +25,7 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 
 func BuildFakeMealPlanGroceryListItemsList() *filtering.QueryFilteredResult[types.MealPlanGroceryListItem] {
 	var examples []*types.MealPlanGroceryListItem
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeMealPlanGroceryListItem())
 	}
 

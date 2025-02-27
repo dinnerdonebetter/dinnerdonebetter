@@ -21,7 +21,7 @@ func BuildFakeInstrumentOwnership() *types.InstrumentOwnership {
 // BuildFakeInstrumentOwnershipsList builds a faked InstrumentOwnershipList.
 func BuildFakeInstrumentOwnershipsList() *filtering.QueryFilteredResult[types.InstrumentOwnership] {
 	var examples []*types.InstrumentOwnership
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeInstrumentOwnership())
 	}
 

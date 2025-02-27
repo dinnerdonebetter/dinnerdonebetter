@@ -89,7 +89,7 @@ func TestQuerier_Integration_RecipeStepProducts(t *testing.T) {
 	createdRecipeStepProducts = append(createdRecipeStepProducts, createRecipeStepProductForTest(t, ctx, exampleRecipe.ID, exampleRecipeStepProduct, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		validMeasurementUnit = createValidMeasurementUnitForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeRecipeStepProduct()
 		input.MeasurementUnit = validMeasurementUnit

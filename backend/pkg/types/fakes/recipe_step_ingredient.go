@@ -32,7 +32,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 // BuildFakeRecipeStepIngredientsList builds a faked RecipeStepIngredientList.
 func BuildFakeRecipeStepIngredientsList() *filtering.QueryFilteredResult[types.RecipeStepIngredient] {
 	var examples []*types.RecipeStepIngredient
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeRecipeStepIngredient())
 	}
 

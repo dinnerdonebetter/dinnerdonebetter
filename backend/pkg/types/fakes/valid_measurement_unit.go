@@ -28,7 +28,7 @@ func BuildFakeValidMeasurementUnit() *types.ValidMeasurementUnit {
 // BuildFakeValidMeasurementUnitsList builds a faked ValidMeasurementUnitList.
 func BuildFakeValidMeasurementUnitsList() *filtering.QueryFilteredResult[types.ValidMeasurementUnit] {
 	var examples []*types.ValidMeasurementUnit
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeValidMeasurementUnit())
 	}
 

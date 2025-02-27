@@ -116,7 +116,7 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 			Ingredients: []*RecipeStepIngredientCreationRequestInput{},
 		}
 
-		for i := 0; i < maxIngredientsPerStep*2; i++ {
+		for range maxIngredientsPerStep * 2 {
 			x.Ingredients = append(x.Ingredients, &RecipeStepIngredientCreationRequestInput{
 				IngredientID:      func(s string) *string { return &s }(t.Name()),
 				MeasurementUnitID: t.Name(),

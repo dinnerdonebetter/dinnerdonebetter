@@ -2,6 +2,7 @@ package authorization
 
 import (
 	"encoding/gob"
+	"slices"
 
 	"github.com/mikespook/gorbac/v2"
 )
@@ -81,13 +82,7 @@ func (r serviceRoleCollection) HasPermission(p Permission) bool {
 
 // IsServiceAdmin returns if a role is an admin.
 func (r serviceRoleCollection) IsServiceAdmin() bool {
-	for _, x := range r.Roles {
-		if x == ServiceAdminRole.String() {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(r.Roles, ServiceAdminRole.String())
 }
 
 // CanUpdateUserAccountStatuses returns whether a user can update user account statuses.

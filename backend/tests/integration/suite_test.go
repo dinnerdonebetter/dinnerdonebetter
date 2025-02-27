@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	// "github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/suite"

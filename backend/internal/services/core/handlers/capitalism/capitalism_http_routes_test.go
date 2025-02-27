@@ -7,9 +7,9 @@ import (
 
 	capitalismmock "github.com/dinnerdonebetter/backend/internal/lib/capitalism/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
+	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -27,7 +27,7 @@ func TestCapitalismService_StripeWebhookHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		mpm := &capitalismmock.MockPaymentManager{}
-		mpm.On("HandleEventWebhook", mock.AnythingOfType("*http.Request")).Return(nil)
+		mpm.On("HandleEventWebhook", testutils.MatchType[*http.Request]()).Return(nil)
 		helper.service.paymentManager = mpm
 
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(nil))

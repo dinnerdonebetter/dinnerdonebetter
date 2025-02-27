@@ -55,7 +55,7 @@ func BuildFakeOAuth2ClientCreationResponse() *types.OAuth2ClientCreationResponse
 // BuildFakeOAuth2ClientsList builds a faked OAuth2ClientList.
 func BuildFakeOAuth2ClientsList() *filtering.QueryFilteredResult[types.OAuth2Client] {
 	var examples []*types.OAuth2Client
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeOAuth2Client())
 	}
 

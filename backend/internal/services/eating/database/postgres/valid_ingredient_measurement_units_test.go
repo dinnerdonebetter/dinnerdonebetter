@@ -81,7 +81,7 @@ func TestQuerier_Integration_ValidIngredientMeasurementUnits(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidIngredientMeasurementUnit(ctx, updatedValidIngredientMeasurementUnit))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		input := fakes.BuildFakeValidIngredientMeasurementUnit()
 		input.MeasurementUnit = createdValidIngredientMeasurementUnits[0].MeasurementUnit
 		input.Ingredient = createdValidIngredientMeasurementUnits[0].Ingredient

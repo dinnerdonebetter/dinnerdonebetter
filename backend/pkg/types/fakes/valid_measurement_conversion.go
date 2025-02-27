@@ -23,7 +23,7 @@ func BuildFakeValidMeasurementUnitConversion() *types.ValidMeasurementUnitConver
 // BuildFakeValidMeasurementUnitConversionsList builds a faked ValidMeasurementUnitConversionList.
 func BuildFakeValidMeasurementUnitConversionsList() *filtering.QueryFilteredResult[types.ValidMeasurementUnitConversion] {
 	var examples []*types.ValidMeasurementUnitConversion
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeValidMeasurementUnitConversion())
 	}
 

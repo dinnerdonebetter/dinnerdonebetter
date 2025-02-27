@@ -12,7 +12,7 @@ TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
 PROTO_FILES_PATH       := proto/*.proto
 PROTO_OUTPUT_PATH      := internal/grpc
-WIRE_TARGETS           := internal/build/services/api \
+DI_TARGETS             := internal/build/services/api \
 	internal/build/services/admin_webapp \
 	internal/build/jobs/db_cleaner \
 	internal/build/jobs/search_data_index_scheduler \
@@ -111,6 +111,8 @@ ifeq (, $(shell which protoc-gen-go-grpc))
 	$(shell go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1)
 endif
 
+
+
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed
 
@@ -130,7 +132,7 @@ revendor: clean_vendor vendor
 
 .PHONY: rewire
 rewire: ensure_wire_installed
-	for tgt in $(WIRE_TARGETS); do \
+	for tgt in $(DI_TARGETS); do \
 		rm -f $(THIS)/$$tgt/wire_gen.go && wire gen $(THIS)/$$tgt; \
 	done
 

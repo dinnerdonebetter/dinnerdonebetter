@@ -68,7 +68,7 @@ func TestQuerier_Integration_ValidIngredients(t *testing.T) {
 	createdValidIngredients[0] = updatedValidIngredient
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		input := fakes.BuildFakeValidIngredient()
 		input.Name = fmt.Sprintf("%s %d", updatedValidIngredient.Name, i)
 		createdValidIngredients = append(createdValidIngredients, createValidIngredientForTest(t, ctx, input, dbc))

@@ -46,7 +46,7 @@ func BuildFakeMealPlanEvent() *types.MealPlanEvent {
 // BuildFakeMealPlanEventsList builds a faked MealPlanEventList.
 func BuildFakeMealPlanEventsList() *filtering.QueryFilteredResult[types.MealPlanEvent] {
 	var examples []*types.MealPlanEvent
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeMealPlanEvent())
 	}
 

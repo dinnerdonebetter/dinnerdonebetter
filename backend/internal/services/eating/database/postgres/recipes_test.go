@@ -184,7 +184,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 	assert.NoError(t, dbc.UpdateRecipe(ctx, updatedRecipe))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for i := range exampleQuantity {
 		exampleRecipe = buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 		exampleRecipe.Name = fmt.Sprintf("%s %d", exampleRecipe.Name, i)
 		createdRecipes = append(createdRecipes, createRecipeForTest(t, ctx, exampleRecipe, dbc, true))

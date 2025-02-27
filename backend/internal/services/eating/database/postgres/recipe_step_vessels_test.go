@@ -90,7 +90,7 @@ func TestQuerier_Integration_RecipeStepVessels(t *testing.T) {
 	createdRecipeStepVessels = append(createdRecipeStepVessels, createRecipeStepVesselForTest(t, ctx, exampleRecipe.ID, exampleRecipeStepVessel, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		validVessel = createValidVesselForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeRecipeStepVessel()
 		input.Vessel = validVessel

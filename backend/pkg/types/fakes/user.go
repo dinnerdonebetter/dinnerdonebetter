@@ -37,7 +37,7 @@ func BuildFakeUser() *types.User {
 // BuildFakeUsersList builds a faked UserList.
 func BuildFakeUsersList() *filtering.QueryFilteredResult[types.User] {
 	var examples []*types.User
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		examples = append(examples, BuildFakeUser())
 	}
 

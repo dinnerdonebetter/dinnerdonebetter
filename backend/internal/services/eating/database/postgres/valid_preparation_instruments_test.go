@@ -79,7 +79,7 @@ func TestQuerier_Integration_ValidPreparationInstruments(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidPreparationInstrument(ctx, updatedValidPreparationInstrument))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		input := fakes.BuildFakeValidPreparationInstrument()
 		input.Preparation = createdValidPreparationInstruments[0].Preparation
 		input.Instrument = createdValidPreparationInstruments[0].Instrument

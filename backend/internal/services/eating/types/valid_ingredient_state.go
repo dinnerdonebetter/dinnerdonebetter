@@ -90,7 +90,7 @@ type (
 		ValidIngredientStateExists(ctx context.Context, validIngredientState string) (bool, error)
 		GetValidIngredientState(ctx context.Context, validIngredientState string) (*ValidIngredientState, error)
 		GetValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ValidIngredientState], error)
-		SearchForValidIngredientStates(ctx context.Context, query string) ([]*ValidIngredientState, error)
+		SearchForValidIngredientStates(ctx context.Context, query string) ([]*ValidIngredientState, error) // TODO: add filter
 		CreateValidIngredientState(ctx context.Context, input *ValidIngredientStateDatabaseCreationInput) (*ValidIngredientState, error)
 		UpdateValidIngredientState(ctx context.Context, updated *ValidIngredientState) error
 		MarkValidIngredientStateAsIndexed(ctx context.Context, validIngredientState string) error

@@ -236,7 +236,7 @@ func TestQuerier_Integration_RecipeSteps(t *testing.T) {
 	createdRecipeSteps = append(createdRecipeSteps, createRecipeStepForTest(t, ctx, exampleRecipe.ID, exampleRecipeStep, dbc))
 
 	// create more
-	for i := 0; i < exampleQuantity; i++ {
+	for range exampleQuantity {
 		input := buildRecipeStepForTestCreation(t, ctx, createdRecipe.ID, dbc)
 		input.BelongsToRecipe = createdRecipe.ID
 		createdRecipeSteps = append(createdRecipeSteps, createRecipeStepForTest(t, ctx, exampleRecipe.ID, input, dbc))
