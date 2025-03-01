@@ -527,7 +527,6 @@ func (s *service) RecipeEstimatedPrepStepsHandler(res http.ResponseWriter, req *
 	}
 	readTimer.Stop()
 
-	// we deliberately call this with fake data because
 	stepInputs, err := s.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
@@ -768,6 +767,37 @@ func (s *service) CloneRecipeHandler(res http.ResponseWriter, req *http.Request)
 	}
 	readTimer.Stop()
 
+	cloneInput, err := cloneRecipe(x, sessionCtxData.Requester.UserID)
+
+	createTimer := timing.NewMetric("database").WithDesc("create").Start()
+	created, err := s.recipeManagementDataManager.CreateRecipe(ctx, cloneInput)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "cloning recipe")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	createTimer.Stop()
+
+	dcm := &types.DataChangeMessage{
+		EventType:   types.RecipeClonedServiceEventType,
+		Recipe:      created,
+		HouseholdID: sessionCtxData.ActiveHouseholdID,
+		UserID:      sessionCtxData.Requester.UserID,
+	}
+
+	s.dataChangesPublisher.PublishAsync(ctx, dcm)
+
+	responseValue := &types.APIResponse[*types.Recipe]{
+		Details: responseDetails,
+		Data:    created,
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
+}
+
+func cloneRecipe(x *types.Recipe, userID string) (*types.RecipeDatabaseCreationInput, error) {
 	ingredientProductIndicies := map[string]int{}
 	instrumentProductIndicies := map[string]int{}
 	vesselProductIndicies := map[string]int{}
@@ -793,8 +823,9 @@ func (s *service) CloneRecipeHandler(res http.ResponseWriter, req *http.Request)
 
 	// clone recipe.
 	cloneInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(x)
-	cloneInput.CreatedByUser = sessionCtxData.Requester.UserID
+	cloneInput.CreatedByUser = userID
 	// TODO: cloneInput.ClonedFromRecipeID = &x.ID
+
 	cloneInput.ID = identifiers.New()
 	for i := range cloneInput.Steps {
 		newRecipeStepID := identifiers.New()
@@ -846,30 +877,5 @@ func (s *service) CloneRecipeHandler(res http.ResponseWriter, req *http.Request)
 		}
 	}
 
-	createTimer := timing.NewMetric("database").WithDesc("create").Start()
-	created, err := s.recipeManagementDataManager.CreateRecipe(ctx, cloneInput)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "cloning recipe")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
-	createTimer.Stop()
-
-	dcm := &types.DataChangeMessage{
-		EventType:   types.RecipeClonedServiceEventType,
-		Recipe:      created,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		UserID:      sessionCtxData.Requester.UserID,
-	}
-
-	s.dataChangesPublisher.PublishAsync(ctx, dcm)
-
-	responseValue := &types.APIResponse[*types.Recipe]{
-		Details: responseDetails,
-		Data:    created,
-	}
-
-	// encode our response and peace.
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
+	return cloneInput, nil
 }
