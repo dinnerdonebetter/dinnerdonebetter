@@ -2,11 +2,11 @@ package managers
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
@@ -102,8 +102,6 @@ type (
 	}
 )
 
-var errUnimplemented = errors.New("not implemented") // TODO: DELETE ME
-
 func NewRecipeManager(
 	ctx context.Context,
 	logger logging.Logger,
@@ -137,23 +135,8 @@ func NewRecipeManager(
 	return m, nil
 }
 
-/*
-
-TODO list:
-
-- [x] all returned errors have description strings
-- [x] all relevant input params are accounted for in logs
-- [x] all relevant input params are accounted for in traces
-- [x] all pointer inputs have nil checks
-- [x] filters are defaulted
-- [ ] no more references to `errUnimplemented`
-- [ ] all CUD functions fire a data change event
-- [ ] unit tests lmfao
-
-*/
-
 func (m *recipeManager) ListRecipes(ctx context.Context, filter *filtering.QueryFilter) ([]*types.Recipe, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span)
@@ -173,7 +156,7 @@ func (m *recipeManager) ListRecipes(ctx context.Context, filter *filtering.Query
 }
 
 func (m *recipeManager) CreateRecipe(ctx context.Context, input *types.RecipeCreationRequestInput) (*types.Recipe, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -195,11 +178,15 @@ func (m *recipeManager) CreateRecipe(ctx context.Context, input *types.RecipeCre
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeCreated, map[string]any{
+		keys.RecipeIDKey: created.ID,
+	}))
+
 	return created, nil
 }
 
 func (m *recipeManager) ReadRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
@@ -214,7 +201,7 @@ func (m *recipeManager) ReadRecipe(ctx context.Context, recipeID string) (*types
 }
 
 func (m *recipeManager) SearchRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.Recipe, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query)
@@ -235,7 +222,7 @@ func (m *recipeManager) SearchRecipes(ctx context.Context, query string, filter 
 }
 
 func (m *recipeManager) UpdateRecipe(ctx context.Context, recipeID string, input *types.RecipeUpdateRequestInput) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -255,11 +242,15 @@ func (m *recipeManager) UpdateRecipe(ctx context.Context, recipeID string, input
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeUpdated, map[string]any{
+		keys.RecipeIDKey: recipeID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -273,11 +264,15 @@ func (m *recipeManager) ArchiveRecipe(ctx context.Context, recipeID, ownerID str
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe")
 	}
 
-	return errUnimplemented
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeArchived, map[string]any{
+		keys.RecipeIDKey: recipeID,
+	}))
+
+	return nil
 }
 
 func (m *recipeManager) RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*types.MealPlanTaskDatabaseCreationEstimate, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	/*
@@ -286,38 +281,38 @@ func (m *recipeManager) RecipeEstimatedPrepSteps(ctx context.Context, recipeID s
 		tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 		x, err := m.db.GetRecipe(ctx, recipeID)
-		if  err != nil {
+		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
 		}
 
-		stepInputs, err := m.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "generating meal plan tasks")
-		}
+			stepInputs, err := m.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
+			if err != nil {
+				return nil, observability.PrepareAndLogError(err, logger, span, "generating meal plan tasks")
+			}
 
-		responseEvents := []*types.MealPlanTaskDatabaseCreationEstimate{}
-		for _, input := range stepInputs {
-			responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
-				CreationExplanation: input.CreationExplanation,
-			})
-		}
+			responseEvents := []*types.MealPlanTaskDatabaseCreationEstimate{}
+			for _, input := range stepInputs {
+				responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
+					CreationExplanation: input.CreationExplanation,
+				})
+			}
 
-		return responseEvents, nil
+			return responseEvents, nil
 
 	*/
 
-	return nil, errUnimplemented
+	return []*types.MealPlanTaskDatabaseCreationEstimate{}, nil
 }
 
 func (m *recipeManager) RecipeImageUpload(ctx context.Context) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return
 }
 
 func (m *recipeManager) RecipeMermaid(ctx context.Context, recipeID string) (string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	/*
@@ -332,7 +327,7 @@ func (m *recipeManager) RecipeMermaid(ctx context.Context, recipeID string) (str
 		return m.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, recipe), nil
 	*/
 
-	return "", errUnimplemented
+	return "", nil
 }
 
 func cloneRecipe(x *types.Recipe, userID string) *types.RecipeDatabaseCreationInput {
@@ -419,7 +414,7 @@ func cloneRecipe(x *types.Recipe, userID string) *types.RecipeDatabaseCreationIn
 }
 
 func (m *recipeManager) CloneRecipe(ctx context.Context, recipeID, newOwnerID string) (*types.Recipe, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -443,7 +438,7 @@ func (m *recipeManager) CloneRecipe(ctx context.Context, recipeID, newOwnerID st
 }
 
 func (m *recipeManager) ListRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) ([]*types.RecipeStep, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
@@ -464,7 +459,7 @@ func (m *recipeManager) ListRecipeSteps(ctx context.Context, recipeID string, fi
 }
 
 func (m *recipeManager) CreateRecipeStep(ctx context.Context, recipeID string, input *types.RecipeStepCreationRequestInput) (*types.RecipeStep, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -483,11 +478,15 @@ func (m *recipeManager) CreateRecipeStep(ctx context.Context, recipeID string, i
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepCreated, map[string]any{
+		keys.RecipeIDKey: recipeID,
+	}))
+
 	return created, nil
 }
 
 func (m *recipeManager) ReadRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -506,7 +505,7 @@ func (m *recipeManager) ReadRecipeStep(ctx context.Context, recipeID, recipeStep
 }
 
 func (m *recipeManager) UpdateRecipeStep(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepUpdateRequestInput) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -530,11 +529,16 @@ func (m *recipeManager) UpdateRecipeStep(ctx context.Context, recipeID, recipeSt
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepUpdated, map[string]any{
+		keys.RecipeIDKey:     recipeID,
+		keys.RecipeStepIDKey: recipeStepID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -548,18 +552,23 @@ func (m *recipeManager) ArchiveRecipeStep(ctx context.Context, recipeID, recipeS
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepArchived, map[string]any{
+		keys.RecipeIDKey:     recipeID,
+		keys.RecipeStepIDKey: recipeStepID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) RecipeStepImageUpload(ctx context.Context) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return
 }
 
 func (m *recipeManager) ListRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*types.RecipeStepProduct, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -584,7 +593,7 @@ func (m *recipeManager) ListRecipeStepProducts(ctx context.Context, recipeID, re
 }
 
 func (m *recipeManager) CreateRecipeStepProduct(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepProductCreationRequestInput) (*types.RecipeStepProduct, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -607,11 +616,16 @@ func (m *recipeManager) CreateRecipeStepProduct(ctx context.Context, recipeID, r
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step product")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepProductCreated, map[string]any{
+		keys.RecipeIDKey:     recipeID,
+		keys.RecipeStepIDKey: recipeStepID,
+	}))
+
 	return created, nil
 }
 
 func (m *recipeManager) ReadRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*types.RecipeStepProduct, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -632,7 +646,7 @@ func (m *recipeManager) ReadRecipeStepProduct(ctx context.Context, recipeID, rec
 }
 
 func (m *recipeManager) UpdateRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string, input *types.RecipeStepProductUpdateRequestInput) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -658,11 +672,17 @@ func (m *recipeManager) UpdateRecipeStepProduct(ctx context.Context, recipeID, r
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step product")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepProductUpdated, map[string]any{
+		keys.RecipeIDKey:            recipeID,
+		keys.RecipeStepIDKey:        recipeStepID,
+		keys.RecipeStepProductIDKey: recipeStepProductID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ArchiveRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -679,11 +699,17 @@ func (m *recipeManager) ArchiveRecipeStepProduct(ctx context.Context, recipeID, 
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step product")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepProductArchived, map[string]any{
+		keys.RecipeIDKey:            recipeID,
+		keys.RecipeStepIDKey:        recipeStepID,
+		keys.RecipeStepProductIDKey: recipeStepProductID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ListRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*types.RecipeStepInstrument, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -708,7 +734,7 @@ func (m *recipeManager) ListRecipeStepInstruments(ctx context.Context, recipeID,
 }
 
 func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepInstrumentCreationRequestInput) (*types.RecipeStepInstrument, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -731,11 +757,16 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step instrument")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepInstrumentCreated, map[string]any{
+		keys.RecipeIDKey:     recipeID,
+		keys.RecipeStepIDKey: recipeStepID,
+	}))
+
 	return created, nil
 }
 
 func (m *recipeManager) ReadRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*types.RecipeStepInstrument, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -756,7 +787,7 @@ func (m *recipeManager) ReadRecipeStepInstrument(ctx context.Context, recipeID, 
 }
 
 func (m *recipeManager) UpdateRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string, input *types.RecipeStepInstrumentUpdateRequestInput) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -782,11 +813,17 @@ func (m *recipeManager) UpdateRecipeStepInstrument(ctx context.Context, recipeID
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step instrument")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepInstrumentUpdated, map[string]any{
+		keys.RecipeIDKey:               recipeID,
+		keys.RecipeStepIDKey:           recipeStepID,
+		keys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ArchiveRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -803,11 +840,17 @@ func (m *recipeManager) ArchiveRecipeStepInstrument(ctx context.Context, recipeI
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step instrument")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepInstrumentArchived, map[string]any{
+		keys.RecipeIDKey:               recipeID,
+		keys.RecipeStepIDKey:           recipeStepID,
+		keys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ListRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*types.RecipeStepIngredient, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -832,7 +875,7 @@ func (m *recipeManager) ListRecipeStepIngredients(ctx context.Context, recipeID,
 }
 
 func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepIngredientCreationRequestInput) (*types.RecipeStepIngredient, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -855,11 +898,16 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step ingredient")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepIngredientCreated, map[string]any{
+		keys.RecipeIDKey:     recipeID,
+		keys.RecipeStepIDKey: recipeStepID,
+	}))
+
 	return created, nil
 }
 
 func (m *recipeManager) ReadRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*types.RecipeStepIngredient, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -880,7 +928,7 @@ func (m *recipeManager) ReadRecipeStepIngredient(ctx context.Context, recipeID, 
 }
 
 func (m *recipeManager) UpdateRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string, input *types.RecipeStepIngredientUpdateRequestInput) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -905,11 +953,17 @@ func (m *recipeManager) UpdateRecipeStepIngredient(ctx context.Context, recipeID
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step ingredient")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepIngredientUpdated, map[string]any{
+		keys.RecipeIDKey:               recipeID,
+		keys.RecipeStepIDKey:           recipeStepID,
+		keys.RecipeStepIngredientIDKey: recipeStepIngredientID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ArchiveRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -926,11 +980,17 @@ func (m *recipeManager) ArchiveRecipeStepIngredient(ctx context.Context, recipeI
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step ingredient")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepIngredientArchived, map[string]any{
+		keys.RecipeIDKey:               recipeID,
+		keys.RecipeStepIDKey:           recipeStepID,
+		keys.RecipeStepIngredientIDKey: recipeStepIngredientID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ListRecipePrepTask(ctx context.Context, recipeID string, filter *filtering.QueryFilter) ([]*types.RecipePrepTask, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
@@ -951,7 +1011,7 @@ func (m *recipeManager) ListRecipePrepTask(ctx context.Context, recipeID string,
 }
 
 func (m *recipeManager) CreateRecipePrepTask(ctx context.Context, recipeID string, input *types.RecipePrepTaskCreationRequestInput) (*types.RecipePrepTask, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -970,11 +1030,15 @@ func (m *recipeManager) CreateRecipePrepTask(ctx context.Context, recipeID strin
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipePrepTaskCreated, map[string]any{
+		keys.RecipeIDKey: recipeID,
+	}))
+
 	return created, nil
 }
 
 func (m *recipeManager) ReadRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (*types.RecipePrepTask, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -993,7 +1057,7 @@ func (m *recipeManager) ReadRecipePrepTask(ctx context.Context, recipeID, recipe
 }
 
 func (m *recipeManager) UpdateRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string, input *types.RecipePrepTaskUpdateRequestInput) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -1017,11 +1081,16 @@ func (m *recipeManager) UpdateRecipePrepTask(ctx context.Context, recipeID, reci
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipePrepTaskUpdated, map[string]any{
+		keys.RecipeIDKey:         recipeID,
+		keys.RecipePrepTaskIDKey: recipePrepTaskID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1035,11 +1104,16 @@ func (m *recipeManager) ArchiveRecipePrepTask(ctx context.Context, recipeID, rec
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe prep task")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipePrepTaskArchived, map[string]any{
+		keys.RecipeIDKey:         recipeID,
+		keys.RecipePrepTaskIDKey: recipePrepTaskID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ListRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*types.RecipeStepCompletionCondition, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1064,7 +1138,7 @@ func (m *recipeManager) ListRecipeStepCompletionConditions(ctx context.Context, 
 }
 
 func (m *recipeManager) CreateRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput) (*types.RecipeStepCompletionCondition, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -1087,11 +1161,16 @@ func (m *recipeManager) CreateRecipeStepCompletionCondition(ctx context.Context,
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step completion condition")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepCompletionConditionCreated, map[string]any{
+		keys.RecipeIDKey:     recipeID,
+		keys.RecipeStepIDKey: recipeStepID,
+	}))
+
 	return created, nil
 }
 
 func (m *recipeManager) ReadRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) (*types.RecipeStepCompletionCondition, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1112,7 +1191,7 @@ func (m *recipeManager) ReadRecipeStepCompletionCondition(ctx context.Context, r
 }
 
 func (m *recipeManager) UpdateRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string, input *types.RecipeStepCompletionConditionUpdateRequestInput) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -1138,11 +1217,17 @@ func (m *recipeManager) UpdateRecipeStepCompletionCondition(ctx context.Context,
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step completion condition")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepCompletionConditionUpdated, map[string]any{
+		keys.RecipeIDKey:                        recipeID,
+		keys.RecipeStepIDKey:                    recipeStepID,
+		keys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ArchiveRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1159,11 +1244,17 @@ func (m *recipeManager) ArchiveRecipeStepCompletionCondition(ctx context.Context
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step completion condition")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepCompletionConditionArchived, map[string]any{
+		keys.RecipeIDKey:                        recipeID,
+		keys.RecipeStepIDKey:                    recipeStepID,
+		keys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ListRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*types.RecipeStepVessel, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1188,7 +1279,7 @@ func (m *recipeManager) ListRecipeStepVessels(ctx context.Context, recipeID, rec
 }
 
 func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepVesselCreationRequestInput) (*types.RecipeStepVessel, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -1211,11 +1302,16 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step vessel")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepVesselCreated, map[string]any{
+		keys.RecipeIDKey:     recipeID,
+		keys.RecipeStepIDKey: recipeStepID,
+	}))
+
 	return created, nil
 }
 
 func (m *recipeManager) ReadRecipeStepVessel(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (*types.RecipeStepVessel, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1236,7 +1332,7 @@ func (m *recipeManager) ReadRecipeStepVessel(ctx context.Context, recipeID, reci
 }
 
 func (m *recipeManager) UpdateRecipeStepVessel(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string, input *types.RecipeStepVesselUpdateRequestInput) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -1262,11 +1358,17 @@ func (m *recipeManager) UpdateRecipeStepVessel(ctx context.Context, recipeID, re
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step vessel")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepVesselUpdated, map[string]any{
+		keys.RecipeIDKey:           recipeID,
+		keys.RecipeStepIDKey:       recipeStepID,
+		keys.RecipeStepVesselIDKey: recipeStepVesselID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ArchiveRecipeStepVessel(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1282,11 +1384,17 @@ func (m *recipeManager) ArchiveRecipeStepVessel(ctx context.Context, recipeID, r
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step vessel")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepVesselArchived, map[string]any{
+		keys.RecipeIDKey:           recipeID,
+		keys.RecipeStepIDKey:       recipeStepID,
+		keys.RecipeStepVesselIDKey: recipeStepVesselID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ListRecipeRatings(ctx context.Context, recipeID string, filter *filtering.QueryFilter) ([]*types.RecipeRating, string, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
@@ -1307,7 +1415,7 @@ func (m *recipeManager) ListRecipeRatings(ctx context.Context, recipeID string, 
 }
 
 func (m *recipeManager) ReadRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*types.RecipeRating, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1326,7 +1434,7 @@ func (m *recipeManager) ReadRecipeRating(ctx context.Context, recipeID, recipeRa
 }
 
 func (m *recipeManager) CreateRecipeRating(ctx context.Context, recipeID string, input *types.RecipeRatingCreationRequestInput) (*types.RecipeRating, error) {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -1345,11 +1453,15 @@ func (m *recipeManager) CreateRecipeRating(ctx context.Context, recipeID string,
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe rating")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeRatingCreated, map[string]any{
+		keys.RecipeIDKey: recipeID,
+	}))
+
 	return created, nil
 }
 
 func (m *recipeManager) UpdateRecipeRating(ctx context.Context, recipeID, recipeRatingID string, input *types.RecipeRatingUpdateRequestInput) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -1373,11 +1485,16 @@ func (m *recipeManager) UpdateRecipeRating(ctx context.Context, recipeID, recipe
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe rating")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeRatingUpdated, map[string]any{
+		keys.RecipeIDKey:       recipeID,
+		keys.RecipeRatingIDKey: recipeRatingID,
+	}))
+
 	return nil
 }
 
 func (m *recipeManager) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error {
-	_, span := m.tracer.StartSpan(ctx)
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1390,6 +1507,11 @@ func (m *recipeManager) ArchiveRecipeRating(ctx context.Context, recipeID, recip
 	if err := m.db.ArchiveRecipeRating(ctx, recipeID, recipeRatingID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating")
 	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeRatingArchived, map[string]any{
+		keys.RecipeIDKey:       recipeID,
+		keys.RecipeRatingIDKey: recipeRatingID,
+	}))
 
 	return nil
 }
