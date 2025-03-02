@@ -3,12 +3,10 @@ package managers
 import (
 	"context"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
-	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
@@ -16,10 +14,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
 	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types/converters"
@@ -34,7 +34,7 @@ type (
 		ListRecipes(ctx context.Context, filter *filtering.QueryFilter) ([]*types.Recipe, string, error)
 		CreateRecipe(ctx context.Context, input *types.RecipeCreationRequestInput) (*types.Recipe, error)
 		ReadRecipe(ctx context.Context, recipeID string) (*types.Recipe, error)
-		SearchRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.Recipe, string, error)
+		SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.Recipe, string, error)
 		UpdateRecipe(ctx context.Context, recipeID string, input *types.RecipeUpdateRequestInput) error
 		ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error
 		RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*types.MealPlanTaskDatabaseCreationEstimate, error)
@@ -200,12 +200,13 @@ func (m *recipeManager) ReadRecipe(ctx context.Context, recipeID string) (*types
 	return x, nil
 }
 
-func (m *recipeManager) SearchRecipes(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.Recipe, string, error) {
+func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.Recipe, string, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()

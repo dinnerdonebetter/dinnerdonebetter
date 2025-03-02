@@ -48,6 +48,28 @@ func buildMealPlanManagerForTest(t *testing.T) *mealPlanningManager {
 	return m.(*mealPlanningManager)
 }
 
+func setupExpectationsForMealPlanningManager(
+	manager *mealPlanningManager,
+	dbSetupFunc func(db *database.MockDatabase),
+	eventTypeMaps ...map[string][]string,
+) []any {
+	db := database.NewMockDatabase()
+	if dbSetupFunc != nil {
+		dbSetupFunc(db)
+	}
+	manager.db = db
+
+	mp := &mockpublishers.Publisher{}
+	for _, eventTypeMap := range eventTypeMaps {
+		for eventType, payload := range eventTypeMap {
+			mp.On("PublishAsync", testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
+		}
+	}
+	manager.dataChangesPublisher = mp
+
+	return []any{db, mp}
+}
+
 func TestMealPlanningManager_ListMeals(T *testing.T) {
 	T.Parallel()
 
