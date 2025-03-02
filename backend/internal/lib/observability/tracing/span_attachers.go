@@ -64,6 +64,14 @@ func AttachToSpan[T any](span trace.Span, attachmentKey string, x T) {
 	}
 }
 
+func AttachManyToSpan[T any](span trace.Span, attachments map[string]T) {
+	if span != nil {
+		for k, v := range attachments {
+			AttachToSpan(span, k, v)
+		}
+	}
+}
+
 // this is effectively an alias for the existing authentication.SessionContextData struct.
 type sessionContextData interface {
 	GetUserID() string
