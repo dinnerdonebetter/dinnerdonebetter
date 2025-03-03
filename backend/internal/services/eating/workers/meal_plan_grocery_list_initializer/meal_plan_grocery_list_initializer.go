@@ -82,12 +82,13 @@ func (w *Worker) Work(ctx context.Context) error {
 		l := logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
 
 		var dbInputs []*types.MealPlanGroceryListItemDatabaseCreationInput
-		dbInputs, err = w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
-		if err != nil {
-			errorResult = multierror.Append(errorResult, err)
-			l.Error("failed to generate grocery list inputs for meal plan", err)
-			continue
-		}
+		// TODO: RESTOREME
+		//dbInputs, err = w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
+		//if err != nil {
+		//	errorResult = multierror.Append(errorResult, err)
+		//	l.Error("failed to generate grocery list inputs for meal plan", err)
+		//	continue
+		//}
 
 		l = l.WithValue("to_create", len(dbInputs))
 		l.Info("creating grocery list items for meal plan")

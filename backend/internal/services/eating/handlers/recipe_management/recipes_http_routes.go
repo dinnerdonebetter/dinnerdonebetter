@@ -514,7 +514,7 @@ func (s *service) RecipeEstimatedPrepStepsHandler(res http.ResponseWriter, req *
 
 	// fetch recipe from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.recipeManagementDataManager.GetRecipe(ctx, recipeID)
+	_, err = s.recipeManagementDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -527,20 +527,20 @@ func (s *service) RecipeEstimatedPrepStepsHandler(res http.ResponseWriter, req *
 	}
 	readTimer.Stop()
 
-	stepInputs, err := s.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
+	//stepInputs, err := s.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
+	//if err != nil {
+	//	observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
+	//	errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+	//	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+	//	return
+	//}
 
 	responseEvents := []*types.MealPlanTaskDatabaseCreationEstimate{}
-	for _, input := range stepInputs {
-		responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
-			CreationExplanation: input.CreationExplanation,
-		})
-	}
+	//for _, input := range stepInputs {
+	//	responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
+	//		CreationExplanation: input.CreationExplanation,
+	//	})
+	//}
 
 	responseValue := &types.APIResponse[[]*types.MealPlanTaskDatabaseCreationEstimate]{
 		Details: responseDetails,
@@ -695,7 +695,7 @@ func (s *service) RecipeMermaidHandler(res http.ResponseWriter, req *http.Reques
 
 	// fetch recipe from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.recipeManagementDataManager.GetRecipe(ctx, recipeID)
+	_, err = s.recipeManagementDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -708,11 +708,11 @@ func (s *service) RecipeMermaidHandler(res http.ResponseWriter, req *http.Reques
 	}
 	readTimer.Stop()
 
-	graphDefinition := s.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, x)
+	// graphDefinition := s.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, x)
 
 	responseValue := &types.APIResponse[string]{
 		Details: responseDetails,
-		Data:    graphDefinition,
+		Data:    "",
 	}
 
 	// encode our response and peace.

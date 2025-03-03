@@ -5,7 +5,7 @@ locals {
 }
 
 provider "grafana" {
-  url  = "https://${local.grafana_stack}.grafana.net/"
+  url                       = "https://${local.grafana_stack}.grafana.net/"
   cloud_access_policy_token = var.GRAFANA_CLOUD_API_KEY
 }
 

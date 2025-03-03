@@ -276,33 +276,27 @@ func (m *recipeManager) RecipeEstimatedPrepSteps(ctx context.Context, recipeID s
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	/*
+	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-		logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-		tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	x, err := m.db.GetRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
+	}
 
-		x, err := m.db.GetRecipe(ctx, recipeID)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
-		}
+	stepInputs, err := m.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "generating meal plan tasks")
+	}
 
-			stepInputs, err := m.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
-			if err != nil {
-				return nil, observability.PrepareAndLogError(err, logger, span, "generating meal plan tasks")
-			}
+	responseEvents := []*types.MealPlanTaskDatabaseCreationEstimate{}
+	for _, input := range stepInputs {
+		responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
+			CreationExplanation: input.CreationExplanation,
+		})
+	}
 
-			responseEvents := []*types.MealPlanTaskDatabaseCreationEstimate{}
-			for _, input := range stepInputs {
-				responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
-					CreationExplanation: input.CreationExplanation,
-				})
-			}
-
-			return responseEvents, nil
-
-	*/
-
-	return []*types.MealPlanTaskDatabaseCreationEstimate{}, nil
+	return responseEvents, nil
 }
 
 func (m *recipeManager) RecipeImageUpload(ctx context.Context) {
@@ -316,19 +310,15 @@ func (m *recipeManager) RecipeMermaid(ctx context.Context, recipeID string) (str
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	/*
-		logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
-		tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger := m.logger.WithSpan(span).WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-		recipe, err := m.db.GetRecipe(ctx, recipeID)
-		if err != nil {
-			return "", observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
-		}
+	recipe, err := m.db.GetRecipe(ctx, recipeID)
+	if err != nil {
+		return "", observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
+	}
 
-		return m.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, recipe), nil
-	*/
-
-	return "", nil
+	return m.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, recipe), nil
 }
 
 func cloneRecipe(x *types.Recipe, userID string) *types.RecipeDatabaseCreationInput {
@@ -435,6 +425,10 @@ func (m *recipeManager) CloneRecipe(ctx context.Context, recipeID, newOwnerID st
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating clone of recipe")
 	}
 
+	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeCloned, map[string]any{
+		keys.RecipeIDKey: recipeID,
+	}))
+
 	return newRecipe, nil
 }
 
@@ -480,7 +474,8 @@ func (m *recipeManager) CreateRecipeStep(ctx context.Context, recipeID string, i
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepCreated, map[string]any{
-		keys.RecipeIDKey: recipeID,
+		keys.RecipeIDKey:     recipeID,
+		keys.RecipeStepIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -618,8 +613,9 @@ func (m *recipeManager) CreateRecipeStepProduct(ctx context.Context, recipeID, r
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepProductCreated, map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		keys.RecipeIDKey:            recipeID,
+		keys.RecipeStepIDKey:        recipeStepID,
+		keys.RecipeStepProductIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -759,8 +755,9 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepInstrumentCreated, map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		keys.RecipeIDKey:               recipeID,
+		keys.RecipeStepIDKey:           recipeStepID,
+		keys.RecipeStepInstrumentIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -900,8 +897,9 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepIngredientCreated, map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		keys.RecipeIDKey:               recipeID,
+		keys.RecipeStepIDKey:           recipeStepID,
+		keys.RecipeStepIngredientIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1032,7 +1030,8 @@ func (m *recipeManager) CreateRecipePrepTask(ctx context.Context, recipeID strin
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipePrepTaskCreated, map[string]any{
-		keys.RecipeIDKey: recipeID,
+		keys.RecipeIDKey:         recipeID,
+		keys.RecipePrepTaskIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1163,8 +1162,9 @@ func (m *recipeManager) CreateRecipeStepCompletionCondition(ctx context.Context,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepCompletionConditionCreated, map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		keys.RecipeIDKey:                        recipeID,
+		keys.RecipeStepIDKey:                    recipeStepID,
+		keys.RecipeStepCompletionConditionIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1304,8 +1304,9 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeStepVesselCreated, map[string]any{
-		keys.RecipeIDKey:     recipeID,
-		keys.RecipeStepIDKey: recipeStepID,
+		keys.RecipeIDKey:           recipeID,
+		keys.RecipeStepIDKey:       recipeStepID,
+		keys.RecipeStepVesselIDKey: convertedInput.ID,
 	}))
 
 	return created, nil
@@ -1455,7 +1456,8 @@ func (m *recipeManager) CreateRecipeRating(ctx context.Context, recipeID string,
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.RecipeRatingCreated, map[string]any{
-		keys.RecipeIDKey: recipeID,
+		keys.RecipeIDKey:       recipeID,
+		keys.RecipeRatingIDKey: convertedInput.ID,
 	}))
 
 	return created, nil

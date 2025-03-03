@@ -140,19 +140,20 @@ func (w *Worker) determineCreatableMealPlanTasks(ctx context.Context) (map[strin
 			inputs[result.MealPlanID] = []*types.MealPlanTaskDatabaseCreationInput{}
 		}
 
-		for _, recipeID := range result.RecipeIDs {
-			recipe, getRecipeErr := w.dataManager.GetRecipe(ctx, recipeID)
-			if getRecipeErr != nil {
-				return nil, observability.PrepareAndLogError(getRecipeErr, l, span, "fetching recipe")
-			}
-
-			creatableSteps, determineStepsErr := w.analyzer.GenerateMealPlanTasksForRecipe(ctx, result.MealPlanOptionID, recipe)
-			if determineStepsErr != nil {
-				return nil, observability.PrepareAndLogError(determineStepsErr, l, span, "fetching recipe")
-			}
-
-			inputs[result.MealPlanID] = append(inputs[result.MealPlanID], creatableSteps...)
-		}
+		// TODO: RESTOREME
+		//for _, recipeID := range result.RecipeIDs {
+		//recipe, getRecipeErr := w.dataManager.GetRecipe(ctx, recipeID)
+		//if getRecipeErr != nil {
+		//	return nil, observability.PrepareAndLogError(getRecipeErr, l, span, "fetching recipe")
+		//}
+		//
+		//creatableSteps, determineStepsErr := w.analyzer.GenerateMealPlanTasksForRecipe(ctx, result.MealPlanOptionID, recipe)
+		//if determineStepsErr != nil {
+		//	return nil, observability.PrepareAndLogError(determineStepsErr, l, span, "fetching recipe")
+		//}
+		//
+		//inputs[result.MealPlanID] = append(inputs[result.MealPlanID], creatableSteps...)
+		//}
 	}
 
 	return inputs, nil

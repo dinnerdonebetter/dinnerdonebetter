@@ -4,6 +4,7 @@ const (
 	RecipeCreated                         = "recipe_created"
 	RecipeUpdated                         = "recipe_updated"
 	RecipeArchived                        = "recipe_archived"
+	RecipeCloned                          = "recipe_cloned"
 	RecipeStepCreated                     = "recipe_step_created"
 	RecipeStepUpdated                     = "recipe_step_updated"
 	RecipeStepArchived                    = "recipe_step_archived"

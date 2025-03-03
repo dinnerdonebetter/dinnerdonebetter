@@ -111,8 +111,6 @@ ifeq (, $(shell which protoc-gen-go-grpc))
 	$(shell go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1)
 endif
 
-
-
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed
 
@@ -151,7 +149,7 @@ format_go_tag_alignment: ensure_tagalign_installed
 	@until tagalign -fix -sort -order "env,envDefault,envPrefix,json,mapstructure,toml,yaml" ./...; do true; done > /dev/null
 
 .PHONY: format_golang
-format_golang: goimports format_imports format_go_fieldalignment # format_go_tag_alignment
+format_golang: format_imports format_go_fieldalignment # format_go_tag_alignment
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: terraformat

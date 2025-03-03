@@ -7,8 +7,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 )
