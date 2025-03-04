@@ -11,7 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -30,14 +29,14 @@ type Worker struct {
 	dataManager             database.DataManager // TODO: make this less potent
 	postUpdatesPublisher    messagequeue.Publisher
 	recordsProcessedCounter metrics.Int64Counter
-	groceryListCreator      grocerylistpreparation.GroceryListCreator
+	// TODO: groceryListCreator      grocerylistpreparation.GroceryListCreator
 }
 
 func NewMealPlanGroceryListInitializer(logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 	publisherProvider messagequeue.PublisherProvider,
-	groceryListCreator grocerylistpreparation.GroceryListCreator,
+	// TODO: groceryListCreator grocerylistpreparation.GroceryListCreator,
 	cfg *msgconfig.QueuesConfig,
 ) (*Worker, error) {
 	postUpdatesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
@@ -53,9 +52,9 @@ func NewMealPlanGroceryListInitializer(logger logging.Logger,
 	return &Worker{
 		recordsProcessedCounter: recordsProcessedCounter,
 		postUpdatesPublisher:    postUpdatesPublisher,
-		groceryListCreator:      groceryListCreator,
-		logger:                  logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		// TODO: groceryListCreator:      groceryListCreator,
+		logger: logging.EnsureLogger(logger).WithName(serviceName),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}, nil
 }
 
@@ -81,13 +80,16 @@ func (w *Worker) Work(ctx context.Context) error {
 	for _, mealPlan := range mealPlans {
 		l := logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
 
-		var dbInputs []*types.MealPlanGroceryListItemDatabaseCreationInput
-		dbInputs, err = w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
-		if err != nil {
-			errorResult = multierror.Append(errorResult, err)
-			l.Error("failed to generate grocery list inputs for meal plan", err)
-			continue
-		}
+		dbInputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{}
+		/*
+			// TODO: RESTOREME
+			//	dbInputs, err = w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
+			//	if err != nil {
+			//		errorResult = multierror.Append(errorResult, err)
+			//		l.Error("failed to generate grocery list inputs for meal plan", err)
+			//		continue
+			//	}
+		*/
 
 		l = l.WithValue("to_create", len(dbInputs))
 		l.Info("creating grocery list items for meal plan")

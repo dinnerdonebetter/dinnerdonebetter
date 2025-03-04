@@ -61,16 +61,16 @@ resource "google_container_node_pool" "primary_nodes" {
 
   autoscaling {
     total_max_node_count = 1
-    location_policy = "BALANCED"
+    location_policy      = "BALANCED"
   }
 
   management {
-    auto_repair = true
+    auto_repair  = true
     auto_upgrade = true
   }
 
   network_config {
-    
+
   }
 
   node_config {

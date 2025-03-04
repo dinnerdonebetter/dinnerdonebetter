@@ -6,10 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types/fakes"
@@ -33,50 +30,6 @@ func eventMatches(eventType string, keys []string) any {
 
 		return result
 	})
-}
-
-func setupExpectationsForMealPlanningManager(
-	manager *mealPlanningManager,
-	dbSetupFunc func(db *database.MockDatabase),
-	eventTypeMaps ...map[string][]string,
-) []any {
-	db := database.NewMockDatabase()
-	if dbSetupFunc != nil {
-		dbSetupFunc(db)
-	}
-	manager.db = db
-
-	mp := &mockpublishers.Publisher{}
-	for _, eventTypeMap := range eventTypeMaps {
-		for eventType, payload := range eventTypeMap {
-			mp.On("PublishAsync", testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
-		}
-	}
-	manager.dataChangesPublisher = mp
-
-	return []any{db, mp}
-}
-
-func setupExpectationsForValidEnumerationManager(
-	manager *validEnumerationManager,
-	dbSetupFunc func(db *database.MockDatabase),
-	eventTypeMaps ...map[string][]string,
-) []any {
-	db := database.NewMockDatabase()
-	if dbSetupFunc != nil {
-		dbSetupFunc(db)
-	}
-	manager.db = db
-
-	mp := &mockpublishers.Publisher{}
-	for _, eventTypeMap := range eventTypeMaps {
-		for eventType, payload := range eventTypeMap {
-			mp.On("PublishAsync", testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
-		}
-	}
-	manager.dataChangesPublisher = mp
-
-	return []any{db, mp}
 }
 
 func Test_buildDataChangeMessageFromContext(T *testing.T) {

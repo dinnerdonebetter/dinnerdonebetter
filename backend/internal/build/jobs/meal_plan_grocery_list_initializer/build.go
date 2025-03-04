@@ -12,7 +12,6 @@ import (
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_grocery_list_initializer"
 
 	"github.com/google/wire"
@@ -30,7 +29,7 @@ func Build(
 		msgconfig.MessageQueueProviders,
 		loggingcfg.ProvidersLogConfig,
 		metricscfg.ProvidersMetrics,
-		grocerylistpreparation.ProvidersGroceryListPreparation,
+		// TODO: grocerylistpreparation.ProvidersGroceryListPreparation,
 		ConfigProviders,
 	)
 

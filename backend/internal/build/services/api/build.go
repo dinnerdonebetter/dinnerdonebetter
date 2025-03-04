@@ -35,7 +35,6 @@ import (
 	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/usernotifications"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/users"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
 	graphing "github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
 	mealplanningservice "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/meal_planning"
 	recipemanagementservice "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
@@ -91,7 +90,7 @@ func Build(
 		mealplantaskcreator.ProvidersMealPlanTaskCreator,
 		mealplangrocerylistinitializer.ProvidersMealPlanGroceryListInitializer,
 		mealplanfinalizer.ProvidersMealPlanFinalizer,
-		grocerylistpreparation.ProvidersGroceryListPreparation,
+		// TODO: grocerylistpreparation.ProvidersGroceryListPreparation,
 		ProvideAPIRouter,
 	)
 

@@ -48,6 +48,28 @@ func buildValidEnumerationsManagerForTest(t *testing.T) *validEnumerationManager
 	return m.(*validEnumerationManager)
 }
 
+func setupExpectationsForValidEnumerationManager(
+	manager *validEnumerationManager,
+	dbSetupFunc func(db *database.MockDatabase),
+	eventTypeMaps ...map[string][]string,
+) []any {
+	db := database.NewMockDatabase()
+	if dbSetupFunc != nil {
+		dbSetupFunc(db)
+	}
+	manager.db = db
+
+	mp := &mockpublishers.Publisher{}
+	for _, eventTypeMap := range eventTypeMaps {
+		for eventType, payload := range eventTypeMap {
+			mp.On("PublishAsync", testutils.ContextMatcher, eventMatches(eventType, payload)).Return()
+		}
+	}
+	manager.dataChangesPublisher = mp
+
+	return []any{db, mp}
+}
+
 func TestValidEnumerationManager_SearchValidIngredientGroups(T *testing.T) {
 	T.Parallel()
 
@@ -208,8 +230,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientGroup(T *testing.T) {
 			},
 		)
 
-		err := vem.ArchiveValidIngredientGroup(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidIngredientGroup(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -348,8 +369,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientMeasurementUnit(T *testin
 			},
 		)
 
-		err := vem.ArchiveValidIngredientMeasurementUnit(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidIngredientMeasurementUnit(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -542,8 +562,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientPreparation(T *testing.T)
 			},
 		)
 
-		err := vem.ArchiveValidIngredientPreparation(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidIngredientPreparation(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -789,8 +808,7 @@ func TestValidEnumerationManager_ArchiveValidIngredient(T *testing.T) {
 			},
 		)
 
-		err := vem.ArchiveValidIngredient(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidIngredient(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -957,8 +975,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientStateIngredient(T *testin
 			},
 		)
 
-		err := vem.ArchiveValidIngredientStateIngredient(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidIngredientStateIngredient(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1178,8 +1195,7 @@ func TestValidEnumerationManager_ArchiveValidIngredientState(T *testing.T) {
 			},
 		)
 
-		err := vem.ArchiveValidIngredientState(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidIngredientState(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1372,8 +1388,7 @@ func TestValidEnumerationManager_ArchiveValidMeasurementUnit(T *testing.T) {
 			},
 		)
 
-		err := vem.ArchiveValidMeasurementUnit(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidMeasurementUnit(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1565,8 +1580,7 @@ func TestValidEnumerationManager_ArchiveValidInstrument(T *testing.T) {
 			},
 		)
 
-		err := vem.ArchiveValidInstrument(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidInstrument(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1732,8 +1746,7 @@ func TestValidEnumerationManager_ArchiveValidMeasurementUnitConversion(T *testin
 			},
 		)
 
-		err := vem.ArchiveValidMeasurementUnitConversion(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidMeasurementUnitConversion(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1872,8 +1885,7 @@ func TestValidEnumerationManager_ArchiveValidPreparationInstrument(T *testing.T)
 			},
 		)
 
-		err := vem.ArchiveValidPreparationInstrument(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidPreparationInstrument(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2119,8 +2131,7 @@ func TestValidEnumerationManager_ArchiveValidPreparation(T *testing.T) {
 			},
 		)
 
-		err := vem.ArchiveValidPreparation(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidPreparation(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2259,8 +2270,7 @@ func TestValidEnumerationManager_ArchiveValidPreparationVessel(T *testing.T) {
 			},
 		)
 
-		err := vem.ArchiveValidPreparationVessel(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidPreparationVessel(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2506,8 +2516,7 @@ func TestValidEnumerationManager_ArchiveValidVessel(T *testing.T) {
 			},
 		)
 
-		err := vem.ArchiveValidVessel(ctx, expected.ID)
-		assert.NoError(t, err)
+		assert.NoError(t, vem.ArchiveValidVessel(ctx, expected.ID))
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})

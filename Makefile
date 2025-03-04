@@ -3,10 +3,27 @@ MYSELF        := $(shell id -u)
 MY_GROUP      := $(shell id -g)
 DEV_NAMESPACE := dev
 
+# PATHS
+PROTO_FILES_PATH       := proto/*.proto
+PROTO_OUTPUT_BACKEND_PATH      := backend/internal/grpc
+BACKEND_REPO_NAME                   := github.com/dinnerdonebetter/backend
+
 .PHONY: ensure_yamlfmt_installed
 ensure_yamlfmt_installed:
 ifeq (, $(shell which yamlfmt))
 	$(shell go install github.com/google/yamlfmt/cmd/yamlfmt@latest)
+endif
+
+.PHONY: ensure_protoc-gen-go_installed
+ensure_protoc-gen-go_installed:
+ifeq (, $(shell which protoc-gen-go-grpc))
+	$(shell go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.4)
+endif
+
+.PHONY: ensure_protoc-gen-go-grpc_installed
+ensure_protoc-gen-go-grpc_installed:
+ifeq (, $(shell which protoc-gen-go-grpc))
+	$(shell go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1)
 endif
 
 .PHONY: setup
@@ -23,6 +40,7 @@ format: format_yaml
 terraformat:
 	(cd backend && $(MAKE) terraformat)
 	(cd frontend && $(MAKE) terraformat)
+	(cd infra && $(MAKE) terraformat)
 
 .PHONY: format_yaml
 format_yaml: ensure_yamlfmt_installed
@@ -38,30 +56,16 @@ test:
 	(cd backend && $(MAKE) test)
 	(cd frontend && $(MAKE) test)
 
-.PHONY: openapi-clients
-openapi-clients:
-	(cd backend && $(MAKE) openapi-client)
-	(cd frontend && $(MAKE) openapi-client)
+.PHONY: proto
+proto: backend_proto
 
-.PHONY: openapi-lint
-openapi-lint:
-	npx @stoplight/spectral-cli@v6.13.1 lint openapi_spec.yamls
-
-.PHONY: regit
-regit:
-	cd ../
-	git clone git@github.com:dinnerdonebetter/dinnerdonebetter tempdir
-	@if [ -n "$(BRANCH)" ]; then \
-	  (cd tempdir && git checkout $(BRANCH)); \
-	fi
-	cp -rf tempdir/.git .
-	rm -rf tempdir
-
-.PHONY: deploy_dev
-deploy_dev:
-	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
-	skaffold run --filename=skaffold.yaml --build-concurrency 1 --profile $(DEV_NAMESPACE)
-
-.PHONY: nuke_dev
-nuke_dev:
-	kubectl delete deployments,cronjobs,configmaps,services,secrets --namespace $(DEV_NAMESPACE) --selector='managed_by!=terraform'
+.PHONY: backend_proto
+backend_proto: ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
+	rm -rf $(PROTO_OUTPUT_BACKEND_PATH)
+	mkdir -p $(PROTO_OUTPUT_BACKEND_PATH)
+	protoc --go_out=. \
+		--go-grpc_out=. \
+		--go_opt=module=$(BACKEND_REPO_NAME) \
+		--go-grpc_opt=module=$(BACKEND_REPO_NAME) \
+		-I internal/services/ \
+		$(PROTO_FILES_PATH)

@@ -25,9 +25,9 @@ const (
 var _ workers.Worker = (*Worker)(nil)
 
 type Worker struct {
-	logger                  logging.Logger
-	tracer                  tracing.Tracer
-	analyzer                recipeanalysis.RecipeAnalyzer
+	logger logging.Logger
+	tracer tracing.Tracer
+	// TODO: analyzer                recipeanalysis.RecipeAnalyzer
 	dataManager             database.DataManager
 	postUpdatesPublisher    messagequeue.Publisher
 	processedRecordsCounter metrics.Int64Counter
@@ -53,7 +53,7 @@ func NewMealPlanTaskCreator(
 	}
 
 	return &Worker{
-		analyzer:                analyzer,
+		// TODO: analyzer:                analyzer,
 		dataManager:             dataManager,
 		postUpdatesPublisher:    postUpdatesPublisher,
 		processedRecordsCounter: processedRecordsCounter,
@@ -140,19 +140,22 @@ func (w *Worker) determineCreatableMealPlanTasks(ctx context.Context) (map[strin
 			inputs[result.MealPlanID] = []*types.MealPlanTaskDatabaseCreationInput{}
 		}
 
+		// TODO: RESTOREME
+		/* TODO:
 		for _, recipeID := range result.RecipeIDs {
-			recipe, getRecipeErr := w.dataManager.GetRecipe(ctx, recipeID)
-			if getRecipeErr != nil {
-				return nil, observability.PrepareAndLogError(getRecipeErr, l, span, "fetching recipe")
-			}
-
-			creatableSteps, determineStepsErr := w.analyzer.GenerateMealPlanTasksForRecipe(ctx, result.MealPlanOptionID, recipe)
-			if determineStepsErr != nil {
-				return nil, observability.PrepareAndLogError(determineStepsErr, l, span, "fetching recipe")
-			}
-
-			inputs[result.MealPlanID] = append(inputs[result.MealPlanID], creatableSteps...)
+		recipe, getRecipeErr := w.dataManager.GetRecipe(ctx, recipeID)
+		if getRecipeErr != nil {
+			return nil, observability.PrepareAndLogError(getRecipeErr, l, span, "fetching recipe")
 		}
+
+		creatableSteps, determineStepsErr := w.analyzer.GenerateMealPlanTasksForRecipe(ctx, result.MealPlanOptionID, recipe)
+		if determineStepsErr != nil {
+			return nil, observability.PrepareAndLogError(determineStepsErr, l, span, "fetching recipe")
+		}
+
+		inputs[result.MealPlanID] = append(inputs[result.MealPlanID], creatableSteps...)
+		}
+		*/
 	}
 
 	return inputs, nil

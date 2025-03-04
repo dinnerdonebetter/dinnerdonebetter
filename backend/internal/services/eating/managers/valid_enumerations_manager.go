@@ -22,6 +22,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types/converters"
 )
 
+const (
+	validEnumerationsManagerName = "valid_enumerations_manager"
+)
+
 type (
 	ValidEnumerationsManager interface {
 		SearchValidIngredientGroups(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error)
@@ -192,8 +196,8 @@ func NewValidEnumerationsManager(
 
 	m := &validEnumerationManager{
 		db:                               db,
-		tracer:                           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger:                           logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(validEnumerationsManagerName)),
+		logger:                           logging.EnsureLogger(logger).WithName(validEnumerationsManagerName),
 		dataChangesPublisher:             dataChangesPublisher,
 		validIngredientStatesSearchIndex: validIngredientStatesSearchIndex,
 		validInstrumentSearchIndex:       validInstrumentSearchIndex,
