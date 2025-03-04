@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package eating;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/messages";
+
+message QueryFilter {
+  optional uint32 PageSize = 1;
+  optional string NextCursor = 2;
+  optional bool IncludeArchived = 3;
+}
+
+message ArbitraryQueueMessageRequestInput {
+  string QueueName = 1;
+  string Body = 2;
+}
+
+message ArbitraryQueueMessageResponse {
+  bool Success = 1;
+}
+
+message ChangeLog {
+  string OldValue = 1;
+  string NewValue = 2;
+}
+
+message AuditLogEntry {
+  google.protobuf.Timestamp CreatedAt = 1;
+  map<string, ChangeLog> Changes = 2;
+  string BelongsToHousehold = 3;
+  string ID = 4;
+  string ResourceType = 5;
+  string RelevantID = 6;
+  string EventType = 7;
+  string BelongsToUser = 8;
+}
+
+message OptionalFloat32Range {
+  optional float Max = 1;
+  optional float Min = 2;
+}
+
+message OptionalUint32Range {
+  optional uint32 Max = 1;
+  optional uint32 Min = 2;
+}

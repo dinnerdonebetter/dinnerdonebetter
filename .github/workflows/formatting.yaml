@@ -19,6 +19,8 @@ jobs:
         id: filter
         with:
           filters: |
+            protobuf:
+              - proto/*.proto
             backend_golang:
               - backend/**/*.go
             frontend_typescript:
@@ -45,6 +47,18 @@ jobs:
       - name: check formatting
         working-directory: backend
         run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi
+
+  protobuf:
+    needs: [changes]
+    if: ${{ needs.changes.outputs.protobuf == 'true' }}
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: check formatting
+        run: make format_proto
 
   typescript:
     needs: [changes]

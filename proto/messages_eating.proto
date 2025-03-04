@@ -1,0 +1,2940 @@
+syntax = "proto3";
+
+package eating;
+
+import "google/protobuf/timestamp.proto";
+import "messages_common.proto";
+import "messages_core.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/messages";
+
+message EatingUserDataCollection {
+  string ReportID = 1;
+  repeated HouseholdInstrumentOwnership HouseholdInstrumentOwnerships = 2;
+  repeated MealPlan MealPlans = 3;
+  repeated RecipeRating RecipeRatings = 4;
+  repeated Recipe Recipes = 5;
+  repeated Meal Meals = 6;
+  repeated UserIngredientPreference UserIngredientPreferences = 7;
+}
+
+// Valid Enumerations
+
+message ValidIngredient {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  OptionalFloat32Range StorageTemperatureInCelsius = 4;
+  string IconPath = 5;
+  string Warning = 6;
+  string PluralName = 7;
+  string StorageInstructions = 8;
+  string Name = 9;
+  string ID = 10;
+  string Description = 11;
+  string Slug = 12;
+  string ShoppingSuggestions = 13;
+  bool ContainsShellfish = 14;
+  bool IsLiquid = 15;
+  bool ContainsPeanut = 16;
+  bool ContainsTreeNut = 17;
+  bool ContainsEgg = 18;
+  bool ContainsWheat = 19;
+  bool ContainsSoy = 20;
+  bool AnimalDerived = 21;
+  bool RestrictToPreparations = 22;
+  bool ContainsSesame = 23;
+  bool ContainsFish = 24;
+  bool ContainsGluten = 25;
+  bool ContainsDairy = 26;
+  bool ContainsAlcohol = 27;
+  bool AnimalFlesh = 28;
+  bool IsStarch = 29;
+  bool IsProtein = 30;
+  bool IsGrain = 31;
+  bool IsFruit = 32;
+  bool IsSalt = 33;
+  bool IsFat = 34;
+  bool IsAcid = 35;
+  bool IsHeat = 36;
+}
+
+message ValidIngredientCreationRequestInput {
+  OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  string Warning = 2;
+  string IconPath = 3;
+  string PluralName = 4;
+  string StorageInstructions = 5;
+  string Name = 6;
+  string Description = 7;
+  string Slug = 8;
+  string ShoppingSuggestions = 9;
+  bool ContainsFish = 10;
+  bool ContainsShellfish = 11;
+  bool AnimalFlesh = 12;
+  bool ContainsEgg = 13;
+  bool IsLiquid = 14;
+  bool ContainsSoy = 15;
+  bool ContainsPeanut = 16;
+  bool AnimalDerived = 17;
+  bool RestrictToPreparations = 18;
+  bool ContainsDairy = 19;
+  bool ContainsSesame = 20;
+  bool ContainsTreeNut = 21;
+  bool ContainsWheat = 22;
+  bool ContainsAlcohol = 23;
+  bool ContainsGluten = 24;
+  bool IsStarch = 25;
+  bool IsProtein = 26;
+  bool IsGrain = 27;
+  bool IsFruit = 28;
+  bool IsSalt = 29;
+  bool IsFat = 30;
+  bool IsAcid = 31;
+  bool IsHeat = 32;
+}
+
+message ValidIngredientGroup {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string ID = 4;
+  string Name = 5;
+  string Slug = 6;
+  string Description = 7;
+  repeated ValidIngredientGroupMember Members = 8;
+}
+
+message ValidIngredientGroupCreationRequestInput {
+  string Name = 1;
+  string Slug = 2;
+  string Description = 3;
+  repeated ValidIngredientGroupMemberCreationRequestInput Members = 4;
+}
+
+message ValidIngredientGroupMember {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  string ID = 3;
+  string BelongsToGroup = 4;
+  ValidIngredient ValidIngredient = 5;
+}
+
+message ValidIngredientGroupMemberCreationRequestInput {
+  string ValidIngredientID = 1;
+}
+
+message ValidIngredientGroupUpdateRequestInput {
+  string Name = 1;
+  string Slug = 2;
+  string Description = 3;
+}
+
+message ValidIngredientMeasurementUnit {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string Notes = 4;
+  string ID = 5;
+  Float32RangeWithOptionalMax AllowableQuantity = 6;
+  ValidMeasurementUnit MeasurementUnit = 7;
+  ValidIngredient Ingredient = 8;
+}
+
+message ValidIngredientMeasurementUnitCreationRequestInput {
+  string Notes = 1;
+  string ValidMeasurementUnitID = 2;
+  string ValidIngredientID = 3;
+  Float32RangeWithOptionalMax AllowableQuantity = 4;
+}
+
+message ValidIngredientMeasurementUnitUpdateRequestInput {
+  string Notes = 1;
+  string ValidMeasurementUnitID = 2;
+  string ValidIngredientID = 3;
+  Float32RangeWithOptionalMaxUpdateRequestInput AllowableQuantity = 4;
+}
+
+message ValidIngredientPreparation {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string Notes = 4;
+  string ID = 5;
+  ValidPreparation Preparation = 6;
+  ValidIngredient Ingredient = 7;
+}
+
+message ValidIngredientPreparationCreationRequestInput {
+  string Notes = 1;
+  string ValidPreparationID = 2;
+  string ValidIngredientID = 3;
+}
+
+message ValidIngredientPreparationUpdateRequestInput {
+  string Notes = 1;
+  string ValidPreparationID = 2;
+  string ValidIngredientID = 3;
+}
+
+message ValidIngredientState {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  string PastTense = 4;
+  string Description = 5;
+  string IconPath = 6;
+  string ID = 7;
+  string Name = 8;
+  string AttributeType = 9;
+  string Slug = 10;
+}
+
+message ValidIngredientStateCreationRequestInput {
+  string Name = 1;
+  string Slug = 2;
+  string PastTense = 3;
+  string Description = 4;
+  string AttributeType = 5;
+  string IconPath = 6;
+}
+
+message ValidIngredientStateIngredient {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string Notes = 4;
+  string ID = 5;
+  ValidIngredientState IngredientState = 6;
+  ValidIngredient Ingredient = 7;
+}
+
+message ValidIngredientStateIngredientCreationRequestInput {
+  string Notes = 1;
+  string ValidIngredientStateID = 2;
+  string ValidIngredientID = 3;
+}
+
+message ValidIngredientStateIngredientUpdateRequestInput {
+  string Notes = 1;
+  string ValidIngredientStateID = 2;
+  string ValidIngredientID = 3;
+}
+
+message ValidIngredientStateUpdateRequestInput {
+  string Name = 1;
+  string Slug = 2;
+  string PastTense = 3;
+  string Description = 4;
+  string AttributeType = 5;
+  string IconPath = 6;
+}
+
+message ValidIngredientUpdateRequestInput {
+  string Name = 1;
+  string Description = 2;
+  string Warning = 3;
+  string IconPath = 4;
+  bool ContainsDairy = 5;
+  bool ContainsPeanut = 6;
+  bool ContainsTreeNut = 7;
+  bool ContainsEgg = 8;
+  bool ContainsWheat = 9;
+  bool ContainsShellfish = 10;
+  bool ContainsSesame = 11;
+  bool ContainsFish = 12;
+  bool ContainsGluten = 13;
+  bool AnimalFlesh = 14;
+  bool IsLiquid = 15;
+  bool ContainsSoy = 16;
+  string PluralName = 17;
+  bool AnimalDerived = 18;
+  bool RestrictToPreparations = 19;
+  OptionalFloat32Range StorageTemperatureInCelsius = 20;
+  string StorageInstructions = 21;
+  string Slug = 22;
+  bool ContainsAlcohol = 23;
+  string ShoppingSuggestions = 24;
+  bool IsStarch = 25;
+  bool IsProtein = 26;
+  bool IsGrain = 27;
+  bool IsFruit = 28;
+  bool IsSalt = 29;
+  bool IsFat = 30;
+  bool IsAcid = 31;
+  bool IsHeat = 32;
+}
+
+message ValidInstrument {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string IconPath = 4;
+  string ID = 5;
+  string Name = 6;
+  string PluralName = 7;
+  string Description = 8;
+  string Slug = 9;
+  bool DisplayInSummaryLists = 10;
+  bool IncludeInGeneratedInstructions = 11;
+  bool UsableForStorage = 12;
+}
+
+message ValidInstrumentCreationRequestInput {
+  string Name = 1;
+  string PluralName = 2;
+  string Description = 3;
+  string IconPath = 4;
+  string Slug = 5;
+  bool DisplayInSummaryLists = 6;
+  bool IncludeInGeneratedInstructions = 7;
+  bool UsableForStorage = 8;
+}
+
+message ValidInstrumentUpdateRequestInput {
+  string Name = 1;
+  string PluralName = 2;
+  string Description = 3;
+  string IconPath = 4;
+  string Slug = 5;
+  bool UsableForStorage = 6;
+  bool DisplayInSummaryLists = 7;
+  bool IncludeInGeneratedInstructions = 8;
+}
+
+message ValidMeasurementUnit {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string Name = 4;
+  string IconPath = 5;
+  string ID = 6;
+  string Description = 7;
+  string PluralName = 8;
+  string Slug = 9;
+  bool Volumetric = 10;
+  bool Universal = 11;
+  bool Metric = 12;
+  bool Imperial = 13;
+}
+
+message ValidMeasurementUnitConversion {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  ValidIngredient OnlyForIngredient = 4;
+  string Notes = 5;
+  string ID = 6;
+  ValidMeasurementUnit From = 7;
+  ValidMeasurementUnit To = 8;
+  float Modifier = 9;
+}
+
+message ValidMeasurementUnitConversionCreationRequestInput {
+  string OnlyForIngredient = 1;
+  string From = 2;
+  string To = 3;
+  string Notes = 4;
+  float Modifier = 5;
+}
+
+message ValidMeasurementUnitConversionUpdateRequestInput {
+  string From = 1;
+  string To = 2;
+  string OnlyForIngredient = 3;
+  float Modifier = 4;
+  string Notes = 5;
+}
+
+message ValidMeasurementUnitCreationRequestInput {
+  string Name = 1;
+  string Description = 2;
+  string IconPath = 3;
+  string PluralName = 4;
+  string Slug = 5;
+  bool Volumetric = 6;
+  bool Universal = 7;
+  bool Metric = 8;
+  bool Imperial = 9;
+}
+
+message ValidMeasurementUnitUpdateRequestInput {
+  string Name = 1;
+  string Description = 2;
+  string IconPath = 3;
+  bool Volumetric = 4;
+  bool Universal = 5;
+  bool Metric = 6;
+  bool Imperial = 7;
+  string PluralName = 8;
+  string Slug = 9;
+}
+
+message ValidPreparation {
+  google.protobuf.Timestamp CreatedAt = 1;
+  Uint16RangeWithOptionalMax InstrumentCount = 2;
+  Uint16RangeWithOptionalMax IngredientCount = 3;
+  Uint16RangeWithOptionalMax VesselCount = 4;
+  google.protobuf.Timestamp ArchivedAt = 5;
+  google.protobuf.Timestamp LastUpdatedAt = 6;
+  string IconPath = 7;
+  string PastTense = 8;
+  string ID = 9;
+  string Name = 10;
+  string Description = 11;
+  string Slug = 12;
+  bool RestrictToIngredients = 13;
+  bool TemperatureRequired = 14;
+  bool TimeEstimateRequired = 15;
+  bool ConditionExpressionRequired = 16;
+  bool ConsumesVessel = 17;
+  bool OnlyForVessels = 18;
+  bool YieldsNothing = 19;
+}
+
+message ValidPreparationCreationRequestInput {
+  Uint16RangeWithOptionalMax InstrumentCount = 1;
+  Uint16RangeWithOptionalMax IngredientCount = 2;
+  Uint16RangeWithOptionalMax VesselCount = 3;
+  string IconPath = 4;
+  string PastTense = 5;
+  string Slug = 6;
+  string Name = 7;
+  string Description = 8;
+  bool TemperatureRequired = 9;
+  bool TimeEstimateRequired = 10;
+  bool ConditionExpressionRequired = 11;
+  bool ConsumesVessel = 12;
+  bool OnlyForVessels = 13;
+  bool RestrictToIngredients = 14;
+  bool YieldsNothing = 15;
+}
+
+message ValidPreparationInstrument {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string ID = 4;
+  string Notes = 5;
+  ValidInstrument Instrument = 6;
+  ValidPreparation Preparation = 7;
+}
+
+message ValidPreparationInstrumentCreationRequestInput {
+  string Notes = 1;
+  string ValidPreparationID = 2;
+  string ValidInstrumentID = 3;
+}
+
+message ValidPreparationInstrumentUpdateRequestInput {
+  string Notes = 1;
+  string ValidPreparationID = 2;
+  string ValidInstrumentID = 3;
+}
+
+message ValidPreparationUpdateRequestInput {
+  Uint16RangeWithOptionalMaxUpdateRequestInput InstrumentCount = 1;
+  Uint16RangeWithOptionalMaxUpdateRequestInput IngredientCount = 2;
+  Uint16RangeWithOptionalMaxUpdateRequestInput VesselCount = 3;
+  string Name = 4;
+  string Description = 5;
+  string IconPath = 6;
+  bool YieldsNothing = 7;
+  string Slug = 8;
+  bool RestrictToIngredients = 9;
+  string PastTense = 10;
+  bool TemperatureRequired = 11;
+  bool TimeEstimateRequired = 12;
+  bool ConditionExpressionRequired = 13;
+  bool ConsumesVessel = 14;
+  bool OnlyForVessels = 15;
+}
+
+message ValidPreparationVessel {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string ID = 4;
+  string Notes = 5;
+  ValidPreparation Preparation = 6;
+  ValidVessel Vessel = 7;
+}
+
+message ValidPreparationVesselCreationRequestInput {
+  string Notes = 1;
+  string ValidPreparationID = 2;
+  string ValidVesselID = 3;
+}
+
+message ValidPreparationVesselUpdateRequestInput {
+  string Notes = 1;
+  string ValidPreparationID = 2;
+  string ValidVesselID = 3;
+}
+
+message ValidVessel {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  ValidMeasurementUnit CapacityUnit = 4;
+  string IconPath = 5;
+  string PluralName = 6;
+  string Description = 7;
+  string Name = 8;
+  string Slug = 9;
+  string Shape = 10;
+  string ID = 11;
+  float WidthInMillimeters = 12;
+  float LengthInMillimeters = 13;
+  float HeightInMillimeters = 14;
+  float Capacity = 15;
+  bool IncludeInGeneratedInstructions = 16;
+  bool DisplayInSummaryLists = 17;
+  bool UsableForStorage = 18;
+}
+
+message ValidVesselCreationRequestInput {
+  string CapacityUnitID = 1;
+  string Shape = 2;
+  string IconPath = 3;
+  string PluralName = 4;
+  string Name = 5;
+  string Description = 6;
+  string Slug = 7;
+  float LengthInMillimeters = 8;
+  float HeightInMillimeters = 9;
+  float Capacity = 10;
+  float WidthInMillimeters = 11;
+  bool UsableForStorage = 12;
+  bool IncludeInGeneratedInstructions = 13;
+  bool DisplayInSummaryLists = 14;
+}
+
+message ValidVesselUpdateRequestInput {
+  string Name = 1;
+  string PluralName = 2;
+  string Description = 3;
+  string IconPath = 4;
+  bool UsableForStorage = 5;
+  string Slug = 6;
+  bool DisplayInSummaryLists = 7;
+  bool IncludeInGeneratedInstructions = 8;
+  float Capacity = 9;
+  string CapacityUnitID = 10;
+  float WidthInMillimeters = 11;
+  float LengthInMillimeters = 12;
+  float HeightInMillimeters = 13;
+  string Shape = 14;
+}
+
+message UserIngredientPreference {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string ID = 4;
+  string Notes = 5;
+  string BelongsToUser = 6;
+  ValidIngredient Ingredient = 7;
+  int32 Rating = 8;
+  bool Allergy = 9;
+}
+
+message UserIngredientPreferenceCreationRequestInput {
+  string ValidIngredientGroupID = 1;
+  string ValidIngredientID = 2;
+  string Notes = 3;
+  int32 Rating = 4;
+  bool Allergy = 5;
+}
+
+message UserIngredientPreferenceUpdateRequestInput {
+  string Notes = 1;
+  string IngredientID = 2;
+  int32 Rating = 3;
+  bool Allergy = 4;
+}
+
+// ArchiveValidIngredient
+message ArchiveValidIngredientRequest {
+  string validIngredientID = 1;
+}
+
+message ArchiveValidIngredientResponse {}
+
+// ArchiveValidIngredientGroup
+message ArchiveValidIngredientGroupRequest {
+  string validIngredientGroupID = 1;
+}
+
+message ArchiveValidIngredientGroupResponse {}
+
+// ArchiveValidIngredientMeasurementUnit
+message ArchiveValidIngredientMeasurementUnitRequest {
+  string validIngredientMeasurementUnitID = 1;
+}
+
+message ArchiveValidIngredientMeasurementUnitResponse {}
+
+// ArchiveValidIngredientPreparation
+message ArchiveValidIngredientPreparationRequest {
+  string validIngredientPreparationID = 1;
+}
+
+message ArchiveValidIngredientPreparationResponse {}
+
+// ArchiveValidIngredientState
+message ArchiveValidIngredientStateRequest {
+  string validIngredientStateID = 1;
+}
+
+message ArchiveValidIngredientStateResponse {}
+
+// ArchiveValidIngredientStateIngredient
+message ArchiveValidIngredientStateIngredientRequest {
+  string validIngredientStateIngredientID = 1;
+}
+
+message ArchiveValidIngredientStateIngredientResponse {}
+
+// ArchiveValidInstrument
+message ArchiveValidInstrumentRequest {
+  string validInstrumentID = 1;
+}
+
+message ArchiveValidInstrumentResponse {}
+
+// ArchiveValidMeasurementUnit
+message ArchiveValidMeasurementUnitRequest {
+  string validMeasurementUnitID = 1;
+}
+
+message ArchiveValidMeasurementUnitResponse {}
+
+// ArchiveValidMeasurementUnitConversion
+message ArchiveValidMeasurementUnitConversionRequest {
+  string validMeasurementUnitConversionID = 1;
+}
+
+message ArchiveValidMeasurementUnitConversionResponse {}
+
+// ArchiveValidPreparation
+message ArchiveValidPreparationRequest {
+  string validPreparationID = 1;
+}
+
+message ArchiveValidPreparationResponse {}
+
+// ArchiveValidPreparationInstrument
+message ArchiveValidPreparationInstrumentRequest {
+  string validPreparationInstrumentID = 1;
+}
+
+message ArchiveValidPreparationInstrumentResponse {}
+
+// ArchiveValidPreparationVessel
+message ArchiveValidPreparationVesselRequest {
+  string validPreparationVesselID = 1;
+}
+
+message ArchiveValidPreparationVesselResponse {}
+
+// ArchiveValidVessel
+message ArchiveValidVesselRequest {}
+
+message ArchiveValidVesselResponse {}
+
+// CreateValidIngredient
+message CreateValidIngredientRequest {
+  OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  string Warning = 2;
+  string IconPath = 3;
+  string PluralName = 4;
+  string StorageInstructions = 5;
+  string Name = 6;
+  string Description = 7;
+  string Slug = 8;
+  string ShoppingSuggestions = 9;
+  bool ContainsFish = 10;
+  bool ContainsShellfish = 11;
+  bool AnimalFlesh = 12;
+  bool ContainsEgg = 13;
+  bool IsLiquid = 14;
+  bool ContainsSoy = 15;
+  bool ContainsPeanut = 16;
+  bool AnimalDerived = 17;
+  bool RestrictToPreparations = 18;
+  bool ContainsDairy = 19;
+  bool ContainsSesame = 20;
+  bool ContainsTreeNut = 21;
+  bool ContainsWheat = 22;
+  bool ContainsAlcohol = 23;
+  bool ContainsGluten = 24;
+  bool IsStarch = 25;
+  bool IsProtein = 26;
+  bool IsGrain = 27;
+  bool IsFruit = 28;
+  bool IsSalt = 29;
+  bool IsFat = 30;
+  bool IsAcid = 31;
+  bool IsHeat = 32;
+}
+
+message CreateValidIngredientResponse {
+  ValidIngredient Result = 2;
+}
+
+// CreateValidIngredientGroup
+message CreateValidIngredientGroupRequest {}
+
+message CreateValidIngredientGroupResponse {}
+
+// CreateValidIngredientMeasurementUnit
+message CreateValidIngredientMeasurementUnitRequest {}
+
+message CreateValidIngredientMeasurementUnitResponse {}
+
+// CreateValidIngredientPreparation
+message CreateValidIngredientPreparationRequest {}
+
+message CreateValidIngredientPreparationResponse {}
+
+// CreateValidIngredientState
+message CreateValidIngredientStateRequest {}
+
+message CreateValidIngredientStateResponse {}
+
+// CreateValidIngredientStateIngredient
+message CreateValidIngredientStateIngredientRequest {}
+
+message CreateValidIngredientStateIngredientResponse {}
+
+// CreateValidInstrument
+message CreateValidInstrumentRequest {}
+
+message CreateValidInstrumentResponse {}
+
+// CreateValidMeasurementUnit
+message CreateValidMeasurementUnitRequest {}
+
+message CreateValidMeasurementUnitResponse {}
+
+// CreateValidMeasurementUnitConversion
+message CreateValidMeasurementUnitConversionRequest {}
+
+message CreateValidMeasurementUnitConversionResponse {}
+
+// CreateValidPreparation
+message CreateValidPreparationRequest {}
+
+message CreateValidPreparationResponse {}
+
+// CreateValidPreparationInstrument
+message CreateValidPreparationInstrumentRequest {}
+
+message CreateValidPreparationInstrumentResponse {}
+
+// CreateValidPreparationVessel
+message CreateValidPreparationVesselRequest {}
+
+message CreateValidPreparationVesselResponse {}
+
+// CreateValidVessel
+message CreateValidVesselRequest {}
+
+message CreateValidVesselResponse {}
+
+// GetRandomValidIngredient
+message GetRandomValidIngredientRequest {}
+
+message GetRandomValidIngredientResponse {
+  ValidIngredient Result = 2;
+}
+
+// GetRandomValidInstrument
+message GetRandomValidInstrumentRequest {}
+
+message GetRandomValidInstrumentResponse {}
+
+// GetRandomValidPreparation
+message GetRandomValidPreparationRequest {}
+
+message GetRandomValidPreparationResponse {}
+
+// GetRandomValidVessel
+message GetRandomValidVesselRequest {}
+
+message GetRandomValidVesselResponse {}
+
+// GetValidIngredient
+message GetValidIngredientRequest {
+  string validIngredientID = 1;
+}
+
+message GetValidIngredientResponse {
+  ValidIngredient Result = 2;
+}
+
+// GetValidIngredientGroup
+message GetValidIngredientGroupRequest {
+  string validIngredientGroupID = 1;
+}
+
+message GetValidIngredientGroupResponse {}
+
+// GetValidIngredientGroups
+message GetValidIngredientGroupsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidIngredientGroupsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientGroup Results = 2;
+}
+
+// GetValidIngredientMeasurementUnit
+message GetValidIngredientMeasurementUnitRequest {
+  string validIngredientMeasurementUnitID = 1;
+}
+
+message GetValidIngredientMeasurementUnitResponse {}
+
+// GetValidIngredientMeasurementUnits
+message GetValidIngredientMeasurementUnitsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidIngredientMeasurementUnitsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientMeasurementUnit Results = 2;
+}
+
+// GetValidIngredientMeasurementUnitsByIngredient
+message GetValidIngredientMeasurementUnitsByIngredientRequest {
+  QueryFilter Filter = 1;
+  string validIngredientID = 2;
+}
+
+message GetValidIngredientMeasurementUnitsByIngredientResponse {
+  QueryFilter Filter = 1;
+  repeated ValidMeasurementUnitConversion Results = 2;
+}
+
+// GetValidIngredientMeasurementUnitsByMeasurementUnit
+message GetValidIngredientMeasurementUnitsByMeasurementUnitRequest {
+  QueryFilter Filter = 1;
+  string validMeasurementUnitID = 2;
+}
+
+message GetValidIngredientMeasurementUnitsByMeasurementUnitResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientMeasurementUnit Results = 2;
+}
+
+// GetValidIngredientPreparation
+message GetValidIngredientPreparationRequest {
+  string validIngredientPreparationID = 1;
+}
+
+message GetValidIngredientPreparationResponse {}
+
+// GetValidIngredientPreparations
+message GetValidIngredientPreparationsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidIngredientPreparationsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientPreparation Results = 2;
+}
+
+// GetValidIngredientPreparationsByIngredient
+message GetValidIngredientPreparationsByIngredientRequest {
+  QueryFilter Filter = 1;
+  string validIngredientID = 2;
+}
+
+message GetValidIngredientPreparationsByIngredientResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientPreparation Results = 2;
+}
+
+// GetValidIngredientPreparationsByPreparation
+message GetValidIngredientPreparationsByPreparationRequest {
+  QueryFilter Filter = 1;
+  string ValidPreparationID = 2;
+}
+
+message GetValidIngredientPreparationsByPreparationResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientPreparation Results = 2;
+}
+
+// GetValidIngredientState
+message GetValidIngredientStateRequest {
+  string validIngredientStateID = 1;
+}
+
+message GetValidIngredientStateResponse {}
+
+// GetValidIngredientStateIngredient
+message GetValidIngredientStateIngredientRequest {
+  string validIngredientStateIngredientID = 1;
+}
+
+message GetValidIngredientStateIngredientResponse {}
+
+// GetValidIngredientStateIngredients
+message GetValidIngredientStateIngredientsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidIngredientStateIngredientsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientState Result = 2;
+}
+
+// GetValidIngredientStateIngredientsByIngredient
+message GetValidIngredientStateIngredientsByIngredientRequest {
+  QueryFilter Filter = 1;
+  string validIngredientID = 2;
+}
+
+message GetValidIngredientStateIngredientsByIngredientResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientStateIngredient Results = 2;
+}
+
+// GetValidIngredientStateIngredientsByIngredientState
+message GetValidIngredientStateIngredientsByIngredientStateRequest {
+  QueryFilter Filter = 1;
+  string validIngredientStateID = 2;
+}
+
+message GetValidIngredientStateIngredientsByIngredientStateResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientStateIngredient Results = 2;
+}
+
+// GetValidIngredientStates
+message GetValidIngredientStatesRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidIngredientStatesResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientState Results = 2;
+}
+
+// GetValidIngredients
+message GetValidIngredientsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidIngredientsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredient Results = 2;
+}
+
+// GetValidInstrument
+message GetValidInstrumentRequest {
+  string validInstrumentID = 1;
+}
+
+message GetValidInstrumentResponse {}
+
+// GetValidInstruments
+message GetValidInstrumentsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidInstrumentsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidInstrument Results = 2;
+}
+
+// GetValidMeasurementUnit
+message GetValidMeasurementUnitRequest {
+  string validMeasurementUnitID = 1;
+}
+
+message GetValidMeasurementUnitResponse {}
+
+// GetValidMeasurementUnitConversion
+message GetValidMeasurementUnitConversionRequest {
+  string validMeasurementUnitConversionID = 1;
+}
+
+message GetValidMeasurementUnitConversionResponse {}
+
+// GetValidMeasurementUnitConversionsFromUnit
+message GetValidMeasurementUnitConversionsFromUnitRequest {
+  QueryFilter Filter = 1;
+  string validMeasurementUnitID = 2;
+}
+
+message GetValidMeasurementUnitConversionsFromUnitResponse {
+  QueryFilter Filter = 1;
+  repeated ValidMeasurementUnitConversion Results = 2;
+}
+
+// GetValidMeasurementUnitConversionsToUnit
+message GetValidMeasurementUnitConversionsToUnitRequest {
+  QueryFilter Filter = 1;
+  string validMeasurementUnitID = 2;
+}
+
+message GetValidMeasurementUnitConversionsToUnitResponse {
+  QueryFilter Filter = 1;
+  repeated ValidMeasurementUnitConversion Results = 2;
+}
+
+// GetValidMeasurementUnits
+message GetValidMeasurementUnitsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidMeasurementUnitsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidMeasurementUnit Results = 2;
+}
+
+// GetValidPreparation
+message GetValidPreparationRequest {
+  string validPreparationID = 1;
+}
+
+message GetValidPreparationResponse {}
+
+// GetValidPreparationInstrument
+message GetValidPreparationInstrumentRequest {
+  string validPreparationInstrumentID = 1;
+}
+
+message GetValidPreparationInstrumentResponse {}
+
+// GetValidPreparationInstruments
+message GetValidPreparationInstrumentsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidPreparationInstrumentsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidPreparationInstrument Results = 2;
+}
+
+// GetValidPreparationInstrumentsByInstrument
+message GetValidPreparationInstrumentsByInstrumentRequest {
+  QueryFilter Filter = 1;
+  string validInstrumentID = 2;
+}
+
+message GetValidPreparationInstrumentsByInstrumentResponse {
+  QueryFilter Filter = 1;
+  repeated ValidPreparationInstrument Results = 2;
+}
+
+// GetValidPreparationInstrumentsByPreparation
+message GetValidPreparationInstrumentsByPreparationRequest {
+  QueryFilter Filter = 1;
+  string validPreparationID = 2;
+}
+
+message GetValidPreparationInstrumentsByPreparationResponse {}
+
+// GetValidPreparationVessel
+message GetValidPreparationVesselRequest {
+  string validPreparationVesselID = 1;
+}
+
+message GetValidPreparationVesselResponse {}
+
+// GetValidPreparationVessels
+message GetValidPreparationVesselsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidPreparationVesselsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidPreparationVessel Result = 2;
+}
+
+// GetValidPreparationVesselsByPreparation
+message GetValidPreparationVesselsByPreparationRequest {
+  QueryFilter Filter = 1;
+  string validPreparationID = 2;
+}
+
+message GetValidPreparationVesselsByPreparationResponse {
+  QueryFilter Filter = 1;
+  repeated ValidPreparationVessel Results = 2;
+}
+
+// GetValidPreparationVesselsByVessel
+message GetValidPreparationVesselsByVesselRequest {
+  QueryFilter Filter = 1;
+  string validVesselID = 2;
+}
+
+message GetValidPreparationVesselsByVesselResponse {
+  QueryFilter Filter = 1;
+  repeated ValidPreparationVessel Results = 2;
+}
+
+// GetValidPreparations
+message GetValidPreparationsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidPreparationsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidPreparation Results = 2;
+}
+
+// GetValidVessel
+message GetValidVesselRequest {
+  string validVesselID = 1;
+}
+
+message GetValidVesselResponse {}
+
+// GetValidVessels
+message GetValidVesselsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetValidVesselsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidVessel Results = 2;
+}
+
+// SearchForValidIngredientGroups
+message SearchForValidIngredientGroupsRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForValidIngredientGroupsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientGroup Results = 2;
+}
+
+// SearchForValidIngredientStates
+message SearchForValidIngredientStatesRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForValidIngredientStatesResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredientState Results = 2;
+}
+
+// SearchForValidIngredients
+message SearchForValidIngredientsRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForValidIngredientsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredient Results = 2;
+}
+
+// SearchForValidInstruments
+message SearchForValidInstrumentsRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForValidInstrumentsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidInstrument Results = 2;
+}
+
+// SearchForValidMeasurementUnits
+message SearchForValidMeasurementUnitsRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForValidMeasurementUnitsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidMeasurementUnit Results = 2;
+}
+
+// SearchForValidPreparations
+message SearchForValidPreparationsRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForValidPreparationsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidPreparation Results = 2;
+}
+
+// SearchForValidVessels
+message SearchForValidVesselsRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForValidVesselsResponse {
+  QueryFilter Filter = 1;
+  repeated ValidVessel Results = 2;
+}
+
+// SearchValidIngredientsByPreparation
+message SearchValidIngredientsByPreparationRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+  string validPreparationID = 3;
+}
+
+message SearchValidIngredientsByPreparationResponse {
+  QueryFilter Filter = 1;
+  repeated ValidIngredient Results = 2;
+}
+
+// SearchValidMeasurementUnitsByIngredient
+message SearchValidMeasurementUnitsByIngredientRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+  string validIngredientID = 3;
+}
+
+message SearchValidMeasurementUnitsByIngredientResponse {
+  QueryFilter Filter = 1;
+  repeated ValidMeasurementUnit Results = 2;
+}
+
+// UpdateValidIngredient
+message UpdateValidIngredientRequest {
+  string validIngredientID = 1;
+  ValidIngredientUpdateRequestInput input = 2;
+}
+
+message UpdateValidIngredientResponse {}
+
+// UpdateValidIngredientGroup
+message UpdateValidIngredientGroupRequest {
+  string validIngredientGroupID = 1;
+  ValidIngredientGroupUpdateRequestInput input = 2;
+}
+
+message UpdateValidIngredientGroupResponse {}
+
+// UpdateValidIngredientMeasurementUnit
+message UpdateValidIngredientMeasurementUnitRequest {
+  string validIngredientMeasurementUnitID = 1;
+  ValidIngredientMeasurementUnitUpdateRequestInput input = 2;
+}
+
+message UpdateValidIngredientMeasurementUnitResponse {}
+
+// UpdateValidIngredientPreparation
+message UpdateValidIngredientPreparationRequest {
+  string validIngredientPreparationID = 1;
+  ValidIngredientPreparationUpdateRequestInput input = 2;
+}
+
+message UpdateValidIngredientPreparationResponse {}
+
+// UpdateValidIngredientState
+message UpdateValidIngredientStateRequest {
+  string validIngredientStateID = 1;
+  ValidIngredientStateUpdateRequestInput input = 2;
+}
+
+message UpdateValidIngredientStateResponse {}
+
+// UpdateValidIngredientStateIngredient
+message UpdateValidIngredientStateIngredientRequest {
+  string validIngredientStateIngredientID = 1;
+  ValidIngredientStateIngredientUpdateRequestInput input = 2;
+}
+
+message UpdateValidIngredientStateIngredientResponse {}
+
+// UpdateValidInstrument
+message UpdateValidInstrumentRequest {
+  string validInstrumentID = 1;
+  ValidInstrumentUpdateRequestInput input = 2;
+}
+
+message UpdateValidInstrumentResponse {}
+
+// UpdateValidMeasurementUnit
+message UpdateValidMeasurementUnitRequest {
+  string validMeasurementUnitID = 1;
+  ValidMeasurementUnitUpdateRequestInput input = 2;
+}
+
+message UpdateValidMeasurementUnitResponse {}
+
+// UpdateValidMeasurementUnitConversion
+message UpdateValidMeasurementUnitConversionRequest {
+  string validMeasurementUnitConversionID = 1;
+  ValidMeasurementUnitConversionUpdateRequestInput input = 2;
+}
+
+message UpdateValidMeasurementUnitConversionResponse {}
+
+// UpdateValidPreparation
+message UpdateValidPreparationRequest {
+  string validPreparationID = 1;
+  ValidPreparationUpdateRequestInput input = 2;
+}
+
+message UpdateValidPreparationResponse {}
+
+// UpdateValidPreparationInstrument
+message UpdateValidPreparationInstrumentRequest {
+  string validPreparationInstrumentID = 1;
+  ValidPreparationInstrumentUpdateRequestInput input = 2;
+}
+
+message UpdateValidPreparationInstrumentResponse {}
+
+// UpdateValidPreparationVessel
+message UpdateValidPreparationVesselRequest {
+  string validPreparationVesselID = 1;
+  ValidPreparationVesselUpdateRequestInput input = 2;
+}
+
+message UpdateValidPreparationVesselResponse {}
+
+// UpdateValidVessel
+message UpdateValidVesselRequest {
+  string validVesselID = 1;
+  ValidVesselUpdateRequestInput input = 2;
+}
+
+message UpdateValidVesselResponse {}
+
+// ArchiveUserIngredientPreference
+message ArchiveUserIngredientPreferenceRequest {
+  string userIngredientPreferenceID = 1;
+}
+
+message ArchiveUserIngredientPreferenceResponse {}
+
+// CreateUserIngredientPreference
+message CreateUserIngredientPreferenceRequest {}
+
+message CreateUserIngredientPreferenceResponse {}
+
+// GetUserIngredientPreferences
+message GetUserIngredientPreferencesRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetUserIngredientPreferencesResponse {
+  QueryFilter Filter = 1;
+  repeated UserIngredientPreference Results = 2;
+}
+
+// UpdateUserIngredientPreference
+message UpdateUserIngredientPreferenceRequest {
+  string userIngredientPreferenceID = 1;
+  UserIngredientPreferenceUpdateRequestInput input = 2;
+}
+
+message UpdateUserIngredientPreferenceResponse {}
+
+// Recipes
+
+message Recipe {
+  google.protobuf.Timestamp CreatedAt = 1;
+  string InspiredByRecipeID = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  Float32RangeWithOptionalMax EstimatedPortions = 5;
+  string PluralPortionName = 6;
+  string Description = 7;
+  string Name = 8;
+  string PortionName = 9;
+  string ID = 10;
+  string CreatedByUser = 11;
+  string Source = 12;
+  string Slug = 13;
+  string YieldsComponentType = 14;
+  repeated RecipePrepTask PrepTasks = 15;
+  repeated RecipeStep Steps = 16;
+  repeated RecipeMedia Media = 17;
+  repeated Recipe SupportingRecipes = 18;
+  bool SealOfApproval = 19;
+  bool EligibleForMeals = 20;
+}
+
+message RecipeCreationRequestInput {
+  string InspiredByRecipeID = 1;
+  string Name = 2;
+  string Source = 3;
+  string Description = 4;
+  string PluralPortionName = 5;
+  string PortionName = 6;
+  string Slug = 7;
+  string YieldsComponentType = 8;
+  Float32RangeWithOptionalMax EstimatedPortions = 9;
+  repeated RecipePrepTaskWithinRecipeCreationRequestInput PrepTasks = 10;
+  repeated RecipeStepCreationRequestInput Steps = 11;
+  bool AlsoCreateMeal = 12;
+  bool SealOfApproval = 13;
+  bool EligibleForMeals = 14;
+}
+
+message RecipeMedia {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  string ID = 4;
+  string BelongsToRecipe = 5;
+  string BelongsToRecipeStep = 6;
+  string MimeType = 7;
+  string InternalPath = 8;
+  string ExternalPath = 9;
+  uint32 Index = 10;
+}
+
+message RecipeMediaCreationRequestInput {
+  string BelongsToRecipe = 1;
+  string BelongsToRecipeStep = 2;
+  string MimeType = 3;
+  string InternalPath = 4;
+  string ExternalPath = 5;
+  uint32 Index = 6;
+}
+
+message RecipeMediaUpdateRequestInput {
+  string BelongsToRecipe = 1;
+  string BelongsToRecipeStep = 2;
+  string MimeType = 3;
+  string InternalPath = 4;
+  string ExternalPath = 5;
+  uint32 Index = 6;
+}
+
+message RecipePrepTask {
+  google.protobuf.Timestamp CreatedAt = 1;
+  OptionalFloat32Range StorageTemperatureInCelsius = 2;
+  Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  google.protobuf.Timestamp LastUpdatedAt = 5;
+  string ID = 6;
+  string StorageType = 7;
+  string BelongsToRecipe = 8;
+  string ExplicitStorageInstructions = 9;
+  string Notes = 10;
+  string Name = 11;
+  string Description = 12;
+  repeated RecipePrepTaskStep TaskSteps = 13;
+  bool Optional = 14;
+}
+
+message RecipePrepTaskCreationRequestInput {
+  OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 2;
+  string StorageType = 3;
+  string ExplicitStorageInstructions = 4;
+  string Notes = 5;
+  string Name = 6;
+  string Description = 7;
+  string BelongsToRecipe = 8;
+  repeated RecipePrepTaskStepCreationRequestInput RecipeSteps = 9;
+  bool Optional = 10;
+}
+
+message RecipePrepTaskStep {
+  string ID = 1;
+  string BelongsToRecipeStep = 2;
+  string BelongsToRecipePrepTask = 3;
+  bool SatisfiesRecipeStep = 4;
+}
+
+message RecipePrepTaskStepCreationRequestInput {
+  string BelongsToRecipeStep = 1;
+  bool SatisfiesRecipeStep = 2;
+}
+
+message RecipePrepTaskStepUpdateRequestInput {
+  bool SatisfiesRecipeStep = 1;
+  string BelongsToRecipeStep = 2;
+  string BelongsToRecipePrepTask = 3;
+}
+
+message RecipePrepTaskStepWithinRecipeCreationRequestInput {
+  uint32 BelongsToRecipeStepIndex = 1;
+  bool SatisfiesRecipeStep = 2;
+}
+
+message RecipePrepTaskUpdateRequestInput {
+  string Notes = 1;
+  string ExplicitStorageInstructions = 2;
+  string StorageType = 3;
+  string Name = 4;
+  bool Optional = 5;
+  string Description = 6;
+  OptionalFloat32Range StorageTemperatureInCelsius = 7;
+  Uint32RangeWithOptionalMaxUpdateRequestInput TimeBufferBeforeRecipeInSeconds = 8;
+  string BelongsToRecipe = 9;
+  repeated RecipePrepTaskStepUpdateRequestInput TaskSteps = 10;
+}
+
+message RecipePrepTaskWithinRecipeCreationRequestInput {
+  OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 2;
+  string StorageType = 3;
+  string Name = 4;
+  string Description = 5;
+  string ExplicitStorageInstructions = 6;
+  string Notes = 7;
+  string BelongsToRecipe = 8;
+  repeated RecipePrepTaskStepWithinRecipeCreationRequestInput RecipeSteps = 9;
+  bool Optional = 10;
+}
+
+message RecipeRating {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string Notes = 4;
+  string ID = 5;
+  string RecipeID = 6;
+  string ByUser = 7;
+  float Taste = 8;
+  float Instructions = 9;
+  float Overall = 10;
+  float Cleanup = 11;
+  float Difficulty = 12;
+}
+
+message RecipeRatingCreationRequestInput {
+  string RecipeID = 1;
+  string Notes = 2;
+  string ByUser = 3;
+  float Taste = 4;
+  float Difficulty = 5;
+  float Cleanup = 6;
+  float Instructions = 7;
+  float Overall = 8;
+}
+
+message RecipeRatingUpdateRequestInput {
+  string RecipeID = 1;
+  float Taste = 2;
+  float Difficulty = 3;
+  float Cleanup = 4;
+  float Instructions = 5;
+  float Overall = 6;
+  string Notes = 7;
+  string ByUser = 8;
+}
+
+message RecipeStep {
+  google.protobuf.Timestamp CreatedAt = 1;
+  OptionalUint32Range EstimatedTimeInSeconds = 2;
+  OptionalFloat32Range TemperatureInCelsius = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  google.protobuf.Timestamp LastUpdatedAt = 5;
+  string BelongsToRecipe = 6;
+  string ConditionExpression = 7;
+  string ID = 8;
+  string Notes = 9;
+  string ExplicitInstructions = 10;
+  repeated RecipeMedia Media = 11;
+  repeated RecipeStepProduct Products = 12;
+  repeated RecipeStepInstrument Instruments = 13;
+  repeated RecipeStepVessel Vessels = 14;
+  repeated RecipeStepCompletionCondition CompletionConditions = 15;
+  repeated RecipeStepIngredient Ingredients = 16;
+  ValidPreparation Preparation = 17;
+  uint32 Index = 18;
+  bool Optional = 19;
+  bool StartTimerAutomatically = 20;
+}
+
+message RecipeStepCompletionCondition {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  ValidIngredientState IngredientState = 4;
+  string ID = 5;
+  string BelongsToRecipeStep = 6;
+  string Notes = 7;
+  repeated RecipeStepCompletionConditionIngredient Ingredients = 8;
+  bool Optional = 9;
+}
+
+message RecipeStepCompletionConditionCreationRequestInput {
+  string IngredientStateID = 1;
+  string BelongsToRecipeStep = 2;
+  string Notes = 3;
+  repeated uint64 Ingredients = 4;
+  bool Optional = 5;
+}
+
+message RecipeStepCompletionConditionForExistingRecipeCreationRequestInput {
+  string IngredientStateID = 1;
+  string BelongsToRecipeStep = 2;
+  string Notes = 3;
+  repeated RecipeStepCompletionConditionIngredient Ingredients = 4;
+  bool Optional = 5;
+}
+
+message RecipeStepCompletionConditionIngredient {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  string ID = 4;
+  string BelongsToRecipeStepCompletionCondition = 5;
+  string RecipeStepIngredient = 6;
+}
+
+message RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput {
+  string RecipeStepIngredient = 1;
+}
+
+message RecipeStepCompletionConditionUpdateRequestInput {
+  string IngredientStateID = 1;
+  string BelongsToRecipeStep = 2;
+  string Notes = 3;
+  bool Optional = 4;
+}
+
+message RecipeStepCreationRequestInput {
+  OptionalUint32Range EstimatedTimeInSeconds = 1;
+  OptionalFloat32Range TemperatureInCelsius = 2;
+  string PreparationID = 3;
+  string Notes = 4;
+  string ConditionExpression = 5;
+  string ExplicitInstructions = 6;
+  repeated RecipeStepInstrumentCreationRequestInput Instruments = 7;
+  repeated RecipeStepVesselCreationRequestInput Vessels = 8;
+  repeated RecipeStepProductCreationRequestInput Products = 9;
+  repeated RecipeStepIngredientCreationRequestInput Ingredients = 10;
+  repeated RecipeStepCompletionConditionCreationRequestInput CompletionConditions = 11;
+  uint32 Index = 12;
+  bool Optional = 13;
+  bool StartTimerAutomatically = 14;
+}
+
+message RecipeStepIngredient {
+  google.protobuf.Timestamp CreatedAt = 1;
+  string RecipeStepProductRecipeID = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  ValidIngredient Ingredient = 4;
+  google.protobuf.Timestamp LastUpdatedAt = 5;
+  uint32 VesselIndex = 6;
+  float ProductPercentageToUse = 7;
+  string RecipeStepProductID = 8;
+  string BelongsToRecipeStep = 9;
+  string ID = 10;
+  string QuantityNotes = 11;
+  string IngredientNotes = 12;
+  string Name = 13;
+  Float32RangeWithOptionalMax Quantity = 14;
+  ValidMeasurementUnit MeasurementUnit = 15;
+  uint32 OptionIndex = 16;
+  bool Optional = 17;
+  bool ToTaste = 18;
+}
+
+message RecipeStepIngredientCreationRequestInput {
+  string IngredientID = 1;
+  uint64 ProductOfRecipeStepIndex = 2;
+  uint64 ProductOfRecipeStepProductIndex = 3;
+  uint32 VesselIndex = 4;
+  float ProductPercentageToUse = 5;
+  string RecipeStepProductRecipeID = 6;
+  string IngredientNotes = 7;
+  string MeasurementUnitID = 8;
+  string Name = 9;
+  string QuantityNotes = 10;
+  Float32RangeWithOptionalMax Quantity = 11;
+  uint32 OptionIndex = 12;
+  bool Optional = 13;
+  bool ToTaste = 14;
+}
+
+message RecipeStepIngredientUpdateRequestInput {
+  string IngredientID = 1;
+  string RecipeStepProductID = 2;
+  string Name = 3;
+  bool Optional = 4;
+  string MeasurementUnitID = 5;
+  string QuantityNotes = 6;
+  string IngredientNotes = 7;
+  string BelongsToRecipeStep = 8;
+  Float32RangeWithOptionalMaxUpdateRequestInput Quantity = 9;
+  uint32 OptionIndex = 10;
+  uint32 VesselIndex = 11;
+  bool ToTaste = 12;
+  float ProductPercentageToUse = 13;
+  string RecipeStepProductRecipeID = 14;
+}
+
+message RecipeStepInstrument {
+  google.protobuf.Timestamp CreatedAt = 1;
+  ValidInstrument Instrument = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  string RecipeStepProductID = 4;
+  google.protobuf.Timestamp ArchivedAt = 5;
+  string Notes = 6;
+  string Name = 7;
+  string BelongsToRecipeStep = 8;
+  string ID = 9;
+  Uint32RangeWithOptionalMax Quantity = 10;
+  uint32 OptionIndex = 11;
+  uint32 PreferenceRank = 12;
+  bool Optional = 13;
+}
+
+message RecipeStepInstrumentCreationRequestInput {
+  string InstrumentID = 1;
+  string RecipeStepProductID = 2;
+  uint64 ProductOfRecipeStepIndex = 3;
+  uint64 ProductOfRecipeStepProductIndex = 4;
+  Uint32RangeWithOptionalMax Quantity = 5;
+  string Notes = 6;
+  string Name = 7;
+  uint32 OptionIndex = 8;
+  bool Optional = 9;
+  uint32 PreferenceRank = 10;
+}
+
+message RecipeStepInstrumentUpdateRequestInput {
+  string InstrumentID = 1;
+  string RecipeStepProductID = 2;
+  string Notes = 3;
+  uint32 PreferenceRank = 4;
+  string BelongsToRecipeStep = 5;
+  string Name = 6;
+  bool Optional = 7;
+  uint32 OptionIndex = 8;
+  Uint32RangeWithOptionalMaxUpdateRequestInput Quantity = 9;
+}
+
+message RecipeStepProduct {
+  google.protobuf.Timestamp CreatedAt = 1;
+  OptionalFloat32Range StorageTemperatureInCelsius = 2;
+  OptionalUint32Range StorageDurationInSeconds = 3;
+  OptionalFloat32Range Quantity = 4;
+  google.protobuf.Timestamp ArchivedAt = 5;
+  google.protobuf.Timestamp LastUpdatedAt = 6;
+  ValidMeasurementUnit MeasurementUnit = 7;
+  uint32 ContainedInVesselIndex = 8;
+  string Name = 9;
+  string BelongsToRecipeStep = 10;
+  string Type = 11;
+  string ID = 12;
+  string StorageInstructions = 13;
+  string QuantityNotes = 14;
+  uint32 Index = 15;
+  bool IsWaste = 16;
+  bool IsLiquid = 17;
+  bool Compostable = 18;
+}
+
+message RecipeStepProductCreationRequestInput {
+  OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  OptionalUint32Range StorageDurationInSeconds = 2;
+  OptionalFloat32Range Quantity = 3;
+  string MeasurementUnitID = 4;
+  uint32 ContainedInVesselIndex = 5;
+  string QuantityNotes = 6;
+  string Name = 7;
+  string StorageInstructions = 8;
+  string Type = 9;
+  uint32 Index = 10;
+  bool Compostable = 11;
+  bool IsLiquid = 12;
+  bool IsWaste = 13;
+}
+
+message RecipeStepProductUpdateRequestInput {
+  string Name = 1;
+  string Type = 2;
+  string MeasurementUnitID = 3;
+  string QuantityNotes = 4;
+  string BelongsToRecipeStep = 5;
+  OptionalFloat32Range StorageTemperatureInCelsius = 6;
+  OptionalUint32Range StorageDurationInSeconds = 7;
+  OptionalFloat32Range Quantity = 8;
+  bool Compostable = 9;
+  string StorageInstructions = 10;
+  bool IsLiquid = 11;
+  bool IsWaste = 12;
+  uint32 Index = 13;
+  uint32 ContainedInVesselIndex = 14;
+}
+
+message RecipeStepUpdateRequestInput {
+  OptionalUint32Range EstimatedTimeInSeconds = 1;
+  OptionalFloat32Range TemperatureInCelsius = 2;
+  string Notes = 3;
+  ValidPreparation Preparation = 4;
+  uint32 Index = 5;
+  bool Optional = 6;
+  string ExplicitInstructions = 7;
+  string ConditionExpression = 8;
+  bool StartTimerAutomatically = 9;
+  string BelongsToRecipe = 10;
+}
+
+message RecipeStepVessel {
+  google.protobuf.Timestamp CreatedAt = 1;
+  Uint16RangeWithOptionalMax Quantity = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  string RecipeStepProductID = 5;
+  ValidVessel Vessel = 6;
+  string ID = 7;
+  string Notes = 8;
+  string BelongsToRecipeStep = 9;
+  string VesselPreposition = 10;
+  string Name = 11;
+  bool UnavailableAfterStep = 12;
+}
+
+message RecipeStepVesselCreationRequestInput {
+  string RecipeStepProductID = 1;
+  uint64 ProductOfRecipeStepIndex = 2;
+  uint64 ProductOfRecipeStepProductIndex = 3;
+  string VesselID = 4;
+  Uint16RangeWithOptionalMax Quantity = 5;
+  string Name = 6;
+  string Notes = 7;
+  string VesselPreposition = 8;
+  bool UnavailableAfterStep = 9;
+}
+
+message RecipeStepVesselUpdateRequestInput {
+  string RecipeStepProductID = 1;
+  string Name = 2;
+  string Notes = 3;
+  string BelongsToRecipeStep = 4;
+  string VesselID = 5;
+  Uint16RangeWithOptionalMaxUpdateRequestInput Quantity = 6;
+  string VesselPreposition = 7;
+  bool UnavailableAfterStep = 8;
+}
+
+message RecipeUpdateRequestInput {
+  string Name = 1;
+  string Slug = 2;
+  string Source = 3;
+  string Description = 4;
+  string InspiredByRecipeID = 5;
+  bool SealOfApproval = 6;
+  Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 7;
+  string PortionName = 8;
+  string PluralPortionName = 9;
+  bool EligibleForMeals = 10;
+  string YieldsComponentType = 11;
+}
+
+// ArchiveRecipe
+message ArchiveRecipeRequest {
+  string recipeID = 1;
+}
+
+message ArchiveRecipeResponse {}
+
+// ArchiveRecipePrepTask
+message ArchiveRecipePrepTaskRequest {
+  string recipeID = 1;
+  string recipePrepTaskID = 2;
+}
+
+message ArchiveRecipePrepTaskResponse {}
+
+// ArchiveRecipeRating
+message ArchiveRecipeRatingRequest {
+  string recipeID = 1;
+  string recipeRatingID = 2;
+}
+
+message ArchiveRecipeRatingResponse {}
+
+// ArchiveRecipeStep
+message ArchiveRecipeStepRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+}
+
+message ArchiveRecipeStepResponse {}
+
+// ArchiveRecipeStepCompletionCondition
+message ArchiveRecipeStepCompletionConditionRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepCompletionConditionID = 3;
+}
+
+message ArchiveRecipeStepCompletionConditionResponse {}
+
+// ArchiveRecipeStepIngredient
+message ArchiveRecipeStepIngredientRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepIngredientID = 3;
+}
+
+message ArchiveRecipeStepIngredientResponse {}
+
+// ArchiveRecipeStepInstrument
+message ArchiveRecipeStepInstrumentRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepInstrumentID = 3;
+}
+
+message ArchiveRecipeStepInstrumentResponse {}
+
+// ArchiveRecipeStepProduct
+message ArchiveRecipeStepProductRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepProductID = 3;
+}
+
+message ArchiveRecipeStepProductResponse {}
+
+// ArchiveRecipeStepVessel
+message ArchiveRecipeStepVesselRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepVesselID = 3;
+}
+
+message ArchiveRecipeStepVesselResponse {}
+
+// CloneRecipe
+message CloneRecipeRequest {
+  string recipeID = 1;
+}
+
+message CloneRecipeResponse {
+  Recipe Result = 1;
+}
+
+// CreateRecipe
+message CreateRecipeRequest {}
+
+message CreateRecipeResponse {}
+
+// CreateRecipePrepTask
+message CreateRecipePrepTaskRequest {
+  string recipeID = 1;
+  RecipePrepTaskCreationRequestInput input = 2;
+}
+
+message CreateRecipePrepTaskResponse {}
+
+// CreateRecipeRating
+message CreateRecipeRatingRequest {
+  string recipeID = 1;
+  RecipeRatingCreationRequestInput input = 2;
+}
+
+message CreateRecipeRatingResponse {}
+
+// CreateRecipeStep
+message CreateRecipeStepRequest {
+  string recipeID = 1;
+  RecipeStepCreationRequestInput input = 2;
+}
+
+message CreateRecipeStepResponse {}
+
+// CreateRecipeStepCompletionCondition
+message CreateRecipeStepCompletionConditionRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  RecipeStepCompletionConditionForExistingRecipeCreationRequestInput input = 3;
+}
+
+message CreateRecipeStepCompletionConditionResponse {}
+
+// CreateRecipeStepIngredient
+message CreateRecipeStepIngredientRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  RecipeStepIngredientCreationRequestInput input = 3;
+}
+
+message CreateRecipeStepIngredientResponse {}
+
+// CreateRecipeStepInstrument
+message CreateRecipeStepInstrumentRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  RecipeStepInstrumentCreationRequestInput input = 3;
+}
+
+message CreateRecipeStepInstrumentResponse {}
+
+// CreateRecipeStepProduct
+message CreateRecipeStepProductRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  RecipeStepProductCreationRequestInput input = 3;
+}
+
+message CreateRecipeStepProductResponse {}
+
+// CreateRecipeStepVessel
+message CreateRecipeStepVesselRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  RecipeStepVesselCreationRequestInput input = 3;
+}
+
+message CreateRecipeStepVesselResponse {}
+
+// GetMermaidDiagramForRecipe
+message GetMermaidDiagramForRecipeRequest {
+  string recipeID = 1;
+}
+
+message GetMermaidDiagramForRecipeResponse {
+  string Response = 2;
+}
+
+// GetRecipe
+message GetRecipeRequest {
+  string recipeID = 1;
+}
+
+message GetRecipeResponse {}
+
+// GetRecipeMealPlanTasks
+message GetRecipeMealPlanTasksRequest {
+  string recipeID = 1;
+}
+
+message GetRecipeMealPlanTasksResponse {}
+
+// GetRecipePrepTask
+message GetRecipePrepTaskRequest {
+  string recipeID = 1;
+  string recipePrepTaskID = 2;
+}
+
+message GetRecipePrepTaskResponse {}
+
+// GetRecipePrepTasks
+message GetRecipePrepTasksRequest {
+  QueryFilter Filter = 1;
+  string recipeID = 2;
+}
+
+message GetRecipePrepTasksResponse {
+  QueryFilter Filter = 1;
+  repeated RecipePrepTask Results = 2;
+}
+
+// GetRecipeRating
+message GetRecipeRatingRequest {
+  string RecipeID = 1;
+  string RecipeRatingID = 2;
+}
+
+message GetRecipeRatingResponse {}
+
+// GetRecipeRatingsForRecipe
+message GetRecipeRatingsForRecipeRequest {
+  QueryFilter Filter = 1;
+  string recipeID = 2;
+}
+
+message GetRecipeRatingsForRecipeResponse {
+  QueryFilter Filter = 1;
+  repeated RecipeRating Results = 2;
+}
+
+// GetRecipeStep
+message GetRecipeStepRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+}
+
+message GetRecipeStepResponse {}
+
+// GetRecipeStepCompletionCondition
+message GetRecipeStepCompletionConditionRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepCompletionConditionID = 3;
+}
+
+message GetRecipeStepCompletionConditionResponse {}
+
+// GetRecipeStepCompletionConditions
+message GetRecipeStepCompletionConditionsRequest {
+  QueryFilter Filter = 1;
+  string recipeID = 2;
+  string recipeStepID = 3;
+}
+
+message GetRecipeStepCompletionConditionsResponse {
+  QueryFilter Filter = 1;
+  repeated RecipeStepCompletionCondition Results = 2;
+}
+
+// GetRecipeStepIngredient
+message GetRecipeStepIngredientRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepIngredientID = 3;
+}
+
+message GetRecipeStepIngredientResponse {}
+
+// GetRecipeStepIngredients
+message GetRecipeStepIngredientsRequest {
+  QueryFilter Filter = 1;
+  string recipeID = 2;
+  string recipeStepID = 3;
+}
+
+message GetRecipeStepIngredientsResponse {
+  QueryFilter Filter = 1;
+  repeated RecipeStepIngredient Results = 2;
+}
+
+// GetRecipeStepInstrument
+message GetRecipeStepInstrumentRequest {
+  string RecipeID = 1;
+  string RecipeStepID = 2;
+  string RecipeStepInstrumentID = 3;
+}
+
+message GetRecipeStepInstrumentResponse {}
+
+// GetRecipeStepInstruments
+message GetRecipeStepInstrumentsRequest {
+  QueryFilter Filter = 1;
+  string recipeID = 2;
+  string recipeStepID = 3;
+}
+
+message GetRecipeStepInstrumentsResponse {
+  QueryFilter Filter = 1;
+  repeated RecipeStepInstrument Results = 2;
+}
+
+// GetRecipeStepProduct
+message GetRecipeStepProductRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepProductID = 3;
+}
+
+message GetRecipeStepProductResponse {}
+
+// GetRecipeStepProducts
+message GetRecipeStepProductsRequest {
+  QueryFilter Filter = 1;
+  string recipeID = 2;
+  string recipeStepID = 3;
+}
+
+message GetRecipeStepProductsResponse {
+  QueryFilter Filter = 1;
+  repeated RecipeStepProduct Results = 2;
+}
+
+// GetRecipeStepVessel
+message GetRecipeStepVesselRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepVesselID = 3;
+}
+
+message GetRecipeStepVesselResponse {}
+
+// GetRecipeStepVessels
+message GetRecipeStepVesselsRequest {
+  QueryFilter Filter = 1;
+  string recipeID = 2;
+  string recipeStepID = 3;
+}
+
+message GetRecipeStepVesselsResponse {
+  QueryFilter Filter = 1;
+  repeated RecipeStepVessel Results = 2;
+}
+
+// GetRecipeSteps
+message GetRecipeStepsRequest {
+  QueryFilter Filter = 1;
+  string recipeID = 2;
+}
+
+message GetRecipeStepsResponse {
+  QueryFilter Filter = 1;
+  repeated RecipeStep Results = 2;
+}
+
+// GetRecipes
+message GetRecipesRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetRecipesResponse {
+  QueryFilter Filter = 1;
+  repeated Recipe Results = 2;
+}
+
+// SearchForRecipes
+message SearchForRecipesRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForRecipesResponse {
+  QueryFilter Filter = 1;
+  repeated Recipe Result = 2;
+}
+
+// UpdateRecipe
+message UpdateRecipeRequest {
+  string recipeID = 1;
+  RecipeUpdateRequestInput input = 2;
+}
+
+message UpdateRecipeResponse {}
+
+// UpdateRecipePrepTask
+message UpdateRecipePrepTaskRequest {
+  string recipeID = 1;
+  string recipePrepTaskID = 2;
+  RecipePrepTaskUpdateRequestInput input = 3;
+}
+
+message UpdateRecipePrepTaskResponse {}
+
+// UpdateRecipeRating
+message UpdateRecipeRatingRequest {
+  string recipeID = 1;
+  string recipeRatingID = 2;
+  RecipeRatingUpdateRequestInput input = 3;
+}
+
+message UpdateRecipeRatingResponse {}
+
+// UpdateRecipeStep
+message UpdateRecipeStepRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  RecipeStepUpdateRequestInput input = 3;
+}
+
+message UpdateRecipeStepResponse {}
+
+// UpdateRecipeStepCompletionCondition
+message UpdateRecipeStepCompletionConditionRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepCompletionConditionID = 3;
+  RecipeStepCompletionConditionUpdateRequestInput input = 4;
+}
+
+message UpdateRecipeStepCompletionConditionResponse {}
+
+// UpdateRecipeStepIngredient
+message UpdateRecipeStepIngredientRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepIngredientID = 3;
+  RecipeStepIngredientUpdateRequestInput input = 4;
+}
+
+message UpdateRecipeStepIngredientResponse {}
+
+// UpdateRecipeStepInstrument
+message UpdateRecipeStepInstrumentRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepInstrumentID = 3;
+  RecipeStepInstrumentUpdateRequestInput input = 4;
+}
+
+message UpdateRecipeStepInstrumentResponse {}
+
+// UpdateRecipeStepProduct
+message UpdateRecipeStepProductRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepProductID = 3;
+  RecipeStepProductUpdateRequestInput input = 4;
+}
+
+message UpdateRecipeStepProductResponse {}
+
+// UpdateRecipeStepVessel
+message UpdateRecipeStepVesselRequest {
+  string recipeID = 1;
+  string recipeStepID = 2;
+  string recipeStepVesselID = 3;
+  RecipeStepVesselUpdateRequestInput input = 4;
+}
+
+message UpdateRecipeStepVesselResponse {}
+
+// Meal Planning
+
+message InitializeMealPlanGroceryListRequest {
+  string HouseholdID = 1;
+}
+
+message InitializeMealPlanGroceryListResponse {
+  bool Success = 1;
+}
+
+message Meal {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  Float32RangeWithOptionalMax EstimatedPortions = 4;
+  string ID = 5;
+  string Description = 6;
+  string CreatedByUser = 7;
+  string Name = 8;
+  repeated MealComponent Components = 9;
+  bool EligibleForMealPlans = 10;
+}
+
+message MealComponent {
+  string ComponentType = 1;
+  Recipe Recipe = 2;
+  float RecipeScale = 3;
+}
+
+message MealComponentCreationRequestInput {
+  string RecipeID = 1;
+  string ComponentType = 2;
+  float RecipeScale = 3;
+}
+
+message MealComponentUpdateRequestInput {
+  string RecipeID = 1;
+  string ComponentType = 2;
+  float RecipeScale = 3;
+}
+
+message MealCreationRequestInput {
+  Float32RangeWithOptionalMax EstimatedPortions = 1;
+  string Name = 2;
+  string Description = 3;
+  repeated MealComponentCreationRequestInput Components = 4;
+  bool EligibleForMealPlans = 5;
+}
+
+message MealPlan {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp VotingDeadline = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  google.protobuf.Timestamp LastUpdatedAt = 4;
+  string ID = 5;
+  string Status = 6;
+  string Notes = 7;
+  string ElectionMethod = 8;
+  string BelongsToHousehold = 9;
+  string CreatedByUser = 10;
+  repeated MealPlanEvent Events = 11;
+  bool GroceryListInitialized = 12;
+  bool TasksCreated = 13;
+}
+
+message MealPlanCreationRequestInput {
+  google.protobuf.Timestamp VotingDeadline = 1;
+  string Notes = 2;
+  string ElectionMethod = 3;
+  repeated MealPlanEventCreationRequestInput Events = 4;
+}
+
+message MealPlanEvent {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp StartsAt = 2;
+  google.protobuf.Timestamp EndsAt = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  google.protobuf.Timestamp LastUpdatedAt = 5;
+  string MealName = 6;
+  string Notes = 7;
+  string BelongsToMealPlan = 8;
+  string ID = 9;
+  repeated MealPlanOption Options = 10;
+}
+
+message MealPlanEventCreationRequestInput {
+  google.protobuf.Timestamp EndsAt = 1;
+  google.protobuf.Timestamp StartsAt = 2;
+  string Notes = 3;
+  string MealName = 4;
+  repeated MealPlanOptionCreationRequestInput Options = 5;
+}
+
+message MealPlanEventUpdateRequestInput {
+  string Notes = 1;
+  google.protobuf.Timestamp StartsAt = 2;
+  string MealName = 3;
+  google.protobuf.Timestamp EndsAt = 4;
+  string BelongsToMealPlan = 5;
+}
+
+message MealPlanGroceryListItem {
+  google.protobuf.Timestamp CreatedAt = 1;
+  float QuantityPurchased = 2;
+  float PurchasePrice = 3;
+  string PurchasedUPC = 4;
+  google.protobuf.Timestamp ArchivedAt = 5;
+  google.protobuf.Timestamp LastUpdatedAt = 6;
+  ValidMeasurementUnit PurchasedMeasurementUnit = 7;
+  string BelongsToMealPlan = 8;
+  string Status = 9;
+  string StatusExplanation = 10;
+  string ID = 11;
+  Float32RangeWithOptionalMax QuantityNeeded = 12;
+  ValidMeasurementUnit MeasurementUnit = 13;
+  ValidIngredient Ingredient = 14;
+}
+
+message MealPlanGroceryListItemCreationRequestInput {
+  string PurchasedMeasurementUnitID = 1;
+  string PurchasedUPC = 2;
+  float PurchasePrice = 3;
+  float QuantityPurchased = 4;
+  string Status = 5;
+  string BelongsToMealPlan = 6;
+  string ValidIngredientID = 7;
+  string ValidMeasurementUnitID = 8;
+  string StatusExplanation = 9;
+  Float32RangeWithOptionalMax QuantityNeeded = 10;
+}
+
+message MealPlanGroceryListItemUpdateRequestInput {
+  string BelongsToMealPlan = 1;
+  string ValidIngredientID = 2;
+  string ValidMeasurementUnitID = 3;
+  string StatusExplanation = 4;
+  float QuantityPurchased = 5;
+  string PurchasedMeasurementUnitID = 6;
+  string PurchasedUPC = 7;
+  float PurchasePrice = 8;
+  string Status = 9;
+  Float32RangeWithOptionalMaxUpdateRequestInput QuantityNeeded = 10;
+}
+
+message MealPlanOption {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  string AssignedCook = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  string AssignedDishwasher = 5;
+  string Notes = 6;
+  string BelongsToMealPlanEvent = 7;
+  string ID = 8;
+  repeated MealPlanOptionVote Votes = 9;
+  Meal Meal = 10;
+  float MealScale = 11;
+  bool Chosen = 12;
+  bool TieBroken = 13;
+}
+
+message MealPlanOptionCreationRequestInput {
+  string AssignedCook = 1;
+  string AssignedDishwasher = 2;
+  string MealID = 3;
+  string Notes = 4;
+  float MealScale = 5;
+}
+
+message MealPlanOptionUpdateRequestInput {
+  string MealID = 1;
+  string Notes = 2;
+  string AssignedCook = 3;
+  string AssignedDishwasher = 4;
+  float MealScale = 5;
+  string BelongsToMealPlanEvent = 6;
+}
+
+message MealPlanOptionVote {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  string ID = 4;
+  string Notes = 5;
+  string BelongsToMealPlanOption = 6;
+  string ByUser = 7;
+  uint32 Rank = 8;
+  bool Abstain = 9;
+}
+
+message MealPlanOptionVoteCreationInput {
+  string ID = 1;
+  string Notes = 2;
+  string ByUser = 3;
+  string BelongsToMealPlanOption = 4;
+  uint32 Rank = 5;
+  bool Abstain = 6;
+}
+
+message MealPlanOptionVoteCreationRequestInput {
+  repeated MealPlanOptionVoteCreationInput Votes = 1;
+}
+
+message MealPlanOptionVoteUpdateRequestInput {
+  string Notes = 1;
+  uint32 Rank = 2;
+  bool Abstain = 3;
+  string BelongsToMealPlanOption = 4;
+}
+
+message MealPlanTask {
+  RecipePrepTask RecipePrepTask = 1;
+  google.protobuf.Timestamp CreatedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  google.protobuf.Timestamp CompletedAt = 4;
+  string AssignedToUser = 5;
+  string ID = 6;
+  string Status = 7;
+  string CreationExplanation = 8;
+  string StatusExplanation = 9;
+  MealPlanOption MealPlanOption = 10;
+}
+
+message MealPlanTaskCreationRequestInput {
+  string AssignedToUser = 1;
+  string Status = 2;
+  string CreationExplanation = 3;
+  string StatusExplanation = 4;
+  string MealPlanOptionID = 5;
+  string RecipePrepTaskID = 6;
+}
+
+message MealPlanTaskStatusChangeRequestInput {
+  string Status = 1;
+  string StatusExplanation = 2;
+  string AssignedToUser = 3;
+  string ID = 4;
+}
+
+message MealPlanUpdateRequestInput {
+  string BelongsToHousehold = 1;
+  string Notes = 2;
+  google.protobuf.Timestamp VotingDeadline = 3;
+}
+
+message MealUpdateRequestInput {
+  string Name = 1;
+  string Description = 2;
+  string CreatedByUser = 3;
+  Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 4;
+  bool EligibleForMealPlans = 5;
+  repeated MealComponentUpdateRequestInput Components = 6;
+}
+
+// ArchiveMeal
+message ArchiveMealRequest {
+  string mealID = 1;
+}
+
+message ArchiveMealResponse {}
+
+// ArchiveMealPlan
+message ArchiveMealPlanRequest {
+  string mealPlanID = 1;
+}
+
+message ArchiveMealPlanResponse {}
+
+// ArchiveMealPlanEvent
+message ArchiveMealPlanEventRequest {
+  string mealPlanID = 1;
+  string mealPlanEventID = 2;
+}
+
+message ArchiveMealPlanEventResponse {}
+
+// ArchiveMealPlanGroceryListItem
+message ArchiveMealPlanGroceryListItemRequest {
+  string mealPlanID = 1;
+  string mealPlanGroceryListItemID = 2;
+}
+
+message ArchiveMealPlanGroceryListItemResponse {}
+
+// ArchiveMealPlanOption
+message ArchiveMealPlanOptionRequest {
+  string MealPlanID = 1;
+  string MealPlanEventID = 2;
+  string MealPlanOptionID = 3;
+}
+
+message ArchiveMealPlanOptionResponse {}
+
+// ArchiveMealPlanOptionVote
+message ArchiveMealPlanOptionVoteRequest {
+  string mealPlanID = 1;
+  string mealPlanEventID = 2;
+  string mealPlanOptionID = 3;
+  string mealPlanOptionVoteID = 4;
+}
+
+message ArchiveMealPlanOptionVoteResponse {}
+
+// CreateMeal
+message CreateMealRequest {}
+
+message CreateMealResponse {}
+
+// CreateMealPlan
+message CreateMealPlanRequest {}
+
+message CreateMealPlanResponse {}
+
+// CreateMealPlanEvent
+message CreateMealPlanEventRequest {
+  string mealPlanID = 1;
+  MealPlanEventCreationRequestInput input = 2;
+}
+
+message CreateMealPlanEventResponse {}
+
+// CreateMealPlanGroceryListItem
+message CreateMealPlanGroceryListItemRequest {
+  string mealPlanID = 1;
+  MealPlanGroceryListItemCreationRequestInput input = 2;
+}
+
+message CreateMealPlanGroceryListItemResponse {}
+
+// CreateMealPlanOption
+message CreateMealPlanOptionRequest {
+  string mealPlanID = 1;
+  string mealPlanEventID = 2;
+  MealPlanOptionCreationRequestInput input = 3;
+}
+
+message CreateMealPlanOptionResponse {}
+
+// CreateMealPlanOptionVote
+message CreateMealPlanOptionVoteRequest {
+  string mealPlanID = 1;
+  string mealPlanEventID = 2;
+  MealPlanOptionVoteCreationRequestInput input = 3;
+}
+
+message CreateMealPlanOptionVoteResponse {}
+
+// CreateMealPlanTask
+message CreateMealPlanTaskRequest {
+  string mealPlanID = 1;
+  MealPlanTaskCreationRequestInput input = 2;
+}
+
+message CreateMealPlanTaskResponse {}
+
+// FinalizeMealPlan
+message FinalizeMealPlanRequest {
+  string mealPlanID = 1;
+}
+
+message FinalizeMealPlanResponse {}
+
+// GetMeal
+message GetMealRequest {
+  string mealID = 1;
+}
+
+message GetMealResponse {}
+
+// GetMealPlan
+message GetMealPlanRequest {
+  string mealPlanID = 1;
+}
+
+message GetMealPlanResponse {}
+
+// GetMealPlanEvent
+message GetMealPlanEventRequest {
+  string mealPlanID = 1;
+  string mealPlanEventID = 2;
+}
+
+message GetMealPlanEventResponse {}
+
+// GetMealPlanEvents
+message GetMealPlanEventsRequest {
+  QueryFilter Filter = 1;
+  string mealPlanID = 2;
+}
+
+message GetMealPlanEventsResponse {
+  QueryFilter Filter = 1;
+  repeated MealPlanEvent Results = 2;
+}
+
+// GetMealPlanGroceryListItem
+message GetMealPlanGroceryListItemRequest {
+  string mealPlanID = 1;
+  string mealPlanGroceryListItemID = 2;
+}
+
+message GetMealPlanGroceryListItemResponse {}
+
+// GetMealPlanGroceryListItemsForMealPlan
+message GetMealPlanGroceryListItemsForMealPlanRequest {
+  QueryFilter Filter = 1;
+  string mealPlanID = 2;
+}
+
+message GetMealPlanGroceryListItemsForMealPlanResponse {
+  QueryFilter Filter = 1;
+  repeated MealPlanGroceryListItem Results = 2;
+}
+
+// GetMealPlanOption
+message GetMealPlanOptionRequest {
+  string MealPlanID = 1;
+  string MealPlanEventID = 2;
+  string MealPlanOptionID = 3;
+}
+
+message GetMealPlanOptionResponse {}
+
+// GetMealPlanOptionVote
+message GetMealPlanOptionVoteRequest {
+  string mealPlanID = 1;
+  string mealPlanEventID = 2;
+  string mealPlanOptionID = 3;
+  string mealPlanOptionVoteID = 4;
+}
+
+message GetMealPlanOptionVoteResponse {}
+
+// GetMealPlanOptionVotes
+message GetMealPlanOptionVotesRequest {
+  QueryFilter Filter = 1;
+  string mealPlanID = 2;
+  string mealPlanEventID = 3;
+  string mealPlanOptionID = 4;
+}
+
+message GetMealPlanOptionVotesResponse {
+  QueryFilter Filter = 1;
+  repeated MealPlanOptionVote Results = 2;
+}
+
+// GetMealPlanOptions
+message GetMealPlanOptionsRequest {
+  QueryFilter Filter = 1;
+  string mealPlanID = 2;
+  string mealPlanEventID = 3;
+}
+
+message GetMealPlanOptionsResponse {
+  QueryFilter Filter = 1;
+  repeated MealPlanOption Result = 2;
+}
+
+// GetMealPlanTask
+message GetMealPlanTaskRequest {
+  string mealPlanID = 1;
+  string mealPlanTaskID = 2;
+}
+
+message GetMealPlanTaskResponse {}
+
+// GetMealPlanTasks
+message GetMealPlanTasksRequest {
+  QueryFilter Filter = 1;
+  string mealPlanID = 2;
+}
+
+message GetMealPlanTasksResponse {
+  QueryFilter Filter = 1;
+  repeated MealPlanTask Results = 2;
+}
+
+// GetMealPlansForHousehold
+message GetMealPlansForHouseholdRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetMealPlansForHouseholdResponse {
+  QueryFilter Filter = 1;
+  repeated MealPlan Results = 2;
+}
+
+// GetMeals
+message GetMealsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetMealsResponse {
+  QueryFilter Filter = 1;
+  repeated Meal Resuls = 2;
+}
+
+// RunFinalizeMealPlanWorker
+message RunFinalizeMealPlanWorkerRequest {}
+
+message RunFinalizeMealPlanWorkerResponse {}
+
+// RunMealPlanGroceryListInitializerWorker
+message RunMealPlanGroceryListInitializerWorkerRequest {}
+
+message RunMealPlanGroceryListInitializerWorkerResponse {}
+
+// RunMealPlanTaskCreatorWorker
+message RunMealPlanTaskCreatorWorkerRequest {}
+
+message RunMealPlanTaskCreatorWorkerResponse {}
+
+// SearchForMeals
+message SearchForMealsRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForMealsResponse {
+  QueryFilter Filter = 1;
+  repeated Meal Results = 2;
+}
+
+// UpdateMealPlan
+message UpdateMealPlanRequest {
+  string mealPlanID = 1;
+  MealPlanUpdateRequestInput input = 2;
+}
+
+message UpdateMealPlanResponse {}
+
+// UpdateMealPlanEvent
+message UpdateMealPlanEventRequest {
+  string mealPlanID = 1;
+  string mealPlanEventID = 2;
+  MealPlanEventUpdateRequestInput input = 3;
+}
+
+message UpdateMealPlanEventResponse {}
+
+// UpdateMealPlanGroceryListItem
+message UpdateMealPlanGroceryListItemRequest {
+  string mealPlanID = 1;
+  string mealPlanGroceryListItemID = 2;
+  MealPlanGroceryListItemUpdateRequestInput input = 3;
+}
+
+message UpdateMealPlanGroceryListItemResponse {}
+
+// UpdateMealPlanOption
+message UpdateMealPlanOptionRequest {
+  string mealPlanID = 1;
+  string mealPlanEventID = 2;
+  string mealPlanOptionID = 3;
+  MealPlanOptionUpdateRequestInput input = 4;
+}
+
+message UpdateMealPlanOptionResponse {}
+
+// UpdateMealPlanOptionVote
+message UpdateMealPlanOptionVoteRequest {
+  string mealPlanID = 1;
+  string mealPlanEventID = 2;
+  string mealPlanOptionID = 3;
+  string mealPlanOptionVoteID = 4;
+  MealPlanOptionVoteUpdateRequestInput input = 5;
+}
+
+message UpdateMealPlanOptionVoteResponse {}
+
+// UpdateMealPlanTaskStatus
+message UpdateMealPlanTaskStatusRequest {
+  string mealPlanID = 1;
+  string mealPlanTaskID = 2;
+  MealPlanTaskStatusChangeRequestInput input = 3;
+}
+
+message UpdateMealPlanTaskStatusResponse {}
+
+message CreateMealPlanTasksRequest {
+  string HouseholdID = 1;
+}
+
+message CreateMealPlanTasksResponse {
+  bool Success = 1;
+}
+
+message FinalizeMealPlansRequest {
+  bool ReturnCount = 1;
+}
+
+message FinalizeMealPlansResponse {
+  int64 Count = 1;
+}
+
+// ArchiveHouseholdInstrumentOwnership
+message ArchiveHouseholdInstrumentOwnershipRequest {
+  string householdInstrumentOwnershipID = 1;
+}
+
+message ArchiveHouseholdInstrumentOwnershipResponse {}
+
+// CreateHouseholdInstrumentOwnership
+message CreateHouseholdInstrumentOwnershipRequest {}
+
+message CreateHouseholdInstrumentOwnershipResponse {}
+
+// GetHouseholdInstrumentOwnerships
+message GetHouseholdInstrumentOwnershipsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetHouseholdInstrumentOwnershipsResponse {
+  QueryFilter Filter = 1;
+  repeated HouseholdInstrumentOwnership Results = 2;
+}
+
+// GetHouseholdInstrumentOwnership
+message GetHouseholdInstrumentOwnershipRequest {
+  string householdInstrumentOwnershipID = 1;
+}
+
+message GetHouseholdInstrumentOwnershipResponse {}
+
+// UpdateHouseholdInstrumentOwnership
+message UpdateHouseholdInstrumentOwnershipRequest {
+  string householdInstrumentOwnershipID = 1;
+  HouseholdInstrumentOwnershipUpdateRequestInput input = 2;
+}
+
+message UpdateHouseholdInstrumentOwnershipResponse {}
+
+message HouseholdInstrumentOwnership {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  string ID = 4;
+  string Notes = 5;
+  string BelongsToHousehold = 6;
+  ValidInstrument Instrument = 7;
+  uint32 Quantity = 8;
+}
+
+message HouseholdInstrumentOwnershipCreationRequestInput {
+  string Notes = 1;
+  string ValidInstrumentID = 2;
+  string BelongsToHousehold = 3;
+  uint32 Quantity = 4;
+}
+
+message HouseholdInstrumentOwnershipUpdateRequestInput {
+  string Notes = 1;
+  uint32 Quantity = 2;
+  string ValidInstrumentID = 3;
+}

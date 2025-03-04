@@ -161,3 +161,16 @@ jobs:
 
       - name: Check for changes
         run: git diff --exit-code
+
+  protobuf:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: generate proto
+        run: make proto
+
+      - name: Check for changes
+        run: git diff --exit-code

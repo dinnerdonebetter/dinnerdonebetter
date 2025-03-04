@@ -1,0 +1,1097 @@
+syntax = "proto3";
+
+package eating;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "messages_common.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/messages";
+
+// BEGIN requests and responses
+
+// Ping
+message PingRequest {}
+
+message PingResponse {}
+
+// ExchangeToken
+message ExchangeTokenRequest {
+  string RefreshToken = 1;
+}
+
+message ExchangeTokenResponse {
+  string UserID = 1;
+  string HouseholdID = 2;
+  string AccessToken = 3;
+  string RefreshToken = 4;
+  google.protobuf.Timestamp ExpiresUTC = 5;
+}
+
+// AcceptHouseholdInvitation
+message AcceptHouseholdInvitationRequest {
+  string householdInvitationID = 1;
+  HouseholdInvitationUpdateRequestInput input = 2;
+}
+
+message AcceptHouseholdInvitationResponse {}
+
+// AdminLoginForToken
+message AdminLoginForTokenRequest {
+  UserLoginInput Input = 1;
+}
+
+message AdminLoginForTokenResponse {
+  TokenResponse Result = 1;
+}
+
+// AdminUpdateUserStatus
+message AdminUpdateUserStatusRequest {}
+
+message AdminUpdateUserStatusResponse {}
+
+// AggregateUserDataReport
+message AggregateUserDataReportRequest {}
+
+message AggregateUserDataReportResponse {}
+
+// ArchiveHousehold
+message ArchiveHouseholdRequest {
+  string householdID = 1;
+}
+
+message ArchiveHouseholdResponse {}
+
+// ArchiveOAuth2Client
+message ArchiveOAuth2ClientRequest {
+  string oauth2ClientID = 1;
+}
+
+message ArchiveOAuth2ClientResponse {}
+
+// ArchiveServiceSetting
+message ArchiveServiceSettingRequest {
+  string serviceSettingID = 1;
+}
+
+message ArchiveServiceSettingResponse {}
+
+// ArchiveServiceSettingConfiguration
+message ArchiveServiceSettingConfigurationRequest {
+  string serviceSettingConfigurationID = 1;
+}
+
+message ArchiveServiceSettingConfigurationResponse {}
+
+// ArchiveUser
+message ArchiveUserRequest {
+  string userID = 1;
+}
+
+message ArchiveUserResponse {}
+
+// ArchiveUserMembership
+message ArchiveUserMembershipRequest {
+  string householdID = 1;
+  string userID = 2;
+}
+
+message ArchiveUserMembershipResponse {}
+
+// ArchiveWebhook
+message ArchiveWebhookRequest {
+  string webhookID = 1;
+}
+
+message ArchiveWebhookResponse {}
+
+// ArchiveWebhookTriggerEvent
+message ArchiveWebhookTriggerEventRequest {
+  string WebhookID = 1;
+  string WebhookTriggerEventID = 2;
+}
+
+message ArchiveWebhookTriggerEventResponse {}
+
+// CancelHouseholdInvitation
+message CancelHouseholdInvitationRequest {
+  string householdInvitationID = 1;
+  HouseholdInvitationUpdateRequestInput input = 2;
+}
+
+message CancelHouseholdInvitationResponse {}
+
+// CheckPermissions
+message CheckPermissionsRequest {}
+
+message CheckPermissionsResponse {}
+
+// CreateHousehold
+message CreateHouseholdRequest {}
+
+message CreateHouseholdResponse {}
+
+// CreateHouseholdInvitation
+message CreateHouseholdInvitationRequest {
+  string householdID = 1;
+  HouseholdInvitationCreationRequestInput input = 2;
+}
+
+message CreateHouseholdInvitationResponse {}
+
+// CreateOAuth2Client
+message CreateOAuth2ClientRequest {}
+
+message CreateOAuth2ClientResponse {}
+
+// CreateServiceSetting
+message CreateServiceSettingRequest {}
+
+message CreateServiceSettingResponse {}
+
+// CreateServiceSettingConfiguration
+message CreateServiceSettingConfigurationRequest {}
+
+message CreateServiceSettingConfigurationResponse {}
+
+// CreateUser
+message CreateUserRequest {
+  UserRegistrationInput Input = 1;
+}
+
+message CreateUserResponse {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp Birthday = 2;
+  string Username = 3;
+  string EmailAddress = 4;
+  string TwoFactorQRCode = 5;
+  string CreatedUserID = 6;
+  string AccountStatus = 7;
+  string TwoFactorSecret = 8;
+  string FirstName = 9;
+  string LastName = 10;
+}
+
+// CreateUserNotification
+message CreateUserNotificationRequest {}
+
+message CreateUserNotificationResponse {}
+
+// CreateWebhook
+message CreateWebhookRequest {}
+
+message CreateWebhookResponse {}
+
+// CreateWebhookTriggerEvent
+message CreateWebhookTriggerEventRequest {
+  string webhookID = 1;
+  WebhookTriggerEventCreationRequestInput input = 2;
+}
+
+message CreateWebhookTriggerEventResponse {}
+
+// DestroyAllUserData
+message DestroyAllUserDataRequest {}
+
+message DestroyAllUserDataResponse {}
+
+// FetchUserDataReport
+message FetchUserDataReportRequest {
+  string userDataAggregationReportID = 1;
+}
+
+message FetchUserDataReportResponse {}
+
+// GetActiveHousehold
+message GetActiveHouseholdRequest {}
+
+message GetActiveHouseholdResponse {}
+
+// GetAuditLogEntriesForHousehold
+message GetAuditLogEntriesForHouseholdRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetAuditLogEntriesForHouseholdResponse {
+  QueryFilter Filter = 1;
+  repeated AuditLogEntry Results = 2;
+}
+
+// GetAuditLogEntriesForUser
+message GetAuditLogEntriesForUserRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetAuditLogEntriesForUserResponse {
+  QueryFilter Filter = 1;
+  repeated AuditLogEntry Results = 2;
+}
+
+// GetAuditLogEntryByID
+message GetAuditLogEntryByIDRequest {
+  string auditLogEntryID = 1;
+}
+
+message GetAuditLogEntryByIDResponse {}
+
+// GetAuthStatus
+message GetAuthStatusRequest {}
+
+message GetAuthStatusResponse {}
+
+// GetHousehold
+message GetHouseholdRequest {
+  string householdID = 1;
+}
+
+message GetHouseholdResponse {}
+
+// GetHouseholdInvitation
+message GetHouseholdInvitationRequest {
+  string householdInvitationID = 1;
+}
+
+message GetHouseholdInvitationResponse {}
+
+// GetHouseholdInvitationByID
+message GetHouseholdInvitationByIDRequest {
+  string householdID = 1;
+  string householdInvitationID = 2;
+}
+
+message GetHouseholdInvitationByIDResponse {
+  HouseholdInvitation Result = 2;
+}
+
+// GetHouseholds
+message GetHouseholdsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetHouseholdsResponse {
+  QueryFilter Filter = 1;
+  repeated Household Results = 2;
+}
+
+// GetOAuth2Client
+message GetOAuth2ClientRequest {
+  string oauth2ClientID = 1;
+}
+
+message GetOAuth2ClientResponse {}
+
+// GetOAuth2Clients
+message GetOAuth2ClientsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetOAuth2ClientsResponse {
+  QueryFilter Filter = 1;
+  repeated OAuth2Client Results = 2;
+}
+
+// GetReceivedHouseholdInvitations
+message GetReceivedHouseholdInvitationsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetReceivedHouseholdInvitationsResponse {
+  QueryFilter Filter = 1;
+  repeated HouseholdInvitation Results = 2;
+}
+
+// GetSelf
+message GetSelfRequest {}
+
+message GetSelfResponse {}
+
+// GetSentHouseholdInvitations
+message GetSentHouseholdInvitationsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetSentHouseholdInvitationsResponse {
+  QueryFilter Filter = 1;
+  repeated HouseholdInvitation Results = 2;
+}
+
+// GetServiceSetting
+message GetServiceSettingRequest {
+  string serviceSettingID = 1;
+}
+
+message GetServiceSettingResponse {}
+
+// GetServiceSettingConfigurationByName
+message GetServiceSettingConfigurationByNameRequest {
+  QueryFilter Filter = 1;
+  string serviceSettingConfigurationName = 2;
+}
+
+message GetServiceSettingConfigurationByNameResponse {
+  QueryFilter Filter = 1;
+  repeated ServiceSettingConfiguration Results = 2;
+}
+
+// GetServiceSettingConfigurationsForHousehold
+message GetServiceSettingConfigurationsForHouseholdRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetServiceSettingConfigurationsForHouseholdResponse {
+  QueryFilter Filter = 1;
+  repeated ServiceSettingConfiguration Results = 2;
+}
+
+// GetServiceSettingConfigurationsForUser
+message GetServiceSettingConfigurationsForUserRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetServiceSettingConfigurationsForUserResponse {
+  QueryFilter Filter = 1;
+  repeated ServiceSettingConfiguration Results = 2;
+}
+
+// GetServiceSettings
+message GetServiceSettingsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetServiceSettingsResponse {
+  QueryFilter Filter = 1;
+  repeated ServiceSetting Results = 2;
+}
+
+// GetUser
+message GetUserRequest {
+  string userID = 1;
+}
+
+message GetUserResponse {}
+
+// GetUserNotification
+message GetUserNotificationRequest {
+  string userNotificationID = 1;
+}
+
+message GetUserNotificationResponse {}
+
+// GetUserNotifications
+message GetUserNotificationsRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetUserNotificationsResponse {
+  QueryFilter Filter = 1;
+  repeated UserNotification Results = 2;
+}
+
+// GetUsers
+message GetUsersRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetUsersResponse {
+  QueryFilter Filter = 1;
+  repeated User Results = 2;
+}
+
+// GetWebhook
+message GetWebhookRequest {
+  string webhookID = 1;
+}
+
+message GetWebhookResponse {}
+
+// GetWebhooks
+message GetWebhooksRequest {
+  QueryFilter Filter = 1;
+}
+
+message GetWebhooksResponse {
+  QueryFilter Filter = 1;
+  repeated Webhook Results = 2;
+}
+
+// LoginForToken
+message LoginForTokenRequest {
+  UserLoginInput Input = 1;
+}
+
+message LoginForTokenResponse {
+  TokenResponse Result = 1;
+}
+
+// PublishArbitraryQueueMessage
+message PublishArbitraryQueueMessageRequest {}
+
+message PublishArbitraryQueueMessageResponse {}
+
+// RedeemPasswordResetToken
+message RedeemPasswordResetTokenRequest {}
+
+message RedeemPasswordResetTokenResponse {}
+
+// RefreshTOTPSecret
+message RefreshTOTPSecretRequest {}
+
+message RefreshTOTPSecretResponse {}
+
+// RejectHouseholdInvitation
+message RejectHouseholdInvitationRequest {
+  string householdInvitationID = 1;
+  HouseholdInvitationUpdateRequestInput input = 2;
+}
+
+message RejectHouseholdInvitationResponse {}
+
+// RequestEmailVerificationEmail
+message RequestEmailVerificationEmailRequest {}
+
+message RequestEmailVerificationEmailResponse {}
+
+// RequestPasswordResetToken
+message RequestPasswordResetTokenRequest {}
+
+message RequestPasswordResetTokenResponse {}
+
+// RequestUsernameReminder
+message RequestUsernameReminderRequest {}
+
+message RequestUsernameReminderResponse {}
+
+// SearchForServiceSettings
+message SearchForServiceSettingsRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForServiceSettingsResponse {
+  QueryFilter Filter = 1;
+  repeated ServiceSetting Results = 2;
+}
+
+// SearchForUsers
+message SearchForUsersRequest {
+  QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForUsersResponse {
+  QueryFilter Filter = 1;
+  repeated User Results = 2;
+}
+
+// SetDefaultHousehold
+message SetDefaultHouseholdRequest {
+  string HouseholdID = 1;
+}
+
+message SetDefaultHouseholdResponse {}
+
+// TransferHouseholdOwnership
+message TransferHouseholdOwnershipRequest {
+  string householdID = 1;
+  HouseholdOwnershipTransferInput input = 2;
+}
+
+message TransferHouseholdOwnershipResponse {}
+
+// UpdateHousehold
+message UpdateHouseholdRequest {
+  string householdID = 1;
+  HouseholdUpdateRequestInput input = 2;
+}
+
+message UpdateHouseholdResponse {}
+
+// UpdateHouseholdMemberPermissions
+message UpdateHouseholdMemberPermissionsRequest {
+  string householdID = 1;
+  string userID = 2;
+  ModifyUserPermissionsInput input = 3;
+}
+
+message UpdateHouseholdMemberPermissionsResponse {}
+
+// UpdatePassword
+message UpdatePasswordRequest {}
+
+message UpdatePasswordResponse {}
+
+// UpdateServiceSettingConfiguration
+message UpdateServiceSettingConfigurationRequest {
+  string serviceSettingConfigurationID = 1;
+  ServiceSettingConfigurationUpdateRequestInput input = 2;
+}
+
+message UpdateServiceSettingConfigurationResponse {}
+
+// UpdateUserDetails
+message UpdateUserDetailsRequest {}
+
+message UpdateUserDetailsResponse {}
+
+// UpdateUserEmailAddress
+message UpdateUserEmailAddressRequest {
+  string NewEmailAddress = 1;
+  string CurrentPassword = 2;
+  string TOTPToken = 3;
+}
+message UpdateUserEmailAddressResponse {}
+
+// UpdateUserNotification
+message UpdateUserNotificationRequest {
+  string userNotificationID = 1;
+  UserNotificationUpdateRequestInput input = 2;
+}
+
+message UpdateUserNotificationResponse {}
+
+// UpdateUserUsername
+message UpdateUserUsernameRequest {}
+
+message UpdateUserUsernameResponse {}
+
+// UploadUserAvatar
+message UploadUserAvatarRequest {}
+
+message UploadUserAvatarResponse {}
+
+// VerifyEmailAddress
+message VerifyEmailAddressRequest {}
+
+message VerifyEmailAddressResponse {}
+
+// VerifyTOTPSecret
+message VerifyTOTPSecretRequest {
+  string TOTPToken = 1;
+  string UserID = 2;
+}
+
+message VerifyTOTPSecretResponse {
+  bool Accepted = 1;
+}
+
+// END requests and responses
+
+// BEGIN things that should end up deleted
+
+message UpdateUserAvatarRequest {
+  string Base64EncodedData = 1;
+}
+
+message ChangeActiveHouseholdInput {
+  string HouseholdID = 1;
+}
+
+message CoreUserDataCollection {
+  map<string, Webhook> Webhooks = 1;
+  map<string, ServiceSettingConfiguration> ServiceSettingConfigurations = 2;
+  map<string, AuditLogEntry> AuditLogEntries = 3;
+  repeated HouseholdInvitation ReceivedInvites = 4;
+  repeated HouseholdInvitation SentInvites = 5;
+  repeated ServiceSettingConfiguration UserServiceSettingConfigurations = 6;
+  repeated AuditLogEntry UserAuditLogEntries = 7;
+  repeated Household Households = 8;
+}
+
+message DataChangeMessage {
+  map<string, google.protobuf.Any> Context = 1;
+  string UserID = 2;
+  string HouseholdID = 3;
+  string EventType = 4;
+}
+
+message DataDeletionResponse {
+  bool Successful = 1;
+}
+
+message EmailAddressVerificationRequest {
+  string Token = 1;
+}
+
+message EmailAddressVerificationResponse {}
+
+message Float32RangeWithOptionalMax {
+  float Max = 1;
+  float Min = 2;
+}
+
+message Float32RangeWithOptionalMaxUpdateRequestInput {
+  float Min = 1;
+  float Max = 2;
+}
+
+message Household {
+  google.protobuf.Timestamp CreatedAt = 1;
+  string SubscriptionPlanID = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  float Longitude = 5;
+  float Latitude = 6;
+  string State = 7;
+  string ContactPhone = 8;
+  string City = 9;
+  string AddressLine1 = 10;
+  string ZipCode = 11;
+  string Country = 12;
+  string BillingStatus = 13;
+  string AddressLine2 = 14;
+  string PaymentProcessorCustomerID = 15;
+  string BelongsToUser = 16;
+  string ID = 17;
+  string Name = 18;
+  string WebhookEncryptionKey = 19;
+  repeated HouseholdUserMembershipWithUser Members = 20;
+}
+
+message HouseholdCreationRequestInput {
+  float Latitude = 1;
+  float Longitude = 2;
+  string Name = 3;
+  string ContactPhone = 4;
+  string AddressLine1 = 5;
+  string AddressLine2 = 6;
+  string City = 7;
+  string State = 8;
+  string ZipCode = 9;
+  string Country = 10;
+}
+
+message HouseholdInvitation {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string ToUser = 4;
+  string Status = 5;
+  string ToEmail = 6;
+  string StatusNote = 7;
+  string Token = 8;
+  string ID = 9;
+  string Note = 10;
+  string ToName = 11;
+  google.protobuf.Timestamp ExpiresAt = 12;
+  Household DestinationHousehold = 13;
+  User FromUser = 14;
+}
+
+message HouseholdInvitationCreationRequestInput {
+  google.protobuf.Timestamp ExpiresAt = 1;
+  string Note = 2;
+  string ToEmail = 3;
+  string ToName = 4;
+}
+
+message HouseholdInvitationUpdateRequestInput {
+  string Token = 1;
+  string Note = 2;
+}
+
+message HouseholdOwnershipTransferInput {
+  string Reason = 1;
+  string CurrentOwner = 2;
+  string NewOwner = 3;
+}
+
+message HouseholdUpdateRequestInput {
+  string Name = 1;
+  string ContactPhone = 2;
+  string AddressLine1 = 3;
+  string AddressLine2 = 4;
+  string City = 5;
+  string State = 6;
+  string ZipCode = 7;
+  string Country = 8;
+  float Latitude = 9;
+  float Longitude = 10;
+  string BelongsToUser = 11;
+}
+
+message HouseholdUserMembership {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string ID = 4;
+  string BelongsToUser = 5;
+  string BelongsToHousehold = 6;
+  string HouseholdRole = 7;
+  bool DefaultHousehold = 8;
+}
+
+message HouseholdUserMembershipWithUser {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  User BelongsToUser = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  string ID = 5;
+  string BelongsToHousehold = 6;
+  string HouseholdRole = 7;
+  bool DefaultHousehold = 8;
+}
+
+message MissingVote {
+  string EventID = 1;
+  string OptionID = 2;
+  string UserID = 3;
+}
+
+message ModifyUserPermissionsInput {
+  string Reason = 1;
+  string NewRole = 2;
+}
+
+message NamedID {
+  string ID = 1;
+  string Name = 2;
+}
+
+message OAuth2Client {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  string Name = 3;
+  string Description = 4;
+  string ClientID = 5;
+  string ID = 6;
+  string ClientSecret = 7;
+}
+
+message OAuth2ClientCreationRequestInput {
+  string Name = 1;
+  string Description = 2;
+}
+
+message OAuth2ClientCreationResponse {
+  string ClientID = 1;
+  string ClientSecret = 2;
+  string Name = 3;
+  string Description = 4;
+  string ID = 5;
+}
+
+message OAuth2ClientToken {
+  google.protobuf.Timestamp RefreshCreatedAt = 1;
+  google.protobuf.Timestamp AccessCreatedAt = 2;
+  google.protobuf.Timestamp CodeCreatedAt = 3;
+  string RedirectURI = 4;
+  string Scope = 5;
+  string Code = 6;
+  string CodeChallenge = 7;
+  string CodeChallengeMethod = 8;
+  string BelongsToUser = 9;
+  string Access = 10;
+  string ClientID = 11;
+  string Refresh = 12;
+  string ID = 13;
+  google.protobuf.Duration CodeExpiresAt = 14;
+  google.protobuf.Duration AccessExpiresAt = 15;
+  google.protobuf.Duration RefreshExpiresAt = 16;
+}
+
+message PasswordResetResponse {
+  bool Successful = 1;
+}
+
+message PasswordResetToken {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ExpiresAt = 2;
+  google.protobuf.Timestamp RedeemedAt = 3;
+  google.protobuf.Timestamp LastUpdatedAt = 4;
+  string ID = 5;
+  string Token = 6;
+  string BelongsToUser = 7;
+}
+
+message PasswordResetTokenCreationRequestInput {
+  string EmailAddress = 1;
+}
+
+message PasswordResetTokenRedemptionRequestInput {
+  string Token = 1;
+  string NewPassword = 2;
+}
+
+message PasswordUpdateInput {
+  string NewPassword = 1;
+  string CurrentPassword = 2;
+  string TOTPToken = 3;
+}
+
+message ResponseDetails {
+  string CurrentHouseholdID = 1;
+  string TraceID = 2;
+}
+
+message ServiceSetting {
+  google.protobuf.Timestamp CreatedAt = 1;
+  string DefaultValue = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  string ID = 5;
+  string Name = 6;
+  string Type = 7;
+  string Description = 8;
+  repeated string Enumeration = 9;
+  bool AdminsOnly = 10;
+}
+
+message ServiceSettingConfiguration {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string ID = 4;
+  string Value = 5;
+  string Notes = 6;
+  string BelongsToUser = 7;
+  string BelongsToHousehold = 8;
+  ServiceSetting ServiceSetting = 9;
+}
+
+message ServiceSettingConfigurationCreationRequestInput {
+  string Value = 1;
+  string Notes = 2;
+  string ServiceSettingID = 3;
+  string BelongsToUser = 4;
+  string BelongsToHousehold = 5;
+}
+
+message ServiceSettingConfigurationUpdateRequestInput {
+  string Value = 1;
+  string Notes = 2;
+  string ServiceSettingID = 3;
+  string BelongsToUser = 4;
+  string BelongsToHousehold = 5;
+}
+
+message ServiceSettingCreationRequestInput {
+  string DefaultValue = 1;
+  string Name = 2;
+  string Type = 3;
+  string Description = 4;
+  repeated string Enumeration = 5;
+  bool AdminsOnly = 6;
+}
+
+message TOTPSecretRefreshInput {
+  string CurrentPassword = 1;
+  string TOTPToken = 2;
+}
+
+message TOTPSecretRefreshResponse {
+  string TwoFactorQRCode = 1;
+  string TwoFactorSecret = 2;
+}
+
+message TOTPSecretVerificationInput {
+  string TOTPToken = 1;
+  string UserID = 2;
+}
+
+message TOTPSecretVerificationResponse {
+  bool Accepted = 1;
+}
+
+message TokenResponse {
+  string UserID = 1;
+  string HouseholdID = 2;
+  string AccessToken = 3;
+  string RefreshToken = 4;
+  google.protobuf.Timestamp ExpiresUTC = 5;
+}
+
+message Uint16RangeWithOptionalMax {
+  uint32 Max = 1;
+  uint32 Min = 2;
+}
+
+message Uint16RangeWithOptionalMaxUpdateRequestInput {
+  uint32 Min = 1;
+  uint32 Max = 2;
+}
+
+message Uint32RangeWithOptionalMax {
+  uint32 Max = 1;
+  uint32 Min = 2;
+}
+
+message Uint32RangeWithOptionalMaxUpdateRequestInput {
+  uint32 Min = 1;
+  uint32 Max = 2;
+}
+
+message User {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp PasswordLastChangedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  google.protobuf.Timestamp LastAcceptedTermsOfService = 4;
+  google.protobuf.Timestamp LastAcceptedPrivacyPolicy = 5;
+  google.protobuf.Timestamp TwoFactorSecretVerifiedAt = 6;
+  string AvatarSrc = 7;
+  google.protobuf.Timestamp Birthday = 8;
+  google.protobuf.Timestamp ArchivedAt = 9;
+  string AccountStatusExplanation = 10;
+  string TwoFactorSecret = 11;
+  string HashedPassword = 12;
+  string ID = 13;
+  string AccountStatus = 14;
+  string Username = 15;
+  string FirstName = 16;
+  string LastName = 17;
+  string EmailAddress = 18;
+  google.protobuf.Timestamp EmailAddressVerifiedAt = 19;
+  string ServiceRole = 20;
+  bool RequiresPasswordChange = 21;
+}
+
+message UserAccountStatusUpdateInput {
+  string NewStatus = 1;
+  string Reason = 2;
+  string TargetUserID = 3;
+}
+
+message UserCreationResponse {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp Birthday = 2;
+  string Username = 4;
+  string EmailAddress = 5;
+  string TwoFactorQRCode = 6;
+  string CreatedUserID = 7;
+  string AccountStatus = 8;
+  string TwoFactorSecret = 9;
+  string FirstName = 10;
+  string LastName = 11;
+}
+
+message UserDataAggregationRequest {
+  string RequestID = 1;
+  string ReportID = 2;
+  string UserID = 3;
+}
+
+// message UserDataCollection {
+//   CoreUserDataCollection Core = 1;
+//   EatingUserDataCollection Eating = 2;
+//   string ReportID = 3;
+//   User User = 4;
+// }
+
+message UserDataCollectionResponse {
+  string ReportID = 1;
+}
+
+message UserDetailsUpdateRequest {
+  string FirstName = 1;
+  string LastName = 2;
+  google.protobuf.Timestamp Birthday = 3;
+  string CurrentPassword = 4;
+  string TOTPToken = 5;
+}
+
+message UserLoginInput {
+  string Username = 1;
+  string Password = 2;
+  string TOTPToken = 3;
+}
+
+message UserNotification {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  string ID = 3;
+  string Content = 4;
+  string Status = 5;
+  string BelongsToUser = 6;
+}
+
+message UserNotificationCreationRequestInput {
+  string Content = 1;
+  string Status = 2;
+  string BelongsToUser = 3;
+}
+
+message UserNotificationUpdateRequestInput {
+  string Status = 1;
+}
+
+message UserPermissionsRequestInput {
+  repeated string Permissions = 1;
+}
+
+message UserPermissionsResponse {
+  map<string, bool> Permissions = 1;
+}
+
+message UserRegistrationInput {
+  google.protobuf.Timestamp Birthday = 1;
+  string Password = 2;
+  string EmailAddress = 3;
+  string InvitationToken = 4;
+  string InvitationID = 5;
+  string Username = 6;
+  string FirstName = 7;
+  string LastName = 8;
+  string HouseholdName = 9;
+  bool AcceptedTOS = 10;
+  bool AcceptedPrivacyPolicy = 11;
+}
+
+message UserStatusResponse {
+  string UserID = 1;
+  string AccountStatus = 2;
+  string AccountStatusExplanation = 3;
+  string ActiveHousehold = 4;
+  bool UserIsAuthenticated = 5;
+}
+
+message UsernameReminderRequestInput {
+  string EmailAddress = 1;
+}
+
+message UsernameUpdateRequest {
+  string NewUsername = 1;
+  string CurrentPassword = 2;
+  string TOTPToken = 3;
+}
+
+message Webhook {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  string Name = 4;
+  string URL = 5;
+  string Method = 6;
+  string ID = 7;
+  string BelongsToHousehold = 8;
+  string ContentType = 9;
+  repeated WebhookTriggerEvent Events = 10;
+}
+
+message WebhookCreationRequestInput {
+  string Name = 1;
+  string ContentType = 2;
+  string URL = 3;
+  string Method = 4;
+  repeated string Events = 5;
+}
+
+message WebhookExecutionRequest {
+  string RequestID = 1;
+  google.protobuf.Any Payload = 2;
+  string WebhookID = 3;
+  string HouseholdID = 4;
+  string TriggerEvent = 5;
+}
+
+message WebhookTriggerEvent {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  string ID = 3;
+  string BelongsToWebhook = 4;
+  string TriggerEvent = 5;
+}
+
+message WebhookTriggerEventCreationRequestInput {
+  string BelongsToWebhook = 1;
+  string TriggerEvent = 2;
+}
