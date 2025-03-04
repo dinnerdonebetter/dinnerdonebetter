@@ -13,7 +13,6 @@ GENERATED_QUERIES_DIR  := internal/database/postgres/generated
 PROTO_FILES_PATH       := proto/*.proto
 PROTO_OUTPUT_PATH      := internal/grpc
 DI_TARGETS             := internal/build/services/api \
-	internal/build/services/admin_webapp \
 	internal/build/jobs/db_cleaner \
 	internal/build/jobs/search_data_index_scheduler \
 	internal/build/jobs/meal_plan_finalizer \

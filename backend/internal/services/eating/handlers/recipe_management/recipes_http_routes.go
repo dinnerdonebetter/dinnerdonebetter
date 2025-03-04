@@ -527,20 +527,24 @@ func (s *service) RecipeEstimatedPrepStepsHandler(res http.ResponseWriter, req *
 	}
 	readTimer.Stop()
 
-	//stepInputs, err := s.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
-	//if err != nil {
-	//	observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
-	//	errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-	//	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-	//	return
-	//}
+	/* TODO:
+	stepInputs, err := s.recipeAnalyzer.GenerateMealPlanTasksForRecipe(ctx, "", x)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	*/
 
 	responseEvents := []*types.MealPlanTaskDatabaseCreationEstimate{}
-	//for _, input := range stepInputs {
-	//	responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
-	//		CreationExplanation: input.CreationExplanation,
-	//	})
-	//}
+	/* TODO:
+	for _, input := range stepInputs {
+		responseEvents = append(responseEvents, &types.MealPlanTaskDatabaseCreationEstimate{
+			CreationExplanation: input.CreationExplanation,
+		})
+	}
+	*/
 
 	responseValue := &types.APIResponse[[]*types.MealPlanTaskDatabaseCreationEstimate]{
 		Details: responseDetails,
@@ -708,7 +712,7 @@ func (s *service) RecipeMermaidHandler(res http.ResponseWriter, req *http.Reques
 	}
 	readTimer.Stop()
 
-	// graphDefinition := s.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, x)
+	// TODO: graphDefinition := s.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, x)
 
 	responseValue := &types.APIResponse[string]{
 		Details: responseDetails,
@@ -767,10 +771,8 @@ func (s *service) CloneRecipeHandler(res http.ResponseWriter, req *http.Request)
 	}
 	readTimer.Stop()
 
-	cloneInput, err := cloneRecipe(x, sessionCtxData.Requester.UserID)
-
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
-	created, err := s.recipeManagementDataManager.CreateRecipe(ctx, cloneInput)
+	created, err := s.recipeManagementDataManager.CreateRecipe(ctx, cloneRecipe(x, sessionCtxData.Requester.UserID))
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "cloning recipe")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -797,7 +799,7 @@ func (s *service) CloneRecipeHandler(res http.ResponseWriter, req *http.Request)
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-func cloneRecipe(x *types.Recipe, userID string) (*types.RecipeDatabaseCreationInput, error) {
+func cloneRecipe(x *types.Recipe, userID string) *types.RecipeDatabaseCreationInput {
 	ingredientProductIndicies := map[string]int{}
 	instrumentProductIndicies := map[string]int{}
 	vesselProductIndicies := map[string]int{}
@@ -877,5 +879,5 @@ func cloneRecipe(x *types.Recipe, userID string) (*types.RecipeDatabaseCreationI
 		}
 	}
 
-	return cloneInput, nil
+	return cloneInput
 }

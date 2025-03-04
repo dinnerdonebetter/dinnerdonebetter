@@ -8,15 +8,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
 )
 
-func fetchSessionDataFromContext(ctx context.Context) *sessions.ContextData {
-	sessionContext, ok := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
-	if !ok {
-		return nil
-	}
-
-	return sessionContext
-}
-
 func buildDataChangeMessageFromContext(ctx context.Context, logger logging.Logger, eventType string, metadata map[string]any) *types.DataChangeMessage {
 	sessionContext, ok := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
 	if !ok {

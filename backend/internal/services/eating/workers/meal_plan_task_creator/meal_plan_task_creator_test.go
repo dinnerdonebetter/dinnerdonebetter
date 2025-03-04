@@ -179,7 +179,7 @@ func TestWorker_Work(T *testing.T) {
 				).Return(expectedReturnResults, nil)
 			}
 		}
-		w.analyzer = mockAnalyzer
+		// TODO: w.analyzer = mockAnalyzer
 
 		mmp := &mockpublishers.Publisher{}
 		mmp.On(

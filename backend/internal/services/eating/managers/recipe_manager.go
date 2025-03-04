@@ -38,16 +38,16 @@ type (
 		UpdateRecipe(ctx context.Context, recipeID string, input *types.RecipeUpdateRequestInput) error
 		ArchiveRecipe(ctx context.Context, recipeID, ownerID string) error
 		RecipeEstimatedPrepSteps(ctx context.Context, recipeID string) ([]*types.MealPlanTaskDatabaseCreationEstimate, error)
-		RecipeImageUpload(ctx context.Context)
 		RecipeMermaid(ctx context.Context, recipeID string) (string, error)
 		CloneRecipe(ctx context.Context, recipeID, newOwnerID string) (*types.Recipe, error)
+		RecipeImageUpload(ctx context.Context) error
 
 		ListRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) ([]*types.RecipeStep, string, error)
 		CreateRecipeStep(ctx context.Context, recipeID string, input *types.RecipeStepCreationRequestInput) (*types.RecipeStep, error)
 		ReadRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error)
 		UpdateRecipeStep(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepUpdateRequestInput) error
 		ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error
-		RecipeStepImageUpload(ctx context.Context)
+		RecipeStepImageUpload(ctx context.Context) error
 
 		ListRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*types.RecipeStepProduct, string, error)
 		CreateRecipeStepProduct(ctx context.Context, recipeID, recipeStepID string, input *types.RecipeStepProductCreationRequestInput) (*types.RecipeStepProduct, error)
@@ -214,9 +214,29 @@ func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useData
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	recipes, err := m.db.SearchForRecipes(ctx, query, filter)
+	var (
+		recipes = &filtering.QueryFilteredResult[types.Recipe]{}
+		err     error
+	)
+
+	if useDatabase {
+		recipes, err = m.db.SearchForRecipes(ctx, query, filter)
+	} else {
+		var recipeSubsets []*eatingindexing.RecipeSearchSubset
+		recipeSubsets, err = m.recipeSearchIndex.Search(ctx, query)
+		if err != nil {
+			return nil, "", observability.PrepareAndLogError(err, logger, span, "failed to search external service for recipes")
+		}
+
+		ids := []string{}
+		for _, recipeSubset := range recipeSubsets {
+			ids = append(ids, recipeSubset.ID)
+		}
+
+		recipes.Data, err = m.db.GetRecipesWithIDs(ctx, ids)
+	}
 	if err != nil {
-		return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for recipes")
+		return nil, "", observability.PrepareAndLogError(err, logger, span, "failed to search for recipes")
 	}
 
 	return recipes.Data, "", nil
@@ -299,11 +319,11 @@ func (m *recipeManager) RecipeEstimatedPrepSteps(ctx context.Context, recipeID s
 	return responseEvents, nil
 }
 
-func (m *recipeManager) RecipeImageUpload(ctx context.Context) {
-	ctx, span := m.tracer.StartSpan(ctx)
+func (m *recipeManager) RecipeImageUpload(ctx context.Context) error {
+	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return
+	return nil
 }
 
 func (m *recipeManager) RecipeMermaid(ctx context.Context, recipeID string) (string, error) {
@@ -556,11 +576,11 @@ func (m *recipeManager) ArchiveRecipeStep(ctx context.Context, recipeID, recipeS
 	return nil
 }
 
-func (m *recipeManager) RecipeStepImageUpload(ctx context.Context) {
-	ctx, span := m.tracer.StartSpan(ctx)
+func (m *recipeManager) RecipeStepImageUpload(ctx context.Context) error {
+	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	return
+	return nil
 }
 
 func (m *recipeManager) ListRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*types.RecipeStepProduct, string, error) {

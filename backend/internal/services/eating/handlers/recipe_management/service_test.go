@@ -18,7 +18,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -73,7 +72,7 @@ func TestProvideRecipesService(T *testing.T) {
 			logging.NewNoopLogger(),
 			cfg,
 			&textsearchcfg.Config{},
-			&recipeanalysis.MockRecipeAnalyzer{},
+			// TODO: &recipeanalysis.MockRecipeAnalyzer{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -112,7 +111,7 @@ func TestProvideRecipesService(T *testing.T) {
 			logging.NewNoopLogger(),
 			cfg,
 			&textsearchcfg.Config{},
-			&recipeanalysis.MockRecipeAnalyzer{},
+			// TODO: &recipeanalysis.MockRecipeAnalyzer{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,
