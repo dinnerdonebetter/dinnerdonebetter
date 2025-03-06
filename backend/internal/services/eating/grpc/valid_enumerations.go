@@ -1,4 +1,4 @@
-package gprc
+package grpc
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 )
 
 func (s *serviceImpl) ArchiveValidIngredient(ctx context.Context, request *messages.ArchiveValidIngredientRequest) (*messages.ArchiveValidIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
@@ -17,7 +17,7 @@ func (s *serviceImpl) ArchiveValidIngredient(ctx context.Context, request *messa
 		return nil, observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
 	}
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.ArchiveValidIngredientResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *messages.ArchiveValidIngredientGroupRequest) (*messages.ArchiveValidIngredientGroupResponse, error) {

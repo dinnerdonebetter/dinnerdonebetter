@@ -9,11 +9,11 @@ import (
 type (
 	Provider interface {
 		NewFloat64Counter(name string, options ...metric.Float64CounterOption) (Float64Counter, error)
-		NewFloat64Gauge(name string, options ...metric.Float64GaugeOption) (Float64Gauge, error)
+		NewFloat64Gauge(name string, minRange, maxRange float64, options ...metric.Float64GaugeOption) (Float64Gauge, error)
 		NewFloat64UpDownCounter(name string, options ...metric.Float64UpDownCounterOption) (Float64UpDownCounter, error)
 		NewFloat64Histogram(name string, options ...metric.Float64HistogramOption) (Float64Histogram, error)
 		NewInt64Counter(name string, options ...metric.Int64CounterOption) (Int64Counter, error)
-		NewInt64Gauge(name string, options ...metric.Int64GaugeOption) (Int64Gauge, error)
+		NewInt64Gauge(name string, minRange, maxRange int64, options ...metric.Int64GaugeOption) (Int64Gauge, error)
 		NewInt64UpDownCounter(name string, options ...metric.Int64UpDownCounterOption) (Int64UpDownCounter, error)
 		NewInt64Histogram(name string, options ...metric.Int64HistogramOption) (Int64Histogram, error)
 		Shutdown(ctx context.Context) error

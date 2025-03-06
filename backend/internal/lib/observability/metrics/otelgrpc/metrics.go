@@ -166,8 +166,12 @@ func (m *providerImpl) NewFloat64Counter(name string, options ...metric.Float64C
 	return &metrics.Float64CounterImpl{X: z}, nil
 }
 
-func (m *providerImpl) NewFloat64Gauge(name string, options ...metric.Float64GaugeOption) (metrics.Float64Gauge, error) {
-	logger := m.logger.WithValue("name", name)
+func (m *providerImpl) NewFloat64Gauge(name string, minRange, maxRange float64, options ...metric.Float64GaugeOption) (metrics.Float64Gauge, error) {
+	logger := m.logger.WithValues(map[string]any{
+		"name": name,
+		"min":  minRange,
+		"max":  maxRange,
+	})
 	logger.Info("NewFloat64Gauge invoked")
 
 	z, err := m.mp.Float64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)
@@ -214,8 +218,12 @@ func (m *providerImpl) NewInt64Counter(name string, options ...metric.Int64Count
 	return &metrics.Int64CounterImpl{X: z}, nil
 }
 
-func (m *providerImpl) NewInt64Gauge(name string, options ...metric.Int64GaugeOption) (metrics.Int64Gauge, error) {
-	logger := m.logger.WithValue("name", name)
+func (m *providerImpl) NewInt64Gauge(name string, minRange, maxRange int64, options ...metric.Int64GaugeOption) (metrics.Int64Gauge, error) {
+	logger := m.logger.WithValues(map[string]any{
+		"name": name,
+		"min":  minRange,
+		"max":  maxRange,
+	})
 	logger.Info("NewInt64Gauge invoked")
 
 	z, err := m.mp.Int64Gauge(fmt.Sprintf("%s.%s", m.serviceName, name), options...)

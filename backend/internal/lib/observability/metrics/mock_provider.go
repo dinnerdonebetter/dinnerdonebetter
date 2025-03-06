@@ -20,8 +20,8 @@ func (m *MockProvider) NewFloat64Counter(name string, options ...metric.Float64C
 }
 
 // NewFloat64Gauge satisfies our interface.
-func (m *MockProvider) NewFloat64Gauge(name string, options ...metric.Float64GaugeOption) (Float64Gauge, error) {
-	returnValues := m.Called(name, options)
+func (m *MockProvider) NewFloat64Gauge(name string, minRange, maxRange float64, options ...metric.Float64GaugeOption) (Float64Gauge, error) {
+	returnValues := m.Called(name, minRange, maxRange, options)
 	return returnValues.Get(0).(metric.Float64Gauge), returnValues.Error(1)
 }
 
@@ -44,8 +44,8 @@ func (m *MockProvider) NewInt64Counter(name string, options ...metric.Int64Count
 }
 
 // NewInt64Gauge satisfies our interface.
-func (m *MockProvider) NewInt64Gauge(name string, options ...metric.Int64GaugeOption) (Int64Gauge, error) {
-	returnValues := m.Called(name, options)
+func (m *MockProvider) NewInt64Gauge(name string, minRange, maxRange int64, options ...metric.Int64GaugeOption) (Int64Gauge, error) {
+	returnValues := m.Called(name, minRange, maxRange, options)
 	return returnValues.Get(0).(metric.Int64Gauge), returnValues.Error(1)
 }
 

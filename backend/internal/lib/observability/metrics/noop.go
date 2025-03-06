@@ -31,7 +31,7 @@ func (m *noopProvider) NewFloat64Counter(name string, options ...metric.Float64C
 }
 
 // NewFloat64Gauge is a no-op method.
-func (m *noopProvider) NewFloat64Gauge(name string, options ...metric.Float64GaugeOption) (Float64Gauge, error) {
+func (m *noopProvider) NewFloat64Gauge(name string, minRange, maxRange float64, options ...metric.Float64GaugeOption) (Float64Gauge, error) {
 	y, err := otel.Meter("noop").Float64Gauge(name, options...)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (m *noopProvider) NewInt64Counter(name string, options ...metric.Int64Count
 }
 
 // NewInt64Gauge is a no-op method.
-func (m *noopProvider) NewInt64Gauge(name string, options ...metric.Int64GaugeOption) (Int64Gauge, error) {
+func (m *noopProvider) NewInt64Gauge(name string, minRange, maxRange int64, options ...metric.Int64GaugeOption) (Int64Gauge, error) {
 	y, err := otel.Meter("noop").Int64Gauge(name, options...)
 	if err != nil {
 		return nil, err

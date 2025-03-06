@@ -1694,6 +1694,8 @@ github.com/vanng822/go-premailer v0.0.0-20191214114701-be27abe028fe/go.mod h1:JT
 github.com/vanng822/go-premailer v1.23.0 h1:vZp2wuz1jb4q/DurUV18VGjXWtTFYZHwTCw2EAWKO74=
 github.com/vanng822/go-premailer v1.23.0/go.mod h1:0+z0UJ6ZGQatzkWlaQNl50M7fLz5f6FcP8V2p0oie88=
 github.com/vanng822/r2router v0.0.0-20150523112421-1023140a4f30/go.mod h1:1BVq8p2jVr55Ost2PkZWDrG86PiJ/0lxqcXoAcGxvWU=
+github.com/verygoodsoftwarenotvirus/typewizard v0.0.0-20250211234715-affd3f333299 h1:cNsluWni33nVTXR5MT5pSzyDVLYHrTCLWdyA+5bk3zE=
+github.com/verygoodsoftwarenotvirus/typewizard v0.0.0-20250211234715-affd3f333299/go.mod h1:ks1KJbzWTYC8KkeCy6mrshbGaKsWpfAzLu41h2qQ+Nw=
 github.com/wagslane/go-password-validator v0.3.0 h1:vfxOPzGHkz5S146HDpavl0cw1DSVP061Ry2PX0/ON6I=
 github.com/wagslane/go-password-validator v0.3.0/go.mod h1:TI1XJ6T5fRdRnHqHt14pvy1tNVnrwe7m3/f1f2fDphQ=
 github.com/wasilibs/go-pgquery v0.0.0-20240606042535-c0843d6592cc h1:Hgim1Xgk1+viV7p0aZh9OOrMRfG+E4mGA+JsI2uB0+k=

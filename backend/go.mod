@@ -78,6 +78,7 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/gcloud v0.34.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.34.0
 	github.com/testcontainers/testcontainers-go/modules/redis v0.34.0
+	github.com/verygoodsoftwarenotvirus/typewizard v0.0.0-20250211234715-affd3f333299
 	github.com/wagslane/go-password-validator v0.3.0
 	go.opentelemetry.io/contrib/bridges/otelslog v0.9.0
 	go.opentelemetry.io/contrib/instrumentation/host v0.59.0
