@@ -123,6 +123,11 @@ func (l *otelSlogLogger) Debug(input string) {
 	l.logger.Debug(input)
 }
 
+// Warn satisfies our contract for the logging.Logger Warn method.
+func (l *otelSlogLogger) Warn(input string) {
+	l.logger.Warn(input)
+}
+
 // Error satisfies our contract for the logging.Logger Error method.
 func (l *otelSlogLogger) Error(whatWasHappeningWhenErrorOccurred string, err error) {
 	if err != nil {
@@ -168,6 +173,10 @@ func (l *otelSlogLogger) WithSpan(span trace.Span) logging.Logger {
 	l2 := l.logger.With(slog.String(keys.SpanIDKey, spanID), slog.String(keys.TraceIDKey, traceID))
 
 	return &otelSlogLogger{logger: l2}
+}
+
+func (l *otelSlogLogger) WithContext(context.Context) logging.Logger {
+	return l
 }
 
 func (l *otelSlogLogger) attachRequestToLog(req *http.Request) *slog.Logger {

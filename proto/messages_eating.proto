@@ -8,6 +8,7 @@ import "messages_core.proto";
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/messages";
 
+/*
 message EatingUserDataCollection {
   string ReportID = 1;
   repeated HouseholdInstrumentOwnership HouseholdInstrumentOwnerships = 2;
@@ -17,6 +18,7 @@ message EatingUserDataCollection {
   repeated Meal Meals = 6;
   repeated UserIngredientPreference UserIngredientPreferences = 7;
 }
+ */
 
 // Valid Enumerations
 
@@ -556,90 +558,92 @@ message UserIngredientPreferenceUpdateRequestInput {
 
 // ArchiveValidIngredient
 message ArchiveValidIngredientRequest {
-  string validIngredientID = 1;
+  string ValidIngredientID = 1;
 }
 
 message ArchiveValidIngredientResponse {}
 
 // ArchiveValidIngredientGroup
 message ArchiveValidIngredientGroupRequest {
-  string validIngredientGroupID = 1;
+  string ValidIngredientGroupID = 1;
 }
 
 message ArchiveValidIngredientGroupResponse {}
 
 // ArchiveValidIngredientMeasurementUnit
 message ArchiveValidIngredientMeasurementUnitRequest {
-  string validIngredientMeasurementUnitID = 1;
+  string ValidIngredientMeasurementUnitID = 1;
 }
 
 message ArchiveValidIngredientMeasurementUnitResponse {}
 
 // ArchiveValidIngredientPreparation
 message ArchiveValidIngredientPreparationRequest {
-  string validIngredientPreparationID = 1;
+  string ValidIngredientPreparationID = 1;
 }
 
 message ArchiveValidIngredientPreparationResponse {}
 
 // ArchiveValidIngredientState
 message ArchiveValidIngredientStateRequest {
-  string validIngredientStateID = 1;
+  string ValidIngredientStateID = 1;
 }
 
 message ArchiveValidIngredientStateResponse {}
 
 // ArchiveValidIngredientStateIngredient
 message ArchiveValidIngredientStateIngredientRequest {
-  string validIngredientStateIngredientID = 1;
+  string ValidIngredientStateIngredientID = 1;
 }
 
 message ArchiveValidIngredientStateIngredientResponse {}
 
 // ArchiveValidInstrument
 message ArchiveValidInstrumentRequest {
-  string validInstrumentID = 1;
+  string ValidInstrumentID = 1;
 }
 
 message ArchiveValidInstrumentResponse {}
 
 // ArchiveValidMeasurementUnit
 message ArchiveValidMeasurementUnitRequest {
-  string validMeasurementUnitID = 1;
+  string ValidMeasurementUnitID = 1;
 }
 
 message ArchiveValidMeasurementUnitResponse {}
 
 // ArchiveValidMeasurementUnitConversion
 message ArchiveValidMeasurementUnitConversionRequest {
-  string validMeasurementUnitConversionID = 1;
+  string ValidMeasurementUnitConversionID = 1;
 }
 
 message ArchiveValidMeasurementUnitConversionResponse {}
 
 // ArchiveValidPreparation
 message ArchiveValidPreparationRequest {
-  string validPreparationID = 1;
+  string ValidPreparationID = 1;
 }
 
 message ArchiveValidPreparationResponse {}
 
 // ArchiveValidPreparationInstrument
 message ArchiveValidPreparationInstrumentRequest {
-  string validPreparationInstrumentID = 1;
+  string ValidPreparationInstrumentID = 1;
 }
 
 message ArchiveValidPreparationInstrumentResponse {}
 
 // ArchiveValidPreparationVessel
 message ArchiveValidPreparationVesselRequest {
-  string validPreparationVesselID = 1;
+  string ValidPreparationVesselID = 1;
 }
 
 message ArchiveValidPreparationVesselResponse {}
 
 // ArchiveValidVessel
-message ArchiveValidVesselRequest {}
+message ArchiveValidVesselRequest {
+  string ValidVesselID = 1;
+}
 
 message ArchiveValidVesselResponse {}
 
@@ -767,7 +771,7 @@ message GetRandomValidVesselResponse {}
 
 // GetValidIngredient
 message GetValidIngredientRequest {
-  string validIngredientID = 1;
+  string ValidIngredientID = 1;
 }
 
 message GetValidIngredientResponse {
@@ -776,7 +780,7 @@ message GetValidIngredientResponse {
 
 // GetValidIngredientGroup
 message GetValidIngredientGroupRequest {
-  string validIngredientGroupID = 1;
+  string ValidIngredientGroupID = 1;
 }
 
 message GetValidIngredientGroupResponse {}
@@ -793,7 +797,7 @@ message GetValidIngredientGroupsResponse {
 
 // GetValidIngredientMeasurementUnit
 message GetValidIngredientMeasurementUnitRequest {
-  string validIngredientMeasurementUnitID = 1;
+  string ValidIngredientMeasurementUnitID = 1;
 }
 
 message GetValidIngredientMeasurementUnitResponse {}
@@ -811,7 +815,7 @@ message GetValidIngredientMeasurementUnitsResponse {
 // GetValidIngredientMeasurementUnitsByIngredient
 message GetValidIngredientMeasurementUnitsByIngredientRequest {
   QueryFilter Filter = 1;
-  string validIngredientID = 2;
+  string ValidIngredientID = 2;
 }
 
 message GetValidIngredientMeasurementUnitsByIngredientResponse {
@@ -822,7 +826,7 @@ message GetValidIngredientMeasurementUnitsByIngredientResponse {
 // GetValidIngredientMeasurementUnitsByMeasurementUnit
 message GetValidIngredientMeasurementUnitsByMeasurementUnitRequest {
   QueryFilter Filter = 1;
-  string validMeasurementUnitID = 2;
+  string ValidMeasurementUnitID = 2;
 }
 
 message GetValidIngredientMeasurementUnitsByMeasurementUnitResponse {
@@ -832,7 +836,7 @@ message GetValidIngredientMeasurementUnitsByMeasurementUnitResponse {
 
 // GetValidIngredientPreparation
 message GetValidIngredientPreparationRequest {
-  string validIngredientPreparationID = 1;
+  string ValidIngredientPreparationID = 1;
 }
 
 message GetValidIngredientPreparationResponse {}
@@ -850,7 +854,7 @@ message GetValidIngredientPreparationsResponse {
 // GetValidIngredientPreparationsByIngredient
 message GetValidIngredientPreparationsByIngredientRequest {
   QueryFilter Filter = 1;
-  string validIngredientID = 2;
+  string ValidIngredientID = 2;
 }
 
 message GetValidIngredientPreparationsByIngredientResponse {
@@ -871,14 +875,14 @@ message GetValidIngredientPreparationsByPreparationResponse {
 
 // GetValidIngredientState
 message GetValidIngredientStateRequest {
-  string validIngredientStateID = 1;
+  string ValidIngredientStateID = 1;
 }
 
 message GetValidIngredientStateResponse {}
 
 // GetValidIngredientStateIngredient
 message GetValidIngredientStateIngredientRequest {
-  string validIngredientStateIngredientID = 1;
+  string ValidIngredientStateIngredientID = 1;
 }
 
 message GetValidIngredientStateIngredientResponse {}
@@ -896,7 +900,7 @@ message GetValidIngredientStateIngredientsResponse {
 // GetValidIngredientStateIngredientsByIngredient
 message GetValidIngredientStateIngredientsByIngredientRequest {
   QueryFilter Filter = 1;
-  string validIngredientID = 2;
+  string ValidIngredientID = 2;
 }
 
 message GetValidIngredientStateIngredientsByIngredientResponse {
@@ -907,7 +911,7 @@ message GetValidIngredientStateIngredientsByIngredientResponse {
 // GetValidIngredientStateIngredientsByIngredientState
 message GetValidIngredientStateIngredientsByIngredientStateRequest {
   QueryFilter Filter = 1;
-  string validIngredientStateID = 2;
+  string ValidIngredientStateID = 2;
 }
 
 message GetValidIngredientStateIngredientsByIngredientStateResponse {
@@ -937,7 +941,7 @@ message GetValidIngredientsResponse {
 
 // GetValidInstrument
 message GetValidInstrumentRequest {
-  string validInstrumentID = 1;
+  string ValidInstrumentID = 1;
 }
 
 message GetValidInstrumentResponse {}
@@ -954,14 +958,14 @@ message GetValidInstrumentsResponse {
 
 // GetValidMeasurementUnit
 message GetValidMeasurementUnitRequest {
-  string validMeasurementUnitID = 1;
+  string ValidMeasurementUnitID = 1;
 }
 
 message GetValidMeasurementUnitResponse {}
 
 // GetValidMeasurementUnitConversion
 message GetValidMeasurementUnitConversionRequest {
-  string validMeasurementUnitConversionID = 1;
+  string ValidMeasurementUnitConversionID = 1;
 }
 
 message GetValidMeasurementUnitConversionResponse {}
@@ -969,7 +973,7 @@ message GetValidMeasurementUnitConversionResponse {}
 // GetValidMeasurementUnitConversionsFromUnit
 message GetValidMeasurementUnitConversionsFromUnitRequest {
   QueryFilter Filter = 1;
-  string validMeasurementUnitID = 2;
+  string ValidMeasurementUnitID = 2;
 }
 
 message GetValidMeasurementUnitConversionsFromUnitResponse {
@@ -980,7 +984,7 @@ message GetValidMeasurementUnitConversionsFromUnitResponse {
 // GetValidMeasurementUnitConversionsToUnit
 message GetValidMeasurementUnitConversionsToUnitRequest {
   QueryFilter Filter = 1;
-  string validMeasurementUnitID = 2;
+  string ValidMeasurementUnitID = 2;
 }
 
 message GetValidMeasurementUnitConversionsToUnitResponse {
@@ -1000,14 +1004,14 @@ message GetValidMeasurementUnitsResponse {
 
 // GetValidPreparation
 message GetValidPreparationRequest {
-  string validPreparationID = 1;
+  string ValidPreparationID = 1;
 }
 
 message GetValidPreparationResponse {}
 
 // GetValidPreparationInstrument
 message GetValidPreparationInstrumentRequest {
-  string validPreparationInstrumentID = 1;
+  string ValidPreparationInstrumentID = 1;
 }
 
 message GetValidPreparationInstrumentResponse {}
@@ -1025,7 +1029,7 @@ message GetValidPreparationInstrumentsResponse {
 // GetValidPreparationInstrumentsByInstrument
 message GetValidPreparationInstrumentsByInstrumentRequest {
   QueryFilter Filter = 1;
-  string validInstrumentID = 2;
+  string ValidInstrumentID = 2;
 }
 
 message GetValidPreparationInstrumentsByInstrumentResponse {
@@ -1036,14 +1040,14 @@ message GetValidPreparationInstrumentsByInstrumentResponse {
 // GetValidPreparationInstrumentsByPreparation
 message GetValidPreparationInstrumentsByPreparationRequest {
   QueryFilter Filter = 1;
-  string validPreparationID = 2;
+  string ValidPreparationID = 2;
 }
 
 message GetValidPreparationInstrumentsByPreparationResponse {}
 
 // GetValidPreparationVessel
 message GetValidPreparationVesselRequest {
-  string validPreparationVesselID = 1;
+  string ValidPreparationVesselID = 1;
 }
 
 message GetValidPreparationVesselResponse {}
@@ -1061,7 +1065,7 @@ message GetValidPreparationVesselsResponse {
 // GetValidPreparationVesselsByPreparation
 message GetValidPreparationVesselsByPreparationRequest {
   QueryFilter Filter = 1;
-  string validPreparationID = 2;
+  string ValidPreparationID = 2;
 }
 
 message GetValidPreparationVesselsByPreparationResponse {
@@ -1072,7 +1076,7 @@ message GetValidPreparationVesselsByPreparationResponse {
 // GetValidPreparationVesselsByVessel
 message GetValidPreparationVesselsByVesselRequest {
   QueryFilter Filter = 1;
-  string validVesselID = 2;
+  string ValidVesselID = 2;
 }
 
 message GetValidPreparationVesselsByVesselResponse {
@@ -1092,7 +1096,7 @@ message GetValidPreparationsResponse {
 
 // GetValidVessel
 message GetValidVesselRequest {
-  string validVesselID = 1;
+  string ValidVesselID = 1;
 }
 
 message GetValidVesselResponse {}
@@ -1188,7 +1192,7 @@ message SearchForValidVesselsResponse {
 message SearchValidIngredientsByPreparationRequest {
   QueryFilter Filter = 1;
   string Query = 2;
-  string validPreparationID = 3;
+  string ValidPreparationID = 3;
 }
 
 message SearchValidIngredientsByPreparationResponse {
@@ -1200,7 +1204,7 @@ message SearchValidIngredientsByPreparationResponse {
 message SearchValidMeasurementUnitsByIngredientRequest {
   QueryFilter Filter = 1;
   string Query = 2;
-  string validIngredientID = 3;
+  string ValidIngredientID = 3;
 }
 
 message SearchValidMeasurementUnitsByIngredientResponse {
@@ -1210,7 +1214,7 @@ message SearchValidMeasurementUnitsByIngredientResponse {
 
 // UpdateValidIngredient
 message UpdateValidIngredientRequest {
-  string validIngredientID = 1;
+  string ValidIngredientID = 1;
   ValidIngredientUpdateRequestInput input = 2;
 }
 
@@ -1218,7 +1222,7 @@ message UpdateValidIngredientResponse {}
 
 // UpdateValidIngredientGroup
 message UpdateValidIngredientGroupRequest {
-  string validIngredientGroupID = 1;
+  string ValidIngredientGroupID = 1;
   ValidIngredientGroupUpdateRequestInput input = 2;
 }
 
@@ -1226,7 +1230,7 @@ message UpdateValidIngredientGroupResponse {}
 
 // UpdateValidIngredientMeasurementUnit
 message UpdateValidIngredientMeasurementUnitRequest {
-  string validIngredientMeasurementUnitID = 1;
+  string ValidIngredientMeasurementUnitID = 1;
   ValidIngredientMeasurementUnitUpdateRequestInput input = 2;
 }
 
@@ -1234,7 +1238,7 @@ message UpdateValidIngredientMeasurementUnitResponse {}
 
 // UpdateValidIngredientPreparation
 message UpdateValidIngredientPreparationRequest {
-  string validIngredientPreparationID = 1;
+  string ValidIngredientPreparationID = 1;
   ValidIngredientPreparationUpdateRequestInput input = 2;
 }
 
@@ -1242,7 +1246,7 @@ message UpdateValidIngredientPreparationResponse {}
 
 // UpdateValidIngredientState
 message UpdateValidIngredientStateRequest {
-  string validIngredientStateID = 1;
+  string ValidIngredientStateID = 1;
   ValidIngredientStateUpdateRequestInput input = 2;
 }
 
@@ -1250,7 +1254,7 @@ message UpdateValidIngredientStateResponse {}
 
 // UpdateValidIngredientStateIngredient
 message UpdateValidIngredientStateIngredientRequest {
-  string validIngredientStateIngredientID = 1;
+  string ValidIngredientStateIngredientID = 1;
   ValidIngredientStateIngredientUpdateRequestInput input = 2;
 }
 
@@ -1258,7 +1262,7 @@ message UpdateValidIngredientStateIngredientResponse {}
 
 // UpdateValidInstrument
 message UpdateValidInstrumentRequest {
-  string validInstrumentID = 1;
+  string ValidInstrumentID = 1;
   ValidInstrumentUpdateRequestInput input = 2;
 }
 
@@ -1266,7 +1270,7 @@ message UpdateValidInstrumentResponse {}
 
 // UpdateValidMeasurementUnit
 message UpdateValidMeasurementUnitRequest {
-  string validMeasurementUnitID = 1;
+  string ValidMeasurementUnitID = 1;
   ValidMeasurementUnitUpdateRequestInput input = 2;
 }
 
@@ -1274,7 +1278,7 @@ message UpdateValidMeasurementUnitResponse {}
 
 // UpdateValidMeasurementUnitConversion
 message UpdateValidMeasurementUnitConversionRequest {
-  string validMeasurementUnitConversionID = 1;
+  string ValidMeasurementUnitConversionID = 1;
   ValidMeasurementUnitConversionUpdateRequestInput input = 2;
 }
 
@@ -1282,7 +1286,7 @@ message UpdateValidMeasurementUnitConversionResponse {}
 
 // UpdateValidPreparation
 message UpdateValidPreparationRequest {
-  string validPreparationID = 1;
+  string ValidPreparationID = 1;
   ValidPreparationUpdateRequestInput input = 2;
 }
 
@@ -1290,7 +1294,7 @@ message UpdateValidPreparationResponse {}
 
 // UpdateValidPreparationInstrument
 message UpdateValidPreparationInstrumentRequest {
-  string validPreparationInstrumentID = 1;
+  string ValidPreparationInstrumentID = 1;
   ValidPreparationInstrumentUpdateRequestInput input = 2;
 }
 
@@ -1298,7 +1302,7 @@ message UpdateValidPreparationInstrumentResponse {}
 
 // UpdateValidPreparationVessel
 message UpdateValidPreparationVesselRequest {
-  string validPreparationVesselID = 1;
+  string ValidPreparationVesselID = 1;
   ValidPreparationVesselUpdateRequestInput input = 2;
 }
 
@@ -1306,7 +1310,7 @@ message UpdateValidPreparationVesselResponse {}
 
 // UpdateValidVessel
 message UpdateValidVesselRequest {
-  string validVesselID = 1;
+  string ValidVesselID = 1;
   ValidVesselUpdateRequestInput input = 2;
 }
 

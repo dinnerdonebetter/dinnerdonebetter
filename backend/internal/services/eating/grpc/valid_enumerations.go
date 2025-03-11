@@ -5,6 +5,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+
+	"google.golang.org/grpc/codes"
 )
 
 func (s *serviceImpl) ArchiveValidIngredient(ctx context.Context, request *messages.ArchiveValidIngredientRequest) (*messages.ArchiveValidIngredientResponse, error) {
@@ -14,800 +16,1053 @@ func (s *serviceImpl) ArchiveValidIngredient(ctx context.Context, request *messa
 	logger := s.logger.WithSpan(span)
 
 	if err := s.validEnumerationsManager.ArchiveValidIngredient(ctx, request.ValidIngredientID); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient")
 	}
 
 	return &messages.ArchiveValidIngredientResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *messages.ArchiveValidIngredientGroupRequest) (*messages.ArchiveValidIngredientGroupResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	if err := s.validEnumerationsManager.ArchiveValidIngredientGroup(ctx, request.ValidIngredientGroupID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient group")
+	}
+
+	return &messages.ArchiveValidIngredientGroupResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context, request *messages.ArchiveValidIngredientMeasurementUnitRequest) (*messages.ArchiveValidIngredientMeasurementUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	if err := s.validEnumerationsManager.ArchiveValidIngredientMeasurementUnit(ctx, request.ValidIngredientMeasurementUnitID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient measurement unit")
+	}
+
+	return &messages.ArchiveValidIngredientMeasurementUnitResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientPreparation(ctx context.Context, request *messages.ArchiveValidIngredientPreparationRequest) (*messages.ArchiveValidIngredientPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	if err := s.validEnumerationsManager.ArchiveValidIngredientPreparation(ctx, request.ValidIngredientPreparationID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient preparation")
+	}
+
+	return &messages.ArchiveValidIngredientPreparationResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientState(ctx context.Context, request *messages.ArchiveValidIngredientStateRequest) (*messages.ArchiveValidIngredientStateResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	if err := s.validEnumerationsManager.ArchiveValidIngredientState(ctx, request.ValidIngredientStateID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient state")
+	}
+
+	return &messages.ArchiveValidIngredientStateResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context, request *messages.ArchiveValidIngredientStateIngredientRequest) (*messages.ArchiveValidIngredientStateIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	if err := s.validEnumerationsManager.ArchiveValidIngredientStateIngredient(ctx, request.ValidIngredientStateIngredientID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient state ingredient")
+	}
+
+	return &messages.ArchiveValidIngredientStateIngredientResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidInstrument(ctx context.Context, request *messages.ArchiveValidInstrumentRequest) (*messages.ArchiveValidInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	if err := s.validEnumerationsManager.ArchiveValidInstrument(ctx, request.ValidInstrumentID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid instrument")
+	}
+
+	return &messages.ArchiveValidInstrumentResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *messages.ArchiveValidMeasurementUnitRequest) (*messages.ArchiveValidMeasurementUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	if err := s.validEnumerationsManager.ArchiveValidMeasurementUnit(ctx, request.ValidMeasurementUnitID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid measurement unit")
+	}
+
+	return &messages.ArchiveValidMeasurementUnitResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context, request *messages.ArchiveValidMeasurementUnitConversionRequest) (*messages.ArchiveValidMeasurementUnitConversionResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	if err := s.validEnumerationsManager.ArchiveValidMeasurementUnitConversion(ctx, request.ValidMeasurementUnitConversionID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid measurement unit conversion")
+	}
+
+	return &messages.ArchiveValidMeasurementUnitConversionResponse{}, nil
 }
 
 func (s *serviceImpl) ArchiveValidPreparation(ctx context.Context, request *messages.ArchiveValidPreparationRequest) (*messages.ArchiveValidPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+
+	if err := s.validEnumerationsManager.ArchiveValidPreparation(ctx, request.ValidPreparationID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation")
+	}
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
 func (s *serviceImpl) ArchiveValidPreparationInstrument(ctx context.Context, request *messages.ArchiveValidPreparationInstrumentRequest) (*messages.ArchiveValidPreparationInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+
+	if err := s.validEnumerationsManager.ArchiveValidPreparationInstrument(ctx, request.ValidPreparationInstrumentID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation instrument")
+	}
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
 func (s *serviceImpl) ArchiveValidPreparationVessel(ctx context.Context, request *messages.ArchiveValidPreparationVesselRequest) (*messages.ArchiveValidPreparationVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+
+	if err := s.validEnumerationsManager.ArchiveValidPreparationVessel(ctx, request.ValidPreparationVesselID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation vessel")
+	}
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
 func (s *serviceImpl) ArchiveValidVessel(ctx context.Context, request *messages.ArchiveValidVesselRequest) (*messages.ArchiveValidVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	if err := s.validEnumerationsManager.ArchiveValidVessel(ctx, request.ValidVesselID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid vessel")
+	}
+
+	return &messages.ArchiveValidVesselResponse{}, nil
 }
 
 func (s *serviceImpl) CreateValidIngredient(ctx context.Context, request *messages.CreateValidIngredientRequest) (*messages.CreateValidIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidIngredientGroup(ctx context.Context, request *messages.CreateValidIngredientGroupRequest) (*messages.CreateValidIngredientGroupResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidIngredientGroupResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidIngredientMeasurementUnit(ctx context.Context, request *messages.CreateValidIngredientMeasurementUnitRequest) (*messages.CreateValidIngredientMeasurementUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidIngredientMeasurementUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidIngredientPreparation(ctx context.Context, request *messages.CreateValidIngredientPreparationRequest) (*messages.CreateValidIngredientPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidIngredientPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidIngredientState(ctx context.Context, request *messages.CreateValidIngredientStateRequest) (*messages.CreateValidIngredientStateResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidIngredientStateResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidIngredientStateIngredient(ctx context.Context, request *messages.CreateValidIngredientStateIngredientRequest) (*messages.CreateValidIngredientStateIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidIngredientStateIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidInstrument(ctx context.Context, request *messages.CreateValidInstrumentRequest) (*messages.CreateValidInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidMeasurementUnit(ctx context.Context, request *messages.CreateValidMeasurementUnitRequest) (*messages.CreateValidMeasurementUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidMeasurementUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidMeasurementUnitConversion(ctx context.Context, request *messages.CreateValidMeasurementUnitConversionRequest) (*messages.CreateValidMeasurementUnitConversionResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidMeasurementUnitConversionResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidPreparation(ctx context.Context, request *messages.CreateValidPreparationRequest) (*messages.CreateValidPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidPreparationInstrument(ctx context.Context, request *messages.CreateValidPreparationInstrumentRequest) (*messages.CreateValidPreparationInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidPreparationInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidPreparationVessel(ctx context.Context, request *messages.CreateValidPreparationVesselRequest) (*messages.CreateValidPreparationVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidPreparationVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) CreateValidVessel(ctx context.Context, request *messages.CreateValidVesselRequest) (*messages.CreateValidVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.CreateValidVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetRandomValidIngredient(ctx context.Context, request *messages.GetRandomValidIngredientRequest) (*messages.GetRandomValidIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.RandomValidIngredient(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetRandomValidIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetRandomValidInstrument(ctx context.Context, request *messages.GetRandomValidInstrumentRequest) (*messages.GetRandomValidInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.RandomValidInstrument(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetRandomValidInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetRandomValidPreparation(ctx context.Context, request *messages.GetRandomValidPreparationRequest) (*messages.GetRandomValidPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.RandomValidPreparation(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetRandomValidPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetRandomValidVessel(ctx context.Context, request *messages.GetRandomValidVesselRequest) (*messages.GetRandomValidVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.RandomValidVessel(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetRandomValidVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredient(ctx context.Context, request *messages.GetValidIngredientRequest) (*messages.GetValidIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidIngredient(ctx, request.ValidIngredientID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientGroup(ctx context.Context, request *messages.GetValidIngredientGroupRequest) (*messages.GetValidIngredientGroupResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidIngredientGroup(ctx, request.ValidIngredientGroupID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientGroupResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientGroups(ctx context.Context, request *messages.GetValidIngredientGroupsRequest) (*messages.GetValidIngredientGroupsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidIngredientGroups(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientGroupsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientMeasurementUnit(ctx context.Context, request *messages.GetValidIngredientMeasurementUnitRequest) (*messages.GetValidIngredientMeasurementUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidIngredientMeasurementUnit(ctx, request.ValidIngredientMeasurementUnitID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientMeasurementUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, request *messages.GetValidIngredientMeasurementUnitsRequest) (*messages.GetValidIngredientMeasurementUnitsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidIngredientMeasurementUnits(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientMeasurementUnitsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientMeasurementUnitsByIngredient(ctx context.Context, request *messages.GetValidIngredientMeasurementUnitsByIngredientRequest) (*messages.GetValidIngredientMeasurementUnitsByIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidIngredientMeasurementUnitsByIngredient(ctx, request.ValidIngredientID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientMeasurementUnitsByIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, request *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) (*messages.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx, request.ValidMeasurementUnitID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientPreparation(ctx context.Context, request *messages.GetValidIngredientPreparationRequest) (*messages.GetValidIngredientPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidIngredientPreparation(ctx, request.ValidIngredientPreparationID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientPreparations(ctx context.Context, request *messages.GetValidIngredientPreparationsRequest) (*messages.GetValidIngredientPreparationsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidIngredientPreparations(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientPreparationsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientPreparationsByIngredient(ctx context.Context, request *messages.GetValidIngredientPreparationsByIngredientRequest) (*messages.GetValidIngredientPreparationsByIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidIngredientPreparationsByIngredient(ctx, request.ValidIngredientID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientPreparationsByIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Context, request *messages.GetValidIngredientPreparationsByPreparationRequest) (*messages.GetValidIngredientPreparationsByPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidIngredientPreparationsByPreparation(ctx, request.ValidPreparationID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientPreparationsByPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientState(ctx context.Context, request *messages.GetValidIngredientStateRequest) (*messages.GetValidIngredientStateResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidIngredientState(ctx, request.ValidIngredientStateID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientStateResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientStateIngredient(ctx context.Context, request *messages.GetValidIngredientStateIngredientRequest) (*messages.GetValidIngredientStateIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidIngredientStateIngredient(ctx, request.ValidIngredientStateIngredientID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientStateIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientStateIngredients(ctx context.Context, request *messages.GetValidIngredientStateIngredientsRequest) (*messages.GetValidIngredientStateIngredientsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidIngredientStateIngredients(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientStateIngredientsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientStateIngredientsByIngredient(ctx context.Context, request *messages.GetValidIngredientStateIngredientsByIngredientRequest) (*messages.GetValidIngredientStateIngredientsByIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidIngredientStateIngredientsByIngredient(ctx, request.ValidIngredientID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientStateIngredientsByIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientStateIngredientsByIngredientState(ctx context.Context, request *messages.GetValidIngredientStateIngredientsByIngredientStateRequest) (*messages.GetValidIngredientStateIngredientsByIngredientStateResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidIngredientStateIngredientsByIngredientState(ctx, request.ValidIngredientStateID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientStateIngredientsByIngredientStateResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredientStates(ctx context.Context, request *messages.GetValidIngredientStatesRequest) (*messages.GetValidIngredientStatesResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidIngredientStates(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientStatesResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidIngredients(ctx context.Context, request *messages.GetValidIngredientsRequest) (*messages.GetValidIngredientsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidIngredients(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidIngredientsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidInstrument(ctx context.Context, request *messages.GetValidInstrumentRequest) (*messages.GetValidInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidInstrument(ctx, request.ValidInstrumentID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidInstruments(ctx context.Context, request *messages.GetValidInstrumentsRequest) (*messages.GetValidInstrumentsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidInstruments(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidInstrumentsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidMeasurementUnit(ctx context.Context, request *messages.GetValidMeasurementUnitRequest) (*messages.GetValidMeasurementUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidMeasurementUnit(ctx, request.ValidMeasurementUnitID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidMeasurementUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidMeasurementUnitConversion(ctx context.Context, request *messages.GetValidMeasurementUnitConversionRequest) (*messages.GetValidMeasurementUnitConversionResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidMeasurementUnitConversion(ctx, request.ValidMeasurementUnitConversionID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidMeasurementUnitConversionResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, request *messages.GetValidMeasurementUnitConversionsFromUnitRequest) (*messages.GetValidMeasurementUnitConversionsFromUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ValidMeasurementUnitConversionsFromMeasurementUnit(ctx, request.ValidMeasurementUnitID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidMeasurementUnitConversionsFromUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, request *messages.GetValidMeasurementUnitConversionsToUnitRequest) (*messages.GetValidMeasurementUnitConversionsToUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ValidMeasurementUnitConversionsToMeasurementUnit(ctx, request.ValidMeasurementUnitID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidMeasurementUnitConversionsToUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidMeasurementUnits(ctx context.Context, request *messages.GetValidMeasurementUnitsRequest) (*messages.GetValidMeasurementUnitsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidMeasurementUnits(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidMeasurementUnitsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparation(ctx context.Context, request *messages.GetValidPreparationRequest) (*messages.GetValidPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidPreparation(ctx, request.ValidPreparationID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparationInstrument(ctx context.Context, request *messages.GetValidPreparationInstrumentRequest) (*messages.GetValidPreparationInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidPreparationInstrument(ctx, request.ValidPreparationInstrumentID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparationInstruments(ctx context.Context, request *messages.GetValidPreparationInstrumentsRequest) (*messages.GetValidPreparationInstrumentsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidPreparationInstruments(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationInstrumentsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparationInstrumentsByInstrument(ctx context.Context, request *messages.GetValidPreparationInstrumentsByInstrumentRequest) (*messages.GetValidPreparationInstrumentsByInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidPreparationInstrumentsByInstrument(ctx, request.ValidInstrumentID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationInstrumentsByInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Context, request *messages.GetValidPreparationInstrumentsByPreparationRequest) (*messages.GetValidPreparationInstrumentsByPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidPreparationInstrumentsByPreparation(ctx, request.ValidPreparationID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationInstrumentsByPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparationVessel(ctx context.Context, request *messages.GetValidPreparationVesselRequest) (*messages.GetValidPreparationVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidPreparationVessel(ctx, request.ValidPreparationVesselID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparationVessels(ctx context.Context, request *messages.GetValidPreparationVesselsRequest) (*messages.GetValidPreparationVesselsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidPreparationVessels(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationVesselsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparationVesselsByPreparation(ctx context.Context, request *messages.GetValidPreparationVesselsByPreparationRequest) (*messages.GetValidPreparationVesselsByPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidPreparationVesselsByPreparation(ctx, request.ValidPreparationID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationVesselsByPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparationVesselsByVessel(ctx context.Context, request *messages.GetValidPreparationVesselsByVesselRequest) (*messages.GetValidPreparationVesselsByVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.SearchValidPreparationVesselsByVessel(ctx, request.ValidVesselID, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationVesselsByVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidPreparations(ctx context.Context, request *messages.GetValidPreparationsRequest) (*messages.GetValidPreparationsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidPreparations(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidPreparationsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidVessel(ctx context.Context, request *messages.GetValidVesselRequest) (*messages.GetValidVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, err := s.validEnumerationsManager.ReadValidVessel(ctx, request.ValidVesselID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) GetValidVessels(ctx context.Context, request *messages.GetValidVesselsRequest) (*messages.GetValidVesselsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	_, _, err := s.validEnumerationsManager.ListValidVessels(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching ")
+	}
+
+	return &messages.GetValidVesselsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) SearchForValidIngredientGroups(ctx context.Context, request *messages.SearchForValidIngredientGroupsRequest) (*messages.SearchForValidIngredientGroupsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.SearchForValidIngredientGroupsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) SearchForValidIngredientStates(ctx context.Context, request *messages.SearchForValidIngredientStatesRequest) (*messages.SearchForValidIngredientStatesResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.SearchForValidIngredientStatesResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) SearchForValidIngredients(ctx context.Context, request *messages.SearchForValidIngredientsRequest) (*messages.SearchForValidIngredientsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.SearchForValidIngredientsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) SearchForValidInstruments(ctx context.Context, request *messages.SearchForValidInstrumentsRequest) (*messages.SearchForValidInstrumentsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.SearchForValidInstrumentsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) SearchForValidMeasurementUnits(ctx context.Context, request *messages.SearchForValidMeasurementUnitsRequest) (*messages.SearchForValidMeasurementUnitsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.SearchForValidMeasurementUnitsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) SearchForValidPreparations(ctx context.Context, request *messages.SearchForValidPreparationsRequest) (*messages.SearchForValidPreparationsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.SearchForValidPreparationsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) SearchForValidVessels(ctx context.Context, request *messages.SearchForValidVesselsRequest) (*messages.SearchForValidVesselsResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.SearchForValidVesselsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) SearchValidIngredientsByPreparation(ctx context.Context, request *messages.SearchValidIngredientsByPreparationRequest) (*messages.SearchValidIngredientsByPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.SearchValidIngredientsByPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Context, request *messages.SearchValidMeasurementUnitsByIngredientRequest) (*messages.SearchValidMeasurementUnitsByIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.SearchValidMeasurementUnitsByIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidIngredient(ctx context.Context, request *messages.UpdateValidIngredientRequest) (*messages.UpdateValidIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidIngredientGroup(ctx context.Context, request *messages.UpdateValidIngredientGroupRequest) (*messages.UpdateValidIngredientGroupResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidIngredientGroupResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidIngredientMeasurementUnit(ctx context.Context, request *messages.UpdateValidIngredientMeasurementUnitRequest) (*messages.UpdateValidIngredientMeasurementUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidIngredientMeasurementUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidIngredientPreparation(ctx context.Context, request *messages.UpdateValidIngredientPreparationRequest) (*messages.UpdateValidIngredientPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidIngredientPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidIngredientState(ctx context.Context, request *messages.UpdateValidIngredientStateRequest) (*messages.UpdateValidIngredientStateResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidIngredientStateResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidIngredientStateIngredient(ctx context.Context, request *messages.UpdateValidIngredientStateIngredientRequest) (*messages.UpdateValidIngredientStateIngredientResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidIngredientStateIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidInstrument(ctx context.Context, request *messages.UpdateValidInstrumentRequest) (*messages.UpdateValidInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidMeasurementUnit(ctx context.Context, request *messages.UpdateValidMeasurementUnitRequest) (*messages.UpdateValidMeasurementUnitResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidMeasurementUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidMeasurementUnitConversion(ctx context.Context, request *messages.UpdateValidMeasurementUnitConversionRequest) (*messages.UpdateValidMeasurementUnitConversionResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidMeasurementUnitConversionResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidPreparation(ctx context.Context, request *messages.UpdateValidPreparationRequest) (*messages.UpdateValidPreparationResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidPreparationInstrument(ctx context.Context, request *messages.UpdateValidPreparationInstrumentRequest) (*messages.UpdateValidPreparationInstrumentResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidPreparationInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidPreparationVessel(ctx context.Context, request *messages.UpdateValidPreparationVesselRequest) (*messages.UpdateValidPreparationVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidPreparationVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
 
 func (s *serviceImpl) UpdateValidVessel(ctx context.Context, request *messages.UpdateValidVesselRequest) (*messages.UpdateValidVesselResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
+	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	return &messages.UpdateValidVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }

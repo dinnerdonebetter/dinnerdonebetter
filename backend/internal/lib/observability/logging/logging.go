@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
@@ -47,18 +48,30 @@ type (
 type Logger interface {
 	Info(string)
 	Debug(string)
+	Warn(string)
 	Error(whatWasHappeningWhenErrorOccurred string, err error)
 
+	// SetRequestIDFunc sets the requestID function for the logger, which is used in the `WithRequest` method.
 	SetRequestIDFunc(RequestIDFunc)
 
+	// Clone produces a duplicated instance of the Logger.
 	Clone() Logger
+	// WithName sets an attribute on the Logger called `_name_`.
 	WithName(string) Logger
-	WithValues(map[string]any) Logger
+	// WithValue attaches the included value to the Logger by its name.
 	WithValue(string, any) Logger
+	// WithValues attaches the included values to the Logger by their keys.
+	WithValues(map[string]any) Logger
+	// WithRequest attaches pertinent values from a http.Request to the Logger.
 	WithRequest(*http.Request) Logger
+	// WithResponse attaches pertinent values from a http.Response to the Logger.
 	WithResponse(response *http.Response) Logger
+	// WithError attaches an error to the Logger.
 	WithError(error) Logger
+	// WithSpan attaches the SpanID and TraceID associated with a given span to the Logger.
 	WithSpan(span trace.Span) Logger
+	// WithContext is effectively a no-op in all implementations. One day it may deprecate WithSpan.
+	WithContext(context.Context) Logger
 }
 
 // EnsureLogger guarantees that a Logger is available.

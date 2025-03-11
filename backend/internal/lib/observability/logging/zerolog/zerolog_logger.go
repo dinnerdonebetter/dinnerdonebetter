@@ -1,6 +1,7 @@
 package zerolog
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -94,6 +95,11 @@ func (l *zerologLogger) Debug(input string) {
 	l.logger.Debug().Msg(input)
 }
 
+// Warn satisfies our contract for the logging.Logger Warn method.
+func (l *zerologLogger) Warn(input string) {
+	l.logger.Warn().Msg(input)
+}
+
 // Error satisfies our contract for the logging.Logger Error method.
 func (l *zerologLogger) Error(whatWasHappeningWhenErrorOccurred string, err error) {
 	if err != nil {
@@ -139,6 +145,10 @@ func (l *zerologLogger) WithSpan(span trace.Span) logging.Logger {
 	l2 := l.logger.With().Str(keys.SpanIDKey, spanID).Str(keys.TraceIDKey, traceID).Logger()
 
 	return &zerologLogger{logger: l2}
+}
+
+func (l *zerologLogger) WithContext(context.Context) logging.Logger {
+	return l
 }
 
 func (l *zerologLogger) attachRequestToLog(req *http.Request) zerolog.Logger {

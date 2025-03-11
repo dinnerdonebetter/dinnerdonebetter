@@ -1,6 +1,7 @@
 package slog
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -70,6 +71,11 @@ func (l *slogLogger) Debug(input string) {
 	l.logger.Debug(input)
 }
 
+// Warn satisfies our contract for the logging.Logger Warn method.
+func (l *slogLogger) Warn(input string) {
+	l.logger.Warn(input)
+}
+
 // Error satisfies our contract for the logging.Logger Error method.
 func (l *slogLogger) Error(whatWasHappeningWhenErrorOccurred string, err error) {
 	if err != nil {
@@ -115,6 +121,10 @@ func (l *slogLogger) WithSpan(span trace.Span) logging.Logger {
 	l2 := l.logger.With(slog.String(keys.SpanIDKey, spanID), slog.String(keys.TraceIDKey, traceID))
 
 	return &slogLogger{logger: l2}
+}
+
+func (l *slogLogger) WithContext(context.Context) logging.Logger {
+	return l
 }
 
 func (l *slogLogger) attachRequestToLog(req *http.Request) *slog.Logger {

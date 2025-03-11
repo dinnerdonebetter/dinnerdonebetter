@@ -1,6 +1,7 @@
 package zap
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -83,6 +84,11 @@ func (l *zapLogger) Debug(input string) {
 	l.logger.Debug(input)
 }
 
+// Warn satisfies our contract for the logging.Logger Warn method.
+func (l *zapLogger) Warn(input string) {
+	l.logger.Warn(input)
+}
+
 // Error satisfies our contract for the logging.Logger Error method.
 func (l *zapLogger) Error(whatWasHappeningWhenErrorOccurred string, err error) {
 	if err != nil {
@@ -130,6 +136,10 @@ func (l *zapLogger) WithSpan(span trace.Span) logging.Logger {
 	return &zapLogger{logger: l2}
 }
 
+func (l *zapLogger) WithContext(context.Context) logging.Logger {
+	return l
+}
+
 func (l *zapLogger) attachRequestToLog(req *http.Request) *zap.Logger {
 	if req != nil {
 		l2 := l.logger.With(zap.String("method", req.Method))
@@ -143,7 +153,7 @@ func (l *zapLogger) attachRequestToLog(req *http.Request) *zap.Logger {
 
 		if l.requestIDFunc != nil {
 			if reqID := l.requestIDFunc(req); reqID != "" {
-				l2 = l2.With(zap.String("request.id", reqID))
+				l2 = l2.With(zap.String(keys.RequestIDKey, reqID))
 			}
 		}
 
