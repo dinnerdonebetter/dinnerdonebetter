@@ -684,7 +684,7 @@ message CreateValidIngredientRequest {
 }
 
 message CreateValidIngredientResponse {
-  ValidIngredient Result = 2;
+  ValidIngredient Result = 1;
 }
 
 // CreateValidIngredientGroup
