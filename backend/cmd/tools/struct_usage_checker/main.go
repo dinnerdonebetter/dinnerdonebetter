@@ -19,14 +19,13 @@ func noTestFiles(f os.FileInfo) bool {
 
 // fetchTypesForPackage parses the given package directory and returns a map of type names to their *ast.StructType.
 // The filter function can be used to limit which struct types are included.
-func fetchTypesForPackage(pkg string, nameFilter func(string) bool) map[string]*ast.StructType {
+func fetchTypesForPackage(pkg string) map[string]*ast.StructType {
 	fileset := token.NewFileSet()
 	astPkg, err := parser.ParseDir(fileset, pkg, noTestFiles, parser.AllErrors)
 	if err != nil {
 		log.Fatalf("failed to parse package %s: %v", pkg, err)
 	}
 
-	// Require exactly one package directory.
 	if len(astPkg) != 1 {
 		log.Fatalf("expected one package in %s, found %d", pkg, len(astPkg))
 	}
@@ -36,7 +35,7 @@ func fetchTypesForPackage(pkg string, nameFilter func(string) bool) map[string]*
 		for _, f := range p.Files {
 			ast.Inspect(f, func(n ast.Node) bool {
 				if ts, ok := n.(*ast.TypeSpec); ok {
-					if structType, ok := ts.Type.(*ast.StructType); ok && nameFilter(ts.Name.Name) {
+					if structType, ok := ts.Type.(*ast.StructType); ok && ast.IsExported(ts.Name.Name) {
 						foundTypes[ts.Name.Name] = structType
 					}
 				}
@@ -44,17 +43,18 @@ func fetchTypesForPackage(pkg string, nameFilter func(string) bool) map[string]*
 			})
 		}
 	}
+
 	return foundTypes
 }
 
-// getOrderedFieldNamesForStruct returns the field names of a struct in order.
-// It handles both named fields and anonymous fields (using the type name).
+// getOrderedFieldNamesForStruct returns the field names of a struct in order. It handles both named fields and anonymous fields (using the type name).
 func getOrderedFieldNamesForStruct(structType *ast.StructType) []string {
 	var fields []string
+
 	for _, field := range structType.Fields.List {
 		if field.Names != nil {
 			for _, name := range field.Names {
-				if name.Name != "_" {
+				if name.Name != "_" && ast.IsExported(name.Name) {
 					fields = append(fields, name.Name)
 				}
 			}
@@ -70,6 +70,7 @@ func getOrderedFieldNamesForStruct(structType *ast.StructType) []string {
 			}
 		}
 	}
+
 	return fields
 }
 
@@ -105,25 +106,25 @@ func extractSelectorFromExpr(expr ast.Expr) (string, string, bool) {
 			}
 		}
 	}
+
 	return "", "", false
 }
 
 // checkCompositeLit inspects a composite literal and checks that all fields declared in the struct definition are initialized.
 // For key–value initialization, it verifies each field is provided.
 // For positional initialization, it checks that the number of elements matches the number of fields.
-func checkCompositeLit(lit *ast.CompositeLit, structDef *ast.StructType, fileName string) error {
+func checkCompositeLit(lit *ast.CompositeLit, structDef *ast.StructType, fileName string, fset *token.FileSet) error {
+	pos := fset.Position(lit.Pos())
 	expectedFields := getOrderedFieldNamesForStruct(structDef)
 
-	// No elements provided: error for each expected field.
 	if len(lit.Elts) == 0 {
 		var errs *multierror.Error
 		for _, field := range expectedFields {
-			errs = multierror.Append(errs, fmt.Errorf("in %s: composite literal of type %s missing field %s", fileName, getTypeAsString(lit.Type), field))
+			errs = multierror.Append(errs, fmt.Errorf("in %s:%d: composite literal of type %s missing field %s", fileName, pos.Line, getTypeAsString(lit.Type), field))
 		}
 		return errs.ErrorOrNil()
 	}
 
-	// Determine if the literal uses key–value initialization.
 	allKV := true
 	for _, elt := range lit.Elts {
 		if _, ok := elt.(*ast.KeyValueExpr); !ok {
@@ -144,30 +145,22 @@ func checkCompositeLit(lit *ast.CompositeLit, structDef *ast.StructType, fileNam
 		var errs *multierror.Error
 		for _, field := range expectedFields {
 			if !initialized[field] {
-				errs = multierror.Append(errs, fmt.Errorf("in %s: composite literal of type %s missing field %s", fileName, getTypeAsString(lit.Type), field))
+				errs = multierror.Append(errs, fmt.Errorf("in %s:%d: composite literal of type %s missing field %s", fileName, pos.Line, getTypeAsString(lit.Type), field))
 			}
 		}
 		return errs.ErrorOrNil()
 	} else {
-		// Positional initialization: ensure the number of elements matches the number of expected fields.
 		if len(lit.Elts) != len(expectedFields) {
-			return fmt.Errorf("in %s: positional composite literal of type %s expects %d fields but got %d", fileName, getTypeAsString(lit.Type), len(expectedFields), len(lit.Elts))
+			return fmt.Errorf("in %s:%d: positional composite literal of type %s expects %d fields but got %d", fileName, pos.Line, getTypeAsString(lit.Type), len(expectedFields), len(lit.Elts))
 		}
-		// If counts match, assume the ordering is correct.
+
 		return nil
 	}
 }
 
-func evaluatePackageUsage(sourcePackage, implementingPackage, mustContain string) error {
-	filterFunc := func(s string) bool {
-		if mustContain == "" {
-			return true
-		}
-		return strings.Contains(s, mustContain)
-	}
-
+func evaluatePackageUsage(sourcePackage, implementingPackage string) error {
 	// Fetch all struct types from the source package.
-	sourceTypes := fetchTypesForPackage(sourcePackage, filterFunc)
+	sourceTypes := fetchTypesForPackage(sourcePackage)
 	if len(sourceTypes) == 0 {
 		log.Fatalf("No types found in source package %s", sourcePackage)
 	}
@@ -190,21 +183,17 @@ func evaluatePackageUsage(sourcePackage, implementingPackage, mustContain string
 					return true
 				}
 
-				// Check if the literal’s type is a selector (possibly wrapped in a pointer)
 				_, typeName, found := extractSelectorFromExpr(compLit.Type)
 				if !found {
-					// Not a composite literal with a qualified type – skip.
 					return true
 				}
 
-				// Only check composite literals whose type (by its unqualified name) comes from the source package.
 				structDef, exists := sourceTypes[typeName]
 				if !exists {
 					return true
 				}
 
-				// Check that all fields are initialized.
-				if err = checkCompositeLit(compLit, structDef, fileName); err != nil {
+				if err = checkCompositeLit(compLit, structDef, fileName, fileset); err != nil {
 					errors = multierror.Append(errors, err)
 				}
 
@@ -217,7 +206,15 @@ func evaluatePackageUsage(sourcePackage, implementingPackage, mustContain string
 }
 
 func main() {
-	if err := evaluatePackageUsage("internal/database/postgres/generated", "internal/database/postgres", ""); err != nil {
-		log.Fatal(err)
+	packagesToCheck := map[string]string{
+		"internal/database/postgres/generated": "internal/database/postgres",
+		"internal/services/eating/types":       "internal/services/eating/grpc/converters",
+		"internal/grpc/messages":               "internal/services/eating/grpc/converters",
+	}
+
+	for sourcePackage, implementingPackage := range packagesToCheck {
+		if err := evaluatePackageUsage(sourcePackage, implementingPackage); err != nil {
+			log.Fatal(err)
+		}
 	}
 }

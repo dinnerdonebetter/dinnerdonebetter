@@ -167,7 +167,7 @@ queries_lint:
 	$(SQL_GENERATOR) vet --no-remote
 
 .PHONY: golang_lint
-golang_lint: check_lib_for_types sqlc_struct_check
+golang_lint: check_lib_for_types check_struct_usage
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
 	$(LINTER) run --config=.golangci.yml --timeout 15m ./...
 
@@ -220,9 +220,9 @@ querier: queries queries_lint
 	rm --recursive --force internal/database/postgres/generated/*.go
 	$(SQL_GENERATOR) generate --no-remote
 
-.PHONY: sqlc_struct_check
-sqlc_struct_check:
-	go run $(THIS)/cmd/tools/sqlc_struct_checker
+.PHONY: check_struct_usage
+check_struct_usage:
+	go run $(THIS)/cmd/tools/struct_usage_checker
 
 .PHONY: openapi
 openapi:
