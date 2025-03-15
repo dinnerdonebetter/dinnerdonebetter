@@ -141,6 +141,7 @@ func (q *Querier) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Cli
 	if writeErr := q.generatedQuerier.CreateOAuth2Client(ctx, q.db, &generated.CreateOAuth2ClientParams{
 		ID:           input.ID,
 		Name:         input.Name,
+		Description:  input.Description,
 		ClientID:     input.ClientID,
 		ClientSecret: input.ClientSecret,
 	}); writeErr != nil {

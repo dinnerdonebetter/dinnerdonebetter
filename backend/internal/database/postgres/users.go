@@ -428,6 +428,9 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		Username:                      input.Username,
 		EmailAddress:                  input.EmailAddress,
 		HashedPassword:                input.HashedPassword,
+		TwoFactorSecretVerifiedAt:     sql.NullTime{Valid: false},
+		UserAccountStatusExplanation:  "",
+		RequiresPasswordChange:        false,
 		TwoFactorSecret:               input.TwoFactorSecret,
 		AvatarSrc:                     database.NullStringFromStringPointer(input.AvatarSrc),
 		UserAccountStatus:             string(types.UnverifiedHouseholdStatus),
@@ -532,19 +535,20 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 
 	// create the household.
 	if err := q.generatedQuerier.CreateHousehold(ctx, querier, &generated.CreateHouseholdParams{
-		City:          householdCreationInput.City,
-		Name:          householdCreationInput.Name,
-		BillingStatus: types.UnpaidHouseholdBillingStatus,
-		ContactPhone:  householdCreationInput.ContactPhone,
-		AddressLine1:  householdCreationInput.AddressLine1,
-		AddressLine2:  householdCreationInput.AddressLine2,
-		ID:            householdCreationInput.ID,
-		State:         householdCreationInput.State,
-		ZipCode:       householdCreationInput.ZipCode,
-		Country:       householdCreationInput.Country,
-		BelongsToUser: householdCreationInput.BelongsToUser,
-		Latitude:      database.NullStringFromFloat64Pointer(householdCreationInput.Latitude),
-		Longitude:     database.NullStringFromFloat64Pointer(householdCreationInput.Longitude),
+		City:              householdCreationInput.City,
+		Name:              householdCreationInput.Name,
+		BillingStatus:     types.UnpaidHouseholdBillingStatus,
+		ContactPhone:      householdCreationInput.ContactPhone,
+		AddressLine1:      householdCreationInput.AddressLine1,
+		AddressLine2:      householdCreationInput.AddressLine2,
+		ID:                householdCreationInput.ID,
+		State:             householdCreationInput.State,
+		ZipCode:           householdCreationInput.ZipCode,
+		Country:           householdCreationInput.Country,
+		BelongsToUser:     householdCreationInput.BelongsToUser,
+		WebhookHmacSecret: householdCreationInput.WebhookEncryptionKey,
+		Latitude:          database.NullStringFromFloat64Pointer(householdCreationInput.Latitude),
+		Longitude:         database.NullStringFromFloat64Pointer(householdCreationInput.Longitude),
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "creating household")
