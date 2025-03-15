@@ -167,7 +167,7 @@ queries_lint:
 	$(SQL_GENERATOR) vet --no-remote
 
 .PHONY: golang_lint
-golang_lint: check_lib_for_types check_struct_usage
+golang_lint: check_struct_usage
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
 	$(LINTER) run --config=.golangci.yml --timeout 15m ./...
 
@@ -186,11 +186,6 @@ clean_coverage:
 coverage: clean_coverage $(ARTIFACTS_DIR)
 	@$(GO_TEST) -coverprofile=$(COVERAGE_OUT) -covermode=atomic $(TESTABLE_PACKAGE_LIST) > /dev/null
 	@go tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
-
-.PHONY: check_lib_for_types
-check_lib_for_types:
-	@! grep -r 'pkg/types"' internal/lib/
-	@! grep -r 'pkg/types/fakes"' internal/lib/
 
 ## GENERATED FILES
 

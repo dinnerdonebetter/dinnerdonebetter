@@ -616,13 +616,13 @@ message EmailAddressVerificationRequest {
 message EmailAddressVerificationResponse {}
 
 message Float32RangeWithOptionalMax {
-  float Max = 1;
+  optional float Max = 1;
   float Min = 2;
 }
 
 message Float32RangeWithOptionalMaxUpdateRequestInput {
   float Min = 1;
-  float Max = 2;
+  optional float Max = 2;
 }
 
 message Household {
@@ -902,23 +902,23 @@ message TokenResponse {
 }
 
 message Uint16RangeWithOptionalMax {
-  uint32 Max = 1;
+  optional uint32 Max = 1;
   uint32 Min = 2;
 }
 
 message Uint16RangeWithOptionalMaxUpdateRequestInput {
   uint32 Min = 1;
-  uint32 Max = 2;
+  optional uint32 Max = 2;
 }
 
 message Uint32RangeWithOptionalMax {
-  uint32 Max = 1;
+  optional uint32 Max = 1;
   uint32 Min = 2;
 }
 
 message Uint32RangeWithOptionalMaxUpdateRequestInput {
   uint32 Min = 1;
-  uint32 Max = 2;
+  optional uint32 Max = 2;
 }
 
 message User {

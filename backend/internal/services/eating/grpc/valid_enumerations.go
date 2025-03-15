@@ -185,12 +185,14 @@ func (s *serviceImpl) CreateValidIngredient(ctx context.Context, request *messag
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidIngredient(ctx, grpcconverters.ConvertGRPCValidIngredientRequestCreationInputToValidIngredientRequestCreationInput(request))
+	created, err := s.validEnumerationsManager.CreateValidIngredient(ctx, grpcconverters.ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient")
 	}
 
-	result := &messages.CreateValidIngredientResponse{Result: grpcconverters.ConvertValidIngredientToGRPCValidIngredient(created)}
+	result := &messages.CreateValidIngredientResponse{
+		Result: grpcconverters.ConvertValidIngredientToGRPCValidIngredient(created),
+	}
 
 	return result, nil
 }
@@ -201,7 +203,16 @@ func (s *serviceImpl) CreateValidIngredientGroup(ctx context.Context, request *m
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.CreateValidIngredientGroupResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	created, err := s.validEnumerationsManager.CreateValidIngredientGroup(ctx, grpcconverters.ConvertGRPCCreateValidIngredientGroupRequestToValidIngredientGroupCreationRequestInput(request))
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient")
+	}
+
+	result := &messages.CreateValidIngredientGroupResponse{
+		Result: grpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(created),
+	}
+
+	return result, nil
 }
 
 func (s *serviceImpl) CreateValidIngredientMeasurementUnit(ctx context.Context, request *messages.CreateValidIngredientMeasurementUnitRequest) (*messages.CreateValidIngredientMeasurementUnitResponse, error) {

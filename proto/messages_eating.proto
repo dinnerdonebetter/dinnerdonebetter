@@ -24,8 +24,8 @@ message EatingUserDataCollection {
 
 message ValidIngredient {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   OptionalFloat32Range StorageTemperatureInCelsius = 4;
   string IconPath = 5;
   string Warning = 6;
@@ -98,8 +98,8 @@ message ValidIngredientCreationRequestInput {
 
 message ValidIngredientGroup {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string ID = 4;
   string Name = 5;
   string Slug = 6;
@@ -116,7 +116,7 @@ message ValidIngredientGroupCreationRequestInput {
 
 message ValidIngredientGroupMember {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 2;
   string ID = 3;
   string BelongsToGroup = 4;
   ValidIngredient ValidIngredient = 5;
@@ -134,8 +134,8 @@ message ValidIngredientGroupUpdateRequestInput {
 
 message ValidIngredientMeasurementUnit {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string Notes = 4;
   string ID = 5;
   Float32RangeWithOptionalMax AllowableQuantity = 6;
@@ -159,8 +159,8 @@ message ValidIngredientMeasurementUnitUpdateRequestInput {
 
 message ValidIngredientPreparation {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string Notes = 4;
   string ID = 5;
   ValidPreparation Preparation = 6;
@@ -181,8 +181,8 @@ message ValidIngredientPreparationUpdateRequestInput {
 
 message ValidIngredientState {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 2;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   string PastTense = 4;
   string Description = 5;
   string IconPath = 6;
@@ -203,8 +203,8 @@ message ValidIngredientStateCreationRequestInput {
 
 message ValidIngredientStateIngredient {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string Notes = 4;
   string ID = 5;
   ValidIngredientState IngredientState = 6;
@@ -269,8 +269,8 @@ message ValidIngredientUpdateRequestInput {
 
 message ValidInstrument {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string IconPath = 4;
   string ID = 5;
   string Name = 6;
@@ -306,8 +306,8 @@ message ValidInstrumentUpdateRequestInput {
 
 message ValidMeasurementUnit {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string Name = 4;
   string IconPath = 5;
   string ID = 6;
@@ -322,8 +322,8 @@ message ValidMeasurementUnit {
 
 message ValidMeasurementUnitConversion {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   ValidIngredient OnlyForIngredient = 4;
   string Notes = 5;
   string ID = 6;
@@ -377,8 +377,8 @@ message ValidPreparation {
   Uint16RangeWithOptionalMax InstrumentCount = 2;
   Uint16RangeWithOptionalMax IngredientCount = 3;
   Uint16RangeWithOptionalMax VesselCount = 4;
-  google.protobuf.Timestamp ArchivedAt = 5;
-  google.protobuf.Timestamp LastUpdatedAt = 6;
+  optional google.protobuf.Timestamp ArchivedAt = 5;
+  optional google.protobuf.Timestamp LastUpdatedAt = 6;
   string IconPath = 7;
   string PastTense = 8;
   string ID = 9;
@@ -414,8 +414,8 @@ message ValidPreparationCreationRequestInput {
 
 message ValidPreparationInstrument {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string ID = 4;
   string Notes = 5;
   ValidInstrument Instrument = 6;
@@ -454,8 +454,8 @@ message ValidPreparationUpdateRequestInput {
 
 message ValidPreparationVessel {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string ID = 4;
   string Notes = 5;
   ValidPreparation Preparation = 6;
@@ -476,8 +476,8 @@ message ValidPreparationVesselUpdateRequestInput {
 
 message ValidVessel {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 2;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   ValidMeasurementUnit CapacityUnit = 4;
   string IconPath = 5;
   string PluralName = 6;
@@ -531,8 +531,8 @@ message ValidVesselUpdateRequestInput {
 
 message UserIngredientPreference {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string ID = 4;
   string Notes = 5;
   string BelongsToUser = 6;
@@ -688,64 +688,98 @@ message CreateValidIngredientResponse {
 }
 
 // CreateValidIngredientGroup
-message CreateValidIngredientGroupRequest {}
+message CreateValidIngredientGroupRequest {
+  string Name = 1;
+  string Slug = 2;
+  string Description = 3;
+  repeated ValidIngredientGroupMemberCreationRequestInput Members = 4;
+}
 
-message CreateValidIngredientGroupResponse {}
+message CreateValidIngredientGroupResponse {
+  ValidIngredientGroup Result = 1;
+}
 
 // CreateValidIngredientMeasurementUnit
-message CreateValidIngredientMeasurementUnitRequest {}
+message CreateValidIngredientMeasurementUnitRequest {
+  string Notes = 1;
+  string ValidMeasurementUnitID = 2;
+  string ValidIngredientID = 3;
+  Float32RangeWithOptionalMax AllowableQuantity = 4;
+}
 
-message CreateValidIngredientMeasurementUnitResponse {}
+message CreateValidIngredientMeasurementUnitResponse {
+  ValidIngredientMeasurementUnit Result = 1;
+}
 
 // CreateValidIngredientPreparation
 message CreateValidIngredientPreparationRequest {}
 
-message CreateValidIngredientPreparationResponse {}
+message CreateValidIngredientPreparationResponse {
+  ValidIngredientPreparation Result = 1;
+}
 
 // CreateValidIngredientState
 message CreateValidIngredientStateRequest {}
 
-message CreateValidIngredientStateResponse {}
+message CreateValidIngredientStateResponse {
+  ValidIngredientState Result = 1;
+}
 
 // CreateValidIngredientStateIngredient
 message CreateValidIngredientStateIngredientRequest {}
 
-message CreateValidIngredientStateIngredientResponse {}
+message CreateValidIngredientStateIngredientResponse {
+  ValidIngredientStateIngredient Result = 1;
+}
 
 // CreateValidInstrument
 message CreateValidInstrumentRequest {}
 
-message CreateValidInstrumentResponse {}
+message CreateValidInstrumentResponse {
+  ValidInstrument Result = 1;
+}
 
 // CreateValidMeasurementUnit
 message CreateValidMeasurementUnitRequest {}
 
-message CreateValidMeasurementUnitResponse {}
+message CreateValidMeasurementUnitResponse {
+  ValidMeasurementUnit Result = 1;
+}
 
 // CreateValidMeasurementUnitConversion
 message CreateValidMeasurementUnitConversionRequest {}
 
-message CreateValidMeasurementUnitConversionResponse {}
+message CreateValidMeasurementUnitConversionResponse {
+  ValidMeasurementUnitConversion Result = 1;
+}
 
 // CreateValidPreparation
 message CreateValidPreparationRequest {}
 
-message CreateValidPreparationResponse {}
+message CreateValidPreparationResponse {
+  ValidPreparation Result = 1;
+}
 
 // CreateValidPreparationInstrument
 message CreateValidPreparationInstrumentRequest {}
 
-message CreateValidPreparationInstrumentResponse {}
+message CreateValidPreparationInstrumentResponse {
+  ValidPreparationInstrument Result = 1;
+}
 
 // CreateValidPreparationVessel
 message CreateValidPreparationVesselRequest {}
 
-message CreateValidPreparationVesselResponse {}
+message CreateValidPreparationVesselResponse {
+  ValidPreparationVessel Result = 1;
+}
 
 // CreateValidVessel
 message CreateValidVesselRequest {}
 
-message CreateValidVesselResponse {}
+message CreateValidVesselResponse {
+  ValidVessel Result = 1;
+}
 
 // GetRandomValidIngredient
 message GetRandomValidIngredientRequest {}
@@ -1351,8 +1385,8 @@ message UpdateUserIngredientPreferenceResponse {}
 message Recipe {
   google.protobuf.Timestamp CreatedAt = 1;
   string InspiredByRecipeID = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
-  google.protobuf.Timestamp ArchivedAt = 4;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 4;
   Float32RangeWithOptionalMax EstimatedPortions = 5;
   string PluralPortionName = 6;
   string Description = 7;
@@ -1390,8 +1424,8 @@ message RecipeCreationRequestInput {
 
 message RecipeMedia {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 2;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   string ID = 4;
   string BelongsToRecipe = 5;
   string BelongsToRecipeStep = 6;
@@ -1423,8 +1457,8 @@ message RecipePrepTask {
   google.protobuf.Timestamp CreatedAt = 1;
   OptionalFloat32Range StorageTemperatureInCelsius = 2;
   Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 3;
-  google.protobuf.Timestamp ArchivedAt = 4;
-  google.protobuf.Timestamp LastUpdatedAt = 5;
+  optional google.protobuf.Timestamp ArchivedAt = 4;
+  optional google.protobuf.Timestamp LastUpdatedAt = 5;
   string ID = 6;
   string StorageType = 7;
   string BelongsToRecipe = 8;
@@ -1500,8 +1534,8 @@ message RecipePrepTaskWithinRecipeCreationRequestInput {
 
 message RecipeRating {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   string Notes = 4;
   string ID = 5;
   string RecipeID = 6;
@@ -1539,8 +1573,8 @@ message RecipeStep {
   google.protobuf.Timestamp CreatedAt = 1;
   OptionalUint32Range EstimatedTimeInSeconds = 2;
   OptionalFloat32Range TemperatureInCelsius = 3;
-  google.protobuf.Timestamp ArchivedAt = 4;
-  google.protobuf.Timestamp LastUpdatedAt = 5;
+  optional google.protobuf.Timestamp ArchivedAt = 4;
+  optional google.protobuf.Timestamp LastUpdatedAt = 5;
   string BelongsToRecipe = 6;
   string ConditionExpression = 7;
   string ID = 8;
@@ -1560,8 +1594,8 @@ message RecipeStep {
 
 message RecipeStepCompletionCondition {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 2;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   ValidIngredientState IngredientState = 4;
   string ID = 5;
   string BelongsToRecipeStep = 6;
@@ -1588,8 +1622,8 @@ message RecipeStepCompletionConditionForExistingRecipeCreationRequestInput {
 
 message RecipeStepCompletionConditionIngredient {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 2;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   string ID = 4;
   string BelongsToRecipeStepCompletionCondition = 5;
   string RecipeStepIngredient = 6;
@@ -1626,9 +1660,9 @@ message RecipeStepCreationRequestInput {
 message RecipeStepIngredient {
   google.protobuf.Timestamp CreatedAt = 1;
   string RecipeStepProductRecipeID = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
   ValidIngredient Ingredient = 4;
-  google.protobuf.Timestamp LastUpdatedAt = 5;
+  optional google.protobuf.Timestamp LastUpdatedAt = 5;
   uint32 VesselIndex = 6;
   float ProductPercentageToUse = 7;
   string RecipeStepProductID = 8;
@@ -1681,9 +1715,9 @@ message RecipeStepIngredientUpdateRequestInput {
 message RecipeStepInstrument {
   google.protobuf.Timestamp CreatedAt = 1;
   ValidInstrument Instrument = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   string RecipeStepProductID = 4;
-  google.protobuf.Timestamp ArchivedAt = 5;
+  optional google.protobuf.Timestamp ArchivedAt = 5;
   string Notes = 6;
   string Name = 7;
   string BelongsToRecipeStep = 8;
@@ -1724,8 +1758,8 @@ message RecipeStepProduct {
   OptionalFloat32Range StorageTemperatureInCelsius = 2;
   OptionalUint32Range StorageDurationInSeconds = 3;
   OptionalFloat32Range Quantity = 4;
-  google.protobuf.Timestamp ArchivedAt = 5;
-  google.protobuf.Timestamp LastUpdatedAt = 6;
+  optional google.protobuf.Timestamp ArchivedAt = 5;
+  optional google.protobuf.Timestamp LastUpdatedAt = 6;
   ValidMeasurementUnit MeasurementUnit = 7;
   uint32 ContainedInVesselIndex = 8;
   string Name = 9;
@@ -1789,8 +1823,8 @@ message RecipeStepUpdateRequestInput {
 message RecipeStepVessel {
   google.protobuf.Timestamp CreatedAt = 1;
   Uint16RangeWithOptionalMax Quantity = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
-  google.protobuf.Timestamp ArchivedAt = 4;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 4;
   string RecipeStepProductID = 5;
   ValidVessel Vessel = 6;
   string ID = 7;
@@ -2300,8 +2334,8 @@ message InitializeMealPlanGroceryListResponse {
 
 message Meal {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 2;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   Float32RangeWithOptionalMax EstimatedPortions = 4;
   string ID = 5;
   string Description = 6;
@@ -2340,8 +2374,8 @@ message MealCreationRequestInput {
 message MealPlan {
   google.protobuf.Timestamp CreatedAt = 1;
   google.protobuf.Timestamp VotingDeadline = 2;
-  google.protobuf.Timestamp ArchivedAt = 3;
-  google.protobuf.Timestamp LastUpdatedAt = 4;
+  optional google.protobuf.Timestamp ArchivedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 4;
   string ID = 5;
   string Status = 6;
   string Notes = 7;
@@ -2364,8 +2398,8 @@ message MealPlanEvent {
   google.protobuf.Timestamp CreatedAt = 1;
   google.protobuf.Timestamp StartsAt = 2;
   google.protobuf.Timestamp EndsAt = 3;
-  google.protobuf.Timestamp ArchivedAt = 4;
-  google.protobuf.Timestamp LastUpdatedAt = 5;
+  optional google.protobuf.Timestamp ArchivedAt = 4;
+  optional google.protobuf.Timestamp LastUpdatedAt = 5;
   string MealName = 6;
   string Notes = 7;
   string BelongsToMealPlan = 8;
@@ -2394,8 +2428,8 @@ message MealPlanGroceryListItem {
   float QuantityPurchased = 2;
   float PurchasePrice = 3;
   string PurchasedUPC = 4;
-  google.protobuf.Timestamp ArchivedAt = 5;
-  google.protobuf.Timestamp LastUpdatedAt = 6;
+  optional google.protobuf.Timestamp ArchivedAt = 5;
+  optional google.protobuf.Timestamp LastUpdatedAt = 6;
   ValidMeasurementUnit PurchasedMeasurementUnit = 7;
   string BelongsToMealPlan = 8;
   string Status = 9;
@@ -2434,9 +2468,9 @@ message MealPlanGroceryListItemUpdateRequestInput {
 
 message MealPlanOption {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp LastUpdatedAt = 2;
+  optional google.protobuf.Timestamp LastUpdatedAt = 2;
   string AssignedCook = 3;
-  google.protobuf.Timestamp ArchivedAt = 4;
+  optional google.protobuf.Timestamp ArchivedAt = 4;
   string AssignedDishwasher = 5;
   string Notes = 6;
   string BelongsToMealPlanEvent = 7;
@@ -2467,8 +2501,8 @@ message MealPlanOptionUpdateRequestInput {
 
 message MealPlanOptionVote {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 2;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   string ID = 4;
   string Notes = 5;
   string BelongsToMealPlanOption = 6;
@@ -2500,7 +2534,7 @@ message MealPlanOptionVoteUpdateRequestInput {
 message MealPlanTask {
   RecipePrepTask RecipePrepTask = 1;
   google.protobuf.Timestamp CreatedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   google.protobuf.Timestamp CompletedAt = 4;
   string AssignedToUser = 5;
   string ID = 6;
@@ -2921,8 +2955,8 @@ message UpdateHouseholdInstrumentOwnershipResponse {}
 
 message HouseholdInstrumentOwnership {
   google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
+  optional google.protobuf.Timestamp ArchivedAt = 2;
+  optional google.protobuf.Timestamp LastUpdatedAt = 3;
   string ID = 4;
   string Notes = 5;
   string BelongsToHousehold = 6;
