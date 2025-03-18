@@ -870,17 +870,23 @@ message GetRandomValidIngredientResponse {
 // GetRandomValidInstrument
 message GetRandomValidInstrumentRequest {}
 
-message GetRandomValidInstrumentResponse {}
+message GetRandomValidInstrumentResponse {
+  ValidInstrument Result = 1;
+}
 
 // GetRandomValidPreparation
 message GetRandomValidPreparationRequest {}
 
-message GetRandomValidPreparationResponse {}
+message GetRandomValidPreparationResponse {
+  ValidPreparation Result = 1;
+}
 
 // GetRandomValidVessel
 message GetRandomValidVesselRequest {}
 
-message GetRandomValidVesselResponse {}
+message GetRandomValidVesselResponse {
+  ValidVessel Result = 1;
+}
 
 // GetValidIngredient
 message GetValidIngredientRequest {

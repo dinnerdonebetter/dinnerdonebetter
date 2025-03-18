@@ -419,12 +419,16 @@ func (s *serviceImpl) GetRandomValidIngredient(ctx context.Context, _ *messages.
 
 	logger := s.logger.WithSpan(span)
 
-	_, err := s.validEnumerationsManager.RandomValidIngredient(ctx)
+	selected, err := s.validEnumerationsManager.RandomValidIngredient(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching random valid ingredient")
 	}
 
-	return &messages.GetRandomValidIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	res := &messages.GetRandomValidIngredientResponse{
+		Result: grpcconverters.ConvertValidIngredientToGRPCValidIngredient(selected),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) GetRandomValidInstrument(ctx context.Context, _ *messages.GetRandomValidInstrumentRequest) (*messages.GetRandomValidInstrumentResponse, error) {
@@ -433,7 +437,7 @@ func (s *serviceImpl) GetRandomValidInstrument(ctx context.Context, _ *messages.
 
 	logger := s.logger.WithSpan(span)
 
-	_, err := s.validEnumerationsManager.RandomValidInstrument(ctx)
+	selected, err := s.validEnumerationsManager.RandomValidInstrument(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching random valid instrument")
 	}
@@ -447,10 +451,12 @@ func (s *serviceImpl) GetRandomValidPreparation(ctx context.Context, _ *messages
 
 	logger := s.logger.WithSpan(span)
 
-	_, err := s.validEnumerationsManager.RandomValidPreparation(ctx)
+	selected, err := s.validEnumerationsManager.RandomValidPreparation(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching random valid preparation")
 	}
+
+	res := &messages.GetRandomValidPreparationResponse{}
 
 	return &messages.GetRandomValidPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
 }
