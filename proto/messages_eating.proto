@@ -943,7 +943,7 @@ message GetValidIngredientMeasurementUnitsByIngredientRequest {
 
 message GetValidIngredientMeasurementUnitsByIngredientResponse {
   QueryFilter Filter = 1;
-  repeated ValidMeasurementUnitConversion Results = 2;
+  repeated ValidIngredientMeasurementUnit Results = 2;
 }
 
 // GetValidIngredientMeasurementUnitsByMeasurementUnit
@@ -1182,7 +1182,10 @@ message GetValidPreparationInstrumentsByPreparationRequest {
   string ValidPreparationID = 2;
 }
 
-message GetValidPreparationInstrumentsByPreparationResponse {}
+message GetValidPreparationInstrumentsByPreparationResponse {
+  QueryFilter Filter = 1;
+  repeated ValidPreparationInstrument Result = 2;
+}
 
 // GetValidPreparationVessel
 message GetValidPreparationVesselRequest {
