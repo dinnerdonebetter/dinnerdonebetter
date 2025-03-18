@@ -1023,7 +1023,7 @@ message GetValidIngredientStateIngredientsRequest {
 
 message GetValidIngredientStateIngredientsResponse {
   QueryFilter Filter = 1;
-  repeated ValidIngredientState Result = 2;
+  repeated ValidIngredientStateIngredient Result = 2;
 }
 
 // GetValidIngredientStateIngredientsByIngredient
