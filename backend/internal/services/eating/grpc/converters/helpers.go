@@ -29,3 +29,17 @@ func ConvertPBTimestampToTime(t *timestamppb.Timestamp) time.Time {
 func ConvertPBTimestampToTimePointer(t *timestamppb.Timestamp) *time.Time {
 	return pointer.To(ConvertPBTimestampToTime(t))
 }
+
+func ConvertUint16PointerToUint32Pointer(i *uint16) *uint32 {
+	if i == nil {
+		return nil
+	}
+	return pointer.To(uint32(*i))
+}
+
+func ConvertUint32PointerToUint16Pointer(i *uint32) *uint16 {
+	if i == nil {
+		return nil
+	}
+	return pointer.To(uint16(*i))
+}

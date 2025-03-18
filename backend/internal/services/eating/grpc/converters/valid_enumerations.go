@@ -143,99 +143,313 @@ func ConvertGRPCCreateValidIngredientMeasurementUnitRequestToValidIngredientMeas
 }
 
 func ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(x *types.ValidIngredientMeasurementUnit) *messages.ValidIngredientMeasurementUnit {
-	return &messages.ValidIngredientMeasurementUnit{}
+	return &messages.ValidIngredientMeasurementUnit{
+		CreatedAt:     ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt: ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:    ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		Notes:         x.Notes,
+		ID:            x.ID,
+		AllowableQuantity: &messages.Float32RangeWithOptionalMax{
+			Max: x.AllowableQuantity.Max,
+			Min: x.AllowableQuantity.Min,
+		},
+		MeasurementUnit: ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.MeasurementUnit),
+		Ingredient:      ConvertValidIngredientToGRPCValidIngredient(&x.Ingredient),
+	}
 }
 
-func ConvertGRPCCreateValidIngredientPreparationRequestToValidIngredientPreparationCreationRequestInput(request *messages.CreateValidIngredientPreparationRequest) *types.ValidIngredientPreparationCreationRequestInput {
-	return &types.ValidIngredientPreparationCreationRequestInput{}
+func ConvertGRPCCreateValidIngredientPreparationRequestToValidIngredientPreparationCreationRequestInput(x *messages.CreateValidIngredientPreparationRequest) *types.ValidIngredientPreparationCreationRequestInput {
+	return &types.ValidIngredientPreparationCreationRequestInput{
+		Notes:              x.Notes,
+		ValidPreparationID: x.ValidPreparationID,
+		ValidIngredientID:  x.ValidIngredientID,
+	}
 }
 
 func ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(x *types.ValidIngredientPreparation) *messages.ValidIngredientPreparation {
-	return &messages.ValidIngredientPreparation{}
+	return &messages.ValidIngredientPreparation{
+		CreatedAt:     ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt: ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:    ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		Notes:         x.Notes,
+		ID:            x.ID,
+		Preparation:   ConvertValidPreparationToGRPCValidPreparation(&x.Preparation),
+		Ingredient:    ConvertValidIngredientToGRPCValidIngredient(&x.Ingredient),
+	}
 }
 
-func ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(request *messages.CreateValidIngredientStateRequest) *types.ValidIngredientStateCreationRequestInput {
-	return &types.ValidIngredientStateCreationRequestInput{}
+func ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(x *messages.CreateValidIngredientStateRequest) *types.ValidIngredientStateCreationRequestInput {
+	return &types.ValidIngredientStateCreationRequestInput{
+		Name:          x.Name,
+		Slug:          x.Slug,
+		PastTense:     x.PastTense,
+		Description:   x.Description,
+		AttributeType: x.AttributeType,
+		IconPath:      x.IconPath,
+	}
 }
 
 func ConvertValidIngredientStateToGRPCValidIngredientState(x *types.ValidIngredientState) *messages.ValidIngredientState {
-	return &messages.ValidIngredientState{}
+	return &messages.ValidIngredientState{
+		CreatedAt:     ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt: ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:    ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		PastTense:     x.PastTense,
+		Description:   x.Description,
+		IconPath:      x.IconPath,
+		ID:            x.ID,
+		Name:          x.Name,
+		AttributeType: x.AttributeType,
+		Slug:          x.Slug,
+	}
 }
 
-func ConvertGRPCCreateValidIngredientStateIngredientRequestToValidIngredientStateIngredientCreationRequestInput(request *messages.CreateValidIngredientStateIngredientRequest) *types.ValidIngredientStateIngredientCreationRequestInput {
-	return &types.ValidIngredientStateIngredientCreationRequestInput{}
+func ConvertGRPCCreateValidIngredientStateIngredientRequestToValidIngredientStateIngredientCreationRequestInput(x *messages.CreateValidIngredientStateIngredientRequest) *types.ValidIngredientStateIngredientCreationRequestInput {
+	return &types.ValidIngredientStateIngredientCreationRequestInput{
+		Notes:                  x.Notes,
+		ValidIngredientStateID: x.ValidIngredientStateID,
+		ValidIngredientID:      x.ValidIngredientID,
+	}
 }
 
 func ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(x *types.ValidIngredientStateIngredient) *messages.ValidIngredientStateIngredient {
-	return &messages.ValidIngredientStateIngredient{}
+	return &messages.ValidIngredientStateIngredient{
+		CreatedAt:       ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt:   ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:      ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		Notes:           x.Notes,
+		ID:              x.ID,
+		IngredientState: ConvertValidIngredientStateToGRPCValidIngredientState(&x.IngredientState),
+		Ingredient:      ConvertValidIngredientToGRPCValidIngredient(&x.Ingredient),
+	}
 }
 
-func ConvertGRPCCreateValidInstrumentRequestToValidInstrumentCreationRequestInput(request *messages.CreateValidInstrumentRequest) *types.ValidInstrumentCreationRequestInput {
-	return &types.ValidInstrumentCreationRequestInput{}
+func ConvertGRPCCreateValidInstrumentRequestToValidInstrumentCreationRequestInput(x *messages.CreateValidInstrumentRequest) *types.ValidInstrumentCreationRequestInput {
+	return &types.ValidInstrumentCreationRequestInput{
+		Name:                           x.Name,
+		PluralName:                     x.PluralName,
+		Description:                    x.Description,
+		IconPath:                       x.IconPath,
+		Slug:                           x.Slug,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+		UsableForStorage:               x.UsableForStorage,
+	}
 }
 
 func ConvertValidInstrumentToGRPCValidInstrument(x *types.ValidInstrument) *messages.ValidInstrument {
-	return &messages.ValidInstrument{}
+	return &messages.ValidInstrument{
+		CreatedAt:                      ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt:                  ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:                     ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		Name:                           x.Name,
+		ID:                             x.ID,
+		IconPath:                       x.IconPath,
+		PluralName:                     x.PluralName,
+		Description:                    x.Description,
+		Slug:                           x.Slug,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+		UsableForStorage:               x.UsableForStorage,
+	}
 }
 
-func ConvertGRPCCreateValidMeasurementUnitRequestToValidMeasurementUnitCreationRequestInput(request *messages.CreateValidMeasurementUnitRequest) *types.ValidMeasurementUnitCreationRequestInput {
-	return &types.ValidMeasurementUnitCreationRequestInput{}
+func ConvertGRPCCreateValidMeasurementUnitRequestToValidMeasurementUnitCreationRequestInput(x *messages.CreateValidMeasurementUnitRequest) *types.ValidMeasurementUnitCreationRequestInput {
+	return &types.ValidMeasurementUnitCreationRequestInput{
+		Name:        x.Name,
+		Description: x.Description,
+		IconPath:    x.IconPath,
+		PluralName:  x.PluralName,
+		Slug:        x.Slug,
+		Volumetric:  x.Volumetric,
+		Universal:   x.Universal,
+		Metric:      x.Metric,
+		Imperial:    x.Imperial,
+	}
 }
 
 func ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(x *types.ValidMeasurementUnit) *messages.ValidMeasurementUnit {
-	return &messages.ValidMeasurementUnit{}
+	return &messages.ValidMeasurementUnit{
+		CreatedAt:     ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt: ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:    ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		PluralName:    x.PluralName,
+		IconPath:      x.IconPath,
+		ID:            x.ID,
+		Description:   x.Description,
+		Name:          x.Name,
+		Slug:          x.Slug,
+		Volumetric:    x.Volumetric,
+		Universal:     x.Universal,
+		Metric:        x.Metric,
+		Imperial:      x.Imperial,
+	}
 }
 
-func ConvertGRPCCreateValidMeasurementUnitConversionRequestToValidMeasurementUnitConversionCreationRequestInput(request *messages.CreateValidMeasurementUnitConversionRequest) *types.ValidMeasurementUnitConversionCreationRequestInput {
-	return &types.ValidMeasurementUnitConversionCreationRequestInput{}
+func ConvertGRPCCreateValidMeasurementUnitConversionRequestToValidMeasurementUnitConversionCreationRequestInput(x *messages.CreateValidMeasurementUnitConversionRequest) *types.ValidMeasurementUnitConversionCreationRequestInput {
+	return &types.ValidMeasurementUnitConversionCreationRequestInput{
+		OnlyForIngredient: x.OnlyForIngredient,
+		From:              x.From,
+		To:                x.To,
+		Notes:             x.Notes,
+		Modifier:          x.Modifier,
+	}
 }
 
 func ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(x *types.ValidMeasurementUnitConversion) *messages.ValidMeasurementUnitConversion {
-	return &messages.ValidMeasurementUnitConversion{}
+	return &messages.ValidMeasurementUnitConversion{
+		CreatedAt:         ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt:     ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:        ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		OnlyForIngredient: ConvertValidIngredientToGRPCValidIngredient(x.OnlyForIngredient),
+		From:              ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.From),
+		To:                ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.To),
+		Notes:             x.Notes,
+		ID:                x.ID,
+		Modifier:          x.Modifier,
+	}
 }
 
-func ConvertGRPCCreateValidPreparationRequestToValidPreparationCreationRequestInput(request *messages.CreateValidPreparationRequest) *types.ValidPreparationCreationRequestInput {
-	return &types.ValidPreparationCreationRequestInput{}
+func ConvertGRPCCreateValidPreparationRequestToValidPreparationCreationRequestInput(x *messages.CreateValidPreparationRequest) *types.ValidPreparationCreationRequestInput {
+	return &types.ValidPreparationCreationRequestInput{
+		InstrumentCount: types.Uint16RangeWithOptionalMax{
+			Min: uint16(x.InstrumentCount.Min),
+			Max: ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
+		},
+		IngredientCount: types.Uint16RangeWithOptionalMax{
+			Min: uint16(x.IngredientCount.Min),
+			Max: ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
+		},
+		VesselCount: types.Uint16RangeWithOptionalMax{
+			Min: uint16(x.VesselCount.Min),
+			Max: ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
+		},
+		IconPath:                    x.IconPath,
+		PastTense:                   x.PastTense,
+		Slug:                        x.Slug,
+		Name:                        x.Name,
+		Description:                 x.Description,
+		TemperatureRequired:         x.TemperatureRequired,
+		TimeEstimateRequired:        x.TimeEstimateRequired,
+		ConditionExpressionRequired: x.ConditionExpressionRequired,
+		ConsumesVessel:              x.ConsumesVessel,
+		OnlyForVessels:              x.OnlyForVessels,
+		RestrictToIngredients:       x.RestrictToIngredients,
+		YieldsNothing:               x.YieldsNothing,
+	}
 }
 
 func ConvertValidPreparationToGRPCValidPreparation(x *types.ValidPreparation) *messages.ValidPreparation {
-	return &messages.ValidPreparation{}
+	return &messages.ValidPreparation{
+		CreatedAt:     ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt: ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:    ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		InstrumentCount: &messages.Uint16RangeWithOptionalMax{
+			Min: uint32(x.InstrumentCount.Min),
+			Max: ConvertUint16PointerToUint32Pointer(x.InstrumentCount.Max),
+		},
+		IngredientCount: &messages.Uint16RangeWithOptionalMax{
+			Min: uint32(x.IngredientCount.Min),
+			Max: ConvertUint16PointerToUint32Pointer(x.IngredientCount.Max),
+		},
+		VesselCount: &messages.Uint16RangeWithOptionalMax{
+			Min: uint32(x.VesselCount.Min),
+			Max: ConvertUint16PointerToUint32Pointer(x.VesselCount.Max),
+		},
+		Name:                        x.Name,
+		ID:                          x.ID,
+		IconPath:                    x.IconPath,
+		Description:                 x.Description,
+		Slug:                        x.Slug,
+		PastTense:                   x.PastTense,
+		TemperatureRequired:         x.TemperatureRequired,
+		ConditionExpressionRequired: x.ConditionExpressionRequired,
+		ConsumesVessel:              x.ConsumesVessel,
+		OnlyForVessels:              x.OnlyForVessels,
+		YieldsNothing:               x.YieldsNothing,
+		TimeEstimateRequired:        x.TimeEstimateRequired,
+		RestrictToIngredients:       x.RestrictToIngredients,
+	}
 }
 
-func ConvertGRPCCreateValidPreparationInstrumentRequestToValidPreparationInstrumentCreationRequestInput(request *messages.CreateValidPreparationInstrumentRequest) *types.ValidPreparationInstrumentCreationRequestInput {
-	return &types.ValidPreparationInstrumentCreationRequestInput{}
+func ConvertGRPCCreateValidPreparationInstrumentRequestToValidPreparationInstrumentCreationRequestInput(x *messages.CreateValidPreparationInstrumentRequest) *types.ValidPreparationInstrumentCreationRequestInput {
+	return &types.ValidPreparationInstrumentCreationRequestInput{
+		Notes:              x.Notes,
+		ValidPreparationID: x.ValidPreparationID,
+		ValidInstrumentID:  x.ValidInstrumentID,
+	}
 }
 
 func ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(x *types.ValidPreparationInstrument) *messages.ValidPreparationInstrument {
-	return &messages.ValidPreparationInstrument{}
+	return &messages.ValidPreparationInstrument{
+		CreatedAt:     ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt: ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:    ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		ID:            x.ID,
+		Notes:         x.Notes,
+		Instrument:    ConvertValidInstrumentToGRPCValidInstrument(&x.Instrument),
+		Preparation:   ConvertValidPreparationToGRPCValidPreparation(&x.Preparation),
+	}
 }
 
-func ConvertGRPCCreateValidPreparationVesselRequestToValidPreparationVesselCreationRequestInput(request *messages.CreateValidPreparationVesselRequest) *types.ValidPreparationVesselCreationRequestInput {
-	return &types.ValidPreparationVesselCreationRequestInput{}
+func ConvertGRPCCreateValidPreparationVesselRequestToValidPreparationVesselCreationRequestInput(x *messages.CreateValidPreparationVesselRequest) *types.ValidPreparationVesselCreationRequestInput {
+	return &types.ValidPreparationVesselCreationRequestInput{
+		Notes:              x.Notes,
+		ValidPreparationID: x.ValidPreparationID,
+		ValidVesselID:      x.ValidVesselID,
+	}
 }
 
 func ConvertValidPreparationVesselToGRPCValidPreparationVessel(x *types.ValidPreparationVessel) *messages.ValidPreparationVessel {
-	return &messages.ValidPreparationVessel{}
+	return &messages.ValidPreparationVessel{
+		CreatedAt:     ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt: ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:    ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		ID:            x.ID,
+		Notes:         x.Notes,
+		Preparation:   ConvertValidPreparationToGRPCValidPreparation(&x.Preparation),
+		Vessel:        ConvertValidVesselToGRPCValidVessel(&x.Vessel),
+	}
 }
 
-func ConvertGRPCCreateValidVesselRequestToValidVesselCreationRequestInput(request *messages.CreateValidVesselRequest) *types.ValidVesselCreationRequestInput {
-	return &types.ValidVesselCreationRequestInput{}
+func ConvertGRPCCreateValidVesselRequestToValidVesselCreationRequestInput(x *messages.CreateValidVesselRequest) *types.ValidVesselCreationRequestInput {
+	return &types.ValidVesselCreationRequestInput{
+		CapacityUnitID:                 x.CapacityUnitID,
+		Shape:                          x.Shape,
+		IconPath:                       x.IconPath,
+		PluralName:                     x.PluralName,
+		Name:                           x.Name,
+		Description:                    x.Description,
+		Slug:                           x.Slug,
+		LengthInMillimeters:            x.LengthInMillimeters,
+		HeightInMillimeters:            x.HeightInMillimeters,
+		Capacity:                       x.Capacity,
+		WidthInMillimeters:             x.WidthInMillimeters,
+		UsableForStorage:               x.UsableForStorage,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+	}
 }
 
 func ConvertValidVesselToGRPCValidVessel(x *types.ValidVessel) *messages.ValidVessel {
-	return &messages.ValidVessel{}
+	return &messages.ValidVessel{
+		CreatedAt:                      ConvertTimeToPBTimestamp(x.CreatedAt),
+		LastUpdatedAt:                  ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
+		ArchivedAt:                     ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		CapacityUnit:                   ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(x.CapacityUnit),
+		Shape:                          x.Shape,
+		Description:                    x.Description,
+		Name:                           x.Name,
+		Slug:                           x.Slug,
+		IconPath:                       x.IconPath,
+		ID:                             x.ID,
+		PluralName:                     x.PluralName,
+		WidthInMillimeters:             x.WidthInMillimeters,
+		HeightInMillimeters:            x.HeightInMillimeters,
+		Capacity:                       x.Capacity,
+		LengthInMillimeters:            x.LengthInMillimeters,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+		UsableForStorage:               x.UsableForStorage,
+	}
 }
-
-/*
-ValidIngredientMeasurementUnit
-ValidIngredientPreparation
-ValidIngredientState
-ValidIngredientStateIngredient
-ValidInstrument
-ValidMeasurementUnit
-ValidMeasurementUnitConversion
-ValidPreparation
-ValidPreparationInstrument
-ValidPreparationVessel
-ValidVessel
-*/

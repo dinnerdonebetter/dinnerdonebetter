@@ -712,70 +712,149 @@ message CreateValidIngredientMeasurementUnitResponse {
 }
 
 // CreateValidIngredientPreparation
-message CreateValidIngredientPreparationRequest {}
+message CreateValidIngredientPreparationRequest {
+  string Notes = 1;
+  string ValidPreparationID = 2;
+  string ValidIngredientID = 3;
+}
 
 message CreateValidIngredientPreparationResponse {
   ValidIngredientPreparation Result = 1;
 }
 
 // CreateValidIngredientState
-message CreateValidIngredientStateRequest {}
+message CreateValidIngredientStateRequest {
+  string Name = 1;
+  string Slug = 2;
+  string PastTense = 3;
+  string Description = 4;
+  string AttributeType = 5;
+  string IconPath = 6;
+}
 
 message CreateValidIngredientStateResponse {
   ValidIngredientState Result = 1;
 }
 
 // CreateValidIngredientStateIngredient
-message CreateValidIngredientStateIngredientRequest {}
+message CreateValidIngredientStateIngredientRequest {
+  string Notes = 1;
+  string ValidIngredientStateID = 2;
+  string ValidIngredientID = 3;
+}
 
 message CreateValidIngredientStateIngredientResponse {
   ValidIngredientStateIngredient Result = 1;
 }
 
 // CreateValidInstrument
-message CreateValidInstrumentRequest {}
+message CreateValidInstrumentRequest {
+  string Name = 1;
+  string PluralName = 2;
+  string Description = 3;
+  string IconPath = 4;
+  string Slug = 5;
+  bool DisplayInSummaryLists = 6;
+  bool IncludeInGeneratedInstructions = 7;
+  bool UsableForStorage = 8;
+}
 
 message CreateValidInstrumentResponse {
   ValidInstrument Result = 1;
 }
 
 // CreateValidMeasurementUnit
-message CreateValidMeasurementUnitRequest {}
+message CreateValidMeasurementUnitRequest {
+  string Name = 1;
+  string Description = 2;
+  string IconPath = 3;
+  string PluralName = 4;
+  string Slug = 5;
+  bool Volumetric = 6;
+  bool Universal = 7;
+  bool Metric = 8;
+  bool Imperial = 9;
+}
 
 message CreateValidMeasurementUnitResponse {
   ValidMeasurementUnit Result = 1;
 }
 
 // CreateValidMeasurementUnitConversion
-message CreateValidMeasurementUnitConversionRequest {}
+message CreateValidMeasurementUnitConversionRequest {
+  optional string OnlyForIngredient = 1;
+  string From = 2;
+  string To = 3;
+  string Notes = 4;
+  float Modifier = 5;
+}
 
 message CreateValidMeasurementUnitConversionResponse {
   ValidMeasurementUnitConversion Result = 1;
 }
 
 // CreateValidPreparation
-message CreateValidPreparationRequest {}
+message CreateValidPreparationRequest {
+  Uint16RangeWithOptionalMax InstrumentCount = 1;
+  Uint16RangeWithOptionalMax IngredientCount = 2;
+  Uint16RangeWithOptionalMax VesselCount = 3;
+  string IconPath = 4;
+  string PastTense = 5;
+  string Slug = 6;
+  string Name = 7;
+  string Description = 8;
+  bool TemperatureRequired = 9;
+  bool TimeEstimateRequired = 10;
+  bool ConditionExpressionRequired = 11;
+  bool ConsumesVessel = 12;
+  bool OnlyForVessels = 13;
+  bool RestrictToIngredients = 14;
+  bool YieldsNothing = 15;
+}
 
 message CreateValidPreparationResponse {
   ValidPreparation Result = 1;
 }
 
 // CreateValidPreparationInstrument
-message CreateValidPreparationInstrumentRequest {}
+message CreateValidPreparationInstrumentRequest {
+  string Notes = 1;
+  string ValidPreparationID = 2;
+  string ValidInstrumentID = 3;
+}
 
 message CreateValidPreparationInstrumentResponse {
   ValidPreparationInstrument Result = 1;
 }
 
 // CreateValidPreparationVessel
-message CreateValidPreparationVesselRequest {}
+message CreateValidPreparationVesselRequest {
+  string Notes = 1;
+  string ValidPreparationID = 2;
+  string ValidVesselID = 3;
+}
 
 message CreateValidPreparationVesselResponse {
   ValidPreparationVessel Result = 1;
 }
 
 // CreateValidVessel
-message CreateValidVesselRequest {}
+message CreateValidVesselRequest {
+  optional string CapacityUnitID = 1;
+  string Shape = 2;
+  string IconPath = 3;
+  string PluralName = 4;
+  string Name = 5;
+  string Description = 6;
+  string Slug = 7;
+  float LengthInMillimeters = 8;
+  float HeightInMillimeters = 9;
+  float Capacity = 10;
+  float WidthInMillimeters = 11;
+  bool UsableForStorage = 12;
+  bool IncludeInGeneratedInstructions = 13;
+  bool DisplayInSummaryLists = 14;
+}
 
 message CreateValidVesselResponse {
   ValidVessel Result = 1;
