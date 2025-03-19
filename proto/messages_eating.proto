@@ -1261,6 +1261,7 @@ message GetValidVesselsResponse {
 message SearchForValidIngredientGroupsRequest {
   QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForValidIngredientGroupsResponse {
@@ -1272,6 +1273,7 @@ message SearchForValidIngredientGroupsResponse {
 message SearchForValidIngredientStatesRequest {
   QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForValidIngredientStatesResponse {
@@ -1283,6 +1285,7 @@ message SearchForValidIngredientStatesResponse {
 message SearchForValidIngredientsRequest {
   QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForValidIngredientsResponse {
@@ -1294,6 +1297,7 @@ message SearchForValidIngredientsResponse {
 message SearchForValidInstrumentsRequest {
   QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForValidInstrumentsResponse {
@@ -1305,6 +1309,7 @@ message SearchForValidInstrumentsResponse {
 message SearchForValidMeasurementUnitsRequest {
   QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForValidMeasurementUnitsResponse {
@@ -1316,6 +1321,7 @@ message SearchForValidMeasurementUnitsResponse {
 message SearchForValidPreparationsRequest {
   QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForValidPreparationsResponse {
@@ -1327,6 +1333,7 @@ message SearchForValidPreparationsResponse {
 message SearchForValidVesselsRequest {
   QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForValidVesselsResponse {
