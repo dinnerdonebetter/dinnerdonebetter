@@ -21,7 +21,9 @@ func (s *serviceImpl) ArchiveValidIngredient(ctx context.Context, request *messa
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient")
 	}
 
-	return &messages.ArchiveValidIngredientResponse{}, nil
+	res := &messages.ArchiveValidIngredientResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *messages.ArchiveValidIngredientGroupRequest) (*messages.ArchiveValidIngredientGroupResponse, error) {
@@ -34,7 +36,9 @@ func (s *serviceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient group")
 	}
 
-	return &messages.ArchiveValidIngredientGroupResponse{}, nil
+	res := &messages.ArchiveValidIngredientGroupResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context, request *messages.ArchiveValidIngredientMeasurementUnitRequest) (*messages.ArchiveValidIngredientMeasurementUnitResponse, error) {
@@ -47,7 +51,9 @@ func (s *serviceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context,
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient measurement unit")
 	}
 
-	return &messages.ArchiveValidIngredientMeasurementUnitResponse{}, nil
+	res := &messages.ArchiveValidIngredientMeasurementUnitResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientPreparation(ctx context.Context, request *messages.ArchiveValidIngredientPreparationRequest) (*messages.ArchiveValidIngredientPreparationResponse, error) {
@@ -60,7 +66,9 @@ func (s *serviceImpl) ArchiveValidIngredientPreparation(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient preparation")
 	}
 
-	return &messages.ArchiveValidIngredientPreparationResponse{}, nil
+	res := &messages.ArchiveValidIngredientPreparationResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientState(ctx context.Context, request *messages.ArchiveValidIngredientStateRequest) (*messages.ArchiveValidIngredientStateResponse, error) {
@@ -73,7 +81,9 @@ func (s *serviceImpl) ArchiveValidIngredientState(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient state")
 	}
 
-	return &messages.ArchiveValidIngredientStateResponse{}, nil
+	res := &messages.ArchiveValidIngredientStateResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context, request *messages.ArchiveValidIngredientStateIngredientRequest) (*messages.ArchiveValidIngredientStateIngredientResponse, error) {
@@ -86,7 +96,9 @@ func (s *serviceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context,
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient state ingredient")
 	}
 
-	return &messages.ArchiveValidIngredientStateIngredientResponse{}, nil
+	res := &messages.ArchiveValidIngredientStateIngredientResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidInstrument(ctx context.Context, request *messages.ArchiveValidInstrumentRequest) (*messages.ArchiveValidInstrumentResponse, error) {
@@ -99,7 +111,9 @@ func (s *serviceImpl) ArchiveValidInstrument(ctx context.Context, request *messa
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid instrument")
 	}
 
-	return &messages.ArchiveValidInstrumentResponse{}, nil
+	res := &messages.ArchiveValidInstrumentResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *messages.ArchiveValidMeasurementUnitRequest) (*messages.ArchiveValidMeasurementUnitResponse, error) {
@@ -112,7 +126,9 @@ func (s *serviceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid measurement unit")
 	}
 
-	return &messages.ArchiveValidMeasurementUnitResponse{}, nil
+	res := &messages.ArchiveValidMeasurementUnitResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context, request *messages.ArchiveValidMeasurementUnitConversionRequest) (*messages.ArchiveValidMeasurementUnitConversionResponse, error) {
@@ -125,7 +141,9 @@ func (s *serviceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context,
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid measurement unit conversion")
 	}
 
-	return &messages.ArchiveValidMeasurementUnitConversionResponse{}, nil
+	res := &messages.ArchiveValidMeasurementUnitConversionResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidPreparation(ctx context.Context, request *messages.ArchiveValidPreparationRequest) (*messages.ArchiveValidPreparationResponse, error) {
@@ -138,7 +156,9 @@ func (s *serviceImpl) ArchiveValidPreparation(ctx context.Context, request *mess
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation")
 	}
 
-	return &messages.ArchiveValidPreparationResponse{}, nil
+	res := &messages.ArchiveValidPreparationResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidPreparationInstrument(ctx context.Context, request *messages.ArchiveValidPreparationInstrumentRequest) (*messages.ArchiveValidPreparationInstrumentResponse, error) {
@@ -151,7 +171,9 @@ func (s *serviceImpl) ArchiveValidPreparationInstrument(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation instrument")
 	}
 
-	return &messages.ArchiveValidPreparationInstrumentResponse{}, nil
+	res := &messages.ArchiveValidPreparationInstrumentResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidPreparationVessel(ctx context.Context, request *messages.ArchiveValidPreparationVesselRequest) (*messages.ArchiveValidPreparationVesselResponse, error) {
@@ -164,7 +186,9 @@ func (s *serviceImpl) ArchiveValidPreparationVessel(ctx context.Context, request
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation vessel")
 	}
 
-	return &messages.ArchiveValidPreparationVesselResponse{}, nil
+	res := &messages.ArchiveValidPreparationVesselResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) ArchiveValidVessel(ctx context.Context, request *messages.ArchiveValidVesselRequest) (*messages.ArchiveValidVesselResponse, error) {
@@ -177,7 +201,9 @@ func (s *serviceImpl) ArchiveValidVessel(ctx context.Context, request *messages.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid vessel")
 	}
 
-	return &messages.ArchiveValidVesselResponse{}, nil
+	res := &messages.ArchiveValidVesselResponse{}
+
+	return res, nil
 }
 
 func (s *serviceImpl) CreateValidIngredient(ctx context.Context, request *messages.CreateValidIngredientRequest) (*messages.CreateValidIngredientResponse, error) {
@@ -1290,8 +1316,23 @@ func (s *serviceImpl) SearchForValidIngredientGroups(ctx context.Context, reques
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	return &messages.SearchForValidIngredientGroupsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	x, err := s.validEnumerationsManager.SearchValidIngredientGroups(ctx, request.Query, false, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid ingredient groups")
+	}
+
+	res := &messages.SearchForValidIngredientGroupsResponse{
+		Filter: request.Filter,
+	}
+
+	for _, y := range x {
+		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(y))
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) SearchForValidIngredientStates(ctx context.Context, request *messages.SearchForValidIngredientStatesRequest) (*messages.SearchForValidIngredientStatesResponse, error) {
@@ -1299,8 +1340,23 @@ func (s *serviceImpl) SearchForValidIngredientStates(ctx context.Context, reques
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	return &messages.SearchForValidIngredientStatesResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	x, err := s.validEnumerationsManager.SearchValidIngredientStates(ctx, request.Query, false, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid ingredient states")
+	}
+
+	res := &messages.SearchForValidIngredientStatesResponse{
+		Filter: request.Filter,
+	}
+
+	for _, y := range x {
+		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(y))
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) SearchForValidIngredients(ctx context.Context, request *messages.SearchForValidIngredientsRequest) (*messages.SearchForValidIngredientsResponse, error) {
@@ -1308,8 +1364,23 @@ func (s *serviceImpl) SearchForValidIngredients(ctx context.Context, request *me
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	return &messages.SearchForValidIngredientsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	x, err := s.validEnumerationsManager.SearchValidIngredients(ctx, request.Query, false, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid ingredients")
+	}
+
+	res := &messages.SearchForValidIngredientsResponse{
+		Filter: request.Filter,
+	}
+
+	for _, y := range x {
+		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientToGRPCValidIngredient(y))
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) SearchForValidInstruments(ctx context.Context, request *messages.SearchForValidInstrumentsRequest) (*messages.SearchForValidInstrumentsResponse, error) {
@@ -1317,8 +1388,23 @@ func (s *serviceImpl) SearchForValidInstruments(ctx context.Context, request *me
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	return &messages.SearchForValidInstrumentsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	x, err := s.validEnumerationsManager.SearchValidInstruments(ctx, request.Query, false, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid instruments")
+	}
+
+	res := &messages.SearchForValidInstrumentsResponse{
+		Filter: request.Filter,
+	}
+
+	for _, y := range x {
+		res.Results = append(res.Results, grpcconverters.ConvertValidInstrumentToGRPCValidInstrument(y))
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) SearchForValidMeasurementUnits(ctx context.Context, request *messages.SearchForValidMeasurementUnitsRequest) (*messages.SearchForValidMeasurementUnitsResponse, error) {
@@ -1326,8 +1412,23 @@ func (s *serviceImpl) SearchForValidMeasurementUnits(ctx context.Context, reques
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	return &messages.SearchForValidMeasurementUnitsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	x, err := s.validEnumerationsManager.SearchValidMeasurementUnits(ctx, request.Query, false, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid measurement units")
+	}
+
+	res := &messages.SearchForValidMeasurementUnitsResponse{
+		Filter: request.Filter,
+	}
+
+	for _, y := range x {
+		res.Results = append(res.Results, grpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) SearchForValidPreparations(ctx context.Context, request *messages.SearchForValidPreparationsRequest) (*messages.SearchForValidPreparationsResponse, error) {
@@ -1335,8 +1436,23 @@ func (s *serviceImpl) SearchForValidPreparations(ctx context.Context, request *m
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	return &messages.SearchForValidPreparationsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	x, err := s.validEnumerationsManager.SearchValidPreparations(ctx, request.Query, false, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid preparations")
+	}
+
+	res := &messages.SearchForValidPreparationsResponse{
+		Filter: request.Filter,
+	}
+
+	for _, y := range x {
+		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationToGRPCValidPreparation(y))
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) SearchForValidVessels(ctx context.Context, request *messages.SearchForValidVesselsRequest) (*messages.SearchForValidVesselsResponse, error) {
@@ -1344,8 +1460,23 @@ func (s *serviceImpl) SearchForValidVessels(ctx context.Context, request *messag
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	return &messages.SearchForValidVesselsResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	x, err := s.validEnumerationsManager.SearchValidVessels(ctx, request.Query, false, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid vessels")
+	}
+
+	res := &messages.SearchForValidVesselsResponse{
+		Filter: request.Filter,
+	}
+
+	for _, y := range x {
+		res.Results = append(res.Results, grpcconverters.ConvertValidVesselToGRPCValidVessel(y))
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) SearchValidIngredientsByPreparation(ctx context.Context, request *messages.SearchValidIngredientsByPreparationRequest) (*messages.SearchValidIngredientsByPreparationResponse, error) {
@@ -1353,8 +1484,23 @@ func (s *serviceImpl) SearchValidIngredientsByPreparation(ctx context.Context, r
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	return &messages.SearchValidIngredientsByPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	x, err := s.validEnumerationsManager.SearchValidIngredientsByPreparationAndIngredientName(ctx, request.ValidPreparationID, request.Query, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid ingredients by preparation")
+	}
+
+	res := &messages.SearchValidIngredientsByPreparationResponse{
+		Filter: request.Filter,
+	}
+
+	for _, y := range x {
+		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientToGRPCValidIngredient(y))
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Context, request *messages.SearchValidMeasurementUnitsByIngredientRequest) (*messages.SearchValidMeasurementUnitsByIngredientResponse, error) {
@@ -1362,8 +1508,23 @@ func (s *serviceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Contex
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	return &messages.SearchValidMeasurementUnitsByIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	x, err := s.validEnumerationsManager.SearchValidMeasurementUnitsByIngredientID(ctx, request.ValidIngredientID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid measurement units by ingredient")
+	}
+
+	res := &messages.SearchValidMeasurementUnitsByIngredientResponse{
+		Filter: request.Filter,
+	}
+
+	for _, y := range x {
+		res.Results = append(res.Results, grpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidIngredient(ctx context.Context, request *messages.UpdateValidIngredientRequest) (*messages.UpdateValidIngredientResponse, error) {
