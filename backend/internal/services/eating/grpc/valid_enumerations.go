@@ -11,6 +11,14 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
+/*
+
+TODO:
+- add tests lol
+- log and trace all relevant IDs
+
+*/
+
 func (s *serviceImpl) ArchiveValidIngredient(ctx context.Context, request *messages.ArchiveValidIngredientRequest) (*messages.ArchiveValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -1533,7 +1541,17 @@ func (s *serviceImpl) UpdateValidIngredient(ctx context.Context, request *messag
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidIngredientUpdateRequestInputToValidIngredientUpdateRequestInput(request.Input)
+	updated, err := s.validEnumerationsManager.UpdateValidIngredient(ctx, request.ValidIngredientID, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient")
+	}
+
+	res := &messages.UpdateValidIngredientResponse{
+		Result: grpcconverters.ConvertValidIngredientToGRPCValidIngredient(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidIngredientGroup(ctx context.Context, request *messages.UpdateValidIngredientGroupRequest) (*messages.UpdateValidIngredientGroupResponse, error) {
@@ -1542,7 +1560,18 @@ func (s *serviceImpl) UpdateValidIngredientGroup(ctx context.Context, request *m
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidIngredientGroupResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidIngredientGroupUpdateRequestInputToValidIngredientGroupUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidIngredientGroup(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient group")
+	}
+
+	res := &messages.UpdateValidIngredientGroupResponse{
+		Result: grpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidIngredientMeasurementUnit(ctx context.Context, request *messages.UpdateValidIngredientMeasurementUnitRequest) (*messages.UpdateValidIngredientMeasurementUnitResponse, error) {
@@ -1551,7 +1580,18 @@ func (s *serviceImpl) UpdateValidIngredientMeasurementUnit(ctx context.Context, 
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidIngredientMeasurementUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidIngredientMeasurementUnitUpdateRequestInputToValidIngredientMeasurementUnitUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidIngredientMeasurementUnit(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient measurement unit")
+	}
+
+	res := &messages.UpdateValidIngredientMeasurementUnitResponse{
+		Result: grpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidIngredientPreparation(ctx context.Context, request *messages.UpdateValidIngredientPreparationRequest) (*messages.UpdateValidIngredientPreparationResponse, error) {
@@ -1560,7 +1600,18 @@ func (s *serviceImpl) UpdateValidIngredientPreparation(ctx context.Context, requ
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidIngredientPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidIngredientPreparationUpdateRequestInputToValidIngredientPreparationUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidIngredientPreparation(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient preparation")
+	}
+
+	res := &messages.UpdateValidIngredientPreparationResponse{
+		Result: grpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidIngredientState(ctx context.Context, request *messages.UpdateValidIngredientStateRequest) (*messages.UpdateValidIngredientStateResponse, error) {
@@ -1569,7 +1620,18 @@ func (s *serviceImpl) UpdateValidIngredientState(ctx context.Context, request *m
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidIngredientStateResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidIngredientStateUpdateRequestInputToValidIngredientStateUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidIngredientState(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient state")
+	}
+
+	res := &messages.UpdateValidIngredientStateResponse{
+		Result: grpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidIngredientStateIngredient(ctx context.Context, request *messages.UpdateValidIngredientStateIngredientRequest) (*messages.UpdateValidIngredientStateIngredientResponse, error) {
@@ -1578,7 +1640,18 @@ func (s *serviceImpl) UpdateValidIngredientStateIngredient(ctx context.Context, 
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidIngredientStateIngredientResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidIngredientStateIngredientUpdateRequestInputToValidIngredientStateIngredientUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidIngredientStateIngredient(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient state ingredient")
+	}
+
+	res := &messages.UpdateValidIngredientStateIngredientResponse{
+		Result: grpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidInstrument(ctx context.Context, request *messages.UpdateValidInstrumentRequest) (*messages.UpdateValidInstrumentResponse, error) {
@@ -1587,7 +1660,18 @@ func (s *serviceImpl) UpdateValidInstrument(ctx context.Context, request *messag
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidInstrumentUpdateRequestInputToValidInstrumentUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidInstrument(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid instrument")
+	}
+
+	res := &messages.UpdateValidInstrumentResponse{
+		Result: grpcconverters.ConvertValidInstrumentToGRPCValidInstrument(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidMeasurementUnit(ctx context.Context, request *messages.UpdateValidMeasurementUnitRequest) (*messages.UpdateValidMeasurementUnitResponse, error) {
@@ -1596,7 +1680,18 @@ func (s *serviceImpl) UpdateValidMeasurementUnit(ctx context.Context, request *m
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidMeasurementUnitResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidMeasurementUnitUpdateRequestInputToValidMeasurementUnitUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidMeasurementUnit(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid measurement unit")
+	}
+
+	res := &messages.UpdateValidMeasurementUnitResponse{
+		Result: grpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidMeasurementUnitConversion(ctx context.Context, request *messages.UpdateValidMeasurementUnitConversionRequest) (*messages.UpdateValidMeasurementUnitConversionResponse, error) {
@@ -1605,7 +1700,18 @@ func (s *serviceImpl) UpdateValidMeasurementUnitConversion(ctx context.Context, 
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidMeasurementUnitConversionResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidMeasurementUnitConversionUpdateRequestInputToValidMeasurementUnitConversionUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidMeasurementUnitConversion(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid measurement unit conversion")
+	}
+
+	res := &messages.UpdateValidMeasurementUnitConversionResponse{
+		Result: grpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidPreparation(ctx context.Context, request *messages.UpdateValidPreparationRequest) (*messages.UpdateValidPreparationResponse, error) {
@@ -1614,7 +1720,18 @@ func (s *serviceImpl) UpdateValidPreparation(ctx context.Context, request *messa
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidPreparationResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidPreparation(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid preparation")
+	}
+
+	res := &messages.UpdateValidPreparationResponse{
+		Result: grpcconverters.ConvertValidPreparationToGRPCValidPreparation(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidPreparationInstrument(ctx context.Context, request *messages.UpdateValidPreparationInstrumentRequest) (*messages.UpdateValidPreparationInstrumentResponse, error) {
@@ -1623,7 +1740,18 @@ func (s *serviceImpl) UpdateValidPreparationInstrument(ctx context.Context, requ
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidPreparationInstrumentResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidPreparationInstrumentUpdateRequestInputToValidPreparationInstrumentUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidPreparationInstrument(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid preparation instrument")
+	}
+
+	res := &messages.UpdateValidPreparationInstrumentResponse{
+		Result: grpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidPreparationVessel(ctx context.Context, request *messages.UpdateValidPreparationVesselRequest) (*messages.UpdateValidPreparationVesselResponse, error) {
@@ -1632,7 +1760,18 @@ func (s *serviceImpl) UpdateValidPreparationVessel(ctx context.Context, request 
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidPreparationVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidPreparationVesselUpdateRequestInputToValidPreparationVesselUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidPreparationVessel(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid preparation vessel")
+	}
+
+	res := &messages.UpdateValidPreparationVesselResponse{
+		Result: grpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(updated),
+	}
+
+	return res, nil
 }
 
 func (s *serviceImpl) UpdateValidVessel(ctx context.Context, request *messages.UpdateValidVesselRequest) (*messages.UpdateValidVesselResponse, error) {
@@ -1641,5 +1780,16 @@ func (s *serviceImpl) UpdateValidVessel(ctx context.Context, request *messages.U
 
 	logger := s.logger.WithSpan(span)
 
-	return &messages.UpdateValidVesselResponse{}, observability.PrepareAndLogError(nil, logger, span, "")
+	input := grpcconverters.ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(request.Input)
+
+	updated, err := s.validEnumerationsManager.UpdateValidVessel(ctx, "", input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid vessel")
+	}
+
+	res := &messages.UpdateValidVesselResponse{
+		Result: grpcconverters.ConvertValidVesselToGRPCValidVessel(updated),
+	}
+
+	return res, nil
 }

@@ -27,7 +27,7 @@ func ConvertValidIngredientToValidIngredientUpdateRequestInput(x *types.ValidIng
 		PluralName:             &x.PluralName,
 		AnimalDerived:          &x.AnimalDerived,
 		RestrictToPreparations: &x.RestrictToPreparations,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: &types.OptionalFloat32Range{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
 		},

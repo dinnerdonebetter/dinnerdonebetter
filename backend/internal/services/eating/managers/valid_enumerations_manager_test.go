@@ -203,7 +203,9 @@ func TestValidEnumerationManager_UpdateValidIngredientGroup(T *testing.T) {
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidIngredientGroup(ctx, exampleValidIngredientGroup.ID, exampleInput))
+		result, err := mpm.UpdateValidIngredientGroup(ctx, exampleValidIngredientGroup.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -342,7 +344,9 @@ func TestValidEnumerationManager_UpdateValidIngredientMeasurementUnit(T *testing
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnit.ID, exampleInput))
+		result, err := mpm.UpdateValidIngredientMeasurementUnit(ctx, exampleValidIngredientMeasurementUnit.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -535,7 +539,9 @@ func TestValidEnumerationManager_UpdateValidIngredientPreparation(T *testing.T) 
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID, exampleInput))
+		result, err := mpm.UpdateValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -781,7 +787,9 @@ func TestValidEnumerationManager_UpdateValidIngredient(T *testing.T) {
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidIngredient(ctx, exampleValidIngredient.ID, exampleInput))
+		result, err := mpm.UpdateValidIngredient(ctx, exampleValidIngredient.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -948,7 +956,9 @@ func TestValidEnumerationManager_UpdateValidIngredientStateIngredient(T *testing
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidIngredientStateIngredient(ctx, exampleValidIngredientStateIngredient.ID, exampleInput))
+		result, err := mpm.UpdateValidIngredientStateIngredient(ctx, exampleValidIngredientStateIngredient.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1168,7 +1178,9 @@ func TestValidEnumerationManager_UpdateValidIngredientState(T *testing.T) {
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidIngredientState(ctx, exampleValidIngredientState.ID, exampleInput))
+		result, err := mpm.UpdateValidIngredientState(ctx, exampleValidIngredientState.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1361,7 +1373,9 @@ func TestValidEnumerationManager_UpdateValidMeasurementUnit(T *testing.T) {
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidMeasurementUnit(ctx, exampleValidMeasurementUnit.ID, exampleInput))
+		result, err := mpm.UpdateValidMeasurementUnit(ctx, exampleValidMeasurementUnit.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1553,7 +1567,9 @@ func TestValidEnumerationManager_UpdateValidInstrument(T *testing.T) {
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidInstrument(ctx, exampleValidInstrument.ID, exampleInput))
+		result, err := mpm.UpdateValidInstrument(ctx, exampleValidInstrument.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1719,7 +1735,9 @@ func TestValidEnumerationManager_UpdateValidMeasurementUnitConversion(T *testing
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidMeasurementUnitConversion(ctx, exampleValidMeasurementUnitConversion.ID, exampleInput))
+		result, err := mpm.UpdateValidMeasurementUnitConversion(ctx, exampleValidMeasurementUnitConversion.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1858,7 +1876,9 @@ func TestValidEnumerationManager_UpdateValidPreparationInstrument(T *testing.T) 
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidPreparationInstrument(ctx, exampleValidPreparationInstrument.ID, exampleInput))
+		result, err := mpm.UpdateValidPreparationInstrument(ctx, exampleValidPreparationInstrument.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2104,7 +2124,9 @@ func TestValidEnumerationManager_UpdateValidPreparation(T *testing.T) {
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidPreparation(ctx, exampleValidPreparation.ID, exampleInput))
+		result, err := mpm.UpdateValidPreparation(ctx, exampleValidPreparation.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2243,7 +2265,9 @@ func TestValidEnumerationManager_UpdateValidPreparationVessel(T *testing.T) {
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidPreparationVessel(ctx, exampleValidPreparationVessel.ID, exampleInput))
+		result, err := mpm.UpdateValidPreparationVessel(ctx, exampleValidPreparationVessel.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2489,7 +2513,9 @@ func TestValidEnumerationManager_UpdateValidVessel(T *testing.T) {
 			},
 		)
 
-		assert.NoError(t, mpm.UpdateValidVessel(ctx, exampleValidVessel.ID, exampleInput))
+		result, err := mpm.UpdateValidVessel(ctx, exampleValidVessel.ID, exampleInput)
+		assert.NotNil(t, result)
+		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})

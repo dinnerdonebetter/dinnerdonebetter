@@ -176,38 +176,38 @@ type (
 	ValidIngredientUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Name                        *string              `json:"name,omitempty"`
-		Description                 *string              `json:"description,omitempty"`
-		Warning                     *string              `json:"warning,omitempty"`
-		IconPath                    *string              `json:"iconPath,omitempty"`
-		ContainsDairy               *bool                `json:"containsDairy,omitempty"`
-		ContainsPeanut              *bool                `json:"containsPeanut,omitempty"`
-		ContainsTreeNut             *bool                `json:"containsTreeNut,omitempty"`
-		ContainsEgg                 *bool                `json:"containsEgg,omitempty"`
-		ContainsWheat               *bool                `json:"containsWheat,omitempty"`
-		ContainsShellfish           *bool                `json:"containsShellfish,omitempty"`
-		ContainsSesame              *bool                `json:"containsSesame,omitempty"`
-		ContainsFish                *bool                `json:"containsFish,omitempty"`
-		ContainsGluten              *bool                `json:"containsGluten,omitempty"`
-		AnimalFlesh                 *bool                `json:"animalFlesh,omitempty"`
-		IsLiquid                    *bool                `json:"isLiquid,omitempty"`
-		ContainsSoy                 *bool                `json:"containsSoy,omitempty"`
-		PluralName                  *string              `json:"pluralName,omitempty"`
-		AnimalDerived               *bool                `json:"animalDerived,omitempty"`
-		RestrictToPreparations      *bool                `json:"restrictToPreparations,omitempty"`
-		StorageTemperatureInCelsius OptionalFloat32Range `json:"storageTemperatureInCelsius"`
-		StorageInstructions         *string              `json:"storageInstructions,omitempty"`
-		Slug                        *string              `json:"slug,omitempty"`
-		ContainsAlcohol             *bool                `json:"containsAlcohol,omitempty"`
-		ShoppingSuggestions         *string              `json:"shoppingSuggestions,omitempty"`
-		IsStarch                    *bool                `json:"isStarch"`
-		IsProtein                   *bool                `json:"isProtein"`
-		IsGrain                     *bool                `json:"isGrain"`
-		IsFruit                     *bool                `json:"isFruit"`
-		IsSalt                      *bool                `json:"isSalt"`
-		IsFat                       *bool                `json:"isFat"`
-		IsAcid                      *bool                `json:"isAcid"`
-		IsHeat                      *bool                `json:"isHeat"`
+		Name                        *string               `json:"name,omitempty"`
+		Description                 *string               `json:"description,omitempty"`
+		Warning                     *string               `json:"warning,omitempty"`
+		IconPath                    *string               `json:"iconPath,omitempty"`
+		ContainsDairy               *bool                 `json:"containsDairy,omitempty"`
+		ContainsPeanut              *bool                 `json:"containsPeanut,omitempty"`
+		ContainsTreeNut             *bool                 `json:"containsTreeNut,omitempty"`
+		ContainsEgg                 *bool                 `json:"containsEgg,omitempty"`
+		ContainsWheat               *bool                 `json:"containsWheat,omitempty"`
+		ContainsShellfish           *bool                 `json:"containsShellfish,omitempty"`
+		ContainsSesame              *bool                 `json:"containsSesame,omitempty"`
+		ContainsFish                *bool                 `json:"containsFish,omitempty"`
+		ContainsGluten              *bool                 `json:"containsGluten,omitempty"`
+		AnimalFlesh                 *bool                 `json:"animalFlesh,omitempty"`
+		IsLiquid                    *bool                 `json:"isLiquid,omitempty"`
+		ContainsSoy                 *bool                 `json:"containsSoy,omitempty"`
+		PluralName                  *string               `json:"pluralName,omitempty"`
+		AnimalDerived               *bool                 `json:"animalDerived,omitempty"`
+		RestrictToPreparations      *bool                 `json:"restrictToPreparations,omitempty"`
+		StorageTemperatureInCelsius *OptionalFloat32Range `json:"storageTemperatureInCelsius"`
+		StorageInstructions         *string               `json:"storageInstructions,omitempty"`
+		Slug                        *string               `json:"slug,omitempty"`
+		ContainsAlcohol             *bool                 `json:"containsAlcohol,omitempty"`
+		ShoppingSuggestions         *string               `json:"shoppingSuggestions,omitempty"`
+		IsStarch                    *bool                 `json:"isStarch"`
+		IsProtein                   *bool                 `json:"isProtein"`
+		IsGrain                     *bool                 `json:"isGrain"`
+		IsFruit                     *bool                 `json:"isFruit"`
+		IsSalt                      *bool                 `json:"isSalt"`
+		IsFat                       *bool                 `json:"isFat"`
+		IsAcid                      *bool                 `json:"isAcid"`
+		IsHeat                      *bool                 `json:"isHeat"`
 	}
 
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
@@ -317,12 +317,14 @@ func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 		x.RestrictToPreparations = *input.RestrictToPreparations
 	}
 
-	if input.StorageTemperatureInCelsius.Min != nil && input.StorageTemperatureInCelsius.Min != x.StorageTemperatureInCelsius.Min {
-		x.StorageTemperatureInCelsius.Min = input.StorageTemperatureInCelsius.Min
-	}
+	if input.StorageTemperatureInCelsius != nil {
+		if input.StorageTemperatureInCelsius.Min != nil && input.StorageTemperatureInCelsius.Min != x.StorageTemperatureInCelsius.Min {
+			x.StorageTemperatureInCelsius.Min = input.StorageTemperatureInCelsius.Min
+		}
 
-	if input.StorageTemperatureInCelsius.Max != nil && input.StorageTemperatureInCelsius.Max != x.StorageTemperatureInCelsius.Max {
-		x.StorageTemperatureInCelsius.Max = input.StorageTemperatureInCelsius.Max
+		if input.StorageTemperatureInCelsius.Max != nil && input.StorageTemperatureInCelsius.Max != x.StorageTemperatureInCelsius.Max {
+			x.StorageTemperatureInCelsius.Max = input.StorageTemperatureInCelsius.Max
+		}
 	}
 
 	if input.StorageInstructions != nil && *input.StorageInstructions != x.StorageInstructions {
