@@ -415,17 +415,24 @@ func ConvertGRPCValidMeasurementUnitConversionUpdateRequestInputToValidMeasureme
 }
 
 func ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(x *types.ValidMeasurementUnitConversion) *messages.ValidMeasurementUnitConversion {
-	return &messages.ValidMeasurementUnitConversion{
+	var ingredient *messages.ValidIngredient
+	if x.OnlyForIngredient != nil {
+		ingredient = ConvertValidIngredientToGRPCValidIngredient(x.OnlyForIngredient)
+	}
+
+	y := &messages.ValidMeasurementUnitConversion{
 		CreatedAt:         ConvertTimeToPBTimestamp(x.CreatedAt),
 		LastUpdatedAt:     ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:        ConvertTimePointerToPBTimestamp(x.ArchivedAt),
-		OnlyForIngredient: ConvertValidIngredientToGRPCValidIngredient(x.OnlyForIngredient),
 		From:              ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.From),
 		To:                ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.To),
 		Notes:             x.Notes,
+		OnlyForIngredient: ingredient,
 		ID:                x.ID,
 		Modifier:          x.Modifier,
 	}
+
+	return y
 }
 
 func ConvertGRPCCreateValidPreparationRequestToValidPreparationCreationRequestInput(x *messages.CreateValidPreparationRequest) *types.ValidPreparationCreationRequestInput {

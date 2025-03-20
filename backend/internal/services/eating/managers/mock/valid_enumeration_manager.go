@@ -62,31 +62,31 @@ func (m *MockValidEnumerationsManager) CreateValidIngredientMeasurementUnit(ctx 
 }
 
 func (m *MockValidEnumerationsManager) ReadValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*types.ValidIngredientMeasurementUnit, error) {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, validIngredientMeasurementUnitID)
 
 	return returnValues.Get(0).(*types.ValidIngredientMeasurementUnit), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) UpdateValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string, input *types.ValidIngredientMeasurementUnitUpdateRequestInput) (*types.ValidIngredientMeasurementUnit, error) {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, validIngredientMeasurementUnitID, input)
 
 	return returnValues.Get(0).(*types.ValidIngredientMeasurementUnit), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, validIngredientMeasurementUnitID)
 
 	return returnValues.Error(0)
 }
 
 func (m *MockValidEnumerationsManager) SearchValidIngredientMeasurementUnitsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientMeasurementUnit, error) {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, validIngredientID, filter)
 
 	return returnValues.Get(0).([]*types.ValidIngredientMeasurementUnit), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) SearchValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientMeasurementUnit, error) {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, validMeasurementUnitID, filter)
 
 	return returnValues.Get(0).([]*types.ValidIngredientMeasurementUnit), returnValues.Error(1)
 }
@@ -104,31 +104,31 @@ func (m *MockValidEnumerationsManager) CreateValidIngredientPreparation(ctx cont
 }
 
 func (m *MockValidEnumerationsManager) ReadValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*types.ValidIngredientPreparation, error) {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, validIngredientPreparationID)
 
 	return returnValues.Get(0).(*types.ValidIngredientPreparation), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) UpdateValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string, input *types.ValidIngredientPreparationUpdateRequestInput) (*types.ValidIngredientPreparation, error) {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, validIngredientPreparationID, input)
 
 	return returnValues.Get(0).(*types.ValidIngredientPreparation), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, validIngredientPreparationID)
 
 	return returnValues.Error(0)
 }
 
 func (m *MockValidEnumerationsManager) SearchValidIngredientPreparationsByIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientPreparation, error) {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, ingredientID, filter)
 
 	return returnValues.Get(0).([]*types.ValidIngredientPreparation), returnValues.Error(1)
 }
 
 func (m *MockValidEnumerationsManager) SearchValidIngredientPreparationsByPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientPreparation, error) {
-	returnValues := m.Called(ctx)
+	returnValues := m.Called(ctx, preparationID, filter)
 
 	return returnValues.Get(0).([]*types.ValidIngredientPreparation), returnValues.Error(1)
 }

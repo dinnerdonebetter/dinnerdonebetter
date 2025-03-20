@@ -92,3 +92,12 @@ func BuildFakeUint32RangeWithOptionalMaxUpdateRequestInput() types.Uint32RangeWi
 		Max: pointer.To(uint32(buildFakeNumber()) + minimum),
 	}
 }
+
+func BuildFake[T any]() *T {
+	x := new(T)
+	if err := fake.Struct(x); err != nil {
+		panic(err)
+	}
+
+	return x
+}

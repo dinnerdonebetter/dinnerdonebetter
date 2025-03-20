@@ -2,8 +2,10 @@ package mockmanagers
 
 import (
 	"context"
+
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
+
 	"github.com/stretchr/testify/mock"
 )
 
