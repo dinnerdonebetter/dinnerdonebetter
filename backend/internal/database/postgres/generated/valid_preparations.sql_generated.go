@@ -173,12 +173,12 @@ type GetRandomValidPreparationRow struct {
 	PastTense                   string
 	Description                 string
 	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
 	MaximumInstrumentCount      sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
 	MaximumVesselCount          sql.NullInt32
+	MinimumIngredientCount      int32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
 	RestrictToIngredients       bool
 	OnlyForVessels              bool
 	ConsumesVessel              bool
@@ -260,12 +260,12 @@ type GetValidPreparationRow struct {
 	PastTense                   string
 	Description                 string
 	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
 	MaximumInstrumentCount      sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
 	MaximumVesselCount          sql.NullInt32
+	MinimumIngredientCount      int32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
 	RestrictToIngredients       bool
 	OnlyForVessels              bool
 	ConsumesVessel              bool
@@ -542,12 +542,12 @@ type GetValidPreparationsWithIDsRow struct {
 	PastTense                   string
 	Description                 string
 	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
 	MaximumInstrumentCount      sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
 	MaximumVesselCount          sql.NullInt32
+	MinimumIngredientCount      int32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
 	RestrictToIngredients       bool
 	OnlyForVessels              bool
 	ConsumesVessel              bool
@@ -646,12 +646,12 @@ type SearchForValidPreparationsRow struct {
 	PastTense                   string
 	Description                 string
 	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
 	MaximumInstrumentCount      sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
 	MaximumVesselCount          sql.NullInt32
+	MinimumIngredientCount      int32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
 	RestrictToIngredients       bool
 	OnlyForVessels              bool
 	ConsumesVessel              bool

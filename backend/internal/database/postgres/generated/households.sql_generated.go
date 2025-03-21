@@ -100,19 +100,19 @@ INSERT INTO households (
 
 type CreateHouseholdParams struct {
 	AddressLine2      string
-	ID                string
+	Country           string
 	BillingStatus     string
 	ContactPhone      string
 	BelongsToUser     string
 	AddressLine1      string
-	Name              string
-	City              string
-	Country           string
-	ZipCode           string
 	State             string
 	WebhookHmacSecret string
-	Longitude         sql.NullString
+	Name              string
+	ZipCode           string
+	ID                string
+	City              string
 	Latitude          sql.NullString
+	Longitude         sql.NullString
 }
 
 func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error {

@@ -173,44 +173,44 @@ type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitConversionLastUpdatedAt            sql.NullTime
 	ValidIngredientCreatedAt                               sql.NullTime
-	ValidMeasurementUnitConversionArchivedAt               sql.NullTime
 	ToUnitLastIndexedAt                                    sql.NullTime
 	ToUnitArchivedAt                                       sql.NullTime
 	ToUnitLastUpdatedAt                                    sql.NullTime
 	FromUnitLastIndexedAt                                  sql.NullTime
-	ValidMeasurementUnitConversionLastUpdatedAt            sql.NullTime
+	ValidMeasurementUnitConversionArchivedAt               sql.NullTime
 	FromUnitLastUpdatedAt                                  sql.NullTime
 	FromUnitArchivedAt                                     sql.NullTime
-	ToUnitName                                             string
-	ToUnitIconPath                                         string
-	ToUnitID                                               string
-	ValidMeasurementUnitConversionModifier                 string
-	FromUnitSlug                                           string
+	ValidMeasurementUnitConversionNotes                    string
 	FromUnitIconPath                                       string
+	ToUnitDescription                                      string
+	ValidMeasurementUnitConversionModifier                 string
+	ToUnitIconPath                                         string
+	FromUnitDescription                                    string
 	ValidMeasurementUnitConversionToUnit                   string
 	ValidMeasurementUnitConversionFromUnit                 string
 	FromUnitName                                           string
-	FromUnitPluralName                                     string
-	ValidMeasurementUnitConversionNotes                    string
-	ValidMeasurementUnitConversionID                       string
 	ToUnitPluralName                                       string
 	ToUnitSlug                                             string
-	ToUnitDescription                                      string
-	FromUnitDescription                                    string
 	FromUnitID                                             string
+	FromUnitPluralName                                     string
+	ToUnitID                                               string
+	ToUnitName                                             string
+	ValidMeasurementUnitConversionID                       string
+	FromUnitSlug                                           string
 	ValidIngredientWarning                                 sql.NullString
 	ValidIngredientIconPath                                sql.NullString
 	ValidIngredientID                                      sql.NullString
-	ValidIngredientPluralName                              sql.NullString
-	ValidIngredientDescription                             sql.NullString
 	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
+	ValidIngredientName                                    sql.NullString
+	ValidIngredientDescription                             sql.NullString
 	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientSlug                                    sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientName                                    sql.NullString
+	ValidIngredientPluralName                              sql.NullString
 	ValidIngredientContainsTreeNut                         sql.NullBool
 	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientAnimalDerived                           sql.NullBool
@@ -438,44 +438,44 @@ type GetAllValidMeasurementUnitConversionsToMeasurementUnitRow struct {
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitConversionLastUpdatedAt            sql.NullTime
 	ValidIngredientCreatedAt                               sql.NullTime
-	ValidMeasurementUnitConversionArchivedAt               sql.NullTime
 	ToUnitLastIndexedAt                                    sql.NullTime
 	ToUnitArchivedAt                                       sql.NullTime
 	ToUnitLastUpdatedAt                                    sql.NullTime
 	FromUnitLastIndexedAt                                  sql.NullTime
-	ValidMeasurementUnitConversionLastUpdatedAt            sql.NullTime
+	ValidMeasurementUnitConversionArchivedAt               sql.NullTime
 	FromUnitLastUpdatedAt                                  sql.NullTime
 	FromUnitArchivedAt                                     sql.NullTime
-	ToUnitName                                             string
-	ToUnitIconPath                                         string
-	ToUnitID                                               string
-	ValidMeasurementUnitConversionModifier                 string
-	FromUnitSlug                                           string
+	ValidMeasurementUnitConversionNotes                    string
 	FromUnitIconPath                                       string
+	ToUnitDescription                                      string
+	ValidMeasurementUnitConversionModifier                 string
+	ToUnitIconPath                                         string
+	FromUnitDescription                                    string
 	ValidMeasurementUnitConversionToUnit                   string
 	ValidMeasurementUnitConversionFromUnit                 string
 	FromUnitName                                           string
-	FromUnitPluralName                                     string
-	ValidMeasurementUnitConversionNotes                    string
-	ValidMeasurementUnitConversionID                       string
 	ToUnitPluralName                                       string
 	ToUnitSlug                                             string
-	ToUnitDescription                                      string
-	FromUnitDescription                                    string
 	FromUnitID                                             string
+	FromUnitPluralName                                     string
+	ToUnitID                                               string
+	ToUnitName                                             string
+	ValidMeasurementUnitConversionID                       string
+	FromUnitSlug                                           string
 	ValidIngredientWarning                                 sql.NullString
 	ValidIngredientIconPath                                sql.NullString
 	ValidIngredientID                                      sql.NullString
-	ValidIngredientPluralName                              sql.NullString
-	ValidIngredientDescription                             sql.NullString
 	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
+	ValidIngredientName                                    sql.NullString
+	ValidIngredientDescription                             sql.NullString
 	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientSlug                                    sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientName                                    sql.NullString
+	ValidIngredientPluralName                              sql.NullString
 	ValidIngredientContainsTreeNut                         sql.NullBool
 	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientAnimalDerived                           sql.NullBool
@@ -703,44 +703,44 @@ type GetValidMeasurementUnitConversionRow struct {
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitConversionLastUpdatedAt            sql.NullTime
 	ValidIngredientCreatedAt                               sql.NullTime
-	ValidMeasurementUnitConversionArchivedAt               sql.NullTime
 	ToUnitLastIndexedAt                                    sql.NullTime
 	ToUnitArchivedAt                                       sql.NullTime
 	ToUnitLastUpdatedAt                                    sql.NullTime
 	FromUnitLastIndexedAt                                  sql.NullTime
-	ValidMeasurementUnitConversionLastUpdatedAt            sql.NullTime
+	ValidMeasurementUnitConversionArchivedAt               sql.NullTime
 	FromUnitLastUpdatedAt                                  sql.NullTime
 	FromUnitArchivedAt                                     sql.NullTime
-	ToUnitName                                             string
-	ToUnitIconPath                                         string
-	ToUnitID                                               string
-	ValidMeasurementUnitConversionModifier                 string
-	FromUnitSlug                                           string
+	ValidMeasurementUnitConversionNotes                    string
 	FromUnitIconPath                                       string
+	ToUnitDescription                                      string
+	ValidMeasurementUnitConversionModifier                 string
+	ToUnitIconPath                                         string
+	FromUnitDescription                                    string
 	ValidMeasurementUnitConversionToUnit                   string
 	ValidMeasurementUnitConversionFromUnit                 string
 	FromUnitName                                           string
-	FromUnitPluralName                                     string
-	ValidMeasurementUnitConversionNotes                    string
-	ValidMeasurementUnitConversionID                       string
 	ToUnitPluralName                                       string
 	ToUnitSlug                                             string
-	ToUnitDescription                                      string
-	FromUnitDescription                                    string
 	FromUnitID                                             string
+	FromUnitPluralName                                     string
+	ToUnitID                                               string
+	ToUnitName                                             string
+	ValidMeasurementUnitConversionID                       string
+	FromUnitSlug                                           string
 	ValidIngredientWarning                                 sql.NullString
 	ValidIngredientIconPath                                sql.NullString
 	ValidIngredientID                                      sql.NullString
-	ValidIngredientPluralName                              sql.NullString
-	ValidIngredientDescription                             sql.NullString
 	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
+	ValidIngredientName                                    sql.NullString
+	ValidIngredientDescription                             sql.NullString
 	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientSlug                                    sql.NullString
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientName                                    sql.NullString
+	ValidIngredientPluralName                              sql.NullString
 	ValidIngredientContainsTreeNut                         sql.NullBool
 	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientAnimalDerived                           sql.NullBool

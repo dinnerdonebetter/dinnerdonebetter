@@ -888,25 +888,25 @@ type GetUsersRow struct {
 	CreatedAt                     time.Time
 	LastAcceptedPrivacyPolicy     sql.NullTime
 	LastAcceptedTermsOfService    sql.NullTime
-	Birthday                      sql.NullTime
+	ArchivedAt                    sql.NullTime
 	LastUpdatedAt                 sql.NullTime
 	PasswordLastChangedAt         sql.NullTime
 	LastIndexedAt                 sql.NullTime
-	EmailAddressVerifiedAt        sql.NullTime
+	Birthday                      sql.NullTime
 	TwoFactorSecretVerifiedAt     sql.NullTime
-	ArchivedAt                    sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	TwoFactorSecret               string
 	Username                      string
 	UserAccountStatusExplanation  string
-	ServiceRole                   string
-	EmailAddress                  string
-	TwoFactorSecret               string
 	UserAccountStatus             string
-	LastName                      string
+	ServiceRole                   string
 	FirstName                     string
+	LastName                      string
+	EmailAddress                  string
 	ID                            string
 	HashedPassword                string
-	EmailAddressVerificationToken sql.NullString
 	AvatarSrc                     sql.NullString
+	EmailAddressVerificationToken sql.NullString
 	FilteredCount                 int64
 	TotalCount                    int64
 	RequiresPasswordChange        bool

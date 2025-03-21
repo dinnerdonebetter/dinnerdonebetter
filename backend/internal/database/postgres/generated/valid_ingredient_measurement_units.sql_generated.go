@@ -397,38 +397,38 @@ type GetValidIngredientMeasurementUnitsRow struct {
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientMeasurementUnitCreatedAt                time.Time
 	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
 	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
-	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidMeasurementUnitSlug                               string
-	ValidIngredientWarning                                 string
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientIconPath                                string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
 	ValidMeasurementUnitName                               string
 	ValidIngredientPluralName                              string
 	ValidIngredientStorageInstructions                     string
-	ValidMeasurementUnitID                                 string
+	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidMeasurementUnitIconPath                           string
 	ValidMeasurementUnitDescription                        string
-	ValidIngredientID                                      string
-	ValidIngredientIconPath                                string
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitID                                 string
+	ValidIngredientWarning                                 string
 	ValidMeasurementUnitPluralName                         string
+	ValidMeasurementUnitSlug                               string
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientSlug                                    string
 	ValidIngredientMeasurementUnitNotes                    string
 	ValidIngredientMeasurementUnitID                       string
-	ValidIngredientShoppingSuggestions                     string
+	ValidMeasurementUnitIconPath                           string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	TotalCount                                             int64
 	FilteredCount                                          int64
-	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
@@ -670,38 +670,38 @@ type GetValidIngredientMeasurementUnitsForIngredientRow struct {
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientMeasurementUnitCreatedAt                time.Time
 	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
 	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
-	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidMeasurementUnitSlug                               string
-	ValidIngredientWarning                                 string
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientIconPath                                string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
 	ValidMeasurementUnitName                               string
 	ValidIngredientPluralName                              string
 	ValidIngredientStorageInstructions                     string
-	ValidMeasurementUnitID                                 string
+	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidMeasurementUnitIconPath                           string
 	ValidMeasurementUnitDescription                        string
-	ValidIngredientID                                      string
-	ValidIngredientIconPath                                string
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitID                                 string
+	ValidIngredientWarning                                 string
 	ValidMeasurementUnitPluralName                         string
+	ValidMeasurementUnitSlug                               string
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientSlug                                    string
 	ValidIngredientMeasurementUnitNotes                    string
 	ValidIngredientMeasurementUnitID                       string
-	ValidIngredientShoppingSuggestions                     string
+	ValidMeasurementUnitIconPath                           string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	TotalCount                                             int64
 	FilteredCount                                          int64
-	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
@@ -944,38 +944,38 @@ type GetValidIngredientMeasurementUnitsForMeasurementUnitRow struct {
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientMeasurementUnitCreatedAt                time.Time
 	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
 	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
-	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidMeasurementUnitSlug                               string
-	ValidIngredientWarning                                 string
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientIconPath                                string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
 	ValidMeasurementUnitName                               string
 	ValidIngredientPluralName                              string
 	ValidIngredientStorageInstructions                     string
-	ValidMeasurementUnitID                                 string
+	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidMeasurementUnitIconPath                           string
 	ValidMeasurementUnitDescription                        string
-	ValidIngredientID                                      string
-	ValidIngredientIconPath                                string
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitID                                 string
+	ValidIngredientWarning                                 string
 	ValidMeasurementUnitPluralName                         string
+	ValidMeasurementUnitSlug                               string
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientSlug                                    string
 	ValidIngredientMeasurementUnitNotes                    string
 	ValidIngredientMeasurementUnitID                       string
-	ValidIngredientShoppingSuggestions                     string
+	ValidMeasurementUnitIconPath                           string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	TotalCount                                             int64
 	FilteredCount                                          int64
-	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool

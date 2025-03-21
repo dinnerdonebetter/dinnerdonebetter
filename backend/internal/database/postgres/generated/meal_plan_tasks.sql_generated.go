@@ -525,18 +525,18 @@ type ListIncompleteMealPlanTasksByMealPlanOptionRow struct {
 	RecipeStepID                                string
 	RecipeStepBelongsToRecipe                   string
 	MealPlanOptionBelongsToMealPlanEvent        sql.NullString
-	CreationExplanation                         sql.NullString
-	MealPlanOptionAssignedDishwasher            sql.NullString
-	MealPlanOptionMealID                        sql.NullString
 	MealPlanOptionNotes                         sql.NullString
+	BelongsToRecipePrepTask                     sql.NullString
+	BelongsToMealPlanOption                     sql.NullString
+	CreationExplanation                         sql.NullString
 	StatusExplanation                           sql.NullString
 	Status                                      NullPrepStepStatus
 	ID                                          sql.NullString
 	AssignedToUser                              sql.NullString
 	MealPlanOptionAssignedCook                  sql.NullString
-	BelongsToRecipePrepTask                     sql.NullString
 	MealPlanOptionID                            sql.NullString
-	BelongsToMealPlanOption                     sql.NullString
+	MealPlanOptionMealID                        sql.NullString
+	MealPlanOptionAssignedDishwasher            sql.NullString
 	MealPlanOptionMealScale                     sql.NullString
 	RecipeStepMaximumTemperatureInCelsius       sql.NullString
 	RecipeStepMinimumTemperatureInCelsius       sql.NullString

@@ -69,14 +69,14 @@ type CreateOAuth2ClientTokenParams struct {
 	CodeExpiresAt       time.Time
 	RefreshExpiresAt    time.Time
 	RefreshCreatedAt    time.Time
-	CodeCreatedAt       time.Time
 	AccessCreatedAt     time.Time
-	CodeChallenge       string
-	CodeChallengeMethod string
+	CodeCreatedAt       time.Time
 	Scope               Oauth2ClientTokenScopes
 	ClientID            string
-	Access              string
 	Code                string
+	CodeChallengeMethod string
+	Access              string
+	CodeChallenge       string
 	ID                  string
 	Refresh             string
 	RedirectUri         string

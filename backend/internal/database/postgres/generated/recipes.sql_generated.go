@@ -80,14 +80,14 @@ INSERT INTO recipes (
 
 type CreateRecipeParams struct {
 	MinEstimatedPortions string
-	ID                   string
+	YieldsComponentType  ComponentType
 	Slug                 string
 	Source               string
 	Description          string
 	CreatedByUser        string
-	Name                 string
-	YieldsComponentType  ComponentType
 	PortionName          string
+	ID                   string
+	Name                 string
 	PluralPortionName    string
 	MaxEstimatedPortions sql.NullString
 	InspiredByRecipeID   sql.NullString
@@ -195,7 +195,7 @@ type GetRecipeByIDRow struct {
 	ArchivedAt                                       sql.NullTime
 	LastUpdatedAt                                    sql.NullTime
 	LastValidatedAt                                  sql.NullTime
-	ID                                               string
+	YieldsComponentType                              ComponentType
 	PortionName                                      string
 	RecipeStepBelongsToRecipe                        string
 	Source                                           string
@@ -212,14 +212,14 @@ type GetRecipeByIDRow struct {
 	RecipeStepExplicitInstructions                   string
 	RecipeStepPreparationPastTense                   string
 	RecipeStepPreparationSlug                        string
-	RecipeStepNotes                                  string
-	YieldsComponentType                              ComponentType
 	Description                                      string
+	RecipeStepNotes                                  string
+	ID                                               string
 	Slug                                             string
 	RecipeStepMinimumTemperatureInCelsius            sql.NullString
-	RecipeStepMaximumTemperatureInCelsius            sql.NullString
-	InspiredByRecipeID                               sql.NullString
 	MaxEstimatedPortions                             sql.NullString
+	InspiredByRecipeID                               sql.NullString
+	RecipeStepMaximumTemperatureInCelsius            sql.NullString
 	RecipeStepMaximumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepMinimumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepPreparationMaximumVesselCount          sql.NullInt32
@@ -227,18 +227,18 @@ type GetRecipeByIDRow struct {
 	RecipeStepPreparationMaximumIngredientCount      sql.NullInt32
 	RecipeStepPreparationMinimumInstrumentCount      int32
 	RecipeStepPreparationMinimumIngredientCount      int32
-	RecipeStepPreparationMinimumVesselCount          int32
 	RecipeStepIndex                                  int32
-	RecipeStepPreparationOnlyForVessels              bool
-	RecipeStepStartTimerAutomatically                bool
-	RecipeStepPreparationConditionExpressionRequired bool
-	RecipeStepPreparationRestrictToIngredients       bool
-	RecipeStepPreparationYieldsNothing               bool
+	RecipeStepPreparationMinimumVesselCount          int32
 	RecipeStepOptional                               bool
 	RecipeStepPreparationConsumesVessel              bool
 	RecipeStepPreparationTemperatureRequired         bool
-	SealOfApproval                                   bool
+	RecipeStepPreparationRestrictToIngredients       bool
+	RecipeStepPreparationYieldsNothing               bool
+	RecipeStepPreparationOnlyForVessels              bool
+	RecipeStepStartTimerAutomatically                bool
 	RecipeStepPreparationTimeEstimateRequired        bool
+	SealOfApproval                                   bool
+	RecipeStepPreparationConditionExpressionRequired bool
 	EligibleForMeals                                 bool
 }
 
@@ -409,48 +409,48 @@ type GetRecipeByIDAndAuthorIDRow struct {
 	LastUpdatedAt                                    sql.NullTime
 	CreatedAt                                        sql.NullTime
 	LastValidatedAt                                  sql.NullTime
-	MinEstimatedPortions                             sql.NullString
+	RecipeStepPreparationSlug                        sql.NullString
 	RecipeStepMinimumTemperatureInCelsius            sql.NullString
 	RecipeStepBelongsToRecipe                        sql.NullString
 	Slug                                             sql.NullString
 	PluralPortionName                                sql.NullString
 	PortionName                                      sql.NullString
 	CreatedByUser                                    sql.NullString
+	RecipeStepID                                     sql.NullString
 	Source                                           sql.NullString
-	Description                                      sql.NullString
 	RecipeStepPreparationID                          sql.NullString
 	RecipeStepPreparationName                        sql.NullString
 	RecipeStepPreparationDescription                 sql.NullString
 	RecipeStepPreparationIconPath                    sql.NullString
+	Description                                      sql.NullString
 	RecipeStepConditionExpression                    sql.NullString
-	RecipeStepExplicitInstructions                   sql.NullString
 	RecipeStepPreparationPastTense                   sql.NullString
-	RecipeStepPreparationSlug                        sql.NullString
 	Name                                             sql.NullString
-	RecipeStepID                                     sql.NullString
+	RecipeStepExplicitInstructions                   sql.NullString
 	RecipeStepNotes                                  sql.NullString
 	RecipeStepMaximumTemperatureInCelsius            sql.NullString
 	YieldsComponentType                              NullComponentType
 	InspiredByRecipeID                               sql.NullString
 	ID                                               sql.NullString
+	MinEstimatedPortions                             sql.NullString
 	MaxEstimatedPortions                             sql.NullString
 	RecipeStepMinimumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepMaximumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepPreparationMaximumInstrumentCount      sql.NullInt32
 	RecipeStepPreparationMinimumVesselCount          sql.NullInt32
 	RecipeStepPreparationMaximumVesselCount          sql.NullInt32
+	RecipeStepIndex                                  sql.NullInt32
 	RecipeStepPreparationMaximumIngredientCount      sql.NullInt32
 	RecipeStepPreparationMinimumIngredientCount      sql.NullInt32
-	RecipeStepIndex                                  sql.NullInt32
 	RecipeStepPreparationMinimumInstrumentCount      sql.NullInt32
-	RecipeStepPreparationConditionExpressionRequired sql.NullBool
-	RecipeStepPreparationTemperatureRequired         sql.NullBool
 	RecipeStepPreparationTimeEstimateRequired        sql.NullBool
+	RecipeStepPreparationTemperatureRequired         sql.NullBool
+	RecipeStepPreparationConditionExpressionRequired sql.NullBool
+	RecipeStepPreparationOnlyForVessels              sql.NullBool
 	RecipeStepPreparationRestrictToIngredients       sql.NullBool
-	RecipeStepPreparationYieldsNothing               sql.NullBool
 	RecipeStepOptional                               sql.NullBool
 	RecipeStepStartTimerAutomatically                sql.NullBool
-	RecipeStepPreparationOnlyForVessels              sql.NullBool
+	RecipeStepPreparationYieldsNothing               sql.NullBool
 	RecipeStepPreparationConsumesVessel              sql.NullBool
 	SealOfApproval                                   sql.NullBool
 	EligibleForMeals                                 sql.NullBool
