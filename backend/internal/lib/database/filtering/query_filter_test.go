@@ -27,7 +27,7 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 		qf := &QueryFilter{
 			Query:           t.Name(),
 			Page:            pointer.To(uint16(100)),
-			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
+			PageSize:        pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
 			CreatedBefore:   pointer.To(time.Now().Truncate(time.Second)),
 			UpdatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
@@ -61,7 +61,7 @@ func TestQueryFilter_FromParams(T *testing.T) {
 		expected := &QueryFilter{
 			Query:           t.Name(),
 			Page:            pointer.To(uint16(100)),
-			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
+			PageSize:        pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
 			CreatedBefore:   pointer.To(tt),
 			UpdatedAfter:    pointer.To(tt),
@@ -73,7 +73,7 @@ func TestQueryFilter_FromParams(T *testing.T) {
 		exampleInput := url.Values{
 			textsearch.QueryKeySearch: []string{t.Name()},
 			QueryKeyPage:              []string{strconv.Itoa(int(*expected.Page))},
-			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.Limit))},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.PageSize))},
 			QueryKeyCreatedBefore:     []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
 			QueryKeyCreatedAfter:      []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
 			QueryKeyUpdatedBefore:     []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
@@ -114,8 +114,8 @@ func TestQueryFilter_QueryPage(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Limit: pointer.To(uint8(10)),
-			Page:  pointer.To(uint16(11)),
+			PageSize: pointer.To(uint8(10)),
+			Page:     pointer.To(uint16(11)),
 		}
 		expected := uint16(100)
 		actual := qf.QueryOffset()
@@ -138,7 +138,7 @@ func TestQueryFilter_QueryPage(T *testing.T) {
 
 		qf := &QueryFilter{
 			Page:            pointer.To(uint16(0)),
-			Limit:           pointer.To(uint8(math.MaxUint8)),
+			PageSize:        pointer.To(uint8(math.MaxUint8)),
 			IncludeArchived: pointer.To(true),
 		}
 		expected := uint16(0)
@@ -160,7 +160,7 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		qf := &QueryFilter{
 			Query:           t.Name(),
 			Page:            pointer.To(uint16(100)),
-			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
+			PageSize:        pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
 			CreatedBefore:   pointer.To(tt),
 			UpdatedAfter:    pointer.To(tt),
@@ -172,7 +172,7 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		expected := url.Values{
 			textsearch.QueryKeySearch: []string{t.Name()},
 			QueryKeyPage:              []string{strconv.Itoa(int(*qf.Page))},
-			QueryKeyLimit:             []string{strconv.Itoa(int(*qf.Limit))},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*qf.PageSize))},
 			QueryKeyCreatedBefore:     []string{qf.CreatedAfter.Format(time.RFC3339Nano)},
 			QueryKeyCreatedAfter:      []string{qf.CreatedBefore.Format(time.RFC3339Nano)},
 			QueryKeyUpdatedBefore:     []string{qf.UpdatedAfter.Format(time.RFC3339Nano)},
@@ -208,7 +208,7 @@ func TestExtractQueryFilter(T *testing.T) {
 		expected := &QueryFilter{
 			Query:         t.Name(),
 			Page:          pointer.To(uint16(100)),
-			Limit:         pointer.To(uint8(MaxQueryFilterLimit)),
+			PageSize:      pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:  pointer.To(tt),
 			CreatedBefore: pointer.To(tt),
 			UpdatedAfter:  pointer.To(tt),
@@ -218,7 +218,7 @@ func TestExtractQueryFilter(T *testing.T) {
 		exampleInput := url.Values{
 			textsearch.QueryKeySearch: []string{t.Name()},
 			QueryKeyPage:              []string{strconv.Itoa(int(*expected.Page))},
-			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.Limit))},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.PageSize))},
 			QueryKeyCreatedBefore:     []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
 			QueryKeyCreatedAfter:      []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
 			QueryKeyUpdatedBefore:     []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
@@ -241,9 +241,9 @@ func TestExtractQueryFilter(T *testing.T) {
 		ctx := t.Context()
 
 		expected := &QueryFilter{
-			Page:   pointer.To(uint16(1)),
-			Limit:  pointer.To(uint8(DefaultQueryFilterLimit)),
-			SortBy: SortAscending,
+			Page:     pointer.To(uint16(1)),
+			PageSize: pointer.To(uint8(DefaultQueryFilterLimit)),
+			SortBy:   SortAscending,
 		}
 		exampleInput := url.Values{
 			QueryKeyPage:  []string{"0"},
@@ -267,13 +267,13 @@ func TestQueryFilter_ToPagination(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Page:  pointer.To(uint16(100)),
-			Limit: pointer.To(uint8(MaxQueryFilterLimit)),
+			Page:     pointer.To(uint16(100)),
+			PageSize: pointer.To(uint8(MaxQueryFilterLimit)),
 		}
 
 		expected := Pagination{
 			Page:  *qf.Page,
-			Limit: *qf.Limit,
+			Limit: *qf.PageSize,
 		}
 
 		actual := qf.ToPagination()

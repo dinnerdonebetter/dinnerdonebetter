@@ -411,7 +411,13 @@ func ConvertGRPCCreateValidMeasurementUnitConversionRequestToValidMeasurementUni
 }
 
 func ConvertGRPCValidMeasurementUnitConversionUpdateRequestInputToValidMeasurementUnitConversionUpdateRequestInput(x *messages.ValidMeasurementUnitConversionUpdateRequestInput) *types.ValidMeasurementUnitConversionUpdateRequestInput {
-	return &types.ValidMeasurementUnitConversionUpdateRequestInput{}
+	return &types.ValidMeasurementUnitConversionUpdateRequestInput{
+		OnlyForIngredient: x.OnlyForIngredient,
+		From:              x.From,
+		To:                x.To,
+		Notes:             x.Notes,
+		Modifier:          x.Modifier,
+	}
 }
 
 func ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(x *types.ValidMeasurementUnitConversion) *messages.ValidMeasurementUnitConversion {

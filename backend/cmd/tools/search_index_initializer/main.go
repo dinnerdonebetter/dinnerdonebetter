@@ -104,7 +104,7 @@ func main() {
 		}
 
 		filter := filtering.DefaultQueryFilter()
-		filter.Limit = pointer.To(uint8(50))
+		filter.PageSize = pointer.To(uint8(50))
 		thresholdMet := false
 
 		switch index {

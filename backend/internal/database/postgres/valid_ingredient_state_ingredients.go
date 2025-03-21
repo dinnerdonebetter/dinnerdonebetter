@@ -142,7 +142,7 @@ func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -248,7 +248,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 		UpdatedBefore:        database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:         database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:          database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:           database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:           database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived:      database.NullBoolFromBoolPointer(filter.IncludeArchived),
 		ValidIngredientState: ingredientStateID,
 	})
@@ -355,7 +355,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 		ValidIngredient: ingredientID,
 	})

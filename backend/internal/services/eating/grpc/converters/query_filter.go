@@ -13,9 +13,10 @@ func ConvertGRPCQueryFilterToQueryFilter(qf *messages.QueryFilter) *filtering.Qu
 
 	filter := &filtering.QueryFilter{
 		Page:            pointer.To[uint16](1),
-		Limit:           pointer.To[uint8](50),
+		PageSize:        pointer.To[uint8](50),
 		IncludeArchived: qf.IncludeArchived,
-		// Query:           qf.Query,
+		NextCursor:      qf.NextCursor,
+		Query:           "",
 	}
 
 	return filter

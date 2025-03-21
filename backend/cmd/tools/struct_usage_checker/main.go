@@ -12,7 +12,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 )
 
-// noTestFiles excludes _test.go files (and directories)
 func noTestFiles(f os.FileInfo) bool {
 	return !f.IsDir() && !strings.HasSuffix(f.Name(), "_test.go")
 }
@@ -35,7 +34,7 @@ func fetchTypesForPackage(pkg string) map[string]*ast.StructType {
 		for _, f := range p.Files {
 			ast.Inspect(f, func(n ast.Node) bool {
 				if ts, ok := n.(*ast.TypeSpec); ok {
-					if structType, ok := ts.Type.(*ast.StructType); ok && ast.IsExported(ts.Name.Name) {
+					if structType, ok2 := ts.Type.(*ast.StructType); ok2 && ast.IsExported(ts.Name.Name) {
 						foundTypes[ts.Name.Name] = structType
 					}
 				}
@@ -93,21 +92,21 @@ func getTypeAsString(expr ast.Expr) string {
 
 // extractSelectorFromExpr extracts the package alias and type name from an expression.
 // It supports either a SelectorExpr or a pointer (StarExpr) to a SelectorExpr.
-func extractSelectorFromExpr(expr ast.Expr) (string, string, bool) {
+func extractSelectorFromExpr(expr ast.Expr) (string, bool) {
 	switch t := expr.(type) {
 	case *ast.SelectorExpr:
-		if ident, ok := t.X.(*ast.Ident); ok {
-			return ident.Name, t.Sel.Name, true
+		if _, ok := t.X.(*ast.Ident); ok {
+			return t.Sel.Name, true
 		}
 	case *ast.StarExpr:
 		if sel, ok := t.X.(*ast.SelectorExpr); ok {
-			if ident, ok := sel.X.(*ast.Ident); ok {
-				return ident.Name, sel.Sel.Name, true
+			if _, ok2 := sel.X.(*ast.Ident); ok2 {
+				return sel.Sel.Name, true
 			}
 		}
 	}
 
-	return "", "", false
+	return "", false
 }
 
 // checkCompositeLit inspects a composite literal and checks that all fields declared in the struct definition are initialized.
@@ -137,7 +136,7 @@ func checkCompositeLit(lit *ast.CompositeLit, structDef *ast.StructType, fileNam
 		initialized := make(map[string]bool)
 		for _, elt := range lit.Elts {
 			if kv, ok := elt.(*ast.KeyValueExpr); ok {
-				if ident, ok := kv.Key.(*ast.Ident); ok {
+				if ident, ok2 := kv.Key.(*ast.Ident); ok2 {
 					initialized[ident.Name] = true
 				}
 			}
@@ -183,7 +182,7 @@ func evaluatePackageUsage(sourcePackage, implementingPackage string) error {
 					return true
 				}
 
-				_, typeName, found := extractSelectorFromExpr(compLit.Type)
+				typeName, found := extractSelectorFromExpr(compLit.Type)
 				if !found {
 					return true
 				}

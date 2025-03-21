@@ -26,7 +26,7 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 
 		qf := &filtering.QueryFilter{
 			Page:          pointer.To(uint16(100)),
-			Limit:         pointer.To(uint8(50)),
+			PageSize:      pointer.To(uint8(50)),
 			CreatedAfter:  pointer.To(time.Now().Truncate(time.Second)),
 			CreatedBefore: pointer.To(time.Now().Truncate(time.Second)),
 			UpdatedAfter:  pointer.To(time.Now().Truncate(time.Second)),
@@ -59,8 +59,8 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &filtering.QueryFilter{
-			Limit: pointer.To(uint8(15)),
-			Page:  pointer.To(uint16(2)),
+			PageSize: pointer.To(uint8(15)),
+			Page:     pointer.To(uint16(2)),
 		}
 
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 LIMIT 15 OFFSET 15"
@@ -76,7 +76,7 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &filtering.QueryFilter{
-			Limit:         pointer.To(uint8(20)),
+			PageSize:      pointer.To(uint8(20)),
 			Page:          pointer.To(uint16(6)),
 			CreatedAfter:  pointer.To(time.Now().Truncate(time.Second)),
 			CreatedBefore: pointer.To(time.Now().Truncate(time.Second)),
@@ -97,8 +97,8 @@ func TestQueryFilter_ApplyFilterToQueryBuilder(T *testing.T) {
 		t.Parallel()
 
 		qf := &filtering.QueryFilter{
-			Limit: pointer.To(uint8(0)),
-			Page:  pointer.To(uint16(1)),
+			PageSize: pointer.To(uint8(0)),
+			Page:     pointer.To(uint16(1)),
 		}
 		expected := "SELECT things FROM stuff WHERE stuff.condition = $1 LIMIT 250"
 		x := applyFilterToQueryBuilder(qf, exampleTableName, baseQueryBuilder)
@@ -120,7 +120,7 @@ func TestQueryFilter_ApplyFilterToSubCountQueryBuilder(T *testing.T) {
 
 		qf := &filtering.QueryFilter{
 			Page:          pointer.To(uint16(100)),
-			Limit:         pointer.To(uint8(50)),
+			PageSize:      pointer.To(uint8(50)),
 			CreatedAfter:  pointer.To(time.Now().Truncate(time.Second)),
 			CreatedBefore: pointer.To(time.Now().Truncate(time.Second)),
 			UpdatedAfter:  pointer.To(time.Now().Truncate(time.Second)),

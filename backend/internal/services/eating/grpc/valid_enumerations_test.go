@@ -979,7 +979,6 @@ func TestServiceImpl_GetValidIngredientPreparationsByIngredient(T *testing.T) {
 		assert.Len(t, result.Results, len(exampleResult.Data))
 
 		mock.AssertExpectationsForObjects(t, mvem)
-
 	})
 }
 

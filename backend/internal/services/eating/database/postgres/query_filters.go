@@ -20,8 +20,8 @@ func applyFilterToQueryBuilder(qf *filtering.QueryFilter, tableName string, quer
 		queryBuilder = queryBuilder.Offset(uint64(qp))
 	}
 
-	if qf.Limit != nil && *qf.Limit != 0 {
-		queryBuilder = queryBuilder.Limit(uint64(*qf.Limit))
+	if qf.PageSize != nil && *qf.PageSize != 0 {
+		queryBuilder = queryBuilder.Limit(uint64(*qf.PageSize))
 	} else {
 		queryBuilder = queryBuilder.Limit(filtering.MaxQueryFilterLimit)
 	}

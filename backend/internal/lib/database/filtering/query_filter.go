@@ -74,25 +74,25 @@ type QueryFilteredResult[T any] struct {
 
 // QueryFilter represents all the filters a User could apply to a list query.
 type QueryFilter struct {
-	_ struct{} `json:"-"`
-
+	_               struct{}   `json:"-"`
 	SortBy          *string    `json:"sortBy,omitempty"`
 	Page            *uint16    `json:"page,omitempty"`
 	CreatedAfter    *time.Time `json:"createdBefore,omitempty"`
 	CreatedBefore   *time.Time `json:"createdAfter,omitempty"`
 	UpdatedAfter    *time.Time `json:"updatedBefore,omitempty"`
 	UpdatedBefore   *time.Time `json:"updatedAfter,omitempty"`
-	Limit           *uint8     `json:"limit,omitempty"`
+	PageSize        *uint8     `json:"pageSize,omitempty"`
 	IncludeArchived *bool      `json:"includeArchived,omitempty"`
+	NextCursor      *string    `json:"nextCursor,omitempty"`
 	Query           string     `json:"q,omitempty"`
 }
 
 // DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
-		Page:   pointer.To(uint16(1)),
-		Limit:  pointer.To(uint8(DefaultQueryFilterLimit)),
-		SortBy: SortAscending,
+		Page:     pointer.To(uint16(1)),
+		PageSize: pointer.To(uint8(DefaultQueryFilterLimit)),
+		SortBy:   SortAscending,
 	}
 }
 
@@ -112,8 +112,8 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 		l = l.WithValue(QueryKeyPage, qf.Page)
 	}
 
-	if qf.Limit != nil {
-		l = l.WithValue(QueryKeyLimit, qf.Limit)
+	if qf.PageSize != nil {
+		l = l.WithValue(QueryKeyLimit, qf.PageSize)
 	}
 
 	if qf.SortBy != nil {
@@ -150,7 +150,7 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 	}
 
 	if i, err := strconv.ParseUint(params.Get(QueryKeyLimit), 10, 64); err == nil {
-		qf.Limit = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxQueryFilterLimit)))
+		qf.PageSize = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxQueryFilterLimit)))
 	}
 
 	if t, err := time.Parse(time.RFC3339Nano, params.Get(QueryKeyCreatedBefore)); err == nil {
@@ -190,13 +190,13 @@ func (qf *QueryFilter) SetPage(page *uint16) {
 
 // QueryOffset calculates a query page from the current filter values.
 func (qf *QueryFilter) QueryOffset() uint16 {
-	if qf != nil && qf.Limit != nil && qf.Page != nil {
+	if qf != nil && qf.PageSize != nil && qf.Page != nil {
 		page := *qf.Page
 		if page == 0 {
 			page = 1
 		}
 
-		return uint16(*qf.Limit) * (page - 1)
+		return uint16(*qf.PageSize) * (page - 1)
 	}
 	return 0
 }
@@ -217,8 +217,8 @@ func (qf *QueryFilter) ToValues() url.Values {
 		v.Set(QueryKeyPage, strconv.FormatUint(uint64(*qf.Page), 10))
 	}
 
-	if qf.Limit != nil {
-		v.Set(QueryKeyLimit, strconv.FormatUint(uint64(*qf.Limit), 10))
+	if qf.PageSize != nil {
+		v.Set(QueryKeyLimit, strconv.FormatUint(uint64(*qf.PageSize), 10))
 	}
 
 	if qf.SortBy != nil {
@@ -260,8 +260,8 @@ func (qf *QueryFilter) ToPagination() Pagination {
 		x.Page = *qf.Page
 	}
 
-	if qf.Limit != nil {
-		x.Limit = *qf.Limit
+	if qf.PageSize != nil {
+		x.Limit = *qf.PageSize
 	}
 
 	return x
@@ -272,9 +272,9 @@ func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 	qf := DefaultQueryFilter()
 	qf.FromParams(req.URL.Query())
 
-	if qf.Limit != nil {
-		if *qf.Limit == 0 {
-			qf.Limit = pointer.To(uint8(DefaultQueryFilterLimit))
+	if qf.PageSize != nil {
+		if *qf.PageSize == 0 {
+			qf.PageSize = pointer.To(uint8(DefaultQueryFilterLimit))
 		}
 	}
 
