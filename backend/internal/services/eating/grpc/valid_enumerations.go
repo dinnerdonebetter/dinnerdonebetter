@@ -844,7 +844,7 @@ func (s *serviceImpl) GetValidIngredientStateIngredients(ctx context.Context, re
 	}
 
 	for _, y := range x {
-		res.Result = append(res.Result, grpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
+		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
 	}
 
 	return res, nil
@@ -1200,7 +1200,7 @@ func (s *serviceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Co
 	}
 
 	for _, y := range x {
-		res.Result = append(res.Result, grpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
+		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
 	}
 
 	return res, nil
@@ -1243,7 +1243,7 @@ func (s *serviceImpl) GetValidPreparationVessels(ctx context.Context, request *m
 	}
 
 	for _, y := range x {
-		res.Result = append(res.Result, grpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
+		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
 	}
 
 	return res, nil

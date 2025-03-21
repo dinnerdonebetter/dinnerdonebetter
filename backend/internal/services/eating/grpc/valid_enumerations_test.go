@@ -74,7 +74,7 @@ func TestServiceImpl_ArchiveValidIngredientMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -773,8 +773,23 @@ func TestServiceImpl_GetValidIngredientGroups(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidIngredientGroupsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidIngredientGroups", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientGroups(ctx, &messages.GetValidIngredientGroupsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -805,8 +820,23 @@ func TestServiceImpl_GetValidIngredientMeasurementUnits(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidMeasurementUnitsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidMeasurementUnits", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidMeasurementUnits(ctx, &messages.GetValidMeasurementUnitsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -814,8 +844,26 @@ func TestServiceImpl_GetValidIngredientMeasurementUnitsByIngredient(T *testing.T
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidIngredientMeasurementUnitsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredientMeasurementUnitsByIngredient", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientMeasurementUnitsByIngredient(ctx, &messages.GetValidIngredientMeasurementUnitsByIngredientRequest{
+			ValidIngredientID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -823,8 +871,26 @@ func TestServiceImpl_GetValidIngredientMeasurementUnitsByMeasurementUnit(T *test
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidIngredientMeasurementUnitsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredientMeasurementUnitsByMeasurementUnit", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx, &messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest{
+			ValidMeasurementUnitID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -855,8 +921,23 @@ func TestServiceImpl_GetValidIngredientPreparations(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidIngredientPreparationsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidIngredientPreparations", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientPreparations(ctx, &messages.GetValidIngredientPreparationsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -864,7 +945,26 @@ func TestServiceImpl_GetValidIngredientPreparationsByIngredient(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
+
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidIngredientPreparationsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredientPreparationsByIngredient", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientPreparationsByIngredient(ctx, &messages.GetValidIngredientPreparationsByIngredientRequest{
+			ValidIngredientID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 
 	})
 }
@@ -873,8 +973,26 @@ func TestServiceImpl_GetValidIngredientPreparationsByPreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidIngredientPreparationsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredientPreparationsByPreparation", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientPreparationsByPreparation(ctx, &messages.GetValidIngredientPreparationsByPreparationRequest{
+			ValidPreparationID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -928,8 +1046,23 @@ func TestServiceImpl_GetValidIngredientStateIngredients(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidIngredientStateIngredientsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidIngredientStateIngredients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientStateIngredients(ctx, &messages.GetValidIngredientStateIngredientsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -937,8 +1070,26 @@ func TestServiceImpl_GetValidIngredientStateIngredientsByIngredient(T *testing.T
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidIngredientStateIngredientsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredientStateIngredientsByIngredient", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientStateIngredientsByIngredient(ctx, &messages.GetValidIngredientStateIngredientsByIngredientRequest{
+			ValidIngredientID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -946,8 +1097,26 @@ func TestServiceImpl_GetValidIngredientStateIngredientsByIngredientState(T *test
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidIngredientStateIngredientsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredientStateIngredientsByIngredientState", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientStateIngredientsByIngredientState(ctx, &messages.GetValidIngredientStateIngredientsByIngredientStateRequest{
+			ValidIngredientStateID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -955,8 +1124,23 @@ func TestServiceImpl_GetValidIngredientStates(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidIngredientStatesList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidIngredientStates", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredientStates(ctx, &messages.GetValidIngredientStatesRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -964,8 +1148,23 @@ func TestServiceImpl_GetValidIngredients(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidIngredientsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidIngredients", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidIngredients(ctx, &messages.GetValidIngredientsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -996,8 +1195,23 @@ func TestServiceImpl_GetValidInstruments(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidInstrumentsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidInstruments", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidInstruments(ctx, &messages.GetValidInstrumentsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1028,8 +1242,22 @@ func TestServiceImpl_GetValidMeasurementUnitConversion(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidMeasurementUnitConversion()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ReadValidMeasurementUnitConversion", testutils.ContextMatcher, exampleResult.ID).Return(exampleResult, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidMeasurementUnitConversion(ctx, &messages.GetValidMeasurementUnitConversionRequest{ValidMeasurementUnitConversionID: exampleResult.ID})
+		assert.Equal(t, exampleResult.ID, result.Result.ID)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1037,8 +1265,26 @@ func TestServiceImpl_GetValidMeasurementUnitConversionsFromUnit(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidMeasurementUnitConversionsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ValidMeasurementUnitConversionsFromMeasurementUnit", testutils.ContextMatcher, exampleID).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidMeasurementUnitConversionsFromUnit(ctx, &messages.GetValidMeasurementUnitConversionsFromUnitRequest{
+			ValidMeasurementUnitID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1046,8 +1292,26 @@ func TestServiceImpl_GetValidMeasurementUnitConversionsToUnit(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidMeasurementUnitConversionsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ValidMeasurementUnitConversionsToMeasurementUnit", testutils.ContextMatcher, exampleID).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidMeasurementUnitConversionsToUnit(ctx, &messages.GetValidMeasurementUnitConversionsToUnitRequest{
+			ValidMeasurementUnitID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1055,8 +1319,23 @@ func TestServiceImpl_GetValidMeasurementUnits(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidMeasurementUnitsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidMeasurementUnits", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidMeasurementUnits(ctx, &messages.GetValidMeasurementUnitsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1110,8 +1389,23 @@ func TestServiceImpl_GetValidPreparationInstruments(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidPreparationInstrumentsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidPreparationInstruments", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPreparationInstruments(ctx, &messages.GetValidPreparationInstrumentsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1119,8 +1413,26 @@ func TestServiceImpl_GetValidPreparationInstrumentsByInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidPreparationInstrumentsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPreparationInstrumentsByInstrument", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPreparationInstrumentsByInstrument(ctx, &messages.GetValidPreparationInstrumentsByInstrumentRequest{
+			ValidInstrumentID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1128,8 +1440,26 @@ func TestServiceImpl_GetValidPreparationInstrumentsByPreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidPreparationInstrumentsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPreparationInstrumentsByPreparation", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPreparationInstrumentsByPreparation(ctx, &messages.GetValidPreparationInstrumentsByPreparationRequest{
+			ValidPreparationID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1160,8 +1490,23 @@ func TestServiceImpl_GetValidPreparationVessels(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidPreparationVesselsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidPreparationVessels", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPreparationVessels(ctx, &messages.GetValidPreparationVesselsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1169,8 +1514,26 @@ func TestServiceImpl_GetValidPreparationVesselsByPreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidPreparationVesselsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPreparationVesselsByPreparation", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPreparationVesselsByPreparation(ctx, &messages.GetValidPreparationVesselsByPreparationRequest{
+			ValidPreparationID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1178,8 +1541,26 @@ func TestServiceImpl_GetValidPreparationVesselsByVessel(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleID := fakes.BuildFakeID()
+		exampleResult := fakes.BuildFakeValidPreparationVesselsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPreparationVesselsByVessel", testutils.ContextMatcher, exampleID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPreparationVesselsByVessel(ctx, &messages.GetValidPreparationVesselsByVesselRequest{
+			ValidVesselID: exampleID,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1187,8 +1568,23 @@ func TestServiceImpl_GetValidPreparations(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidPreparationsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidPreparations", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidPreparations(ctx, &messages.GetValidPreparationsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1219,8 +1615,23 @@ func TestServiceImpl_GetValidVessels(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidVesselsList()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ListValidVessels", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return(exampleResult.Data, "", nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.GetValidVessels(ctx, &messages.GetValidVesselsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1228,7 +1639,7 @@ func TestServiceImpl_SearchForValidIngredientGroups(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1237,7 +1648,7 @@ func TestServiceImpl_SearchForValidIngredientStates(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1246,7 +1657,7 @@ func TestServiceImpl_SearchForValidIngredients(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1255,7 +1666,7 @@ func TestServiceImpl_SearchForValidInstruments(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1264,7 +1675,7 @@ func TestServiceImpl_SearchForValidMeasurementUnits(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1273,7 +1684,7 @@ func TestServiceImpl_SearchForValidPreparations(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1282,7 +1693,7 @@ func TestServiceImpl_SearchForValidVessels(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1291,7 +1702,7 @@ func TestServiceImpl_SearchValidIngredientsByPreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1300,7 +1711,7 @@ func TestServiceImpl_SearchValidMeasurementUnitsByIngredient(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1309,7 +1720,7 @@ func TestServiceImpl_UpdateValidIngredient(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1318,7 +1729,7 @@ func TestServiceImpl_UpdateValidIngredientGroup(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1327,7 +1738,7 @@ func TestServiceImpl_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1336,7 +1747,7 @@ func TestServiceImpl_UpdateValidIngredientPreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1345,7 +1756,7 @@ func TestServiceImpl_UpdateValidIngredientState(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1354,7 +1765,7 @@ func TestServiceImpl_UpdateValidIngredientStateIngredient(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1363,7 +1774,7 @@ func TestServiceImpl_UpdateValidInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1372,7 +1783,7 @@ func TestServiceImpl_UpdateValidMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1381,7 +1792,7 @@ func TestServiceImpl_UpdateValidMeasurementUnitConversion(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1390,7 +1801,7 @@ func TestServiceImpl_UpdateValidPreparation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1399,7 +1810,7 @@ func TestServiceImpl_UpdateValidPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1408,7 +1819,7 @@ func TestServiceImpl_UpdateValidPreparationVessel(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }
@@ -1417,7 +1828,7 @@ func TestServiceImpl_UpdateValidVessel(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow()
+		t.Parallel()
 
 	})
 }

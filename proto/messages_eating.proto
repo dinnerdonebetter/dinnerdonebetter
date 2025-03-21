@@ -1023,7 +1023,7 @@ message GetValidIngredientStateIngredientsRequest {
 
 message GetValidIngredientStateIngredientsResponse {
   QueryFilter Filter = 1;
-  repeated ValidIngredientStateIngredient Result = 2;
+  repeated ValidIngredientStateIngredient Results = 2;
 }
 
 // GetValidIngredientStateIngredientsByIngredient
@@ -1184,7 +1184,7 @@ message GetValidPreparationInstrumentsByPreparationRequest {
 
 message GetValidPreparationInstrumentsByPreparationResponse {
   QueryFilter Filter = 1;
-  repeated ValidPreparationInstrument Result = 2;
+  repeated ValidPreparationInstrument Results = 2;
 }
 
 // GetValidPreparationVessel
@@ -1203,7 +1203,7 @@ message GetValidPreparationVesselsRequest {
 
 message GetValidPreparationVesselsResponse {
   QueryFilter Filter = 1;
-  repeated ValidPreparationVessel Result = 2;
+  repeated ValidPreparationVessel Results = 2;
 }
 
 // GetValidPreparationVesselsByPreparation
@@ -2379,7 +2379,7 @@ message SearchForRecipesRequest {
 
 message SearchForRecipesResponse {
   QueryFilter Filter = 1;
-  repeated Recipe Result = 2;
+  repeated Recipe Results = 2;
 }
 
 // UpdateRecipe
@@ -2921,7 +2921,7 @@ message GetMealPlanOptionsRequest {
 
 message GetMealPlanOptionsResponse {
   QueryFilter Filter = 1;
-  repeated MealPlanOption Result = 2;
+  repeated MealPlanOption Results = 2;
 }
 
 // GetMealPlanTask
