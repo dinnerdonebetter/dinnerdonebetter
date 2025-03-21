@@ -76,6 +76,20 @@ func TestServiceImpl_ArchiveValidIngredientMeasurementUnit(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		exampleValidIngredientMeasurementUnitID := fakes.BuildFakeID()
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("ArchiveValidIngredientMeasurementUnit", testutils.ContextMatcher, exampleValidIngredientMeasurementUnitID).Return(nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.ArchiveValidIngredientMeasurementUnit(ctx, &messages.ArchiveValidIngredientMeasurementUnitRequest{ValidIngredientMeasurementUnitID: exampleValidIngredientMeasurementUnitID})
+		assert.NotNil(t, res)
+		assert.NoError(t, err)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1641,6 +1655,22 @@ func TestServiceImpl_SearchForValidIngredientGroups(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidIngredientGroupsList()
+		exampleRequest := fakes.BuildFake[messages.SearchForValidIngredientGroupsRequest]()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredientGroups", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.SearchForValidIngredientGroups(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1650,6 +1680,22 @@ func TestServiceImpl_SearchForValidIngredientStates(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidIngredientStatesList()
+		exampleRequest := fakes.BuildFake[messages.SearchForValidIngredientStatesRequest]()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredientStates", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.SearchForValidIngredientStates(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1659,6 +1705,22 @@ func TestServiceImpl_SearchForValidIngredients(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidIngredientsList()
+		exampleRequest := fakes.BuildFake[messages.SearchForValidIngredientsRequest]()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredients", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.SearchForValidIngredients(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1668,6 +1730,22 @@ func TestServiceImpl_SearchForValidInstruments(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidInstrumentsList()
+		exampleRequest := fakes.BuildFake[messages.SearchForValidInstrumentsRequest]()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidInstruments", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.SearchForValidInstruments(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1677,6 +1755,22 @@ func TestServiceImpl_SearchForValidMeasurementUnits(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidMeasurementUnitsList()
+		exampleRequest := fakes.BuildFake[messages.SearchForValidMeasurementUnitsRequest]()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidMeasurementUnits", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.SearchForValidMeasurementUnits(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1686,6 +1780,22 @@ func TestServiceImpl_SearchForValidPreparations(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidPreparationsList()
+		exampleRequest := fakes.BuildFake[messages.SearchForValidPreparationsRequest]()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidPreparations", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.SearchForValidPreparations(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1695,6 +1805,22 @@ func TestServiceImpl_SearchForValidVessels(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidVesselsList()
+		exampleRequest := fakes.BuildFake[messages.SearchForValidVesselsRequest]()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidVessels", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.SearchForValidVessels(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1704,6 +1830,22 @@ func TestServiceImpl_SearchValidIngredientsByPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidIngredientsList()
+		exampleRequest := fakes.BuildFake[messages.SearchValidIngredientsByPreparationRequest]()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidIngredientsByPreparationAndIngredientName", testutils.ContextMatcher, exampleRequest.ValidPreparationID, exampleRequest.Query, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.SearchValidIngredientsByPreparation(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1713,6 +1855,22 @@ func TestServiceImpl_SearchValidMeasurementUnitsByIngredient(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		exampleResult := fakes.BuildFakeValidMeasurementUnitsList()
+		exampleRequest := fakes.BuildFake[messages.SearchValidMeasurementUnitsByIngredientRequest]()
+
+		ctx := t.Context()
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("SearchValidMeasurementUnitsByIngredientID", testutils.ContextMatcher, exampleRequest.ValidIngredientID, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		s.validEnumerationsManager = mvem
+
+		result, err := s.SearchValidMeasurementUnitsByIngredient(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.Len(t, result.Results, len(exampleResult.Data))
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
