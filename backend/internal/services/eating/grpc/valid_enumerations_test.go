@@ -1880,6 +1880,21 @@ func TestServiceImpl_UpdateValidIngredient(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidIngredientRequest]()
+		exampleResponse := fakes.BuildFakeValidIngredient()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidIngredient", testutils.ContextMatcher, exampleRequest.ValidIngredientID, testutils.MatchType[*types.ValidIngredientUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidIngredient(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1889,6 +1904,21 @@ func TestServiceImpl_UpdateValidIngredientGroup(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidIngredientGroupRequest]()
+		exampleResponse := fakes.BuildFakeValidIngredientGroup()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidIngredientGroup", testutils.ContextMatcher, exampleRequest.ValidIngredientGroupID, testutils.MatchType[*types.ValidIngredientGroupUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidIngredientGroup(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1898,6 +1928,21 @@ func TestServiceImpl_UpdateValidIngredientMeasurementUnit(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidIngredientMeasurementUnitRequest]()
+		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnit()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidIngredientMeasurementUnit", testutils.ContextMatcher, exampleRequest.ValidIngredientMeasurementUnitID, testutils.MatchType[*types.ValidIngredientMeasurementUnitUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidIngredientMeasurementUnit(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1907,6 +1952,21 @@ func TestServiceImpl_UpdateValidIngredientPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidIngredientPreparationRequest]()
+		exampleResponse := fakes.BuildFakeValidIngredientPreparation()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidIngredientPreparation", testutils.ContextMatcher, exampleRequest.ValidIngredientPreparationID, testutils.MatchType[*types.ValidIngredientPreparationUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidIngredientPreparation(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1916,6 +1976,21 @@ func TestServiceImpl_UpdateValidIngredientState(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidIngredientStateRequest]()
+		exampleResponse := fakes.BuildFakeValidIngredientState()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidIngredientState", testutils.ContextMatcher, exampleRequest.ValidIngredientStateID, testutils.MatchType[*types.ValidIngredientStateUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidIngredientState(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1925,6 +2000,21 @@ func TestServiceImpl_UpdateValidIngredientStateIngredient(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidIngredientStateIngredientRequest]()
+		exampleResponse := fakes.BuildFakeValidIngredientStateIngredient()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidIngredientStateIngredient", testutils.ContextMatcher, exampleRequest.ValidIngredientStateIngredientID, testutils.MatchType[*types.ValidIngredientStateIngredientUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidIngredientStateIngredient(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1934,6 +2024,21 @@ func TestServiceImpl_UpdateValidInstrument(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidInstrumentRequest]()
+		exampleResponse := fakes.BuildFakeValidInstrument()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidInstrument", testutils.ContextMatcher, exampleRequest.ValidInstrumentID, testutils.MatchType[*types.ValidInstrumentUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidInstrument(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1943,6 +2048,21 @@ func TestServiceImpl_UpdateValidMeasurementUnit(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidMeasurementUnitRequest]()
+		exampleResponse := fakes.BuildFakeValidMeasurementUnit()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidMeasurementUnit", testutils.ContextMatcher, exampleRequest.ValidMeasurementUnitID, testutils.MatchType[*types.ValidMeasurementUnitUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidMeasurementUnit(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1952,6 +2072,21 @@ func TestServiceImpl_UpdateValidMeasurementUnitConversion(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidMeasurementUnitConversionRequest]()
+		exampleResponse := fakes.BuildFakeValidMeasurementUnitConversion()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidMeasurementUnitConversion", testutils.ContextMatcher, exampleRequest.ValidMeasurementUnitConversionID, testutils.MatchType[*types.ValidMeasurementUnitConversionUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidMeasurementUnitConversion(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1961,6 +2096,21 @@ func TestServiceImpl_UpdateValidPreparation(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidPreparationRequest]()
+		exampleResponse := fakes.BuildFakeValidPreparation()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidPreparation", testutils.ContextMatcher, exampleRequest.ValidPreparationID, testutils.MatchType[*types.ValidPreparationUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidPreparation(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1970,6 +2120,21 @@ func TestServiceImpl_UpdateValidPreparationInstrument(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidPreparationInstrumentRequest]()
+		exampleResponse := fakes.BuildFakeValidPreparationInstrument()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidPreparationInstrument", testutils.ContextMatcher, exampleRequest.ValidPreparationInstrumentID, testutils.MatchType[*types.ValidPreparationInstrumentUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidPreparationInstrument(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1979,6 +2144,21 @@ func TestServiceImpl_UpdateValidPreparationVessel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidPreparationVesselRequest]()
+		exampleResponse := fakes.BuildFakeValidPreparationVessel()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidPreparationVessel", testutils.ContextMatcher, exampleRequest.ValidPreparationVesselID, testutils.MatchType[*types.ValidPreparationVesselUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidPreparationVessel(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
 
@@ -1988,5 +2168,20 @@ func TestServiceImpl_UpdateValidVessel(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := t.Context()
+		exampleRequest := fakes.BuildFake[messages.UpdateValidVesselRequest]()
+		exampleResponse := fakes.BuildFakeValidVessel()
+
+		s := buildServiceImplForTest(t)
+
+		mvem := &mockmanagers.MockValidEnumerationsManager{}
+		mvem.On("UpdateValidVessel", testutils.ContextMatcher, exampleRequest.ValidVesselID, testutils.MatchType[*types.ValidVesselUpdateRequestInput]()).Return(exampleResponse, nil)
+		s.validEnumerationsManager = mvem
+
+		res, err := s.UpdateValidVessel(ctx, exampleRequest)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleResponse.ID, res.Result.ID)
+
+		mock.AssertExpectationsForObjects(t, mvem)
 	})
 }
