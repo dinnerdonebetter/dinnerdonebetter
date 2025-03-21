@@ -82,7 +82,7 @@ backend_proto: ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installe
 			--proto_path proto/ \
 			$(PROTO_FILES_PATH); \
 	done
-	(cd backend && $(MAKE) format)
+	(cd backend && $(MAKE) format_golang)
 
 .PHONY: proto
 proto: backend_proto
