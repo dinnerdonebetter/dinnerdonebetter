@@ -67,7 +67,7 @@ func TestQuerier_Integration_ValidPreparations(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidPreparation(ctx, updatedValidPreparation))
 
 	// create more
-	for i := range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeValidPreparation()
 		input.Name = fmt.Sprintf("%s %d", updatedValidPreparation.Name, i)
 		createdValidPreparations = append(createdValidPreparations, createValidPreparationForTest(t, ctx, input, dbc))

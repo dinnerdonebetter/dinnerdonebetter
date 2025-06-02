@@ -33,7 +33,7 @@ func BuildFakeValidVessel() *types.ValidVessel {
 // BuildFakeValidVesselsList builds a faked ValidVesselList.
 func BuildFakeValidVesselsList() *filtering.QueryFilteredResult[types.ValidVessel] {
 	var examples []*types.ValidVessel
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidVessel())
 	}
 

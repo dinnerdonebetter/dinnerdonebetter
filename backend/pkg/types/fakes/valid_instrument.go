@@ -27,7 +27,7 @@ func BuildFakeValidInstrument() *types.ValidInstrument {
 // BuildFakeValidInstrumentsList builds a faked ValidInstrumentList.
 func BuildFakeValidInstrumentsList() *filtering.QueryFilteredResult[types.ValidInstrument] {
 	var examples []*types.ValidInstrument
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidInstrument())
 	}
 

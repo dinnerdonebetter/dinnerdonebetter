@@ -34,7 +34,7 @@ type (
 		encoderDecoder                        encoding.ServerEncoderDecoder
 		tracer                                tracing.Tracer
 		mealPlanningDataManager               types.MealPlanningDataManager
-		mealsSearchIndex                      textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
+		searchIndex                           textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
 		householdInstrumentOwnershipIDFetcher func(*http.Request) string
 		userIngredientPreferenceIDFetcher     func(*http.Request) string
 		mealPlanIDFetcher                     func(*http.Request) string
@@ -94,7 +94,7 @@ func ProvideService(
 		encoderDecoder:                        encoder,
 		mealPlanningDataManager:               mealPlanningDataManager,
 		tracer:                                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		mealsSearchIndex:                      searchIndex,
+		searchIndex:                           searchIndex,
 	}
 
 	return svc, nil

@@ -66,7 +66,7 @@ func TestQuerier_Integration_ValidIngredientStates(t *testing.T) {
 	assert.NoError(t, dbc.UpdateValidIngredientState(ctx, updatedValidIngredientState))
 
 	// create more
-	for i := range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeValidIngredientState()
 		input.Name = fmt.Sprintf("%s %d", updatedValidIngredientState.Name, i)
 		createdValidIngredientStates = append(createdValidIngredientStates, createValidIngredientStateForTest(t, ctx, input, dbc))

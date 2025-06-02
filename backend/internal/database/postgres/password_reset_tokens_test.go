@@ -66,7 +66,7 @@ func TestQuerier_Integration_PasswordResetTokens(t *testing.T) {
 	createdPasswordResetTokens = append(createdPasswordResetTokens, createPasswordResetTokenForTest(t, ctx, examplePasswordResetToken, dbc))
 
 	// create more
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakePasswordResetToken()
 		input.BelongsToUser = user.ID
 		createdPasswordResetTokens = append(createdPasswordResetTokens, createPasswordResetTokenForTest(t, ctx, input, dbc))

@@ -11,7 +11,7 @@ import (
 // BuildFakeMealPlanOption builds a faked meal plan option.
 func BuildFakeMealPlanOption() *types.MealPlanOption {
 	var examples []*types.MealPlanOptionVote
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanOptionVote())
 	}
 
@@ -33,7 +33,7 @@ func BuildFakeMealPlanOption() *types.MealPlanOption {
 // BuildFakeMealPlanOptionsList builds a faked MealPlanOptionList.
 func BuildFakeMealPlanOptionsList() *filtering.QueryFilteredResult[types.MealPlanOption] {
 	var examples []*types.MealPlanOption
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeMealPlanOption())
 	}
 

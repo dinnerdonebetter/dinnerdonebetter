@@ -6,7 +6,6 @@ import (
 	"go/parser"
 	"go/token"
 	"log"
-	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -109,7 +108,7 @@ func parseGoFiles(dir string) map[string]*ast.TypeSpec {
 
 // getTagValue extracts the value of a specific tag from a struct field tag.
 func getTagValue(tag, key string) string {
-	for t := range strings.SplitSeq(tag, " ") {
+	for _, t := range strings.Split(tag, " ") {
 		parts := strings.SplitN(t, ":", 2)
 		if len(parts) == 2 && parts[0] == key {
 			return strings.Trim(strings.Split(parts[1], ",")[0], "\"")
@@ -125,7 +124,9 @@ func handleIdent(structs map[string]*ast.TypeSpec, fieldType *ast.Ident, envVars
 		keyParts := strings.Split(key, ".")
 		if len(keyParts) == 2 && keyParts[1] == fieldType.Name {
 			if keyParts[0] == currentPackage || currentPackage == "main" {
-				maps.Copy(envVars, extractEnvVars(nestedStruct, structs, keyParts[0], prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName)))
+				for k, v := range extractEnvVars(nestedStruct, structs, keyParts[0], prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName)) {
+					envVars[k] = v
+				}
 			}
 		}
 	}
@@ -136,7 +137,9 @@ func handleSelectorExpr(structs map[string]*ast.TypeSpec, fieldType *ast.Selecto
 	if pkgIdent, isIdentifier := fieldType.X.(*ast.Ident); isIdentifier {
 		fullName := fmt.Sprintf("%s.%s", pkgIdent.Name, fieldType.Sel.Name)
 		if nestedStruct, found := structs[fullName]; found {
-			maps.Copy(envVars, extractEnvVars(nestedStruct, structs, pkgIdent.Name, prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName)))
+			for k, v := range extractEnvVars(nestedStruct, structs, pkgIdent.Name, prefixValue, fmt.Sprintf("%s.%s", fieldNamePrefix, fieldName)) {
+				envVars[k] = v
+			}
 		}
 	}
 }

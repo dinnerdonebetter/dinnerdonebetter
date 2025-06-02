@@ -15,7 +15,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"go.opentelemetry.io/otel/metric"
 )
 
 func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
@@ -70,7 +69,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 		helper.setContextFetcher(t)
 
 		mp := &mockmetrics.Int64Counter{}
-		mp.On("Add", testutils.ContextMatcher, int64(1), testutils.MatchType[[]metric.AddOption]()).Return()
+		mp.On("Add", testutils.ContextMatcher, int64(1), mock.Anything).Return()
 		helper.service.rejectedRequestCounter = mp
 
 		sessionCtxData := &sessions.ContextData{
@@ -148,7 +147,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 		}
 
 		mp := &mockmetrics.Int64Counter{}
-		mp.On("Add", testutils.ContextMatcher, int64(1), testutils.MatchType[[]metric.AddOption]()).Return()
+		mp.On("Add", testutils.ContextMatcher, int64(1), mock.Anything).Return()
 		helper.service.rejectedRequestCounter = mp
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.ctx, sessions.SessionContextDataKey, sessionCtxData))

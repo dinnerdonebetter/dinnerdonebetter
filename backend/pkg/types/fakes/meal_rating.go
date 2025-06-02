@@ -25,7 +25,7 @@ func BuildFakeRecipeRating() *types.RecipeRating {
 // BuildFakeRecipeRatingsList builds a faked RecipeRatingList.
 func BuildFakeRecipeRatingsList() *filtering.QueryFilteredResult[types.RecipeRating] {
 	var examples []*types.RecipeRating
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeRating())
 	}
 

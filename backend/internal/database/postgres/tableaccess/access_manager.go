@@ -8,7 +8,6 @@ import (
 )
 
 type Manager interface {
-	UserCanAccessTable(ctx context.Context, username, table string) (bool, error)
 }
 
 type manager struct {

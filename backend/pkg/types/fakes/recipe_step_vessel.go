@@ -27,7 +27,7 @@ func BuildFakeRecipeStepVessel() *types.RecipeStepVessel {
 // BuildFakeRecipeStepVesselsList builds a faked RecipeStepVesselList.
 func BuildFakeRecipeStepVesselsList() *filtering.QueryFilteredResult[types.RecipeStepVessel] {
 	var examples []*types.RecipeStepVessel
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepVessel())
 	}
 

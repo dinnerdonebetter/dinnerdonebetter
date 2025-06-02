@@ -21,7 +21,7 @@ func BuildFakeHouseholdInstrumentOwnership() *types.HouseholdInstrumentOwnership
 // BuildFakeHouseholdInstrumentOwnershipsList builds a faked HouseholdInstrumentOwnershipList.
 func BuildFakeHouseholdInstrumentOwnershipsList() *filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership] {
 	var examples []*types.HouseholdInstrumentOwnership
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeHouseholdInstrumentOwnership())
 	}
 

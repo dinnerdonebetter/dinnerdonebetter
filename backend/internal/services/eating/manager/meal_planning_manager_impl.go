@@ -1,9 +1,10 @@
-package managers
+package manager
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue"
@@ -11,13 +12,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/database"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/events"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/types/converters"
 )
@@ -26,93 +23,29 @@ const (
 	o11yName = "meal_planning_manager"
 )
 
-type (
-	MealPlanningManager interface {
-		ListMeals(ctx context.Context, filter *filtering.QueryFilter) ([]*types.Meal, string, error)
-		CreateMeal(ctx context.Context, input *types.MealCreationRequestInput) (*types.Meal, error)
-		ReadMeal(ctx context.Context, mealID string) (*types.Meal, error)
-		SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.Meal, error)
-		ArchiveMeal(ctx context.Context, mealID, ownerID string) error
-
-		ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.MealPlan, string, error)
-		CreateMealPlan(ctx context.Context, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error)
-		ReadMealPlan(ctx context.Context, mealPlanID, ownerID string) (*types.MealPlan, error)
-		UpdateMealPlan(ctx context.Context, mealPlanID, ownerID string, input *types.MealPlanUpdateRequestInput) error
-		ArchiveMealPlan(ctx context.Context, mealPlanID, ownerID string) error
-		FinalizeMealPlan(ctx context.Context, mealPlanID, ownerID string) (bool, error)
-
-		ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanEvent, string, error)
-		CreateMealPlanEvent(ctx context.Context, input *types.MealPlanEventCreationRequestInput) (*types.MealPlanEvent, error)
-		ReadMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error)
-		UpdateMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string, input *types.MealPlanEventUpdateRequestInput) error
-		ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error
-
-		ListMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) ([]*types.MealPlanOption, string, error)
-		CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error)
-		ReadMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*types.MealPlanOption, error)
-		UpdateMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, input *types.MealPlanOptionUpdateRequestInput) error
-		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error
-
-		ListMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) ([]*types.MealPlanOptionVote, string, error)
-		CreateMealPlanOptionVotes(ctx context.Context, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error)
-		ReadMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error)
-		UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string, input *types.MealPlanOptionVoteUpdateRequestInput) error
-		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error
-
-		ListMealPlanTasksByMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanTask, string, error)
-		ReadMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID string) (*types.MealPlanTask, error)
-		CreateMealPlanTask(ctx context.Context, input *types.MealPlanTaskCreationRequestInput) (*types.MealPlanTask, error)
-		MealPlanTaskStatusChange(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error
-
-		ListMealPlanGroceryListItemsByMealPlan(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanGroceryListItem, string, error)
-		CreateMealPlanGroceryListItem(ctx context.Context, input *types.MealPlanGroceryListItemCreationRequestInput) (*types.MealPlanGroceryListItem, error)
-		ReadMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*types.MealPlanGroceryListItem, error)
-		UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string, input *types.MealPlanGroceryListItemUpdateRequestInput) error
-		ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) error
-
-		ListIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.IngredientPreference, string, error)
-		CreateIngredientPreference(ctx context.Context, input *types.IngredientPreferenceCreationRequestInput) ([]*types.IngredientPreference, error)
-		UpdateIngredientPreference(ctx context.Context, ingredientPreferenceID, ownerID string, input *types.IngredientPreferenceUpdateRequestInput) error
-		ArchiveIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) error
-
-		ListInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.InstrumentOwnership, string, error)
-		CreateInstrumentOwnership(ctx context.Context, input *types.InstrumentOwnershipCreationRequestInput) (*types.InstrumentOwnership, error)
-		ReadInstrumentOwnership(ctx context.Context, ownerID, instrumentOwnershipID string) (*types.InstrumentOwnership, error)
-		UpdateInstrumentOwnership(ctx context.Context, instrumentOwnershipID, ownerID string, input *types.InstrumentOwnershipUpdateRequestInput) error
-		ArchiveInstrumentOwnership(ctx context.Context, ownerID, instrumentOwnershipID string) error
-	}
-
-	mealPlanningManager struct {
-		tracer               tracing.Tracer
-		logger               logging.Logger
-		dataChangesPublisher messagequeue.Publisher
-		mealsSearchIndex     textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
-		db                   types.MealPlanningDataManager
-	}
-)
-
 var (
 	_ MealPlanningManager = (*mealPlanningManager)(nil)
 )
 
+type (
+	mealPlanningManager struct {
+		tracer               tracing.Tracer
+		logger               logging.Logger
+		dataChangesPublisher messagequeue.Publisher
+		db                   types.MealPlanningDataManager
+	}
+)
+
 func NewMealPlanningManager(
-	ctx context.Context,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	db database.DataManager,
 	cfg *msgconfig.QueuesConfig,
 	publisherProvider messagequeue.PublisherProvider,
-	searchConfig *textsearchcfg.Config,
-	metricsProvider metrics.Provider,
 ) (MealPlanningManager, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to provide publisher for data changes topic: %w", err)
-	}
-
-	mealsSearchIndex, err := textsearchcfg.ProvideIndex[eatingindexing.MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, eatingindexing.IndexTypeMeals)
-	if err != nil {
-		return nil, observability.PrepareError(err, nil, "initializing recipe index manager")
 	}
 
 	m := &mealPlanningManager{
@@ -120,10 +53,28 @@ func NewMealPlanningManager(
 		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		logger:               logging.EnsureLogger(logger).WithName(o11yName),
 		dataChangesPublisher: dataChangesPublisher,
-		mealsSearchIndex:     mealsSearchIndex,
 	}
 
 	return m, nil
+}
+
+func (m *mealPlanningManager) buildDataChangeMessageFromContext(ctx context.Context, eventType string, metadata map[string]any) *types.DataChangeMessage {
+	sessionContext, ok := ctx.Value(sessions.SessionContextDataKey).(*sessions.ContextData)
+	if !ok {
+		m.logger.WithValue("event_type", eventType).Info("failed to extract session data from context")
+	}
+
+	x := &types.DataChangeMessage{
+		EventType: eventType,
+		Context:   metadata,
+	}
+
+	if sessionContext != nil {
+		x.UserID = sessionContext.Requester.UserID
+		x.HouseholdID = sessionContext.ActiveHouseholdID
+	}
+
+	return x
 }
 
 func (m *mealPlanningManager) ListMeals(ctx context.Context, filter *filtering.QueryFilter) ([]*types.Meal, string, error) {
@@ -156,7 +107,7 @@ func (m *mealPlanningManager) CreateMeal(ctx context.Context, input *types.MealC
 	}
 
 	convertedInput := converters.ConvertMealCreationRequestInputToMealDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.MealIDKey, convertedInput.ID)
+	logger := m.logger.WithValue(keys.MealIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMeal(ctx, convertedInput)
@@ -164,7 +115,7 @@ func (m *mealPlanningManager) CreateMeal(ctx context.Context, input *types.MealC
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealCreated, map[string]any{
 		keys.MealIDKey: created.ID,
 	}))
 
@@ -175,7 +126,7 @@ func (m *mealPlanningManager) ReadMeal(ctx context.Context, mealID string) (*typ
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealIDKey, mealID)
+	logger := m.logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	meal, err := m.db.GetMeal(ctx, mealID)
@@ -186,7 +137,7 @@ func (m *mealPlanningManager) ReadMeal(ctx context.Context, mealID string) (*typ
 	return meal, nil
 }
 
-func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.Meal, error) {
+func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.Meal, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -194,42 +145,22 @@ func (m *mealPlanningManager) SearchMeals(ctx context.Context, query string, use
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query)
+	logger := m.logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
-	var results []*types.Meal
-	if useDatabase {
-		allResults, err := m.db.SearchForMeals(ctx, query, filter)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "searching for meals")
-		}
-
-		results = allResults.Data
-	} else {
-		mealSubsets, err := m.mealsSearchIndex.Search(ctx, query)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "searching external provider for meals")
-		}
-
-		ids := []string{}
-		for _, mealSubset := range mealSubsets {
-			ids = append(ids, mealSubset.ID)
-		}
-
-		results, err = m.db.GetMealsWithIDs(ctx, ids)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "fetching meals from database")
-		}
+	results, err := m.db.SearchForMeals(ctx, query, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "searching for meals")
 	}
 
-	return results, nil
+	return results.Data, nil
 }
 
 func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealIDKey: mealID,
 		keys.UserIDKey: ownerID,
 	})
@@ -240,7 +171,7 @@ func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID s
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealArchived, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealArchived, map[string]any{
 		keys.MealIDKey: mealID,
 	}))
 
@@ -255,7 +186,7 @@ func (m *mealPlanningManager) ListMealPlans(ctx context.Context, ownerID string,
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.HouseholdIDKey, ownerID)
+	logger := m.logger.WithValue(keys.HouseholdIDKey, ownerID)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, ownerID)
 
 	mealPlans, err := m.db.GetMealPlansForHousehold(ctx, ownerID, filter)
@@ -275,7 +206,7 @@ func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, input *types.M
 	}
 
 	convertedInput := converters.ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, convertedInput.ID)
+	logger := m.logger.WithValue(keys.MealPlanIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlan(ctx, convertedInput)
@@ -283,7 +214,7 @@ func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, input *types.M
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanCreated, map[string]any{
 		keys.MealPlanIDKey: created.ID,
 	}))
 
@@ -294,7 +225,7 @@ func (m *mealPlanningManager) ReadMealPlan(ctx context.Context, mealPlanID, owne
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 		keys.UserIDKey:     ownerID,
 	})
@@ -317,7 +248,7 @@ func (m *mealPlanningManager) UpdateMealPlan(ctx context.Context, mealPlanID, ow
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 		keys.UserIDKey:     ownerID,
 	})
@@ -334,7 +265,7 @@ func (m *mealPlanningManager) UpdateMealPlan(ctx context.Context, mealPlanID, ow
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanUpdated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanUpdated, map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 	}))
 
@@ -345,7 +276,7 @@ func (m *mealPlanningManager) ArchiveMealPlan(ctx context.Context, mealPlanID, o
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 		keys.UserIDKey:     ownerID,
 	})
@@ -356,7 +287,7 @@ func (m *mealPlanningManager) ArchiveMealPlan(ctx context.Context, mealPlanID, o
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanArchived, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanArchived, map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 	}))
 
@@ -367,7 +298,7 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 		keys.UserIDKey:     ownerID,
 	})
@@ -379,7 +310,7 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 		return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanFinalized, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanFinalized, map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 	}))
 
@@ -394,7 +325,7 @@ func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, mealPlanID)
+	logger := m.logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	mealPlanEvents, err := m.db.GetMealPlanEvents(ctx, mealPlanID, filter)
@@ -414,7 +345,7 @@ func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, input *ty
 	}
 
 	convertedInput := converters.ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanEventIDKey, convertedInput.ID)
+	logger := m.logger.WithValue(keys.MealPlanEventIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanEvent(ctx, convertedInput)
@@ -422,7 +353,7 @@ func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, input *ty
 		return nil, observability.PrepareAndLogError(err, logger, span, "created meal plan event")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanEventCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanEventCreated, map[string]any{
 		keys.MealPlanEventIDKey: created.ID,
 	}))
 
@@ -433,7 +364,7 @@ func (m *mealPlanningManager) ReadMealPlanEvent(ctx context.Context, mealPlanID,
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
 		keys.MealPlanEventIDKey: mealPlanEventID,
 	})
@@ -456,7 +387,7 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
 		keys.MealPlanEventIDKey: mealPlanEventID,
 	})
@@ -473,7 +404,7 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanEventUpdated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanEventUpdated, map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
 		keys.MealPlanEventIDKey: mealPlanEventID,
 	}))
@@ -485,7 +416,7 @@ func (m *mealPlanningManager) ArchiveMealPlanEvent(ctx context.Context, mealPlan
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
 		keys.MealPlanEventIDKey: mealPlanEventID,
 	})
@@ -496,7 +427,7 @@ func (m *mealPlanningManager) ArchiveMealPlanEvent(ctx context.Context, mealPlan
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan event")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanEventArchived, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanEventArchived, map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
 		keys.MealPlanEventIDKey: mealPlanEventID,
 	}))
@@ -512,7 +443,7 @@ func (m *mealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanI
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
 		keys.MealPlanEventIDKey: mealPlanEventID,
 	})
@@ -536,7 +467,7 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)
+	logger := m.logger.WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanOption(ctx, convertedInput)
@@ -544,7 +475,7 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "created meal plan option")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanOptionCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanOptionCreated, map[string]any{
 		keys.MealPlanOptionIDKey: convertedInput.ID,
 	}))
 
@@ -555,7 +486,7 @@ func (m *mealPlanningManager) ReadMealPlanOption(ctx context.Context, mealPlanID
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
 		keys.MealPlanEventIDKey:  mealPlanEventID,
 		keys.MealPlanOptionIDKey: mealPlanOptionID,
@@ -580,7 +511,7 @@ func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlan
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
 		keys.MealPlanEventIDKey:  mealPlanEventID,
 		keys.MealPlanOptionIDKey: mealPlanOptionID,
@@ -599,7 +530,7 @@ func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlan
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanOptionUpdated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanOptionUpdated, map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
 		keys.MealPlanEventIDKey:  mealPlanEventID,
 		keys.MealPlanOptionIDKey: mealPlanOptionID,
@@ -612,7 +543,7 @@ func (m *mealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mealPla
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
 		keys.MealPlanEventIDKey:  mealPlanEventID,
 		keys.MealPlanOptionIDKey: mealPlanOptionID,
@@ -625,7 +556,7 @@ func (m *mealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mealPla
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanOptionArchived, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanOptionArchived, map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
 		keys.MealPlanEventIDKey:  mealPlanEventID,
 		keys.MealPlanOptionIDKey: mealPlanOptionID,
@@ -642,7 +573,7 @@ func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealP
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
 		keys.MealPlanEventIDKey:  mealPlanEventID,
 		keys.MealPlanOptionIDKey: mealPlanOptionID,
@@ -668,7 +599,7 @@ func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, inp
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue("vote_count", len(input.Votes))
+	logger := m.logger.WithValue("vote_count", len(input.Votes))
 	tracing.AttachToSpan(span, "vote_count", len(input.Votes))
 
 	created, err := m.db.CreateMealPlanOptionVote(ctx, convertedInput)
@@ -676,7 +607,7 @@ func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, inp
 		return nil, observability.PrepareAndLogError(err, logger, span, "created meal plan option votes")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanOptionVoteCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanOptionVoteCreated, map[string]any{
 		"vote_count": len(input.Votes),
 		"created":    len(created),
 	}))
@@ -688,7 +619,7 @@ func (m *mealPlanningManager) ReadMealPlanOptionVote(ctx context.Context, mealPl
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:           mealPlanID,
 		keys.MealPlanEventIDKey:      mealPlanEventID,
 		keys.MealPlanOptionIDKey:     mealPlanOptionID,
@@ -715,7 +646,7 @@ func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, meal
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:           mealPlanID,
 		keys.MealPlanEventIDKey:      mealPlanEventID,
 		keys.MealPlanOptionIDKey:     mealPlanOptionID,
@@ -736,7 +667,7 @@ func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, meal
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option vote")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanOptionVoteUpdated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanOptionVoteUpdated, map[string]any{
 		keys.MealPlanIDKey:           mealPlanID,
 		keys.MealPlanEventIDKey:      mealPlanEventID,
 		keys.MealPlanOptionIDKey:     mealPlanOptionID,
@@ -750,7 +681,7 @@ func (m *mealPlanningManager) ArchiveMealPlanOptionVote(ctx context.Context, mea
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:           mealPlanID,
 		keys.MealPlanEventIDKey:      mealPlanEventID,
 		keys.MealPlanOptionIDKey:     mealPlanOptionID,
@@ -765,7 +696,7 @@ func (m *mealPlanningManager) ArchiveMealPlanOptionVote(ctx context.Context, mea
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option vote")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanOptionVoteArchived, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanOptionVoteArchived, map[string]any{
 		keys.MealPlanIDKey:           mealPlanID,
 		keys.MealPlanEventIDKey:      mealPlanEventID,
 		keys.MealPlanOptionIDKey:     mealPlanOptionID,
@@ -779,7 +710,7 @@ func (m *mealPlanningManager) ListMealPlanTasksByMealPlan(ctx context.Context, m
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, mealPlanID)
+	logger := m.logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	results, err := m.db.GetMealPlanTasksForMealPlan(ctx, mealPlanID)
@@ -794,7 +725,7 @@ func (m *mealPlanningManager) ReadMealPlanTask(ctx context.Context, mealPlanID, 
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:     mealPlanID,
 		keys.MealPlanTaskIDKey: mealPlanTaskID,
 	})
@@ -818,7 +749,7 @@ func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *typ
 	}
 
 	convertedInput := converters.ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanTaskIDKey, convertedInput.ID)
+	logger := m.logger.WithValue(keys.MealPlanTaskIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanTask(ctx, convertedInput)
@@ -826,7 +757,7 @@ func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *typ
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanTaskCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanTaskCreated, map[string]any{
 		keys.MealPlanTaskIDKey: convertedInput.ID,
 	}))
 
@@ -841,14 +772,14 @@ func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, inpu
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanTaskIDKey, input.ID)
+	logger := m.logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, input.ID)
 
 	if err := m.db.ChangeMealPlanTaskStatus(ctx, input); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "changing meal plan task status")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanTaskStatusChanged, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanTaskStatusChanged, map[string]any{
 		keys.MealPlanTaskIDKey: input.ID,
 	}))
 
@@ -859,7 +790,7 @@ func (m *mealPlanningManager) ListMealPlanGroceryListItemsByMealPlan(ctx context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, mealPlanID)
+	logger := m.logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	results, err := m.db.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID)
@@ -879,7 +810,7 @@ func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context,
 	}
 
 	convertedInput := converters.ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanGroceryListItemIDKey, convertedInput.ID)
+	logger := m.logger.WithValue(keys.MealPlanGroceryListItemIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateMealPlanGroceryListItem(ctx, convertedInput)
@@ -887,7 +818,7 @@ func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context,
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan grocery list item")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanGroceryListItemCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanGroceryListItemCreated, map[string]any{
 		keys.MealPlanGroceryListItemIDKey: convertedInput.ID,
 	}))
 
@@ -898,7 +829,7 @@ func (m *mealPlanningManager) ReadMealPlanGroceryListItem(ctx context.Context, m
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:                mealPlanID,
 		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	})
@@ -921,7 +852,7 @@ func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context,
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:                mealPlanID,
 		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	})
@@ -938,7 +869,7 @@ func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context,
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan grocery list item")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanGroceryListItemUpdated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanGroceryListItemUpdated, map[string]any{
 		keys.MealPlanIDKey:                mealPlanID,
 		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	}))
@@ -950,7 +881,7 @@ func (m *mealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Context
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.MealPlanIDKey:                mealPlanID,
 		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	})
@@ -961,7 +892,7 @@ func (m *mealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Context
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan grocery list item")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.MealPlanGroceryListItemArchived, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.MealPlanGroceryListItemArchived, map[string]any{
 		keys.MealPlanIDKey:                mealPlanID,
 		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	}))
@@ -977,7 +908,7 @@ func (m *mealPlanningManager) ListIngredientPreferences(ctx context.Context, own
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.UserIDKey, ownerID)
+	logger := m.logger.WithValue(keys.UserIDKey, ownerID)
 	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
 
 	results, err := m.db.GetIngredientPreferences(ctx, ownerID, filter)
@@ -996,7 +927,7 @@ func (m *mealPlanningManager) CreateIngredientPreference(ctx context.Context, in
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.ValidIngredientGroupIDKey: input.ValidIngredientGroupID,
 		keys.ValidIngredientIDKey:      input.ValidIngredientID,
 	})
@@ -1010,7 +941,7 @@ func (m *mealPlanningManager) CreateIngredientPreference(ctx context.Context, in
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating ingredient preference")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.IngredientPreferenceCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.IngredientPreferenceCreated, map[string]any{
 		keys.ValidIngredientGroupIDKey: input.ValidIngredientGroupID,
 		keys.ValidIngredientIDKey:      input.ValidIngredientID,
 		"created":                      len(created),
@@ -1027,7 +958,7 @@ func (m *mealPlanningManager) UpdateIngredientPreference(ctx context.Context, in
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.IngredientPreferenceIDKey: ingredientPreferenceID,
 		keys.UserIDKey:                 ownerID,
 	})
@@ -1044,7 +975,7 @@ func (m *mealPlanningManager) UpdateIngredientPreference(ctx context.Context, in
 		return observability.PrepareAndLogError(err, logger, span, "updating ingredient preference")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.IngredientPreferenceUpdated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.IngredientPreferenceUpdated, map[string]any{
 		keys.IngredientPreferenceIDKey: ingredientPreferenceID,
 	}))
 
@@ -1055,7 +986,7 @@ func (m *mealPlanningManager) ArchiveIngredientPreference(ctx context.Context, o
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.IngredientPreferenceIDKey: ingredientPreferenceID,
 		keys.UserIDKey:                 ownerID,
 	})
@@ -1066,7 +997,7 @@ func (m *mealPlanningManager) ArchiveIngredientPreference(ctx context.Context, o
 		return observability.PrepareAndLogError(err, logger, span, "archiving ingredient preference")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.IngredientPreferenceArchived, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.IngredientPreferenceArchived, map[string]any{
 		keys.IngredientPreferenceIDKey: ingredientPreferenceID,
 	}))
 
@@ -1081,7 +1012,7 @@ func (m *mealPlanningManager) ListInstrumentOwnerships(ctx context.Context, owne
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := m.logger.WithSpan(span).WithValue(keys.HouseholdIDKey, ownerID)
+	logger := m.logger.WithValue(keys.HouseholdIDKey, ownerID)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, ownerID)
 
 	results, err := m.db.GetInstrumentOwnerships(ctx, ownerID, filter)
@@ -1097,7 +1028,7 @@ func (m *mealPlanningManager) CreateInstrumentOwnership(ctx context.Context, inp
 	defer span.End()
 
 	convertedInput := converters.ConvertInstrumentOwnershipCreationRequestInputToInstrumentOwnershipDatabaseCreationInput(input)
-	logger := m.logger.WithSpan(span).WithValue(keys.InstrumentOwnershipIDKey, convertedInput.ID)
+	logger := m.logger.WithValue(keys.InstrumentOwnershipIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.InstrumentOwnershipIDKey, convertedInput.ID)
 
 	created, err := m.db.CreateInstrumentOwnership(ctx, convertedInput)
@@ -1105,7 +1036,7 @@ func (m *mealPlanningManager) CreateInstrumentOwnership(ctx context.Context, inp
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating instrument ownership")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.InstrumentOwnershipCreated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.InstrumentOwnershipCreated, map[string]any{
 		keys.InstrumentOwnershipIDKey: convertedInput.ID,
 	}))
 
@@ -1116,7 +1047,7 @@ func (m *mealPlanningManager) ReadInstrumentOwnership(ctx context.Context, owner
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.HouseholdIDKey:           ownerID,
 		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	})
@@ -1139,7 +1070,7 @@ func (m *mealPlanningManager) UpdateInstrumentOwnership(ctx context.Context, ins
 		return internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.HouseholdIDKey:           ownerID,
 		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	})
@@ -1156,7 +1087,7 @@ func (m *mealPlanningManager) UpdateInstrumentOwnership(ctx context.Context, ins
 		return observability.PrepareAndLogError(err, logger, span, "updating instrument ownership")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.InstrumentOwnershipUpdated, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.InstrumentOwnershipUpdated, map[string]any{
 		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	}))
 
@@ -1167,7 +1098,7 @@ func (m *mealPlanningManager) ArchiveInstrumentOwnership(ctx context.Context, ow
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValues(map[string]any{
+	logger := m.logger.WithValues(map[string]any{
 		keys.HouseholdIDKey:           ownerID,
 		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	})
@@ -1178,7 +1109,7 @@ func (m *mealPlanningManager) ArchiveInstrumentOwnership(ctx context.Context, ow
 		return observability.PrepareAndLogError(err, logger, span, "archiving instrument ownership")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, events.InstrumentOwnershipArchived, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, m.buildDataChangeMessageFromContext(ctx, events.InstrumentOwnershipArchived, map[string]any{
 		keys.InstrumentOwnershipIDKey: instrumentOwnershipID,
 	}))
 

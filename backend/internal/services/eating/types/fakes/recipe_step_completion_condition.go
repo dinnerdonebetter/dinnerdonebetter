@@ -13,7 +13,7 @@ import (
 func BuildFakeRecipeStepCompletionCondition() *types.RecipeStepCompletionCondition {
 	id := BuildFakeID()
 	var ingredients []*types.RecipeStepCompletionConditionIngredient
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		ingredient := BuildFakeRecipeStepCompletionConditionIngredient()
 		ingredient.BelongsToRecipeStepCompletionCondition = id
 		ingredients = append(ingredients, ingredient)
@@ -42,7 +42,7 @@ func BuildFakeRecipeStepCompletionConditionIngredient() *types.RecipeStepComplet
 // BuildFakeRecipeStepCompletionConditionsList builds a faked RecipeStepCompletionConditionList.
 func BuildFakeRecipeStepCompletionConditionsList() *filtering.QueryFilteredResult[types.RecipeStepCompletionCondition] {
 	var examples []*types.RecipeStepCompletionCondition
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepCompletionCondition())
 	}
 

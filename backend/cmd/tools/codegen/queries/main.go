@@ -106,7 +106,7 @@ func main() {
 		}
 
 		fileOutput := ""
-		for line := range strings.SplitSeq(strings.TrimSpace(fileContent), "\n") {
+		for _, line := range strings.Split(strings.TrimSpace(fileContent), "\n") {
 			fileOutput += strings.TrimSuffix(line, " ") + "\n"
 		}
 

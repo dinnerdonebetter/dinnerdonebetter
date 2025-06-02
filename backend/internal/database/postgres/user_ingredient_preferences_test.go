@@ -79,7 +79,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	assert.NoError(t, dbc.UpdateUserIngredientPreference(ctx, updatedUserIngredientPreference))
 
 	// create more
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeUserIngredientPreference()
 		ingredient3 := createValidIngredientForTest(t, ctx, nil, dbc)
 		input.BelongsToUser = user.ID

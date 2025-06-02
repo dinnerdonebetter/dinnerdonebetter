@@ -26,7 +26,7 @@ func BuildFakeRecipeMedia() *types.RecipeMedia {
 // BuildFakeRecipeMediaList builds a faked RecipeMediaList.
 func BuildFakeRecipeMediaList() *filtering.QueryFilteredResult[types.RecipeMedia] {
 	var examples []*types.RecipeMedia
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeMedia())
 	}
 

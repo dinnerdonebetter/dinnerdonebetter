@@ -83,7 +83,7 @@ func TestQuerier_Integration_Households(t *testing.T) {
 	assert.NoError(t, dbc.UpdateHousehold(ctx, updatedHousehold))
 
 	// create more
-	for i := range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeHousehold()
 		input.BelongsToUser = exampleUser.ID
 		input.Name = fmt.Sprintf("%s %d", updatedHousehold.Name, i)

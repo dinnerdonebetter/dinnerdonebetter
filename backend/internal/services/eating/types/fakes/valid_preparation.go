@@ -34,7 +34,7 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 // BuildFakeValidPreparationsList builds a faked ValidPreparationList.
 func BuildFakeValidPreparationsList() *filtering.QueryFilteredResult[types.ValidPreparation] {
 	var examples []*types.ValidPreparation
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidPreparation())
 	}
 

@@ -11,7 +11,7 @@ import (
 
 func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 	recipePrepTaskSteps := []*types.RecipePrepTaskStep{}
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		recipePrepTaskSteps = append(recipePrepTaskSteps, BuildFakeRecipePrepTaskStep())
 	}
 
@@ -40,7 +40,7 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 
 func BuildFakeRecipePrepTasksList() *filtering.QueryFilteredResult[types.RecipePrepTask] {
 	recipePrepTasks := &filtering.QueryFilteredResult[types.RecipePrepTask]{}
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		recipePrepTasks.Data = append(recipePrepTasks.Data, BuildFakeRecipePrepTask())
 	}
 
@@ -73,7 +73,7 @@ func BuildFakeRecipePrepTaskStepUpdateRequestInput() *types.RecipePrepTaskStepUp
 
 func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreationRequestInput {
 	taskSteps := []*types.RecipePrepTaskStepCreationRequestInput{}
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepCreationRequestInput())
 	}
 
@@ -93,7 +93,7 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 
 func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequestInput {
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepUpdateRequestInput())
 	}
 

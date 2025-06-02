@@ -39,7 +39,7 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 // BuildFakeRecipeStepProductsList builds a faked RecipeStepProductList.
 func BuildFakeRecipeStepProductsList() *filtering.QueryFilteredResult[types.RecipeStepProduct] {
 	var examples []*types.RecipeStepProduct
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStepProduct())
 	}
 

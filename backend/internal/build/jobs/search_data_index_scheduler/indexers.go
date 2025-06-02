@@ -1,8 +1,6 @@
 package searchdataindexscheduler
 
 import (
-	"maps"
-
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/lib/search/text/indexing"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
@@ -14,9 +12,13 @@ func ProvideIndexFunctions(dataManager database.DataManager) map[string]indexing
 	coreMap := coreindexing.BuildCoreDataIndexingFunctions(dataManager)
 	eatingMap := eatingindexing.BuildEatingDataIndexingFunctions(dataManager)
 
-	maps.Copy(outputMap, coreMap)
+	for k, v := range coreMap {
+		outputMap[k] = v
+	}
 
-	maps.Copy(outputMap, eatingMap)
+	for k, v := range eatingMap {
+		outputMap[k] = v
+	}
 
 	return outputMap
 }

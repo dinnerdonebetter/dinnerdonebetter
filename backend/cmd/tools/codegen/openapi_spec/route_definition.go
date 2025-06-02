@@ -44,7 +44,7 @@ var routesWithoutAuth = map[string]struct{}{
 
 func (d *RouteDefinition) ToOperation() *openapi.Operation {
 	operationParts := []string{d.Method}
-	for part := range strings.SplitSeq(d.Path, "/") {
+	for _, part := range strings.Split(d.Path, "/") {
 		if part == "api" || part == "v1" || strings.TrimSpace(part) == "" {
 			continue
 		}

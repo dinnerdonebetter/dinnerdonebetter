@@ -22,7 +22,7 @@ func BuildFakeAuditLogEntry() *types.AuditLogEntry {
 // BuildFakeAuditLogEntriesList builds a faked AuditLogEntryList.
 func BuildFakeAuditLogEntriesList() *filtering.QueryFilteredResult[types.AuditLogEntry] {
 	var examples []*types.AuditLogEntry
-	for range exampleQuantity {
+	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeAuditLogEntry())
 	}
 
