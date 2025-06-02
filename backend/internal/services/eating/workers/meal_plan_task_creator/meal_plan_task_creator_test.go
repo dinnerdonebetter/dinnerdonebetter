@@ -66,9 +66,6 @@ func TestWorker_Work(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: RESTOREME
-		t.SkipNow()
-
 		w := buildNewMealPlanTaskCreatorForTest(t)
 		assert.NotNil(t, w)
 
@@ -179,7 +176,7 @@ func TestWorker_Work(T *testing.T) {
 				).Return(expectedReturnResults, nil)
 			}
 		}
-		// TODO: w.analyzer = mockAnalyzer
+		w.analyzer = mockAnalyzer
 
 		mmp := &mockpublishers.Publisher{}
 		mmp.On(

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
@@ -60,6 +61,7 @@ func (s *service) CreateRecipeStepCompletionConditionHandler(res http.ResponseWr
 	}
 
 	input := converters.ConvertRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput(providedInput)
+	input.ID = identifiers.New()
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)

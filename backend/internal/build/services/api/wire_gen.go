@@ -12,17 +12,17 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
 	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/random"
-	"github.com/dinnerdonebetter/backend/internal/lib/routing/config"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/admin"
@@ -37,14 +37,15 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/usernotifications"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/users"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/webhooks"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/handlers/meal_planning"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/handlers/valid_enumerations"
+	mealplanning "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/meal_planning"
+	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
+	validenumerations "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/valid_enumerations"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/handlers/workers"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_finalizer"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_grocery_list_initializer"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_task_creator"
+	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_finalizer"
+	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_grocery_list_initializer"
+	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_task_creator"
 )
 
 // Injectors from build.go:
@@ -159,7 +160,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, queuesConfig)
+	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
+	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +195,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	textsearchcfgConfig := &cfg.TextSearch
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
 	recipeManagementDataManager := database.ProvideRecipeManagementDataManager(dataManager)
-	recipeManagementDataService, err := recipemanagement.ProvideService(ctx, logger, recipemanagementConfig, textsearchcfgConfig, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider, provider, queuesConfig, recipeManagementDataManager)
+	recipeManagementDataService, err := recipemanagement.ProvideService(ctx, logger, recipemanagementConfig, textsearchcfgConfig, recipeAnalyzer, serverEncoderDecoder, routeParamManager, publisherProvider, mediaUploadProcessor, tracerProvider, provider, queuesConfig, recipeManagementDataManager)
 	if err != nil {
 		return nil, err
 	}

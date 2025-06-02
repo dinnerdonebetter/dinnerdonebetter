@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	mealPlannerName = "meal_planning_manager"
+	o11yName = "meal_planning_manager"
 )
 
 type (
@@ -117,8 +117,8 @@ func NewMealPlanningManager(
 
 	m := &mealPlanningManager{
 		db:                   db,
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlannerName)),
-		logger:               logging.EnsureLogger(logger).WithName(mealPlannerName),
+		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:               logging.EnsureLogger(logger).WithName(o11yName),
 		dataChangesPublisher: dataChangesPublisher,
 		mealsSearchIndex:     mealsSearchIndex,
 	}

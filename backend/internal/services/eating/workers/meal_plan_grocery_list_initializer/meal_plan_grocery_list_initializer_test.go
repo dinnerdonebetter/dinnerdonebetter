@@ -33,7 +33,7 @@ func buildNewMealPlanGroceryListInitializerForTest(t *testing.T) *Worker {
 		tracing.NewNoopTracerProvider(),
 		metrics.NewNoopMetricsProvider(),
 		pp,
-		// TODO: grocerylistpreparation.NewGroceryListCreator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+		grocerylistpreparation.NewGroceryListCreator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		cfg,
 	)
 	require.NoError(t, err)
@@ -46,8 +46,6 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
-
-		t.SkipNow()
 
 		w := buildNewMealPlanGroceryListInitializerForTest(t)
 		assert.NotNil(t, w)
@@ -270,7 +268,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 			testutils.ContextMatcher,
 			expectedMealPlans[0],
 		).Return(firstMealPlanExpectedGroceryListItemInputs, nil)
-		// TODO: w.groceryListCreator = mglm
+		w.groceryListCreator = mglm
 
 		pup := &mockpublishers.Publisher{}
 		for _, inputs := range expectedInputSets {

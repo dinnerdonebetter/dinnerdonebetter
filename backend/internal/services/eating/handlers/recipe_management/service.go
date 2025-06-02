@@ -20,6 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/images"
 	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -45,14 +46,14 @@ type (
 		recipeStepInstrumentIDFetcher          func(*http.Request) string
 		recipeStepIngredientIDFetcher          func(*http.Request) string
 		recipeStepCompletionConditionIDFetcher func(*http.Request) string
-		// TODO: recipeAnalyzer                         recipeanalysis.RecipeAnalyzer
-		imageUploadProcessor      images.MediaUploadProcessor
-		encoderDecoder            encoding.ServerEncoderDecoder
-		dataChangesPublisher      messagequeue.Publisher
-		searchIndex               textsearch.IndexSearcher[eatingindexing.RecipeSearchSubset]
-		uploadManager             uploads.UploadManager
-		sessionContextDataFetcher func(*http.Request) (*sessions.ContextData, error)
-		cfg                       *Config
+		recipeAnalyzer                         recipeanalysis.RecipeAnalyzer
+		imageUploadProcessor                   images.MediaUploadProcessor
+		encoderDecoder                         encoding.ServerEncoderDecoder
+		dataChangesPublisher                   messagequeue.Publisher
+		searchIndex                            textsearch.IndexSearcher[eatingindexing.RecipeSearchSubset]
+		uploadManager                          uploads.UploadManager
+		sessionContextDataFetcher              func(*http.Request) (*sessions.ContextData, error)
+		cfg                                    *Config
 	}
 )
 
@@ -64,7 +65,7 @@ func ProvideService(
 	logger logging.Logger,
 	cfg *Config,
 	searchConfig *textsearchcfg.Config,
-	// TODO: recipeGrapher recipeanalysis.RecipeAnalyzer,
+	recipeGrapher recipeanalysis.RecipeAnalyzer,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
@@ -113,11 +114,11 @@ func ProvideService(
 		cfg:                                    cfg,
 		dataChangesPublisher:                   dataChangesPublisher,
 		encoderDecoder:                         encoder,
-		// TODO: recipeAnalyzer:                         recipeGrapher,
-		uploadManager:        uploader,
-		imageUploadProcessor: imageUploadProcessor,
-		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		searchIndex:          searchIndex,
+		recipeAnalyzer:                         recipeGrapher,
+		uploadManager:                          uploader,
+		imageUploadProcessor:                   imageUploadProcessor,
+		tracer:                                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		searchIndex:                            searchIndex,
 	}
 
 	return svc, nil
