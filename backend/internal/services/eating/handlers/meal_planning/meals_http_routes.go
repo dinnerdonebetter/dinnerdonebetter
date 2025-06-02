@@ -88,7 +88,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Meal]{
 		Details: responseDetails,
@@ -360,7 +360,7 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 		UserID:      sessionCtxData.Requester.UserID,
 	}
 
-	s.dataChangesPublisher.PublishAsync(ctx, dcm)
+	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
 	responseValue := &types.APIResponse[*types.Meal]{
 		Details: responseDetails,

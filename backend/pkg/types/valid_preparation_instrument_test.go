@@ -67,7 +67,7 @@ func TestValidPreparationInstrumentCreationRequestInput_ValidateWithContext(T *t
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ValidPreparationInstrumentCreationRequestInput{
 			ValidPreparationID: t.Name(),
 			ValidInstrumentID:  t.Name(),
@@ -83,7 +83,7 @@ func TestValidPreparationInstrumentDatabaseCreationInput_ValidateWithContext(T *
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ValidPreparationInstrumentDatabaseCreationInput{
 			ID:                 t.Name(),
 			ValidPreparationID: t.Name(),
@@ -100,7 +100,7 @@ func TestValidPreparationInstrumentUpdateRequestInput_ValidateWithContext(T *tes
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ValidPreparationInstrumentUpdateRequestInput{
 			ValidPreparationID: pointer.To(t.Name()),
 			ValidInstrumentID:  pointer.To(t.Name()),

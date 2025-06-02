@@ -1,6 +1,7 @@
 package segment
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
@@ -57,7 +58,7 @@ func TestSegmentEventReporter_AddUser(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		exampleUserID := identifiers.New()
 		properties := map[string]any{
@@ -78,7 +79,7 @@ func TestSegmentEventReporter_EventOccurred(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		exampleUserID := identifiers.New()
 		properties := map[string]any{

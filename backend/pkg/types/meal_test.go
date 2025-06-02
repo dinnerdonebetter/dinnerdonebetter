@@ -109,7 +109,7 @@ func TestMealDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &MealDatabaseCreationInput{
 			Name: t.Name(),
 			Components: []*MealComponentDatabaseCreationInput{
@@ -130,7 +130,7 @@ func TestMealUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &MealUpdateRequestInput{
 			Name:        pointer.To(t.Name()),
 			Description: pointer.To(t.Name()),

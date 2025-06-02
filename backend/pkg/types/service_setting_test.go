@@ -1,6 +1,7 @@
 package types
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
@@ -14,7 +15,7 @@ func TestServiceSettingCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingCreationRequestInput{
 			Name:        t.Name(),
 			Description: t.Name(),
@@ -33,7 +34,7 @@ func TestServiceSettingCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid struct", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingCreationRequestInput{}
 
 		actual := x.ValidateWithContext(ctx)
@@ -44,7 +45,7 @@ func TestServiceSettingCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid default value", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingCreationRequestInput{
 			Name:        t.Name(),
 			Description: t.Name(),
@@ -67,7 +68,7 @@ func TestServiceSettingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingDatabaseCreationInput{
 			ID:          t.Name(),
 			Name:        t.Name(),

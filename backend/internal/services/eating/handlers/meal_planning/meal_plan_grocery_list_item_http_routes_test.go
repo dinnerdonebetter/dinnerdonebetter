@@ -337,7 +337,6 @@ func TestMealPlanGroceryListItemsService_ArchiveMealPlanGroceryListItemHandler(T
 		mealPlanGroceryListItemDataManager.MealPlanGroceryListItemDataManagerMock.On(
 			"ArchiveMealPlanGroceryListItem",
 			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanGroceryListItem.ID,
 		).Return(nil)
 		helper.service.mealPlanningDataManager = mealPlanGroceryListItemDataManager
@@ -402,7 +401,6 @@ func TestMealPlanGroceryListItemsService_ArchiveMealPlanGroceryListItemHandler(T
 		mealPlanGroceryListItemDataManager.MealPlanGroceryListItemDataManagerMock.On(
 			"ArchiveMealPlanGroceryListItem",
 			testutils.ContextMatcher,
-			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanGroceryListItem.ID,
 		).Return(errors.New("blah"))
 		helper.service.mealPlanningDataManager = mealPlanGroceryListItemDataManager

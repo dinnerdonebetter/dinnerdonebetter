@@ -2,6 +2,7 @@ package encoding
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
 	"encoding/json"
 	"encoding/xml"
@@ -64,7 +65,7 @@ func TestServerEncoderDecoder_encodeResponse(T *testing.T) {
 			encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType).(*serverEncoderDecoder)
 			require.True(t, ok)
 
-			ctx := t.Context()
+			ctx := context.Background()
 			res := httptest.NewRecorder()
 			res.Header().Set(ContentTypeHeaderKey, ContentTypeToString(tc.contentType))
 
@@ -81,7 +82,7 @@ func TestServerEncoderDecoder_encodeResponse(T *testing.T) {
 		encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji).(*serverEncoderDecoder)
 		require.True(t, ok)
 
-		ctx := t.Context()
+		ctx := context.Background()
 		res := httptest.NewRecorder()
 		res.Header().Set(ContentTypeHeaderKey, ContentTypeToString(ContentTypeEmoji))
 
@@ -97,7 +98,7 @@ func TestServerEncoderDecoder_encodeResponse(T *testing.T) {
 		encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON).(*serverEncoderDecoder)
 		require.True(t, ok)
 
-		ctx := t.Context()
+		ctx := context.Background()
 		res := httptest.NewRecorder()
 
 		encoderDecoder.encodeResponse(ctx, res, ex, http.StatusOK)
@@ -111,7 +112,7 @@ func TestServerEncoderDecoder_encodeResponse(T *testing.T) {
 		encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON).(*serverEncoderDecoder)
 		require.True(t, ok)
 
-		ctx := t.Context()
+		ctx := context.Background()
 		res := httptest.NewRecorder()
 
 		encoderDecoder.encodeResponse(ctx, res, ex, http.StatusOK)
@@ -125,7 +126,7 @@ func TestServerEncoderDecoder_MustEncodeJSON(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		expected := `{"name":"TestServerEncoderDecoder_MustEncodeJSON/standard"}
@@ -138,7 +139,7 @@ func TestServerEncoderDecoder_MustEncodeJSON(T *testing.T) {
 	T.Run("with panic", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		defer func() {
@@ -178,7 +179,7 @@ func TestServerEncoderDecoder_MustEncode(T *testing.T) {
 		T.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			ctx := t.Context()
+			ctx := context.Background()
 			encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType)
 
 			actual := string(encoderDecoder.MustEncode(ctx, &example{Name: t.Name()}))
@@ -190,7 +191,7 @@ func TestServerEncoderDecoder_MustEncode(T *testing.T) {
 	T.Run("emoji", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeEmoji)
 
 		actual := string(encoderDecoder.MustEncode(ctx, &example{Name: t.Name()}))
@@ -200,7 +201,7 @@ func TestServerEncoderDecoder_MustEncode(T *testing.T) {
 	T.Run("with broken struct", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		encoderDecoder, ok := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON).(*serverEncoderDecoder)
 		require.True(t, ok)
 
@@ -221,7 +222,7 @@ func TestServerEncoderDecoder_EncodeResponseWithStatus(T *testing.T) {
 		ex := &example{Name: expectation}
 		encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
-		ctx := t.Context()
+		ctx := context.Background()
 		res := httptest.NewRecorder()
 
 		expected := 666
@@ -273,7 +274,7 @@ func TestServerEncoderDecoder_DecodeRequest(T *testing.T) {
 		T.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			ctx := t.Context()
+			ctx := context.Background()
 			encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType)
 
 			bs, err := tc.marshaller(e)
@@ -328,7 +329,7 @@ func Test_serverEncoderDecoder_DecodeBytes(T *testing.T) {
 	for name, tc := range goodDataTestCases {
 		T.Run(name, func(t *testing.T) {
 			t.Parallel()
-			ctx := t.Context()
+			ctx := context.Background()
 
 			encoderDecoder := ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType)
 

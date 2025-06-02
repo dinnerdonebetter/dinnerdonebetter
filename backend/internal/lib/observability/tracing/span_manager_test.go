@@ -33,7 +33,7 @@ func Test_otelSpanManager_StartCustomSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		NewTracerForTest(t.Name()).StartCustomSpan(ctx, t.Name())
 	})
 }

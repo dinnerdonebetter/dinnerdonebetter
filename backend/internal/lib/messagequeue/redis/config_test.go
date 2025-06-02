@@ -40,7 +40,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &Config{
 			Username:       t.Name(),
 			Password:       t.Name(),

@@ -1,6 +1,7 @@
 package mailgun
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -109,7 +110,7 @@ func TestMailgunEmailer_SendEmail(T *testing.T) {
 
 		c.client.SetAPIBase(ts.URL + "/v4")
 
-		ctx := t.Context()
+		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
@@ -139,7 +140,7 @@ func TestMailgunEmailer_SendEmail(T *testing.T) {
 		c, err := NewMailgunEmailer(cfg, logger, tracing.NewNoopTracerProvider(), client, circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
-		ctx := t.Context()
+		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
@@ -168,7 +169,7 @@ func TestMailgunEmailer_SendEmail(T *testing.T) {
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
-		ctx := t.Context()
+		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),

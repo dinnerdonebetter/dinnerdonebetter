@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,7 @@ func TestMetaSettings_ValidateWithContext(T *testing.T) {
 	T.Run("testing mode", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := MetaSettings{
 			RunMode: TestingRunMode,
 		}
@@ -23,7 +24,7 @@ func TestMetaSettings_ValidateWithContext(T *testing.T) {
 	T.Run("development mode", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := MetaSettings{
 			RunMode: DevelopmentRunMode,
 		}
@@ -34,7 +35,7 @@ func TestMetaSettings_ValidateWithContext(T *testing.T) {
 	T.Run("production mode", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := MetaSettings{
 			RunMode: ProductionRunMode,
 		}
@@ -45,7 +46,7 @@ func TestMetaSettings_ValidateWithContext(T *testing.T) {
 	T.Run("invalid mode", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := MetaSettings{
 			RunMode: runMode(t.Name()),
 		}

@@ -1,6 +1,7 @@
 package elasticsearch
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -26,7 +27,7 @@ func Test_indexManager_CompleteLifecycle(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg, shutdownFunc := buildContainerBackedElasticsearchConfig(t, ctx)
 		defer func() {
 			require.NoError(t, shutdownFunc(ctx))

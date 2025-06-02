@@ -1,6 +1,7 @@
 package emailcfg
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -19,7 +20,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &Config{
 			Sendgrid: &sendgrid.Config{APIToken: t.Name()},
 		}
@@ -30,7 +31,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &Config{
 			Provider: "sendgrid",
 		}

@@ -59,7 +59,7 @@ func Test_pubSubPublisher_Publish(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		publisher, shutdownFunc := buildPubSubBackedPublisher(t, ctx)
 		defer func() {
 			require.NoError(t, shutdownFunc(ctx))

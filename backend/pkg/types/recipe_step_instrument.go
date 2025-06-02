@@ -162,7 +162,7 @@ func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx conte
 	err := &multierror.Error{}
 
 	if x.InstrumentID == nil && x.ProductOfRecipeStepIndex == nil && x.ProductOfRecipeStepProductIndex == nil {
-		err = multierror.Append(err, ErrInstrumentIDOrProductIndicesRequired)
+		err = multierror.Append(err, errInstrumentIDOrProductIndicesRequired)
 	}
 
 	validationErr := validation.ValidateStructWithContext(

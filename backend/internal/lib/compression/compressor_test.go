@@ -1,6 +1,7 @@
 package compression
 
 import (
+	"context"
 	"encoding/base64"
 	"testing"
 
@@ -22,7 +23,7 @@ func Test_compressor_CompressBytes(T *testing.T) {
 	T.Run("zstandard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		comp, err := NewCompressor(algoZstd)
 		require.NoError(t, err)
 
@@ -43,7 +44,7 @@ func Test_compressor_CompressBytes(T *testing.T) {
 	T.Run("s2", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		comp, err := NewCompressor(algoS2)
 		require.NoError(t, err)
 
@@ -74,7 +75,7 @@ func Test_compressor_DecompressBytes(T *testing.T) {
 		T.Run("zstandard", func(t *testing.T) {
 			t.Parallel()
 
-			ctx := t.Context()
+			ctx := context.Background()
 			comp, err := NewCompressor(a)
 			require.NoError(t, err)
 

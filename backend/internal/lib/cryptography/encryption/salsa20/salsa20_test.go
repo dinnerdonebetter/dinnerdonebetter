@@ -1,6 +1,7 @@
 package salsa20
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -17,7 +18,7 @@ func TestStandardEncryptor(T *testing.T) {
 	T.Run("basic operation", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		expected := t.Name()
 		secret, err := random.GenerateHexEncodedString(ctx, 16)
 		require.NoError(t, err)

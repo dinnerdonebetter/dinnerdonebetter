@@ -53,7 +53,7 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := t.Context()
+	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -133,7 +133,7 @@ func TestQuerier_WebhookExists(T *testing.T) {
 	T.Run("with invalid webhook ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
@@ -147,7 +147,7 @@ func TestQuerier_WebhookExists(T *testing.T) {
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		exampleWebhookID := fakes.BuildFakeID()
 
@@ -169,7 +169,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetWebhook(ctx, "", exampleHouseholdID)
@@ -182,7 +182,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 
 		exampleWebhook := fakes.BuildFakeWebhook()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetWebhook(ctx, exampleWebhook.ID, "")
@@ -197,7 +197,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		filter := filtering.DefaultQueryFilter()
 		c, _ := buildTestClient(t)
 
@@ -213,7 +213,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateWebhook(ctx, nil)
@@ -224,7 +224,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 	T.Run("with msising user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		input := converters.ConvertWebhookToWebhookDatabaseCreationInput(fakes.BuildFakeWebhook())
@@ -241,7 +241,7 @@ func TestQuerier_createWebhookTriggerEvent(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		created, err := c.createWebhookTriggerEvent(ctx, c.db, fakes.BuildFakeID(), nil)
@@ -252,7 +252,7 @@ func TestQuerier_createWebhookTriggerEvent(T *testing.T) {
 	T.Run("with missing household ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 		fakes.BuildFakeWebhookTriggerEvent()
 
@@ -272,7 +272,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveWebhook(ctx, "", exampleHouseholdID))
@@ -283,7 +283,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		exampleWebhookID := fakes.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhookID, ""))
@@ -298,7 +298,7 @@ func TestQuerier_ArchiveWebhookTriggerEvent(T *testing.T) {
 
 		exampleHouseholdID := fakes.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveWebhookTriggerEvent(ctx, "", exampleHouseholdID))
@@ -309,7 +309,7 @@ func TestQuerier_ArchiveWebhookTriggerEvent(T *testing.T) {
 
 		exampleWebhookID := fakes.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveWebhookTriggerEvent(ctx, exampleWebhookID, ""))

@@ -103,7 +103,7 @@ func TestValidPreparationCreationRequestInput_ValidateWithContext(T *testing.T) 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ValidPreparationCreationRequestInput{
 			Name: t.Name(),
 		}
@@ -118,7 +118,7 @@ func TestValidPreparationDatabaseCreationInput_ValidateWithContext(T *testing.T)
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ValidPreparationDatabaseCreationInput{
 			ID:   t.Name(),
 			Name: t.Name(),
@@ -134,7 +134,7 @@ func TestValidPreparationUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ValidPreparationUpdateRequestInput{
 			Name: pointer.To(t.Name()),
 		}

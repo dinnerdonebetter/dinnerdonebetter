@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"context"
 	"crypto/ed25519"
 	"testing"
 	"time"
@@ -32,7 +33,7 @@ func Test_signer_IssueJWT(T *testing.T) {
 		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
-		ctx := t.Context()
+		ctx := context.Background()
 		user := authentication.NewMockUser()
 		user.On("GetID").Return("user_id").Times(2)
 
@@ -56,7 +57,7 @@ func Test_signer_ParseJWT(T *testing.T) {
 		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
 
-		ctx := t.Context()
+		ctx := context.Background()
 		user := authentication.NewMockUser()
 		user.On("GetID").Return("user_id").Times(2)
 
@@ -79,7 +80,7 @@ func Test_signer_ParseJWT(T *testing.T) {
 		tokenString, err := token.SignedString(cryptoSigner)
 		require.NoError(t, err)
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		s, err := NewJWTSigner(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), t.Name(), []byte(exampleSigningKey))
 		require.NoError(t, err)
@@ -97,7 +98,7 @@ func Test_signer_ParseJWT(T *testing.T) {
 
 		s.(*signer).signingKey = nil
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		actual, err := s.ParseUserIDFromToken(ctx, exampleToken)
 		assert.Error(t, err)

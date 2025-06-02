@@ -16,7 +16,7 @@ type stringDurationValidator struct {
 func (v *stringDurationValidator) Validate(value any) error {
 	raw, ok := value.(string)
 	if !ok {
-		return ErrInvalidType
+		return errInvalidType
 	}
 
 	d, err := time.ParseDuration(raw)

@@ -1,6 +1,7 @@
 package launchdarkly
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -90,7 +91,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		exampleUsername := "username"
 
 		cfg := &Config{SDKKey: t.Name()}

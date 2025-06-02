@@ -1,6 +1,7 @@
 package oteltrace
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -25,7 +26,7 @@ func TestConfig_SetupOtelHTTP(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &Config{
 			CollectorEndpoint: "blah blah blah",
 		}

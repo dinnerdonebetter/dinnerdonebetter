@@ -1,6 +1,7 @@
 package random
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestGenerateBase32EncodedString(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		actual, err := GenerateBase32EncodedString(ctx, 32)
 		assert.NoError(t, err)
@@ -36,7 +37,7 @@ func TestGenerateBase64EncodedString(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		actual, err := GenerateBase64EncodedString(ctx, 32)
 		assert.NoError(t, err)
@@ -50,7 +51,7 @@ func TestGenerateRawBytes(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		actual, err := GenerateRawBytes(ctx, 32)
 		assert.NoError(t, err)
@@ -64,7 +65,7 @@ func TestStandardSecretGenerator_GenerateBase32EncodedString(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		exampleLength := 123
 
 		s := NewGenerator(nil, tracing.NewNoopTracerProvider())
@@ -78,7 +79,7 @@ func TestStandardSecretGenerator_GenerateBase32EncodedString(T *testing.T) {
 	T.Run("with error reading from secure PRNG", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		exampleLength := 123
 
 		s, ok := NewGenerator(nil, tracing.NewNoopTracerProvider()).(*standardGenerator)
@@ -97,7 +98,7 @@ func TestStandardSecretGenerator_GenerateBase64EncodedString(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		exampleLength := 123
 
 		s := NewGenerator(nil, tracing.NewNoopTracerProvider())
@@ -111,7 +112,7 @@ func TestStandardSecretGenerator_GenerateBase64EncodedString(T *testing.T) {
 	T.Run("with error reading from secure PRNG", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		exampleLength := 123
 
 		s, ok := NewGenerator(nil, tracing.NewNoopTracerProvider()).(*standardGenerator)
@@ -130,7 +131,7 @@ func TestStandardSecretGenerator_GenerateRawBytes(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		exampleLength := 123
 
 		s := NewGenerator(nil, tracing.NewNoopTracerProvider())
@@ -144,7 +145,7 @@ func TestStandardSecretGenerator_GenerateRawBytes(T *testing.T) {
 	T.Run("with error reading from secure PRNG", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		exampleLength := 123
 
 		s, ok := NewGenerator(nil, tracing.NewNoopTracerProvider()).(*standardGenerator)

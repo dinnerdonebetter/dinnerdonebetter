@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -15,7 +16,7 @@ func TestQuerier_Integration_DataPrivacy(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := t.Context()
+	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -47,7 +48,7 @@ func TestQuerier_DeleteUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.DeleteUser(ctx, ""))

@@ -1,6 +1,7 @@
 package observability
 
 import (
+	"context"
 	"testing"
 
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
@@ -15,7 +16,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &Config{
 			Tracing: tracingcfg.Config{
 				ServiceName:               t.Name(),

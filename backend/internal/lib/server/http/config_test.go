@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -13,7 +14,7 @@ func TestConfig_Validate(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &Config{
 			StartupDeadline: time.Second,
 			HTTPPort:        8080,

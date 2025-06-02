@@ -1,6 +1,7 @@
 package indexing
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -23,7 +24,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
@@ -45,7 +46,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleMeal := fakes.BuildFakeMeal()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
@@ -67,7 +68,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidVessel := fakes.BuildFakeValidVessel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
@@ -89,7 +90,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
@@ -111,7 +112,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
@@ -133,7 +134,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
@@ -155,7 +156,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
@@ -177,7 +178,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 

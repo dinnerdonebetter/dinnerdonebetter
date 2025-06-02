@@ -1,6 +1,7 @@
 package authentication_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -27,7 +28,7 @@ func TestArgon2_HashPassword(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		actual, err := x.HashPassword(ctx, examplePassword)
 		assert.NoError(t, err)
@@ -43,7 +44,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		code, err := totp.GenerateCode(exampleTwoFactorSecret, time.Now().UTC())
 		assert.NoError(t, err, "error generating code to validate login")
@@ -62,7 +63,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 	T.Run("without two factor secret", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		valid, err := x.CredentialsAreValid(
 			ctx,
 			argon2HashedExamplePassword,
@@ -77,7 +78,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 	T.Run("with error determining if password matches", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		valid, err := x.CredentialsAreValid(
 			ctx,
@@ -93,7 +94,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 	T.Run("with non-matching password", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		code, err := totp.GenerateCode(exampleTwoFactorSecret, time.Now().UTC())
 		assert.NoError(t, err, "error generating code to validate login")
@@ -112,7 +113,7 @@ func TestArgon2_ValidateLogin(T *testing.T) {
 	T.Run("with invalid code", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		valid, err := x.CredentialsAreValid(
 			ctx,

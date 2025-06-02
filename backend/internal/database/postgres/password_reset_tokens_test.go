@@ -44,7 +44,7 @@ func TestQuerier_Integration_PasswordResetTokens(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := t.Context()
+	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -84,7 +84,7 @@ func TestSQLQuerier_GetPasswordResetTokenByToken(T *testing.T) {
 	T.Run("with missing token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetPasswordResetTokenByToken(ctx, "")
@@ -99,7 +99,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 	T.Run("with missing input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreatePasswordResetToken(ctx, nil)
@@ -114,7 +114,7 @@ func TestSQLQuerier_RedeemPasswordResetToken(T *testing.T) {
 	T.Run("with missing ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		actual := c.RedeemPasswordResetToken(ctx, "")

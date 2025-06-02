@@ -1,6 +1,7 @@
 package sendgrid
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -44,7 +45,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 
 		c.client.Request.BaseURL = ts.URL
 
-		ctx := t.Context()
+		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
@@ -72,7 +73,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 
 		c.client.Request.BaseURL = ts.URL
 
-		ctx := t.Context()
+		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
@@ -99,7 +100,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 
 		c.client.Request.BaseURL = ts.URL
 
-		ctx := t.Context()
+		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
@@ -128,7 +129,7 @@ func TestSendGridEmailer_sendDynamicTemplateEmail(T *testing.T) {
 
 		c.client.Request.BaseURL = ts.URL
 
-		ctx := t.Context()
+		ctx := context.Background()
 		to := mail.NewEmail("sender", "sender@fake.com")
 		from := mail.NewEmail("sender", "sender@fake.com")
 

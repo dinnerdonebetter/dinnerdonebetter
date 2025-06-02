@@ -1,6 +1,7 @@
 package types
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,7 @@ func TestHouseholdInvitationCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &HouseholdInvitationCreationRequestInput{
 			ToEmail: t.Name(),
 		}
@@ -27,7 +28,7 @@ func TestHouseholdInvitationUpdateRequestInput_ValidateWithContext(T *testing.T)
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &HouseholdInvitationUpdateRequestInput{
 			Token: t.Name(),
 		}

@@ -139,7 +139,7 @@ var _ validation.ValidatableWithContext = (*MealPlanCreationRequestInput)(nil)
 // ValidateWithContext validates a MealPlanCreationRequestInput.
 func (x *MealPlanCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	if time.Now().After(x.VotingDeadline) {
-		return ErrInvalidVotingDeadline
+		return errInvalidVotingDeadline
 	}
 
 	return validation.ValidateStructWithContext(

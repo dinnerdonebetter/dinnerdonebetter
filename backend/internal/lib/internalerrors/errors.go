@@ -5,12 +5,7 @@ import (
 	"fmt"
 )
 
-var (
-	// ErrCircuitBroken is returned when a circuit breaker has tripped.
-	ErrCircuitBroken = errors.New("service circuit broken")
-	// ErrNilInputParameter is returned when an input parameter is nil.
-	ErrNilInputParameter = errors.New("provided input parameter is nil")
-)
+var ErrCircuitBroken = errors.New("service circuit broken")
 
 // NilConfigError returns a nil config error.
 func NilConfigError(name string) error {

@@ -1,6 +1,7 @@
 package mealplanfinalizer
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -44,7 +45,7 @@ func TestWorker_Work(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		exampleMealPlans := fakes.BuildFakeMealPlansList().Data
 
 		dbm := database.NewMockDatabase()

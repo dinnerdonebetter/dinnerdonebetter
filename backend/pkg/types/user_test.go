@@ -1,6 +1,7 @@
 package types
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -53,7 +54,7 @@ func TestUserRegistrationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &UserRegistrationInput{
 			Username:     t.Name(),
 			Password:     t.Name(),
@@ -66,7 +67,7 @@ func TestUserRegistrationInput_ValidateWithContext(T *testing.T) {
 	T.Run("invalid", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &UserRegistrationInput{
 			Username:     "",
 			EmailAddress: "",
@@ -84,7 +85,7 @@ func TestTOTPSecretVerificationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &TOTPSecretVerificationInput{
 			UserID:    "123",
 			TOTPToken: "123456",
@@ -100,7 +101,7 @@ func TestUserLoginInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &UserLoginInput{
 			Username:  t.Name(),
 			Password:  t.Name(),
@@ -113,7 +114,7 @@ func TestUserLoginInput_ValidateWithContext(T *testing.T) {
 	T.Run("without token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &UserLoginInput{
 			Username: t.Name(),
 			Password: t.Name(),
@@ -125,7 +126,7 @@ func TestUserLoginInput_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &UserLoginInput{
 			Username:  t.Name(),
 			Password:  t.Name(),
@@ -142,7 +143,7 @@ func TestPasswordUpdateInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &PasswordUpdateInput{
 			NewPassword:     "new_password",
 			CurrentPassword: t.Name(),
@@ -155,7 +156,7 @@ func TestPasswordUpdateInput_ValidateWithContext(T *testing.T) {
 	T.Run("with identical passwords", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &PasswordUpdateInput{
 			NewPassword:     t.Name(),
 			CurrentPassword: t.Name(),
@@ -172,7 +173,7 @@ func TestTOTPSecretRefreshInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &TOTPSecretRefreshInput{
 			CurrentPassword: t.Name(),
 			TOTPToken:       "123456",
@@ -188,7 +189,7 @@ func TestEmailAddressVerificationRequestInput_ValidateWithContext(T *testing.T) 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &EmailAddressVerificationRequestInput{
 			Token: "123456",
 		}
@@ -203,7 +204,7 @@ func TestUsernameUpdateInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &UsernameUpdateInput{
 			NewUsername:     t.Name(),
 			CurrentPassword: t.Name(),
@@ -220,7 +221,7 @@ func TestUserEmailAddressUpdateInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &UserEmailAddressUpdateInput{
 			NewEmailAddress: t.Name(),
 			CurrentPassword: t.Name(),
@@ -237,7 +238,7 @@ func TestUserDetailsUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &UserDetailsUpdateRequestInput{
 			FirstName:       t.Name(),
 			CurrentPassword: t.Name(),

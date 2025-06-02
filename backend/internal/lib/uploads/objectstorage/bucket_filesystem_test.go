@@ -1,6 +1,7 @@
 package objectstorage
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,7 @@ func TestFilesystemConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &FilesystemConfig{
 			RootDirectory: t.Name(),
 		}

@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"testing"
@@ -36,7 +37,7 @@ func Test_stripePaymentManager_HandleSubscriptionEventWebhook(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		pm := ProvideStripePaymentManager(nil, nil, &Config{}).(*stripePaymentManager)
 		pm.webhookSecret = "example_webhook_secret"
 

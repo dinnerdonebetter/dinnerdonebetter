@@ -57,7 +57,7 @@ func TestQuerier_Integration_RecipeStepVessels(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := t.Context()
+	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -127,7 +127,7 @@ func TestQuerier_RecipeStepVesselExists(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
@@ -142,7 +142,7 @@ func TestQuerier_RecipeStepVesselExists(T *testing.T) {
 	T.Run("with invalid recipe step ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
@@ -157,7 +157,7 @@ func TestQuerier_RecipeStepVesselExists(T *testing.T) {
 	T.Run("with invalid recipe step instrument ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
@@ -179,7 +179,7 @@ func TestQuerier_GetRecipeStepVessel(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetRecipeStepVessel(ctx, "", exampleRecipeStepID, exampleRecipeStepVessel.ID)
@@ -193,7 +193,7 @@ func TestQuerier_GetRecipeStepVessel(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetRecipeStepVessel(ctx, exampleRecipeID, "", exampleRecipeStepVessel.ID)
@@ -207,7 +207,7 @@ func TestQuerier_GetRecipeStepVessel(T *testing.T) {
 		exampleRecipeID := fakes.BuildFakeID()
 		exampleRecipeStepID := fakes.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetRecipeStepVessel(ctx, exampleRecipeID, exampleRecipeStepID, "")
@@ -225,7 +225,7 @@ func TestQuerier_GetRecipeStepVessels(T *testing.T) {
 		filter := filtering.DefaultQueryFilter()
 		exampleRecipeStepID := fakes.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetRecipeStepVessels(ctx, "", exampleRecipeStepID, filter)
@@ -239,7 +239,7 @@ func TestQuerier_GetRecipeStepVessels(T *testing.T) {
 		filter := filtering.DefaultQueryFilter()
 		exampleRecipeID := fakes.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.GetRecipeStepVessels(ctx, exampleRecipeID, "", filter)
@@ -254,7 +254,7 @@ func TestQuerier_CreateRecipeStepVessel(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		actual, err := c.CreateRecipeStepVessel(ctx, nil)
@@ -269,7 +269,7 @@ func TestQuerier_UpdateRecipeStepVessel(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipeStepVessel(ctx, nil))
@@ -284,7 +284,7 @@ func TestQuerier_ArchiveRecipeStepVessel(T *testing.T) {
 
 		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveRecipeStepVessel(ctx, "", exampleRecipeStepVessel.ID))
@@ -295,7 +295,7 @@ func TestQuerier_ArchiveRecipeStepVessel(T *testing.T) {
 
 		exampleRecipeStepID := fakes.BuildFakeID()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveRecipeStepVessel(ctx, exampleRecipeStepID, ""))

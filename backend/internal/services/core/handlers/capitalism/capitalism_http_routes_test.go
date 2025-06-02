@@ -2,6 +2,7 @@ package capitalism
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"testing"
 
@@ -19,7 +20,7 @@ func TestCapitalismService_StripeWebhookHandler(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		secret, err := random.GenerateHexEncodedString(ctx, 32)
 		require.NoError(t, err)
 		require.NotEmpty(t, secret)

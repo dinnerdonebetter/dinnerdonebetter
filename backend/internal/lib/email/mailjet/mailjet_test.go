@@ -1,6 +1,7 @@
 package mailjet
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -98,7 +99,7 @@ func TestMailjetEmailer_SendEmail(T *testing.T) {
 
 		c.client.(*mailjet.Client).SetBaseURL(ts.URL + "/")
 
-		ctx := t.Context()
+		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
@@ -130,7 +131,7 @@ func TestMailjetEmailer_SendEmail(T *testing.T) {
 		c.client.(*mailjet.Client).SetBaseURL(ts.URL + "/")
 		client.Timeout = time.Millisecond
 
-		ctx := t.Context()
+		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),

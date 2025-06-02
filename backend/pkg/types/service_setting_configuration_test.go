@@ -1,6 +1,7 @@
 package types
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
@@ -30,7 +31,7 @@ func TestServiceSettingConfigurationCreationRequestInput_ValidateWithContext(T *
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingConfigurationCreationRequestInput{
 			Value:         t.Name(),
 			BelongsToUser: t.Name(),
@@ -44,7 +45,7 @@ func TestServiceSettingConfigurationCreationRequestInput_ValidateWithContext(T *
 	T.Run("with invalid struct", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingConfigurationCreationRequestInput{}
 
 		actual := x.ValidateWithContext(ctx)
@@ -59,7 +60,7 @@ func TestServiceSettingConfigurationDatabaseCreationInput_ValidateWithContext(T 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingConfigurationDatabaseCreationInput{
 			ID:            t.Name(),
 			Value:         t.Name(),
@@ -74,7 +75,7 @@ func TestServiceSettingConfigurationDatabaseCreationInput_ValidateWithContext(T 
 	T.Run("with invalid struct", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingConfigurationDatabaseCreationInput{}
 
 		actual := x.ValidateWithContext(ctx)
@@ -89,7 +90,7 @@ func TestServiceSettingConfigurationUpdateRequestInput_ValidateWithContext(T *te
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingConfigurationUpdateRequestInput{
 			Value:            pointer.To(t.Name()),
 			ServiceSettingID: pointer.To(t.Name()),
@@ -103,7 +104,7 @@ func TestServiceSettingConfigurationUpdateRequestInput_ValidateWithContext(T *te
 	T.Run("with invalid struct", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		x := &ServiceSettingConfigurationUpdateRequestInput{}
 
 		actual := x.ValidateWithContext(ctx)

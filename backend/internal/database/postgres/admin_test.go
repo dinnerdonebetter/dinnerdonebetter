@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -14,7 +15,7 @@ func TestQuerier_Integration_Admin(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := t.Context()
+	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)

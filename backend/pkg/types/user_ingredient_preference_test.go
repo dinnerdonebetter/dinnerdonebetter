@@ -32,7 +32,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		input := &UserIngredientPreferenceCreationRequestInput{
 			ValidIngredientID: t.Name(),
 			Rating:            1,
@@ -44,7 +44,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 	T.Run("invalid range", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		input := &UserIngredientPreferenceCreationRequestInput{
 			ValidIngredientID: t.Name(),
 			Rating:            math.MaxInt8,
@@ -56,7 +56,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 	T.Run("with valid ingredient group ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		input := &UserIngredientPreferenceCreationRequestInput{
 			ValidIngredientGroupID: t.Name(),
 			Rating:                 1,

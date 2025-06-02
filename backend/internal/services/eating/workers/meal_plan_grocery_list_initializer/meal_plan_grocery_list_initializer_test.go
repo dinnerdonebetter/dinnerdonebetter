@@ -1,6 +1,7 @@
 package mealplangrocerylistinitializer
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -210,7 +211,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 			},
 		}
 
-		ctx := t.Context()
+		ctx := context.Background()
 		mdm := database.NewMockDatabase()
 
 		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlansWithUninitializedGroceryLists", testutils.ContextMatcher).Return(expectedMealPlans, nil)

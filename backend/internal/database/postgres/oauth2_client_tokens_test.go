@@ -50,7 +50,7 @@ func TestQuerier_Integration_OAuth2ClientTokens(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := t.Context()
+	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -109,7 +109,7 @@ func TestQuerier_ArchiveOAuth2ClientTokenByAccess(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		assert.Error(t, c.DeleteOAuth2ClientTokenByAccess(ctx, ""))
@@ -124,7 +124,7 @@ func TestQuerier_ArchiveOAuth2ClientTokenByCode(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		assert.Error(t, c.DeleteOAuth2ClientTokenByCode(ctx, ""))
@@ -139,7 +139,7 @@ func TestQuerier_ArchiveOAuth2ClientTokenByRefresh(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c, db := buildTestClient(t)
 
 		assert.Error(t, c.DeleteOAuth2ClientTokenByRefresh(ctx, ""))

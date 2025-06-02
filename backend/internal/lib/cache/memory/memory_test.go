@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -31,7 +32,7 @@ func Test_inMemoryCacheImpl_Get(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c := NewInMemoryCache[example]()
 
 		expected := &example{Name: t.Name()}
@@ -49,7 +50,7 @@ func Test_inMemoryCacheImpl_Set(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c := NewInMemoryCache[example]()
 
 		assert.Len(t, c.(*inMemoryCacheImpl[example]).cache, 0)
@@ -64,7 +65,7 @@ func Test_inMemoryCacheImpl_Delete(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		c := NewInMemoryCache[example]()
 
 		assert.Len(t, c.(*inMemoryCacheImpl[example]).cache, 0)

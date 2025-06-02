@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/capitalism/stripe"
@@ -14,7 +15,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &Config{
 			Enabled:  true,
 			Provider: StripeProvider,
@@ -27,7 +28,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("returns nil when not enabled", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &Config{
 			Enabled: false,
 		}
@@ -38,7 +39,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("with invalid config", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		cfg := &Config{
 			Enabled:  true,
 			Provider: StripeProvider,

@@ -1,6 +1,7 @@
 package msgconfig
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
@@ -25,7 +26,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{
 			Consumer: MessageQueueConfig{
@@ -41,7 +42,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{}
 
@@ -57,7 +58,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{
 			Publisher: MessageQueueConfig{
@@ -73,7 +74,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := t.Context()
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{}
 

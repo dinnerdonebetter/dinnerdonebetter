@@ -182,11 +182,11 @@ const (
 	// ServiceSettingConfigurationNameKey is the standard key for referring to a service setting configuration's Name.
 	ServiceSettingConfigurationNameKey = "service_setting_configuration.name"
 
-	// IngredientPreferenceIDKey is the standard key for referring to a user ingredient preference's ID.
-	IngredientPreferenceIDKey = "user_ingredient_preference.id"
+	// UserIngredientPreferenceIDKey is the standard key for referring to a user ingredient preference's ID.
+	UserIngredientPreferenceIDKey = "user_ingredient_preference.id"
 
-	// InstrumentOwnershipIDKey is the standard key for referring to a household instrument ownership's ID.
-	InstrumentOwnershipIDKey = "household_instrument_ownership.id"
+	// HouseholdInstrumentOwnershipIDKey is the standard key for referring to a household instrument ownership's ID.
+	HouseholdInstrumentOwnershipIDKey = "household_instrument_ownership.id"
 
 	// RecipeRatingIDKey is the standard key for referring to a recipe rating's ID.
 	RecipeRatingIDKey = "recipe_rating.id"
