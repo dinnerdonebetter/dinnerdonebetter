@@ -164,9 +164,9 @@ export function AppLayout(
         >
           <NavLink
             icon={<IconHome size={16} />}
-            label="Household"
-            onClick={() => router.push('/settings/household')}
-            active={pathName.startsWith('/settings/household')}
+            label="Account"
+            onClick={() => router.push('/settings/account')}
+            active={pathName.startsWith('/settings/account')}
           />
           <NavLink
             icon={<IconUser size={16} />}

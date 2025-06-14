@@ -5,7 +5,7 @@ import { useState } from 'react';
 import {
   APIResponse,
   EitherErrorOr,
-  Household,
+  Account,
   IAPIError,
   MealPlan,
   MealPlanGroceryListItem,
@@ -27,7 +27,7 @@ declare interface MealPlanRecipePageProps {
   recipe: EitherErrorOr<Recipe>;
   mealPlan: EitherErrorOr<MealPlan>;
   userID: string;
-  household: EitherErrorOr<Household>;
+  account: EitherErrorOr<Account>;
   groceryList: EitherErrorOr<MealPlanGroceryListItem[]>;
   tasks: EitherErrorOr<MealPlanTask[]>;
 }
@@ -74,7 +74,7 @@ export const getServerSideProps: GetServerSideProps = async (
     const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'RECIPE_PAGE', context, {
       recipeID,
-      householdID: userSessionData.householdID,
+      accountID: userSessionData.accountID,
     });
     analyticsTimer.end();
   }
@@ -94,11 +94,11 @@ export const getServerSideProps: GetServerSideProps = async (
       fetchMealPlanTimer.end();
     });
 
-  const fetchHouseholdTimer = timing.addEvent('fetch household');
-  const householdPromise = apiClient
-    .getActiveHousehold()
-    .then((result: APIResponse<Household>) => {
-      span.addEvent(`household retrieved`);
+  const fetchAccountTimer = timing.addEvent('fetch account');
+  const accountPromise = apiClient
+    .getActiveAccount()
+    .then((result: APIResponse<Account>) => {
+      span.addEvent(`account retrieved`);
       return { data: result.data };
     })
     .catch((error: IAPIError) => {
@@ -106,7 +106,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { error };
     })
     .finally(() => {
-      fetchHouseholdTimer.end();
+      fetchAccountTimer.end();
     });
 
   const fetchMealPlanTasksTimer = timing.addEvent('fetch meal plan tasks');
@@ -156,7 +156,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const retrievedData = await Promise.all([
     mealPlanPromise,
-    householdPromise,
+    accountPromise,
     groceryListPromise,
     tasksPromise,
     recipePromise,
@@ -164,14 +164,14 @@ export const getServerSideProps: GetServerSideProps = async (
 
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
-  const [mealPlan, household, groceryList, tasks, recipe] = retrievedData;
+  const [mealPlan, account, groceryList, tasks, recipe] = retrievedData;
 
   span.end();
   return {
     props: {
       recipe: recipe,
       mealPlan: mealPlan!,
-      household: household!,
+      account: account!,
       userID: userSessionData?.userID || '',
       tasks: tasks,
       groceryList: groceryList || [],

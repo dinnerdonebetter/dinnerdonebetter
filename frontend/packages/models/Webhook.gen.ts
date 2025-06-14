@@ -4,7 +4,7 @@ import { WebhookTriggerEvent } from './WebhookTriggerEvent.gen';
 
 export interface IWebhook {
   archivedAt: string;
-  belongsToHousehold: string;
+  belongsToAccount: string;
   contentType: string;
   createdAt: string;
   events: WebhookTriggerEvent[];
@@ -17,7 +17,7 @@ export interface IWebhook {
 
 export class Webhook implements IWebhook {
   archivedAt: string;
-  belongsToHousehold: string;
+  belongsToAccount: string;
   contentType: string;
   createdAt: string;
   events: WebhookTriggerEvent[];
@@ -28,7 +28,7 @@ export class Webhook implements IWebhook {
   url: string;
   constructor(input: Partial<Webhook> = {}) {
     this.archivedAt = input.archivedAt || '';
-    this.belongsToHousehold = input.belongsToHousehold || '';
+    this.belongsToAccount = input.belongsToAccount || '';
     this.contentType = input.contentType || '';
     this.createdAt = input.createdAt || '';
     this.events = input.events || [];

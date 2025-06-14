@@ -1,12 +1,12 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface ICreateMealPlanTasksRequest {
-  householdID: string;
+  accountID: string;
 }
 
 export class CreateMealPlanTasksRequest implements ICreateMealPlanTasksRequest {
-  householdID: string;
+  accountID: string;
   constructor(input: Partial<CreateMealPlanTasksRequest> = {}) {
-    this.householdID = input.householdID || '';
+    this.accountID = input.accountID || '';
   }
 }

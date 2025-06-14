@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async (
     const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'MEALS_PAGE', context, {
       query: context.query,
-      householdID: userSessionData.householdID,
+      accountID: userSessionData.accountID,
     });
     analyticsTimer.end();
   } else {

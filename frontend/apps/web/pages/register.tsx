@@ -17,7 +17,7 @@ import { AppLayout } from '../src/layouts';
 
 const registrationFormSchema = z.object({
   emailAddress: z.string().trim().email({ message: 'invalid email' }),
-  householdName: z.string().trim(),
+  accountName: z.string().trim(),
   username: z.string().trim().min(1, 'username is required'),
   firstName: z.string().trim().optional(),
   lastName: z.string().trim().optional(),
@@ -60,7 +60,7 @@ export default function Register(props: RegistrationPageProps): JSX.Element {
       firstName: '',
       lastName: '',
       password: '',
-      householdName: '',
+      accountName: '',
       repeatedPassword: '',
       birthday: null,
     },
@@ -86,7 +86,7 @@ export default function Register(props: RegistrationPageProps): JSX.Element {
       lastName: registrationForm.values.lastName.trim(),
       username: registrationForm.values.username.trim(),
       password: registrationForm.values.password.trim(),
-      householdName: registrationForm.values.householdName.trim(),
+      accountName: registrationForm.values.accountName.trim(),
       invitationToken: (invitationToken || '').trim(),
       invitationID: (invitationID || '').trim(),
     });
@@ -142,10 +142,10 @@ export default function Register(props: RegistrationPageProps): JSX.Element {
           <Divider label="optional fields" labelPosition="center" m="sm" />
 
           <TextInput
-            data-qa="registration-household-name-input"
-            label="Household Name"
+            data-qa="registration-account-name-input"
+            label="Account Name"
             placeholder="username's Beloved Family"
-            {...registrationForm.getInputProps('householdName')}
+            {...registrationForm.getInputProps('accountName')}
           />
 
           <DatePicker

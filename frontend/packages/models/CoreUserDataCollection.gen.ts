@@ -1,15 +1,15 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 import { AuditLogEntry } from './AuditLogEntry.gen';
-import { Household } from './Household.gen';
-import { HouseholdInvitation } from './HouseholdInvitation.gen';
+import { Account } from './Account.gen';
+import { AccountInvitation } from './AccountInvitation.gen';
 import { ServiceSettingConfiguration } from './ServiceSettingConfiguration.gen';
 
 export interface ICoreUserDataCollection {
   auditLogEntries: object;
-  households: Household[];
-  receivedInvites: HouseholdInvitation[];
-  sentInvites: HouseholdInvitation[];
+  accounts: Account[];
+  receivedInvites: AccountInvitation[];
+  sentInvites: AccountInvitation[];
   serviceSettingConfigurations: object;
   userAuditLogEntries: AuditLogEntry[];
   userServiceSettingConfigurations: ServiceSettingConfiguration[];
@@ -18,16 +18,16 @@ export interface ICoreUserDataCollection {
 
 export class CoreUserDataCollection implements ICoreUserDataCollection {
   auditLogEntries: object;
-  households: Household[];
-  receivedInvites: HouseholdInvitation[];
-  sentInvites: HouseholdInvitation[];
+  accounts: Account[];
+  receivedInvites: AccountInvitation[];
+  sentInvites: AccountInvitation[];
   serviceSettingConfigurations: object;
   userAuditLogEntries: AuditLogEntry[];
   userServiceSettingConfigurations: ServiceSettingConfiguration[];
   webhooks: object;
   constructor(input: Partial<CoreUserDataCollection> = {}) {
     this.auditLogEntries = input.auditLogEntries || {};
-    this.households = input.households || [];
+    this.accounts = input.accounts || [];
     this.receivedInvites = input.receivedInvites || [];
     this.sentInvites = input.sentInvites || [];
     this.serviceSettingConfigurations = input.serviceSettingConfigurations || {};

@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IServiceSettingConfigurationCreationRequestInput {
-  belongsToHousehold: string;
+  belongsToAccount: string;
   belongsToUser: string;
   notes: string;
   serviceSettingID: string;
@@ -11,13 +11,13 @@ export interface IServiceSettingConfigurationCreationRequestInput {
 export class ServiceSettingConfigurationCreationRequestInput
   implements IServiceSettingConfigurationCreationRequestInput
 {
-  belongsToHousehold: string;
+  belongsToAccount: string;
   belongsToUser: string;
   notes: string;
   serviceSettingID: string;
   value: string;
   constructor(input: Partial<ServiceSettingConfigurationCreationRequestInput> = {}) {
-    this.belongsToHousehold = input.belongsToHousehold || '';
+    this.belongsToAccount = input.belongsToAccount || '';
     this.belongsToUser = input.belongsToUser || '';
     this.notes = input.notes || '';
     this.serviceSettingID = input.serviceSettingID || '';

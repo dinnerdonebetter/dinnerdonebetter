@@ -2,18 +2,18 @@
 
 import type { Page, Route } from '@playwright/test';
 
-import { HouseholdUserMembership } from '@dinnerdonebetter/models';
+import { AccountUserMembership } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockArchiveUserMembershipResponseConfig extends ResponseConfig<HouseholdUserMembership> {
-  householdID: string;
+export class MockArchiveUserMembershipResponseConfig extends ResponseConfig<AccountUserMembership> {
+  accountID: string;
   userID: string;
 
-  constructor(householdID: string, userID: string, status: number = 202, body?: HouseholdUserMembership) {
+  constructor(accountID: string, userID: string, status: number = 202, body?: AccountUserMembership) {
     super();
 
-    this.householdID = householdID;
+    this.accountID = accountID;
     this.userID = userID;
 
     this.status = status;
@@ -26,7 +26,7 @@ export class MockArchiveUserMembershipResponseConfig extends ResponseConfig<Hous
 export const mockArchiveUserMembership = (resCfg: MockArchiveUserMembershipResponseConfig) => {
   return (page: Page) =>
     page.route(
-      `**/api/v1/households/${resCfg.householdID}/members/${resCfg.userID}`,
+      `**/api/v1/accounts/${resCfg.accountID}/members/${resCfg.userID}`,
       (route: Route) => {
         const req = route.request();
 

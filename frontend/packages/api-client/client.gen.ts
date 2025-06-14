@@ -23,17 +23,17 @@ import {
   EmailAddressVerificationRequestInput,
   FinalizeMealPlansRequest,
   FinalizeMealPlansResponse,
-  Household,
-  HouseholdCreationRequestInput,
-  HouseholdInstrumentOwnership,
-  HouseholdInstrumentOwnershipCreationRequestInput,
-  HouseholdInstrumentOwnershipUpdateRequestInput,
-  HouseholdInvitation,
-  HouseholdInvitationCreationRequestInput,
-  HouseholdInvitationUpdateRequestInput,
-  HouseholdOwnershipTransferInput,
-  HouseholdUpdateRequestInput,
-  HouseholdUserMembership,
+  Account,
+  AccountCreationRequestInput,
+  AccountInstrumentOwnership,
+  AccountInstrumentOwnershipCreationRequestInput,
+  AccountInstrumentOwnershipUpdateRequestInput,
+  AccountInvitation,
+  AccountInvitationCreationRequestInput,
+  AccountInvitationUpdateRequestInput,
+  AccountOwnershipTransferInput,
+  AccountUpdateRequestInput,
+  AccountUserMembership,
   InitializeMealPlanGroceryListRequest,
   InitializeMealPlanGroceryListResponse,
   Meal,
@@ -306,26 +306,26 @@ export class DinnerDoneBetterAPIClient {
     );
   }
 
-  async acceptHouseholdInvitation(
-    householdInvitationID: string,
-    input: HouseholdInvitationUpdateRequestInput,
-  ): Promise<APIResponse<HouseholdInvitation>> {
+  async acceptAccountInvitation(
+    accountInvitationID: string,
+    input: AccountInvitationUpdateRequestInput,
+  ): Promise<APIResponse<AccountInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdInvitationID.trim() === '') {
-        throw new Error('householdInvitationID is required');
+      if (accountInvitationID.trim() === '') {
+        throw new Error('accountInvitationID is required');
       }
 
       self.client
-        .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/accept`, input)
-        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+        .put<APIResponse<AccountInvitation>>(`/api/v1/account_invitations/${accountInvitationID}/accept`, input)
+        .then((res: AxiosResponse<APIResponse<AccountInvitation>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInvitation>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -401,23 +401,23 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async archiveHousehold(householdID: string): Promise<APIResponse<Household>> {
+  async archiveAccount(accountID: string): Promise<APIResponse<Account>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdID.trim() === '') {
-        throw new Error('householdID is required');
+      if (accountID.trim() === '') {
+        throw new Error('accountID is required');
       }
 
       self.client
-        .delete<APIResponse<Household>>(`/api/v1/households/${householdID}`)
-        .then((res: AxiosResponse<APIResponse<Household>>) => {
+        .delete<APIResponse<Account>>(`/api/v1/accounts/${accountID}`)
+        .then((res: AxiosResponse<APIResponse<Account>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<Household>>) => {
+        .catch((error: AxiosError<APIResponse<Account>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -427,27 +427,27 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async archiveHouseholdInstrumentOwnership(
-    householdInstrumentOwnershipID: string,
-  ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
+  async archiveAccountInstrumentOwnership(
+    accountInstrumentOwnershipID: string,
+  ): Promise<APIResponse<AccountInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdInstrumentOwnershipID.trim() === '') {
-        throw new Error('householdInstrumentOwnershipID is required');
+      if (accountInstrumentOwnershipID.trim() === '') {
+        throw new Error('accountInstrumentOwnershipID is required');
       }
 
       self.client
-        .delete<APIResponse<HouseholdInstrumentOwnership>>(
-          `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
+        .delete<APIResponse<AccountInstrumentOwnership>>(
+          `/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`,
         )
-        .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
+        .then((res: AxiosResponse<APIResponse<AccountInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInstrumentOwnership>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -1113,11 +1113,11 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async archiveUserMembership(householdID: string, userID: string): Promise<APIResponse<HouseholdUserMembership>> {
+  async archiveUserMembership(accountID: string, userID: string): Promise<APIResponse<AccountUserMembership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdID.trim() === '') {
-        throw new Error('householdID is required');
+      if (accountID.trim() === '') {
+        throw new Error('accountID is required');
       }
 
       if (userID.trim() === '') {
@@ -1125,15 +1125,15 @@ export class DinnerDoneBetterAPIClient {
       }
 
       self.client
-        .delete<APIResponse<HouseholdUserMembership>>(`/api/v1/households/${householdID}/members/${userID}`)
-        .then((res: AxiosResponse<APIResponse<HouseholdUserMembership>>) => {
+        .delete<APIResponse<AccountUserMembership>>(`/api/v1/accounts/${accountID}/members/${userID}`)
+        .then((res: AxiosResponse<APIResponse<AccountUserMembership>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdUserMembership>>) => {
+        .catch((error: AxiosError<APIResponse<AccountUserMembership>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -1562,26 +1562,26 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async cancelHouseholdInvitation(
-    householdInvitationID: string,
-    input: HouseholdInvitationUpdateRequestInput,
-  ): Promise<APIResponse<HouseholdInvitation>> {
+  async cancelAccountInvitation(
+    accountInvitationID: string,
+    input: AccountInvitationUpdateRequestInput,
+  ): Promise<APIResponse<AccountInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdInvitationID.trim() === '') {
-        throw new Error('householdInvitationID is required');
+      if (accountInvitationID.trim() === '') {
+        throw new Error('accountInvitationID is required');
       }
 
       self.client
-        .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/cancel`, input)
-        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+        .put<APIResponse<AccountInvitation>>(`/api/v1/account_invitations/${accountInvitationID}/cancel`, input)
+        .then((res: AxiosResponse<APIResponse<AccountInvitation>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInvitation>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -1639,19 +1639,19 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async createHousehold(input: HouseholdCreationRequestInput): Promise<APIResponse<Household>> {
+  async createAccount(input: AccountCreationRequestInput): Promise<APIResponse<Account>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .post<APIResponse<Household>>(`/api/v1/households`, input)
-        .then((res: AxiosResponse<APIResponse<Household>>) => {
+        .post<APIResponse<Account>>(`/api/v1/accounts`, input)
+        .then((res: AxiosResponse<APIResponse<Account>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<Household>>) => {
+        .catch((error: AxiosError<APIResponse<Account>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -1661,21 +1661,21 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async createHouseholdInstrumentOwnership(
-    input: HouseholdInstrumentOwnershipCreationRequestInput,
-  ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
+  async createAccountInstrumentOwnership(
+    input: AccountInstrumentOwnershipCreationRequestInput,
+  ): Promise<APIResponse<AccountInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .post<APIResponse<HouseholdInstrumentOwnership>>(`/api/v1/households/instruments`, input)
-        .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
+        .post<APIResponse<AccountInstrumentOwnership>>(`/api/v1/accounts/instruments`, input)
+        .then((res: AxiosResponse<APIResponse<AccountInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInstrumentOwnership>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -1685,26 +1685,26 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async createHouseholdInvitation(
-    householdID: string,
-    input: HouseholdInvitationCreationRequestInput,
-  ): Promise<APIResponse<HouseholdInvitation>> {
+  async createAccountInvitation(
+    accountID: string,
+    input: AccountInvitationCreationRequestInput,
+  ): Promise<APIResponse<AccountInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdID.trim() === '') {
-        throw new Error('householdID is required');
+      if (accountID.trim() === '') {
+        throw new Error('accountID is required');
       }
 
       self.client
-        .post<APIResponse<HouseholdInvitation>>(`/api/v1/households/${householdID}/invite`, input)
-        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+        .post<APIResponse<AccountInvitation>>(`/api/v1/accounts/${accountID}/invite`, input)
+        .then((res: AxiosResponse<APIResponse<AccountInvitation>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInvitation>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -2762,19 +2762,19 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getActiveHousehold(): Promise<APIResponse<Household>> {
+  async getActiveAccount(): Promise<APIResponse<Account>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Household>>(`/api/v1/households/current`)
-        .then((res: AxiosResponse<APIResponse<Household>>) => {
+        .get<APIResponse<Account>>(`/api/v1/accounts/current`)
+        .then((res: AxiosResponse<APIResponse<Account>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<Household>>) => {
+        .catch((error: AxiosError<APIResponse<Account>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -2784,13 +2784,13 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getAuditLogEntriesForHousehold(
+  async getAuditLogEntriesForAccount(
     filter: QueryFilter = QueryFilter.Default(),
   ): Promise<QueryFilteredResult<AuditLogEntry>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Array<AuditLogEntry>>>(`/api/v1/audit_log_entries/for_household`, {
+        .get<APIResponse<Array<AuditLogEntry>>>(`/api/v1/audit_log_entries/for_account`, {
           params: filter.asRecord(),
         })
         .then((res: AxiosResponse<APIResponse<Array<AuditLogEntry>>>) => {
@@ -2898,23 +2898,23 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getHousehold(householdID: string): Promise<APIResponse<Household>> {
+  async getAccount(accountID: string): Promise<APIResponse<Account>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdID.trim() === '') {
-        throw new Error('householdID is required');
+      if (accountID.trim() === '') {
+        throw new Error('accountID is required');
       }
 
       self.client
-        .get<APIResponse<Household>>(`/api/v1/households/${householdID}`)
-        .then((res: AxiosResponse<APIResponse<Household>>) => {
+        .get<APIResponse<Account>>(`/api/v1/accounts/${accountID}`)
+        .then((res: AxiosResponse<APIResponse<Account>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<Household>>) => {
+        .catch((error: AxiosError<APIResponse<Account>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -2924,27 +2924,27 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getHouseholdInstrumentOwnership(
-    householdInstrumentOwnershipID: string,
-  ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
+  async getAccountInstrumentOwnership(
+    accountInstrumentOwnershipID: string,
+  ): Promise<APIResponse<AccountInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdInstrumentOwnershipID.trim() === '') {
-        throw new Error('householdInstrumentOwnershipID is required');
+      if (accountInstrumentOwnershipID.trim() === '') {
+        throw new Error('accountInstrumentOwnershipID is required');
       }
 
       self.client
-        .get<APIResponse<HouseholdInstrumentOwnership>>(
-          `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
+        .get<APIResponse<AccountInstrumentOwnership>>(
+          `/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`,
         )
-        .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
+        .then((res: AxiosResponse<APIResponse<AccountInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInstrumentOwnership>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -2954,21 +2954,21 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getHouseholdInstrumentOwnerships(
+  async getAccountInstrumentOwnerships(
     filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<HouseholdInstrumentOwnership>> {
+  ): Promise<QueryFilteredResult<AccountInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Array<HouseholdInstrumentOwnership>>>(`/api/v1/households/instruments`, {
+        .get<APIResponse<Array<AccountInstrumentOwnership>>>(`/api/v1/accounts/instruments`, {
           params: filter.asRecord(),
         })
-        .then((res: AxiosResponse<APIResponse<Array<HouseholdInstrumentOwnership>>>) => {
+        .then((res: AxiosResponse<APIResponse<Array<AccountInstrumentOwnership>>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(
-              new QueryFilteredResult<HouseholdInstrumentOwnership>({
+              new QueryFilteredResult<AccountInstrumentOwnership>({
                 data: res.data.data,
                 totalCount: res.data.pagination?.totalCount,
                 page: res.data.pagination?.page,
@@ -2977,7 +2977,7 @@ export class DinnerDoneBetterAPIClient {
             );
           }
         })
-        .catch((error: AxiosError<APIResponse<Array<HouseholdInstrumentOwnership>>>) => {
+        .catch((error: AxiosError<APIResponse<Array<AccountInstrumentOwnership>>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -2987,23 +2987,23 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getHouseholdInvitation(householdInvitationID: string): Promise<APIResponse<HouseholdInvitation>> {
+  async getAccountInvitation(accountInvitationID: string): Promise<APIResponse<AccountInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdInvitationID.trim() === '') {
-        throw new Error('householdInvitationID is required');
+      if (accountInvitationID.trim() === '') {
+        throw new Error('accountInvitationID is required');
       }
 
       self.client
-        .get<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}`)
-        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+        .get<APIResponse<AccountInvitation>>(`/api/v1/account_invitations/${accountInvitationID}`)
+        .then((res: AxiosResponse<APIResponse<AccountInvitation>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInvitation>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -3013,30 +3013,30 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getHouseholdInvitationByID(
-    householdID: string,
-    householdInvitationID: string,
-  ): Promise<APIResponse<HouseholdInvitation>> {
+  async getAccountInvitationByID(
+    accountID: string,
+    accountInvitationID: string,
+  ): Promise<APIResponse<AccountInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdID.trim() === '') {
-        throw new Error('householdID is required');
+      if (accountID.trim() === '') {
+        throw new Error('accountID is required');
       }
 
-      if (householdInvitationID.trim() === '') {
-        throw new Error('householdInvitationID is required');
+      if (accountInvitationID.trim() === '') {
+        throw new Error('accountInvitationID is required');
       }
 
       self.client
-        .get<APIResponse<HouseholdInvitation>>(`/api/v1/households/${householdID}/invitations/${householdInvitationID}`)
-        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+        .get<APIResponse<AccountInvitation>>(`/api/v1/accounts/${accountID}/invitations/${accountInvitationID}`)
+        .then((res: AxiosResponse<APIResponse<AccountInvitation>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInvitation>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -3046,19 +3046,19 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getHouseholds(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Household>> {
+  async getAccounts(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<Account>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Array<Household>>>(`/api/v1/households`, {
+        .get<APIResponse<Array<Account>>>(`/api/v1/accounts`, {
           params: filter.asRecord(),
         })
-        .then((res: AxiosResponse<APIResponse<Array<Household>>>) => {
+        .then((res: AxiosResponse<APIResponse<Array<Account>>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(
-              new QueryFilteredResult<Household>({
+              new QueryFilteredResult<Account>({
                 data: res.data.data,
                 totalCount: res.data.pagination?.totalCount,
                 page: res.data.pagination?.page,
@@ -3067,7 +3067,7 @@ export class DinnerDoneBetterAPIClient {
             );
           }
         })
-        .catch((error: AxiosError<APIResponse<Array<Household>>>) => {
+        .catch((error: AxiosError<APIResponse<Array<Account>>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -3517,7 +3517,7 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getMealPlansForHousehold(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<MealPlan>> {
+  async getMealPlansForAccount(filter: QueryFilter = QueryFilter.Default()): Promise<QueryFilteredResult<MealPlan>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
@@ -3750,21 +3750,21 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getReceivedHouseholdInvitations(
+  async getReceivedAccountInvitations(
     filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<HouseholdInvitation>> {
+  ): Promise<QueryFilteredResult<AccountInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Array<HouseholdInvitation>>>(`/api/v1/household_invitations/received`, {
+        .get<APIResponse<Array<AccountInvitation>>>(`/api/v1/account_invitations/received`, {
           params: filter.asRecord(),
         })
-        .then((res: AxiosResponse<APIResponse<Array<HouseholdInvitation>>>) => {
+        .then((res: AxiosResponse<APIResponse<Array<AccountInvitation>>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(
-              new QueryFilteredResult<HouseholdInvitation>({
+              new QueryFilteredResult<AccountInvitation>({
                 data: res.data.data,
                 totalCount: res.data.pagination?.totalCount,
                 page: res.data.pagination?.page,
@@ -3773,7 +3773,7 @@ export class DinnerDoneBetterAPIClient {
             );
           }
         })
-        .catch((error: AxiosError<APIResponse<Array<HouseholdInvitation>>>) => {
+        .catch((error: AxiosError<APIResponse<Array<AccountInvitation>>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -4516,21 +4516,21 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getSentHouseholdInvitations(
+  async getSentAccountInvitations(
     filter: QueryFilter = QueryFilter.Default(),
-  ): Promise<QueryFilteredResult<HouseholdInvitation>> {
+  ): Promise<QueryFilteredResult<AccountInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Array<HouseholdInvitation>>>(`/api/v1/household_invitations/sent`, {
+        .get<APIResponse<Array<AccountInvitation>>>(`/api/v1/account_invitations/sent`, {
           params: filter.asRecord(),
         })
-        .then((res: AxiosResponse<APIResponse<Array<HouseholdInvitation>>>) => {
+        .then((res: AxiosResponse<APIResponse<Array<AccountInvitation>>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(
-              new QueryFilteredResult<HouseholdInvitation>({
+              new QueryFilteredResult<AccountInvitation>({
                 data: res.data.data,
                 totalCount: res.data.pagination?.totalCount,
                 page: res.data.pagination?.page,
@@ -4539,7 +4539,7 @@ export class DinnerDoneBetterAPIClient {
             );
           }
         })
-        .catch((error: AxiosError<APIResponse<Array<HouseholdInvitation>>>) => {
+        .catch((error: AxiosError<APIResponse<Array<AccountInvitation>>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -4616,13 +4616,13 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async getServiceSettingConfigurationsForHousehold(
+  async getServiceSettingConfigurationsForAccount(
     filter: QueryFilter = QueryFilter.Default(),
   ): Promise<QueryFilteredResult<ServiceSettingConfiguration>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
       self.client
-        .get<APIResponse<Array<ServiceSettingConfiguration>>>(`/api/v1/settings/configurations/household`, {
+        .get<APIResponse<Array<ServiceSettingConfiguration>>>(`/api/v1/settings/configurations/account`, {
           params: filter.asRecord(),
         })
         .then((res: AxiosResponse<APIResponse<Array<ServiceSettingConfiguration>>>) => {
@@ -6253,26 +6253,26 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async rejectHouseholdInvitation(
-    householdInvitationID: string,
-    input: HouseholdInvitationUpdateRequestInput,
-  ): Promise<APIResponse<HouseholdInvitation>> {
+  async rejectAccountInvitation(
+    accountInvitationID: string,
+    input: AccountInvitationUpdateRequestInput,
+  ): Promise<APIResponse<AccountInvitation>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdInvitationID.trim() === '') {
-        throw new Error('householdInvitationID is required');
+      if (accountInvitationID.trim() === '') {
+        throw new Error('accountInvitationID is required');
       }
 
       self.client
-        .put<APIResponse<HouseholdInvitation>>(`/api/v1/household_invitations/${householdInvitationID}/reject`, input)
-        .then((res: AxiosResponse<APIResponse<HouseholdInvitation>>) => {
+        .put<APIResponse<AccountInvitation>>(`/api/v1/account_invitations/${accountInvitationID}/reject`, input)
+        .then((res: AxiosResponse<APIResponse<AccountInvitation>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInvitation>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInvitation>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -6918,23 +6918,23 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async setDefaultHousehold(householdID: string): Promise<APIResponse<Household>> {
+  async setDefaultAccount(accountID: string): Promise<APIResponse<Account>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdID.trim() === '') {
-        throw new Error('householdID is required');
+      if (accountID.trim() === '') {
+        throw new Error('accountID is required');
       }
 
       self.client
-        .post<APIResponse<Household>>(`/api/v1/households/${householdID}/default`)
-        .then((res: AxiosResponse<APIResponse<Household>>) => {
+        .post<APIResponse<Account>>(`/api/v1/accounts/${accountID}/default`)
+        .then((res: AxiosResponse<APIResponse<Account>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<Household>>) => {
+        .catch((error: AxiosError<APIResponse<Account>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -6944,26 +6944,26 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async transferHouseholdOwnership(
-    householdID: string,
-    input: HouseholdOwnershipTransferInput,
-  ): Promise<APIResponse<Household>> {
+  async transferAccountOwnership(
+    accountID: string,
+    input: AccountOwnershipTransferInput,
+  ): Promise<APIResponse<Account>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdID.trim() === '') {
-        throw new Error('householdID is required');
+      if (accountID.trim() === '') {
+        throw new Error('accountID is required');
       }
 
       self.client
-        .post<APIResponse<Household>>(`/api/v1/households/${householdID}/transfer`, input)
-        .then((res: AxiosResponse<APIResponse<Household>>) => {
+        .post<APIResponse<Account>>(`/api/v1/accounts/${accountID}/transfer`, input)
+        .then((res: AxiosResponse<APIResponse<Account>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<Household>>) => {
+        .catch((error: AxiosError<APIResponse<Account>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -6973,23 +6973,23 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async updateHousehold(householdID: string, input: HouseholdUpdateRequestInput): Promise<APIResponse<Household>> {
+  async updateAccount(accountID: string, input: AccountUpdateRequestInput): Promise<APIResponse<Account>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdID.trim() === '') {
-        throw new Error('householdID is required');
+      if (accountID.trim() === '') {
+        throw new Error('accountID is required');
       }
 
       self.client
-        .put<APIResponse<Household>>(`/api/v1/households/${householdID}`, input)
-        .then((res: AxiosResponse<APIResponse<Household>>) => {
+        .put<APIResponse<Account>>(`/api/v1/accounts/${accountID}`, input)
+        .then((res: AxiosResponse<APIResponse<Account>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<Household>>) => {
+        .catch((error: AxiosError<APIResponse<Account>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -6999,29 +6999,29 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async updateHouseholdInstrumentOwnership(
-    householdInstrumentOwnershipID: string,
-    input: HouseholdInstrumentOwnershipUpdateRequestInput,
-  ): Promise<APIResponse<HouseholdInstrumentOwnership>> {
+  async updateAccountInstrumentOwnership(
+    accountInstrumentOwnershipID: string,
+    input: AccountInstrumentOwnershipUpdateRequestInput,
+  ): Promise<APIResponse<AccountInstrumentOwnership>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdInstrumentOwnershipID.trim() === '') {
-        throw new Error('householdInstrumentOwnershipID is required');
+      if (accountInstrumentOwnershipID.trim() === '') {
+        throw new Error('accountInstrumentOwnershipID is required');
       }
 
       self.client
-        .put<APIResponse<HouseholdInstrumentOwnership>>(
-          `/api/v1/households/instruments/${householdInstrumentOwnershipID}`,
+        .put<APIResponse<AccountInstrumentOwnership>>(
+          `/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`,
           input,
         )
-        .then((res: AxiosResponse<APIResponse<HouseholdInstrumentOwnership>>) => {
+        .then((res: AxiosResponse<APIResponse<AccountInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(res.data.error);
           } else {
             resolve(res.data);
           }
         })
-        .catch((error: AxiosError<APIResponse<HouseholdInstrumentOwnership>>) => {
+        .catch((error: AxiosError<APIResponse<AccountInstrumentOwnership>>) => {
           if (error?.response?.data?.error) {
             reject(error?.response?.data?.error);
           } else {
@@ -7031,15 +7031,15 @@ export class DinnerDoneBetterAPIClient {
     });
   }
 
-  async updateHouseholdMemberPermissions(
-    householdID: string,
+  async updateAccountMemberPermissions(
+    accountID: string,
     userID: string,
     input: ModifyUserPermissionsInput,
   ): Promise<APIResponse<UserPermissionsResponse>> {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      if (householdID.trim() === '') {
-        throw new Error('householdID is required');
+      if (accountID.trim() === '') {
+        throw new Error('accountID is required');
       }
 
       if (userID.trim() === '') {
@@ -7048,7 +7048,7 @@ export class DinnerDoneBetterAPIClient {
 
       self.client
         .patch<APIResponse<UserPermissionsResponse>>(
-          `/api/v1/households/${householdID}/members/${userID}/permissions`,
+          `/api/v1/accounts/${accountID}/members/${userID}/permissions`,
           input,
         )
         .then((res: AxiosResponse<APIResponse<UserPermissionsResponse>>) => {

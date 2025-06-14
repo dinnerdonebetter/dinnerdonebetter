@@ -29,7 +29,7 @@ import { z } from 'zod';
 
 import {
   User,
-  HouseholdInvitation,
+  AccountInvitation,
   QueryFilteredResult,
   ServiceSetting,
   ServiceSettingConfiguration,
@@ -51,16 +51,16 @@ import { serverSideAnalytics } from '../../../src/analytics';
 import { userSessionDetailsOrRedirect } from '../../../src/auth';
 import { valueOrDefault } from '../../../src/utils';
 
-declare interface HouseholdSettingsPageProps {
+declare interface AccountSettingsPageProps {
   user: EitherErrorOr<User>;
-  invitations: EitherErrorOr<QueryFilteredResult<HouseholdInvitation>>;
+  invitations: EitherErrorOr<QueryFilteredResult<AccountInvitation>>;
   allSettings: EitherErrorOr<QueryFilteredResult<ServiceSetting>>;
   configuredSettings: EitherErrorOr<QueryFilteredResult<ServiceSettingConfiguration>>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext,
-): Promise<GetServerSidePropsResult<HouseholdSettingsPageProps>> => {
+): Promise<GetServerSidePropsResult<AccountSettingsPageProps>> => {
   const timing = new ServerTiming();
   const span = serverSideTracer.startSpan('UserSettingsPage.getServerSideProps');
 
@@ -88,7 +88,7 @@ export const getServerSideProps: GetServerSideProps = async (
   if (userSessionData?.userID) {
     const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'USER_SETTINGS_PAGE', context, {
-      householdID: userSessionData.householdID,
+      accountID: userSessionData.accountID,
     });
     analyticsTimer.end();
   }
@@ -110,8 +110,8 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchInvitationsTimer = timing.addEvent('fetch received invitations');
   const invitationsPromise = apiClient
-    .getReceivedHouseholdInvitations()
-    .then((result: QueryFilteredResult<HouseholdInvitation>) => {
+    .getReceivedAccountInvitations()
+    .then((result: QueryFilteredResult<AccountInvitation>) => {
       span.addEvent('invitations retrieved');
       return { data: result };
     })
@@ -185,10 +185,10 @@ const formatDate = (x: string | undefined): string => {
   return x ? formatRelative(new Date(x), new Date()) : 'never';
 };
 
-export default function UserSettingsPage(props: HouseholdSettingsPageProps): JSX.Element {
+export default function UserSettingsPage(props: AccountSettingsPageProps): JSX.Element {
   const apiClient = buildLocalClient();
 
-  const pageLoadInvitations = valueOrDefault(props.invitations, new QueryFilteredResult<HouseholdInvitation>());
+  const pageLoadInvitations = valueOrDefault(props.invitations, new QueryFilteredResult<AccountInvitation>());
   const pageLoadUser = valueOrDefault(props.user, new User());
   const pageLoadAllSettings = valueOrDefault(props.allSettings, new QueryFilteredResult<ServiceSetting>());
   const pageLoadConfiguredSettings = valueOrDefault(
@@ -196,7 +196,7 @@ export default function UserSettingsPage(props: HouseholdSettingsPageProps): JSX
     new QueryFilteredResult<ServiceSettingConfiguration>(),
   );
 
-  const [invitations] = useState<QueryFilteredResult<HouseholdInvitation>>(pageLoadInvitations);
+  const [invitations] = useState<QueryFilteredResult<AccountInvitation>>(pageLoadInvitations);
   const [invitationsError] = useState<IAPIError | undefined>(props.invitations.error);
   const [user] = useState<User>(pageLoadUser);
   const [userError] = useState<IAPIError | undefined>(props.user.error);
@@ -209,7 +209,7 @@ export default function UserSettingsPage(props: HouseholdSettingsPageProps): JSX
   const [needsTOTPToUpdatePassword, setNeedsTOTPToUpdatePassword] = useState(false);
   const [avatarUploadError, setAvatarUploadError] = useState<string>('');
 
-  const pendingInvites = (invitations.data || []).map((invite: HouseholdInvitation) => {
+  const pendingInvites = (invitations.data || []).map((invite: AccountInvitation) => {
     return (
       <List.Item key={invite.id}>
         {invite.toEmail} - {invite.status}

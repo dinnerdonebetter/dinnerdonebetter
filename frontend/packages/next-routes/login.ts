@@ -11,7 +11,7 @@ import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 import { parseUserSessionDetailsFromCookie } from './api_proxy';
 import { UserSessionDetails } from './utils';
 
-type cookieFunction = (_token: AccessToken, _userID: string, _householdID: string) => string;
+type cookieFunction = (_token: AccessToken, _userID: string, _accountID: string) => string;
 
 async function getOAuth2Token(input: {
   baseURL: string;
@@ -20,7 +20,7 @@ async function getOAuth2Token(input: {
   oauth2ClientSecret: string;
   jwt: string;
   userID: string;
-  householdID: string;
+  accountID: string;
 }): Promise<AccessToken> {
   const state = crypto.randomBytes(32).toString('hex');
 
@@ -77,7 +77,7 @@ async function getOAuth2Token(input: {
 
 export function buildLoginRoute(config: {
   baseURL: string;
-  scope: 'household_member' | 'household_admin' | 'service_admin';
+  scope: 'account_member' | 'account_admin' | 'service_admin';
   oauth2ClientID: string;
   oauth2ClientSecret: string;
   serverSideTracer: TracerType;
@@ -141,14 +141,14 @@ export function buildLoginRoute(config: {
             oauth2ClientSecret: config.oauth2ClientSecret,
             jwt: jwToken,
             userID: result.data.data.userID,
-            householdID: result.data.data.householdID,
+            accountID: result.data.data.accountID,
           });
 
           let written = false;
           try {
             res.setHeader(
               'Set-Cookie',
-              config.cookieFunc(token, result.data.data.userID, result.data.data.householdID),
+              config.cookieFunc(token, result.data.data.userID, result.data.data.accountID),
             );
           } catch (e) {
             res.status(401).send('');

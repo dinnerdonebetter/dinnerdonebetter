@@ -1,17 +1,17 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface ITokenResponse {
-  householdID: string;
+  accountID: string;
   token: string;
   userID: string;
 }
 
 export class TokenResponse implements ITokenResponse {
-  householdID: string;
+  accountID: string;
   token: string;
   userID: string;
   constructor(input: Partial<TokenResponse> = {}) {
-    this.householdID = input.householdID || '';
+    this.accountID = input.accountID || '';
     this.token = input.token || '';
     this.userID = input.userID || '';
   }

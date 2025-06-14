@@ -6,15 +6,15 @@ import { EncryptorDecryptor } from '@dinnerdonebetter/encryption';
 export interface UserSessionDetails {
   token: AccessToken;
   userID: string;
-  householdID: string;
+  accountID: string;
 }
 
 export function cookieEncoderBuilder(cookieName: string, encryptorDecryptor: EncryptorDecryptor<UserSessionDetails>) {
-  return function (token: AccessToken, userID: string, householdID: string): string {
+  return function (token: AccessToken, userID: string, accountID: string): string {
     const cookieValue = encryptorDecryptor.encrypt({
       token: token,
       userID: userID,
-      householdID: householdID,
+      accountID: accountID,
     });
 
     return serialize(cookieName, cookieValue, {

@@ -6,7 +6,7 @@ import { RecipeRating } from './RecipeRating.gen';
 import { UserIngredientPreference } from './UserIngredientPreference.gen';
 
 export interface IEatingUserDataCollection {
-  householdInstrumentOwnerships: object;
+  accountInstrumentOwnerships: object;
   mealPlans: object;
   meals: Meal[];
   recipeRatings: RecipeRating[];
@@ -16,7 +16,7 @@ export interface IEatingUserDataCollection {
 }
 
 export class EatingUserDataCollection implements IEatingUserDataCollection {
-  householdInstrumentOwnerships: object;
+  accountInstrumentOwnerships: object;
   mealPlans: object;
   meals: Meal[];
   recipeRatings: RecipeRating[];
@@ -24,7 +24,7 @@ export class EatingUserDataCollection implements IEatingUserDataCollection {
   reportID: string;
   userIngredientPreferences: UserIngredientPreference[];
   constructor(input: Partial<EatingUserDataCollection> = {}) {
-    this.householdInstrumentOwnerships = input.householdInstrumentOwnerships || {};
+    this.accountInstrumentOwnerships = input.accountInstrumentOwnerships || {};
     this.mealPlans = input.mealPlans || {};
     this.meals = input.meals || [];
     this.recipeRatings = input.recipeRatings || [];

@@ -52,7 +52,7 @@ export const getServerSideProps: GetServerSideProps = async (
   if (userSessionData?.userID) {
     serverSideAnalytics.page(userSessionData.userID, 'RECIPE_PAGE', context, {
       recipeID,
-      householdID: userSessionData.householdID,
+      accountID: userSessionData.accountID,
     });
   }
 

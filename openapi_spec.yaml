@@ -218,13 +218,13 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - audit log entries
-  /api/v1/audit_log_entries/for_household:
+  /api/v1/audit_log_entries/for_account:
     get:
-      description: Retrieves audit log entries for a household
-      operationId: GetAuditLogEntriesForHousehold
+      description: Retrieves audit log entries for a account
+      operationId: GetAuditLogEntriesForAccount
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -334,7 +334,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - audit log entries
   /api/v1/audit_log_entries/for_user:
@@ -450,7 +450,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - audit log entries
   /api/v1/data_privacy/destroy:
@@ -508,7 +508,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
   /api/v1/data_privacy/disclose:
     post:
       description: Aggregates a user's data into a big disclosure blob
@@ -564,7 +564,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
   /api/v1/data_privacy/reports/{userDataAggregationReportID}:
     get:
       description: Reads a user's data report from storage
@@ -626,14 +626,14 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
-  /api/v1/household_invitations/{householdInvitationID}:
+        - account_member
+  /api/v1/account_invitations/{accountInvitationID}:
     get:
-      description: Fetches household invitations for a given household
-      operationId: GetHouseholdInvitation
+      description: Fetches account invitations for a given account
+      operationId: GetAccountInvitation
       parameters:
       - in: path
-        name: householdInvitationID
+        name: accountInvitationID
         required: true
         schema:
           type: string
@@ -646,7 +646,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
             application/xml:
@@ -655,7 +655,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
           description: ""
@@ -688,16 +688,16 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - household invitations
-  /api/v1/household_invitations/{householdInvitationID}/accept:
+      - account invitations
+  /api/v1/account_invitations/{accountInvitationID}/accept:
     put:
-      description: Accepts a received household invitation
-      operationId: AcceptHouseholdInvitation
+      description: Accepts a received account invitation
+      operationId: AcceptAccountInvitation
       parameters:
       - in: path
-        name: householdInvitationID
+        name: accountInvitationID
         required: true
         schema:
           type: string
@@ -705,10 +705,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdInvitationUpdateRequestInput'
+              $ref: '#/components/schemas/AccountInvitationUpdateRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdInvitationUpdateRequestInput'
+              $ref: '#/components/schemas/AccountInvitationUpdateRequestInput'
         required: true
       responses:
         "200":
@@ -719,7 +719,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
             application/xml:
@@ -728,7 +728,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
           description: ""
@@ -761,16 +761,16 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - household invitations
-  /api/v1/household_invitations/{householdInvitationID}/cancel:
+      - account invitations
+  /api/v1/account_invitations/{accountInvitationID}/cancel:
     put:
-      description: Cancels a sent household invitation
-      operationId: CancelHouseholdInvitation
+      description: Cancels a sent account invitation
+      operationId: CancelAccountInvitation
       parameters:
       - in: path
-        name: householdInvitationID
+        name: accountInvitationID
         required: true
         schema:
           type: string
@@ -778,10 +778,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdInvitationUpdateRequestInput'
+              $ref: '#/components/schemas/AccountInvitationUpdateRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdInvitationUpdateRequestInput'
+              $ref: '#/components/schemas/AccountInvitationUpdateRequestInput'
         required: true
       responses:
         "200":
@@ -792,7 +792,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
             application/xml:
@@ -801,7 +801,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
           description: ""
@@ -834,16 +834,16 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - household invitations
-  /api/v1/household_invitations/{householdInvitationID}/reject:
+      - account invitations
+  /api/v1/account_invitations/{accountInvitationID}/reject:
     put:
-      description: Rejects a received household invitation
-      operationId: RejectHouseholdInvitation
+      description: Rejects a received account invitation
+      operationId: RejectAccountInvitation
       parameters:
       - in: path
-        name: householdInvitationID
+        name: accountInvitationID
         required: true
         schema:
           type: string
@@ -851,10 +851,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdInvitationUpdateRequestInput'
+              $ref: '#/components/schemas/AccountInvitationUpdateRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdInvitationUpdateRequestInput'
+              $ref: '#/components/schemas/AccountInvitationUpdateRequestInput'
         required: true
       responses:
         "200":
@@ -865,7 +865,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
             application/xml:
@@ -874,7 +874,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
           description: ""
@@ -907,13 +907,13 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - household invitations
-  /api/v1/household_invitations/received:
+      - account invitations
+  /api/v1/account_invitations/received:
     get:
-      description: Fetches received household invitations
-      operationId: GetReceivedHouseholdInvitations
+      description: Fetches received account invitations
+      operationId: GetReceivedAccountInvitations
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -980,7 +980,7 @@ paths:
                 - properties:
                     data:
                       items:
-                        $ref: '#/components/schemas/HouseholdInvitation'
+                        $ref: '#/components/schemas/AccountInvitation'
                       type: array
                   type: object
             application/xml:
@@ -990,7 +990,7 @@ paths:
                 - properties:
                     data:
                       items:
-                        $ref: '#/components/schemas/HouseholdInvitation'
+                        $ref: '#/components/schemas/AccountInvitation'
                       type: array
                   type: object
           description: ""
@@ -1023,13 +1023,13 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - household invitations
-  /api/v1/household_invitations/sent:
+      - account invitations
+  /api/v1/account_invitations/sent:
     get:
-      description: Fetches sent household invitations
-      operationId: GetSentHouseholdInvitations
+      description: Fetches sent account invitations
+      operationId: GetSentAccountInvitations
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -1096,7 +1096,7 @@ paths:
                 - properties:
                     data:
                       items:
-                        $ref: '#/components/schemas/HouseholdInvitation'
+                        $ref: '#/components/schemas/AccountInvitation'
                       type: array
                   type: object
             application/xml:
@@ -1106,7 +1106,7 @@ paths:
                 - properties:
                     data:
                       items:
-                        $ref: '#/components/schemas/HouseholdInvitation'
+                        $ref: '#/components/schemas/AccountInvitation'
                       type: array
                   type: object
           description: ""
@@ -1139,13 +1139,13 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - household invitations
-  /api/v1/households:
+      - account invitations
+  /api/v1/accounts:
     get:
-      description: Fetches a list of households
-      operationId: GetHouseholds
+      description: Fetches a list of accounts
+      operationId: GetAccounts
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -1212,7 +1212,7 @@ paths:
                 - properties:
                     data:
                       items:
-                        $ref: '#/components/schemas/Household'
+                        $ref: '#/components/schemas/Account'
                       type: array
                   type: object
             application/xml:
@@ -1222,7 +1222,7 @@ paths:
                 - properties:
                     data:
                       items:
-                        $ref: '#/components/schemas/Household'
+                        $ref: '#/components/schemas/Account'
                       type: array
                   type: object
           description: ""
@@ -1255,20 +1255,20 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - households
+      - accounts
     post:
-      description: Creates a household
-      operationId: CreateHousehold
+      description: Creates a account
+      operationId: CreateAccount
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdCreationRequestInput'
+              $ref: '#/components/schemas/AccountCreationRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdCreationRequestInput'
+              $ref: '#/components/schemas/AccountCreationRequestInput'
         required: true
       responses:
         "201":
@@ -1279,7 +1279,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
             application/xml:
@@ -1288,7 +1288,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
           description: ""
@@ -1321,16 +1321,16 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - households
-  /api/v1/households/{householdID}:
+      - accounts
+  /api/v1/accounts/{accountID}:
     delete:
-      description: Archives a household
-      operationId: ArchiveHousehold
+      description: Archives a account
+      operationId: ArchiveAccount
       parameters:
       - in: path
-        name: householdID
+        name: accountID
         required: true
         schema:
           type: string
@@ -1343,7 +1343,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
             application/xml:
@@ -1352,7 +1352,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
           description: ""
@@ -1385,15 +1385,15 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
-      - households
+      - accounts
     get:
-      description: Fetches a household
-      operationId: GetHousehold
+      description: Fetches a account
+      operationId: GetAccount
       parameters:
       - in: path
-        name: householdID
+        name: accountID
         required: true
         schema:
           type: string
@@ -1406,7 +1406,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
             application/xml:
@@ -1415,7 +1415,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
           description: ""
@@ -1448,15 +1448,15 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - households
+      - accounts
     put:
-      description: Updates a household
-      operationId: UpdateHousehold
+      description: Updates a account
+      operationId: UpdateAccount
       parameters:
       - in: path
-        name: householdID
+        name: accountID
         required: true
         schema:
           type: string
@@ -1464,10 +1464,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdUpdateRequestInput'
+              $ref: '#/components/schemas/AccountUpdateRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdUpdateRequestInput'
+              $ref: '#/components/schemas/AccountUpdateRequestInput'
         required: true
       responses:
         "200":
@@ -1478,7 +1478,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
             application/xml:
@@ -1487,7 +1487,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
           description: ""
@@ -1520,16 +1520,16 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
-      - households
-  /api/v1/households/{householdID}/default:
+      - accounts
+  /api/v1/accounts/{accountID}/default:
     post:
-      description: Updates the default household assigned at login
-      operationId: SetDefaultHousehold
+      description: Updates the default account assigned at login
+      operationId: SetDefaultAccount
       parameters:
       - in: path
-        name: householdID
+        name: accountID
         required: true
         schema:
           type: string
@@ -1542,7 +1542,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
             application/xml:
@@ -1551,7 +1551,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
           description: ""
@@ -1584,21 +1584,21 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - households
-  /api/v1/households/{householdID}/invitations/{householdInvitationID}:
+      - accounts
+  /api/v1/accounts/{accountID}/invitations/{accountInvitationID}:
     get:
-      description: Fetches a household invitation by its ID
-      operationId: GetHouseholdInvitationByID
+      description: Fetches a account invitation by its ID
+      operationId: GetAccountInvitationByID
       parameters:
       - in: path
-        name: householdID
+        name: accountID
         required: true
         schema:
           type: string
       - in: path
-        name: householdInvitationID
+        name: accountInvitationID
         required: true
         schema:
           type: string
@@ -1611,7 +1611,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
             application/xml:
@@ -1620,7 +1620,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
           description: ""
@@ -1653,17 +1653,17 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - households
+      - accounts
       - invitations
-  /api/v1/households/{householdID}/invite:
+  /api/v1/accounts/{accountID}/invite:
     post:
-      description: Create a household invitation
-      operationId: CreateHouseholdInvitation
+      description: Create a account invitation
+      operationId: CreateAccountInvitation
       parameters:
       - in: path
-        name: householdID
+        name: accountID
         required: true
         schema:
           type: string
@@ -1671,10 +1671,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdInvitationCreationRequestInput'
+              $ref: '#/components/schemas/AccountInvitationCreationRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdInvitationCreationRequestInput'
+              $ref: '#/components/schemas/AccountInvitationCreationRequestInput'
         required: true
       responses:
         "201":
@@ -1685,7 +1685,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
             application/xml:
@@ -1694,7 +1694,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInvitation'
+                      $ref: '#/components/schemas/AccountInvitation'
                       type: object
                   type: object
           description: ""
@@ -1727,16 +1727,16 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
-      - households
-  /api/v1/households/{householdID}/members/{userID}:
+      - accounts
+  /api/v1/accounts/{accountID}/members/{userID}:
     delete:
-      description: Archive a household user membership
+      description: Archive a account user membership
       operationId: ArchiveUserMembership
       parameters:
       - in: path
-        name: householdID
+        name: accountID
         required: true
         schema:
           type: string
@@ -1754,7 +1754,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdUserMembership'
+                      $ref: '#/components/schemas/AccountUserMembership'
                       type: object
                   type: object
             application/xml:
@@ -1763,7 +1763,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdUserMembership'
+                      $ref: '#/components/schemas/AccountUserMembership'
                       type: object
                   type: object
           description: ""
@@ -1796,17 +1796,17 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
-      - households
-      - household members
-  /api/v1/households/{householdID}/members/{userID}/permissions:
+      - accounts
+      - account members
+  /api/v1/accounts/{accountID}/members/{userID}/permissions:
     patch:
-      description: Update a household member's household permissions
-      operationId: UpdateHouseholdMemberPermissions
+      description: Update a account member's account permissions
+      operationId: UpdateAccountMemberPermissions
       parameters:
       - in: path
-        name: householdID
+        name: accountID
         required: true
         schema:
           type: string
@@ -1875,17 +1875,17 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
-      - households
-      - household members
-  /api/v1/households/{householdID}/transfer:
+      - accounts
+      - account members
+  /api/v1/accounts/{accountID}/transfer:
     post:
-      description: Transfer household ownership to another user
-      operationId: TransferHouseholdOwnership
+      description: Transfer account ownership to another user
+      operationId: TransferAccountOwnership
       parameters:
       - in: path
-        name: householdID
+        name: accountID
         required: true
         schema:
           type: string
@@ -1893,10 +1893,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdOwnershipTransferInput'
+              $ref: '#/components/schemas/AccountOwnershipTransferInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdOwnershipTransferInput'
+              $ref: '#/components/schemas/AccountOwnershipTransferInput'
         required: true
       responses:
         "201":
@@ -1907,7 +1907,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
             application/xml:
@@ -1916,7 +1916,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
           description: ""
@@ -1949,13 +1949,13 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
-      - households
-  /api/v1/households/current:
+      - accounts
+  /api/v1/accounts/current:
     get:
-      description: Fetches the currently active household
-      operationId: GetActiveHousehold
+      description: Fetches the currently active account
+      operationId: GetActiveAccount
       responses:
         "200":
           content:
@@ -1965,7 +1965,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
             application/xml:
@@ -1974,7 +1974,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/Household'
+                      $ref: '#/components/schemas/Account'
                       type: object
                   type: object
           description: ""
@@ -2007,13 +2007,13 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - households
-  /api/v1/households/instruments:
+      - accounts
+  /api/v1/accounts/instruments:
     get:
-      description: creates a household instrument
-      operationId: GetHouseholdInstrumentOwnerships
+      description: creates a account instrument
+      operationId: GetAccountInstrumentOwnerships
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -2080,7 +2080,7 @@ paths:
                 - properties:
                     data:
                       items:
-                        $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                        $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: array
                   type: object
             application/xml:
@@ -2090,7 +2090,7 @@ paths:
                 - properties:
                     data:
                       items:
-                        $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                        $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: array
                   type: object
           description: ""
@@ -2123,21 +2123,21 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - households
-      - household instrument ownerships
+      - accounts
+      - account instrument ownerships
     post:
-      description: Creates a household instrument ownership
-      operationId: CreateHouseholdInstrumentOwnership
+      description: Creates a account instrument ownership
+      operationId: CreateAccountInstrumentOwnership
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdInstrumentOwnershipCreationRequestInput'
+              $ref: '#/components/schemas/AccountInstrumentOwnershipCreationRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdInstrumentOwnershipCreationRequestInput'
+              $ref: '#/components/schemas/AccountInstrumentOwnershipCreationRequestInput'
         required: true
       responses:
         "201":
@@ -2148,7 +2148,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                      $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: object
                   type: object
             application/xml:
@@ -2157,7 +2157,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                      $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: object
                   type: object
           description: ""
@@ -2190,17 +2190,17 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
-      - households
-      - household instrument ownerships
-  /api/v1/households/instruments/{householdInstrumentOwnershipID}:
+      - accounts
+      - account instrument ownerships
+  /api/v1/accounts/instruments/{accountInstrumentOwnershipID}:
     delete:
-      description: Archives a household instrument ownership
-      operationId: ArchiveHouseholdInstrumentOwnership
+      description: Archives a account instrument ownership
+      operationId: ArchiveAccountInstrumentOwnership
       parameters:
       - in: path
-        name: householdInstrumentOwnershipID
+        name: accountInstrumentOwnershipID
         required: true
         schema:
           type: string
@@ -2213,7 +2213,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                      $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: object
                   type: object
             application/xml:
@@ -2222,7 +2222,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                      $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: object
                   type: object
           description: ""
@@ -2255,16 +2255,16 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
-      - households
-      - household instrument ownerships
+      - accounts
+      - account instrument ownerships
     get:
-      description: Fetches a household instrument ownership
-      operationId: GetHouseholdInstrumentOwnership
+      description: Fetches a account instrument ownership
+      operationId: GetAccountInstrumentOwnership
       parameters:
       - in: path
-        name: householdInstrumentOwnershipID
+        name: accountInstrumentOwnershipID
         required: true
         schema:
           type: string
@@ -2277,7 +2277,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                      $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: object
                   type: object
             application/xml:
@@ -2286,7 +2286,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                      $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: object
                   type: object
           description: ""
@@ -2319,16 +2319,16 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
-      - households
-      - household instrument ownerships
+      - accounts
+      - account instrument ownerships
     put:
-      description: Updates a household instrument ownership
-      operationId: UpdateHouseholdInstrumentOwnership
+      description: Updates a account instrument ownership
+      operationId: UpdateAccountInstrumentOwnership
       parameters:
       - in: path
-        name: householdInstrumentOwnershipID
+        name: accountInstrumentOwnershipID
         required: true
         schema:
           type: string
@@ -2336,10 +2336,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdInstrumentOwnershipUpdateRequestInput'
+              $ref: '#/components/schemas/AccountInstrumentOwnershipUpdateRequestInput'
           application/xml:
             schema:
-              $ref: '#/components/schemas/HouseholdInstrumentOwnershipUpdateRequestInput'
+              $ref: '#/components/schemas/AccountInstrumentOwnershipUpdateRequestInput'
         required: true
       responses:
         "200":
@@ -2350,7 +2350,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                      $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: object
                   type: object
             application/xml:
@@ -2359,7 +2359,7 @@ paths:
                 - $ref: '#/components/schemas/APIResponse'
                 - properties:
                     data:
-                      $ref: '#/components/schemas/HouseholdInstrumentOwnership'
+                      $ref: '#/components/schemas/AccountInstrumentOwnership'
                       type: object
                   type: object
           description: ""
@@ -2392,14 +2392,14 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
-      - households
-      - household instrument ownerships
+      - accounts
+      - account instrument ownerships
   /api/v1/meal_plans:
     get:
       description: Fetches a MealPlans
-      operationId: GetMealPlansForHousehold
+      operationId: GetMealPlansForAccount
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -2509,7 +2509,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
     post:
@@ -2575,7 +2575,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
   /api/v1/meal_plans/{mealPlanID}:
@@ -2639,7 +2639,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
     get:
@@ -2702,7 +2702,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
     put:
@@ -2774,7 +2774,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
   /api/v1/meal_plans/{mealPlanID}/events:
@@ -2895,7 +2895,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan events
@@ -2968,7 +2968,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
       - meal plan events
@@ -3038,7 +3038,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
       - meal plan events
@@ -3107,7 +3107,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan events
@@ -3185,7 +3185,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
       - meal plan events
@@ -3312,7 +3312,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan events
@@ -3391,7 +3391,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
       - meal plan events
@@ -3467,7 +3467,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
       - meal plan events
@@ -3542,7 +3542,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan events
@@ -3626,7 +3626,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
       - meal plan events
@@ -3759,7 +3759,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan events
@@ -3841,7 +3841,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan events
@@ -3922,7 +3922,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan events
@@ -4012,7 +4012,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan events
@@ -4095,7 +4095,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan events
@@ -4160,7 +4160,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - meal plans
   /api/v1/meal_plans/{mealPlanID}/grocery_list_items:
@@ -4281,7 +4281,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - grocery list items
@@ -4424,7 +4424,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - grocery list items
@@ -4493,7 +4493,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - grocery list items
@@ -4571,7 +4571,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - grocery list items
@@ -4693,7 +4693,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan tasks
@@ -4836,7 +4836,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan tasks
@@ -4914,7 +4914,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meal plans
       - meal plan tasks
@@ -5031,7 +5031,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meals
     post:
@@ -5097,7 +5097,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meals
   /api/v1/meals/{mealID}:
@@ -5161,7 +5161,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meals
     get:
@@ -5224,7 +5224,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meals
   /api/v1/meals/search:
@@ -5346,7 +5346,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - meals
   /api/v1/oauth2_clients:
@@ -5462,7 +5462,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - oauth2
     post:
@@ -5655,7 +5655,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - oauth2
   /api/v1/recipes:
@@ -5771,7 +5771,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
     post:
@@ -5837,7 +5837,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
   /api/v1/recipes/{recipeID}:
@@ -5901,7 +5901,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
     get:
@@ -5964,7 +5964,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
     put:
@@ -6036,7 +6036,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/clone:
@@ -6100,7 +6100,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/mermaid:
@@ -6162,7 +6162,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/prep_steps:
@@ -6226,7 +6226,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
   /api/v1/recipes/{recipeID}/prep_tasks:
@@ -6347,7 +6347,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe prep tasks
@@ -6420,7 +6420,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe prep tasks
@@ -6490,7 +6490,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe prep tasks
@@ -6559,7 +6559,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe prep tasks
@@ -6637,7 +6637,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe prep tasks
@@ -6759,7 +6759,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe ratings
@@ -6832,7 +6832,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe ratings
@@ -6902,7 +6902,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe ratings
@@ -6971,7 +6971,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe ratings
@@ -7049,7 +7049,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe ratings
@@ -7171,7 +7171,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -7244,7 +7244,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -7314,7 +7314,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -7383,7 +7383,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -7461,7 +7461,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -7588,7 +7588,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -7667,7 +7667,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -7743,7 +7743,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -7818,7 +7818,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -7902,7 +7902,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -8030,7 +8030,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -8109,7 +8109,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -8185,7 +8185,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -8260,7 +8260,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -8344,7 +8344,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -8472,11 +8472,11 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
-      - household instrument ownerships
+      - account instrument ownerships
     post:
       description: Creates a RecipeStepInstrument
       operationId: CreateRecipeStepInstrument
@@ -8551,11 +8551,11 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
-      - household instrument ownerships
+      - account instrument ownerships
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/instruments/{recipeStepInstrumentID}:
     delete:
       description: Archives a RecipeStepInstrument
@@ -8627,11 +8627,11 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
-      - household instrument ownerships
+      - account instrument ownerships
     get:
       description: Fetches a RecipeStepInstrument
       operationId: GetRecipeStepInstrument
@@ -8702,11 +8702,11 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
-      - household instrument ownerships
+      - account instrument ownerships
     put:
       description: Updates a RecipeStepInstrument
       operationId: UpdateRecipeStepInstrument
@@ -8786,11 +8786,11 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
-      - household instrument ownerships
+      - account instrument ownerships
   /api/v1/recipes/{recipeID}/steps/{recipeStepID}/products:
     get:
       description: Fetches a RecipeStepProducts
@@ -8914,7 +8914,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -8993,7 +8993,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -9069,7 +9069,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -9144,7 +9144,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -9228,7 +9228,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -9356,7 +9356,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -9435,7 +9435,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -9511,7 +9511,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -9586,7 +9586,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -9670,7 +9670,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
       - recipe steps
@@ -9794,7 +9794,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - recipes
   /api/v1/settings:
@@ -9910,7 +9910,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - service settings
     post:
@@ -10103,7 +10103,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - service settings
   /api/v1/settings/configurations:
@@ -10170,7 +10170,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - service settings
       - service setting configurations
@@ -10235,7 +10235,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - service settings
       - service setting configurations
@@ -10308,14 +10308,14 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - service settings
       - service setting configurations
-  /api/v1/settings/configurations/household:
+  /api/v1/settings/configurations/account:
     get:
-      description: Fetches a ServiceSettingConfigurationsForHousehold
-      operationId: GetServiceSettingConfigurationsForHousehold
+      description: Fetches a ServiceSettingConfigurationsForAccount
+      operationId: GetServiceSettingConfigurationsForAccount
       parameters:
       - description: How many results should appear in output, max is 250.
         in: query
@@ -10425,7 +10425,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - service settings
       - service setting configurations
@@ -10542,7 +10542,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - service settings
       - service setting configurations
@@ -10664,7 +10664,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - service settings
       - service setting configurations
@@ -10788,7 +10788,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - service settings
   /api/v1/user_ingredient_preferences:
@@ -10904,7 +10904,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - user ingredient preferences
     post:
@@ -10972,7 +10972,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - user ingredient preferences
   /api/v1/user_ingredient_preferences/{userIngredientPreferenceID}:
@@ -11036,7 +11036,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - user ingredient preferences
     put:
@@ -11108,7 +11108,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - user ingredient preferences
   /api/v1/user_notifications:
@@ -11224,7 +11224,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - user notifications
     post:
@@ -11354,7 +11354,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - user notifications
     patch:
@@ -11426,7 +11426,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - user notifications
   /api/v1/users:
@@ -11542,7 +11542,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
   /api/v1/users/{userID}:
@@ -11606,7 +11606,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
     get:
@@ -11669,7 +11669,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
   /api/v1/users/avatar/upload:
@@ -11736,7 +11736,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
   /api/v1/users/details:
@@ -11803,7 +11803,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
   /api/v1/users/email_address:
@@ -11870,7 +11870,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
   /api/v1/users/email_address_verification:
@@ -11928,7 +11928,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
   /api/v1/users/password/new:
@@ -11995,7 +11995,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
       - password
@@ -12063,7 +12063,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
       - permissions
@@ -12186,7 +12186,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
   /api/v1/users/self:
@@ -12244,7 +12244,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
   /api/v1/users/totp_secret/new:
@@ -12311,7 +12311,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
       - totp secret
@@ -12379,7 +12379,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - users
   /api/v1/valid_ingredient_groups:
@@ -12495,7 +12495,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient groups
     post:
@@ -12688,7 +12688,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient groups
     put:
@@ -12882,7 +12882,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient groups
   /api/v1/valid_ingredient_measurement_units:
@@ -12998,7 +12998,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient measurement units
     post:
@@ -13191,7 +13191,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient measurement units
     put:
@@ -13384,7 +13384,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient measurement units
   /api/v1/valid_ingredient_measurement_units/by_measurement_unit/{validMeasurementUnitID}:
@@ -13505,7 +13505,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient measurement units
   /api/v1/valid_ingredient_preparations:
@@ -13621,7 +13621,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient preparations
     post:
@@ -13814,7 +13814,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient preparations
     put:
@@ -14007,7 +14007,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient preparations
   /api/v1/valid_ingredient_preparations/by_preparation/{validPreparationID}:
@@ -14128,7 +14128,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient preparations
   /api/v1/valid_ingredient_state_ingredients:
@@ -14244,7 +14244,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient state ingredients
     post:
@@ -14437,7 +14437,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient state ingredients
     put:
@@ -14630,7 +14630,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient state ingredients
   /api/v1/valid_ingredient_state_ingredients/by_ingredient_state/{validIngredientStateID}:
@@ -14751,7 +14751,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient state ingredients
   /api/v1/valid_ingredient_states:
@@ -14867,7 +14867,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient states
     post:
@@ -15060,7 +15060,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient states
     put:
@@ -15254,7 +15254,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredient states
   /api/v1/valid_ingredients:
@@ -15370,7 +15370,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredients
     post:
@@ -15563,7 +15563,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredients
     put:
@@ -15762,7 +15762,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredients
   /api/v1/valid_ingredients/random:
@@ -15820,7 +15820,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredients
   /api/v1/valid_ingredients/search:
@@ -15942,7 +15942,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid ingredients
   /api/v1/valid_instruments:
@@ -16058,7 +16058,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid instruments
     post:
@@ -16251,7 +16251,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid instruments
     put:
@@ -16381,7 +16381,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid instruments
   /api/v1/valid_instruments/search:
@@ -16503,7 +16503,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid instruments
   /api/v1/valid_measurement_conversions:
@@ -16697,7 +16697,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid measurement conversions
     put:
@@ -16890,7 +16890,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid measurement conversions
   /api/v1/valid_measurement_conversions/to_unit/{validMeasurementUnitID}:
@@ -17011,7 +17011,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid measurement conversions
   /api/v1/valid_measurement_units:
@@ -17127,7 +17127,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid measurement units
     post:
@@ -17320,7 +17320,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid measurement units
     put:
@@ -17519,7 +17519,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid measurement units
   /api/v1/valid_measurement_units/search:
@@ -17641,7 +17641,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid measurement units
   /api/v1/valid_preparation_instruments:
@@ -17757,7 +17757,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparation instruments
     post:
@@ -17950,7 +17950,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparation instruments
     put:
@@ -18143,7 +18143,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparation instruments
   /api/v1/valid_preparation_instruments/by_preparation/{validPreparationID}:
@@ -18264,7 +18264,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparation instruments
   /api/v1/valid_preparation_vessels:
@@ -18380,7 +18380,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparation vessels
     post:
@@ -18573,7 +18573,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparation vessels
     put:
@@ -18766,7 +18766,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparation vessels
   /api/v1/valid_preparation_vessels/by_vessel/{validVesselID}:
@@ -18887,7 +18887,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparation vessels
   /api/v1/valid_preparations:
@@ -19003,7 +19003,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparations
     post:
@@ -19196,7 +19196,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparations
     put:
@@ -19326,7 +19326,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparations
   /api/v1/valid_preparations/search:
@@ -19448,7 +19448,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid preparations
   /api/v1/valid_vessels:
@@ -19564,7 +19564,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid vessels
     post:
@@ -19757,7 +19757,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid vessels
     put:
@@ -19887,7 +19887,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid vessels
   /api/v1/valid_vessels/search:
@@ -20009,7 +20009,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - valid vessels
   /api/v1/webhooks:
@@ -20125,7 +20125,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - webhooks
     post:
@@ -20191,7 +20191,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - webhooks
   /api/v1/webhooks/{webhookID}:
@@ -20255,7 +20255,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - webhooks
     get:
@@ -20318,7 +20318,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - webhooks
   /api/v1/webhooks/{webhookID}/trigger_events:
@@ -20391,7 +20391,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - webhooks
   /api/v1/webhooks/{webhookID}/trigger_events/{webhookTriggerEventID}:
@@ -20460,7 +20460,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_admin
+        - account_admin
       tags:
       - webhooks
       - webhook trigger events
@@ -20720,7 +20720,7 @@ paths:
           description: ""
       security:
       - oauth2:
-        - household_member
+        - account_member
       tags:
       - auth
   /users:
@@ -21282,7 +21282,7 @@ components:
       type: object
     AuditLogEntry:
       properties:
-        belongsToHousehold:
+        belongsToAccount:
           oneOf:
           - type: "null"
           - type: string
@@ -21318,17 +21318,17 @@ components:
       properties:
         auditLogEntries:
           type: object
-        households:
+        accounts:
           items:
-            $ref: '#/components/schemas/Household'
+            $ref: '#/components/schemas/Account'
           type: array
         receivedInvites:
           items:
-            $ref: '#/components/schemas/HouseholdInvitation'
+            $ref: '#/components/schemas/AccountInvitation'
           type: array
         sentInvites:
           items:
-            $ref: '#/components/schemas/HouseholdInvitation'
+            $ref: '#/components/schemas/AccountInvitation'
           type: array
         serviceSettingConfigurations:
           type: object
@@ -21345,7 +21345,7 @@ components:
       type: object
     CreateMealPlanTasksRequest:
       properties:
-        householdID:
+        accountID:
           type: string
       type: object
     CreateMealPlanTasksResponse:
@@ -21360,7 +21360,7 @@ components:
       type: object
     EatingUserDataCollection:
       properties:
-        householdInstrumentOwnerships:
+        accountInstrumentOwnerships:
           type: object
         mealPlans:
           type: object
@@ -21423,7 +21423,7 @@ components:
           - format: double
             type: number
       type: object
-    Household:
+    Account:
       properties:
         addressLine1:
           type: string
@@ -21466,7 +21466,7 @@ components:
             type: number
         members:
           items:
-            $ref: '#/components/schemas/HouseholdUserMembershipWithUser'
+            $ref: '#/components/schemas/AccountUserMembershipWithUser'
           type: array
         name:
           type: string
@@ -21481,7 +21481,7 @@ components:
         zipCode:
           type: string
       type: object
-    HouseholdCreationRequestInput:
+    AccountCreationRequestInput:
       properties:
         addressLine1:
           type: string
@@ -21510,14 +21510,14 @@ components:
         zipCode:
           type: string
       type: object
-    HouseholdInstrumentOwnership:
+    AccountInstrumentOwnership:
       properties:
         archivedAt:
           oneOf:
           - type: "null"
           - format: date-time
             type: string
-        belongsToHousehold:
+        belongsToAccount:
           type: string
         createdAt:
           format: date-time
@@ -21537,9 +21537,9 @@ components:
           format: int64
           type: integer
       type: object
-    HouseholdInstrumentOwnershipCreationRequestInput:
+    AccountInstrumentOwnershipCreationRequestInput:
       properties:
-        belongsToHousehold:
+        belongsToAccount:
           type: string
         notes:
           type: string
@@ -21549,7 +21549,7 @@ components:
         validInstrumentID:
           type: string
       type: object
-    HouseholdInstrumentOwnershipUpdateRequestInput:
+    AccountInstrumentOwnershipUpdateRequestInput:
       properties:
         notes:
           oneOf:
@@ -21565,7 +21565,7 @@ components:
           - type: "null"
           - type: string
       type: object
-    HouseholdInvitation:
+    AccountInvitation:
       properties:
         archivedAt:
           oneOf:
@@ -21575,8 +21575,8 @@ components:
         createdAt:
           format: date-time
           type: string
-        destinationHousehold:
-          $ref: '#/components/schemas/Household'
+        destinationAccount:
+          $ref: '#/components/schemas/Account'
         expiresAt:
           format: date-time
           type: string
@@ -21606,7 +21606,7 @@ components:
         token:
           type: string
       type: object
-    HouseholdInvitationCreationRequestInput:
+    AccountInvitationCreationRequestInput:
       properties:
         expiresAt:
           oneOf:
@@ -21620,14 +21620,14 @@ components:
         toName:
           type: string
       type: object
-    HouseholdInvitationUpdateRequestInput:
+    AccountInvitationUpdateRequestInput:
       properties:
         note:
           type: string
         token:
           type: string
       type: object
-    HouseholdOwnershipTransferInput:
+    AccountOwnershipTransferInput:
       properties:
         currentOwner:
           type: string
@@ -21636,7 +21636,7 @@ components:
         reason:
           type: string
       type: object
-    HouseholdUpdateRequestInput:
+    AccountUpdateRequestInput:
       properties:
         addressLine1:
           oneOf:
@@ -21681,23 +21681,23 @@ components:
           - type: "null"
           - type: string
       type: object
-    HouseholdUserMembership:
+    AccountUserMembership:
       properties:
         archivedAt:
           oneOf:
           - type: "null"
           - format: date-time
             type: string
-        belongsToHousehold:
+        belongsToAccount:
           type: string
         belongsToUser:
           type: string
         createdAt:
           format: date-time
           type: string
-        defaultHousehold:
+        defaultAccount:
           type: boolean
-        householdRole:
+        accountRole:
           type: string
         id:
           type: string
@@ -21707,14 +21707,14 @@ components:
           - format: date-time
             type: string
       type: object
-    HouseholdUserMembershipWithUser:
+    AccountUserMembershipWithUser:
       properties:
         archivedAt:
           oneOf:
           - type: "null"
           - format: date-time
             type: string
-        belongsToHousehold:
+        belongsToAccount:
           type: string
         belongsToUser:
           oneOf:
@@ -21723,9 +21723,9 @@ components:
         createdAt:
           format: date-time
           type: string
-        defaultHousehold:
+        defaultAccount:
           type: boolean
-        householdRole:
+        accountRole:
           type: string
         id:
           type: string
@@ -21737,7 +21737,7 @@ components:
       type: object
     InitializeMealPlanGroceryListRequest:
       properties:
-        householdID:
+        accountID:
           type: string
       type: object
     InitializeMealPlanGroceryListResponse:
@@ -21831,7 +21831,7 @@ components:
           - type: "null"
           - format: date-time
             type: string
-        belongsToHousehold:
+        belongsToAccount:
           type: string
         createdAt:
           format: date-time
@@ -23687,7 +23687,7 @@ components:
       type: object
     ResponseDetails:
       properties:
-        currentHouseholdID:
+        currentAccountID:
           type: string
         traceID:
           type: string
@@ -23733,7 +23733,7 @@ components:
           - type: "null"
           - format: date-time
             type: string
-        belongsToHousehold:
+        belongsToAccount:
           type: string
         belongsToUser:
           type: string
@@ -23756,7 +23756,7 @@ components:
       type: object
     ServiceSettingConfigurationCreationRequestInput:
       properties:
-        belongsToHousehold:
+        belongsToAccount:
           type: string
         belongsToUser:
           type: string
@@ -23769,7 +23769,7 @@ components:
       type: object
     ServiceSettingConfigurationUpdateRequestInput:
       properties:
-        belongsToHousehold:
+        belongsToAccount:
           oneOf:
           - type: "null"
           - type: string
@@ -23833,7 +23833,7 @@ components:
       type: object
     TokenResponse:
       properties:
-        householdID:
+        accountID:
           type: string
         token:
           type: string
@@ -24186,7 +24186,7 @@ components:
           type: string
         firstName:
           type: string
-        householdName:
+        accountName:
           type: string
         invitationID:
           type: string
@@ -24206,7 +24206,7 @@ components:
           type: string
         accountStatusExplanation:
           type: string
-        activeHousehold:
+        activeAccount:
           type: string
         isAuthenticated:
           type: boolean
@@ -25502,7 +25502,7 @@ components:
           - type: "null"
           - format: date-time
             type: string
-        belongsToHousehold:
+        belongsToAccount:
           type: string
         contentType:
           type: string
@@ -25574,8 +25574,8 @@ components:
         implicit:
           authorizationUrl: /oauth2/authorize
           scopes:
-            household_admin: household-level administrator capabilities
-            household_member: household-level user capabilities
+            account_admin: account-level administrator capabilities
+            account_member: account-level user capabilities
             service_admin: service-level administrator capabilities
       type: oauth2
 tags:
@@ -25584,10 +25584,10 @@ tags:
 - name: auth
 - name: email address
 - name: grocery list items
-- name: household instrument ownerships
-- name: household invitations
-- name: household members
-- name: households
+- name: account instrument ownerships
+- name: account invitations
+- name: account members
+- name: accounts
 - name: invitations
 - name: meal plan events
 - name: meal plan option votes

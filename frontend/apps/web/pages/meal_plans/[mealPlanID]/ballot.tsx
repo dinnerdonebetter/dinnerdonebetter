@@ -9,8 +9,8 @@ import router from 'next/router';
 import {
   APIResponse,
   EitherErrorOr,
-  Household,
-  HouseholdUserMembershipWithUser,
+  Account,
+  AccountUserMembershipWithUser,
   IAPIError,
   MealPlan,
   MealPlanEvent,
@@ -31,7 +31,7 @@ import { valueOrDefault } from '../../../src/utils';
 declare interface MealPlanBallotPageProps {
   mealPlan: EitherErrorOr<MealPlan>;
   userID: string;
-  household: EitherErrorOr<Household>;
+  account: EitherErrorOr<Account>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -72,7 +72,7 @@ export const getServerSideProps: GetServerSideProps = async (
     const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'MEAL_PLAN_BALLOT_PAGE', context, {
       mealPlanID,
-      householdID: userSessionData.householdID,
+      accountID: userSessionData.accountID,
     });
     analyticsTimer.end();
   } else {
@@ -94,11 +94,11 @@ export const getServerSideProps: GetServerSideProps = async (
       fetchMealPlanTimer.end();
     });
 
-  const fetchHouseholdTimer = timing.addEvent('fetch household');
-  const householdPromise = apiClient
-    .getActiveHousehold()
-    .then((result: APIResponse<Household>) => {
-      span.addEvent(`household retrieved`);
+  const fetchAccountTimer = timing.addEvent('fetch account');
+  const accountPromise = apiClient
+    .getActiveAccount()
+    .then((result: APIResponse<Account>) => {
+      span.addEvent(`account retrieved`);
       return { data: result.data };
     })
     .catch((error: IAPIError) => {
@@ -106,20 +106,20 @@ export const getServerSideProps: GetServerSideProps = async (
       return { error };
     })
     .finally(() => {
-      fetchHouseholdTimer.end();
+      fetchAccountTimer.end();
     });
 
-  const retrievedData = await Promise.all([mealPlanPromise, householdPromise]);
+  const retrievedData = await Promise.all([mealPlanPromise, accountPromise]);
 
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
-  const [mealPlan, household] = retrievedData;
+  const [mealPlan, account] = retrievedData;
 
   span.end();
 
   return {
     props: {
       mealPlan: mealPlan,
-      household: household!,
+      account: account!,
       userID: userSessionData?.userID || '',
     },
   };
@@ -212,13 +212,13 @@ const useMealPlanReducer: Reducer<MealPlanBallotPageState, mealPlanBallotPageAct
 
 const getMissingVotersForMealPlanEvent = (
   mealPlanEvent: MealPlanEvent,
-  household: Household,
+  account: Account,
   userID: string,
 ): Array<string> => {
   const missingVotes: Set<string> = new Set<string>();
 
   mealPlanEvent.options.forEach((option: MealPlanOption) => {
-    household.members.forEach((member: HouseholdUserMembershipWithUser) => {
+    account.members.forEach((member: AccountUserMembershipWithUser) => {
       if (
         (option.votes || []).find((vote: MealPlanOptionVote) => vote.byUser === member.belongsToUser!.id) === undefined
       ) {
@@ -245,7 +245,7 @@ function MealPlanBallotPage(props: MealPlanBallotPageProps) {
   const apiClient = buildLocalClient();
 
   const userID = props.userID || '';
-  const household = valueOrDefault(props.household, new Household());
+  const account = valueOrDefault(props.account, new Account());
 
   const mealPlan = valueOrDefault(props.mealPlan, new MealPlan());
   const [mealPlanError] = useState<IAPIError | undefined>(props.mealPlan.error);
@@ -397,11 +397,11 @@ function MealPlanBallotPage(props: MealPlanBallotPageProps) {
                     );
                   })}
 
-                  {getMissingVotersForMealPlanEvent(event, household, userID).length > 0 && (
+                  {getMissingVotersForMealPlanEvent(event, account, userID).length > 0 && (
                     <Grid justify="center" align="center">
                       <Grid.Col span="auto">
                         <sub>{`(awaiting votes from ${new Intl.ListFormat('en').format(
-                          getMissingVotersForMealPlanEvent(event, household, userID),
+                          getMissingVotersForMealPlanEvent(event, account, userID),
                         )})`}</sub>
                       </Grid.Col>
                     </Grid>

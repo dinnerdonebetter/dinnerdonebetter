@@ -27,8 +27,8 @@ import { IconCheck, IconCircleX, IconThumbUp, IconTrash } from '@tabler/icons';
 import {
   APIResponse,
   EitherErrorOr,
-  Household,
-  HouseholdUserMembershipWithUser,
+  Account,
+  AccountUserMembershipWithUser,
   IAPIError,
   MealComponent,
   MealPlan,
@@ -59,7 +59,7 @@ import { valueOrDefault } from '../../../src/utils';
 declare interface MealPlanPageProps {
   mealPlan: EitherErrorOr<MealPlan>;
   userID: string;
-  household: EitherErrorOr<Household>;
+  account: EitherErrorOr<Account>;
   groceryList: EitherErrorOr<MealPlanGroceryListItem[]>;
   tasks: EitherErrorOr<MealPlanTask[]>;
 }
@@ -102,7 +102,7 @@ export const getServerSideProps: GetServerSideProps = async (
     const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'MEAL_PLAN_PAGE', context, {
       mealPlanID,
-      householdID: userSessionData.householdID,
+      accountID: userSessionData.accountID,
     });
     analyticsTimer.end();
   } else {
@@ -124,11 +124,11 @@ export const getServerSideProps: GetServerSideProps = async (
       fetchMealPlanTimer.end();
     });
 
-  const fetchHouseholdTimer = timing.addEvent('fetch household');
-  const householdPromise = apiClient
-    .getActiveHousehold()
-    .then((result: APIResponse<Household>) => {
-      span.addEvent(`household retrieved`);
+  const fetchAccountTimer = timing.addEvent('fetch account');
+  const accountPromise = apiClient
+    .getActiveAccount()
+    .then((result: APIResponse<Account>) => {
+      span.addEvent(`account retrieved`);
       return { data: result.data };
     })
     .catch((error: IAPIError) => {
@@ -136,7 +136,7 @@ export const getServerSideProps: GetServerSideProps = async (
       return { error };
     })
     .finally(() => {
-      fetchHouseholdTimer.end();
+      fetchAccountTimer.end();
     });
 
   const fetchMealPlanTasksTimer = timing.addEvent('fetch meal plan tasks');
@@ -169,18 +169,18 @@ export const getServerSideProps: GetServerSideProps = async (
       fetchMealPlanGroceryListItemsTimer.end();
     });
 
-  const retrievedData = await Promise.all([mealPlanPromise, householdPromise, groceryListPromise, tasksPromise]);
+  const retrievedData = await Promise.all([mealPlanPromise, accountPromise, groceryListPromise, tasksPromise]);
 
   context.res.setHeader(ServerTimingHeaderName, timing.headerValue());
 
-  const [mealPlan, household, groceryList, tasks] = retrievedData;
+  const [mealPlan, account, groceryList, tasks] = retrievedData;
 
   span.end();
 
   return {
     props: {
       mealPlan: mealPlan!,
-      household: household!,
+      account: account!,
       userID: userSessionData?.userID || '',
       tasks: tasks,
       groceryList: groceryList || [],
@@ -297,13 +297,13 @@ const useMealPlanReducer: Reducer<MealPlanPageState, mealPlanPageAction> = (
 
 const getMissingVotersForMealPlanEvent = (
   mealPlanEvent: MealPlanEvent,
-  household: Household,
+  account: Account,
   userID: string,
 ): Array<string> => {
   const missingVotes: Set<string> = new Set<string>();
 
   mealPlanEvent.options.forEach((option: MealPlanOption) => {
-    household.members.forEach((member: HouseholdUserMembershipWithUser) => {
+    account.members.forEach((member: AccountUserMembershipWithUser) => {
       if (
         (option.votes || []).find((vote: MealPlanOptionVote) => vote.byUser === member.belongsToUser?.id) === undefined
       ) {
@@ -362,11 +362,11 @@ const findRecipeInMealPlan = (mealPlan: MealPlan, recipeID: string): Recipe | un
   return recipeToReturn;
 };
 
-const getUserFromHouseholdByID = (
-  household: Household,
+const getUserFromAccountByID = (
+  account: Account,
   userID: string,
-): HouseholdUserMembershipWithUser | undefined => {
-  return household.members.find((member: HouseholdUserMembershipWithUser) => member.belongsToUser?.id === userID);
+): AccountUserMembershipWithUser | undefined => {
+  return account.members.find((member: AccountUserMembershipWithUser) => member.belongsToUser?.id === userID);
 };
 
 function MealPlanPage(props: MealPlanPageProps) {
@@ -374,15 +374,15 @@ function MealPlanPage(props: MealPlanPageProps) {
 
   const pageLoadMealPlan = props.mealPlan;
   const userID = props.userID;
-  const pageLoadHousehold = props.household;
+  const pageLoadAccount = props.account;
   const pageLoadGroceryList = props.groceryList;
   const pageLoadTasks = props.tasks;
 
   const mealPlan = valueOrDefault(pageLoadMealPlan, new MealPlan());
   const [mealPlanError] = useState<IAPIError | undefined>(pageLoadMealPlan.error);
 
-  const household = valueOrDefault(pageLoadHousehold, new MealPlan());
-  const [householdError] = useState<IAPIError | undefined>(pageLoadHousehold.error);
+  const account = valueOrDefault(pageLoadAccount, new MealPlan());
+  const [accountError] = useState<IAPIError | undefined>(pageLoadAccount.error);
 
   const groceryList = valueOrDefault(pageLoadGroceryList, new MealPlan());
   const [groceryListError] = useState<IAPIError | undefined>(pageLoadGroceryList.error);
@@ -450,11 +450,11 @@ function MealPlanPage(props: MealPlanPageProps) {
                                   </Link>
                                 </Grid.Col>
                                 <Grid.Col span="auto">
-                                  {!householdError && (
+                                  {!accountError && (
                                     <Box sx={{ float: 'right' }}>
                                       {(option.votes || []).map((vote: MealPlanOptionVote) => {
-                                        const userWhoVoted = getUserFromHouseholdByID(
-                                          household,
+                                        const userWhoVoted = getUserFromAccountByID(
+                                          account,
                                           vote.byUser,
                                         )?.belongsToUser;
                                         return (
@@ -498,13 +498,13 @@ function MealPlanPage(props: MealPlanPageProps) {
                     );
                   })}
 
-                {householdError && <Text color="tomato">{householdError.message}</Text>}
+                {accountError && <Text color="tomato">{accountError.message}</Text>}
 
-                {!householdError && getMissingVotersForMealPlanEvent(event, household, userID).length > 0 && (
+                {!accountError && getMissingVotersForMealPlanEvent(event, account, userID).length > 0 && (
                   <Grid justify="center" align="center">
                     <Grid.Col span="auto">
                       <small>{`(awaiting votes from ${new Intl.ListFormat('en').format(
-                        getMissingVotersForMealPlanEvent(event, household, userID),
+                        getMissingVotersForMealPlanEvent(event, account, userID),
                       )})`}</small>
                     </Grid.Col>
                   </Grid>
