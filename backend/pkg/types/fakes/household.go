@@ -9,24 +9,24 @@ import (
 	fake "github.com/brianvoe/gofakeit/v7"
 )
 
-// BuildFakeHousehold builds a faked household.
-func BuildFakeHousehold() *types.Household {
-	householdID := BuildFakeID()
+// BuildFakeAccount builds a faked account.
+func BuildFakeAccount() *types.Account {
+	accountID := BuildFakeID()
 
-	var memberships []*types.HouseholdUserMembershipWithUser
+	var memberships []*types.AccountUserMembershipWithUser
 	for i := 0; i < exampleQuantity; i++ {
-		membership := BuildFakeHouseholdUserMembershipWithUser()
-		membership.BelongsToHousehold = householdID
+		membership := BuildFakeAccountUserMembershipWithUser()
+		membership.BelongsToAccount = accountID
 		memberships = append(memberships, membership)
 	}
 
 	fakeAddress := fake.Address()
 	key := fake.BitcoinPrivateKey()
 
-	return &types.Household{
-		ID:                         householdID,
+	return &types.Account{
+		ID:                         accountID,
 		Name:                       fake.UUID(),
-		BillingStatus:              types.UnpaidHouseholdBillingStatus,
+		BillingStatus:              types.UnpaidAccountBillingStatus,
 		ContactPhone:               fake.PhoneFormatted(),
 		PaymentProcessorCustomerID: fake.UUID(),
 		CreatedAt:                  BuildFakeTime(),
@@ -44,14 +44,14 @@ func BuildFakeHousehold() *types.Household {
 	}
 }
 
-// BuildFakeHouseholdsList builds a faked HouseholdList.
-func BuildFakeHouseholdsList() *filtering.QueryFilteredResult[types.Household] {
-	var examples []*types.Household
+// BuildFakeAccountsList builds a faked AccountList.
+func BuildFakeAccountsList() *filtering.QueryFilteredResult[types.Account] {
+	var examples []*types.Account
 	for i := 0; i < exampleQuantity; i++ {
-		examples = append(examples, BuildFakeHousehold())
+		examples = append(examples, BuildFakeAccount())
 	}
 
-	return &filtering.QueryFilteredResult[types.Household]{
+	return &filtering.QueryFilteredResult[types.Account]{
 		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
@@ -62,22 +62,22 @@ func BuildFakeHouseholdsList() *filtering.QueryFilteredResult[types.Household] {
 	}
 }
 
-func BuildFakeHouseholdOwnershipTransferInput() *types.HouseholdOwnershipTransferInput {
-	return &types.HouseholdOwnershipTransferInput{
+func BuildFakeAccountOwnershipTransferInput() *types.AccountOwnershipTransferInput {
+	return &types.AccountOwnershipTransferInput{
 		Reason:       fake.Sentence(5),
 		CurrentOwner: BuildFakeID(),
 		NewOwner:     BuildFakeID(),
 	}
 }
 
-// BuildFakeHouseholdUpdateRequestInput builds a faked HouseholdUpdateRequestInput from a household.
-func BuildFakeHouseholdUpdateRequestInput() *types.HouseholdUpdateRequestInput {
-	household := BuildFakeHousehold()
-	return converters.ConvertHouseholdToHouseholdUpdateRequestInput(household)
+// BuildFakeAccountUpdateRequestInput builds a faked AccountUpdateRequestInput from a account.
+func BuildFakeAccountUpdateRequestInput() *types.AccountUpdateRequestInput {
+	account := BuildFakeAccount()
+	return converters.ConvertAccountToAccountUpdateRequestInput(account)
 }
 
-// BuildFakeHouseholdCreationRequestInput builds a faked HouseholdCreationRequestInput.
-func BuildFakeHouseholdCreationRequestInput() *types.HouseholdCreationRequestInput {
-	household := BuildFakeHousehold()
-	return converters.ConvertHouseholdToHouseholdCreationRequestInput(household)
+// BuildFakeAccountCreationRequestInput builds a faked AccountCreationRequestInput.
+func BuildFakeAccountCreationRequestInput() *types.AccountCreationRequestInput {
+	account := BuildFakeAccount()
+	return converters.ConvertAccountToAccountCreationRequestInput(account)
 }

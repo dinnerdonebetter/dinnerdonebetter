@@ -490,7 +490,7 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 }
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
-func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID string) (changed bool, err error) {
+func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, accountID string) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -514,13 +514,13 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	if householdID == "" {
+	if accountID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, householdID)
+	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, accountID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "fetching meal plan")
 	}
@@ -541,14 +541,14 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 		}
 	}
 
-	// fetch household data
-	household, err := q.GetHousehold(ctx, mealPlan.BelongsToHousehold)
+	// fetch account data
+	account, err := q.GetAccount(ctx, mealPlan.BelongsToAccount)
 	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "fetching household")
+		return false, observability.PrepareAndLogError(err, logger, span, "fetching account")
 	}
 
 	// go through all the votes for this meal plan option and determine if they're all there
-	for _, member := range household.Members {
+	for _, member := range account.Members {
 		memberVoteFound := false
 		for _, vote := range mealPlanOption.Votes {
 			if vote.ByUser == member.BelongsToUser.ID {

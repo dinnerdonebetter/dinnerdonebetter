@@ -3,7 +3,7 @@
 package apiclient
 
 type (
-	HouseholdInstrumentOwnershipUpdateRequestInput struct {
+	AccountInstrumentOwnershipUpdateRequestInput struct {
 		Notes             string `json:"notes"`
 		ValidInstrumentID string `json:"validInstrumentID"`
 		Quantity          uint64 `json:"quantity"`

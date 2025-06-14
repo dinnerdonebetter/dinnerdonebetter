@@ -11,31 +11,31 @@ import (
 )
 
 const (
-	// HouseholdInvitationCreatedServiceEventType indicates a household invitation was created.
-	HouseholdInvitationCreatedServiceEventType = "household_invitation_created"
-	// HouseholdInvitationCanceledServiceEventType indicates a household invitation was created.
-	HouseholdInvitationCanceledServiceEventType = "household_invitation_canceled"
-	// HouseholdInvitationAcceptedServiceEventType indicates a household invitation was created.
-	HouseholdInvitationAcceptedServiceEventType = "household_invitation_accepted"
-	// HouseholdInvitationRejectedServiceEventType indicates a household invitation was created.
-	HouseholdInvitationRejectedServiceEventType = "household_invitation_rejected"
+	// AccountInvitationCreatedServiceEventType indicates a account invitation was created.
+	AccountInvitationCreatedServiceEventType = "account_invitation_created"
+	// AccountInvitationCanceledServiceEventType indicates a account invitation was created.
+	AccountInvitationCanceledServiceEventType = "account_invitation_canceled"
+	// AccountInvitationAcceptedServiceEventType indicates a account invitation was created.
+	AccountInvitationAcceptedServiceEventType = "account_invitation_accepted"
+	// AccountInvitationRejectedServiceEventType indicates a account invitation was created.
+	AccountInvitationRejectedServiceEventType = "account_invitation_rejected"
 
-	// PendingHouseholdInvitationStatus indicates a household invitation is pending.
-	PendingHouseholdInvitationStatus HouseholdInvitationStatus = "pending"
-	// CancelledHouseholdInvitationStatus indicates a household invitation was accepted.
-	CancelledHouseholdInvitationStatus HouseholdInvitationStatus = "cancelled"
-	// AcceptedHouseholdInvitationStatus indicates a household invitation was accepted.
-	AcceptedHouseholdInvitationStatus HouseholdInvitationStatus = "accepted"
-	// RejectedHouseholdInvitationStatus indicates a household invitation was rejected.
-	RejectedHouseholdInvitationStatus HouseholdInvitationStatus = "rejected"
+	// PendingAccountInvitationStatus indicates a account invitation is pending.
+	PendingAccountInvitationStatus AccountInvitationStatus = "pending"
+	// CancelledAccountInvitationStatus indicates a account invitation was accepted.
+	CancelledAccountInvitationStatus AccountInvitationStatus = "cancelled"
+	// AcceptedAccountInvitationStatus indicates a account invitation was accepted.
+	AcceptedAccountInvitationStatus AccountInvitationStatus = "accepted"
+	// RejectedAccountInvitationStatus indicates a account invitation was rejected.
+	RejectedAccountInvitationStatus AccountInvitationStatus = "rejected"
 )
 
 type (
-	// HouseholdInvitationStatus is the type to use/compare against when checking invitation status.
-	HouseholdInvitationStatus string
+	// AccountInvitationStatus is the type to use/compare against when checking invitation status.
+	AccountInvitationStatus string
 
-	// HouseholdInvitationCreationRequestInput represents what a User could set as input for creating household invitations.
-	HouseholdInvitationCreationRequestInput struct {
+	// AccountInvitationCreationRequestInput represents what a User could set as input for creating account invitations.
+	AccountInvitationCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
 		ExpiresAt *time.Time `json:"expiresAt"`
@@ -44,64 +44,64 @@ type (
 		ToName    string     `json:"toName"`
 	}
 
-	// HouseholdInvitationDatabaseCreationInput represents what a User could set as input for creating household invitations.
-	HouseholdInvitationDatabaseCreationInput struct {
+	// AccountInvitationDatabaseCreationInput represents what a User could set as input for creating account invitations.
+	AccountInvitationDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                     string    `json:"-"`
-		FromUser               string    `json:"-"`
-		ToUser                 *string   `json:"-"`
-		Note                   string    `json:"-"`
-		ToEmail                string    `json:"-"`
-		Token                  string    `json:"-"`
-		ToName                 string    `json:"-"`
-		ExpiresAt              time.Time `json:"-"`
-		DestinationHouseholdID string    `json:"-"`
+		ID                   string    `json:"-"`
+		FromUser             string    `json:"-"`
+		ToUser               *string   `json:"-"`
+		Note                 string    `json:"-"`
+		ToEmail              string    `json:"-"`
+		Token                string    `json:"-"`
+		ToName               string    `json:"-"`
+		ExpiresAt            time.Time `json:"-"`
+		DestinationAccountID string    `json:"-"`
 	}
 
-	// HouseholdInvitation represents a household invitation.
-	HouseholdInvitation struct {
+	// AccountInvitation represents a account invitation.
+	AccountInvitation struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt            time.Time  `json:"createdAt"`
-		LastUpdatedAt        *time.Time `json:"lastUpdatedAt"`
-		ArchivedAt           *time.Time `json:"archivedAt"`
-		ToUser               *string    `json:"toUser"`
-		Status               string     `json:"status"`
-		ToEmail              string     `json:"toEmail"`
-		StatusNote           string     `json:"statusNote"`
-		Token                string     `json:"token"`
-		ID                   string     `json:"id"`
-		Note                 string     `json:"note"`
-		ToName               string     `json:"toName"`
-		ExpiresAt            time.Time  `json:"expiresAt"`
-		DestinationHousehold Household  `json:"destinationHousehold"`
-		FromUser             User       `json:"fromUser"`
+		CreatedAt          time.Time  `json:"createdAt"`
+		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt         *time.Time `json:"archivedAt"`
+		ToUser             *string    `json:"toUser"`
+		Status             string     `json:"status"`
+		ToEmail            string     `json:"toEmail"`
+		StatusNote         string     `json:"statusNote"`
+		Token              string     `json:"token"`
+		ID                 string     `json:"id"`
+		Note               string     `json:"note"`
+		ToName             string     `json:"toName"`
+		ExpiresAt          time.Time  `json:"expiresAt"`
+		DestinationAccount Account    `json:"destinationAccount"`
+		FromUser           User       `json:"fromUser"`
 	}
 
-	// HouseholdInvitationUpdateRequestInput is used by users to update the status of a given household invitation.
-	HouseholdInvitationUpdateRequestInput struct {
+	// AccountInvitationUpdateRequestInput is used by users to update the status of a given account invitation.
+	AccountInvitationUpdateRequestInput struct {
 		Token string `json:"token"`
 		Note  string `json:"note"`
 	}
 
-	// HouseholdInvitationDataManager describes a structure capable of storing household invitations permanently.
-	HouseholdInvitationDataManager interface {
-		HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error)
-		GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*HouseholdInvitation, error)
-		GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*HouseholdInvitation, error)
-		GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*HouseholdInvitation, error)
-		GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[HouseholdInvitation], error)
-		GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[HouseholdInvitation], error)
-		CreateHouseholdInvitation(ctx context.Context, input *HouseholdInvitationDatabaseCreationInput) (*HouseholdInvitation, error)
-		CancelHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error
-		AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error
-		RejectHouseholdInvitation(ctx context.Context, householdInvitationID, note string) error
+	// AccountInvitationDataManager describes a structure capable of storing account invitations permanently.
+	AccountInvitationDataManager interface {
+		AccountInvitationExists(ctx context.Context, accountInvitationID string) (bool, error)
+		GetAccountInvitationByAccountAndID(ctx context.Context, accountID, accountInvitationID string) (*AccountInvitation, error)
+		GetAccountInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*AccountInvitation, error)
+		GetAccountInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*AccountInvitation, error)
+		GetPendingAccountInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AccountInvitation], error)
+		GetPendingAccountInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AccountInvitation], error)
+		CreateAccountInvitation(ctx context.Context, input *AccountInvitationDatabaseCreationInput) (*AccountInvitation, error)
+		CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error
+		AcceptAccountInvitation(ctx context.Context, accountInvitationID, token, note string) error
+		RejectAccountInvitation(ctx context.Context, accountInvitationID, note string) error
 	}
 
-	// HouseholdInvitationDataService describes a structure capable of serving traffic related to household invitations.
-	HouseholdInvitationDataService interface {
-		ReadHouseholdInviteHandler(http.ResponseWriter, *http.Request)
+	// AccountInvitationDataService describes a structure capable of serving traffic related to account invitations.
+	AccountInvitationDataService interface {
+		ReadAccountInviteHandler(http.ResponseWriter, *http.Request)
 		InboundInvitesHandler(http.ResponseWriter, *http.Request)
 		OutboundInvitesHandler(http.ResponseWriter, *http.Request)
 		InviteMemberHandler(http.ResponseWriter, *http.Request)
@@ -111,19 +111,19 @@ type (
 	}
 )
 
-var _ validation.ValidatableWithContext = (*HouseholdInvitationCreationRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*AccountInvitationCreationRequestInput)(nil)
 
-// ValidateWithContext validates a HouseholdCreationRequestInput.
-func (x *HouseholdInvitationCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a AccountCreationRequestInput.
+func (x *AccountInvitationCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.ToEmail, validation.Required),
 	)
 }
 
-var _ validation.ValidatableWithContext = (*HouseholdInvitationUpdateRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*AccountInvitationUpdateRequestInput)(nil)
 
-// ValidateWithContext validates a HouseholdInvitationUpdateRequestInput.
-func (x *HouseholdInvitationUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a AccountInvitationUpdateRequestInput.
+func (x *AccountInvitationUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

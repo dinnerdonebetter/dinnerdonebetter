@@ -14,8 +14,8 @@ type (
 	ResponseDetails struct {
 		_ struct{} `json:"-"`
 
-		CurrentHouseholdID string `json:"currentHouseholdID"`
-		TraceID            string `json:"traceID"`
+		CurrentAccountID string `json:"currentAccountID"`
+		TraceID          string `json:"traceID"`
 	}
 
 	// APIResponse represents a response we might send to the user.

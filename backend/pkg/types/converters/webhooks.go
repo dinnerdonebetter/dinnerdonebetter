@@ -29,13 +29,13 @@ func ConvertWebhookToWebhookDatabaseCreationInput(webhook *types.Webhook) *types
 	}
 
 	return &types.WebhookDatabaseCreationInput{
-		ID:                 webhook.ID,
-		Name:               webhook.Name,
-		ContentType:        webhook.ContentType,
-		URL:                webhook.URL,
-		Method:             webhook.Method,
-		Events:             events,
-		BelongsToHousehold: webhook.BelongsToHousehold,
+		ID:               webhook.ID,
+		Name:             webhook.Name,
+		ContentType:      webhook.ContentType,
+		URL:              webhook.URL,
+		Method:           webhook.Method,
+		Events:           events,
+		BelongsToAccount: webhook.BelongsToAccount,
 	}
 }
 

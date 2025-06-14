@@ -61,16 +61,16 @@ func TestQuerier_Integration_MealPlanOptionVotes(t *testing.T) {
 	}(t)
 
 	user := createUserForTest(t, ctx, nil, dbc)
-	householdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, householdID)
+	require.NotEmpty(t, accountID)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
 	meal := createMealForTest(t, ctx, nil, dbc)
 
 	exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
-	exampleMealPlan.BelongsToHousehold = householdID
+	exampleMealPlan.BelongsToAccount = accountID
 	mealPlan := createMealPlanForTest(t, ctx, exampleMealPlan, dbc)
 	mealPlanEvent := mealPlan.Events[0]
 	mealPlanOption := mealPlanEvent.Options[0]

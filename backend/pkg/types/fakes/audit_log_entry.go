@@ -8,14 +8,14 @@ import (
 // BuildFakeAuditLogEntry builds a faked valid instrument.
 func BuildFakeAuditLogEntry() *types.AuditLogEntry {
 	return &types.AuditLogEntry{
-		ID:                 BuildFakeID(),
-		CreatedAt:          BuildFakeTime(),
-		Changes:            nil,
-		BelongsToHousehold: nil,
-		ResourceType:       "example",
-		RelevantID:         BuildFakeID(),
-		EventType:          types.AuditLogEventTypeOther,
-		BelongsToUser:      BuildFakeID(),
+		ID:               BuildFakeID(),
+		CreatedAt:        BuildFakeTime(),
+		Changes:          nil,
+		BelongsToAccount: nil,
+		ResourceType:     "example",
+		RelevantID:       BuildFakeID(),
+		EventType:        types.AuditLogEventTypeOther,
+		BelongsToUser:    BuildFakeID(),
 	}
 }
 

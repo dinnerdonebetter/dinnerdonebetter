@@ -59,9 +59,9 @@ type (
 
 		types.MealPlanTaskDataManager
 		types.AdminUserDataManager
-		types.HouseholdDataManager
-		types.HouseholdInvitationDataManager
-		types.HouseholdUserMembershipDataManager
+		types.AccountDataManager
+		types.AccountInvitationDataManager
+		types.AccountUserMembershipDataManager
 		types.UserDataManager
 		types.PasswordResetTokenDataManager
 		types.WebhookDataManager
@@ -95,7 +95,7 @@ type (
 		types.ValidIngredientGroupDataManager
 		types.UserIngredientPreferenceDataManager
 		types.RecipeRatingDataManager
-		types.HouseholdInstrumentOwnershipDataManager
+		types.AccountInstrumentOwnershipDataManager
 		types.OAuth2ClientDataManager
 		types.OAuth2ClientTokenDataManager
 		types.ValidVesselDataManager

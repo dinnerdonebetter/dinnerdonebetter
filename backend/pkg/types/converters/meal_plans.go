@@ -8,9 +8,9 @@ import (
 // ConvertMealPlanToMealPlanUpdateRequestInput creates a MealPlanUpdateRequestInput from a MealPlan.
 func ConvertMealPlanToMealPlanUpdateRequestInput(input *types.MealPlan) *types.MealPlanUpdateRequestInput {
 	x := &types.MealPlanUpdateRequestInput{
-		BelongsToHousehold: &input.BelongsToHousehold,
-		Notes:              &input.Notes,
-		VotingDeadline:     &input.VotingDeadline,
+		BelongsToAccount: &input.BelongsToAccount,
+		Notes:            &input.Notes,
+		VotingDeadline:   &input.VotingDeadline,
 	}
 
 	return x
@@ -58,12 +58,12 @@ func ConvertMealPlanToMealPlanDatabaseCreationInput(mealPlan *types.MealPlan) *t
 	}
 
 	return &types.MealPlanDatabaseCreationInput{
-		ID:                 mealPlan.ID,
-		Notes:              mealPlan.Notes,
-		VotingDeadline:     mealPlan.VotingDeadline,
-		Events:             events,
-		ElectionMethod:     mealPlan.ElectionMethod,
-		BelongsToHousehold: mealPlan.BelongsToHousehold,
-		CreatedByUser:      mealPlan.CreatedByUser,
+		ID:               mealPlan.ID,
+		Notes:            mealPlan.Notes,
+		VotingDeadline:   mealPlan.VotingDeadline,
+		Events:           events,
+		ElectionMethod:   mealPlan.ElectionMethod,
+		BelongsToAccount: mealPlan.BelongsToAccount,
+		CreatedByUser:    mealPlan.CreatedByUser,
 	}
 }

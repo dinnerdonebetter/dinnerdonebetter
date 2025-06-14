@@ -12,40 +12,40 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestClient_UpdateHousehold(T *testing.T) {
+func TestClient_UpdateAccount(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%s"
+	const expectedPathFormat = "/api/v1/accounts/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		data := &Household{}
-		expected := &APIResponse[*Household]{
+		data := &Account{}
+		expected := &APIResponse[*Account]{
 			Data: data,
 		}
 
-		exampleInput := &HouseholdUpdateRequestInput{}
+		exampleInput := &AccountUpdateRequestInput{}
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, householdID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, accountID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		err := c.UpdateHousehold(ctx, householdID, exampleInput)
+		err := c.UpdateAccount(ctx, accountID, exampleInput)
 
 		assert.NoError(t, err)
 
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleInput := &HouseholdUpdateRequestInput{}
+		exampleInput := &AccountUpdateRequestInput{}
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		err := c.UpdateHousehold(ctx, "", exampleInput)
+		err := c.UpdateAccount(ctx, "", exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -54,12 +54,12 @@ func TestClient_UpdateHousehold(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdUpdateRequestInput{}
+		exampleInput := &AccountUpdateRequestInput{}
 
 		c := buildTestClientWithInvalidURL(t)
-		err := c.UpdateHousehold(ctx, householdID, exampleInput)
+		err := c.UpdateAccount(ctx, accountID, exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -68,13 +68,13 @@ func TestClient_UpdateHousehold(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdUpdateRequestInput{}
+		exampleInput := &AccountUpdateRequestInput{}
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, householdID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, accountID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		err := c.UpdateHousehold(ctx, householdID, exampleInput)
+		err := c.UpdateAccount(ctx, accountID, exampleInput)
 
 		assert.Error(t, err)
 	})

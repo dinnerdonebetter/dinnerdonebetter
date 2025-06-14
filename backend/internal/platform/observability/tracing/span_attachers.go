@@ -68,14 +68,14 @@ func AttachToSpan[T any](span trace.Span, attachmentKey string, x T) {
 type sessionContextData interface {
 	GetUserID() string
 	GetServicePermissions() authorization.ServiceRolePermissionChecker
-	GetActiveHouseholdID() string
+	GetActiveAccountID() string
 }
 
 // AttachSessionContextDataToSpan provides a consistent way to attach a SessionContextData object to a span.
 func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData sessionContextData) {
 	if sessionCtxData != nil {
 		AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.GetUserID())
-		AttachToSpan(span, keys.ActiveHouseholdIDKey, sessionCtxData.GetActiveHouseholdID())
+		AttachToSpan(span, keys.ActiveAccountIDKey, sessionCtxData.GetActiveAccountID())
 		if servicePerms := sessionCtxData.GetServicePermissions(); servicePerms != nil {
 			AttachToSpan(span, keys.UserIsServiceAdminKey, servicePerms.IsServiceAdmin())
 		}

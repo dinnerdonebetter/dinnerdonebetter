@@ -9,14 +9,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTransferHouseholdOwnershipInput_ValidateWithContext(T *testing.T) {
+func TestTransferAccountOwnershipInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdOwnershipTransferInput{
+		x := &AccountOwnershipTransferInput{
 			CurrentOwner: "123",
 			NewOwner:     "321",
 			Reason:       t.Name(),
@@ -34,7 +34,7 @@ func TestModifyUserPermissionsInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &ModifyUserPermissionsInput{
-			NewRole: authorization.HouseholdMemberRole.String(),
+			NewRole: authorization.AccountMemberRole.String(),
 			Reason:  t.Name(),
 		}
 

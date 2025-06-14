@@ -4,7 +4,7 @@ package apiclient
 
 type (
 	ResponseDetails struct {
-		CurrentHouseholdID string `json:"currentHouseholdID"`
-		TraceID            string `json:"traceID"`
+		CurrentAccountID string `json:"currentAccountID"`
+		TraceID          string `json:"traceID"`
 	}
 )

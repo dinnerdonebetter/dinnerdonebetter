@@ -13,10 +13,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_GetAuditLogEntriesForHousehold(T *testing.T) {
+func TestClient_GetAuditLogEntriesForAccount(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/audit_log_entries/for_household"
+	const expectedPathFormat = "/api/v1/audit_log_entries/for_account"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -35,7 +35,7 @@ func TestClient_GetAuditLogEntriesForHousehold(T *testing.T) {
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleResponse)
-		actual, err := c.GetAuditLogEntriesForHousehold(ctx, nil)
+		actual, err := c.GetAuditLogEntriesForAccount(ctx, nil)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -48,7 +48,7 @@ func TestClient_GetAuditLogEntriesForHousehold(T *testing.T) {
 		ctx := context.Background()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetAuditLogEntriesForHousehold(ctx, nil)
+		actual, err := c.GetAuditLogEntriesForAccount(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -61,7 +61,7 @@ func TestClient_GetAuditLogEntriesForHousehold(T *testing.T) {
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetAuditLogEntriesForHousehold(ctx, nil)
+		actual, err := c.GetAuditLogEntriesForAccount(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

@@ -22,9 +22,9 @@ func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurat
 	return returnValues.Get(0).(*types.ServiceSettingConfiguration), returnValues.Error(1)
 }
 
-// GetServiceSettingConfigurationForHouseholdByName is a mock function.
-func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationForHouseholdByName(ctx context.Context, householdID, serviceSettingConfigurationID string) (*types.ServiceSettingConfiguration, error) {
-	returnValues := m.Called(ctx, householdID, serviceSettingConfigurationID)
+// GetServiceSettingConfigurationForAccountByName is a mock function.
+func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationForAccountByName(ctx context.Context, accountID, serviceSettingConfigurationID string) (*types.ServiceSettingConfiguration, error) {
+	returnValues := m.Called(ctx, accountID, serviceSettingConfigurationID)
 	return returnValues.Get(0).(*types.ServiceSettingConfiguration), returnValues.Error(1)
 }
 
@@ -34,9 +34,9 @@ func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurat
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ServiceSettingConfiguration]), returnValues.Error(1)
 }
 
-// GetServiceSettingConfigurationsForHousehold is a mock function.
-func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
-	returnValues := m.Called(ctx, householdID, filter)
+// GetServiceSettingConfigurationsForAccount is a mock function.
+func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+	returnValues := m.Called(ctx, accountID, filter)
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.ServiceSettingConfiguration]), returnValues.Error(1)
 }
 

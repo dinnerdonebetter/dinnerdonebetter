@@ -19,13 +19,13 @@ func createServiceSettingConfigurationForTest(t *testing.T, ctx context.Context,
 	// create
 	if exampleServiceSettingConfiguration == nil {
 		user := createUserForTest(t, ctx, nil, dbc)
-		householdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, user.ID)
+		accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
 		require.NoError(t, err)
 		serviceSetting := createServiceSettingForTest(t, ctx, nil, dbc)
 		exampleServiceSettingConfiguration = fakes.BuildFakeServiceSettingConfiguration()
 		exampleServiceSettingConfiguration.ServiceSetting = *serviceSetting
 		exampleServiceSettingConfiguration.BelongsToUser = user.ID
-		exampleServiceSettingConfiguration.BelongsToHousehold = householdID
+		exampleServiceSettingConfiguration.BelongsToAccount = accountID
 	}
 	dbInput := converters.ConvertServiceSettingConfigurationToServiceSettingConfigurationDatabaseCreationInput(exampleServiceSettingConfiguration)
 
@@ -64,13 +64,13 @@ func TestQuerier_Integration_ServiceSettingConfigurations(t *testing.T) {
 	}(t)
 
 	user := createUserForTest(t, ctx, nil, dbc)
-	householdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
 	require.NoError(t, err)
 	serviceSetting := createServiceSettingForTest(t, ctx, nil, dbc)
 	exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
 	exampleServiceSettingConfiguration.ServiceSetting = *serviceSetting
 	exampleServiceSettingConfiguration.BelongsToUser = user.ID
-	exampleServiceSettingConfiguration.BelongsToHousehold = householdID
+	exampleServiceSettingConfiguration.BelongsToAccount = accountID
 	createdServiceSettingConfigurations := []*types.ServiceSettingConfiguration{}
 
 	// create
@@ -145,17 +145,17 @@ func TestQuerier_GetServiceSettingConfigurationForUserByName(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetServiceSettingConfigurationForHouseholdByName(T *testing.T) {
+func TestQuerier_GetServiceSettingConfigurationForAccountByName(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid service setting name", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetServiceSettingConfigurationForHouseholdByName(ctx, exampleHouseholdID, "")
+		actual, err := c.GetServiceSettingConfigurationForAccountByName(ctx, exampleAccountID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

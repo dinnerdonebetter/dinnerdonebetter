@@ -18,36 +18,36 @@ import (
 )
 
 type mealsServiceHTTPRoutesTestHelper struct {
-	ctx                                              context.Context
-	exampleMealPlanEventUpdateInput                  *types.MealPlanEventUpdateRequestInput
-	exampleHousehold                                 *types.Household
-	exampleMealPlanTask                              *types.MealPlanTask
-	exampleUser                                      *types.User
-	exampleMealPlanGroceryListItem                   *types.MealPlanGroceryListItem
-	exampleMeal                                      *types.Meal
-	exampleCreationInput                             *types.MealCreationRequestInput
-	exampleUpdateInput                               *types.MealUpdateRequestInput
-	exampleMealPlan                                  *types.MealPlan
-	exampleMealPlanCreationInput                     *types.MealPlanCreationRequestInput
-	exampleMealPlanUpdateInput                       *types.MealPlanUpdateRequestInput
-	exampleMealPlanOption                            *types.MealPlanOption
-	exampleMealPlanEventCreationInput                *types.MealPlanEventCreationRequestInput
-	req                                              *http.Request
-	service                                          *service
-	res                                              *httptest.ResponseRecorder
-	exampleMealPlanEvent                             *types.MealPlanEvent
-	exampleMealPlanOptionCreationInput               *types.MealPlanOptionCreationRequestInput
-	exampleMealPlanOptionUpdateInput                 *types.MealPlanOptionUpdateRequestInput
-	exampleMealPlanOptionVote                        *types.MealPlanOptionVote
-	exampleMealPlanOptionVoteCreationInput           *types.MealPlanOptionVoteCreationRequestInput
-	exampleMealPlanOptionVoteUpdateInput             *types.MealPlanOptionVoteUpdateRequestInput
-	exampleHouseholdInstrumentOwnershipUpdateInput   *types.HouseholdInstrumentOwnershipUpdateRequestInput
-	exampleUserIngredientPreference                  *types.UserIngredientPreference
-	exampleUserIngredientPreferenceCreationInput     *types.UserIngredientPreferenceCreationRequestInput
-	exampleUserIngredientPreferenceUpdateInput       *types.UserIngredientPreferenceUpdateRequestInput
-	exampleHouseholdInstrumentOwnership              *types.HouseholdInstrumentOwnership
-	exampleHouseholdInstrumentOwnershipCreationInput *types.HouseholdInstrumentOwnershipCreationRequestInput
-	exampleMealPlanOptionVotes                       []*types.MealPlanOptionVote
+	ctx                                            context.Context
+	exampleMealPlanEventUpdateInput                *types.MealPlanEventUpdateRequestInput
+	exampleAccount                                 *types.Account
+	exampleMealPlanTask                            *types.MealPlanTask
+	exampleUser                                    *types.User
+	exampleMealPlanGroceryListItem                 *types.MealPlanGroceryListItem
+	exampleMeal                                    *types.Meal
+	exampleCreationInput                           *types.MealCreationRequestInput
+	exampleUpdateInput                             *types.MealUpdateRequestInput
+	exampleMealPlan                                *types.MealPlan
+	exampleMealPlanCreationInput                   *types.MealPlanCreationRequestInput
+	exampleMealPlanUpdateInput                     *types.MealPlanUpdateRequestInput
+	exampleMealPlanOption                          *types.MealPlanOption
+	exampleMealPlanEventCreationInput              *types.MealPlanEventCreationRequestInput
+	req                                            *http.Request
+	service                                        *service
+	res                                            *httptest.ResponseRecorder
+	exampleMealPlanEvent                           *types.MealPlanEvent
+	exampleMealPlanOptionCreationInput             *types.MealPlanOptionCreationRequestInput
+	exampleMealPlanOptionUpdateInput               *types.MealPlanOptionUpdateRequestInput
+	exampleMealPlanOptionVote                      *types.MealPlanOptionVote
+	exampleMealPlanOptionVoteCreationInput         *types.MealPlanOptionVoteCreationRequestInput
+	exampleMealPlanOptionVoteUpdateInput           *types.MealPlanOptionVoteUpdateRequestInput
+	exampleAccountInstrumentOwnershipUpdateInput   *types.AccountInstrumentOwnershipUpdateRequestInput
+	exampleUserIngredientPreference                *types.UserIngredientPreference
+	exampleUserIngredientPreferenceCreationInput   *types.UserIngredientPreferenceCreationRequestInput
+	exampleUserIngredientPreferenceUpdateInput     *types.UserIngredientPreferenceUpdateRequestInput
+	exampleAccountInstrumentOwnership              *types.AccountInstrumentOwnership
+	exampleAccountInstrumentOwnershipCreationInput *types.AccountInstrumentOwnershipCreationRequestInput
+	exampleMealPlanOptionVotes                     []*types.MealPlanOptionVote
 }
 
 func buildTestHelper(t *testing.T) *mealsServiceHTTPRoutesTestHelper {
@@ -58,15 +58,15 @@ func buildTestHelper(t *testing.T) *mealsServiceHTTPRoutesTestHelper {
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleMeal = fakes.BuildFakeMeal()
-	helper.exampleMeal.CreatedByUser = helper.exampleHousehold.ID
+	helper.exampleMeal.CreatedByUser = helper.exampleAccount.ID
 	helper.exampleCreationInput = converters.ConvertMealToMealCreationRequestInput(helper.exampleMeal)
 	helper.exampleUpdateInput = converters.ConvertMealToMealUpdateRequestInput(helper.exampleMeal)
 
 	helper.exampleMealPlan = fakes.BuildFakeMealPlan()
-	helper.exampleMealPlan.BelongsToHousehold = helper.exampleHousehold.ID
+	helper.exampleMealPlan.BelongsToAccount = helper.exampleAccount.ID
 	helper.exampleMealPlanCreationInput = converters.ConvertMealPlanToMealPlanCreationRequestInput(helper.exampleMealPlan)
 	helper.exampleMealPlanUpdateInput = converters.ConvertMealPlanToMealPlanUpdateRequestInput(helper.exampleMealPlan)
 
@@ -94,9 +94,9 @@ func buildTestHelper(t *testing.T) *mealsServiceHTTPRoutesTestHelper {
 	helper.exampleUserIngredientPreferenceCreationInput = converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceCreationRequestInput(helper.exampleUserIngredientPreference)
 	helper.exampleUserIngredientPreferenceUpdateInput = converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput(helper.exampleUserIngredientPreference)
 
-	helper.exampleHouseholdInstrumentOwnership = fakes.BuildFakeHouseholdInstrumentOwnership()
-	helper.exampleHouseholdInstrumentOwnershipCreationInput = converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipCreationRequestInput(helper.exampleHouseholdInstrumentOwnership)
-	helper.exampleHouseholdInstrumentOwnershipUpdateInput = converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequestInput(helper.exampleHouseholdInstrumentOwnership)
+	helper.exampleAccountInstrumentOwnership = fakes.BuildFakeAccountInstrumentOwnership()
+	helper.exampleAccountInstrumentOwnershipCreationInput = converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipCreationRequestInput(helper.exampleAccountInstrumentOwnership)
+	helper.exampleAccountInstrumentOwnershipUpdateInput = converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipUpdateRequestInput(helper.exampleAccountInstrumentOwnership)
 
 	// ID fetchers
 
@@ -164,8 +164,8 @@ func buildTestHelper(t *testing.T) *mealsServiceHTTPRoutesTestHelper {
 		return helper.exampleUserIngredientPreference.ID
 	}
 
-	helper.service.householdInstrumentOwnershipIDFetcher = func(*http.Request) string {
-		return helper.exampleHouseholdInstrumentOwnership.ID
+	helper.service.accountInstrumentOwnershipIDFetcher = func(*http.Request) string {
+		return helper.exampleAccountInstrumentOwnership.ID
 	}
 
 	// auth stuff
@@ -177,9 +177,9 @@ func buildTestHelper(t *testing.T) *mealsServiceHTTPRoutesTestHelper {
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

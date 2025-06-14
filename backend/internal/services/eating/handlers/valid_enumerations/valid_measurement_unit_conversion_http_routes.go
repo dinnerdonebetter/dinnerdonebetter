@@ -43,7 +43,7 @@ func (s *service) CreateValidMeasurementUnitConversionHandler(res http.ResponseW
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidMeasurementUnitConversionCreationRequestInput)
@@ -118,7 +118,7 @@ func (s *service) ReadValidMeasurementUnitConversionHandler(res http.ResponseWri
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid measurement conversion ID.
 	validMeasurementUnitConversionID := s.validMeasurementUnitConversionIDFetcher(req)
@@ -173,7 +173,7 @@ func (s *service) UpdateValidMeasurementUnitConversionHandler(res http.ResponseW
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidMeasurementUnitConversionUpdateRequestInput)
@@ -264,7 +264,7 @@ func (s *service) ArchiveValidMeasurementUnitConversionHandler(res http.Response
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid measurement conversion ID.
 	validMeasurementUnitConversionID := s.validMeasurementUnitConversionIDFetcher(req)
@@ -336,7 +336,7 @@ func (s *service) ValidMeasurementUnitConversionsFromMeasurementUnitHandler(res 
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid measurement conversion ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
@@ -393,7 +393,7 @@ func (s *service) ValidMeasurementUnitConversionsToMeasurementUnitHandler(res ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid measurement conversion ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)

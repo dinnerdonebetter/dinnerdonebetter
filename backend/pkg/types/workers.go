@@ -17,7 +17,7 @@ type (
 	}
 
 	InitializeMealPlanGroceryListRequest struct {
-		HouseholdID string `json:"householdID"`
+		AccountID string `json:"accountID"`
 	}
 
 	InitializeMealPlanGroceryListResponse struct {
@@ -25,7 +25,7 @@ type (
 	}
 
 	CreateMealPlanTasksRequest struct {
-		HouseholdID string `json:"householdID"`
+		AccountID string `json:"accountID"`
 	}
 
 	CreateMealPlanTasksResponse struct {

@@ -41,7 +41,7 @@ func (s *service) CreateUserIngredientPreferenceHandler(res http.ResponseWriter,
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.UserIngredientPreferenceCreationRequestInput)

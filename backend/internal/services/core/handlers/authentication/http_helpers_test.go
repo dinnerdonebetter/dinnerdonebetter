@@ -24,8 +24,8 @@ type authServiceHTTPRoutesTestHelper struct {
 	sessionCtxData      *sessions.ContextData
 	service             *service
 	exampleUser         *types.User
-	exampleHousehold    *types.Household
-	examplePermCheckers map[string]authorization.HouseholdRolePermissionsChecker
+	exampleAccount      *types.Account
+	examplePermCheckers map[string]authorization.AccountRolePermissionsChecker
 	exampleLoginInput   *types.UserLoginInput
 }
 
@@ -39,8 +39,8 @@ func (helper *authServiceHTTPRoutesTestHelper) setContextFetcher(t *testing.T) {
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
-		ActiveHouseholdID:    helper.exampleHousehold.ID,
-		HouseholdPermissions: helper.examplePermCheckers,
+		ActiveAccountID:    helper.exampleAccount.ID,
+		AccountPermissions: helper.examplePermCheckers,
 	}
 
 	helper.sessionCtxData = sessionCtxData
@@ -57,12 +57,12 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 	helper.ctx = context.Background()
 	helper.service = buildTestService(t)
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleLoginInput = fakes.BuildFakeUserLoginInputFromUser(helper.exampleUser)
 
-	helper.examplePermCheckers = map[string]authorization.HouseholdRolePermissionsChecker{
-		helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+	helper.examplePermCheckers = map[string]authorization.AccountRolePermissionsChecker{
+		helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 	}
 
 	helper.setContextFetcher(t)

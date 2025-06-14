@@ -18,15 +18,15 @@ const (
 	auditLogEntriesCreatedForUsersByDefault = 3
 )
 
-func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *types.User, household *types.Household, dbc *Querier) *types.AuditLogEntry {
+func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *types.User, account *types.Account, dbc *Querier) *types.AuditLogEntry {
 	t.Helper()
 
 	if user == nil {
 		user = createUserForTest(t, ctx, nil, dbc)
 	}
 
-	if household == nil {
-		household = createHouseholdForTest(t, ctx, nil, dbc)
+	if account == nil {
+		account = createAccountForTest(t, ctx, nil, dbc)
 	}
 
 	// create
@@ -34,7 +34,7 @@ func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier datab
 		exampleAuditLogEntry = fakes.BuildFakeAuditLogEntry()
 	}
 	exampleAuditLogEntry.BelongsToUser = user.ID
-	exampleAuditLogEntry.BelongsToHousehold = &household.ID
+	exampleAuditLogEntry.BelongsToAccount = &account.ID
 	dbInput := converters.ConvertAuditLogEntryToAuditLogEntryDatabaseCreationInput(exampleAuditLogEntry)
 
 	created, err := dbc.createAuditLogEntry(ctx, querier, dbInput)
@@ -70,20 +70,20 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 	}(t)
 
 	user := createUserForTest(t, ctx, nil, dbc)
-	household := createHouseholdForTest(t, ctx, nil, dbc)
+	account := createAccountForTest(t, ctx, nil, dbc)
 
 	exampleAuditLogEntry := fakes.BuildFakeAuditLogEntry()
-	exampleAuditLogEntry.BelongsToHousehold = &household.ID
+	exampleAuditLogEntry.BelongsToAccount = &account.ID
 	exampleAuditLogEntry.BelongsToUser = user.ID
 	createdAuditLogEntries := []*types.AuditLogEntry{}
 
 	// create
-	createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, dbc.db, exampleAuditLogEntry, user, household, dbc))
+	createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, dbc.db, exampleAuditLogEntry, user, account, dbc))
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeAuditLogEntry()
-		createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, dbc.db, input, user, household, dbc))
+		createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, dbc.db, input, user, account, dbc))
 	}
 
 	// fetch as list
@@ -92,7 +92,7 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 	assert.NotEmpty(t, auditLogEntries.Data)
 	assert.Equal(t, len(createdAuditLogEntries)+auditLogEntriesCreatedForUsersByDefault, len(auditLogEntries.Data))
 
-	auditLogEntries, err = dbc.GetAuditLogEntriesForHousehold(ctx, household.ID, nil)
+	auditLogEntries, err = dbc.GetAuditLogEntriesForAccount(ctx, account.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, auditLogEntries.Data)
 	assert.Equal(t, len(createdAuditLogEntries)+auditLogEntriesCreatedForUsersByDefault-1, len(auditLogEntries.Data))

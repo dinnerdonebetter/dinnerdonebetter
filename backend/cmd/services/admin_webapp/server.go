@@ -108,7 +108,7 @@ func (s *Server) authMiddleware(next http.Handler) http.Handler {
 					ctx,
 					s.oauth2APIClientID,
 					s.oauth2APIClientSecret,
-					[]string{authorization.HouseholdAdminRoleName},
+					[]string{authorization.AccountAdminRoleName},
 					usd.Token,
 				),
 			)

@@ -45,7 +45,7 @@ func (s *service) DataDeletionHandler(res http.ResponseWriter, req *http.Request
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	destroyUserDataTimer := timing.NewMetric("database").WithDesc("destroy user data").Start()
 	if err = s.dataPrivacyDataManager.DeleteUser(ctx, sessionCtxData.Requester.UserID); err != nil {
@@ -57,10 +57,10 @@ func (s *service) DataDeletionHandler(res http.ResponseWriter, req *http.Request
 	destroyUserDataTimer.Stop()
 
 	if err = s.dataChangesPublisher.Publish(ctx, &types.DataChangeMessage{
-		Context:     nil,
-		EventType:   types.UserDataDestroyedServiceEventType,
-		UserID:      sessionCtxData.Requester.UserID,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
+		Context:   nil,
+		EventType: types.UserDataDestroyedServiceEventType,
+		UserID:    sessionCtxData.Requester.UserID,
+		AccountID: sessionCtxData.ActiveAccountID,
 	}); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data")
 	}
@@ -101,7 +101,7 @@ func (s *service) UserDataAggregationRequestHandler(res http.ResponseWriter, req
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	reportID := identifiers.New()
 	tracing.AttachToSpan(span, keys.UserDataAggregationReportIDKey, reportID)
@@ -118,9 +118,9 @@ func (s *service) UserDataAggregationRequestHandler(res http.ResponseWriter, req
 		Context: map[string]any{
 			keys.UserDataAggregationReportIDKey: reportID,
 		},
-		EventType:   types.UserDataAggregationRequestServiceEventType,
-		UserID:      sessionCtxData.Requester.UserID,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
+		EventType: types.UserDataAggregationRequestServiceEventType,
+		UserID:    sessionCtxData.Requester.UserID,
+		AccountID: sessionCtxData.ActiveAccountID,
 	}); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
@@ -161,7 +161,7 @@ func (s *service) ReadUserDataAggregationReportHandler(res http.ResponseWriter, 
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine report ID.
 	reportID := s.reportIDFetcher(req)

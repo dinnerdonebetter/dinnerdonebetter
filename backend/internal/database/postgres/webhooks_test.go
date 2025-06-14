@@ -36,7 +36,7 @@ func createWebhookForTest(t *testing.T, ctx context.Context, exampleWebhook *typ
 	}
 	assert.Equal(t, exampleWebhook, created)
 
-	webhook, err := dbc.GetWebhook(ctx, created.ID, created.BelongsToHousehold)
+	webhook, err := dbc.GetWebhook(ctx, created.ID, created.BelongsToAccount)
 	exampleWebhook.CreatedAt = webhook.CreatedAt
 	for i := range created.Events {
 		exampleWebhook.Events[i].CreatedAt = webhook.Events[i].CreatedAt
@@ -66,12 +66,12 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	}(t)
 
 	user := createUserForTest(t, ctx, nil, dbc)
-	householdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, householdID)
+	require.NotEmpty(t, accountID)
 
 	exampleWebhook := fakes.BuildFakeWebhook()
-	exampleWebhook.BelongsToHousehold = householdID
+	exampleWebhook.BelongsToAccount = accountID
 	createdWebhooks := []*types.Webhook{}
 
 	// create
@@ -81,22 +81,22 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeWebhook()
 		input.Name = fmt.Sprintf("%s %d", exampleWebhook.Name, i)
-		input.BelongsToHousehold = householdID
+		input.BelongsToAccount = accountID
 		createdWebhooks = append(createdWebhooks, createWebhookForTest(t, ctx, input, dbc))
 	}
 
 	// fetch as list
-	webhooks, err := dbc.GetWebhooks(ctx, householdID, nil)
+	webhooks, err := dbc.GetWebhooks(ctx, accountID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, webhooks.Data)
 	assert.Equal(t, len(createdWebhooks), len(webhooks.Data))
 
 	// fetch as list
-	webhooksByHouseholdAndEvent, err := dbc.GetWebhooksForHouseholdAndEvent(ctx, householdID, createdWebhooks[0].Events[0].TriggerEvent)
+	webhooksByAccountAndEvent, err := dbc.GetWebhooksForAccountAndEvent(ctx, accountID, createdWebhooks[0].Events[0].TriggerEvent)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, webhooksByHouseholdAndEvent)
+	assert.NotEmpty(t, webhooksByAccountAndEvent)
 
-	createdEvent, err := dbc.AddWebhookTriggerEvent(ctx, householdID, &types.WebhookTriggerEventDatabaseCreationInput{
+	createdEvent, err := dbc.AddWebhookTriggerEvent(ctx, accountID, &types.WebhookTriggerEventDatabaseCreationInput{
 		ID:               identifiers.New(),
 		BelongsToWebhook: createdWebhooks[0].ID,
 		TriggerEvent:     types.WebhookArchivedServiceEventType,
@@ -112,15 +112,15 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 			assert.NoError(t, dbc.ArchiveWebhookTriggerEvent(ctx, webhook.ID, event.ID))
 		}
 
-		assert.NoError(t, dbc.ArchiveWebhook(ctx, webhook.ID, householdID))
+		assert.NoError(t, dbc.ArchiveWebhook(ctx, webhook.ID, accountID))
 
 		var exists bool
-		exists, err = dbc.WebhookExists(ctx, webhook.ID, householdID)
+		exists, err = dbc.WebhookExists(ctx, webhook.ID, accountID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
 
 		var y *types.Webhook
-		y, err = dbc.GetWebhook(ctx, webhook.ID, householdID)
+		y, err = dbc.GetWebhook(ctx, webhook.ID, accountID)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)
@@ -135,16 +135,16 @@ func TestQuerier_WebhookExists(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.WebhookExists(ctx, "", exampleHouseholdID)
+		actual, err := c.WebhookExists(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -167,17 +167,17 @@ func TestQuerier_GetWebhook(T *testing.T) {
 	T.Run("with invalid webhook ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetWebhook(ctx, "", exampleHouseholdID)
+		actual, err := c.GetWebhook(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleWebhook := fakes.BuildFakeWebhook()
@@ -194,7 +194,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 func TestQuerier_GetWebhooks(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -249,7 +249,7 @@ func TestQuerier_createWebhookTriggerEvent(T *testing.T) {
 		assert.Nil(t, created)
 	})
 
-	T.Run("with missing household ID", func(t *testing.T) {
+	T.Run("with missing account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -270,15 +270,15 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 	T.Run("with invalid webhook ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveWebhook(ctx, "", exampleHouseholdID))
+		assert.Error(t, c.ArchiveWebhook(ctx, "", exampleAccountID))
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleWebhookID := fakes.BuildFakeID()
@@ -296,12 +296,12 @@ func TestQuerier_ArchiveWebhookTriggerEvent(T *testing.T) {
 	T.Run("with invalid webhook ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveWebhookTriggerEvent(ctx, "", exampleHouseholdID))
+		assert.Error(t, c.ArchiveWebhookTriggerEvent(ctx, "", exampleAccountID))
 	})
 
 	T.Run("with invalid webhook trigger event ID", func(t *testing.T) {

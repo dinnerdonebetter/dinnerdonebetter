@@ -82,16 +82,16 @@ func TestQuerier_Integration_MealPlanEvents(t *testing.T) {
 	}(t)
 
 	user := createUserForTest(t, ctx, nil, dbc)
-	householdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, householdID)
+	require.NotEmpty(t, accountID)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
 	meal := createMealForTest(t, ctx, nil, dbc)
 
 	exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
-	exampleMealPlan.BelongsToHousehold = householdID
+	exampleMealPlan.BelongsToAccount = accountID
 	mealPlan := createMealPlanForTest(t, ctx, exampleMealPlan, dbc)
 
 	newMeal := createMealForTest(t, ctx, nil, dbc)
@@ -127,7 +127,7 @@ func TestQuerier_Integration_MealPlanEvents(t *testing.T) {
 		assert.NoError(t, dbc.ArchiveMealPlanEvent(ctx, mealPlan.ID, mealPlanEvent.ID))
 
 		var exists bool
-		exists, err = dbc.MealPlanEventExists(ctx, mealPlanEvent.ID, householdID)
+		exists, err = dbc.MealPlanEventExists(ctx, mealPlanEvent.ID, accountID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
 	}

@@ -26,9 +26,9 @@ const (
 	// MealPlanFinalizedServiceEventType indicates a meal plan was finalized.
 	MealPlanFinalizedServiceEventType = "meal_plan_finalized"
 
-	// MealPlanStatusAwaitingVotes indicates a household invitation is pending.
+	// MealPlanStatusAwaitingVotes indicates a account invitation is pending.
 	MealPlanStatusAwaitingVotes MealPlanStatus = "awaiting_votes"
-	// MealPlanStatusFinalized indicates a household invitation was accepted.
+	// MealPlanStatusFinalized indicates a account invitation was accepted.
 	MealPlanStatusFinalized MealPlanStatus = "finalized"
 )
 
@@ -54,7 +54,7 @@ type (
 		Status                 string           `json:"status"`
 		Notes                  string           `json:"notes"`
 		ElectionMethod         string           `json:"electionMethod"`
-		BelongsToHousehold     string           `json:"belongsToHousehold"`
+		BelongsToAccount       string           `json:"belongsToAccount"`
 		CreatedByUser          string           `json:"createdBy"`
 		Events                 []*MealPlanEvent `json:"events"`
 		GroceryListInitialized bool             `json:"groceryListInitialized"`
@@ -75,22 +75,22 @@ type (
 	MealPlanDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		VotingDeadline     time.Time                             `json:"-"`
-		BelongsToHousehold string                                `json:"-"`
-		Notes              string                                `json:"-"`
-		ID                 string                                `json:"-"`
-		ElectionMethod     string                                `json:"-"`
-		CreatedByUser      string                                `json:"-"`
-		Events             []*MealPlanEventDatabaseCreationInput `json:"-"`
+		VotingDeadline   time.Time                             `json:"-"`
+		BelongsToAccount string                                `json:"-"`
+		Notes            string                                `json:"-"`
+		ID               string                                `json:"-"`
+		ElectionMethod   string                                `json:"-"`
+		CreatedByUser    string                                `json:"-"`
+		Events           []*MealPlanEventDatabaseCreationInput `json:"-"`
 	}
 
 	// MealPlanUpdateRequestInput represents what a user could set as input for updating meal plans.
 	MealPlanUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		BelongsToHousehold *string    `json:"-"`
-		Notes              *string    `json:"notes,omitempty"`
-		VotingDeadline     *time.Time `json:"votingDeadline,omitempty"`
+		BelongsToAccount *string    `json:"-"`
+		Notes            *string    `json:"notes,omitempty"`
+		VotingDeadline   *time.Time `json:"votingDeadline,omitempty"`
 	}
 
 	// FinalizedMealPlanDatabaseResult represents what is returned by the above query.
@@ -104,13 +104,13 @@ type (
 
 	// MealPlanDataManager describes a structure capable of storing meal plans permanently.
 	MealPlanDataManager interface {
-		MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error)
-		GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*MealPlan, error)
-		GetMealPlansForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlan], error)
+		MealPlanExists(ctx context.Context, mealPlanID, accountID string) (bool, error)
+		GetMealPlan(ctx context.Context, mealPlanID, accountID string) (*MealPlan, error)
+		GetMealPlansForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[MealPlan], error)
 		CreateMealPlan(ctx context.Context, input *MealPlanDatabaseCreationInput) (*MealPlan, error)
 		UpdateMealPlan(ctx context.Context, updated *MealPlan) error
-		ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error
-		AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (bool, error)
+		ArchiveMealPlan(ctx context.Context, mealPlanID, accountID string) error
+		AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, accountID string) (bool, error)
 		GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*FinalizedMealPlanDatabaseResult, error)
 		GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*MealPlan, error)
 		GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*MealPlan, error)
@@ -160,7 +160,7 @@ func (x *MealPlanDatabaseCreationInput) ValidateWithContext(ctx context.Context)
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.VotingDeadline, validation.Required),
-		validation.Field(&x.BelongsToHousehold, validation.Required),
+		validation.Field(&x.BelongsToAccount, validation.Required),
 		validation.Field(&x.CreatedByUser, validation.Required),
 	)
 }

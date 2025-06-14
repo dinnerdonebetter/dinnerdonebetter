@@ -42,7 +42,7 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -107,7 +107,7 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 			MealPlanOptionID:     vote.BelongsToMealPlanOption,
 			MealPlanOptionVote:   vote,
 			MealPlanOptionVoteID: vote.ID,
-			HouseholdID:          sessionCtxData.ActiveHouseholdID,
+			AccountID:            sessionCtxData.ActiveAccountID,
 			UserID:               sessionCtxData.Requester.UserID,
 		}
 
@@ -118,7 +118,7 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 		lastVote := mealPlanOptionVotes[len(mealPlanOptionVotes)-1]
 
 		// have all votes been received for an option? if so, finalize it
-		mealPlanOptionFinalized, optionFinalizationErr := s.mealPlanningDataManager.FinalizeMealPlanOption(ctx, mealPlanID, mealPlanEventID, lastVote.BelongsToMealPlanOption, sessionCtxData.ActiveHouseholdID)
+		mealPlanOptionFinalized, optionFinalizationErr := s.mealPlanningDataManager.FinalizeMealPlanOption(ctx, mealPlanID, mealPlanEventID, lastVote.BelongsToMealPlanOption, sessionCtxData.ActiveAccountID)
 		if optionFinalizationErr != nil {
 			observability.AcknowledgeError(optionFinalizationErr, logger, span, "finalizing meal plan option vote")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -136,13 +136,13 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 				MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
 				MealPlanOptionVote:   lastVote,
 				MealPlanOptionVoteID: lastVote.ID,
-				HouseholdID:          sessionCtxData.ActiveHouseholdID,
+				AccountID:            sessionCtxData.ActiveAccountID,
 				UserID:               sessionCtxData.Requester.UserID,
 			}
 
 			go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
-			mealPlanFinalized, finalizationErr := s.mealPlanningDataManager.AttemptToFinalizeMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+			mealPlanFinalized, finalizationErr := s.mealPlanningDataManager.AttemptToFinalizeMealPlan(ctx, mealPlanID, sessionCtxData.ActiveAccountID)
 			if finalizationErr != nil {
 				observability.AcknowledgeError(err, logger, span, "finalizing meal plan option vote")
 				errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -159,7 +159,7 @@ func (s *service) CreateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 					MealPlanOptionID:     lastVote.BelongsToMealPlanOption,
 					MealPlanOptionVote:   lastVote,
 					MealPlanOptionVoteID: lastVote.ID,
-					HouseholdID:          sessionCtxData.ActiveHouseholdID,
+					AccountID:            sessionCtxData.ActiveAccountID,
 					UserID:               sessionCtxData.Requester.UserID,
 				}
 
@@ -202,7 +202,7 @@ func (s *service) ReadMealPlanOptionVoteHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -276,7 +276,7 @@ func (s *service) ListMealPlanOptionVoteHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -340,7 +340,7 @@ func (s *service) UpdateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.MealPlanOptionVoteUpdateRequestInput)
@@ -407,7 +407,7 @@ func (s *service) UpdateMealPlanOptionVoteHandler(res http.ResponseWriter, req *
 		MealPlanOptionID:     mealPlanOptionID,
 		MealPlanOptionVote:   mealPlanOptionVote,
 		MealPlanOptionVoteID: mealPlanOptionVote.ID,
-		HouseholdID:          sessionCtxData.ActiveHouseholdID,
+		AccountID:            sessionCtxData.ActiveAccountID,
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 
@@ -448,7 +448,7 @@ func (s *service) ArchiveMealPlanOptionVoteHandler(res http.ResponseWriter, req 
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -494,7 +494,7 @@ func (s *service) ArchiveMealPlanOptionVoteHandler(res http.ResponseWriter, req 
 		MealPlanID:           mealPlanID,
 		MealPlanOptionID:     mealPlanOptionID,
 		MealPlanOptionVoteID: mealPlanOptionVoteID,
-		HouseholdID:          sessionCtxData.ActiveHouseholdID,
+		AccountID:            sessionCtxData.ActiveAccountID,
 		UserID:               sessionCtxData.Requester.UserID,
 	}
 

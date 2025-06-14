@@ -333,16 +333,16 @@ CREATE TABLE IF NOT EXISTS user_ingredient_preferences (
     UNIQUE(belongs_to_user, ingredient)
 );
 
-CREATE TABLE IF NOT EXISTS household_instrument_ownerships (
+CREATE TABLE IF NOT EXISTS account_instrument_ownerships (
     id TEXT NOT NULL PRIMARY KEY,
     notes TEXT DEFAULT ''::TEXT NOT NULL,
     quantity INTEGER DEFAULT 0 NOT NULL,
     valid_instrument_id TEXT NOT NULL,
-    belongs_to_household TEXT NOT NULL REFERENCES households("id") ON DELETE CASCADE,
+    belongs_to_account TEXT NOT NULL REFERENCES accounts("id") ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
-    UNIQUE(valid_instrument_id, belongs_to_household, archived_at)
+    UNIQUE(valid_instrument_id, belongs_to_account, archived_at)
 );
 
 CREATE TABLE IF NOT EXISTS recipes (
@@ -575,7 +575,7 @@ CREATE TABLE IF NOT EXISTS meal_plans (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
-    belongs_to_household TEXT NOT NULL REFERENCES households("id") ON DELETE CASCADE,
+    belongs_to_account TEXT NOT NULL REFERENCES accounts("id") ON DELETE CASCADE,
     grocery_list_initialized BOOLEAN DEFAULT FALSE NOT NULL,
     tasks_created BOOLEAN DEFAULT FALSE NOT NULL,
     election_method valid_election_method DEFAULT 'schulze'::valid_election_method NOT NULL,
@@ -665,7 +665,7 @@ CREATE INDEX IF NOT EXISTS meal_plan_options_belongs_to_meal_plan_option ON meal
 CREATE INDEX IF NOT EXISTS meal_plan_tasks_assigned_to_user_index ON meal_plan_tasks USING btree (assigned_to_user);
 CREATE INDEX IF NOT EXISTS meal_plan_tasks_belongs_to_meal_plan_option_index ON meal_plan_tasks USING btree (belongs_to_meal_plan_option);
 CREATE INDEX IF NOT EXISTS meal_plan_tasks_belongs_to_recipe_prep_task_index ON meal_plan_tasks USING btree (belongs_to_recipe_prep_task);
-CREATE INDEX IF NOT EXISTS meal_plans_belongs_to_household ON meal_plans USING btree (belongs_to_household);
+CREATE INDEX IF NOT EXISTS meal_plans_belongs_to_account ON meal_plans USING btree (belongs_to_account);
 CREATE INDEX IF NOT EXISTS meal_recipes_meal_id ON meal_components USING btree (meal_id);
 CREATE INDEX IF NOT EXISTS meal_recipes_recipe_id ON meal_components USING btree (recipe_id);
 CREATE INDEX IF NOT EXISTS meals_created_by_user ON meals USING btree (created_by_user);

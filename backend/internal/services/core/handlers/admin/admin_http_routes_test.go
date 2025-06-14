@@ -67,7 +67,7 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 			Requester: sessions.RequesterInfo{
 				ServicePermissions: authorization.NewServiceRolePermissionChecker(),
 			},
-			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{},
+			AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{},
 		}
 		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 			return sessionCtxData, nil
@@ -210,7 +210,7 @@ func TestAdminService_UserAccountStatusChangeHandler(T *testing.T) {
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
 	})
 
-	T.Run("with inadequate admin user attempting to terminate households", func(t *testing.T) {
+	T.Run("with inadequate admin user attempting to terminate accounts", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)

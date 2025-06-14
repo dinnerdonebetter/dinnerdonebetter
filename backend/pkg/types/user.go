@@ -23,13 +23,13 @@ const (
 	// UserDataAggregationRequestServiceEventType indicates a user requested their data be aggregated.
 	UserDataAggregationRequestServiceEventType = "user_data_aggregation_requested"
 
-	// GoodStandingUserAccountStatus indicates a User's household is in good standing.
+	// GoodStandingUserAccountStatus indicates a User's account is in good standing.
 	GoodStandingUserAccountStatus userAccountStatus = "good"
-	// UnverifiedHouseholdStatus indicates a User's household requires two factor secret verification.
-	UnverifiedHouseholdStatus userAccountStatus = "unverified"
-	// BannedUserAccountStatus indicates a User's household is banned.
+	// UnverifiedAccountStatus indicates a User's account requires two factor secret verification.
+	UnverifiedAccountStatus userAccountStatus = "unverified"
+	// BannedUserAccountStatus indicates a User's account is banned.
 	BannedUserAccountStatus userAccountStatus = "banned"
-	// TerminatedUserAccountStatus indicates a User's household is banned.
+	// TerminatedUserAccountStatus indicates a User's account is banned.
 	TerminatedUserAccountStatus userAccountStatus = "terminated"
 
 	validTOTPTokenLength = 6
@@ -81,7 +81,7 @@ type (
 		Username              string     `json:"username"`
 		FirstName             string     `json:"firstName"`
 		LastName              string     `json:"lastName"`
-		HouseholdName         string     `json:"householdName"`
+		AccountName           string     `json:"accountName"`
 		AcceptedTOS           bool       `json:"acceptedTOS"`
 		AcceptedPrivacyPolicy bool       `json:"acceptedPrivacyPolicy"`
 	}
@@ -90,20 +90,20 @@ type (
 	UserDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		Birthday               *time.Time `json:"-"`
-		ID                     string     `json:"-"`
-		AvatarSrc              *string    `json:"-"`
-		HashedPassword         string     `json:"-"`
-		TwoFactorSecret        string     `json:"-"`
-		InvitationToken        string     `json:"-"`
-		DestinationHouseholdID string     `json:"-"`
-		Username               string     `json:"-"`
-		EmailAddress           string     `json:"-"`
-		HouseholdName          string     `json:"-"`
-		FirstName              string     `json:"-"`
-		LastName               string     `json:"-"`
-		AcceptedTOS            bool       `json:"-"`
-		AcceptedPrivacyPolicy  bool       `json:"-"`
+		Birthday              *time.Time `json:"-"`
+		ID                    string     `json:"-"`
+		AvatarSrc             *string    `json:"-"`
+		HashedPassword        string     `json:"-"`
+		TwoFactorSecret       string     `json:"-"`
+		InvitationToken       string     `json:"-"`
+		DestinationAccountID  string     `json:"-"`
+		Username              string     `json:"-"`
+		EmailAddress          string     `json:"-"`
+		AccountName           string     `json:"-"`
+		FirstName             string     `json:"-"`
+		LastName              string     `json:"-"`
+		AcceptedTOS           bool       `json:"-"`
+		AcceptedPrivacyPolicy bool       `json:"-"`
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.

@@ -25,7 +25,7 @@ var (
 		eventTypeColumn,
 		"changes",
 		belongsToUserColumn,
-		belongsToHouseholdColumn,
+		belongsToAccountColumn,
 		createdAtColumn,
 	}
 )
@@ -53,7 +53,7 @@ func buildAuditLogEntryQueries(database string) []*Query {
 					auditLogsTableName,
 					strings.Join(insertColumns, ",\n\t"),
 					strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
-						if s == belongsToUserColumn || s == belongsToHouseholdColumn {
+						if s == belongsToUserColumn || s == belongsToAccountColumn {
 							return fmt.Sprintf("sqlc.narg(%s)", s)
 						}
 						return fmt.Sprintf("sqlc.arg(%s)", s)
@@ -129,7 +129,7 @@ WHERE %s
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetAuditLogEntriesForHousehold",
+					Name: "GetAuditLogEntriesForAccount",
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -145,17 +145,17 @@ WHERE %s
 						false,
 						false,
 						[]string{},
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToAccountColumn, belongsToAccountColumn),
 					),
-					buildTotalCountSelect(auditLogsTableName, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)),
+					buildTotalCountSelect(auditLogsTableName, false, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToAccountColumn, belongsToAccountColumn)),
 					auditLogsTableName,
-					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)), "AND "),
+					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToAccountColumn, belongsToAccountColumn)), "AND "),
 					offsetLimitAddendum,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetAuditLogEntriesForHouseholdAndResourceType",
+					Name: "GetAuditLogEntriesForAccountAndResourceType",
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -171,18 +171,18 @@ WHERE %s
 						false,
 						false,
 						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToAccountColumn, belongsToAccountColumn),
 						fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources"),
 					),
 					buildTotalCountSelect(
 						auditLogsTableName,
 						false,
 						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToAccountColumn, belongsToAccountColumn),
 						fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources"),
 					),
 					auditLogsTableName,
-					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn), fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources")), "AND "),
+					strings.TrimPrefix(buildFilterConditions(auditLogsTableName, false, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", auditLogsTableName, belongsToAccountColumn, belongsToAccountColumn), fmt.Sprintf("%s.%s = ANY(sqlc.arg(%s)::text[])", auditLogsTableName, resourceTypeColumn, "resources")), "AND "),
 					offsetLimitAddendum,
 				)),
 			},

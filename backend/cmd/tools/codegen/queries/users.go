@@ -64,7 +64,7 @@ var usersColumns = []string{
 	archivedAtColumn,
 }
 
-func buildUpdateHouseholdMembershipsQuery(ownershipColumn string, nowColumns []string) string {
+func buildUpdateAccountMembershipsQuery(ownershipColumn string, nowColumns []string) string {
 	var updateQueryBuilder builq.Builder
 
 	addendum := ""
@@ -77,7 +77,7 @@ func buildUpdateHouseholdMembershipsQuery(ownershipColumn string, nowColumns []s
 	%s = %s%s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-		householdUserMembershipsTableName,
+		accountUserMembershipsTableName,
 		archivedAtColumn,
 		currentTimeExpression,
 		addendum,
@@ -165,13 +165,6 @@ func buildUsersQueries(database string) []*Query {
 					idColumn,
 					idColumn,
 				)),
-			},
-			{
-				Annotation: QueryAnnotation{
-					Name: "ArchiveUserMemberships",
-					Type: ExecRowsType,
-				},
-				Content: buildUpdateHouseholdMembershipsQuery(belongsToUserColumn, []string{}),
 			},
 			{
 				Annotation: QueryAnnotation{

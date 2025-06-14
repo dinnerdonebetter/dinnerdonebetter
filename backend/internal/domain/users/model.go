@@ -5,10 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"net/http"
 	"time"
-
-	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -24,13 +21,13 @@ const (
 	// UserDataAggregationRequestServiceEventType indicates a user requested their data be aggregated.
 	UserDataAggregationRequestServiceEventType = "user_data_aggregation_requested"
 
-	// GoodStandingUserAccountStatus indicates a User's household is in good standing.
+	// GoodStandingUserAccountStatus indicates a User's account is in good standing.
 	GoodStandingUserAccountStatus userAccountStatus = "good"
-	// UnverifiedHouseholdStatus indicates a User's household requires two factor secret verification.
-	UnverifiedHouseholdStatus userAccountStatus = "unverified"
-	// BannedUserAccountStatus indicates a User's household is banned.
+	// UnverifiedAccountStatus indicates a User's account requires two factor secret verification.
+	UnverifiedAccountStatus userAccountStatus = "unverified"
+	// BannedUserAccountStatus indicates a User's account is banned.
 	BannedUserAccountStatus userAccountStatus = "banned"
-	// TerminatedUserAccountStatus indicates a User's household is banned.
+	// TerminatedUserAccountStatus indicates a User's account is banned.
 	TerminatedUserAccountStatus userAccountStatus = "terminated"
 
 	validTOTPTokenLength = 6
@@ -84,7 +81,7 @@ type (
 		Username              string     `json:"username"`
 		FirstName             string     `json:"firstName"`
 		LastName              string     `json:"lastName"`
-		HouseholdName         string     `json:"householdName"`
+		AccountName           string     `json:"accountName"`
 		AcceptedTOS           bool       `json:"acceptedTOS"`
 		AcceptedPrivacyPolicy bool       `json:"acceptedPrivacyPolicy"`
 	}
@@ -93,20 +90,20 @@ type (
 	UserDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		Birthday               *time.Time `json:"-"`
-		ID                     string     `json:"-"`
-		AvatarSrc              *string    `json:"-"`
-		HashedPassword         string     `json:"-"`
-		TwoFactorSecret        string     `json:"-"`
-		InvitationToken        string     `json:"-"`
-		DestinationHouseholdID string     `json:"-"`
-		Username               string     `json:"-"`
-		EmailAddress           string     `json:"-"`
-		HouseholdName          string     `json:"-"`
-		FirstName              string     `json:"-"`
-		LastName               string     `json:"-"`
-		AcceptedTOS            bool       `json:"-"`
-		AcceptedPrivacyPolicy  bool       `json:"-"`
+		Birthday              *time.Time `json:"-"`
+		ID                    string     `json:"-"`
+		AvatarSrc             *string    `json:"-"`
+		HashedPassword        string     `json:"-"`
+		TwoFactorSecret       string     `json:"-"`
+		InvitationToken       string     `json:"-"`
+		DestinationAccountID  string     `json:"-"`
+		Username              string     `json:"-"`
+		EmailAddress          string     `json:"-"`
+		AccountName           string     `json:"-"`
+		FirstName             string     `json:"-"`
+		LastName              string     `json:"-"`
+		AcceptedTOS           bool       `json:"-"`
+		AcceptedPrivacyPolicy bool       `json:"-"`
 	}
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
@@ -233,61 +230,6 @@ type (
 		NewStatus    string `json:"newStatus"`
 		Reason       string `json:"reason"`
 		TargetUserID string `json:"targetUserID"`
-	}
-
-	// AdminUserDataManager contains administrative User functions that we don't necessarily want to expose
-	// to, say, the collection of handlers.
-	AdminUserDataManager interface {
-		UpdateUserAccountStatus(ctx context.Context, userID string, input *UserAccountStatusUpdateInput) error
-	}
-
-	// UserDataManager describes a structure which can manage users in persistent storage.
-	UserDataManager interface {
-		GetUser(ctx context.Context, userID string) (*User, error)
-		GetUserByUsername(ctx context.Context, username string) (*User, error)
-		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
-		GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
-		GetUserByEmail(ctx context.Context, email string) (*User, error)
-		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
-		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
-		UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error
-		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
-		UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error
-		UpdateUserDetails(ctx context.Context, userID string, input *UserDetailsDatabaseUpdateInput) error
-		UpdateUserPassword(ctx context.Context, userID, newHash string) error
-		ArchiveUser(ctx context.Context, userID string) error
-		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
-		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
-		MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error
-		GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error)
-		GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*User, error)
-		MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error
-		MarkUserEmailAddressAsUnverified(ctx context.Context, userID string) error
-		GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
-		MarkUserAsIndexed(ctx context.Context, userID string) error
-	}
-
-	// UserDataService describes a structure capable of serving traffic related to users.
-	UserDataService interface {
-		ListUsersHandler(http.ResponseWriter, *http.Request)
-		CreateUserHandler(http.ResponseWriter, *http.Request)
-		ReadUserHandler(http.ResponseWriter, *http.Request)
-		SelfHandler(http.ResponseWriter, *http.Request)
-		UserPermissionsHandler(http.ResponseWriter, *http.Request)
-		UsernameSearchHandler(http.ResponseWriter, *http.Request)
-		NewTOTPSecretHandler(http.ResponseWriter, *http.Request)
-		TOTPSecretVerificationHandler(http.ResponseWriter, *http.Request)
-		UpdatePasswordHandler(http.ResponseWriter, *http.Request)
-		UpdateUserEmailAddressHandler(http.ResponseWriter, *http.Request)
-		UpdateUserUsernameHandler(http.ResponseWriter, *http.Request)
-		UpdateUserDetailsHandler(http.ResponseWriter, *http.Request)
-		AvatarUploadHandler(http.ResponseWriter, *http.Request)
-		ArchiveUserHandler(http.ResponseWriter, *http.Request)
-		CreatePasswordResetTokenHandler(http.ResponseWriter, *http.Request)
-		PasswordResetTokenRedemptionHandler(http.ResponseWriter, *http.Request)
-		RequestUsernameReminderHandler(http.ResponseWriter, *http.Request)
-		VerifyUserEmailAddressHandler(http.ResponseWriter, *http.Request)
-		RequestEmailVerificationEmailHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

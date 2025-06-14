@@ -43,7 +43,7 @@ func (s *service) CreateMealPlanHandler(res http.ResponseWriter, req *http.Reque
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.MealPlanCreationRequestInput)
@@ -77,7 +77,7 @@ func (s *service) CreateMealPlanHandler(res http.ResponseWriter, req *http.Reque
 		}
 	}
 
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	input.BelongsToAccount = sessionCtxData.ActiveAccountID
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, input.ID)
 
 	logger = logger.WithValue("input", input)
@@ -93,10 +93,10 @@ func (s *service) CreateMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.MealPlanCreatedServiceEventType,
-		MealPlan:    mealPlan,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType: types.MealPlanCreatedServiceEventType,
+		MealPlan:  mealPlan,
+		AccountID: sessionCtxData.ActiveAccountID,
+		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
@@ -135,7 +135,7 @@ func (s *service) ReadMealPlanHandler(res http.ResponseWriter, req *http.Request
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -144,7 +144,7 @@ func (s *service) ReadMealPlanHandler(res http.ResponseWriter, req *http.Request
 
 	// fetch meal plan from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.mealPlanningDataManager.GetMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+	x, err := s.mealPlanningDataManager.GetMealPlan(ctx, mealPlanID, sessionCtxData.ActiveAccountID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -196,10 +196,10 @@ func (s *service) ListMealPlanHandler(res http.ResponseWriter, req *http.Request
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	mealPlans, err := s.mealPlanningDataManager.GetMealPlansForHousehold(ctx, sessionCtxData.ActiveHouseholdID, filter)
+	mealPlans, err := s.mealPlanningDataManager.GetMealPlansForAccount(ctx, sessionCtxData.ActiveAccountID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		mealPlans = &filtering.QueryFilteredResult[types.MealPlan]{Data: []*types.MealPlan{}}
@@ -247,7 +247,7 @@ func (s *service) UpdateMealPlanHandler(res http.ResponseWriter, req *http.Reque
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.MealPlanUpdateRequestInput)
@@ -264,7 +264,7 @@ func (s *service) UpdateMealPlanHandler(res http.ResponseWriter, req *http.Reque
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
-	input.BelongsToHousehold = &sessionCtxData.ActiveHouseholdID
+	input.BelongsToAccount = &sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -273,7 +273,7 @@ func (s *service) UpdateMealPlanHandler(res http.ResponseWriter, req *http.Reque
 
 	// fetch meal plan from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	mealPlan, err := s.mealPlanningDataManager.GetMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+	mealPlan, err := s.mealPlanningDataManager.GetMealPlan(ctx, mealPlanID, sessionCtxData.ActiveAccountID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -299,10 +299,10 @@ func (s *service) UpdateMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.MealPlanUpdatedServiceEventType,
-		MealPlan:    mealPlan,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType: types.MealPlanUpdatedServiceEventType,
+		MealPlan:  mealPlan,
+		AccountID: sessionCtxData.ActiveAccountID,
+		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
@@ -342,7 +342,7 @@ func (s *service) ArchiveMealPlanHandler(res http.ResponseWriter, req *http.Requ
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -350,7 +350,7 @@ func (s *service) ArchiveMealPlanHandler(res http.ResponseWriter, req *http.Requ
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.mealPlanningDataManager.MealPlanExists(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
+	exists, err := s.mealPlanningDataManager.MealPlanExists(ctx, mealPlanID, sessionCtxData.ActiveAccountID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		observability.AcknowledgeError(err, logger, span, "checking meal plan existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -364,7 +364,7 @@ func (s *service) ArchiveMealPlanHandler(res http.ResponseWriter, req *http.Requ
 	existenceTimer.Stop()
 
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	if err = s.mealPlanningDataManager.ArchiveMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID); err != nil {
+	if err = s.mealPlanningDataManager.ArchiveMealPlan(ctx, mealPlanID, sessionCtxData.ActiveAccountID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -373,10 +373,10 @@ func (s *service) ArchiveMealPlanHandler(res http.ResponseWriter, req *http.Requ
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.MealPlanArchivedServiceEventType,
-		MealPlanID:  mealPlanID,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType:  types.MealPlanArchivedServiceEventType,
+		MealPlanID: mealPlanID,
+		AccountID:  sessionCtxData.ActiveAccountID,
+		UserID:     sessionCtxData.Requester.UserID,
 	}
 
 	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
@@ -415,7 +415,7 @@ func (s *service) FinalizeMealPlanHandler(res http.ResponseWriter, req *http.Req
 	}
 	sessionContextTimer.Stop()
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	accountID := sessionCtxData.ActiveAccountID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
@@ -428,7 +428,7 @@ func (s *service) FinalizeMealPlanHandler(res http.ResponseWriter, req *http.Req
 
 	// fetch meal plan from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	mealPlan, err := s.mealPlanningDataManager.GetMealPlan(ctx, mealPlanID, householdID)
+	mealPlan, err := s.mealPlanningDataManager.GetMealPlan(ctx, mealPlanID, accountID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -442,7 +442,7 @@ func (s *service) FinalizeMealPlanHandler(res http.ResponseWriter, req *http.Req
 	readTimer.Stop()
 
 	// update the meal plan.
-	worked, err := s.mealPlanningDataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, householdID)
+	worked, err := s.mealPlanningDataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, accountID)
 	if err != nil {
 		if errors.Is(err, database.ErrAlreadyFinalized) {
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAlreadyReported)
@@ -460,10 +460,10 @@ func (s *service) FinalizeMealPlanHandler(res http.ResponseWriter, req *http.Req
 		return
 	} else {
 		dcm := &types.DataChangeMessage{
-			EventType:   types.MealPlanFinalizedServiceEventType,
-			MealPlan:    mealPlan,
-			HouseholdID: householdID,
-			UserID:      sessionCtxData.Requester.UserID,
+			EventType: types.MealPlanFinalizedServiceEventType,
+			MealPlan:  mealPlan,
+			AccountID: accountID,
+			UserID:    sessionCtxData.Requester.UserID,
 		}
 
 		go s.dataChangesPublisher.PublishAsync(ctx, dcm)

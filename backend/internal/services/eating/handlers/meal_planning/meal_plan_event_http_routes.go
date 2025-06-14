@@ -42,7 +42,7 @@ func (s *service) CreateMealPlanEventHandler(res http.ResponseWriter, req *http.
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID // determine meal plan ID.
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID // determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
@@ -86,7 +86,7 @@ func (s *service) CreateMealPlanEventHandler(res http.ResponseWriter, req *http.
 	dcm := &types.DataChangeMessage{
 		EventType:     types.MealPlanEventCreatedServiceEventType,
 		MealPlanEvent: mealPlanEvent,
-		HouseholdID:   sessionCtxData.ActiveHouseholdID,
+		AccountID:     sessionCtxData.ActiveAccountID,
 		UserID:        sessionCtxData.Requester.UserID,
 	}
 
@@ -126,7 +126,7 @@ func (s *service) ReadMealPlanEventHandler(res http.ResponseWriter, req *http.Re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID // determine meal plan ID.
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID // determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
@@ -190,7 +190,7 @@ func (s *service) ListMealPlanEventHandler(res http.ResponseWriter, req *http.Re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID // determine meal plan ID.
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID // determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
@@ -244,7 +244,7 @@ func (s *service) UpdateMealPlanEventHandler(res http.ResponseWriter, req *http.
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID // check for parsed input attached to session context data.
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID // check for parsed input attached to session context data.
 	input := new(types.MealPlanEventUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error("error encountered decoding request body", err)
@@ -300,7 +300,7 @@ func (s *service) UpdateMealPlanEventHandler(res http.ResponseWriter, req *http.
 	dcm := &types.DataChangeMessage{
 		EventType:     types.MealPlanEventUpdatedServiceEventType,
 		MealPlanEvent: mealPlanEvent,
-		HouseholdID:   sessionCtxData.ActiveHouseholdID,
+		AccountID:     sessionCtxData.ActiveAccountID,
 		UserID:        sessionCtxData.Requester.UserID,
 	}
 
@@ -341,7 +341,7 @@ func (s *service) ArchiveMealPlanEventHandler(res http.ResponseWriter, req *http
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -379,7 +379,7 @@ func (s *service) ArchiveMealPlanEventHandler(res http.ResponseWriter, req *http
 	dcm := &types.DataChangeMessage{
 		EventType:       types.MealPlanEventArchivedServiceEventType,
 		MealPlanEventID: mealPlanEventID,
-		HouseholdID:     sessionCtxData.ActiveHouseholdID,
+		AccountID:       sessionCtxData.ActiveAccountID,
 		UserID:          sessionCtxData.Requester.UserID,
 	}
 

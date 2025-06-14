@@ -42,7 +42,7 @@ func (s *service) CreateRecipeRatingHandler(res http.ResponseWriter, req *http.R
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.RecipeRatingCreationRequestInput)
@@ -118,7 +118,7 @@ func (s *service) ReadRecipeRatingHandler(res http.ResponseWriter, req *http.Req
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -189,7 +189,7 @@ func (s *service) ListRecipeRatingsHandler(res http.ResponseWriter, req *http.Re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	recipeRatings, err := s.recipeManagementDataManager.GetRecipeRatingsForRecipe(ctx, recipeID, filter)
@@ -240,7 +240,7 @@ func (s *service) UpdateRecipeRatingHandler(res http.ResponseWriter, req *http.R
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.RecipeRatingUpdateRequestInput)
@@ -338,7 +338,7 @@ func (s *service) ArchiveRecipeRatingHandler(res http.ResponseWriter, req *http.
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)

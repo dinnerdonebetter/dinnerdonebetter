@@ -3,7 +3,7 @@
 package apiclient
 
 type (
-	HouseholdInvitationCreationRequestInput struct {
+	AccountInvitationCreationRequestInput struct {
 		ExpiresAt string `json:"expiresAt"`
 		Note      string `json:"note"`
 		ToEmail   string `json:"toEmail"`

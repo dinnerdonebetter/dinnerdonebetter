@@ -47,7 +47,7 @@ func (s *service) CreateUserNotificationHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.UserNotificationCreationRequestInput)
@@ -81,7 +81,7 @@ func (s *service) CreateUserNotificationHandler(res http.ResponseWriter, req *ht
 	dcm := &types.DataChangeMessage{
 		EventType:        types.UserNotificationCreatedServiceEventType,
 		UserNotification: userNotification,
-		HouseholdID:      sessionCtxData.ActiveHouseholdID,
+		AccountID:        sessionCtxData.ActiveAccountID,
 		UserID:           sessionCtxData.Requester.UserID,
 	}
 
@@ -123,7 +123,7 @@ func (s *service) ReadUserNotificationHandler(res http.ResponseWriter, req *http
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine user notification ID.
 	userNotificationID := s.userNotificationIDFetcher(req)
@@ -184,7 +184,7 @@ func (s *service) ListUserNotificationsHandler(res http.ResponseWriter, req *htt
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	userNotifications, err := s.userNotificationDataManager.GetUserNotifications(ctx, sessionCtxData.Requester.UserID, filter)
@@ -235,7 +235,7 @@ func (s *service) UpdateUserNotificationHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.UserNotificationUpdateRequestInput)
@@ -288,7 +288,7 @@ func (s *service) UpdateUserNotificationHandler(res http.ResponseWriter, req *ht
 	dcm := &types.DataChangeMessage{
 		EventType:        types.UserNotificationUpdatedServiceEventType,
 		UserNotification: userNotification,
-		HouseholdID:      sessionCtxData.ActiveHouseholdID,
+		AccountID:        sessionCtxData.ActiveAccountID,
 		UserID:           sessionCtxData.Requester.UserID,
 	}
 

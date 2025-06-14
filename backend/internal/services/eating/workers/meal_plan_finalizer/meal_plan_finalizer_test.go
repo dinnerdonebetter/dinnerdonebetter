@@ -61,7 +61,7 @@ func TestWorker_Work(T *testing.T) {
 				"AttemptToFinalizeMealPlan",
 				testutils.ContextMatcher,
 				mealPlan.ID,
-				mealPlan.BelongsToHousehold,
+				mealPlan.BelongsToAccount,
 			).Return(true, nil)
 
 			pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*types.DataChangeMessage")).Return(nil)

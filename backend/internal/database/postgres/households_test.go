@@ -15,40 +15,40 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createHouseholdForTest(t *testing.T, ctx context.Context, exampleHousehold *types.Household, dbc *Querier) *types.Household {
+func createAccountForTest(t *testing.T, ctx context.Context, exampleAccount *types.Account, dbc *Querier) *types.Account {
 	t.Helper()
 
 	// create
-	if exampleHousehold == nil {
+	if exampleAccount == nil {
 		exampleUser := createUserForTest(t, ctx, nil, dbc)
-		exampleHousehold = fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = exampleUser.ID
+		exampleAccount = fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = exampleUser.ID
 	}
-	exampleHousehold.PaymentProcessorCustomerID = ""
-	exampleHousehold.Members = nil
-	dbInput := converters.ConvertHouseholdToHouseholdDatabaseCreationInput(exampleHousehold)
+	exampleAccount.PaymentProcessorCustomerID = ""
+	exampleAccount.Members = nil
+	dbInput := converters.ConvertAccountToAccountDatabaseCreationInput(exampleAccount)
 
-	created, err := dbc.CreateHousehold(ctx, dbInput)
+	created, err := dbc.CreateAccount(ctx, dbInput)
 	assert.NoError(t, err)
 	require.NotNil(t, created)
-	exampleHousehold.CreatedAt = created.CreatedAt
-	exampleHousehold.WebhookEncryptionKey = created.WebhookEncryptionKey
-	assert.Equal(t, exampleHousehold, created)
+	exampleAccount.CreatedAt = created.CreatedAt
+	exampleAccount.WebhookEncryptionKey = created.WebhookEncryptionKey
+	assert.Equal(t, exampleAccount, created)
 
-	household, err := dbc.GetHousehold(ctx, created.ID)
+	account, err := dbc.GetAccount(ctx, created.ID)
 	require.NoError(t, err)
-	require.NotNil(t, household)
+	require.NotNil(t, account)
 
-	exampleHousehold.CreatedAt = household.CreatedAt
-	exampleHousehold.Members = household.Members
-	exampleHousehold.WebhookEncryptionKey = household.WebhookEncryptionKey
+	exampleAccount.CreatedAt = account.CreatedAt
+	exampleAccount.Members = account.Members
+	exampleAccount.WebhookEncryptionKey = account.WebhookEncryptionKey
 
-	assert.Equal(t, exampleHousehold, household)
+	assert.Equal(t, exampleAccount, account)
 
 	return created
 }
 
-func TestQuerier_Integration_Households(t *testing.T) {
+func TestQuerier_Integration_Accounts(t *testing.T) {
 	if !runningContainerTests {
 		t.SkipNow()
 	}
@@ -67,41 +67,41 @@ func TestQuerier_Integration_Households(t *testing.T) {
 
 	exampleUser := createUserForTest(t, ctx, nil, dbc)
 
-	exampleHousehold := fakes.BuildFakeHousehold()
-	exampleHousehold.Members = nil
-	exampleHousehold.BelongsToUser = exampleUser.ID
-	exampleHousehold.PaymentProcessorCustomerID = ""
-	createdHouseholds := []*types.Household{}
+	exampleAccount := fakes.BuildFakeAccount()
+	exampleAccount.Members = nil
+	exampleAccount.BelongsToUser = exampleUser.ID
+	exampleAccount.PaymentProcessorCustomerID = ""
+	createdAccounts := []*types.Account{}
 
 	// create
-	createdHouseholds = append(createdHouseholds, createHouseholdForTest(t, ctx, exampleHousehold, dbc))
+	createdAccounts = append(createdAccounts, createAccountForTest(t, ctx, exampleAccount, dbc))
 
 	// update
-	updatedHousehold := fakes.BuildFakeHousehold()
-	updatedHousehold.ID = createdHouseholds[0].ID
-	updatedHousehold.BelongsToUser = createdHouseholds[0].BelongsToUser
-	assert.NoError(t, dbc.UpdateHousehold(ctx, updatedHousehold))
+	updatedAccount := fakes.BuildFakeAccount()
+	updatedAccount.ID = createdAccounts[0].ID
+	updatedAccount.BelongsToUser = createdAccounts[0].BelongsToUser
+	assert.NoError(t, dbc.UpdateAccount(ctx, updatedAccount))
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		input := fakes.BuildFakeHousehold()
+		input := fakes.BuildFakeAccount()
 		input.BelongsToUser = exampleUser.ID
-		input.Name = fmt.Sprintf("%s %d", updatedHousehold.Name, i)
-		createdHouseholds = append(createdHouseholds, createHouseholdForTest(t, ctx, input, dbc))
+		input.Name = fmt.Sprintf("%s %d", updatedAccount.Name, i)
+		createdAccounts = append(createdAccounts, createAccountForTest(t, ctx, input, dbc))
 	}
 
 	// fetch as list
-	households, err := dbc.GetHouseholds(ctx, exampleUser.ID, nil)
+	accounts, err := dbc.GetAccounts(ctx, exampleUser.ID, nil)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, households.Data)
-	assert.GreaterOrEqual(t, len(households.Data), len(createdHouseholds))
+	assert.NotEmpty(t, accounts.Data)
+	assert.GreaterOrEqual(t, len(accounts.Data), len(createdAccounts))
 
 	// delete
-	for _, household := range createdHouseholds {
-		assert.NoError(t, dbc.ArchiveHousehold(ctx, household.ID, exampleUser.ID))
+	for _, account := range createdAccounts {
+		assert.NoError(t, dbc.ArchiveAccount(ctx, account.ID, exampleUser.ID))
 
-		var y *types.Household
-		y, err = dbc.GetHousehold(ctx, household.ID)
+		var y *types.Account
+		y, err = dbc.GetAccount(ctx, account.ID)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)
@@ -110,21 +110,21 @@ func TestQuerier_Integration_Households(t *testing.T) {
 	assert.NoError(t, dbc.ArchiveUser(ctx, exampleUser.ID))
 }
 
-func TestQuerier_GetHousehold(T *testing.T) {
+func TestQuerier_GetAccount(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
 		exampleUserID := fakes.BuildFakeID()
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = exampleUserID
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = exampleUserID
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHousehold(ctx, "")
+		actual, err := c.GetAccount(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -135,18 +135,18 @@ func TestQuerier_GetHousehold(T *testing.T) {
 		ctx := context.Background()
 
 		exampleUserID := fakes.BuildFakeID()
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = exampleUserID
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = exampleUserID
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHousehold(ctx, exampleHousehold.ID)
+		actual, err := c.GetAccount(ctx, exampleAccount.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 }
 
-func TestQuerier_GetHouseholds(T *testing.T) {
+func TestQuerier_GetAccounts(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid user ID", func(t *testing.T) {
@@ -157,13 +157,13 @@ func TestQuerier_GetHouseholds(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHouseholds(ctx, "", filter)
+		actual, err := c.GetAccounts(ctx, "", filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 }
 
-func TestQuerier_CreateHousehold(T *testing.T) {
+func TestQuerier_CreateAccount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -172,33 +172,33 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.CreateHousehold(ctx, nil)
+		actual, err := c.CreateAccount(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 }
 
-func TestQuerier_UpdateHousehold(T *testing.T) {
+func TestQuerier_UpdateAccount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = exampleUserID
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = exampleUserID
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.UpdateHousehold(ctx, nil))
+		assert.Error(t, c.UpdateAccount(ctx, nil))
 	})
 }
 
-func TestQuerier_ArchiveHousehold(T *testing.T) {
+func TestQuerier_ArchiveAccount(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleUserID := fakes.BuildFakeID()
@@ -206,17 +206,17 @@ func TestQuerier_ArchiveHousehold(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveHousehold(ctx, "", exampleUserID))
+		assert.Error(t, c.ArchiveAccount(ctx, "", exampleUserID))
 	})
 
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveHousehold(ctx, exampleHouseholdID, ""))
+		assert.Error(t, c.ArchiveAccount(ctx, exampleAccountID, ""))
 	})
 }

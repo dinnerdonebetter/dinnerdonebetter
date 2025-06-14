@@ -45,7 +45,7 @@ func (s *service) CreateValidPreparationHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidPreparationCreationRequestInput)
@@ -120,7 +120,7 @@ func (s *service) ReadValidPreparationHandler(res http.ResponseWriter, req *http
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid preparation ID.
 	validPreparationID := s.validPreparationIDFetcher(req)
@@ -181,7 +181,7 @@ func (s *service) ListValidPreparationsHandler(res http.ResponseWriter, req *htt
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	validPreparations, err := s.validEnumerationDataManager.GetValidPreparations(ctx, filter)
@@ -311,7 +311,7 @@ func (s *service) UpdateValidPreparationHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidPreparationUpdateRequestInput)
@@ -404,7 +404,7 @@ func (s *service) ArchiveValidPreparationHandler(res http.ResponseWriter, req *h
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid preparation ID.
 	validPreparationID := s.validPreparationIDFetcher(req)
@@ -475,7 +475,7 @@ func (s *service) RandomValidPreparationHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// fetch valid preparation from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()

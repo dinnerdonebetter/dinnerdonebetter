@@ -16,8 +16,8 @@ import (
 	servertiming "github.com/mitchellh/go-server-timing"
 )
 
-// CreateHouseholdInstrumentOwnershipHandler is our household instrument ownership creation route.
-func (s *service) CreateHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
+// CreateAccountInstrumentOwnershipHandler is our account instrument ownership creation route.
+func (s *service) CreateAccountInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -42,10 +42,10 @@ func (s *service) CreateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
-	providedInput := new(types.HouseholdInstrumentOwnershipCreationRequestInput)
+	providedInput := new(types.AccountInstrumentOwnershipCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -60,16 +60,16 @@ func (s *service) CreateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 		return
 	}
 
-	input := converters.ConvertHouseholdInstrumentOwnershipCreationRequestInputToHouseholdInstrumentOwnershipDatabaseCreationInput(providedInput)
+	input := converters.ConvertAccountInstrumentOwnershipCreationRequestInputToAccountInstrumentOwnershipDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	input.BelongsToAccount = sessionCtxData.ActiveAccountID
 
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, input.ID)
 
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
-	householdInstrumentOwnership, err := s.mealPlanningDataManager.CreateHouseholdInstrumentOwnership(ctx, input)
+	accountInstrumentOwnership, err := s.mealPlanningDataManager.CreateAccountInstrumentOwnership(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating household instrument ownership")
+		observability.AcknowledgeError(err, logger, span, "creating account instrument ownership")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -77,23 +77,23 @@ func (s *service) CreateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:                    types.HouseholdInstrumentOwnershipCreatedServiceEventType,
-		HouseholdInstrumentOwnership: householdInstrumentOwnership,
-		UserID:                       sessionCtxData.Requester.UserID,
+		EventType:                  types.AccountInstrumentOwnershipCreatedServiceEventType,
+		AccountInstrumentOwnership: accountInstrumentOwnership,
+		UserID:                     sessionCtxData.Requester.UserID,
 	}
 
 	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
-	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
+	responseValue := &types.APIResponse[*types.AccountInstrumentOwnership]{
 		Details: responseDetails,
-		Data:    householdInstrumentOwnership,
+		Data:    accountInstrumentOwnership,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHouseholdInstrumentOwnershipHandler returns a GET handler that returns a household instrument ownership.
-func (s *service) ReadHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
+// ReadAccountInstrumentOwnershipHandler returns a GET handler that returns a account instrument ownership.
+func (s *service) ReadAccountInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -116,29 +116,29 @@ func (s *service) ReadHouseholdInstrumentOwnershipHandler(res http.ResponseWrite
 	}
 	sessionContextTimer.Stop()
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	accountID := sessionCtxData.ActiveAccountID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine household instrument ownership ID.
-	householdInstrumentOwnershipID := s.householdInstrumentOwnershipIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	// determine account instrument ownership ID.
+	accountInstrumentOwnershipID := s.accountInstrumentOwnershipIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
-	// fetch household instrument ownership from database.
-	x, err := s.mealPlanningDataManager.GetHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, householdID)
+	// fetch account instrument ownership from database.
+	x, err := s.mealPlanningDataManager.GetAccountInstrumentOwnership(ctx, accountInstrumentOwnershipID, accountID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving household instrument ownership")
+		observability.AcknowledgeError(err, logger, span, "retrieving account instrument ownership")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
-	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
+	responseValue := &types.APIResponse[*types.AccountInstrumentOwnership]{
 		Details: responseDetails,
 		Data:    x,
 	}
@@ -147,8 +147,8 @@ func (s *service) ReadHouseholdInstrumentOwnershipHandler(res http.ResponseWrite
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// ListHouseholdInstrumentOwnershipHandler is our list route.
-func (s *service) ListHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
+// ListAccountInstrumentOwnershipHandler is our list route.
+func (s *service) ListAccountInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -175,33 +175,33 @@ func (s *service) ListHouseholdInstrumentOwnershipHandler(res http.ResponseWrite
 	}
 	sessionContextTimer.Stop()
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	accountID := sessionCtxData.ActiveAccountID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	householdInstrumentOwnerships, err := s.mealPlanningDataManager.GetHouseholdInstrumentOwnerships(ctx, householdID, filter)
+	accountInstrumentOwnerships, err := s.mealPlanningDataManager.GetAccountInstrumentOwnerships(ctx, accountID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		householdInstrumentOwnerships = &filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership]{Data: []*types.HouseholdInstrumentOwnership{}}
+		accountInstrumentOwnerships = &filtering.QueryFilteredResult[types.AccountInstrumentOwnership]{Data: []*types.AccountInstrumentOwnership{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving household instrument ownerships")
+		observability.AcknowledgeError(err, logger, span, "retrieving account instrument ownerships")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
-	responseValue := &types.APIResponse[[]*types.HouseholdInstrumentOwnership]{
+	responseValue := &types.APIResponse[[]*types.AccountInstrumentOwnership]{
 		Details:    responseDetails,
-		Data:       householdInstrumentOwnerships.Data,
-		Pagination: &householdInstrumentOwnerships.Pagination,
+		Data:       accountInstrumentOwnerships.Data,
+		Pagination: &accountInstrumentOwnerships.Pagination,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// UpdateHouseholdInstrumentOwnershipHandler returns a handler that updates a household instrument ownership.
-func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
+// UpdateAccountInstrumentOwnershipHandler returns a handler that updates a account instrument ownership.
+func (s *service) UpdateAccountInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -224,12 +224,12 @@ func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 	}
 	sessionContextTimer.Stop()
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	accountID := sessionCtxData.ActiveAccountID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.HouseholdInstrumentOwnershipUpdateRequestInput)
+	input := new(types.AccountInstrumentOwnershipUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error("error encountered decoding request body", err)
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -244,30 +244,30 @@ func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 		return
 	}
 
-	// determine household instrument ownership ID.
-	householdInstrumentOwnershipID := s.householdInstrumentOwnershipIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	// determine account instrument ownership ID.
+	accountInstrumentOwnershipID := s.accountInstrumentOwnershipIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
-	// fetch household instrument ownership from database.
-	householdInstrumentOwnership, err := s.mealPlanningDataManager.GetHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, householdID)
+	// fetch account instrument ownership from database.
+	accountInstrumentOwnership, err := s.mealPlanningDataManager.GetAccountInstrumentOwnership(ctx, accountInstrumentOwnershipID, accountID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving household instrument ownership for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving account instrument ownership for update")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
-	// update the household instrument ownership.
-	householdInstrumentOwnership.Update(input)
+	// update the account instrument ownership.
+	accountInstrumentOwnership.Update(input)
 
 	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
-	if err = s.mealPlanningDataManager.UpdateHouseholdInstrumentOwnership(ctx, householdInstrumentOwnership); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating household instrument ownership")
+	if err = s.mealPlanningDataManager.UpdateAccountInstrumentOwnership(ctx, accountInstrumentOwnership); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating account instrument ownership")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -275,24 +275,24 @@ func (s *service) UpdateHouseholdInstrumentOwnershipHandler(res http.ResponseWri
 	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:                    types.HouseholdInstrumentOwnershipUpdatedServiceEventType,
-		HouseholdInstrumentOwnership: householdInstrumentOwnership,
-		UserID:                       sessionCtxData.Requester.UserID,
+		EventType:                  types.AccountInstrumentOwnershipUpdatedServiceEventType,
+		AccountInstrumentOwnership: accountInstrumentOwnership,
+		UserID:                     sessionCtxData.Requester.UserID,
 	}
 
 	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
-	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
+	responseValue := &types.APIResponse[*types.AccountInstrumentOwnership]{
 		Details: responseDetails,
-		Data:    householdInstrumentOwnership,
+		Data:    accountInstrumentOwnership,
 	}
 
 	// encode our response and peace.
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// ArchiveHouseholdInstrumentOwnershipHandler returns a handler that archives a household instrument ownership.
-func (s *service) ArchiveHouseholdInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
+// ArchiveAccountInstrumentOwnershipHandler returns a handler that archives a account instrument ownership.
+func (s *service) ArchiveAccountInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -315,19 +315,19 @@ func (s *service) ArchiveHouseholdInstrumentOwnershipHandler(res http.ResponseWr
 	}
 	sessionContextTimer.Stop()
 
-	householdID := sessionCtxData.ActiveHouseholdID
+	accountID := sessionCtxData.ActiveAccountID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine household instrument ownership ID.
-	householdInstrumentOwnershipID := s.householdInstrumentOwnershipIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	// determine account instrument ownership ID.
+	accountInstrumentOwnershipID := s.accountInstrumentOwnershipIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.mealPlanningDataManager.HouseholdInstrumentOwnershipExists(ctx, householdInstrumentOwnershipID, householdID)
+	exists, err := s.mealPlanningDataManager.AccountInstrumentOwnershipExists(ctx, accountInstrumentOwnershipID, accountID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		observability.AcknowledgeError(err, logger, span, "checking household instrument ownership existence")
+		observability.AcknowledgeError(err, logger, span, "checking account instrument ownership existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -339,8 +339,8 @@ func (s *service) ArchiveHouseholdInstrumentOwnershipHandler(res http.ResponseWr
 	existenceTimer.Stop()
 
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	if err = s.mealPlanningDataManager.ArchiveHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, householdID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving household instrument ownership")
+	if err = s.mealPlanningDataManager.ArchiveAccountInstrumentOwnership(ctx, accountInstrumentOwnershipID, accountID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving account instrument ownership")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -348,13 +348,13 @@ func (s *service) ArchiveHouseholdInstrumentOwnershipHandler(res http.ResponseWr
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.HouseholdInstrumentOwnershipArchivedServiceEventType,
+		EventType: types.AccountInstrumentOwnershipArchivedServiceEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
 
-	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
+	responseValue := &types.APIResponse[*types.AccountInstrumentOwnership]{
 		Details: responseDetails,
 	}
 

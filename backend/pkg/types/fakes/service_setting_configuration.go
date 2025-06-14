@@ -9,13 +9,13 @@ import (
 // BuildFakeServiceSettingConfiguration builds a faked service setting.
 func BuildFakeServiceSettingConfiguration() *types.ServiceSettingConfiguration {
 	return &types.ServiceSettingConfiguration{
-		ID:                 BuildFakeID(),
-		Value:              buildUniqueString(),
-		Notes:              buildUniqueString(),
-		ServiceSetting:     *BuildFakeServiceSetting(),
-		BelongsToUser:      buildUniqueString(),
-		BelongsToHousehold: buildUniqueString(),
-		CreatedAt:          BuildFakeTime(),
+		ID:               BuildFakeID(),
+		Value:            buildUniqueString(),
+		Notes:            buildUniqueString(),
+		ServiceSetting:   *BuildFakeServiceSetting(),
+		BelongsToUser:    buildUniqueString(),
+		BelongsToAccount: buildUniqueString(),
+		CreatedAt:        BuildFakeTime(),
 	}
 }
 

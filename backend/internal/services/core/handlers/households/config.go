@@ -1,4 +1,4 @@
-package households
+package accounts
 
 import (
 	"context"

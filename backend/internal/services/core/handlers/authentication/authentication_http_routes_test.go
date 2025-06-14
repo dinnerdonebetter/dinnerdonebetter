@@ -59,13 +59,13 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManagerMock{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountMembershipManager = membershipDB
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -126,13 +126,13 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManagerMock{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountMembershipManager = membershipDB
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -480,7 +480,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator)
 	})
 
-	T.Run("with error fetching default household", func(t *testing.T) {
+	T.Run("with error fetching default account", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -512,13 +512,13 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManagerMock{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return("", errors.New("blah"))
-		helper.service.householdMembershipManager = membershipDB
+		helper.service.accountMembershipManager = membershipDB
 
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
@@ -560,13 +560,13 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
+		membershipDB := &mocktypes.AccountUserMembershipDataManagerMock{}
 		membershipDB.On(
-			"GetDefaultHouseholdIDForUser",
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdMembershipManager = membershipDB
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountMembershipManager = membershipDB
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(

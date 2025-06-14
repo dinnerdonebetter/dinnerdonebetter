@@ -14,12 +14,12 @@ import (
 )
 
 type capitalismServiceHTTPRoutesTestHelper struct {
-	ctx              context.Context
-	req              *http.Request
-	res              *httptest.ResponseRecorder
-	service          *service
-	exampleUser      *types.User
-	exampleHousehold *types.Household
+	ctx            context.Context
+	req            *http.Request
+	res            *httptest.ResponseRecorder
+	service        *service
+	exampleUser    *types.User
+	exampleAccount *types.Account
 }
 
 func buildTestHelper(t *testing.T) *capitalismServiceHTTPRoutesTestHelper {
@@ -30,8 +30,8 @@ func buildTestHelper(t *testing.T) *capitalismServiceHTTPRoutesTestHelper {
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 
 	sessionCtxData := &sessions.ContextData{
 		Requester: sessions.RequesterInfo{
@@ -40,9 +40,9 @@ func buildTestHelper(t *testing.T) *capitalismServiceHTTPRoutesTestHelper {
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

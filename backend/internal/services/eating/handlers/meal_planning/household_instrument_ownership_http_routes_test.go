@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnershipHandler(T *testing.T) {
+func TestAccountInstrumentOwnershipsService_CreateAccountInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -33,7 +33,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdInstrumentOwnershipCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountInstrumentOwnershipCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -42,11 +42,11 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"CreateHouseholdInstrumentOwnership",
+		dbManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"CreateAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInstrumentOwnershipDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
+			mock.MatchedBy(func(*types.AccountInstrumentOwnershipDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleAccountInstrumentOwnership, nil)
 		helper.service.mealPlanningDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -57,12 +57,12 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.CreateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInstrumentOwnership)
+		assert.Equal(t, actual.Data, helper.exampleAccountInstrumentOwnership)
 		assert.NoError(t, actual.Error.AsError())
 
 		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
@@ -79,10 +79,10 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.CreateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -94,7 +94,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.HouseholdInstrumentOwnershipCreationRequestInput{}
+		exampleCreationInput := &types.AccountInstrumentOwnershipCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -102,10 +102,10 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.CreateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -117,7 +117,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdInstrumentOwnershipCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountInstrumentOwnershipCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -127,10 +127,10 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.CreateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -142,7 +142,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdInstrumentOwnershipCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountInstrumentOwnershipCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -151,17 +151,17 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"CreateHouseholdInstrumentOwnership",
+		dbManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"CreateAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInstrumentOwnershipDatabaseCreationInput) bool { return true }),
-		).Return((*types.HouseholdInstrumentOwnership)(nil), errors.New("blah"))
+			mock.MatchedBy(func(*types.AccountInstrumentOwnershipDatabaseCreationInput) bool { return true }),
+		).Return((*types.AccountInstrumentOwnership)(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
 
-		helper.service.CreateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.CreateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -170,7 +170,7 @@ func TestHouseholdInstrumentOwnershipsService_CreateHouseholdInstrumentOwnership
 	})
 }
 
-func TestHouseholdInstrumentOwnershipsService_ReadHouseholdInstrumentOwnershipHandler(T *testing.T) {
+func TestAccountInstrumentOwnershipsService_ReadAccountInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -178,24 +178,24 @@ func TestHouseholdInstrumentOwnershipsService_ReadHouseholdInstrumentOwnershipHa
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnership",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
+		).Return(helper.exampleAccountInstrumentOwnership, nil)
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.ReadHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ReadAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInstrumentOwnership)
+		assert.Equal(t, actual.Data, helper.exampleAccountInstrumentOwnership)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -204,38 +204,38 @@ func TestHouseholdInstrumentOwnershipsService_ReadHouseholdInstrumentOwnershipHa
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ReadAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such household instrument ownership in the database", func(t *testing.T) {
+	T.Run("with no such account instrument ownership in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnership",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return((*types.HouseholdInstrumentOwnership)(nil), sql.ErrNoRows)
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
+		).Return((*types.AccountInstrumentOwnership)(nil), sql.ErrNoRows)
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.ReadHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ReadAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -243,28 +243,28 @@ func TestHouseholdInstrumentOwnershipsService_ReadHouseholdInstrumentOwnershipHa
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnership",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return((*types.HouseholdInstrumentOwnership)(nil), errors.New("blah"))
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
+		).Return((*types.AccountInstrumentOwnership)(nil), errors.New("blah"))
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.ReadHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ReadAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 }
 
-func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHandler(T *testing.T) {
+func TestAccountInstrumentOwnershipsService_ListAccountInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -272,26 +272,26 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 
 		helper := buildTestHelper(t)
 
-		exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipsList()
+		exampleAccountInstrumentOwnershipList := fakes.BuildFakeAccountInstrumentOwnershipsList()
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnerships",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnerships",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return(exampleHouseholdInstrumentOwnershipList, nil)
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+		).Return(exampleAccountInstrumentOwnershipList, nil)
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ListAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[[]*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, exampleHouseholdInstrumentOwnershipList.Data)
+		assert.Equal(t, actual.Data, exampleAccountInstrumentOwnershipList.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -300,10 +300,10 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ListAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -314,53 +314,53 @@ func TestHouseholdInstrumentOwnershipsService_ListHouseholdInstrumentOwnershipHa
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnerships",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnerships",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return((*filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), sql.ErrNoRows)
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+		).Return((*filtering.QueryFilteredResult[types.AccountInstrumentOwnership])(nil), sql.ErrNoRows)
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ListAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[[]*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 
-	T.Run("with error retrieving household instrument ownerships from database", func(t *testing.T) {
+	T.Run("with error retrieving account instrument ownerships from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnerships",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnerships",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return((*filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership])(nil), errors.New("blah"))
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+		).Return((*filtering.QueryFilteredResult[types.AccountInstrumentOwnership])(nil), errors.New("blah"))
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.ListHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ListAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 }
 
-func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnershipHandler(T *testing.T) {
+func TestAccountInstrumentOwnershipsService_UpdateAccountInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -369,7 +369,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountInstrumentOwnershipUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -378,17 +378,17 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnership",
+		dbManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
+		).Return(helper.exampleAccountInstrumentOwnership, nil)
 
-		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"UpdateHouseholdInstrumentOwnership",
+		dbManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"UpdateAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInstrumentOwnership) bool { return true }),
+			mock.MatchedBy(func(*types.AccountInstrumentOwnership) bool { return true }),
 		).Return(nil)
 		helper.service.mealPlanningDataManager = dbManager
 
@@ -400,12 +400,12 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.UpdateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInstrumentOwnership)
+		assert.Equal(t, actual.Data, helper.exampleAccountInstrumentOwnership)
 		assert.NoError(t, actual.Error.AsError())
 
 		assert.Eventually(t, func() bool { return mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher) }, time.Second, time.Millisecond*100)
@@ -417,7 +417,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.HouseholdInstrumentOwnershipUpdateRequestInput{}
+		exampleCreationInput := &types.AccountInstrumentOwnershipUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -425,10 +425,10 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.UpdateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -440,10 +440,10 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.UpdateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -460,22 +460,22 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.UpdateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such household instrument ownership", func(t *testing.T) {
+	T.Run("with no such account instrument ownership", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountInstrumentOwnershipUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -483,33 +483,33 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnership",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return((*types.HouseholdInstrumentOwnership)(nil), sql.ErrNoRows)
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
+		).Return((*types.AccountInstrumentOwnership)(nil), sql.ErrNoRows)
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.UpdateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 
-	T.Run("with error retrieving household instrument ownership from database", func(t *testing.T) {
+	T.Run("with error retrieving account instrument ownership from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountInstrumentOwnershipUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -517,24 +517,24 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnership",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return((*types.HouseholdInstrumentOwnership)(nil), errors.New("blah"))
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
+		).Return((*types.AccountInstrumentOwnership)(nil), errors.New("blah"))
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.UpdateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -543,7 +543,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountInstrumentOwnershipUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -552,24 +552,24 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"GetHouseholdInstrumentOwnership",
+		dbManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"GetAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleHouseholdInstrumentOwnership, nil)
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
+		).Return(helper.exampleAccountInstrumentOwnership, nil)
 
-		dbManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"UpdateHouseholdInstrumentOwnership",
+		dbManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"UpdateAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInstrumentOwnership) bool { return true }),
+			mock.MatchedBy(func(*types.AccountInstrumentOwnership) bool { return true }),
 		).Return(errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
 
-		helper.service.UpdateHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.UpdateAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -578,7 +578,7 @@ func TestHouseholdInstrumentOwnershipsService_UpdateHouseholdInstrumentOwnership
 	})
 }
 
-func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershipHandler(T *testing.T) {
+func TestAccountInstrumentOwnershipsService_ArchiveAccountInstrumentOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -586,21 +586,21 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"HouseholdInstrumentOwnershipExists",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"AccountInstrumentOwnershipExists",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
 		).Return(true, nil)
 
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"ArchiveHouseholdInstrumentOwnership",
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"ArchiveAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
 		).Return(nil)
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -610,15 +610,15 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
 		assert.Eventually(t, func() bool {
-			return mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager, dataChangesPublisher)
+			return mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager, dataChangesPublisher)
 		}, time.Second, time.Millisecond*100)
 	})
 
@@ -628,38 +628,38 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such household instrument ownership in the database", func(t *testing.T) {
+	T.Run("with no such account instrument ownership in the database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"HouseholdInstrumentOwnershipExists",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"AccountInstrumentOwnershipExists",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
 		).Return(false, nil)
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {
@@ -667,24 +667,24 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"HouseholdInstrumentOwnershipExists",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"AccountInstrumentOwnershipExists",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
 		).Return(false, errors.New("blah"))
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -692,30 +692,30 @@ func TestHouseholdInstrumentOwnershipsService_ArchiveHouseholdInstrumentOwnershi
 
 		helper := buildTestHelper(t)
 
-		householdInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"HouseholdInstrumentOwnershipExists",
+		accountInstrumentOwnershipDataManager := mocktypes.NewMealPlanningDataManagerMock()
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"AccountInstrumentOwnershipExists",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
 		).Return(true, nil)
 
-		householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipDataManagerMock.On(
-			"ArchiveHouseholdInstrumentOwnership",
+		accountInstrumentOwnershipDataManager.AccountInstrumentOwnershipDataManagerMock.On(
+			"ArchiveAccountInstrumentOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInstrumentOwnership.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccountInstrumentOwnership.ID,
+			helper.exampleAccount.ID,
 		).Return(errors.New("blah"))
-		helper.service.mealPlanningDataManager = householdInstrumentOwnershipDataManager
+		helper.service.mealPlanningDataManager = accountInstrumentOwnershipDataManager
 
-		helper.service.ArchiveHouseholdInstrumentOwnershipHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountInstrumentOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInstrumentOwnership]
+		var actual *types.APIResponse[*types.AccountInstrumentOwnership]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdInstrumentOwnershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountInstrumentOwnershipDataManager)
 	})
 }

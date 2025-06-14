@@ -196,20 +196,20 @@ func ImpersonatingUser(userID string) func(*Client) error {
 	}
 }
 
-// ImpersonatingHousehold sets the impersonatedHouseholdID value on the client.
-func ImpersonatingHousehold(householdID string) func(*Client) error {
+// ImpersonatingAccount sets the impersonatedAccountID value on the client.
+func ImpersonatingAccount(accountID string) func(*Client) error {
 	return func(c *Client) error {
-		c.impersonatedHouseholdID = householdID
+		c.impersonatedAccountID = accountID
 
 		return nil
 	}
 }
 
-// WithoutImpersonating clears the impersonatedUserID and impersonatedHouseholdID value on the client.
+// WithoutImpersonating clears the impersonatedUserID and impersonatedAccountID value on the client.
 func WithoutImpersonating() func(*Client) error {
 	return func(c *Client) error {
 		c.impersonatedUserID = ""
-		c.impersonatedHouseholdID = ""
+		c.impersonatedAccountID = ""
 
 		return nil
 	}

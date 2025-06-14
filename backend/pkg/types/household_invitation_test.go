@@ -7,14 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHouseholdInvitationCreationInput_ValidateWithContext(T *testing.T) {
+func TestAccountInvitationCreationInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdInvitationCreationRequestInput{
+		x := &AccountInvitationCreationRequestInput{
 			ToEmail: t.Name(),
 		}
 
@@ -22,14 +22,14 @@ func TestHouseholdInvitationCreationInput_ValidateWithContext(T *testing.T) {
 	})
 }
 
-func TestHouseholdInvitationUpdateRequestInput_ValidateWithContext(T *testing.T) {
+func TestAccountInvitationUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdInvitationUpdateRequestInput{
+		x := &AccountInvitationUpdateRequestInput{
 			Token: t.Name(),
 		}
 

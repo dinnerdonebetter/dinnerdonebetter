@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (c *Client) GetMealPlansForHousehold(
+func (c *Client) GetMealPlansForAccount(
 	ctx context.Context,
 	filter *QueryFilter,
 	reqMods ...RequestModifier,

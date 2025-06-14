@@ -5,13 +5,13 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// ConvertHouseholdUserMembershipToHouseholdUserMembershipDatabaseCreationInput builds a faked HouseholdUserMembershipCreationRequestInput.
-func ConvertHouseholdUserMembershipToHouseholdUserMembershipDatabaseCreationInput(household *types.HouseholdUserMembership) *types.HouseholdUserMembershipDatabaseCreationInput {
-	return &types.HouseholdUserMembershipDatabaseCreationInput{
-		ID:            identifiers.New(),
-		Reason:        "",
-		UserID:        household.BelongsToUser,
-		HouseholdID:   household.ID,
-		HouseholdRole: household.HouseholdRole,
+// ConvertAccountUserMembershipToAccountUserMembershipDatabaseCreationInput builds a faked AccountUserMembershipCreationRequestInput.
+func ConvertAccountUserMembershipToAccountUserMembershipDatabaseCreationInput(account *types.AccountUserMembership) *types.AccountUserMembershipDatabaseCreationInput {
+	return &types.AccountUserMembershipDatabaseCreationInput{
+		ID:          identifiers.New(),
+		Reason:      "",
+		UserID:      account.BelongsToUser,
+		AccountID:   account.ID,
+		AccountRole: account.AccountRole,
 	}
 }

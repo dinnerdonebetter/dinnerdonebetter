@@ -12,11 +12,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
+	accountinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/accountinvitations"
+	accountsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/accounts"
 	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/dataprivacy"
-	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/householdinvitations"
-	householdsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/households"
 	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/oauth2clients"
 	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/servicesettings"
@@ -46,8 +46,8 @@ func ProvideAPIRouter(
 	metricsProvider metrics.Provider,
 	dataManager database.DataManager,
 	authService types.AuthDataService,
-	householdsService types.HouseholdDataService,
-	householdInvitationsService types.HouseholdInvitationDataService,
+	accountsService types.AccountDataService,
+	accountInvitationsService types.AccountInvitationDataService,
 	usersService types.UserDataService,
 	adminService types.AdminDataService,
 	webhooksService types.WebhookDataService,
@@ -178,78 +178,78 @@ func ProvideAPIRouter(
 			})
 		})
 
-		// Households
-		v1Router.Route("/households", func(householdsRouter routing.Router) {
-			householdsRouter.Post(root, householdsService.CreateHouseholdHandler)
-			householdsRouter.Get(root, householdsService.ListHouseholdsHandler)
-			householdsRouter.Get("/current", householdsService.CurrentInfoHandler)
+		// Accounts
+		v1Router.Route("/accounts", func(accountsRouter routing.Router) {
+			accountsRouter.Post(root, accountsService.CreateAccountHandler)
+			accountsRouter.Get(root, accountsService.ListAccountsHandler)
+			accountsRouter.Get("/current", accountsService.CurrentInfoHandler)
 
-			singleUserRoute := buildURLVarChunk(householdsservice.UserIDURIParamKey)
-			singleHouseholdRoute := buildURLVarChunk(householdsservice.HouseholdIDURIParamKey)
-			householdsRouter.Route(singleHouseholdRoute, func(singleHouseholdRouter routing.Router) {
-				singleHouseholdRouter.Get(root, householdsService.ReadHouseholdHandler)
-				singleHouseholdRouter.Put(root, householdsService.UpdateHouseholdHandler)
-				singleHouseholdRouter.
-					WithMiddleware(authService.PermissionFilterMiddleware(authorization.ArchiveHouseholdPermission)).
-					Delete(root, householdsService.ArchiveHouseholdHandler)
+			singleUserRoute := buildURLVarChunk(accountsservice.UserIDURIParamKey)
+			singleAccountRoute := buildURLVarChunk(accountsservice.AccountIDURIParamKey)
+			accountsRouter.Route(singleAccountRoute, func(singleAccountRouter routing.Router) {
+				singleAccountRouter.Get(root, accountsService.ReadAccountHandler)
+				singleAccountRouter.Put(root, accountsService.UpdateAccountHandler)
+				singleAccountRouter.
+					WithMiddleware(authService.PermissionFilterMiddleware(authorization.ArchiveAccountPermission)).
+					Delete(root, accountsService.ArchiveAccountHandler)
 
-				singleHouseholdRouter.Post("/default", householdsService.MarkAsDefaultHouseholdHandler)
-				singleHouseholdRouter.
-					WithMiddleware(authService.PermissionFilterMiddleware(authorization.RemoveMemberHouseholdPermission)).
-					Delete("/members"+singleUserRoute, householdsService.RemoveMemberHandler)
-				singleHouseholdRouter.
-					WithMiddleware(authService.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)).
-					Post("/invite", householdInvitationsService.InviteMemberHandler)
-				singleHouseholdRouter.
-					WithMiddleware(authService.PermissionFilterMiddleware(authorization.ModifyMemberPermissionsForHouseholdPermission)).
-					Patch("/members"+singleUserRoute+"/permissions", householdsService.ModifyMemberPermissionsHandler)
-				singleHouseholdRouter.Post("/transfer", householdsService.TransferHouseholdOwnershipHandler)
+				singleAccountRouter.Post("/default", accountsService.MarkAsDefaultAccountHandler)
+				singleAccountRouter.
+					WithMiddleware(authService.PermissionFilterMiddleware(authorization.RemoveMemberAccountPermission)).
+					Delete("/members"+singleUserRoute, accountsService.RemoveMemberHandler)
+				singleAccountRouter.
+					WithMiddleware(authService.PermissionFilterMiddleware(authorization.InviteUserToAccountPermission)).
+					Post("/invite", accountInvitationsService.InviteMemberHandler)
+				singleAccountRouter.
+					WithMiddleware(authService.PermissionFilterMiddleware(authorization.ModifyMemberPermissionsForAccountPermission)).
+					Patch("/members"+singleUserRoute+"/permissions", accountsService.ModifyMemberPermissionsHandler)
+				singleAccountRouter.Post("/transfer", accountsService.TransferAccountOwnershipHandler)
 
-				singleHouseholdRouter.Route("/invitations", func(invitationsRouter routing.Router) {
-					invitationsRouter.Post(root, householdInvitationsService.InviteMemberHandler)
+				singleAccountRouter.Route("/invitations", func(invitationsRouter routing.Router) {
+					invitationsRouter.Post(root, accountInvitationsService.InviteMemberHandler)
 
-					singleHouseholdInvitationRoute := buildURLVarChunk(householdinvitationsservice.HouseholdInvitationIDURIParamKey)
-					invitationsRouter.Route(singleHouseholdInvitationRoute, func(singleHouseholdInvitationRouter routing.Router) {
-						singleHouseholdInvitationRouter.Get(root, householdInvitationsService.ReadHouseholdInviteHandler)
+					singleAccountInvitationRoute := buildURLVarChunk(accountinvitationsservice.AccountInvitationIDURIParamKey)
+					invitationsRouter.Route(singleAccountInvitationRoute, func(singleAccountInvitationRouter routing.Router) {
+						singleAccountInvitationRouter.Get(root, accountInvitationsService.ReadAccountInviteHandler)
 					})
 				})
 			})
 
-			// HouseholdInstrumentOwnerships
-			householdInstrumentOwnershipsRouteWithPrefix := "/instruments"
-			householdInstrumentOwnershipIDRouteParam := buildURLVarChunk(mealplanningservice.HouseholdInstrumentOwnershipIDURIParamKey)
-			householdsRouter.Route(householdInstrumentOwnershipsRouteWithPrefix, func(householdInstrumentOwnershipsRouter routing.Router) {
-				householdInstrumentOwnershipsRouter.
-					WithMiddleware(authService.PermissionFilterMiddleware(authorization.CreateHouseholdInstrumentOwnershipsPermission)).
-					Post(root, mealPlanningService.CreateHouseholdInstrumentOwnershipHandler)
-				householdInstrumentOwnershipsRouter.
-					WithMiddleware(authService.PermissionFilterMiddleware(authorization.ReadHouseholdInstrumentOwnershipsPermission)).
-					Get(root, mealPlanningService.ListHouseholdInstrumentOwnershipHandler)
+			// AccountInstrumentOwnerships
+			accountInstrumentOwnershipsRouteWithPrefix := "/instruments"
+			accountInstrumentOwnershipIDRouteParam := buildURLVarChunk(mealplanningservice.AccountInstrumentOwnershipIDURIParamKey)
+			accountsRouter.Route(accountInstrumentOwnershipsRouteWithPrefix, func(accountInstrumentOwnershipsRouter routing.Router) {
+				accountInstrumentOwnershipsRouter.
+					WithMiddleware(authService.PermissionFilterMiddleware(authorization.CreateAccountInstrumentOwnershipsPermission)).
+					Post(root, mealPlanningService.CreateAccountInstrumentOwnershipHandler)
+				accountInstrumentOwnershipsRouter.
+					WithMiddleware(authService.PermissionFilterMiddleware(authorization.ReadAccountInstrumentOwnershipsPermission)).
+					Get(root, mealPlanningService.ListAccountInstrumentOwnershipHandler)
 
-				householdInstrumentOwnershipsRouter.Route(householdInstrumentOwnershipIDRouteParam, func(singleHouseholdInstrumentOwnershipRouter routing.Router) {
-					singleHouseholdInstrumentOwnershipRouter.
-						WithMiddleware(authService.PermissionFilterMiddleware(authorization.ReadHouseholdInstrumentOwnershipsPermission)).
-						Get(root, mealPlanningService.ReadHouseholdInstrumentOwnershipHandler)
-					singleHouseholdInstrumentOwnershipRouter.
-						WithMiddleware(authService.PermissionFilterMiddleware(authorization.UpdateHouseholdInstrumentOwnershipsPermission)).
-						Put(root, mealPlanningService.UpdateHouseholdInstrumentOwnershipHandler)
-					singleHouseholdInstrumentOwnershipRouter.
-						WithMiddleware(authService.PermissionFilterMiddleware(authorization.ArchiveHouseholdInstrumentOwnershipsPermission)).
-						Delete(root, mealPlanningService.ArchiveHouseholdInstrumentOwnershipHandler)
+				accountInstrumentOwnershipsRouter.Route(accountInstrumentOwnershipIDRouteParam, func(singleAccountInstrumentOwnershipRouter routing.Router) {
+					singleAccountInstrumentOwnershipRouter.
+						WithMiddleware(authService.PermissionFilterMiddleware(authorization.ReadAccountInstrumentOwnershipsPermission)).
+						Get(root, mealPlanningService.ReadAccountInstrumentOwnershipHandler)
+					singleAccountInstrumentOwnershipRouter.
+						WithMiddleware(authService.PermissionFilterMiddleware(authorization.UpdateAccountInstrumentOwnershipsPermission)).
+						Put(root, mealPlanningService.UpdateAccountInstrumentOwnershipHandler)
+					singleAccountInstrumentOwnershipRouter.
+						WithMiddleware(authService.PermissionFilterMiddleware(authorization.ArchiveAccountInstrumentOwnershipsPermission)).
+						Delete(root, mealPlanningService.ArchiveAccountInstrumentOwnershipHandler)
 				})
 			})
 		})
 
-		v1Router.Route("/household_invitations", func(householdInvitationsRouter routing.Router) {
-			householdInvitationsRouter.Get("/sent", householdInvitationsService.OutboundInvitesHandler)
-			householdInvitationsRouter.Get("/received", householdInvitationsService.InboundInvitesHandler)
+		v1Router.Route("/account_invitations", func(accountInvitationsRouter routing.Router) {
+			accountInvitationsRouter.Get("/sent", accountInvitationsService.OutboundInvitesHandler)
+			accountInvitationsRouter.Get("/received", accountInvitationsService.InboundInvitesHandler)
 
-			singleHouseholdInvitationRoute := buildURLVarChunk(householdinvitationsservice.HouseholdInvitationIDURIParamKey)
-			householdInvitationsRouter.Route(singleHouseholdInvitationRoute, func(singleHouseholdInvitationRouter routing.Router) {
-				singleHouseholdInvitationRouter.Get(root, householdInvitationsService.ReadHouseholdInviteHandler)
-				singleHouseholdInvitationRouter.Put("/cancel", householdInvitationsService.CancelInviteHandler)
-				singleHouseholdInvitationRouter.Put("/accept", householdInvitationsService.AcceptInviteHandler)
-				singleHouseholdInvitationRouter.Put("/reject", householdInvitationsService.RejectInviteHandler)
+			singleAccountInvitationRoute := buildURLVarChunk(accountinvitationsservice.AccountInvitationIDURIParamKey)
+			accountInvitationsRouter.Route(singleAccountInvitationRoute, func(singleAccountInvitationRouter routing.Router) {
+				singleAccountInvitationRouter.Get(root, accountInvitationsService.ReadAccountInviteHandler)
+				singleAccountInvitationRouter.Put("/cancel", accountInvitationsService.CancelInviteHandler)
+				singleAccountInvitationRouter.Put("/accept", accountInvitationsService.AcceptInviteHandler)
+				singleAccountInvitationRouter.Put("/reject", accountInvitationsService.RejectInviteHandler)
 			})
 		})
 
@@ -315,7 +315,7 @@ func ProvideAPIRouter(
 				Get("/for_user", auditLogEntriesService.ListUserAuditLogEntriesHandler)
 			auditLogEntriesRouter.
 				WithMiddleware(authService.PermissionFilterMiddleware(authorization.ReadAuditLogEntriesPermission)).
-				Get("/for_household", auditLogEntriesService.ListHouseholdAuditLogEntriesHandler)
+				Get("/for_account", auditLogEntriesService.ListAccountAuditLogEntriesHandler)
 		})
 
 		// ValidInstruments
@@ -1316,7 +1316,7 @@ func ProvideAPIRouter(
 					Get("/user", serviceSettingConfigurationsService.GetServiceSettingConfigurationsForUserHandler)
 				settingConfigurationRouter.
 					WithMiddleware(authService.PermissionFilterMiddleware(authorization.ReadServiceSettingConfigurationsPermission)).
-					Get("/household", serviceSettingConfigurationsService.GetServiceSettingConfigurationsForHouseholdHandler)
+					Get("/account", serviceSettingConfigurationsService.GetServiceSettingConfigurationsForAccountHandler)
 				settingConfigurationRouter.
 					WithMiddleware(authService.PermissionFilterMiddleware(authorization.UpdateServiceSettingConfigurationsPermission)).
 					Put(serviceSettingConfigurationIDRouteParam, serviceSettingConfigurationsService.UpdateServiceSettingConfigurationHandler)

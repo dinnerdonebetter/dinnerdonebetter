@@ -1,4 +1,4 @@
-package householdinvitations
+package accountinvitations
 
 import (
 	"bytes"
@@ -36,7 +36,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
+		exampleInput := fakes.BuildFakeAccountInvitationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -61,12 +61,12 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManagerMock.On(
-			"CreateHouseholdInvitation",
+		dbManager.AccountInvitationDataManagerMock.On(
+			"CreateAccountInvitation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleHouseholdInvitation, nil)
-		helper.service.householdInvitationDataManager = dbManager
+			mock.MatchedBy(func(*types.AccountInvitationDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleAccountInvitation, nil)
+		helper.service.accountInvitationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -79,11 +79,11 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
-		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		helper.exampleAccountInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleAccountInvitation.DestinationAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccountInvitation)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
@@ -101,7 +101,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -113,7 +113,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := &types.HouseholdInvitationCreationRequestInput{}
+		exampleInput := &types.AccountInvitationCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -124,7 +124,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -136,7 +136,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
+		exampleInput := fakes.BuildFakeAccountInvitationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -155,7 +155,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -169,7 +169,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
+		exampleInput := fakes.BuildFakeAccountInvitationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -196,7 +196,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -210,7 +210,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
+		exampleInput := fakes.BuildFakeAccountInvitationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -235,17 +235,17 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManagerMock.On(
-			"CreateHouseholdInvitation",
+		dbManager.AccountInvitationDataManagerMock.On(
+			"CreateAccountInvitation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
-		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
-		helper.service.householdInvitationDataManager = dbManager
+			mock.MatchedBy(func(*types.AccountInvitationDatabaseCreationInput) bool { return true }),
+		).Return((*types.AccountInvitation)(nil), errors.New("blah"))
+		helper.service.accountInvitationDataManager = dbManager
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -259,7 +259,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
+		exampleInput := fakes.BuildFakeAccountInvitationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -284,12 +284,12 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManagerMock.On(
-			"CreateHouseholdInvitation",
+		dbManager.AccountInvitationDataManagerMock.On(
+			"CreateAccountInvitation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleHouseholdInvitation, nil)
-		helper.service.householdInvitationDataManager = dbManager
+			mock.MatchedBy(func(*types.AccountInvitationDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleAccountInvitation, nil)
+		helper.service.accountInvitationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -302,11 +302,11 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
-		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		helper.exampleAccountInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleAccountInvitation.DestinationAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccountInvitation)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
@@ -318,7 +318,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
+		exampleInput := fakes.BuildFakeAccountInvitationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -343,12 +343,12 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManagerMock.On(
-			"CreateHouseholdInvitation",
+		dbManager.AccountInvitationDataManagerMock.On(
+			"CreateAccountInvitation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleHouseholdInvitation, nil)
-		helper.service.householdInvitationDataManager = dbManager
+			mock.MatchedBy(func(*types.AccountInvitationDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleAccountInvitation, nil)
+		helper.service.accountInvitationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -361,11 +361,11 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
-		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		helper.exampleAccountInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleAccountInvitation.DestinationAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccountInvitation)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
@@ -377,7 +377,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeHouseholdInvitationCreationRequestInput()
+		exampleInput := fakes.BuildFakeAccountInvitationCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -402,12 +402,12 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManagerMock.On(
-			"CreateHouseholdInvitation",
+		dbManager.AccountInvitationDataManagerMock.On(
+			"CreateAccountInvitation",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleHouseholdInvitation, nil)
-		helper.service.householdInvitationDataManager = dbManager
+			mock.MatchedBy(func(*types.AccountInvitationDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleAccountInvitation, nil)
+		helper.service.accountInvitationDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -420,18 +420,18 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
-		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		helper.exampleAccountInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleAccountInvitation.DestinationAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccountInvitation)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
 	})
 }
 
-func Test_service_ReadHouseholdInviteHandler(T *testing.T) {
+func Test_service_ReadAccountInviteHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -439,23 +439,23 @@ func Test_service_ReadHouseholdInviteHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
+		wd := &mocktypes.AccountInvitationDataManagerMock{}
 		wd.On(
-			"GetHouseholdInvitationByHouseholdAndID",
+			"GetAccountInvitationByAccountAndID",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
-		helper.service.householdInvitationDataManager = wd
+			helper.exampleAccount.ID,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
+		helper.service.accountInvitationDataManager = wd
 
-		helper.service.ReadHouseholdInviteHandler(helper.res, helper.req)
+		helper.service.ReadAccountInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
-		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		helper.exampleAccountInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleAccountInvitation.DestinationAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccountInvitation)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, wd)
@@ -467,33 +467,33 @@ func Test_service_ReadHouseholdInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHouseholdInviteHandler(helper.res, helper.req)
+		helper.service.ReadAccountInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such household invitation in database", func(t *testing.T) {
+	T.Run("with no such account invitation in database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
+		wd := &mocktypes.AccountInvitationDataManagerMock{}
 		wd.On(
-			"GetHouseholdInvitationByHouseholdAndID",
+			"GetAccountInvitationByAccountAndID",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-			helper.exampleHouseholdInvitation.ID,
-		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
-		helper.service.householdInvitationDataManager = wd
+			helper.exampleAccount.ID,
+			helper.exampleAccountInvitation.ID,
+		).Return((*types.AccountInvitation)(nil), sql.ErrNoRows)
+		helper.service.accountInvitationDataManager = wd
 
-		helper.service.ReadHouseholdInviteHandler(helper.res, helper.req)
+		helper.service.ReadAccountInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -501,24 +501,24 @@ func Test_service_ReadHouseholdInviteHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, wd)
 	})
 
-	T.Run("with error fetching household invitation from database", func(t *testing.T) {
+	T.Run("with error fetching account invitation from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
+		wd := &mocktypes.AccountInvitationDataManagerMock{}
 		wd.On(
-			"GetHouseholdInvitationByHouseholdAndID",
+			"GetAccountInvitationByAccountAndID",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-			helper.exampleHouseholdInvitation.ID,
-		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
-		helper.service.householdInvitationDataManager = wd
+			helper.exampleAccount.ID,
+			helper.exampleAccountInvitation.ID,
+		).Return((*types.AccountInvitation)(nil), errors.New("blah"))
+		helper.service.accountInvitationDataManager = wd
 
-		helper.service.ReadHouseholdInviteHandler(helper.res, helper.req)
+		helper.service.ReadAccountInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -534,21 +534,21 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		exampleHouseholdInvitations := fakes.BuildFakeHouseholdInvitationsList()
+		exampleAccountInvitations := fakes.BuildFakeAccountInvitationsList()
 
-		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
+		wd := &mocktypes.AccountInvitationDataManagerMock{}
 		wd.On(
-			"GetPendingHouseholdInvitationsForUser",
+			"GetPendingAccountInvitationsForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return(exampleHouseholdInvitations, nil)
-		helper.service.householdInvitationDataManager = wd
+		).Return(exampleAccountInvitations, nil)
+		helper.service.accountInvitationDataManager = wd
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.HouseholdInvitation]
+		var actual *types.APIResponse[[]*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
@@ -567,7 +567,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -578,19 +578,19 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
+		wd := &mocktypes.AccountInvitationDataManagerMock{}
 		wd.On(
-			"GetPendingHouseholdInvitationsForUser",
+			"GetPendingAccountInvitationsForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return((*filtering.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
-		helper.service.householdInvitationDataManager = wd
+		).Return((*filtering.QueryFilteredResult[types.AccountInvitation])(nil), errors.New("blah"))
+		helper.service.accountInvitationDataManager = wd
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -606,21 +606,21 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-		exampleHouseholdInvitations := fakes.BuildFakeHouseholdInvitationsList()
+		exampleAccountInvitations := fakes.BuildFakeAccountInvitationsList()
 
-		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
+		wd := &mocktypes.AccountInvitationDataManagerMock{}
 		wd.On(
-			"GetPendingHouseholdInvitationsFromUser",
+			"GetPendingAccountInvitationsFromUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return(exampleHouseholdInvitations, nil)
-		helper.service.householdInvitationDataManager = wd
+		).Return(exampleAccountInvitations, nil)
+		helper.service.accountInvitationDataManager = wd
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.HouseholdInvitation]
+		var actual *types.APIResponse[[]*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
@@ -639,7 +639,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -650,19 +650,19 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
+		wd := &mocktypes.AccountInvitationDataManagerMock{}
 		wd.On(
-			"GetPendingHouseholdInvitationsFromUser",
+			"GetPendingAccountInvitationsFromUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return((*filtering.QueryFilteredResult[types.HouseholdInvitation])(nil), errors.New("blah"))
-		helper.service.householdInvitationDataManager = wd
+		).Return((*filtering.QueryFilteredResult[types.AccountInvitation])(nil), errors.New("blah"))
+		helper.service.accountInvitationDataManager = wd
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -680,7 +680,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -688,22 +688,22 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
 
 		dataManager.On(
-			"AcceptHouseholdInvitation",
+			"AcceptAccountInvitation",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.Note,
+			helper.exampleAccountInvitation.ID,
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.Note,
 		).Return(nil)
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -716,7 +716,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
@@ -734,7 +734,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -754,7 +754,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -766,7 +766,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := &types.HouseholdUpdateRequestInput{}
+		exampleInput := &types.AccountUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -777,7 +777,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -789,7 +789,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -797,19 +797,19 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
-		helper.service.householdInvitationDataManager = dataManager
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return((*types.AccountInvitation)(nil), sql.ErrNoRows)
+		helper.service.accountInvitationDataManager = dataManager
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -823,7 +823,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -831,19 +831,19 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
-		helper.service.householdInvitationDataManager = dataManager
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return((*types.AccountInvitation)(nil), errors.New("blah"))
+		helper.service.accountInvitationDataManager = dataManager
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -857,7 +857,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -865,27 +865,27 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
 
 		dataManager.On(
-			"AcceptHouseholdInvitation",
+			"AcceptAccountInvitation",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.Note,
+			helper.exampleAccountInvitation.ID,
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.Note,
 		).Return(errors.New("blah"))
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -899,7 +899,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -907,22 +907,22 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
 
 		dataManager.On(
-			"AcceptHouseholdInvitation",
+			"AcceptAccountInvitation",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.Note,
+			helper.exampleAccountInvitation.ID,
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.Note,
 		).Return(nil)
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -935,7 +935,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
@@ -952,7 +952,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -960,21 +960,21 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
 
 		dataManager.On(
-			"CancelHouseholdInvitation",
+			"CancelAccountInvitation",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Note,
+			helper.exampleAccountInvitation.ID,
+			helper.exampleAccountInvitation.Note,
 		).Return(nil)
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -987,7 +987,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.CancelInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
@@ -1000,7 +1000,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := &types.HouseholdUpdateRequestInput{}
+		exampleInput := &types.AccountUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1011,7 +1011,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.CancelInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1031,7 +1031,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.CancelInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1043,7 +1043,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1051,19 +1051,19 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
-		helper.service.householdInvitationDataManager = dataManager
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return((*types.AccountInvitation)(nil), sql.ErrNoRows)
+		helper.service.accountInvitationDataManager = dataManager
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1077,7 +1077,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1085,19 +1085,19 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
-		helper.service.householdInvitationDataManager = dataManager
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return((*types.AccountInvitation)(nil), errors.New("blah"))
+		helper.service.accountInvitationDataManager = dataManager
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1116,7 +1116,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.CancelInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1128,7 +1128,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1136,26 +1136,26 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
 
 		dataManager.On(
-			"CancelHouseholdInvitation",
+			"CancelAccountInvitation",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Note,
+			helper.exampleAccountInvitation.ID,
+			helper.exampleAccountInvitation.Note,
 		).Return(errors.New("blah"))
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1169,7 +1169,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1177,21 +1177,21 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
 
 		dataManager.On(
-			"CancelHouseholdInvitation",
+			"CancelAccountInvitation",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Note,
+			helper.exampleAccountInvitation.ID,
+			helper.exampleAccountInvitation.Note,
 		).Return(nil)
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1204,7 +1204,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.CancelInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
@@ -1221,7 +1221,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1229,21 +1229,21 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
 
 		dataManager.On(
-			"RejectHouseholdInvitation",
+			"RejectAccountInvitation",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Note,
+			helper.exampleAccountInvitation.ID,
+			helper.exampleAccountInvitation.Note,
 		).Return(nil)
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1256,7 +1256,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.RejectInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
@@ -1269,7 +1269,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := &types.HouseholdInvitationUpdateRequestInput{}
+		exampleInput := &types.AccountInvitationUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1280,7 +1280,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.RejectInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1292,7 +1292,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1300,19 +1300,19 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
-		helper.service.householdInvitationDataManager = dataManager
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return((*types.AccountInvitation)(nil), sql.ErrNoRows)
+		helper.service.accountInvitationDataManager = dataManager
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1326,7 +1326,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1334,20 +1334,20 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return((*types.AccountInvitation)(nil), errors.New("blah"))
 
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1366,7 +1366,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.RejectInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1386,7 +1386,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.RejectInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1398,7 +1398,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1406,26 +1406,26 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
 
 		dataManager.On(
-			"RejectHouseholdInvitation",
+			"RejectAccountInvitation",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Note,
+			helper.exampleAccountInvitation.ID,
+			helper.exampleAccountInvitation.Note,
 		).Return(errors.New("blah"))
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1439,7 +1439,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(helper.exampleHouseholdInvitation)
+		exampleInput := converters.ConvertAccountInvitationToAccountInvitationUpdateInput(helper.exampleAccountInvitation)
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1447,21 +1447,21 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
+		dataManager := &mocktypes.AccountInvitationDataManagerMock{}
 		dataManager.On(
-			"GetHouseholdInvitationByTokenAndID",
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.Token,
-			helper.exampleHouseholdInvitation.ID,
-		).Return(helper.exampleHouseholdInvitation, nil)
+			helper.exampleAccountInvitation.Token,
+			helper.exampleAccountInvitation.ID,
+		).Return(helper.exampleAccountInvitation, nil)
 
 		dataManager.On(
-			"RejectHouseholdInvitation",
+			"RejectAccountInvitation",
 			testutils.ContextMatcher,
-			helper.exampleHouseholdInvitation.ID,
-			helper.exampleHouseholdInvitation.Note,
+			helper.exampleAccountInvitation.ID,
+			helper.exampleAccountInvitation.Note,
 		).Return(nil)
-		helper.service.householdInvitationDataManager = dataManager
+		helper.service.accountInvitationDataManager = dataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1474,7 +1474,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.RejectInviteHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
+		var actual *types.APIResponse[*types.AccountInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 

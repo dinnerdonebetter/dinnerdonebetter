@@ -39,7 +39,7 @@ type (
 	ServiceRolePermissionChecker interface {
 		HasPermission(Permission) bool
 
-		AsHouseholdRolePermissionChecker() HouseholdRolePermissionsChecker
+		AsAccountRolePermissionChecker() AccountRolePermissionsChecker
 		IsServiceAdmin() bool
 		CanUpdateUserAccountStatuses() bool
 		CanImpersonateUsers() bool
@@ -70,8 +70,8 @@ func NewServiceRolePermissionChecker(roles ...string) ServiceRolePermissionCheck
 	}
 }
 
-func (r serviceRoleCollection) AsHouseholdRolePermissionChecker() HouseholdRolePermissionsChecker {
-	return NewHouseholdRolePermissionChecker(r.Roles...)
+func (r serviceRoleCollection) AsAccountRolePermissionChecker() AccountRolePermissionsChecker {
+	return NewAccountRolePermissionChecker(r.Roles...)
 }
 
 // HasPermission returns whether a user can do something or not.

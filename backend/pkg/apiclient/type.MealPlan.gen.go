@@ -5,7 +5,7 @@ package apiclient
 type (
 	MealPlan struct {
 		Notes                  string          `json:"notes"`
-		BelongsToHousehold     string          `json:"belongsToHousehold"`
+		BelongsToAccount       string          `json:"belongsToAccount"`
 		CreatedAt              string          `json:"createdAt"`
 		CreatedBy              string          `json:"createdBy"`
 		ElectionMethod         string          `json:"electionMethod"`

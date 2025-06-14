@@ -44,7 +44,7 @@ func (s *service) CreateValidIngredientGroupHandler(res http.ResponseWriter, req
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidIngredientGroupCreationRequestInput)
@@ -119,7 +119,7 @@ func (s *service) ReadValidIngredientGroupHandler(res http.ResponseWriter, req *
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid ingredient ID.
 	validIngredientGroupID := s.validIngredientGroupIDFetcher(req)
@@ -180,7 +180,7 @@ func (s *service) ListValidIngredientGroupsHandler(res http.ResponseWriter, req 
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	validIngredientGroups, err := s.validEnumerationDataManager.GetValidIngredientGroups(ctx, filter)
@@ -282,7 +282,7 @@ func (s *service) UpdateValidIngredientGroupHandler(res http.ResponseWriter, req
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidIngredientGroupUpdateRequestInput)
@@ -373,7 +373,7 @@ func (s *service) ArchiveValidIngredientGroupHandler(res http.ResponseWriter, re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid ingredient ID.
 	validIngredientGroupID := s.validIngredientGroupIDFetcher(req)

@@ -5,9 +5,9 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
-func ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequestInput(x *types.HouseholdInstrumentOwnership) *types.HouseholdInstrumentOwnershipUpdateRequestInput {
-	out := &types.HouseholdInstrumentOwnershipUpdateRequestInput{
+// ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
+func ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipUpdateRequestInput(x *types.AccountInstrumentOwnership) *types.AccountInstrumentOwnershipUpdateRequestInput {
+	out := &types.AccountInstrumentOwnershipUpdateRequestInput{
 		Notes:             &x.Notes,
 		Quantity:          &x.Quantity,
 		ValidInstrumentID: &x.Instrument.ID,
@@ -16,9 +16,9 @@ func ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequ
 	return out
 }
 
-// ConvertHouseholdInstrumentOwnershipCreationRequestInputToHouseholdInstrumentOwnershipDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ConvertHouseholdInstrumentOwnershipCreationRequestInputToHouseholdInstrumentOwnershipDatabaseCreationInput(x *types.HouseholdInstrumentOwnershipCreationRequestInput) *types.HouseholdInstrumentOwnershipDatabaseCreationInput {
-	out := &types.HouseholdInstrumentOwnershipDatabaseCreationInput{
+// ConvertAccountInstrumentOwnershipCreationRequestInputToAccountInstrumentOwnershipDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
+func ConvertAccountInstrumentOwnershipCreationRequestInputToAccountInstrumentOwnershipDatabaseCreationInput(x *types.AccountInstrumentOwnershipCreationRequestInput) *types.AccountInstrumentOwnershipDatabaseCreationInput {
+	out := &types.AccountInstrumentOwnershipDatabaseCreationInput{
 		ID:                identifiers.New(),
 		Notes:             x.Notes,
 		Quantity:          x.Quantity,
@@ -28,23 +28,23 @@ func ConvertHouseholdInstrumentOwnershipCreationRequestInputToHouseholdInstrumen
 	return out
 }
 
-// ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipCreationRequestInput builds a HouseholdInstrumentOwnershipCreationRequestInput from a Ingredient.
-func ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipCreationRequestInput(x *types.HouseholdInstrumentOwnership) *types.HouseholdInstrumentOwnershipCreationRequestInput {
-	return &types.HouseholdInstrumentOwnershipCreationRequestInput{
-		Notes:              x.Notes,
-		Quantity:           x.Quantity,
-		ValidInstrumentID:  x.Instrument.ID,
-		BelongsToHousehold: x.BelongsToHousehold,
+// ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipCreationRequestInput builds a AccountInstrumentOwnershipCreationRequestInput from a Ingredient.
+func ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipCreationRequestInput(x *types.AccountInstrumentOwnership) *types.AccountInstrumentOwnershipCreationRequestInput {
+	return &types.AccountInstrumentOwnershipCreationRequestInput{
+		Notes:             x.Notes,
+		Quantity:          x.Quantity,
+		ValidInstrumentID: x.Instrument.ID,
+		BelongsToAccount:  x.BelongsToAccount,
 	}
 }
 
-// ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipDatabaseCreationInput builds a HouseholdInstrumentOwnershipDatabaseCreationInput from a HouseholdInstrumentOwnership.
-func ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipDatabaseCreationInput(x *types.HouseholdInstrumentOwnership) *types.HouseholdInstrumentOwnershipDatabaseCreationInput {
-	return &types.HouseholdInstrumentOwnershipDatabaseCreationInput{
-		ID:                 x.ID,
-		Notes:              x.Notes,
-		Quantity:           x.Quantity,
-		ValidInstrumentID:  x.Instrument.ID,
-		BelongsToHousehold: x.BelongsToHousehold,
+// ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipDatabaseCreationInput builds a AccountInstrumentOwnershipDatabaseCreationInput from a AccountInstrumentOwnership.
+func ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipDatabaseCreationInput(x *types.AccountInstrumentOwnership) *types.AccountInstrumentOwnershipDatabaseCreationInput {
+	return &types.AccountInstrumentOwnershipDatabaseCreationInput{
+		ID:                x.ID,
+		Notes:             x.Notes,
+		Quantity:          x.Quantity,
+		ValidInstrumentID: x.Instrument.ID,
+		BelongsToAccount:  x.BelongsToAccount,
 	}
 }

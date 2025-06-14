@@ -115,7 +115,7 @@ func Test_mergeColumns(T *testing.T) {
 			"webhooks.created_at",
 			"webhooks.last_updated_at",
 			"webhooks.archived_at",
-			"webhooks.belongs_to_household",
+			"webhooks.belongs_to_account",
 		}
 
 		actual := mergeColumns(

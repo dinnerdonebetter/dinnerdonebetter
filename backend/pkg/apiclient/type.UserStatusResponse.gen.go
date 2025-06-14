@@ -6,7 +6,7 @@ type (
 	UserStatusResponse struct {
 		AccountStatus            string `json:"accountStatus"`
 		AccountStatusExplanation string `json:"accountStatusExplanation"`
-		ActiveHousehold          string `json:"activeHousehold"`
+		ActiveAccount            string `json:"activeAccount"`
 		UserID                   string `json:"userID"`
 		IsAuthenticated          bool   `json:"isAuthenticated"`
 	}

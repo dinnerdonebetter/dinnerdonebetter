@@ -392,7 +392,7 @@ func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 	return nil
 }
 
-// CreateUser creates a user. TODO: this should return a household as well.
+// CreateUser creates a user. TODO: this should return a account as well.
 func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -403,10 +403,10 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 
 	tracing.AttachToSpan(span, keys.UsernameKey, input.Username)
 	logger := q.logger.WithValues(map[string]any{
-		keys.UsernameKey:                 input.Username,
-		keys.UserEmailAddressKey:         input.EmailAddress,
-		keys.HouseholdInvitationTokenKey: input.InvitationToken,
-		"destination_household":          input.DestinationHouseholdID,
+		keys.UsernameKey:               input.Username,
+		keys.UserEmailAddressKey:       input.EmailAddress,
+		keys.AccountInvitationTokenKey: input.InvitationToken,
+		"destination_account":          input.DestinationAccountID,
 	})
 
 	// begin user creation transaction
@@ -430,7 +430,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		HashedPassword:                input.HashedPassword,
 		TwoFactorSecret:               input.TwoFactorSecret,
 		AvatarSrc:                     database.NullStringFromStringPointer(input.AvatarSrc),
-		UserAccountStatus:             string(types.UnverifiedHouseholdStatus),
+		UserAccountStatus:             string(types.UnverifiedAccountStatus),
 		Birthday:                      database.NullTimeFromTimePointer(input.Birthday),
 		ServiceRole:                   authorization.ServiceUserRole.String(),
 		EmailAddressVerificationToken: database.NullStringFromString(token),
@@ -447,7 +447,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		return nil, observability.PrepareError(err, span, "creating user")
 	}
 
-	hasValidInvite := input.InvitationToken != "" && input.DestinationHouseholdID != ""
+	hasValidInvite := input.InvitationToken != "" && input.DestinationAccountID != ""
 
 	user := &types.User{
 		ID:              input.ID,
@@ -457,7 +457,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		EmailAddress:    input.EmailAddress,
 		HashedPassword:  input.HashedPassword,
 		TwoFactorSecret: input.TwoFactorSecret,
-		AccountStatus:   string(types.UnverifiedHouseholdStatus),
+		AccountStatus:   string(types.UnverifiedAccountStatus),
 		Birthday:        input.Birthday,
 		ServiceRole:     authorization.ServiceUserRole.String(),
 		CreatedAt:       q.currentTime(),
@@ -476,24 +476,24 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	if strings.TrimSpace(input.HouseholdName) == "" {
-		input.HouseholdName = fmt.Sprintf("%s's cool household", input.Username)
+	if strings.TrimSpace(input.AccountName) == "" {
+		input.AccountName = fmt.Sprintf("%s's cool account", input.Username)
 	}
 
-	household, err := q.createHouseholdForUser(ctx, tx, hasValidInvite, input.HouseholdName, user.ID)
+	account, err := q.createAccountForUser(ctx, tx, hasValidInvite, input.AccountName, user.ID)
 	if err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating household for new user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating account for new user")
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
-	logger.Debug("household created")
+	logger = logger.WithValue(keys.AccountIDKey, account.ID)
+	logger.Debug("account created")
 
 	if hasValidInvite {
 		if err = q.acceptInvitationForUser(ctx, tx, input); err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareAndLogError(err, logger, span, "accepting household invitation")
+			return nil, observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
 		}
-		logger.Debug("accepted invitation and joined household for user")
+		logger.Debug("accepted invitation and joined account for user")
 	}
 
 	if err = q.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
@@ -506,106 +506,106 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	logger.Debug("user and household created")
+	logger.Debug("user and account created")
 
 	return user, nil
 }
 
-func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, householdName, userID string) (*types.Household, error) {
+func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, accountName, userID string) (*types.Account, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	// standard registration: we need to create the household
-	householdID := identifiers.New()
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	// standard registration: we need to create the account
+	accountID := identifiers.New()
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	hn := householdName
-	if householdName == "" {
+	hn := accountName
+	if accountName == "" {
 		hn = fmt.Sprintf("%s_default", userID)
 	}
 
-	householdCreationInput := &types.HouseholdDatabaseCreationInput{
-		ID:            householdID,
+	accountCreationInput := &types.AccountDatabaseCreationInput{
+		ID:            accountID,
 		Name:          hn,
 		BelongsToUser: userID,
 	}
 
-	// create the household.
-	if err := q.generatedQuerier.CreateHousehold(ctx, querier, &generated.CreateHouseholdParams{
-		City:          householdCreationInput.City,
-		Name:          householdCreationInput.Name,
-		BillingStatus: types.UnpaidHouseholdBillingStatus,
-		ContactPhone:  householdCreationInput.ContactPhone,
-		AddressLine1:  householdCreationInput.AddressLine1,
-		AddressLine2:  householdCreationInput.AddressLine2,
-		ID:            householdCreationInput.ID,
-		State:         householdCreationInput.State,
-		ZipCode:       householdCreationInput.ZipCode,
-		Country:       householdCreationInput.Country,
-		BelongsToUser: householdCreationInput.BelongsToUser,
-		Latitude:      database.NullStringFromFloat64Pointer(householdCreationInput.Latitude),
-		Longitude:     database.NullStringFromFloat64Pointer(householdCreationInput.Longitude),
+	// create the account.
+	if err := q.generatedQuerier.CreateAccount(ctx, querier, &generated.CreateAccountParams{
+		City:          accountCreationInput.City,
+		Name:          accountCreationInput.Name,
+		BillingStatus: types.UnpaidAccountBillingStatus,
+		ContactPhone:  accountCreationInput.ContactPhone,
+		AddressLine1:  accountCreationInput.AddressLine1,
+		AddressLine2:  accountCreationInput.AddressLine2,
+		ID:            accountCreationInput.ID,
+		State:         accountCreationInput.State,
+		ZipCode:       accountCreationInput.ZipCode,
+		Country:       accountCreationInput.Country,
+		BelongsToUser: accountCreationInput.BelongsToUser,
+		Latitude:      database.NullStringFromFloat64Pointer(accountCreationInput.Latitude),
+		Longitude:     database.NullStringFromFloat64Pointer(accountCreationInput.Longitude),
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return nil, observability.PrepareError(err, span, "creating household")
+		return nil, observability.PrepareError(err, span, "creating account")
 	}
 
 	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &householdCreationInput.ID,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeHouseholds,
-		RelevantID:         householdCreationInput.ID,
-		EventType:          types.AuditLogEventTypeCreated,
-		BelongsToUser:      householdCreationInput.BelongsToUser,
+		BelongsToAccount: &accountCreationInput.ID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccounts,
+		RelevantID:       accountCreationInput.ID,
+		EventType:        types.AuditLogEventTypeCreated,
+		BelongsToUser:    accountCreationInput.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	householdMembershipID := identifiers.New()
-	if err := q.generatedQuerier.CreateHouseholdUserMembershipForNewUser(ctx, querier, &generated.CreateHouseholdUserMembershipForNewUserParams{
-		ID:                 householdMembershipID,
-		BelongsToUser:      userID,
-		BelongsToHousehold: householdID,
-		HouseholdRole:      authorization.HouseholdAdminRole.String(),
-		DefaultHousehold:   !hasValidInvite,
+	accountMembershipID := identifiers.New()
+	if err := q.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated.CreateAccountUserMembershipForNewUserParams{
+		ID:               accountMembershipID,
+		BelongsToUser:    userID,
+		BelongsToAccount: accountID,
+		AccountRole:      authorization.AccountAdminRole.String(),
+		DefaultAccount:   !hasValidInvite,
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return nil, observability.PrepareError(err, span, "writing household user membership")
+		return nil, observability.PrepareError(err, span, "writing account user membership")
 	}
 
 	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &householdCreationInput.ID,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeHouseholdUserMemberships,
-		RelevantID:         householdMembershipID,
-		EventType:          types.AuditLogEventTypeCreated,
-		BelongsToUser:      householdCreationInput.BelongsToUser,
+		BelongsToAccount: &accountCreationInput.ID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccountUserMemberships,
+		RelevantID:       accountMembershipID,
+		EventType:        types.AuditLogEventTypeCreated,
+		BelongsToUser:    accountCreationInput.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	household := &types.Household{
+	account := &types.Account{
 		CreatedAt:            q.currentTime(),
-		Longitude:            householdCreationInput.Longitude,
-		Latitude:             householdCreationInput.Latitude,
-		State:                householdCreationInput.State,
-		ContactPhone:         householdCreationInput.ContactPhone,
-		City:                 householdCreationInput.City,
-		AddressLine1:         householdCreationInput.AddressLine1,
-		ZipCode:              householdCreationInput.ZipCode,
-		Country:              householdCreationInput.Country,
-		BillingStatus:        types.UnpaidHouseholdBillingStatus,
-		AddressLine2:         householdCreationInput.AddressLine2,
-		BelongsToUser:        householdCreationInput.BelongsToUser,
-		ID:                   householdCreationInput.ID,
-		Name:                 householdCreationInput.Name,
-		WebhookEncryptionKey: householdCreationInput.WebhookEncryptionKey,
+		Longitude:            accountCreationInput.Longitude,
+		Latitude:             accountCreationInput.Latitude,
+		State:                accountCreationInput.State,
+		ContactPhone:         accountCreationInput.ContactPhone,
+		City:                 accountCreationInput.City,
+		AddressLine1:         accountCreationInput.AddressLine1,
+		ZipCode:              accountCreationInput.ZipCode,
+		Country:              accountCreationInput.Country,
+		BillingStatus:        types.UnpaidAccountBillingStatus,
+		AddressLine2:         accountCreationInput.AddressLine2,
+		BelongsToUser:        accountCreationInput.BelongsToUser,
+		ID:                   accountCreationInput.ID,
+		Name:                 accountCreationInput.Name,
+		WebhookEncryptionKey: accountCreationInput.WebhookEncryptionKey,
 		Members:              nil,
 	}
 
-	return household, nil
+	return account, nil
 }
 
 // UpdateUserUsername updates a user's username.
@@ -1103,7 +1103,7 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 
 	if _, err = q.generatedQuerier.ArchiveUserMemberships(ctx, tx, userID); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareAndLogError(err, logger, span, "archiving user household memberships")
+		return observability.PrepareAndLogError(err, logger, span, "archiving user account memberships")
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -1281,7 +1281,7 @@ func (q *Querier) MarkUserEmailAddressAsUnverified(ctx context.Context, userID s
 	}
 
 	if _, err = q.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated.SetUserAccountStatusParams{
-		UserAccountStatus:            string(types.UnverifiedHouseholdStatus),
+		UserAccountStatus:            string(types.UnverifiedAccountStatus),
 		UserAccountStatusExplanation: "unverified email address",
 		ID:                           userID,
 	}); err != nil {

@@ -44,7 +44,7 @@ func TestAPIResponse_EncodeToJSON(T *testing.T) {
 		encodedBytes, err := json.Marshal(example)
 		require.NoError(t, err)
 
-		expected := `{"error":{"message":"TestAPIResponse_EncodeToJSON/standard","code":"E104"},"details":{"currentHouseholdID":"","traceID":""}}`
+		expected := `{"error":{"message":"TestAPIResponse_EncodeToJSON/standard","code":"E104"},"details":{"currentAccountID":"","traceID":""}}`
 		actual := string(encodedBytes)
 
 		assert.Equal(t, expected, actual)

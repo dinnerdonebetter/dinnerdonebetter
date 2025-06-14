@@ -64,11 +64,11 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 
 	// TODO: var outputWG sync.WG; var outputLock sync.Mutex; go func() {}()
 
-	allHouseholds, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Household], error) {
-		return q.getHouseholdsForUser(ctx, q.db, userID, filter)
+	allAccounts, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Account], error) {
+		return q.getAccountsForUser(ctx, q.db, userID, filter)
 	})
 	if err != nil {
-		return nil, fmt.Errorf("getting households: %w", err)
+		return nil, fmt.Errorf("getting accounts: %w", err)
 	}
 
 	allUserAuditLogEntries, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AuditLogEntry], error) {
@@ -92,15 +92,15 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		return nil, fmt.Errorf("getting user ingredient preferences: %w", err)
 	}
 
-	receivedInvites, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInvitation], error) {
-		return q.GetPendingHouseholdInvitationsForUser(ctx, userID, filter)
+	receivedInvites, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInvitation], error) {
+		return q.GetPendingAccountInvitationsForUser(ctx, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting received invites: %w", err)
 	}
 
-	sentInvites, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInvitation], error) {
-		return q.GetPendingHouseholdInvitationsFromUser(ctx, userID, filter)
+	sentInvites, err := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInvitation], error) {
+		return q.GetPendingAccountInvitationsFromUser(ctx, userID, filter)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting sent invites: %w", err)
@@ -131,7 +131,7 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 		User:     *user,
 		ReportID: identifiers.New(),
 		Core: types.CoreUserDataCollection{
-			Households:                       allHouseholds,
+			Accounts:                         allAccounts,
 			UserAuditLogEntries:              allUserAuditLogEntries,
 			UserServiceSettingConfigurations: allSettingConfigs,
 			ReceivedInvites:                  receivedInvites,
@@ -141,57 +141,57 @@ func (q *Querier) AggregateUserData(ctx context.Context, userID string) (*types.
 			Webhooks:                         map[string][]types.Webhook{},
 		},
 		Eating: types.EatingUserDataCollection{
-			UserIngredientPreferences:     userIngredientPreferences,
-			RecipeRatings:                 recipeRatings,
-			Recipes:                       recipes,
-			Meals:                         meals,
-			MealPlans:                     map[string][]types.MealPlan{},
-			HouseholdInstrumentOwnerships: map[string][]types.HouseholdInstrumentOwnership{},
+			UserIngredientPreferences:   userIngredientPreferences,
+			RecipeRatings:               recipeRatings,
+			Recipes:                     recipes,
+			Meals:                       meals,
+			MealPlans:                   map[string][]types.MealPlan{},
+			AccountInstrumentOwnerships: map[string][]types.AccountInstrumentOwnership{},
 		},
 	}
 
-	// set up data collections for all households
-	for i := range allHouseholds {
-		household := allHouseholds[i]
+	// set up data collections for all accounts
+	for i := range allAccounts {
+		account := allAccounts[i]
 		auditLogEntries, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AuditLogEntry], error) {
-			return q.GetAuditLogEntriesForHousehold(ctx, household.ID, filter)
+			return q.GetAuditLogEntriesForAccount(ctx, account.ID, filter)
 		})
 		if fetchErr != nil {
-			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
+			return nil, fmt.Errorf("fetching audit log entries for account %s", account.ID)
 		}
-		output.Core.AuditLogEntries[household.ID] = auditLogEntries
+		output.Core.AuditLogEntries[account.ID] = auditLogEntries
 
 		serviceSettingConfigs, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
-			return q.GetServiceSettingConfigurationsForHousehold(ctx, household.ID, filter)
+			return q.GetServiceSettingConfigurationsForAccount(ctx, account.ID, filter)
 		})
 		if fetchErr != nil {
-			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
+			return nil, fmt.Errorf("fetching audit log entries for account %s", account.ID)
 		}
-		output.Core.ServiceSettingConfigurations[household.ID] = serviceSettingConfigs
+		output.Core.ServiceSettingConfigurations[account.ID] = serviceSettingConfigs
 
 		webhooks, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
-			return q.GetWebhooks(ctx, household.ID, filter)
+			return q.GetWebhooks(ctx, account.ID, filter)
 		})
 		if fetchErr != nil {
-			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
+			return nil, fmt.Errorf("fetching audit log entries for account %s", account.ID)
 		}
-		output.Core.Webhooks[household.ID] = webhooks
+		output.Core.Webhooks[account.ID] = webhooks
 
-		householdInstrumentOwnerships, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership], error) {
-			return q.GetHouseholdInstrumentOwnerships(ctx, household.ID, filter)
+		accountInstrumentOwnerships, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInstrumentOwnership], error) {
+			return q.GetAccountInstrumentOwnerships(ctx, account.ID, filter)
 		})
 		if fetchErr != nil {
-			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
+			return nil, fmt.Errorf("fetching audit log entries for account %s", account.ID)
 		}
-		output.Eating.HouseholdInstrumentOwnerships[household.ID] = householdInstrumentOwnerships
+		output.Eating.AccountInstrumentOwnerships[account.ID] = accountInstrumentOwnerships
 
 		mealPlans, fetchErr := fetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error) {
-			return q.GetMealPlansForHousehold(ctx, household.ID, filter)
+			return q.GetMealPlansForAccount(ctx, account.ID, filter)
 		})
 		if fetchErr != nil {
-			return nil, fmt.Errorf("fetching audit log entries for household %s", household.ID)
+			return nil, fmt.Errorf("fetching audit log entries for account %s", account.ID)
 		}
-		output.Eating.MealPlans[household.ID] = mealPlans
+		output.Eating.MealPlans[account.ID] = mealPlans
 	}
 
 	logger.Info("user data collected")

@@ -28,8 +28,8 @@ func (m *mockSessionData) GetServicePermissions() authorization.ServiceRolePermi
 	return m.Called().Get(0).(authorization.ServiceRolePermissionChecker)
 }
 
-// GetActiveHouseholdID implements our interface.
-func (m *mockSessionData) GetActiveHouseholdID() string {
+// GetActiveAccountID implements our interface.
+func (m *mockSessionData) GetActiveAccountID() string {
 	return m.Called().String(0)
 }
 
@@ -42,11 +42,11 @@ func TestAttachSessionContextDataToSpan(T *testing.T) {
 		_, span := StartSpan(context.Background())
 
 		AttachSessionContextDataToSpan(span, &sessions.ContextData{
-			HouseholdPermissions: nil,
+			AccountPermissions: nil,
 			Requester: sessions.RequesterInfo{
 				ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
 			},
-			ActiveHouseholdID: "",
+			ActiveAccountID: "",
 		})
 	})
 }

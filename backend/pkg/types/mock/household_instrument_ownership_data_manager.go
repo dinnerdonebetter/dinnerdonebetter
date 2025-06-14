@@ -9,43 +9,43 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ types.HouseholdInstrumentOwnershipDataManager = (*HouseholdInstrumentOwnershipDataManagerMock)(nil)
+var _ types.AccountInstrumentOwnershipDataManager = (*AccountInstrumentOwnershipDataManagerMock)(nil)
 
-// HouseholdInstrumentOwnershipDataManagerMock is a mocked types.HouseholdInstrumentOwnershipDataManager for testing.
-type HouseholdInstrumentOwnershipDataManagerMock struct {
+// AccountInstrumentOwnershipDataManagerMock is a mocked types.AccountInstrumentOwnershipDataManager for testing.
+type AccountInstrumentOwnershipDataManagerMock struct {
 	mock.Mock
 }
 
-// HouseholdInstrumentOwnershipExists is a mock function.
-func (m *HouseholdInstrumentOwnershipDataManagerMock) HouseholdInstrumentOwnershipExists(ctx context.Context, householdInstrumentOwnershipID, householdID string) (bool, error) {
-	returnValues := m.Called(ctx, householdInstrumentOwnershipID, householdID)
+// AccountInstrumentOwnershipExists is a mock function.
+func (m *AccountInstrumentOwnershipDataManagerMock) AccountInstrumentOwnershipExists(ctx context.Context, accountInstrumentOwnershipID, accountID string) (bool, error) {
+	returnValues := m.Called(ctx, accountInstrumentOwnershipID, accountID)
 	return returnValues.Bool(0), returnValues.Error(1)
 }
 
-// GetHouseholdInstrumentOwnership is a mock function.
-func (m *HouseholdInstrumentOwnershipDataManagerMock) GetHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) (*types.HouseholdInstrumentOwnership, error) {
-	returnValues := m.Called(ctx, householdInstrumentOwnershipID, householdID)
-	return returnValues.Get(0).(*types.HouseholdInstrumentOwnership), returnValues.Error(1)
+// GetAccountInstrumentOwnership is a mock function.
+func (m *AccountInstrumentOwnershipDataManagerMock) GetAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) (*types.AccountInstrumentOwnership, error) {
+	returnValues := m.Called(ctx, accountInstrumentOwnershipID, accountID)
+	return returnValues.Get(0).(*types.AccountInstrumentOwnership), returnValues.Error(1)
 }
 
-// GetHouseholdInstrumentOwnerships is a mock function.
-func (m *HouseholdInstrumentOwnershipDataManagerMock) GetHouseholdInstrumentOwnerships(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership], error) {
-	returnValues := m.Called(ctx, householdID, filter)
-	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership]), returnValues.Error(1)
+// GetAccountInstrumentOwnerships is a mock function.
+func (m *AccountInstrumentOwnershipDataManagerMock) GetAccountInstrumentOwnerships(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInstrumentOwnership], error) {
+	returnValues := m.Called(ctx, accountID, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.AccountInstrumentOwnership]), returnValues.Error(1)
 }
 
-// CreateHouseholdInstrumentOwnership is a mock function.
-func (m *HouseholdInstrumentOwnershipDataManagerMock) CreateHouseholdInstrumentOwnership(ctx context.Context, input *types.HouseholdInstrumentOwnershipDatabaseCreationInput) (*types.HouseholdInstrumentOwnership, error) {
+// CreateAccountInstrumentOwnership is a mock function.
+func (m *AccountInstrumentOwnershipDataManagerMock) CreateAccountInstrumentOwnership(ctx context.Context, input *types.AccountInstrumentOwnershipDatabaseCreationInput) (*types.AccountInstrumentOwnership, error) {
 	returnValues := m.Called(ctx, input)
-	return returnValues.Get(0).(*types.HouseholdInstrumentOwnership), returnValues.Error(1)
+	return returnValues.Get(0).(*types.AccountInstrumentOwnership), returnValues.Error(1)
 }
 
-// UpdateHouseholdInstrumentOwnership is a mock function.
-func (m *HouseholdInstrumentOwnershipDataManagerMock) UpdateHouseholdInstrumentOwnership(ctx context.Context, updated *types.HouseholdInstrumentOwnership) error {
+// UpdateAccountInstrumentOwnership is a mock function.
+func (m *AccountInstrumentOwnershipDataManagerMock) UpdateAccountInstrumentOwnership(ctx context.Context, updated *types.AccountInstrumentOwnership) error {
 	return m.Called(ctx, updated).Error(0)
 }
 
-// ArchiveHouseholdInstrumentOwnership is a mock function.
-func (m *HouseholdInstrumentOwnershipDataManagerMock) ArchiveHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) error {
-	return m.Called(ctx, householdInstrumentOwnershipID, householdID).Error(0)
+// ArchiveAccountInstrumentOwnership is a mock function.
+func (m *AccountInstrumentOwnershipDataManagerMock) ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error {
+	return m.Called(ctx, accountInstrumentOwnershipID, accountID).Error(0)
 }

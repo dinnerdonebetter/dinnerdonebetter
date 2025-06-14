@@ -10,14 +10,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHouseholdInstrumentOwnership_Update(T *testing.T) {
+func TestAccountInstrumentOwnership_Update(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := &HouseholdInstrumentOwnership{}
-		input := &HouseholdInstrumentOwnershipUpdateRequestInput{}
+		x := &AccountInstrumentOwnership{}
+		input := &AccountInstrumentOwnershipUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
 
@@ -25,14 +25,14 @@ func TestHouseholdInstrumentOwnership_Update(T *testing.T) {
 	})
 }
 
-func TestHouseholdInstrumentOwnershipCreationRequestInput_ValidateWithContext(T *testing.T) {
+func TestAccountInstrumentOwnershipCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdInstrumentOwnershipCreationRequestInput{
+		x := &AccountInstrumentOwnershipCreationRequestInput{
 			Quantity:          1,
 			ValidInstrumentID: t.Name(),
 		}
@@ -41,14 +41,14 @@ func TestHouseholdInstrumentOwnershipCreationRequestInput_ValidateWithContext(T 
 	})
 }
 
-func TestHouseholdInstrumentOwnershipDatabaseCreationInput_ValidateWithContext(T *testing.T) {
+func TestAccountInstrumentOwnershipDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdInstrumentOwnershipDatabaseCreationInput{
+		x := &AccountInstrumentOwnershipDatabaseCreationInput{
 			ID:                t.Name(),
 			Quantity:          1,
 			ValidInstrumentID: t.Name(),
@@ -58,14 +58,14 @@ func TestHouseholdInstrumentOwnershipDatabaseCreationInput_ValidateWithContext(T
 	})
 }
 
-func TestHouseholdInstrumentOwnershipUpdateRequestInput_ValidateWithContext(T *testing.T) {
+func TestAccountInstrumentOwnershipUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &HouseholdInstrumentOwnershipUpdateRequestInput{
+		x := &AccountInstrumentOwnershipUpdateRequestInput{
 			Quantity:          pointer.To[uint16](1),
 			ValidInstrumentID: pointer.To(t.Name()),
 		}

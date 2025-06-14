@@ -1,4 +1,4 @@
-package householdinvitations
+package accountinvitations
 
 import (
 	"fmt"
@@ -12,46 +12,46 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
-	householdsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/households"
+	accountsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/accounts"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 const (
-	serviceName string = "household_invitations_service"
+	serviceName string = "account_invitations_service"
 )
 
 var (
-	_ types.HouseholdInvitationDataService = (*service)(nil)
+	_ types.AccountInvitationDataService = (*service)(nil)
 )
 
 type (
 	// service handles webhooks.
 	service struct {
-		logger                         logging.Logger
-		userDataManager                types.UserDataManager
-		householdInvitationDataManager types.HouseholdInvitationDataManager
-		tracer                         tracing.Tracer
-		encoderDecoder                 encoding.ServerEncoderDecoder
-		secretGenerator                random.Generator
-		dataChangesPublisher           messagequeue.Publisher
-		householdIDFetcher             func(*http.Request) string
-		householdInvitationIDFetcher   func(*http.Request) string
-		sessionContextDataFetcher      func(*http.Request) (*sessions.ContextData, error)
+		logger                       logging.Logger
+		userDataManager              types.UserDataManager
+		accountInvitationDataManager types.AccountInvitationDataManager
+		tracer                       tracing.Tracer
+		encoderDecoder               encoding.ServerEncoderDecoder
+		secretGenerator              random.Generator
+		dataChangesPublisher         messagequeue.Publisher
+		accountIDFetcher             func(*http.Request) string
+		accountInvitationIDFetcher   func(*http.Request) string
+		sessionContextDataFetcher    func(*http.Request) (*sessions.ContextData, error)
 	}
 )
 
-// ProvideHouseholdInvitationsService builds a new HouseholdInvitationDataService.
-func ProvideHouseholdInvitationsService(
+// ProvideAccountInvitationsService builds a new AccountInvitationDataService.
+func ProvideAccountInvitationsService(
 	logger logging.Logger,
 	userDataManager types.UserDataManager,
-	householdInvitationDataManager types.HouseholdInvitationDataManager,
+	accountInvitationDataManager types.AccountInvitationDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 	secretGenerator random.Generator,
 	queueConfig *msgconfig.QueuesConfig,
-) (types.HouseholdInvitationDataService, error) {
+) (types.AccountInvitationDataService, error) {
 	if queueConfig == nil {
 		return nil, fmt.Errorf("nil queue config provided")
 	}
@@ -62,16 +62,16 @@ func ProvideHouseholdInvitationsService(
 	}
 
 	s := &service{
-		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
-		userDataManager:                userDataManager,
-		householdInvitationDataManager: householdInvitationDataManager,
-		encoderDecoder:                 encoder,
-		dataChangesPublisher:           dataChangesPublisher,
-		secretGenerator:                secretGenerator,
-		sessionContextDataFetcher:      sessions.FetchContextFromRequest,
-		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),
-		householdInvitationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInvitationIDURIParamKey),
-		tracer:                         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:                       logging.EnsureLogger(logger).WithName(serviceName),
+		userDataManager:              userDataManager,
+		accountInvitationDataManager: accountInvitationDataManager,
+		encoderDecoder:               encoder,
+		dataChangesPublisher:         dataChangesPublisher,
+		secretGenerator:              secretGenerator,
+		sessionContextDataFetcher:    sessions.FetchContextFromRequest,
+		accountIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(accountsservice.AccountIDURIParamKey),
+		accountInvitationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(AccountInvitationIDURIParamKey),
+		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return s, nil

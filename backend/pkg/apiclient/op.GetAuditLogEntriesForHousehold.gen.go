@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (c *Client) GetAuditLogEntriesForHousehold(
+func (c *Client) GetAuditLogEntriesForAccount(
 	ctx context.Context,
 	filter *QueryFilter,
 	reqMods ...RequestModifier,
@@ -26,7 +26,7 @@ func (c *Client) GetAuditLogEntriesForHousehold(
 
 	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, values, "/api/v1/audit_log_entries/for_household")
+	u := c.BuildURL(ctx, values, "/api/v1/audit_log_entries/for_account")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of AuditLogEntry")

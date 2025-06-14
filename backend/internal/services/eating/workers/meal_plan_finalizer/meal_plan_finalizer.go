@@ -76,7 +76,7 @@ func (w *Worker) Work(ctx context.Context) (int64, error) {
 	var changedCount int64
 	for _, mealPlan := range mealPlans {
 		var changed bool
-		changed, err = w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
+		changed, err = w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToAccount)
 		if err != nil {
 			return -1, observability.PrepareError(err, span, "finalizing meal plan")
 		}
@@ -84,9 +84,9 @@ func (w *Worker) Work(ctx context.Context) (int64, error) {
 		if changed {
 			changedCount++
 			if err = w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-				MealPlanID:  mealPlan.ID,
-				MealPlan:    mealPlan,
-				HouseholdID: mealPlan.BelongsToHousehold,
+				MealPlanID: mealPlan.ID,
+				MealPlan:   mealPlan,
+				AccountID:  mealPlan.BelongsToAccount,
 			}); err != nil {
 				logger.Error("writing data change message for finalized meal plan", err)
 			}

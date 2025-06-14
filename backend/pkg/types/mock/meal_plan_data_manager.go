@@ -17,20 +17,20 @@ type MealPlanDataManagerMock struct {
 }
 
 // MealPlanExists is a mock function.
-func (m *MealPlanDataManagerMock) MealPlanExists(ctx context.Context, mealPlanID, householdID string) (bool, error) {
-	returnValues := m.Called(ctx, mealPlanID, householdID)
+func (m *MealPlanDataManagerMock) MealPlanExists(ctx context.Context, mealPlanID, accountID string) (bool, error) {
+	returnValues := m.Called(ctx, mealPlanID, accountID)
 	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetMealPlan is a mock function.
-func (m *MealPlanDataManagerMock) GetMealPlan(ctx context.Context, mealPlanID, householdID string) (*types.MealPlan, error) {
-	returnValues := m.Called(ctx, mealPlanID, householdID)
+func (m *MealPlanDataManagerMock) GetMealPlan(ctx context.Context, mealPlanID, accountID string) (*types.MealPlan, error) {
+	returnValues := m.Called(ctx, mealPlanID, accountID)
 	return returnValues.Get(0).(*types.MealPlan), returnValues.Error(1)
 }
 
 // GetMealPlans is a mock function.
-func (m *MealPlanDataManagerMock) GetMealPlansForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error) {
-	returnValues := m.Called(ctx, householdID, filter)
+func (m *MealPlanDataManagerMock) GetMealPlansForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlan], error) {
+	returnValues := m.Called(ctx, accountID, filter)
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.MealPlan]), returnValues.Error(1)
 }
 
@@ -46,13 +46,13 @@ func (m *MealPlanDataManagerMock) UpdateMealPlan(ctx context.Context, updated *t
 }
 
 // ArchiveMealPlan is a mock function.
-func (m *MealPlanDataManagerMock) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error {
-	return m.Called(ctx, mealPlanID, householdID).Error(0)
+func (m *MealPlanDataManagerMock) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID string) error {
+	return m.Called(ctx, mealPlanID, accountID).Error(0)
 }
 
 // AttemptToFinalizeMealPlan is a mock function.
-func (m *MealPlanDataManagerMock) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (changed bool, err error) {
-	returnValues := m.Called(ctx, mealPlanID, householdID)
+func (m *MealPlanDataManagerMock) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, accountID string) (changed bool, err error) {
+	returnValues := m.Called(ctx, mealPlanID, accountID)
 	return returnValues.Bool(0), returnValues.Error(1)
 }
 

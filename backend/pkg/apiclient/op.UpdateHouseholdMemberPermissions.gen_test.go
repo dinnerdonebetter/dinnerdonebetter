@@ -12,16 +12,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
+func TestClient_UpdateAccountMemberPermissions(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%s/members/%s/permissions"
+	const expectedPathFormat = "/api/v1/accounts/%s/members/%s/permissions"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 		userID := fake.BuildFakeID()
 
 		data := &UserPermissionsResponse{}
@@ -31,15 +31,15 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 
 		exampleInput := &ModifyUserPermissionsInput{}
 
-		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, householdID, userID)
+		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, accountID, userID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		err := c.UpdateHouseholdMemberPermissions(ctx, householdID, userID, exampleInput)
+		err := c.UpdateAccountMemberPermissions(ctx, accountID, userID, exampleInput)
 
 		assert.NoError(t, err)
 
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		userID := fake.BuildFakeID()
@@ -48,7 +48,7 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		err := c.UpdateHouseholdMemberPermissions(ctx, "", userID, exampleInput)
+		err := c.UpdateAccountMemberPermissions(ctx, "", userID, exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -56,13 +56,13 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
 		exampleInput := &ModifyUserPermissionsInput{}
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		err := c.UpdateHouseholdMemberPermissions(ctx, householdID, "", exampleInput)
+		err := c.UpdateAccountMemberPermissions(ctx, accountID, "", exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -71,13 +71,13 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 		userID := fake.BuildFakeID()
 
 		exampleInput := &ModifyUserPermissionsInput{}
 
 		c := buildTestClientWithInvalidURL(t)
-		err := c.UpdateHouseholdMemberPermissions(ctx, householdID, userID, exampleInput)
+		err := c.UpdateAccountMemberPermissions(ctx, accountID, userID, exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -86,14 +86,14 @@ func TestClient_UpdateHouseholdMemberPermissions(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 		userID := fake.BuildFakeID()
 
 		exampleInput := &ModifyUserPermissionsInput{}
 
-		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, householdID, userID)
+		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, accountID, userID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		err := c.UpdateHouseholdMemberPermissions(ctx, householdID, userID, exampleInput)
+		err := c.UpdateAccountMemberPermissions(ctx, accountID, userID, exampleInput)
 
 		assert.Error(t, err)
 	})

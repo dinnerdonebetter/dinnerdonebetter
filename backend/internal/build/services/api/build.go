@@ -23,12 +23,12 @@ import (
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/images"
+	accountinvitationssservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/accountinvitations"
+	accountsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/accounts"
 	adminservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/admin"
 	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
 	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/dataprivacy"
-	householdinvitationssservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/householdinvitations"
-	householdsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/households"
 	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/oauth2clients"
 	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/servicesettings"
@@ -70,8 +70,8 @@ func Build(
 		graphing.ProvidersRecipeAnalysis,
 		authservice.Providers,
 		usersservice.Providers,
-		householdsservice.Providers,
-		householdinvitationssservice.Providers,
+		accountsservice.Providers,
+		accountinvitationssservice.Providers,
 		webhooksservice.Providers,
 		adminservice.Providers,
 		validenumerationsservice.Providers,

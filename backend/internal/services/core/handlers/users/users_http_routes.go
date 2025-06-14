@@ -205,10 +205,10 @@ func (s *service) CreateUserHandler(res http.ResponseWriter, req *http.Request) 
 	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
 
 	logger = logger.WithValues(map[string]any{
-		keys.UsernameKey:                 registrationInput.Username,
-		keys.UserEmailAddressKey:         registrationInput.EmailAddress,
-		keys.HouseholdInvitationIDKey:    registrationInput.InvitationID,
-		keys.HouseholdInvitationTokenKey: registrationInput.InvitationToken,
+		keys.UsernameKey:               registrationInput.Username,
+		keys.UserEmailAddressKey:       registrationInput.EmailAddress,
+		keys.AccountInvitationIDKey:    registrationInput.InvitationID,
+		keys.AccountInvitationTokenKey: registrationInput.InvitationToken,
 	})
 
 	if err := registrationInput.ValidateWithContext(ctx); err != nil {
@@ -226,10 +226,10 @@ func (s *service) CreateUserHandler(res http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	var invitation *types.HouseholdInvitation
+	var invitation *types.AccountInvitation
 	if registrationInput.InvitationID != "" && registrationInput.InvitationToken != "" {
 		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-		i, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, registrationInput.InvitationToken, registrationInput.InvitationID)
+		i, err := s.accountInvitationDataManager.GetAccountInvitationByTokenAndID(ctx, registrationInput.InvitationToken, registrationInput.InvitationID)
 		if errors.Is(err, sql.ErrNoRows) {
 			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -243,8 +243,8 @@ func (s *service) CreateUserHandler(res http.ResponseWriter, req *http.Request) 
 		readTimer.Stop()
 
 		invitation = i
-		logger = logger.WithValue(keys.HouseholdInvitationIDKey, invitation.ID)
-		logger.Debug("retrieved household invitation")
+		logger = logger.WithValue(keys.AccountInvitationIDKey, invitation.ID)
+		logger.Debug("retrieved account invitation")
 	}
 
 	logger.Debug("completed invitation check")
@@ -277,12 +277,12 @@ func (s *service) CreateUserHandler(res http.ResponseWriter, req *http.Request) 
 		TwoFactorSecret: tfs,
 		InvitationToken: registrationInput.InvitationToken,
 		Birthday:        registrationInput.Birthday,
-		HouseholdName:   registrationInput.HouseholdName,
+		AccountName:     registrationInput.AccountName,
 	}
 
 	if invitation != nil {
 		logger.Debug("supplementing user creation input with invitation data")
-		input.DestinationHouseholdID = invitation.DestinationHousehold.ID
+		input.DestinationAccountID = invitation.DestinationAccount.ID
 		input.InvitationToken = invitation.Token
 	}
 
@@ -304,10 +304,10 @@ func (s *service) CreateUserHandler(res http.ResponseWriter, req *http.Request) 
 
 	logger.Debug("user created")
 
-	readTimer := timing.NewMetric("database").WithDesc("get default household").Start()
-	defaultHouseholdID, err := s.householdUserMembershipDataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	readTimer := timing.NewMetric("database").WithDesc("get default account").Start()
+	defaultAccountID, err := s.accountUserMembershipDataManager.GetDefaultAccountIDForUser(ctx, user.ID)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching default household ID for user")
+		observability.AcknowledgeError(err, logger, span, "fetching default account ID for user")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -327,7 +327,7 @@ func (s *service) CreateUserHandler(res http.ResponseWriter, req *http.Request) 
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
 	dcm := &types.DataChangeMessage{
-		HouseholdID:            defaultHouseholdID,
+		AccountID:              defaultAccountID,
 		EventType:              types.UserSignedUpServiceEventType,
 		UserID:                 user.ID,
 		EmailVerificationToken: emailVerificationToken,
@@ -338,10 +338,10 @@ func (s *service) CreateUserHandler(res http.ResponseWriter, req *http.Request) 
 	}
 
 	if err = s.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
-		"username":          user.Username,
-		"default_household": defaultHouseholdID,
-		"first_name":        user.FirstName,
-		"last_name":         user.LastName,
+		"username":        user.Username,
+		"default_account": defaultAccountID,
+		"first_name":      user.FirstName,
+		"last_name":       user.LastName,
 	}); err != nil {
 		observability.AcknowledgeError(err, logger, span, "identifying user for analytics")
 	}
@@ -438,7 +438,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// figure out who this is all for.
 	requester := sessionCtxData.Requester.UserID
@@ -495,7 +495,7 @@ func (s *service) UserPermissionsHandler(res http.ResponseWriter, req *http.Requ
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// decode the request.
 	permissionsInput := new(types.UserPermissionsRequestInput)
@@ -512,9 +512,9 @@ func (s *service) UserPermissionsHandler(res http.ResponseWriter, req *http.Requ
 
 	for _, perm := range permissionsInput.Permissions {
 		p := authorization.Permission(perm)
-		hasHouseholdPerm := sessionCtxData.HouseholdPermissions[sessionCtxData.ActiveHouseholdID].HasPermission(p)
+		hasAccountPerm := sessionCtxData.AccountPermissions[sessionCtxData.ActiveAccountID].HasPermission(p)
 		hasServicePerm := sessionCtxData.Requester.ServicePermissions.HasPermission(p)
-		body.Permissions[perm] = hasHouseholdPerm || hasServicePerm
+		body.Permissions[perm] = hasAccountPerm || hasServicePerm
 	}
 
 	responseValue := &types.APIResponse[*types.UserPermissionsResponse]{
@@ -707,7 +707,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// fetch user
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
@@ -1270,9 +1270,9 @@ func (s *service) ArchiveUserHandler(res http.ResponseWriter, req *http.Request)
 	logger.Info("user archived")
 
 	dcm := &types.DataChangeMessage{
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		EventType:   types.UserArchivedServiceEventType,
-		UserID:      userID,
+		AccountID: sessionCtxData.ActiveAccountID,
+		EventType: types.UserArchivedServiceEventType,
+		UserID:    userID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

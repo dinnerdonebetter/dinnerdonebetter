@@ -12,52 +12,52 @@ import (
 )
 
 const (
-	// HouseholdCreatedServiceEventType indicates a household was created.
-	HouseholdCreatedServiceEventType = "household_created"
-	// HouseholdUpdatedServiceEventType indicates a household was updated.
-	HouseholdUpdatedServiceEventType = "household_updated"
-	// HouseholdArchivedServiceEventType indicates a household was archived.
-	HouseholdArchivedServiceEventType = "household_archived"
-	// HouseholdMemberRemovedServiceEventType indicates a household member was removed.
-	HouseholdMemberRemovedServiceEventType = "household_member_removed"
-	// HouseholdMembershipPermissionsUpdatedServiceEventType indicates a household member's permissions were modified.
-	HouseholdMembershipPermissionsUpdatedServiceEventType = "household_membership_permissions_updated"
-	// HouseholdOwnershipTransferredServiceEventType indicates a household was transferred to another owner.
-	HouseholdOwnershipTransferredServiceEventType = "household_ownership_transferred"
+	// AccountCreatedServiceEventType indicates a account was created.
+	AccountCreatedServiceEventType = "account_created"
+	// AccountUpdatedServiceEventType indicates a account was updated.
+	AccountUpdatedServiceEventType = "account_updated"
+	// AccountArchivedServiceEventType indicates a account was archived.
+	AccountArchivedServiceEventType = "account_archived"
+	// AccountMemberRemovedServiceEventType indicates a account member was removed.
+	AccountMemberRemovedServiceEventType = "account_member_removed"
+	// AccountMembershipPermissionsUpdatedServiceEventType indicates a account member's permissions were modified.
+	AccountMembershipPermissionsUpdatedServiceEventType = "account_membership_permissions_updated"
+	// AccountOwnershipTransferredServiceEventType indicates a account was transferred to another owner.
+	AccountOwnershipTransferredServiceEventType = "account_ownership_transferred"
 
-	// UnpaidHouseholdBillingStatus indicates a household is not paid.
-	UnpaidHouseholdBillingStatus = "unpaid"
+	// UnpaidAccountBillingStatus indicates a account is not paid.
+	UnpaidAccountBillingStatus = "unpaid"
 )
 
 type (
-	// Household represents a household.
-	Household struct {
+	// Account represents a account.
+	Account struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt                  time.Time                          `json:"createdAt"`
-		SubscriptionPlanID         *string                            `json:"subscriptionPlanID"`
-		LastUpdatedAt              *time.Time                         `json:"lastUpdatedAt"`
-		ArchivedAt                 *time.Time                         `json:"archivedAt"`
-		Longitude                  *float64                           `json:"longitude"`
-		Latitude                   *float64                           `json:"latitude"`
-		State                      string                             `json:"state"`
-		ContactPhone               string                             `json:"contactPhone"`
-		City                       string                             `json:"city"`
-		AddressLine1               string                             `json:"addressLine1"`
-		ZipCode                    string                             `json:"zipCode"`
-		Country                    string                             `json:"country"`
-		BillingStatus              string                             `json:"billingStatus"`
-		AddressLine2               string                             `json:"addressLine2"`
-		PaymentProcessorCustomerID string                             `json:"paymentProcessorCustomer"`
-		BelongsToUser              string                             `json:"belongsToUser"`
-		ID                         string                             `json:"id"`
-		Name                       string                             `json:"name"`
-		WebhookEncryptionKey       string                             `json:"-"`
-		Members                    []*HouseholdUserMembershipWithUser `json:"members"`
+		CreatedAt                  time.Time                        `json:"createdAt"`
+		SubscriptionPlanID         *string                          `json:"subscriptionPlanID"`
+		LastUpdatedAt              *time.Time                       `json:"lastUpdatedAt"`
+		ArchivedAt                 *time.Time                       `json:"archivedAt"`
+		Longitude                  *float64                         `json:"longitude"`
+		Latitude                   *float64                         `json:"latitude"`
+		State                      string                           `json:"state"`
+		ContactPhone               string                           `json:"contactPhone"`
+		City                       string                           `json:"city"`
+		AddressLine1               string                           `json:"addressLine1"`
+		ZipCode                    string                           `json:"zipCode"`
+		Country                    string                           `json:"country"`
+		BillingStatus              string                           `json:"billingStatus"`
+		AddressLine2               string                           `json:"addressLine2"`
+		PaymentProcessorCustomerID string                           `json:"paymentProcessorCustomer"`
+		BelongsToUser              string                           `json:"belongsToUser"`
+		ID                         string                           `json:"id"`
+		Name                       string                           `json:"name"`
+		WebhookEncryptionKey       string                           `json:"-"`
+		Members                    []*AccountUserMembershipWithUser `json:"members"`
 	}
 
-	// HouseholdCreationRequestInput represents what a User could set as input for creating households.
-	HouseholdCreationRequestInput struct {
+	// AccountCreationRequestInput represents what a User could set as input for creating accounts.
+	AccountCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
 		Latitude     *float64 `json:"latitude"`
@@ -72,8 +72,8 @@ type (
 		Country      string   `json:"country"`
 	}
 
-	// HouseholdDatabaseCreationInput represents what a User could set as input for creating households.
-	HouseholdDatabaseCreationInput struct {
+	// AccountDatabaseCreationInput represents what a User could set as input for creating accounts.
+	AccountDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
 		ID                   string   `json:"-"`
@@ -91,8 +91,8 @@ type (
 		WebhookEncryptionKey string   `json:"-"`
 	}
 
-	// HouseholdUpdateRequestInput represents what a User could set as input for updating households.
-	HouseholdUpdateRequestInput struct {
+	// AccountUpdateRequestInput represents what a User could set as input for updating accounts.
+	AccountUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
 		Name          *string  `json:"name,omitempty"`
@@ -108,32 +108,32 @@ type (
 		BelongsToUser string   `json:"-"`
 	}
 
-	// HouseholdDataManager describes a structure capable of storing households permanently.
-	HouseholdDataManager interface {
-		GetHousehold(ctx context.Context, householdID string) (*Household, error)
-		GetHouseholds(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Household], error)
-		CreateHousehold(ctx context.Context, input *HouseholdDatabaseCreationInput) (*Household, error)
-		UpdateHousehold(ctx context.Context, updated *Household) error
-		ArchiveHousehold(ctx context.Context, householdID string, userID string) error
+	// AccountDataManager describes a structure capable of storing accounts permanently.
+	AccountDataManager interface {
+		GetAccount(ctx context.Context, accountID string) (*Account, error)
+		GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[Account], error)
+		CreateAccount(ctx context.Context, input *AccountDatabaseCreationInput) (*Account, error)
+		UpdateAccount(ctx context.Context, updated *Account) error
+		ArchiveAccount(ctx context.Context, accountID string, userID string) error
 	}
 
-	// HouseholdDataService describes a structure capable of serving traffic related to households.
-	HouseholdDataService interface {
-		ListHouseholdsHandler(http.ResponseWriter, *http.Request)
-		CreateHouseholdHandler(http.ResponseWriter, *http.Request)
+	// AccountDataService describes a structure capable of serving traffic related to accounts.
+	AccountDataService interface {
+		ListAccountsHandler(http.ResponseWriter, *http.Request)
+		CreateAccountHandler(http.ResponseWriter, *http.Request)
 		CurrentInfoHandler(http.ResponseWriter, *http.Request)
-		ReadHouseholdHandler(http.ResponseWriter, *http.Request)
-		UpdateHouseholdHandler(http.ResponseWriter, *http.Request)
-		ArchiveHouseholdHandler(http.ResponseWriter, *http.Request)
+		ReadAccountHandler(http.ResponseWriter, *http.Request)
+		UpdateAccountHandler(http.ResponseWriter, *http.Request)
+		ArchiveAccountHandler(http.ResponseWriter, *http.Request)
 		RemoveMemberHandler(http.ResponseWriter, *http.Request)
-		MarkAsDefaultHouseholdHandler(http.ResponseWriter, *http.Request)
+		MarkAsDefaultAccountHandler(http.ResponseWriter, *http.Request)
 		ModifyMemberPermissionsHandler(http.ResponseWriter, *http.Request)
-		TransferHouseholdOwnershipHandler(http.ResponseWriter, *http.Request)
+		TransferAccountOwnershipHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
-// Update merges a HouseholdUpdateRequestInput with a household.
-func (x *Household) Update(input *HouseholdUpdateRequestInput) {
+// Update merges a AccountUpdateRequestInput with a account.
+func (x *Account) Update(input *AccountUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name
 	}
@@ -175,10 +175,10 @@ func (x *Household) Update(input *HouseholdUpdateRequestInput) {
 	}
 }
 
-var _ validation.ValidatableWithContext = (*HouseholdCreationRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*AccountCreationRequestInput)(nil)
 
-// ValidateWithContext validates a HouseholdCreationRequestInput.
-func (x *HouseholdCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a AccountCreationRequestInput.
+func (x *AccountCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Latitude, validation.NilOrNotEmpty),
@@ -186,10 +186,10 @@ func (x *HouseholdCreationRequestInput) ValidateWithContext(ctx context.Context)
 	)
 }
 
-var _ validation.ValidatableWithContext = (*HouseholdUpdateRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*AccountUpdateRequestInput)(nil)
 
-// ValidateWithContext validates a HouseholdUpdateRequestInput.
-func (x *HouseholdUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a AccountUpdateRequestInput.
+func (x *AccountUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Latitude, validation.NilOrNotEmpty),
@@ -197,10 +197,10 @@ func (x *HouseholdUpdateRequestInput) ValidateWithContext(ctx context.Context) e
 	)
 }
 
-// HouseholdCreationInputForNewUser creates a new HouseholdInputCreation struct for a given user.
-func HouseholdCreationInputForNewUser(u *User) *HouseholdDatabaseCreationInput {
-	return &HouseholdDatabaseCreationInput{
-		Name:          fmt.Sprintf("%s's cool household", u.Username),
+// AccountCreationInputForNewUser creates a new AccountInputCreation struct for a given user.
+func AccountCreationInputForNewUser(u *User) *AccountDatabaseCreationInput {
+	return &AccountDatabaseCreationInput{
+		Name:          fmt.Sprintf("%s's cool account", u.Username),
 		BelongsToUser: u.ID,
 	}
 }

@@ -3,7 +3,7 @@ UPDATE webhooks SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
-	AND belongs_to_household = sqlc.arg(belongs_to_household);
+	AND belongs_to_account = sqlc.arg(belongs_to_account);
 
 -- name: CreateWebhook :exec
 INSERT INTO webhooks (
@@ -12,14 +12,14 @@ INSERT INTO webhooks (
 	content_type,
 	url,
 	method,
-	belongs_to_household
+	belongs_to_account
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(name),
 	sqlc.arg(content_type),
 	sqlc.arg(url),
 	sqlc.arg(method),
-	sqlc.arg(belongs_to_household)
+	sqlc.arg(belongs_to_account)
 );
 
 -- name: CheckWebhookExistence :one
@@ -28,10 +28,10 @@ SELECT EXISTS(
 	FROM webhooks
 	WHERE webhooks.archived_at IS NULL
 	AND webhooks.id = sqlc.arg(id)
-	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
+	AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
 );
 
--- name: GetWebhooksForHousehold :many
+-- name: GetWebhooksForAccount :many
 SELECT
 	webhooks.id,
 	webhooks.name,
@@ -46,7 +46,7 @@ SELECT
 	webhooks.created_at,
 	webhooks.last_updated_at,
 	webhooks.archived_at,
-	webhooks.belongs_to_household,
+	webhooks.belongs_to_account,
 	(
 		SELECT COUNT(webhooks.id)
 		FROM webhooks
@@ -63,13 +63,13 @@ SELECT
 				OR webhooks.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR webhooks.archived_at = NULL)
-			AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
+			AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
 	) AS filtered_count,
 	(
 		SELECT COUNT(webhooks.id)
 		FROM webhooks
 		WHERE webhooks.archived_at IS NULL
-			AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
+			AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
 			AND webhook_trigger_events.archived_at IS NULL
 	) AS total_count
 FROM webhooks
@@ -86,12 +86,12 @@ WHERE webhooks.archived_at IS NULL
 		OR webhooks.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR webhooks.archived_at = NULL)
-	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
+	AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
 	AND webhook_trigger_events.archived_at IS NULL
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
--- name: GetWebhooksForHouseholdAndEvent :many
+-- name: GetWebhooksForAccountAndEvent :many
 SELECT
 	webhooks.id,
 	webhooks.name,
@@ -101,12 +101,12 @@ SELECT
 	webhooks.created_at,
 	webhooks.last_updated_at,
 	webhooks.archived_at,
-	webhooks.belongs_to_household
+	webhooks.belongs_to_account
 FROM webhooks
 	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhook_trigger_events.archived_at IS NULL
 	AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
-	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
+	AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
 	AND webhooks.archived_at IS NULL;
 
 -- name: GetWebhook :many
@@ -124,10 +124,10 @@ SELECT
 	webhooks.created_at as webhook_created_at,
 	webhooks.last_updated_at as webhook_last_updated_at,
 	webhooks.archived_at as webhook_archived_at,
-	webhooks.belongs_to_household as webhook_belongs_to_household
+	webhooks.belongs_to_account as webhook_belongs_to_account
 FROM webhooks
 	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhook_trigger_events.archived_at IS NULL
 	AND webhooks.archived_at IS NULL
-	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
+	AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)
 	AND webhooks.id = sqlc.arg(id);

@@ -244,7 +244,7 @@ type responsePartial = {
 function buildObligatoryError(msg: string): responsePartial {
 	return {
 		details: {
-			currentHouseholdID: 'test',
+			currentAccountID: 'test',
 			traceID: 'test',
 		},
 		error: {

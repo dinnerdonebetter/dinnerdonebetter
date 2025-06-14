@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/accountinvitations"
+	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/accounts"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/dataprivacy"
-	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/householdinvitations"
-	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/households"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/oauth2clients"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/servicesettings"
@@ -30,7 +30,7 @@ type (
 		AuditLogEntries              auditlogentries.Config              `envPrefix:"AUDIT_LOG_ENTRIES_"              json:"auditLogEntries,omitempty"`
 		ServiceSettingConfigurations servicesettingconfigurations.Config `envPrefix:"SERVICE_SETTING_CONFIGURATIONS_" json:"serviceSettingConfigurations,omitempty"`
 		UserNotifications            usernotifications.Config            `envPrefix:"USER_NOTIFICATIONS_"             json:"userNotifications,omitempty"`
-		Households                   households.Config                   `envPrefix:"HOUSEHOLDS_"                     json:"households,omitempty"`
+		Accounts                     accounts.Config                     `envPrefix:"HOUSEHOLDS_"                     json:"accounts,omitempty"`
 		ServiceSettings              servicesettings.Config              `envPrefix:"SERVICE_SETTINGS_"               json:"serviceSettings,omitempty"`
 		Users                        users.Config                        `envPrefix:"USERS_"                          json:"users,omitempty"`
 		DataPrivacy                  dataprivacy.Config                  `envPrefix:"DATA_PRIVACY_"                   json:"dataPrivacy,omitempty"`
@@ -39,7 +39,7 @@ type (
 		OAuth2Clients                oauth2clients.Config                `envPrefix:"OAUTH2_CLIENTS_"                 json:"oauth2Clients,omitempty"`
 		MealPlanning                 mealplanning.Config                 `envPrefix:"MEAL_PLANNING_"                  json:"meals,omitempty"`
 		Webhooks                     webhooks.Config                     `envPrefix:"WEBHOOKS_"                       json:"webhooks,omitempty"`
-		HouseholdInvitations         householdinvitations.Config         `envPrefix:"HOUSEHOLD_INVITATIONS_"          json:"householdInvitations,omitempty"`
+		AccountInvitations           accountinvitations.Config           `envPrefix:"HOUSEHOLD_INVITATIONS_"          json:"accountInvitations,omitempty"`
 		ValidEnumerations            validenumerations.Config            `envPrefix:"VALID_ENUMERATIONS_"             json:"validEnumerations,omitempty"`
 	}
 )
@@ -52,7 +52,7 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"AuditLogEntries":              cfg.AuditLogEntries.ValidateWithContext,
 		"ServiceSettingConfigurations": cfg.ServiceSettingConfigurations.ValidateWithContext,
 		"UserNotifications":            cfg.UserNotifications.ValidateWithContext,
-		"Households":                   cfg.Households.ValidateWithContext,
+		"Accounts":                     cfg.Accounts.ValidateWithContext,
 		"ServiceSettings":              cfg.ServiceSettings.ValidateWithContext,
 		"Users":                        cfg.Users.ValidateWithContext,
 		"DataPrivacy":                  cfg.DataPrivacy.ValidateWithContext,
@@ -61,7 +61,7 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"OAuth2Clients":                cfg.OAuth2Clients.ValidateWithContext,
 		"MealPlanning":                 cfg.MealPlanning.ValidateWithContext,
 		"Webhooks":                     cfg.Webhooks.ValidateWithContext,
-		"HouseholdInvitations":         cfg.HouseholdInvitations.ValidateWithContext,
+		"AccountInvitations":           cfg.AccountInvitations.ValidateWithContext,
 		"ValidEnumerations":            cfg.ValidEnumerations.ValidateWithContext,
 	}
 

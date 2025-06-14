@@ -8,35 +8,35 @@ import (
 )
 
 const (
-	householdUserMembershipsTableName = "household_user_memberships"
+	accountUserMembershipsTableName = "account_user_memberships"
 
-	defaultHouseholdColumn = "default_household"
-	householdRoleColumn    = "household_role"
+	defaultAccountColumn = "default_account"
+	accountRoleColumn    = "account_role"
 )
 
 func init() {
-	registerTableName(householdUserMembershipsTableName)
+	registerTableName(accountUserMembershipsTableName)
 }
 
-var householdUserMembershipsColumns = []string{
+var accountUserMembershipsColumns = []string{
 	idColumn,
-	belongsToHouseholdColumn,
+	belongsToAccountColumn,
 	belongsToUserColumn,
-	defaultHouseholdColumn,
-	householdRoleColumn,
+	defaultAccountColumn,
+	accountRoleColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
 
-func buildHouseholdUserMembershipsQueries(database string) []*Query {
+func buildAccountUserMembershipsQueries(database string) []*Query {
 	switch database {
 	case postgres:
 
 		return []*Query{
 			{
 				Annotation: QueryAnnotation{
-					Name: "AddUserToHousehold",
+					Name: "AddUserToAccount",
 					Type: ExecType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
@@ -44,16 +44,23 @@ func buildHouseholdUserMembershipsQueries(database string) []*Query {
 ) VALUES (
 	%s
 );`,
-					householdUserMembershipsTableName,
-					strings.Join(filterForInsert(householdUserMembershipsColumns, "default_household"), ",\n\t"),
-					strings.Join(applyToEach(filterForInsert(householdUserMembershipsColumns, "default_household"), func(i int, s string) string {
+					accountUserMembershipsTableName,
+					strings.Join(filterForInsert(accountUserMembershipsColumns, "default_account"), ",\n\t"),
+					strings.Join(applyToEach(filterForInsert(accountUserMembershipsColumns, "default_account"), func(i int, s string) string {
 						return fmt.Sprintf("sqlc.arg(%s)", s)
 					}), ",\n\t"),
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "CreateHouseholdUserMembershipForNewUser",
+					Name: "ArchiveUserMemberships",
+					Type: ExecRowsType,
+				},
+				Content: buildUpdateAccountMembershipsQuery(belongsToUserColumn, []string{}),
+			},
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateAccountUserMembershipForNewUser",
 					Type: ExecType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
@@ -61,16 +68,16 @@ func buildHouseholdUserMembershipsQueries(database string) []*Query {
 ) VALUES (
 	%s
 );`,
-					householdUserMembershipsTableName,
-					strings.Join(filterForInsert(householdUserMembershipsColumns), ",\n\t"),
-					strings.Join(applyToEach(filterForInsert(householdUserMembershipsColumns), func(i int, s string) string {
+					accountUserMembershipsTableName,
+					strings.Join(filterForInsert(accountUserMembershipsColumns), ",\n\t"),
+					strings.Join(applyToEach(filterForInsert(accountUserMembershipsColumns), func(i int, s string) string {
 						return fmt.Sprintf("sqlc.arg(%s)", s)
 					}), ",\n\t"),
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetDefaultHouseholdIDForUser",
+					Name: "GetDefaultAccountIDForUser",
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
@@ -78,16 +85,16 @@ FROM %s
 	JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s = sqlc.arg(%s)
 	AND %s.%s = TRUE;`,
-					householdsTableName, idColumn,
-					householdsTableName,
-					householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
-					householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
-					householdUserMembershipsTableName, defaultHouseholdColumn,
+					accountsTableName, idColumn,
+					accountsTableName,
+					accountUserMembershipsTableName, accountUserMembershipsTableName, belongsToAccountColumn, accountsTableName, idColumn,
+					accountUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
+					accountUserMembershipsTableName, defaultAccountColumn,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetHouseholdUserMembershipsForUser",
+					Name: "GetAccountUserMembershipsForUser",
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -96,48 +103,48 @@ FROM %s
 	JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-					strings.Join(applyToEach(householdUserMembershipsColumns, func(i int, s string) string {
-						return fmt.Sprintf("%s.%s", householdUserMembershipsTableName, s)
+					strings.Join(applyToEach(accountUserMembershipsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", accountUserMembershipsTableName, s)
 					}), ",\n\t"),
-					householdUserMembershipsTableName,
-					householdsTableName, householdsTableName, idColumn, householdUserMembershipsTableName, belongsToHouseholdColumn,
-					householdUserMembershipsTableName, archivedAtColumn,
-					householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
+					accountUserMembershipsTableName,
+					accountsTableName, accountsTableName, idColumn, accountUserMembershipsTableName, belongsToAccountColumn,
+					accountUserMembershipsTableName, archivedAtColumn,
+					accountUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "MarkHouseholdUserMembershipAsUserDefault",
+					Name: "MarkAccountUserMembershipAsUserDefault",
 					Type: ExecType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = (%s = sqlc.arg(%s) AND %s = sqlc.arg(%s))
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-					householdUserMembershipsTableName,
-					defaultHouseholdColumn, belongsToUserColumn, belongsToUserColumn, belongsToHouseholdColumn, belongsToHouseholdColumn,
+					accountUserMembershipsTableName,
+					defaultAccountColumn, belongsToUserColumn, belongsToUserColumn, belongsToAccountColumn, belongsToAccountColumn,
 					archivedAtColumn,
 					belongsToUserColumn, belongsToUserColumn,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "ModifyHouseholdUserPermissions",
+					Name: "ModifyAccountUserPermissions",
 					Type: ExecType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s)
 WHERE %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
-					householdUserMembershipsTableName,
-					householdRoleColumn, householdRoleColumn,
-					belongsToHouseholdColumn, belongsToHouseholdColumn,
+					accountUserMembershipsTableName,
+					accountRoleColumn, accountRoleColumn,
+					belongsToAccountColumn, belongsToAccountColumn,
 					belongsToUserColumn, belongsToUserColumn,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "RemoveUserFromHousehold",
+					Name: "RemoveUserFromAccount",
 					Type: ExecType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
@@ -146,17 +153,17 @@ WHERE %s = sqlc.arg(%s)
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s = sqlc.arg(%s);`,
-					householdUserMembershipsTableName,
+					accountUserMembershipsTableName,
 					archivedAtColumn, currentTimeExpression,
-					defaultHouseholdColumn,
-					householdUserMembershipsTableName, archivedAtColumn,
-					householdUserMembershipsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
-					householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
+					defaultAccountColumn,
+					accountUserMembershipsTableName, archivedAtColumn,
+					accountUserMembershipsTableName, belongsToAccountColumn, belongsToAccountColumn,
+					accountUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "TransferHouseholdMembership",
+					Name: "TransferAccountMembership",
 					Type: ExecType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
@@ -164,27 +171,27 @@ WHERE %s.%s IS NULL
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
-					householdUserMembershipsTableName,
+					accountUserMembershipsTableName,
 					belongsToUserColumn,
 					belongsToUserColumn,
 					archivedAtColumn,
-					belongsToHouseholdColumn,
-					belongsToHouseholdColumn,
+					belongsToAccountColumn,
+					belongsToAccountColumn,
 					belongsToUserColumn,
 					belongsToUserColumn,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "TransferHouseholdOwnership",
+					Name: "TransferAccountOwnership",
 					Type: ExecType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(new_owner)
 WHERE %s IS NULL
 	AND %s = sqlc.arg(old_owner)
-	AND %s = sqlc.arg(household_id);`,
-					householdsTableName,
+	AND %s = sqlc.arg(account_id);`,
+					accountsTableName,
 					belongsToUserColumn,
 					archivedAtColumn,
 					belongsToUserColumn,
@@ -193,7 +200,7 @@ WHERE %s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "UserIsHouseholdMember",
+					Name: "UserIsAccountMember",
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
@@ -203,11 +210,11 @@ WHERE %s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 		AND %s.%s = sqlc.arg(%s)
 );`,
-					householdUserMembershipsTableName, idColumn,
-					householdUserMembershipsTableName,
-					householdUserMembershipsTableName, archivedAtColumn,
-					householdUserMembershipsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
-					householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
+					accountUserMembershipsTableName, idColumn,
+					accountUserMembershipsTableName,
+					accountUserMembershipsTableName, archivedAtColumn,
+					accountUserMembershipsTableName, belongsToAccountColumn, belongsToAccountColumn,
+					accountUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 				)),
 			},
 		}

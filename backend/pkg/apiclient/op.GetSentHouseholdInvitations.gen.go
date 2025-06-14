@@ -9,11 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (c *Client) GetSentHouseholdInvitations(
+func (c *Client) GetSentAccountInvitations(
 	ctx context.Context,
 	filter *QueryFilter,
 	reqMods ...RequestModifier,
-) (*QueryFilteredResult[HouseholdInvitation], error) {
+) (*QueryFilteredResult[AccountInvitation], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -26,26 +26,26 @@ func (c *Client) GetSentHouseholdInvitations(
 
 	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, values, "/api/v1/household_invitations/sent")
+	u := c.BuildURL(ctx, values, "/api/v1/account_invitations/sent")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of HouseholdInvitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of AccountInvitation")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *APIResponse[[]*HouseholdInvitation]
+	var apiResponse *APIResponse[[]*AccountInvitation]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of HouseholdInvitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of AccountInvitation")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
 
-	result := &QueryFilteredResult[HouseholdInvitation]{
+	result := &QueryFilteredResult[AccountInvitation]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

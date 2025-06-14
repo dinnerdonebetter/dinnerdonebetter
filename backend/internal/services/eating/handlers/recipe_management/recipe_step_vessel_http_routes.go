@@ -42,7 +42,7 @@ func (s *service) CreateRecipeStepVesselHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.RecipeStepVesselCreationRequestInput)
@@ -84,7 +84,7 @@ func (s *service) CreateRecipeStepVesselHandler(res http.ResponseWriter, req *ht
 	dcm := &types.DataChangeMessage{
 		EventType:        types.RecipeStepVesselCreatedServiceEventType,
 		RecipeStepVessel: recipeStepVessel,
-		HouseholdID:      sessionCtxData.ActiveHouseholdID,
+		AccountID:        sessionCtxData.ActiveAccountID,
 		UserID:           sessionCtxData.Requester.UserID,
 	}
 
@@ -124,7 +124,7 @@ func (s *service) ReadRecipeStepVesselHandler(res http.ResponseWriter, req *http
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -195,7 +195,7 @@ func (s *service) ListRecipeStepVesselsHandler(res http.ResponseWriter, req *htt
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -256,7 +256,7 @@ func (s *service) UpdateRecipeStepVesselHandler(res http.ResponseWriter, req *ht
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.RecipeStepVesselUpdateRequestInput)
@@ -319,7 +319,7 @@ func (s *service) UpdateRecipeStepVesselHandler(res http.ResponseWriter, req *ht
 	dcm := &types.DataChangeMessage{
 		EventType:        types.RecipeStepVesselUpdatedServiceEventType,
 		RecipeStepVessel: recipeStepVessel,
-		HouseholdID:      sessionCtxData.ActiveHouseholdID,
+		AccountID:        sessionCtxData.ActiveAccountID,
 		UserID:           sessionCtxData.Requester.UserID,
 	}
 
@@ -360,7 +360,7 @@ func (s *service) ArchiveRecipeStepVesselHandler(res http.ResponseWriter, req *h
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -401,9 +401,9 @@ func (s *service) ArchiveRecipeStepVesselHandler(res http.ResponseWriter, req *h
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.RecipeStepVesselArchivedServiceEventType,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType: types.RecipeStepVesselArchivedServiceEventType,
+		AccountID: sessionCtxData.ActiveAccountID,
+		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	go s.dataChangesPublisher.PublishAsync(ctx, dcm)

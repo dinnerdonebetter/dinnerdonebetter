@@ -349,8 +349,8 @@ func TestService_CreateUserHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = helper.exampleUser.ID
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
@@ -374,12 +374,12 @@ func TestService_CreateUserHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
-		db.HouseholdUserMembershipDataManagerMock.On(
-			"GetDefaultHouseholdIDForUser",
+		db.AccountUserMembershipDataManagerMock.On(
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdUserMembershipDataManager = db
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountUserMembershipDataManager = db
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(
@@ -465,8 +465,8 @@ func TestService_CreateUserHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = helper.exampleUser.ID
 
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateUserHandler(helper.res, helper.req)
@@ -493,8 +493,8 @@ func TestService_CreateUserHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = helper.exampleUser.ID
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(
@@ -528,12 +528,12 @@ func TestService_CreateUserHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = helper.exampleUser.ID
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.ID = exampleInput.InvitationID
-		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
-		exampleHouseholdInvitation.DestinationHousehold = *exampleHousehold
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = helper.exampleUser.ID
+		exampleAccountInvitation := fakes.BuildFakeAccountInvitation()
+		exampleAccountInvitation.ID = exampleInput.InvitationID
+		exampleAccountInvitation.Token = exampleInput.InvitationToken
+		exampleAccountInvitation.DestinationAccount = *exampleAccount
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
@@ -556,21 +556,21 @@ func TestService_CreateUserHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(t.Name(), nil)
 
-		db.HouseholdInvitationDataManagerMock.On(
-			"GetHouseholdInvitationByTokenAndID",
+		db.AccountInvitationDataManagerMock.On(
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
 			exampleInput.InvitationToken,
 			exampleInput.InvitationID,
-		).Return(exampleHouseholdInvitation, nil)
+		).Return(exampleAccountInvitation, nil)
 		helper.service.userDataManager = db
-		helper.service.householdInvitationDataManager = db
+		helper.service.accountInvitationDataManager = db
 
-		db.HouseholdUserMembershipDataManagerMock.On(
-			"GetDefaultHouseholdIDForUser",
+		db.AccountUserMembershipDataManagerMock.On(
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdUserMembershipDataManager = db
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountUserMembershipDataManager = db
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(
@@ -614,12 +614,12 @@ func TestService_CreateUserHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = helper.exampleUser.ID
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.ID = exampleInput.InvitationID
-		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
-		exampleHouseholdInvitation.DestinationHousehold = *exampleHousehold
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = helper.exampleUser.ID
+		exampleAccountInvitation := fakes.BuildFakeAccountInvitation()
+		exampleAccountInvitation.ID = exampleInput.InvitationID
+		exampleAccountInvitation.Token = exampleInput.InvitationToken
+		exampleAccountInvitation.DestinationAccount = *exampleAccount
 
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
@@ -635,14 +635,14 @@ func TestService_CreateUserHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
-		db.HouseholdInvitationDataManagerMock.On(
-			"GetHouseholdInvitationByTokenAndID",
+		db.AccountInvitationDataManagerMock.On(
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
 			exampleInput.InvitationToken,
 			exampleInput.InvitationID,
-		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
+		).Return((*types.AccountInvitation)(nil), sql.ErrNoRows)
 		helper.service.userDataManager = db
-		helper.service.householdInvitationDataManager = db
+		helper.service.accountInvitationDataManager = db
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(
@@ -678,12 +678,12 @@ func TestService_CreateUserHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = helper.exampleUser.ID
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.ID = exampleInput.InvitationID
-		exampleHouseholdInvitation.Token = exampleInput.InvitationToken
-		exampleHouseholdInvitation.DestinationHousehold = *exampleHousehold
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = helper.exampleUser.ID
+		exampleAccountInvitation := fakes.BuildFakeAccountInvitation()
+		exampleAccountInvitation.ID = exampleInput.InvitationID
+		exampleAccountInvitation.Token = exampleInput.InvitationToken
+		exampleAccountInvitation.DestinationAccount = *exampleAccount
 
 		db := database.NewMockDatabase()
 		db.UserDataManagerMock.On(
@@ -698,14 +698,14 @@ func TestService_CreateUserHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(t.Name(), nil)
 
-		db.HouseholdInvitationDataManagerMock.On(
-			"GetHouseholdInvitationByTokenAndID",
+		db.AccountInvitationDataManagerMock.On(
+			"GetAccountInvitationByTokenAndID",
 			testutils.ContextMatcher,
 			exampleInput.InvitationToken,
 			exampleInput.InvitationID,
-		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
+		).Return((*types.AccountInvitation)(nil), errors.New("blah"))
 		helper.service.userDataManager = db
-		helper.service.householdInvitationDataManager = db
+		helper.service.accountInvitationDataManager = db
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(
@@ -805,12 +805,12 @@ func TestService_CreateUserHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
-		db.HouseholdUserMembershipDataManagerMock.On(
-			"GetDefaultHouseholdIDForUser",
+		db.AccountUserMembershipDataManagerMock.On(
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdUserMembershipDataManager = db
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountUserMembershipDataManager = db
 
 		sg := &randommock.Generator{}
 		sg.On(
@@ -952,8 +952,8 @@ func TestService_CreateUserHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = helper.exampleUser.ID
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
@@ -977,12 +977,12 @@ func TestService_CreateUserHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.userDataManager = db
 
-		db.HouseholdUserMembershipDataManagerMock.On(
-			"GetDefaultHouseholdIDForUser",
+		db.AccountUserMembershipDataManagerMock.On(
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdUserMembershipDataManager = db
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountUserMembershipDataManager = db
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(
@@ -1026,8 +1026,8 @@ func TestService_CreateUserHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = helper.exampleUser.ID
+		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccount.BelongsToUser = helper.exampleUser.ID
 
 		auth := &mockauthn.Authenticator{}
 		auth.On(
@@ -1051,12 +1051,12 @@ func TestService_CreateUserHandler(T *testing.T) {
 		).Return("", errors.New("blah"))
 		helper.service.userDataManager = db
 
-		db.HouseholdUserMembershipDataManagerMock.On(
-			"GetDefaultHouseholdIDForUser",
+		db.AccountUserMembershipDataManagerMock.On(
+			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-		).Return(helper.exampleHousehold.ID, nil)
-		helper.service.householdUserMembershipDataManager = db
+		).Return(helper.exampleAccount.ID, nil)
+		helper.service.accountUserMembershipDataManager = db
 
 		helper.req = helper.req.WithContext(
 			context.WithValue(

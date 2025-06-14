@@ -6,26 +6,26 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
-// BuildFakeHouseholdInstrumentOwnership builds a faked valid ingredient.
-func BuildFakeHouseholdInstrumentOwnership() *types.HouseholdInstrumentOwnership {
-	return &types.HouseholdInstrumentOwnership{
-		CreatedAt:          BuildFakeTime(),
-		ID:                 buildUniqueString(),
-		Notes:              buildUniqueString(),
-		BelongsToHousehold: buildUniqueString(),
-		Instrument:         *BuildFakeValidInstrument(),
-		Quantity:           uint16(buildFakeNumber()),
+// BuildFakeAccountInstrumentOwnership builds a faked valid ingredient.
+func BuildFakeAccountInstrumentOwnership() *types.AccountInstrumentOwnership {
+	return &types.AccountInstrumentOwnership{
+		CreatedAt:        BuildFakeTime(),
+		ID:               buildUniqueString(),
+		Notes:            buildUniqueString(),
+		BelongsToAccount: buildUniqueString(),
+		Instrument:       *BuildFakeValidInstrument(),
+		Quantity:         uint16(buildFakeNumber()),
 	}
 }
 
-// BuildFakeHouseholdInstrumentOwnershipsList builds a faked HouseholdInstrumentOwnershipList.
-func BuildFakeHouseholdInstrumentOwnershipsList() *filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership] {
-	var examples []*types.HouseholdInstrumentOwnership
+// BuildFakeAccountInstrumentOwnershipsList builds a faked AccountInstrumentOwnershipList.
+func BuildFakeAccountInstrumentOwnershipsList() *filtering.QueryFilteredResult[types.AccountInstrumentOwnership] {
+	var examples []*types.AccountInstrumentOwnership
 	for i := 0; i < exampleQuantity; i++ {
-		examples = append(examples, BuildFakeHouseholdInstrumentOwnership())
+		examples = append(examples, BuildFakeAccountInstrumentOwnership())
 	}
 
-	return &filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership]{
+	return &filtering.QueryFilteredResult[types.AccountInstrumentOwnership]{
 		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
@@ -36,14 +36,14 @@ func BuildFakeHouseholdInstrumentOwnershipsList() *filtering.QueryFilteredResult
 	}
 }
 
-// BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput builds a faked HouseholdInstrumentOwnershipUpdateRequestInput from a valid ingredient.
-func BuildFakeHouseholdInstrumentOwnershipUpdateRequestInput() *types.HouseholdInstrumentOwnershipUpdateRequestInput {
-	validIngredient := BuildFakeHouseholdInstrumentOwnership()
-	return converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequestInput(validIngredient)
+// BuildFakeAccountInstrumentOwnershipUpdateRequestInput builds a faked AccountInstrumentOwnershipUpdateRequestInput from a valid ingredient.
+func BuildFakeAccountInstrumentOwnershipUpdateRequestInput() *types.AccountInstrumentOwnershipUpdateRequestInput {
+	validIngredient := BuildFakeAccountInstrumentOwnership()
+	return converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipUpdateRequestInput(validIngredient)
 }
 
-// BuildFakeHouseholdInstrumentOwnershipCreationRequestInput builds a faked HouseholdInstrumentOwnershipCreationRequestInput.
-func BuildFakeHouseholdInstrumentOwnershipCreationRequestInput() *types.HouseholdInstrumentOwnershipCreationRequestInput {
-	validIngredient := BuildFakeHouseholdInstrumentOwnership()
-	return converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipCreationRequestInput(validIngredient)
+// BuildFakeAccountInstrumentOwnershipCreationRequestInput builds a faked AccountInstrumentOwnershipCreationRequestInput.
+func BuildFakeAccountInstrumentOwnershipCreationRequestInput() *types.AccountInstrumentOwnershipCreationRequestInput {
+	validIngredient := BuildFakeAccountInstrumentOwnership()
+	return converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipCreationRequestInput(validIngredient)
 }

@@ -3,14 +3,14 @@ package keys
 const (
 	// RequesterIDKey is the standard key for referring to a requesting user's ID.
 	RequesterIDKey = "request.made_by"
-	// HouseholdIDKey is the standard key for referring to a household ID.
-	HouseholdIDKey = "household.id"
-	// HouseholdInvitationIDKey is the standard key for referring to a household ID.
-	HouseholdInvitationIDKey = "household_invitation.id"
-	// HouseholdInvitationTokenKey is the standard key for referring to a household invitation token.
-	HouseholdInvitationTokenKey = "household_invitation.token"
-	// ActiveHouseholdIDKey is the standard key for referring to an active household ID.
-	ActiveHouseholdIDKey = "active_household.id"
+	// AccountIDKey is the standard key for referring to a account ID.
+	AccountIDKey = "account.id"
+	// AccountInvitationIDKey is the standard key for referring to a account ID.
+	AccountInvitationIDKey = "account_invitation.id"
+	// AccountInvitationTokenKey is the standard key for referring to a account invitation token.
+	AccountInvitationTokenKey = "account_invitation.token"
+	// ActiveAccountIDKey is the standard key for referring to an active account ID.
+	ActiveAccountIDKey = "active_account.id"
 	// UserIDKey is the standard key for referring to a user ID.
 	UserIDKey = "user.id"
 	// UserNotificationIDKey is the standard key for referring to a user notification ID.
@@ -185,8 +185,8 @@ const (
 	// UserIngredientPreferenceIDKey is the standard key for referring to a user ingredient preference's ID.
 	UserIngredientPreferenceIDKey = "user_ingredient_preference.id"
 
-	// HouseholdInstrumentOwnershipIDKey is the standard key for referring to a household instrument ownership's ID.
-	HouseholdInstrumentOwnershipIDKey = "household_instrument_ownership.id"
+	// AccountInstrumentOwnershipIDKey is the standard key for referring to a account instrument ownership's ID.
+	AccountInstrumentOwnershipIDKey = "account_instrument_ownership.id"
 
 	// RecipeRatingIDKey is the standard key for referring to a recipe rating's ID.
 	RecipeRatingIDKey = "recipe_rating.id"

@@ -22,7 +22,7 @@ INSERT INTO audit_log_entries (
 	event_type,
 	changes,
 	belongs_to_user,
-	belongs_to_household
+	belongs_to_account
 ) VALUES (
 	$1,
 	$2,
@@ -41,7 +41,7 @@ type CreateAuditLogEntryParams struct {
 	EventType          AuditLogEventType
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
-	BelongsToHousehold sql.NullString
+	BelongsToAccount sql.NullString
 }
 
 func (q *Queries) CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateAuditLogEntryParams) error {
@@ -52,12 +52,12 @@ func (q *Queries) CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateA
 		arg.EventType,
 		arg.Changes,
 		arg.BelongsToUser,
-		arg.BelongsToHousehold,
+		arg.BelongsToAccount,
 	)
 	return err
 }
 
-const getAuditLogEntriesForHousehold = `-- name: GetAuditLogEntriesForHousehold :many
+const getAuditLogEntriesForAccount = `-- name: GetAuditLogEntriesForAccount :many
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -65,7 +65,7 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at,
 	(
 		SELECT COUNT(audit_log_entries.id)
@@ -73,48 +73,48 @@ SELECT
 		WHERE
 			audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log_entries.belongs_to_household = $3
+			AND audit_log_entries.belongs_to_account = $3
 	) AS filtered_count,
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
 		WHERE
-			audit_log_entries.belongs_to_household = $3
+			audit_log_entries.belongs_to_account = $3
 	) AS total_count
 FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log_entries.belongs_to_household = $3
+	AND audit_log_entries.belongs_to_account = $3
 LIMIT $5
 OFFSET $4
 `
 
-type GetAuditLogEntriesForHouseholdParams struct {
+type GetAuditLogEntriesForAccountParams struct {
 	CreatedAfter       sql.NullTime
 	CreatedBefore      sql.NullTime
-	BelongsToHousehold sql.NullString
+	BelongsToAccount sql.NullString
 	QueryOffset        sql.NullInt32
 	QueryLimit         sql.NullInt32
 }
 
-type GetAuditLogEntriesForHouseholdRow struct {
-	CreatedAt          time.Time
+type GetAuditLogEntriesForAccountRow struct {
 	ID                 string
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
-	BelongsToHousehold sql.NullString
+	BelongsToAccount sql.NullString
+	CreatedAt          time.Time
 	FilteredCount      int64
 	TotalCount         int64
 }
 
-func (q *Queries) GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdParams) ([]*GetAuditLogEntriesForHouseholdRow, error) {
-	rows, err := db.QueryContext(ctx, getAuditLogEntriesForHousehold,
+func (q *Queries) GetAuditLogEntriesForAccount(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountParams) ([]*GetAuditLogEntriesForAccountRow, error) {
+	rows, err := db.QueryContext(ctx, getAuditLogEntriesForAccount,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.BelongsToHousehold,
+		arg.BelongsToAccount,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -122,9 +122,9 @@ func (q *Queries) GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, a
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*GetAuditLogEntriesForHouseholdRow{}
+	items := []*GetAuditLogEntriesForAccountRow{}
 	for rows.Next() {
-		var i GetAuditLogEntriesForHouseholdRow
+		var i GetAuditLogEntriesForAccountRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.ResourceType,
@@ -132,7 +132,7 @@ func (q *Queries) GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, a
 			&i.EventType,
 			&i.Changes,
 			&i.BelongsToUser,
-			&i.BelongsToHousehold,
+			&i.BelongsToAccount,
 			&i.CreatedAt,
 			&i.FilteredCount,
 			&i.TotalCount,
@@ -150,7 +150,7 @@ func (q *Queries) GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, a
 	return items, nil
 }
 
-const getAuditLogEntriesForHouseholdAndResourceType = `-- name: GetAuditLogEntriesForHouseholdAndResourceType :many
+const getAuditLogEntriesForAccountAndResourceType = `-- name: GetAuditLogEntriesForAccountAndResourceType :many
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -158,7 +158,7 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at,
 	(
 		SELECT COUNT(audit_log_entries.id)
@@ -166,52 +166,52 @@ SELECT
 		WHERE
 			audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log_entries.belongs_to_household = $3
+			AND audit_log_entries.belongs_to_account = $3
 			AND audit_log_entries.resource_type = ANY($4::text[])
 	) AS filtered_count,
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
 		WHERE
-			audit_log_entries.belongs_to_household = $3
+			audit_log_entries.belongs_to_account = $3
 			AND audit_log_entries.resource_type = ANY($4::text[])
 	) AS total_count
 FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log_entries.belongs_to_household = $3
+	AND audit_log_entries.belongs_to_account = $3
 	AND audit_log_entries.resource_type = ANY($4::text[])
 LIMIT $6
 OFFSET $5
 `
 
-type GetAuditLogEntriesForHouseholdAndResourceTypeParams struct {
+type GetAuditLogEntriesForAccountAndResourceTypeParams struct {
 	CreatedAfter       sql.NullTime
 	CreatedBefore      sql.NullTime
-	BelongsToHousehold sql.NullString
+	BelongsToAccount sql.NullString
 	Resources          []string
 	QueryOffset        sql.NullInt32
 	QueryLimit         sql.NullInt32
 }
 
-type GetAuditLogEntriesForHouseholdAndResourceTypeRow struct {
-	CreatedAt          time.Time
+type GetAuditLogEntriesForAccountAndResourceTypeRow struct {
 	ID                 string
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
-	BelongsToHousehold sql.NullString
+	BelongsToAccount sql.NullString
+	CreatedAt          time.Time
 	FilteredCount      int64
 	TotalCount         int64
 }
 
-func (q *Queries) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdAndResourceTypeParams) ([]*GetAuditLogEntriesForHouseholdAndResourceTypeRow, error) {
-	rows, err := db.QueryContext(ctx, getAuditLogEntriesForHouseholdAndResourceType,
+func (q *Queries) GetAuditLogEntriesForAccountAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountAndResourceTypeParams) ([]*GetAuditLogEntriesForAccountAndResourceTypeRow, error) {
+	rows, err := db.QueryContext(ctx, getAuditLogEntriesForAccountAndResourceType,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.BelongsToHousehold,
+		arg.BelongsToAccount,
 		pq.Array(arg.Resources),
 		arg.QueryOffset,
 		arg.QueryLimit,
@@ -220,9 +220,9 @@ func (q *Queries) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*GetAuditLogEntriesForHouseholdAndResourceTypeRow{}
+	items := []*GetAuditLogEntriesForAccountAndResourceTypeRow{}
 	for rows.Next() {
-		var i GetAuditLogEntriesForHouseholdAndResourceTypeRow
+		var i GetAuditLogEntriesForAccountAndResourceTypeRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.ResourceType,
@@ -230,7 +230,7 @@ func (q *Queries) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 			&i.EventType,
 			&i.Changes,
 			&i.BelongsToUser,
-			&i.BelongsToHousehold,
+			&i.BelongsToAccount,
 			&i.CreatedAt,
 			&i.FilteredCount,
 			&i.TotalCount,
@@ -256,7 +256,7 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at,
 	(
 		SELECT COUNT(audit_log_entries.id)
@@ -289,14 +289,14 @@ type GetAuditLogEntriesForUserParams struct {
 }
 
 type GetAuditLogEntriesForUserRow struct {
-	CreatedAt          time.Time
 	ID                 string
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
-	BelongsToHousehold sql.NullString
+	BelongsToAccount sql.NullString
+	CreatedAt          time.Time
 	FilteredCount      int64
 	TotalCount         int64
 }
@@ -323,7 +323,7 @@ func (q *Queries) GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *G
 			&i.EventType,
 			&i.Changes,
 			&i.BelongsToUser,
-			&i.BelongsToHousehold,
+			&i.BelongsToAccount,
 			&i.CreatedAt,
 			&i.FilteredCount,
 			&i.TotalCount,
@@ -349,7 +349,7 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at,
 	(
 		SELECT COUNT(audit_log_entries.id)
@@ -386,14 +386,14 @@ type GetAuditLogEntriesForUserAndResourceTypeParams struct {
 }
 
 type GetAuditLogEntriesForUserAndResourceTypeRow struct {
-	CreatedAt          time.Time
 	ID                 string
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
-	BelongsToHousehold sql.NullString
+	BelongsToAccount sql.NullString
+	CreatedAt          time.Time
 	FilteredCount      int64
 	TotalCount         int64
 }
@@ -421,7 +421,7 @@ func (q *Queries) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 			&i.EventType,
 			&i.Changes,
 			&i.BelongsToUser,
-			&i.BelongsToHousehold,
+			&i.BelongsToAccount,
 			&i.CreatedAt,
 			&i.FilteredCount,
 			&i.TotalCount,
@@ -447,21 +447,21 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at
 FROM audit_log_entries
 WHERE audit_log_entries.id = $1
 `
 
 type GetAuditLogEntryRow struct {
-	CreatedAt          time.Time
 	ID                 string
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
 	Changes            json.RawMessage
 	BelongsToUser      sql.NullString
-	BelongsToHousehold sql.NullString
+	BelongsToAccount sql.NullString
+	CreatedAt          time.Time
 }
 
 func (q *Queries) GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error) {
@@ -474,7 +474,7 @@ func (q *Queries) GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*Ge
 		&i.EventType,
 		&i.Changes,
 		&i.BelongsToUser,
-		&i.BelongsToHousehold,
+		&i.BelongsToAccount,
 		&i.CreatedAt,
 	)
 	return &i, err

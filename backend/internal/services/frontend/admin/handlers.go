@@ -71,9 +71,9 @@ func (s *WebappServer) HandleLoginSubmission(res http.ResponseWriter, req *http.
 	}
 
 	usd := &userSessionDetails{
-		Token:       response.Token,
-		UserID:      response.UserID,
-		HouseholdID: response.HouseholdID,
+		Token:     response.Token,
+		UserID:    response.UserID,
+		AccountID: response.AccountID,
 	}
 
 	encoded, err := s.cookieManager.Encode(ctx, s.cookiesConfig.CookieName, usd)

@@ -21,7 +21,7 @@ type adminServiceHTTPRoutesTestHelper struct {
 	ctx                                      context.Context
 	service                                  *service
 	exampleUser                              *types.User
-	exampleHousehold                         *types.Household
+	exampleAccount                           *types.Account
 	exampleAccountStatusUpdateInput          *types.UserAccountStatusUpdateInput
 	exampleArbitraryQueueMessageRequestInput *types.ArbitraryQueueMessageRequestInput
 
@@ -39,9 +39,9 @@ func (helper *adminServiceHTTPRoutesTestHelper) neuterAdminUser() {
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
-			ActiveHouseholdID: helper.exampleHousehold.ID,
-			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-				helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+			ActiveAccountID: helper.exampleAccount.ID,
+			AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+				helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 			},
 		}, nil
 	}
@@ -56,8 +56,8 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 	helper.ctx = context.Background()
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleUser.ServiceRole = authorization.ServiceAdminRole.String()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleAccountStatusUpdateInput = fakes.BuildFakeUserAccountStatusUpdateInput()
 	helper.exampleArbitraryQueueMessageRequestInput = fakes.BuildFakeArbitraryQueueMessageRequestInput()
 
@@ -74,9 +74,9 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 	helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {

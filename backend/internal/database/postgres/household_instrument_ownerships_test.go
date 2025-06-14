@@ -13,36 +13,36 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createHouseholdInstrumentOwnershipForTest(t *testing.T, ctx context.Context, exampleHouseholdInstrumentOwnership *types.HouseholdInstrumentOwnership, dbc *Querier) *types.HouseholdInstrumentOwnership {
+func createAccountInstrumentOwnershipForTest(t *testing.T, ctx context.Context, exampleAccountInstrumentOwnership *types.AccountInstrumentOwnership, dbc *Querier) *types.AccountInstrumentOwnership {
 	t.Helper()
 
 	// create
-	if exampleHouseholdInstrumentOwnership == nil {
-		exampleHouseholdInstrumentOwnership = fakes.BuildFakeHouseholdInstrumentOwnership()
+	if exampleAccountInstrumentOwnership == nil {
+		exampleAccountInstrumentOwnership = fakes.BuildFakeAccountInstrumentOwnership()
 	}
-	dbInput := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipDatabaseCreationInput(exampleHouseholdInstrumentOwnership)
+	dbInput := converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipDatabaseCreationInput(exampleAccountInstrumentOwnership)
 
-	created, err := dbc.CreateHouseholdInstrumentOwnership(ctx, dbInput)
+	created, err := dbc.CreateAccountInstrumentOwnership(ctx, dbInput)
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 
-	exampleHouseholdInstrumentOwnership.CreatedAt = created.CreatedAt
-	assert.Equal(t, exampleHouseholdInstrumentOwnership.Instrument.ID, created.Instrument.ID)
-	exampleHouseholdInstrumentOwnership.Instrument = created.Instrument
-	assert.Equal(t, exampleHouseholdInstrumentOwnership, created)
+	exampleAccountInstrumentOwnership.CreatedAt = created.CreatedAt
+	assert.Equal(t, exampleAccountInstrumentOwnership.Instrument.ID, created.Instrument.ID)
+	exampleAccountInstrumentOwnership.Instrument = created.Instrument
+	assert.Equal(t, exampleAccountInstrumentOwnership, created)
 
-	householdInstrumentOwnership, err := dbc.GetHouseholdInstrumentOwnership(ctx, created.ID, created.BelongsToHousehold)
-	exampleHouseholdInstrumentOwnership.CreatedAt = householdInstrumentOwnership.CreatedAt
-	assert.Equal(t, exampleHouseholdInstrumentOwnership.Instrument.ID, householdInstrumentOwnership.Instrument.ID)
-	exampleHouseholdInstrumentOwnership.Instrument = householdInstrumentOwnership.Instrument
+	accountInstrumentOwnership, err := dbc.GetAccountInstrumentOwnership(ctx, created.ID, created.BelongsToAccount)
+	exampleAccountInstrumentOwnership.CreatedAt = accountInstrumentOwnership.CreatedAt
+	assert.Equal(t, exampleAccountInstrumentOwnership.Instrument.ID, accountInstrumentOwnership.Instrument.ID)
+	exampleAccountInstrumentOwnership.Instrument = accountInstrumentOwnership.Instrument
 
 	assert.NoError(t, err)
-	assert.Equal(t, householdInstrumentOwnership, exampleHouseholdInstrumentOwnership)
+	assert.Equal(t, accountInstrumentOwnership, exampleAccountInstrumentOwnership)
 
 	return created
 }
 
-func TestQuerier_Integration_HouseholdInstrumentOwnerships(t *testing.T) {
+func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 	if !runningContainerTests {
 		t.SkipNow()
 	}
@@ -60,90 +60,90 @@ func TestQuerier_Integration_HouseholdInstrumentOwnerships(t *testing.T) {
 	}(t)
 
 	user := createUserForTest(t, ctx, nil, dbc)
-	householdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, householdID)
+	require.NotEmpty(t, accountID)
 
 	instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
 
-	exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-	exampleHouseholdInstrumentOwnership.BelongsToHousehold = householdID
-	exampleHouseholdInstrumentOwnership.Instrument = *instrument
-	createdHouseholdInstrumentOwnerships := []*types.HouseholdInstrumentOwnership{}
+	exampleAccountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
+	exampleAccountInstrumentOwnership.BelongsToAccount = accountID
+	exampleAccountInstrumentOwnership.Instrument = *instrument
+	createdAccountInstrumentOwnerships := []*types.AccountInstrumentOwnership{}
 
 	// create
-	createdHouseholdInstrumentOwnerships = append(createdHouseholdInstrumentOwnerships, createHouseholdInstrumentOwnershipForTest(t, ctx, exampleHouseholdInstrumentOwnership, dbc))
+	createdAccountInstrumentOwnerships = append(createdAccountInstrumentOwnerships, createAccountInstrumentOwnershipForTest(t, ctx, exampleAccountInstrumentOwnership, dbc))
 
 	// update
-	assert.NoError(t, dbc.UpdateHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnerships[0]))
+	assert.NoError(t, dbc.UpdateAccountInstrumentOwnership(ctx, createdAccountInstrumentOwnerships[0]))
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
 		newInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
-		input := fakes.BuildFakeHouseholdInstrumentOwnership()
-		input.BelongsToHousehold = householdID
+		input := fakes.BuildFakeAccountInstrumentOwnership()
+		input.BelongsToAccount = accountID
 		input.Instrument = *newInstrument
-		createdHouseholdInstrumentOwnerships = append(createdHouseholdInstrumentOwnerships, createHouseholdInstrumentOwnershipForTest(t, ctx, input, dbc))
+		createdAccountInstrumentOwnerships = append(createdAccountInstrumentOwnerships, createAccountInstrumentOwnershipForTest(t, ctx, input, dbc))
 	}
 
 	// fetch as list
-	householdInstrumentOwnerships, err := dbc.GetHouseholdInstrumentOwnerships(ctx, householdID, nil)
+	accountInstrumentOwnerships, err := dbc.GetAccountInstrumentOwnerships(ctx, accountID, nil)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, householdInstrumentOwnerships.Data)
-	assert.Equal(t, len(createdHouseholdInstrumentOwnerships), len(householdInstrumentOwnerships.Data))
+	assert.NotEmpty(t, accountInstrumentOwnerships.Data)
+	assert.Equal(t, len(createdAccountInstrumentOwnerships), len(accountInstrumentOwnerships.Data))
 
 	// delete
-	for _, householdInstrumentOwnership := range createdHouseholdInstrumentOwnerships {
-		assert.NoError(t, dbc.ArchiveHouseholdInstrumentOwnership(ctx, householdInstrumentOwnership.ID, householdID))
+	for _, accountInstrumentOwnership := range createdAccountInstrumentOwnerships {
+		assert.NoError(t, dbc.ArchiveAccountInstrumentOwnership(ctx, accountInstrumentOwnership.ID, accountID))
 
 		var exists bool
-		exists, err = dbc.HouseholdInstrumentOwnershipExists(ctx, householdInstrumentOwnership.ID, householdID)
+		exists, err = dbc.AccountInstrumentOwnershipExists(ctx, accountInstrumentOwnership.ID, accountID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
 
-		var y *types.HouseholdInstrumentOwnership
-		y, err = dbc.GetHouseholdInstrumentOwnership(ctx, householdInstrumentOwnership.ID, householdID)
+		var y *types.AccountInstrumentOwnership
+		y, err = dbc.GetAccountInstrumentOwnership(ctx, accountInstrumentOwnership.ID, accountID)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)
 	}
 }
 
-func TestQuerier_HouseholdInstrumentOwnershipExists(T *testing.T) {
+func TestQuerier_AccountInstrumentOwnershipExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household instrument ownership ID", func(t *testing.T) {
+	T.Run("with invalid account instrument ownership ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.HouseholdInstrumentOwnershipExists(ctx, "", exampleHouseholdID)
+		actual, err := c.AccountInstrumentOwnershipExists(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.False(t, actual)
 	})
 }
 
-func TestQuerier_GetHouseholdInstrumentOwnership(T *testing.T) {
+func TestQuerier_GetAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household instrument ownership ID", func(t *testing.T) {
+	T.Run("with invalid account instrument ownership ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHouseholdInstrumentOwnership(ctx, "", exampleHouseholdID)
+		actual, err := c.GetAccountInstrumentOwnership(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 }
 
-func TestQuerier_CreateHouseholdInstrumentOwnership(T *testing.T) {
+func TestQuerier_CreateAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -152,13 +152,13 @@ func TestQuerier_CreateHouseholdInstrumentOwnership(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.CreateHouseholdInstrumentOwnership(ctx, nil)
+		actual, err := c.CreateAccountInstrumentOwnership(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 }
 
-func TestQuerier_UpdateHouseholdInstrumentOwnership(T *testing.T) {
+func TestQuerier_UpdateAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with nil input", func(t *testing.T) {
@@ -167,21 +167,21 @@ func TestQuerier_UpdateHouseholdInstrumentOwnership(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.UpdateHouseholdInstrumentOwnership(ctx, nil))
+		assert.Error(t, c.UpdateAccountInstrumentOwnership(ctx, nil))
 	})
 }
 
-func TestQuerier_ArchiveHouseholdInstrumentOwnership(T *testing.T) {
+func TestQuerier_ArchiveAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household instrument ownership ID", func(t *testing.T) {
+	T.Run("with invalid account instrument ownership ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveHouseholdInstrumentOwnership(ctx, "", exampleHouseholdID))
+		assert.Error(t, c.ArchiveAccountInstrumentOwnership(ctx, "", exampleAccountID))
 	})
 }

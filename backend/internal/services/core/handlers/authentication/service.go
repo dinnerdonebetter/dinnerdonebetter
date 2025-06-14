@@ -38,21 +38,21 @@ var useProvidersMutex = sync.Mutex{}
 type (
 	// service handles passwords service-wide.
 	service struct {
-		config                     *Config
-		logger                     logging.Logger
-		authenticator              authentication.Authenticator
-		analyticsReporter          analytics.EventReporter
-		featureFlagManager         featureflags.FeatureFlagManager
-		userDataManager            types.UserDataManager
-		householdMembershipManager types.HouseholdUserMembershipDataManager
-		encoderDecoder             encoding.ServerEncoderDecoder
-		sessionContextDataFetcher  func(*http.Request) (*sessions.ContextData, error)
-		authProviderFetcher        func(*http.Request) string
-		tracer                     tracing.Tracer
-		dataChangesPublisher       messagequeue.Publisher
-		oauth2Server               *server.Server
-		tokenIssuer                tokens.Issuer
-		rejectedRequestCounter     metrics.Int64Counter
+		config                    *Config
+		logger                    logging.Logger
+		authenticator             authentication.Authenticator
+		analyticsReporter         analytics.EventReporter
+		featureFlagManager        featureflags.FeatureFlagManager
+		userDataManager           types.UserDataManager
+		accountMembershipManager  types.AccountUserMembershipDataManager
+		encoderDecoder            encoding.ServerEncoderDecoder
+		sessionContextDataFetcher func(*http.Request) (*sessions.ContextData, error)
+		authProviderFetcher       func(*http.Request) string
+		tracer                    tracing.Tracer
+		dataChangesPublisher      messagequeue.Publisher
+		oauth2Server              *server.Server
+		tokenIssuer               tokens.Issuer
+		rejectedRequestCounter    metrics.Int64Counter
 	}
 )
 
@@ -62,7 +62,7 @@ func ProvideService(
 	cfg *Config,
 	authenticator authentication.Authenticator,
 	dataManager database.DataManager,
-	householdMembershipManager types.HouseholdUserMembershipDataManager,
+	accountMembershipManager types.AccountUserMembershipDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
@@ -94,21 +94,21 @@ func ProvideService(
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))
 
 	svc := &service{
-		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
-		encoderDecoder:             encoder,
-		config:                     cfg,
-		userDataManager:            dataManager,
-		householdMembershipManager: householdMembershipManager,
-		authenticator:              authenticator,
-		sessionContextDataFetcher:  sessions.FetchContextFromRequest,
-		tracer:                     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		dataChangesPublisher:       dataChangesPublisher,
-		featureFlagManager:         featureFlagManager,
-		analyticsReporter:          analyticsReporter,
-		tokenIssuer:                signer,
-		rejectedRequestCounter:     rejectedRequestCounter,
-		authProviderFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
-		oauth2Server:               ProvideOAuth2ServerImplementation(logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
+		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
+		encoderDecoder:            encoder,
+		config:                    cfg,
+		userDataManager:           dataManager,
+		accountMembershipManager:  accountMembershipManager,
+		authenticator:             authenticator,
+		sessionContextDataFetcher: sessions.FetchContextFromRequest,
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		dataChangesPublisher:      dataChangesPublisher,
+		featureFlagManager:        featureFlagManager,
+		analyticsReporter:         analyticsReporter,
+		tokenIssuer:               signer,
+		rejectedRequestCounter:    rejectedRequestCounter,
+		authProviderFetcher:       routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
+		oauth2Server:              ProvideOAuth2ServerImplementation(logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
 	}
 
 	useProvidersMutex.Lock()

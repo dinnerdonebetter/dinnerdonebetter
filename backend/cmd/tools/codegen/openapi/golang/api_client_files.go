@@ -156,7 +156,7 @@ func uppercaseFirstLetter(s string) string {
 }
 
 var postSkipPaths = map[string]bool{
-	"/api/v1/households/{householdID}/default": true,
+	"/api/v1/accounts/{accountID}/default":     true,
 	"/api/v1/recipes/{recipeID}/clone":         true,
 	"/api/v1/meal_plans/{mealPlanID}/finalize": true,
 }

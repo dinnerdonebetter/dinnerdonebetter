@@ -1,39 +1,39 @@
--- name: ArchiveHouseholdInstrumentOwnership :execrows
-UPDATE household_instrument_ownerships SET
+-- name: ArchiveAccountInstrumentOwnership :execrows
+UPDATE account_instrument_ownerships SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
-	AND belongs_to_household = sqlc.arg(belongs_to_household);
+	AND belongs_to_account = sqlc.arg(belongs_to_account);
 
--- name: CreateHouseholdInstrumentOwnership :exec
-INSERT INTO household_instrument_ownerships (
+-- name: CreateAccountInstrumentOwnership :exec
+INSERT INTO account_instrument_ownerships (
 	id,
 	notes,
 	quantity,
 	valid_instrument_id,
-	belongs_to_household
+	belongs_to_account
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(notes),
 	sqlc.arg(quantity),
 	sqlc.arg(valid_instrument_id),
-	sqlc.arg(belongs_to_household)
+	sqlc.arg(belongs_to_account)
 );
 
--- name: CheckHouseholdInstrumentOwnershipExistence :one
+-- name: CheckAccountInstrumentOwnershipExistence :one
 SELECT EXISTS (
-	SELECT household_instrument_ownerships.id
-	FROM household_instrument_ownerships
-	WHERE household_instrument_ownerships.archived_at IS NULL
-		AND household_instrument_ownerships.id = sqlc.arg(id)
-		AND household_instrument_ownerships.belongs_to_household = sqlc.arg(belongs_to_household)
+	SELECT account_instrument_ownerships.id
+	FROM account_instrument_ownerships
+	WHERE account_instrument_ownerships.archived_at IS NULL
+		AND account_instrument_ownerships.id = sqlc.arg(id)
+		AND account_instrument_ownerships.belongs_to_account = sqlc.arg(belongs_to_account)
 );
 
--- name: GetHouseholdInstrumentOwnerships :many
+-- name: GetAccountInstrumentOwnerships :many
 SELECT
-	household_instrument_ownerships.id,
-	household_instrument_ownerships.notes,
-	household_instrument_ownerships.quantity,
+	account_instrument_ownerships.id,
+	account_instrument_ownerships.notes,
+	account_instrument_ownerships.quantity,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
 	valid_instruments.description as valid_instrument_description,
@@ -47,63 +47,63 @@ SELECT
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
-	household_instrument_ownerships.belongs_to_household,
-	household_instrument_ownerships.created_at,
-	household_instrument_ownerships.last_updated_at,
-	household_instrument_ownerships.archived_at,
+	account_instrument_ownerships.belongs_to_account,
+	account_instrument_ownerships.created_at,
+	account_instrument_ownerships.last_updated_at,
+	account_instrument_ownerships.archived_at,
 	(
-		SELECT COUNT(household_instrument_ownerships.id)
-		FROM household_instrument_ownerships
-		WHERE household_instrument_ownerships.archived_at IS NULL
+		SELECT COUNT(account_instrument_ownerships.id)
+		FROM account_instrument_ownerships
+		WHERE account_instrument_ownerships.archived_at IS NULL
 			AND
-			household_instrument_ownerships.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-			AND household_instrument_ownerships.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			account_instrument_ownerships.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND account_instrument_ownerships.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
-				household_instrument_ownerships.last_updated_at IS NULL
-				OR household_instrument_ownerships.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+				account_instrument_ownerships.last_updated_at IS NULL
+				OR account_instrument_ownerships.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
 			)
 			AND (
-				household_instrument_ownerships.last_updated_at IS NULL
-				OR household_instrument_ownerships.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+				account_instrument_ownerships.last_updated_at IS NULL
+				OR account_instrument_ownerships.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
-			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR household_instrument_ownerships.archived_at = NULL)
-			AND household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR account_instrument_ownerships.archived_at = NULL)
+			AND account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id)
 	) AS filtered_count,
 	(
-		SELECT COUNT(household_instrument_ownerships.id)
-		FROM household_instrument_ownerships
-		WHERE household_instrument_ownerships.archived_at IS NULL
-			AND household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)
+		SELECT COUNT(account_instrument_ownerships.id)
+		FROM account_instrument_ownerships
+		WHERE account_instrument_ownerships.archived_at IS NULL
+			AND account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id)
 	) AS total_count
-FROM household_instrument_ownerships
-INNER JOIN valid_instruments ON household_instrument_ownerships.valid_instrument_id = valid_instruments.id
+FROM account_instrument_ownerships
+INNER JOIN valid_instruments ON account_instrument_ownerships.valid_instrument_id = valid_instruments.id
 WHERE
-	household_instrument_ownerships.archived_at IS NULL
-	AND household_instrument_ownerships.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-	AND household_instrument_ownerships.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	account_instrument_ownerships.archived_at IS NULL
+	AND account_instrument_ownerships.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND account_instrument_ownerships.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
-		household_instrument_ownerships.last_updated_at IS NULL
-		OR household_instrument_ownerships.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+		account_instrument_ownerships.last_updated_at IS NULL
+		OR account_instrument_ownerships.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
-		household_instrument_ownerships.last_updated_at IS NULL
-		OR household_instrument_ownerships.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+		account_instrument_ownerships.last_updated_at IS NULL
+		OR account_instrument_ownerships.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR household_instrument_ownerships.archived_at = NULL)
-	AND household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR account_instrument_ownerships.archived_at = NULL)
+	AND account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id)
 GROUP BY
-	household_instrument_ownerships.id,
+	account_instrument_ownerships.id,
 	valid_instruments.id
 ORDER BY
-	household_instrument_ownerships.id
+	account_instrument_ownerships.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
--- name: GetHouseholdInstrumentOwnership :one
+-- name: GetAccountInstrumentOwnership :one
 SELECT
-	household_instrument_ownerships.id,
-	household_instrument_ownerships.notes,
-	household_instrument_ownerships.quantity,
+	account_instrument_ownerships.id,
+	account_instrument_ownerships.notes,
+	account_instrument_ownerships.quantity,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
 	valid_instruments.description as valid_instrument_description,
@@ -117,22 +117,22 @@ SELECT
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
-	household_instrument_ownerships.belongs_to_household,
-	household_instrument_ownerships.created_at,
-	household_instrument_ownerships.last_updated_at,
-	household_instrument_ownerships.archived_at
-FROM household_instrument_ownerships
-INNER JOIN valid_instruments ON household_instrument_ownerships.valid_instrument_id = valid_instruments.id
-WHERE household_instrument_ownerships.archived_at IS NULL
-	AND household_instrument_ownerships.id = sqlc.arg(id)
-	AND household_instrument_ownerships.belongs_to_household = sqlc.arg(belongs_to_household);
+	account_instrument_ownerships.belongs_to_account,
+	account_instrument_ownerships.created_at,
+	account_instrument_ownerships.last_updated_at,
+	account_instrument_ownerships.archived_at
+FROM account_instrument_ownerships
+INNER JOIN valid_instruments ON account_instrument_ownerships.valid_instrument_id = valid_instruments.id
+WHERE account_instrument_ownerships.archived_at IS NULL
+	AND account_instrument_ownerships.id = sqlc.arg(id)
+	AND account_instrument_ownerships.belongs_to_account = sqlc.arg(belongs_to_account);
 
--- name: UpdateHouseholdInstrumentOwnership :execrows
-UPDATE household_instrument_ownerships SET
+-- name: UpdateAccountInstrumentOwnership :execrows
+UPDATE account_instrument_ownerships SET
 	notes = sqlc.arg(notes),
 	quantity = sqlc.arg(quantity),
 	valid_instrument_id = sqlc.arg(valid_instrument_id),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
-	AND household_instrument_ownerships.belongs_to_household = sqlc.arg(belongs_to_household);
+	AND account_instrument_ownerships.belongs_to_account = sqlc.arg(belongs_to_account);

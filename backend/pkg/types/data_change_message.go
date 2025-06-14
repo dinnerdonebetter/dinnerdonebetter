@@ -12,7 +12,7 @@ type (
 		_ struct{} `json:"-"`
 
 		RequestID                        string                          `json:"id"`
-		HouseholdInvitation              *HouseholdInvitation            `json:"householdInvitation,omitempty"`
+		AccountInvitation                *AccountInvitation              `json:"accountInvitation,omitempty"`
 		ValidMeasurementUnitConversion   *ValidMeasurementUnitConversion `json:"validMeasurementUnitConversion,omitempty"`
 		ValidInstrument                  *ValidInstrument                `json:"validInstrument,omitempty"`
 		ValidIngredient                  *ValidIngredient                `json:"validIngredient,omitempty"`
@@ -32,7 +32,7 @@ type (
 		MealPlan                         *MealPlan                       `json:"mealPlan,omitempty"`
 		MealPlanTask                     *MealPlanTask                   `json:"mealPlanTask,omitempty"`
 		MealPlanEvent                    *MealPlanEvent                  `json:"mealPlanEvent,omitempty"`
-		Household                        *Household                      `json:"household,omitempty"`
+		Account                          *Account                        `json:"account,omitempty"`
 		MealPlanOption                   *MealPlanOption                 `json:"mealPlanOption,omitempty"`
 		ValidIngredientMeasurementUnit   *ValidIngredientMeasurementUnit `json:"validIngredientMeasurementUnit,omitempty"`
 		MealPlanOptionVote               *MealPlanOptionVote             `json:"mealPlanOptionVote,omitempty"`
@@ -40,23 +40,23 @@ type (
 		Webhook                          *Webhook                        `json:"webhook,omitempty"`
 		ValidIngredientPreparation       *ValidIngredientPreparation     `json:"validIngredientPreparation,omitempty"`
 		ValidMeasurementUnit             *ValidMeasurementUnit           `json:"validMeasurementUnit,omitempty"`
-		UserMembership                   *HouseholdUserMembership        `json:"userMembership,omitempty"`
+		UserMembership                   *AccountUserMembership          `json:"userMembership,omitempty"`
 		RecipeStepCompletionCondition    *RecipeStepCompletionCondition  `json:"recipeStepCompletionCondition,omitempty"`
 		RecipeStepVessel                 *RecipeStepVessel               `json:"recipeStepVessel,omitempty"`
 		PasswordResetToken               *PasswordResetToken             `json:"passwordResetToken,omitempty"`
 		ValidIngredientStateIngredient   *ValidIngredientStateIngredient `json:"validIngredientStateIngredient,omitempty"`
 		ServiceSetting                   *ServiceSetting                 `json:"serviceSetting,omitempty"`
 		ServiceSettingConfiguration      *ServiceSettingConfiguration    `json:"serviceSettingConfiguration,omitempty"`
-		HouseholdInstrumentOwnership     *HouseholdInstrumentOwnership   `json:"householdInstrumentOwnership,omitempty"`
+		AccountInstrumentOwnership       *AccountInstrumentOwnership     `json:"accountInstrumentOwnership,omitempty"`
 		RecipeRating                     *RecipeRating                   `json:"recipeRating,omitempty"`
 		ValidVessel                      *ValidVessel                    `json:"validVessel,omitempty"`
 		ValidPreparationVessel           *ValidPreparationVessel         `json:"validPreparationVessel,omitempty"`
 		UserNotification                 *UserNotification               `json:"userNotification,omitempty"`
 		UserNotificationID               string                          `json:"userNotificationID"`
 		RecipeStepVesselID               string                          `json:"recipeStepVesselID,omitempty"`
-		HouseholdInvitationID            string                          `json:"householdInvitationID,omitempty"`
+		AccountInvitationID              string                          `json:"accountInvitationID,omitempty"`
 		UserID                           string                          `json:"userID"`
-		HouseholdID                      string                          `json:"householdID,omitempty"`
+		AccountID                        string                          `json:"accountID,omitempty"`
 		ValidMeasurementUnitID           string                          `json:"validMeasurementUnitID,omitempty"`
 		ValidPreparationInstrumentID     string                          `json:"validPreparationInstrumentID,omitempty"`
 		MealPlanOptionVoteID             string                          `json:"mealPlanOptionVoteID,omitempty"`
@@ -78,7 +78,7 @@ type (
 		MealPlanEventID                  string                          `json:"mealPlanEventID,omitempty"`
 		EmailVerificationToken           string                          `json:"emailVerificationToken,omitempty"`
 		UserIngredientPreferenceID       string                          `json:"userIngredientPreferenceID,omitempty"`
-		HouseholdInstrumentOwnershipID   string                          `json:"householdInstrumentOwnershipID,omitempty"`
+		AccountInstrumentOwnershipID     string                          `json:"accountInstrumentOwnershipID,omitempty"`
 		RecipeRatingID                   string                          `json:"recipeRatingID,omitempty"`
 		OAuth2ClientID                   string                          `json:"oauth2ClientID,omitempty"`
 		UserIngredientPreferences        []*UserIngredientPreference     `json:"userIngredientPreference,omitempty"`

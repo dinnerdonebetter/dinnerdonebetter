@@ -1,4 +1,4 @@
-package householdinvitations
+package accountinvitations
 
 import (
 	"context"

@@ -13,37 +13,37 @@ func BuildFakeUserDataCollectionResponse() *types.UserDataCollectionResponse {
 
 func BuildFakeUserDataCollection() *types.UserDataCollection {
 	user := BuildFakeUser()
-	household := BuildFakeHousehold()
+	account := BuildFakeAccount()
 
 	recipeRatings := BuildFakeRecipeRatingsList().Data
 	recipes := BuildFakeRecipesList().Data
 	meals := BuildFakeMealsList().Data
-	receivedHouseholdInvitations := BuildFakeHouseholdInvitationsList().Data
+	receivedAccountInvitations := BuildFakeAccountInvitationsList().Data
 	userIngredientPreferences := BuildFakeUserIngredientPreferencesList().Data
-	sentHouseholdInvitations := BuildFakeHouseholdInvitationsList().Data
+	sentAccountInvitations := BuildFakeAccountInvitationsList().Data
 	serviceSettingConfigurations := BuildFakeServiceSettingConfigurationsList().Data
 	auditLogEntries := BuildFakeAuditLogEntriesList().Data
 	mealPlans := BuildFakeMealPlansList().Data
 	webhooks := BuildFakeWebhooksList().Data
-	householdInstrumentOwnerships := BuildFakeHouseholdInstrumentOwnershipsList().Data
+	accountInstrumentOwnerships := BuildFakeAccountInstrumentOwnershipsList().Data
 
 	return &types.UserDataCollection{
 		ReportID: BuildFakeID(),
 		User:     *user,
 		Core: types.CoreUserDataCollection{
-			ReceivedInvites:                  pointer.DereferenceSlice(receivedHouseholdInvitations),
-			SentInvites:                      pointer.DereferenceSlice(sentHouseholdInvitations),
+			ReceivedInvites:                  pointer.DereferenceSlice(receivedAccountInvitations),
+			SentInvites:                      pointer.DereferenceSlice(sentAccountInvitations),
 			UserServiceSettingConfigurations: pointer.DereferenceSlice(serviceSettingConfigurations),
 			UserAuditLogEntries:              pointer.DereferenceSlice(auditLogEntries),
-			Households:                       []types.Household{*household},
+			Accounts:                         []types.Account{*account},
 			Webhooks: map[string][]types.Webhook{
-				household.ID: pointer.DereferenceSlice(webhooks),
+				account.ID: pointer.DereferenceSlice(webhooks),
 			},
 			ServiceSettingConfigurations: map[string][]types.ServiceSettingConfiguration{
-				household.ID: pointer.DereferenceSlice(serviceSettingConfigurations),
+				account.ID: pointer.DereferenceSlice(serviceSettingConfigurations),
 			},
 			AuditLogEntries: map[string][]types.AuditLogEntry{
-				household.ID: pointer.DereferenceSlice(auditLogEntries),
+				account.ID: pointer.DereferenceSlice(auditLogEntries),
 			},
 		},
 		Eating: types.EatingUserDataCollection{
@@ -51,11 +51,11 @@ func BuildFakeUserDataCollection() *types.UserDataCollection {
 			Recipes:                   pointer.DereferenceSlice(recipes),
 			Meals:                     pointer.DereferenceSlice(meals),
 			UserIngredientPreferences: pointer.DereferenceSlice(userIngredientPreferences),
-			HouseholdInstrumentOwnerships: map[string][]types.HouseholdInstrumentOwnership{
-				household.ID: pointer.DereferenceSlice(householdInstrumentOwnerships),
+			AccountInstrumentOwnerships: map[string][]types.AccountInstrumentOwnership{
+				account.ID: pointer.DereferenceSlice(accountInstrumentOwnerships),
 			},
 			MealPlans: map[string][]types.MealPlan{
-				household.ID: pointer.DereferenceSlice(mealPlans),
+				account.ID: pointer.DereferenceSlice(mealPlans),
 			},
 		},
 	}

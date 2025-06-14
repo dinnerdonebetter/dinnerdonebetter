@@ -3,14 +3,14 @@
 package apiclient
 
 type (
-	HouseholdUserMembershipWithUser struct {
-		ArchivedAt         string `json:"archivedAt"`
-		BelongsToHousehold string `json:"belongsToHousehold"`
-		CreatedAt          string `json:"createdAt"`
-		HouseholdRole      string `json:"householdRole"`
-		ID                 string `json:"id"`
-		LastUpdatedAt      string `json:"lastUpdatedAt"`
-		BelongsToUser      User   `json:"belongsToUser"`
-		DefaultHousehold   bool   `json:"defaultHousehold"`
+	AccountUserMembershipWithUser struct {
+		ArchivedAt       string `json:"archivedAt"`
+		BelongsToAccount string `json:"belongsToAccount"`
+		CreatedAt        string `json:"createdAt"`
+		AccountRole      string `json:"accountRole"`
+		ID               string `json:"id"`
+		LastUpdatedAt    string `json:"lastUpdatedAt"`
+		BelongsToUser    User   `json:"belongsToUser"`
+		DefaultAccount   bool   `json:"defaultAccount"`
 	}
 )

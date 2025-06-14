@@ -1,4 +1,4 @@
-package householdinvitations
+package accountinvitations
 
 import (
 	"database/sql"
@@ -20,13 +20,13 @@ import (
 )
 
 const (
-	// HouseholdInvitationIDURIParamKey is a standard string that we'll use to refer to household invitation IDs with.
-	HouseholdInvitationIDURIParamKey = "householdInvitationID"
+	// AccountInvitationIDURIParamKey is a standard string that we'll use to refer to account invitation IDs with.
+	AccountInvitationIDURIParamKey = "accountInvitationID"
 )
 
-var _ types.HouseholdInvitationDataService = (*service)(nil)
+var _ types.AccountInvitationDataService = (*service)(nil)
 
-// InviteMemberHandler is our household creation route.
+// InviteMemberHandler is our account creation route.
 func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -52,18 +52,18 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	userID := sessionCtxData.Requester.UserID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = logger.WithValue(keys.RequesterIDKey, userID)
 
-	householdID := s.householdIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	accountID := s.accountIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	// read parsed input struct from request body.
-	providedInput := new(types.HouseholdInvitationCreationRequestInput)
+	providedInput := new(types.AccountInvitationCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -84,10 +84,10 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		providedInput.ExpiresAt = pointer.To(time.Now().Add((time.Hour * 24) * 7))
 	}
 
-	input := converters.ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreationInput(providedInput)
+	input := converters.ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput(providedInput)
 
 	input.ID = identifiers.New()
-	input.DestinationHouseholdID = householdID
+	input.DestinationAccountID = accountID
 	input.FromUser = userID
 
 	token, err := s.secretGenerator.GenerateBase64EncodedString(ctx, 64)
@@ -114,9 +114,9 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
-	householdInvitation, err := s.householdInvitationDataManager.CreateHouseholdInvitation(ctx, input)
+	accountInvitation, err := s.accountInvitationDataManager.CreateAccountInvitation(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating household invitation")
+		observability.AcknowledgeError(err, logger, span, "creating account invitation")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -124,26 +124,26 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:           types.HouseholdInvitationCreatedServiceEventType,
-		HouseholdInvitation: householdInvitation,
-		HouseholdID:         householdID,
-		UserID:              userID,
+		EventType:         types.AccountInvitationCreatedServiceEventType,
+		AccountInvitation: accountInvitation,
+		AccountID:         accountID,
+		UserID:            userID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.HouseholdInvitation]{
+	responseValue := &types.APIResponse[*types.AccountInvitation]{
 		Details: responseDetails,
-		Data:    householdInvitation,
+		Data:    accountInvitation,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadHouseholdInviteHandler returns a GET handler that returns a household invitation.
-func (s *service) ReadHouseholdInviteHandler(res http.ResponseWriter, req *http.Request) {
+// ReadAccountInviteHandler returns a GET handler that returns a account invitation.
+func (s *service) ReadAccountInviteHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -168,33 +168,33 @@ func (s *service) ReadHouseholdInviteHandler(res http.ResponseWriter, req *http.
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID // determine relevant household invitation ID.
-	householdInvitationID := s.householdInvitationIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
-	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID // determine relevant account invitation ID.
+	accountInvitationID := s.accountInvitationIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
+	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, sessionCtxData.ActiveAccountID)
+	logger = logger.WithValue(keys.AccountIDKey, sessionCtxData.ActiveAccountID)
 
-	// fetch the household invitation from the database.
+	// fetch the account invitation from the database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	householdInvitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByHouseholdAndID(ctx, sessionCtxData.ActiveHouseholdID, householdInvitationID)
+	accountInvitation, err := s.accountInvitationDataManager.GetAccountInvitationByAccountAndID(ctx, sessionCtxData.ActiveAccountID, accountInvitationID)
 	if errors.Is(err, sql.ErrNoRows) {
-		logger.Debug("No rows found in household invitation database")
+		logger.Debug("No rows found in account invitation database")
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching household invitation from database")
+		observability.AcknowledgeError(err, logger, span, "fetching account invitation from database")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 	readTimer.Stop()
 
-	responseValue := &types.APIResponse[*types.HouseholdInvitation]{
+	responseValue := &types.APIResponse[*types.AccountInvitation]{
 		Details: responseDetails,
-		Data:    householdInvitation,
+		Data:    accountInvitation,
 	}
 
 	// encode the response.
@@ -231,12 +231,12 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := s.householdIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	accountID := s.accountIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	invitations, err := s.householdInvitationDataManager.GetPendingHouseholdInvitationsForUser(ctx, userID, filter)
+	invitations, err := s.accountInvitationDataManager.GetPendingAccountInvitationsForUser(ctx, userID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching outbound invites")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -245,7 +245,7 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 	}
 	readTimer.Stop()
 
-	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+	responseValue := &types.APIResponse[[]*types.AccountInvitation]{
 		Details:    responseDetails,
 		Data:       invitations.Data,
 		Pagination: &invitations.Pagination,
@@ -270,7 +270,7 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	filter := filtering.ExtractQueryFilterFromRequest(req)
 	filter.AttachToLogger(logger)
 
-	logger.Debug("fetching outbound invites for household")
+	logger.Debug("fetching outbound invites for account")
 
 	// determine relevant user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -287,12 +287,12 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := s.householdIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	accountID := s.accountIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	invitations, err := s.householdInvitationDataManager.GetPendingHouseholdInvitationsFromUser(ctx, userID, filter)
+	invitations, err := s.accountInvitationDataManager.GetPendingAccountInvitationsFromUser(ctx, userID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching outbound invites")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -301,9 +301,9 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	}
 	readTimer.Stop()
 
-	logger.Debug("responding with outbound invites for household")
+	logger.Debug("responding with outbound invites for account")
 
-	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+	responseValue := &types.APIResponse[[]*types.AccountInvitation]{
 		Details:    responseDetails,
 		Data:       invitations.Data,
 		Pagination: &invitations.Pagination,
@@ -336,7 +336,7 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 	sessionContextTimer.Stop()
 
 	// read parsed input struct from request body.
-	providedInput := new(types.HouseholdInvitationUpdateRequestInput)
+	providedInput := new(types.AccountInvitationUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -356,12 +356,12 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdInvitationID := s.householdInvitationIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
-	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
+	accountInvitationID := s.accountInvitationIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
+	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	invitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, providedInput.Token, householdInvitationID)
+	invitation, err := s.accountInvitationDataManager.GetAccountInvitationByTokenAndID(ctx, providedInput.Token, accountInvitationID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -374,7 +374,7 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 	readTimer.Stop()
 
-	if err = s.householdInvitationDataManager.AcceptHouseholdInvitation(ctx, invitation.ID, providedInput.Token, providedInput.Note); err != nil {
+	if err = s.accountInvitationDataManager.AcceptAccountInvitation(ctx, invitation.ID, providedInput.Token, providedInput.Note); err != nil {
 		observability.AcknowledgeError(err, logger, span, "accepting invitation")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -382,17 +382,17 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:             types.HouseholdInvitationAcceptedServiceEventType,
-		HouseholdID:           invitation.DestinationHousehold.ID,
-		HouseholdInvitationID: householdInvitationID,
-		UserID:                sessionCtxData.Requester.UserID,
+		EventType:           types.AccountInvitationAcceptedServiceEventType,
+		AccountID:           invitation.DestinationAccount.ID,
+		AccountInvitationID: accountInvitationID,
+		UserID:              sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+	responseValue := &types.APIResponse[[]*types.AccountInvitation]{
 		Details: responseDetails,
 	}
 
@@ -424,7 +424,7 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 	sessionContextTimer.Stop()
 
 	// read parsed input struct from request body.
-	providedInput := new(types.HouseholdInvitationUpdateRequestInput)
+	providedInput := new(types.AccountInvitationUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -445,12 +445,12 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdInvitationID := s.householdInvitationIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
-	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
+	accountInvitationID := s.accountInvitationIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
+	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	invitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, providedInput.Token, householdInvitationID)
+	invitation, err := s.accountInvitationDataManager.GetAccountInvitationByTokenAndID(ctx, providedInput.Token, accountInvitationID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -463,7 +463,7 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 	readTimer.Stop()
 
-	if err = s.householdInvitationDataManager.CancelHouseholdInvitation(ctx, invitation.ID, providedInput.Note); err != nil {
+	if err = s.accountInvitationDataManager.CancelAccountInvitation(ctx, invitation.ID, providedInput.Note); err != nil {
 		observability.AcknowledgeError(err, logger, span, "cancelling invitation")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -471,17 +471,17 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:             types.HouseholdInvitationCanceledServiceEventType,
-		HouseholdID:           invitation.DestinationHousehold.ID,
-		HouseholdInvitationID: householdInvitationID,
-		UserID:                sessionCtxData.Requester.UserID,
+		EventType:           types.AccountInvitationCanceledServiceEventType,
+		AccountID:           invitation.DestinationAccount.ID,
+		AccountInvitationID: accountInvitationID,
+		UserID:              sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+	responseValue := &types.APIResponse[[]*types.AccountInvitation]{
 		Details: responseDetails,
 	}
 
@@ -513,7 +513,7 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 	sessionContextTimer.Stop()
 
 	// read parsed input struct from request body.
-	providedInput := new(types.HouseholdInvitationUpdateRequestInput)
+	providedInput := new(types.AccountInvitationUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -533,12 +533,12 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdInvitationID := s.householdInvitationIDFetcher(req)
-	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
-	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
+	accountInvitationID := s.accountInvitationIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
+	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	invitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, providedInput.Token, householdInvitationID)
+	invitation, err := s.accountInvitationDataManager.GetAccountInvitationByTokenAndID(ctx, providedInput.Token, accountInvitationID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -551,7 +551,7 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 	readTimer.Stop()
 
-	if err = s.householdInvitationDataManager.RejectHouseholdInvitation(ctx, invitation.ID, providedInput.Note); err != nil {
+	if err = s.accountInvitationDataManager.RejectAccountInvitation(ctx, invitation.ID, providedInput.Note); err != nil {
 		observability.AcknowledgeError(err, logger, span, "rejecting invitation")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -559,17 +559,17 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:             types.HouseholdInvitationRejectedServiceEventType,
-		HouseholdID:           invitation.DestinationHousehold.ID,
-		HouseholdInvitationID: householdInvitationID,
-		UserID:                sessionCtxData.Requester.UserID,
+		EventType:           types.AccountInvitationRejectedServiceEventType,
+		AccountID:           invitation.DestinationAccount.ID,
+		AccountInvitationID: accountInvitationID,
+		UserID:              sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+	responseValue := &types.APIResponse[[]*types.AccountInvitation]{
 		Details: responseDetails,
 	}
 

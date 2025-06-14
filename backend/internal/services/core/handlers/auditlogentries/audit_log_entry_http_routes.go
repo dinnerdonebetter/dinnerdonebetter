@@ -45,7 +45,7 @@ func (s *service) ReadAuditLogEntryHandler(res http.ResponseWriter, req *http.Re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine audit log entry ID.
 	auditLogEntryID := s.auditLogEntryIDFetcher(req)
@@ -110,7 +110,7 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 
@@ -142,7 +142,7 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, req *http.Request) {
+func (s *service) ListAccountAuditLogEntriesHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -175,14 +175,14 @@ func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, r
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	var auditLogEntries *filtering.QueryFilteredResult[types.AuditLogEntry]
 	if len(resourceTypes) == 0 {
-		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForHousehold(ctx, sessionCtxData.ActiveHouseholdID, filter)
+		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForAccount(ctx, sessionCtxData.ActiveAccountID, filter)
 	} else {
-		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForHouseholdAndResourceType(ctx, sessionCtxData.ActiveHouseholdID, resourceTypes, filter)
+		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForAccountAndResourceType(ctx, sessionCtxData.ActiveAccountID, resourceTypes, filter)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {

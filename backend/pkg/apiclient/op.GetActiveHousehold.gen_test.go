@@ -11,24 +11,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_GetActiveHousehold(T *testing.T) {
+func TestClient_GetActiveAccount(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/current"
+	const expectedPathFormat = "/api/v1/accounts/current"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
-		data := &Household{}
-		expected := &APIResponse[*Household]{
+		data := &Account{}
+		expected := &APIResponse[*Account]{
 			Data: data,
 		}
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.GetActiveHousehold(ctx)
+		actual, err := c.GetActiveAccount(ctx)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -41,7 +41,7 @@ func TestClient_GetActiveHousehold(T *testing.T) {
 		ctx := context.Background()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetActiveHousehold(ctx)
+		actual, err := c.GetActiveAccount(ctx)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -54,7 +54,7 @@ func TestClient_GetActiveHousehold(T *testing.T) {
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetActiveHousehold(ctx)
+		actual, err := c.GetActiveAccount(ctx)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

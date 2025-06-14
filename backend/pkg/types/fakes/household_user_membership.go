@@ -7,29 +7,29 @@ import (
 	fake "github.com/brianvoe/gofakeit/v7"
 )
 
-// BuildFakeHouseholdUserMembership builds a faked HouseholdUserMembership.
-func BuildFakeHouseholdUserMembership() *types.HouseholdUserMembership {
-	return &types.HouseholdUserMembership{
-		ID:                 BuildFakeID(),
-		BelongsToUser:      BuildFakeID(),
-		BelongsToHousehold: fake.UUID(),
-		HouseholdRole:      authorization.HouseholdMemberRole.String(),
-		CreatedAt:          BuildFakeTime(),
-		ArchivedAt:         nil,
+// BuildFakeAccountUserMembership builds a faked AccountUserMembership.
+func BuildFakeAccountUserMembership() *types.AccountUserMembership {
+	return &types.AccountUserMembership{
+		ID:               BuildFakeID(),
+		BelongsToUser:    BuildFakeID(),
+		BelongsToAccount: fake.UUID(),
+		AccountRole:      authorization.AccountMemberRole.String(),
+		CreatedAt:        BuildFakeTime(),
+		ArchivedAt:       nil,
 	}
 }
 
-// BuildFakeHouseholdUserMembershipWithUser builds a faked HouseholdUserMembershipWithUser.
-func BuildFakeHouseholdUserMembershipWithUser() *types.HouseholdUserMembershipWithUser {
+// BuildFakeAccountUserMembershipWithUser builds a faked AccountUserMembershipWithUser.
+func BuildFakeAccountUserMembershipWithUser() *types.AccountUserMembershipWithUser {
 	u := BuildFakeUser()
 	u.TwoFactorSecret = ""
 
-	return &types.HouseholdUserMembershipWithUser{
-		ID:                 BuildFakeID(),
-		BelongsToUser:      u,
-		BelongsToHousehold: fake.UUID(),
-		HouseholdRole:      authorization.HouseholdMemberRole.String(),
-		CreatedAt:          BuildFakeTime(),
-		ArchivedAt:         nil,
+	return &types.AccountUserMembershipWithUser{
+		ID:               BuildFakeID(),
+		BelongsToUser:    u,
+		BelongsToAccount: fake.UUID(),
+		AccountRole:      authorization.AccountMemberRole.String(),
+		CreatedAt:        BuildFakeTime(),
+		ArchivedAt:       nil,
 	}
 }

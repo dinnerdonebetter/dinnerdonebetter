@@ -45,7 +45,7 @@ func (s *service) CreateValidMeasurementUnitHandler(res http.ResponseWriter, req
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidMeasurementUnitCreationRequestInput)
@@ -120,7 +120,7 @@ func (s *service) ReadValidMeasurementUnitHandler(res http.ResponseWriter, req *
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid measurement unit ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
@@ -179,7 +179,7 @@ func (s *service) ListValidMeasurementUnitsHandler(res http.ResponseWriter, req 
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	validMeasurementUnits, err := s.validEnumerationDataManager.GetValidMeasurementUnits(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -242,7 +242,7 @@ func (s *service) SearchValidMeasurementUnitsHandler(res http.ResponseWriter, re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	var validMeasurementUnits []*types.ValidMeasurementUnit
 	if useDB {
@@ -330,7 +330,7 @@ func (s *service) SearchValidMeasurementUnitsByIngredientIDHandler(res http.Resp
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	validMeasurementUnits, err := s.validEnumerationDataManager.ValidMeasurementUnitsForIngredientID(ctx, validIngredientID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -379,7 +379,7 @@ func (s *service) UpdateValidMeasurementUnitHandler(res http.ResponseWriter, req
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidMeasurementUnitUpdateRequestInput)
@@ -470,7 +470,7 @@ func (s *service) ArchiveValidMeasurementUnitHandler(res http.ResponseWriter, re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine valid measurement unit ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)

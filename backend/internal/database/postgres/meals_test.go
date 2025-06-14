@@ -211,15 +211,15 @@ func TestQuerier_ArchiveMeal(T *testing.T) {
 	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveMeal(ctx, "", exampleHouseholdID))
+		assert.Error(t, c.ArchiveMeal(ctx, "", exampleAccountID))
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMeal := fakes.BuildFakeMeal()

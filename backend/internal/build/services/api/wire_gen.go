@@ -29,8 +29,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/auditlogentries"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/dataprivacy"
-	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/householdinvitations"
-	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/households"
+	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/accountinvitations"
+	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/accounts"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/oauth2clients"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/servicesettings"
@@ -78,7 +78,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	servicesConfig := &cfg.Services
 	authenticationConfig := &servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
+	accountUserMembershipDataManager := database.ProvideAccountUserMembershipDataManager(dataManager)
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
@@ -104,24 +104,24 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	queuesConfig := &cfg.Queues
-	authDataService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, provider, queuesConfig)
+	authDataService, err := authentication2.ProvideService(logger, authenticationConfig, authenticator, dataManager, accountUserMembershipDataManager, serverEncoderDecoder, tracerProvider, publisherProvider, featureFlagManager, eventReporter, routeParamManager, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
+	accountDataManager := database.ProvideAccountDataManager(dataManager)
 	generator := random.NewGenerator(logger, tracerProvider)
-	householdDataService, err := households.ProvideService(logger, householdDataManager, householdUserMembershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
+	accountDataService, err := accounts.ProvideService(logger, accountDataManager, accountUserMembershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	userDataManager := database.ProvideUserDataManager(dataManager)
-	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
-	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
+	accountInvitationDataManager := database.ProvideAccountInvitationDataManager(dataManager)
+	accountInvitationDataService, err := accountinvitations.ProvideAccountInvitationsService(logger, userDataManager, accountInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
-	userDataService, err := users.ProvideUsersService(authenticationConfig, logger, userDataManager, householdInvitationDataManager, householdUserMembershipDataManager, authenticator, serverEncoderDecoder, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, featureFlagManager, eventReporter, queuesConfig)
+	userDataService, err := users.ProvideUsersService(authenticationConfig, logger, userDataManager, accountInvitationDataManager, accountUserMembershipDataManager, authenticator, serverEncoderDecoder, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, featureFlagManager, eventReporter, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -205,7 +205,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, dataManager, authDataService, householdDataService, householdInvitationDataService, userDataService, adminDataService, webhookDataService, serviceSettingDataService, serviceSettingConfigurationDataService, oAuth2ClientDataService, userNotificationDataService, workerService, validEnumerationDataService, auditLogEntryDataService, dataPrivacyService, recipeManagementDataService, mealPlanningDataService)
+	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, dataManager, authDataService, accountDataService, accountInvitationDataService, userDataService, adminDataService, webhookDataService, serviceSettingDataService, serviceSettingConfigurationDataService, oAuth2ClientDataService, userNotificationDataService, workerService, validEnumerationDataService, auditLogEntryDataService, dataPrivacyService, recipeManagementDataService, mealPlanningDataService)
 	if err != nil {
 		return nil, err
 	}

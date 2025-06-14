@@ -30,8 +30,8 @@ var (
 			// Core
 			"AuditLogEntries",
 			"Auth",
-			"Households",
-			"HouseholdInvitations",
+			"Accounts",
+			"AccountInvitations",
 			"ServiceSettings",
 			"ServiceSettingConfigurations",
 			"Users",

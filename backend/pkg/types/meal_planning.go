@@ -10,7 +10,7 @@ type (
 		MealPlanTaskDataManager
 		MealPlanGroceryListItemDataManager
 		UserIngredientPreferenceDataManager
-		HouseholdInstrumentOwnershipDataManager
+		AccountInstrumentOwnershipDataManager
 	}
 
 	MealPlanningDataService interface {
@@ -22,6 +22,6 @@ type (
 		MealPlanTaskDataService
 		MealPlanGroceryListItemDataService
 		UserIngredientPreferenceDataService
-		HouseholdInstrumentOwnershipDataService
+		AccountInstrumentOwnershipDataService
 	}
 )

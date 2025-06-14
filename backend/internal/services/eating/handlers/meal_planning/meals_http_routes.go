@@ -47,7 +47,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.MealCreationRequestInput)
@@ -82,10 +82,10 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.MealCreatedServiceEventType,
-		Meal:        meal,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType: types.MealCreatedServiceEventType,
+		Meal:      meal,
+		AccountID: sessionCtxData.ActiveAccountID,
+		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	go s.dataChangesPublisher.PublishAsync(ctx, dcm)
@@ -124,7 +124,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal ID.
 	mealID := s.mealIDFetcher(req)
@@ -185,7 +185,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	meals, err := s.mealPlanningDataManager.GetMeals(ctx, filter)
@@ -246,7 +246,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	meals := &filtering.QueryFilteredResult[types.Meal]{
 		Pagination: filter.ToPagination(),
@@ -323,7 +323,7 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal ID.
 	mealID := s.mealIDFetcher(req)
@@ -354,10 +354,10 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.MealArchivedServiceEventType,
-		MealID:      mealID,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType: types.MealArchivedServiceEventType,
+		MealID:    mealID,
+		AccountID: sessionCtxData.ActiveAccountID,
+		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	go s.dataChangesPublisher.PublishAsync(ctx, dcm)

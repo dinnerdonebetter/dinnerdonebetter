@@ -63,8 +63,8 @@ func (m *MealDataManagerMock) UpdateMeal(ctx context.Context, updated *types.Mea
 }
 
 // ArchiveMeal is a mock function.
-func (m *MealDataManagerMock) ArchiveMeal(ctx context.Context, recipeID, householdID string) error {
-	return m.Called(ctx, recipeID, householdID).Error(0)
+func (m *MealDataManagerMock) ArchiveMeal(ctx context.Context, recipeID, accountID string) error {
+	return m.Called(ctx, recipeID, accountID).Error(0)
 }
 
 // MarkMealAsIndexed is a mock function.

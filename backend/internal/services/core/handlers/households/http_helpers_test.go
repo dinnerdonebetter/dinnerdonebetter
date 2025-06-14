@@ -1,4 +1,4 @@
-package households
+package accounts
 
 import (
 	"context"
@@ -17,25 +17,25 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type householdsServiceHTTPRoutesTestHelper struct {
-	ctx              context.Context
-	req              *http.Request
-	res              *httptest.ResponseRecorder
-	service          *service
-	exampleUser      *types.User
-	exampleHousehold *types.Household
+type accountsServiceHTTPRoutesTestHelper struct {
+	ctx            context.Context
+	req            *http.Request
+	res            *httptest.ResponseRecorder
+	service        *service
+	exampleUser    *types.User
+	exampleAccount *types.Account
 }
 
-func buildTestHelper(t *testing.T) *householdsServiceHTTPRoutesTestHelper {
+func buildTestHelper(t *testing.T) *accountsServiceHTTPRoutesTestHelper {
 	t.Helper()
 
-	helper := &householdsServiceHTTPRoutesTestHelper{}
+	helper := &accountsServiceHTTPRoutesTestHelper{}
 
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 
 	sessionCtxData := &sessions.ContextData{
 		Requester: sessions.RequesterInfo{
@@ -44,9 +44,9 @@ func buildTestHelper(t *testing.T) *householdsServiceHTTPRoutesTestHelper {
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 
@@ -54,8 +54,8 @@ func buildTestHelper(t *testing.T) *householdsServiceHTTPRoutesTestHelper {
 	helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 		return sessionCtxData, nil
 	}
-	helper.service.householdIDFetcher = func(req *http.Request) string {
-		return helper.exampleHousehold.ID
+	helper.service.accountIDFetcher = func(req *http.Request) string {
+		return helper.exampleAccount.ID
 	}
 	helper.service.userIDFetcher = func(req *http.Request) string {
 		return helper.exampleUser.ID

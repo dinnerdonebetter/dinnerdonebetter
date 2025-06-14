@@ -9,9 +9,9 @@ import (
 var (
 	// DBProviders represents what we provide to dependency injectors.
 	DBProviders = wire.NewSet(
-		ProvideHouseholdDataManager,
-		ProvideHouseholdInvitationDataManager,
-		ProvideHouseholdUserMembershipDataManager,
+		ProvideAccountDataManager,
+		ProvideAccountInvitationDataManager,
+		ProvideAccountUserMembershipDataManager,
 		ProvideUserDataManager,
 		ProvideAdminUserDataManager,
 		ProvidePasswordResetTokenDataManager,
@@ -19,7 +19,7 @@ var (
 		ProvideServiceSettingDataManager,
 		ProvideServiceSettingConfigurationDataManager,
 		ProvideUserIngredientPreferenceDataManager,
-		ProvideHouseholdInstrumentOwnershipDataManager,
+		ProvideAccountInstrumentOwnershipDataManager,
 		ProvideOAuth2ClientDataManager,
 		ProvideOAuth2ClientTokenDataManager,
 		ProvideUserNotificationDataManager,
@@ -32,18 +32,18 @@ var (
 	)
 )
 
-// ProvideHouseholdDataManager is an arbitrary function for dependency injection's sake.
-func ProvideHouseholdDataManager(db DataManager) types.HouseholdDataManager {
+// ProvideAccountDataManager is an arbitrary function for dependency injection's sake.
+func ProvideAccountDataManager(db DataManager) types.AccountDataManager {
 	return db
 }
 
-// ProvideHouseholdInvitationDataManager is an arbitrary function for dependency injection's sake.
-func ProvideHouseholdInvitationDataManager(db DataManager) types.HouseholdInvitationDataManager {
+// ProvideAccountInvitationDataManager is an arbitrary function for dependency injection's sake.
+func ProvideAccountInvitationDataManager(db DataManager) types.AccountInvitationDataManager {
 	return db
 }
 
-// ProvideHouseholdUserMembershipDataManager is an arbitrary function for dependency injection's sake.
-func ProvideHouseholdUserMembershipDataManager(db DataManager) types.HouseholdUserMembershipDataManager {
+// ProvideAccountUserMembershipDataManager is an arbitrary function for dependency injection's sake.
+func ProvideAccountUserMembershipDataManager(db DataManager) types.AccountUserMembershipDataManager {
 	return db
 }
 
@@ -82,8 +82,8 @@ func ProvideUserIngredientPreferenceDataManager(db DataManager) types.UserIngred
 	return db
 }
 
-// ProvideHouseholdInstrumentOwnershipDataManager is an arbitrary function for dependency injection's sake.
-func ProvideHouseholdInstrumentOwnershipDataManager(db DataManager) types.HouseholdInstrumentOwnershipDataManager {
+// ProvideAccountInstrumentOwnershipDataManager is an arbitrary function for dependency injection's sake.
+func ProvideAccountInstrumentOwnershipDataManager(db DataManager) types.AccountInstrumentOwnershipDataManager {
 	return db
 }
 

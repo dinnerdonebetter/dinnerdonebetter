@@ -7,58 +7,58 @@ import (
 )
 
 type (
-	// HouseholdRole describes a role a user has for a household context.
-	HouseholdRole role
+	// AccountRole describes a role a user has for a account context.
+	AccountRole role
 
-	// HouseholdRolePermissionsChecker checks permissions for one or more household Roles.
-	HouseholdRolePermissionsChecker interface {
+	// AccountRolePermissionsChecker checks permissions for one or more account Roles.
+	AccountRolePermissionsChecker interface {
 		HasPermission(Permission) bool
 	}
 )
 
 const (
-	// HouseholdMemberRole is a role for a plain household participant.
-	HouseholdMemberRole HouseholdRole = iota
-	// HouseholdAdminRole is a role for someone who can manipulate the specifics of a household.
-	HouseholdAdminRole HouseholdRole = iota
+	// AccountMemberRole is a role for a plain account participant.
+	AccountMemberRole AccountRole = iota
+	// AccountAdminRole is a role for someone who can manipulate the specifics of a account.
+	AccountAdminRole AccountRole = iota
 
-	HouseholdAdminRoleName  = "household_admin"
-	HouseholdMemberRoleName = "household_member"
+	AccountAdminRoleName  = "account_admin"
+	AccountMemberRoleName = "account_member"
 )
 
 var (
-	householdAdmin  = gorbac.NewStdRole(HouseholdAdminRoleName)
-	householdMember = gorbac.NewStdRole(HouseholdMemberRoleName)
+	accountAdmin  = gorbac.NewStdRole(AccountAdminRoleName)
+	accountMember = gorbac.NewStdRole(AccountMemberRoleName)
 )
 
-type householdRoleCollection struct {
+type accountRoleCollection struct {
 	Roles []string
 }
 
 func init() {
-	gob.Register(householdRoleCollection{})
+	gob.Register(accountRoleCollection{})
 }
 
-// NewHouseholdRolePermissionChecker returns a new checker for a set of Roles.
-func NewHouseholdRolePermissionChecker(roles ...string) HouseholdRolePermissionsChecker {
-	return &householdRoleCollection{
+// NewAccountRolePermissionChecker returns a new checker for a set of Roles.
+func NewAccountRolePermissionChecker(roles ...string) AccountRolePermissionsChecker {
+	return &accountRoleCollection{
 		Roles: roles,
 	}
 }
 
-func (r HouseholdRole) String() string {
+func (r AccountRole) String() string {
 	switch r {
-	case HouseholdMemberRole:
-		return HouseholdMemberRoleName
-	case HouseholdAdminRole:
-		return HouseholdAdminRoleName
+	case AccountMemberRole:
+		return AccountMemberRoleName
+	case AccountAdminRole:
+		return AccountAdminRoleName
 	default:
 		return ""
 	}
 }
 
 // HasPermission returns whether a user can do something or not.
-func (r householdRoleCollection) HasPermission(p Permission) bool {
+func (r accountRoleCollection) HasPermission(p Permission) bool {
 	return hasPermission(p, r.Roles...)
 }
 

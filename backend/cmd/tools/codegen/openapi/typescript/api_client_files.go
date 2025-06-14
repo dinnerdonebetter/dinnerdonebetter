@@ -152,7 +152,7 @@ func uppercaseFirstLetter(s string) string {
 }
 
 var postSkipPaths = map[string]bool{
-	"/api/v1/households/{householdID}/default": true,
+	"/api/v1/accounts/{accountID}/default":     true,
 	"/api/v1/recipes/{recipeID}/clone":         true,
 	"/api/v1/meal_plans/{mealPlanID}/finalize": true,
 }
@@ -469,7 +469,7 @@ func (f *APIClientFunction) RenderTest() (string, error) {
 		
 			       const exampleResponse = new {{ if ne .ResponseType.GenericContainer "" }}{{ .ResponseType.GenericContainer }} < {{ end }}{{ if or .ReturnsList .ResponseType.IsArray }}Array<{{ end }}{{ .ResponseType.TypeName }}{{ if or .ReturnsList .ResponseType.IsArray }}>{{ end }} {{ if ne .ResponseType.GenericContainer "" }} > {{ end }}({
 			           details: {
-			             currentHouseholdID: "test",
+			             currentAccountID: "test",
 			             traceID: "test",
 			           },
 		               pagination: QueryFilter.Default().toPagination(),

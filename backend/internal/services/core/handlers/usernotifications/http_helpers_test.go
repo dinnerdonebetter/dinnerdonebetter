@@ -23,7 +23,7 @@ type userNotificationsServiceHTTPRoutesTestHelper struct {
 	res                     *httptest.ResponseRecorder
 	service                 *service
 	exampleUser             *types.User
-	exampleHousehold        *types.Household
+	exampleAccount          *types.Account
 	exampleUserNotification *types.UserNotification
 	exampleCreationInput    *types.UserNotificationCreationRequestInput
 	exampleUpdateInput      *types.UserNotificationUpdateRequestInput
@@ -37,8 +37,8 @@ func buildTestHelper(t *testing.T) *userNotificationsServiceHTTPRoutesTestHelper
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleUserNotification = fakes.BuildFakeUserNotification()
 	helper.exampleUserNotification.BelongsToUser = helper.exampleUser.ID
 	helper.exampleCreationInput = converters.ConvertUserNotificationToUserNotificationCreationRequestInput(helper.exampleUserNotification)
@@ -55,9 +55,9 @@ func buildTestHelper(t *testing.T) *userNotificationsServiceHTTPRoutesTestHelper
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

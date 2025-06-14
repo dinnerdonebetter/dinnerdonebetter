@@ -156,7 +156,7 @@
 		"auditLogEntries": {},
 		"serviceSettingConfigurations": {},
 		"userNotifications": {},
-		"households": {},
+		"accounts": {},
 		"serviceSettings": {},
 		"users": {
 			"publicMediaURLPrefix": "",
@@ -231,7 +231,7 @@
 		"webhooks": {
 			"debug": false
 		},
-		"householdInvitations": {
+		"accountInvitations": {
 			"debug": false
 		},
 		"validEnumerations": {

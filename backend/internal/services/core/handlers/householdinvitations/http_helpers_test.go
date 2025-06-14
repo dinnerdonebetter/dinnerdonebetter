@@ -1,4 +1,4 @@
-package householdinvitations
+package accountinvitations
 
 import (
 	"context"
@@ -17,35 +17,35 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 )
 
-type householdInvitationsServiceHTTPRoutesTestHelper struct {
-	ctx                        context.Context
-	req                        *http.Request
-	res                        *httptest.ResponseRecorder
-	service                    *service
-	exampleUser                *types.User
-	exampleHousehold           *types.Household
-	exampleHouseholdInvitation *types.HouseholdInvitation
-	exampleCreationInput       *types.HouseholdInvitationCreationRequestInput
+type accountInvitationsServiceHTTPRoutesTestHelper struct {
+	ctx                      context.Context
+	req                      *http.Request
+	res                      *httptest.ResponseRecorder
+	service                  *service
+	exampleUser              *types.User
+	exampleAccount           *types.Account
+	exampleAccountInvitation *types.AccountInvitation
+	exampleCreationInput     *types.AccountInvitationCreationRequestInput
 }
 
-func newTestHelper(t *testing.T) *householdInvitationsServiceHTTPRoutesTestHelper {
+func newTestHelper(t *testing.T) *accountInvitationsServiceHTTPRoutesTestHelper {
 	t.Helper()
 
-	helper := &householdInvitationsServiceHTTPRoutesTestHelper{}
+	helper := &accountInvitationsServiceHTTPRoutesTestHelper{}
 
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
-	helper.exampleHouseholdInvitation = fakes.BuildFakeHouseholdInvitation()
-	helper.exampleCreationInput = converters.ConvertHouseholdInvitationToHouseholdInvitationCreationInput(helper.exampleHouseholdInvitation)
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccountInvitation = fakes.BuildFakeAccountInvitation()
+	helper.exampleCreationInput = converters.ConvertAccountInvitationToAccountInvitationCreationInput(helper.exampleAccountInvitation)
 
-	helper.service.householdIDFetcher = func(*http.Request) string {
-		return helper.exampleHousehold.ID
+	helper.service.accountIDFetcher = func(*http.Request) string {
+		return helper.exampleAccount.ID
 	}
-	helper.service.householdInvitationIDFetcher = func(*http.Request) string {
-		return helper.exampleHouseholdInvitation.ID
+	helper.service.accountInvitationIDFetcher = func(*http.Request) string {
+		return helper.exampleAccountInvitation.ID
 	}
 
 	sessionCtxData := &sessions.ContextData{
@@ -55,9 +55,9 @@ func newTestHelper(t *testing.T) *householdInvitationsServiceHTTPRoutesTestHelpe
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

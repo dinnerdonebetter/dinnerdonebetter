@@ -3,7 +3,7 @@
 package apiclient
 
 type (
-	HouseholdCreationRequestInput struct {
+	AccountCreationRequestInput struct {
 		AddressLine1 string  `json:"addressLine1"`
 		AddressLine2 string  `json:"addressLine2"`
 		City         string  `json:"city"`

@@ -1,5 +1,5 @@
 -- name: ArchiveMealPlan :execrows
-UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = sqlc.arg(belongs_to_household) AND id = sqlc.arg(id);
+UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_account = sqlc.arg(belongs_to_account) AND id = sqlc.arg(id);
 
 -- name: CreateMealPlan :exec
 INSERT INTO meal_plans (
@@ -7,14 +7,14 @@ INSERT INTO meal_plans (
 	notes,
 	status,
 	voting_deadline,
-	belongs_to_household,
+	belongs_to_account,
 	created_by_user
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(notes),
 	sqlc.arg(status),
 	sqlc.arg(voting_deadline),
-	sqlc.arg(belongs_to_household),
+	sqlc.arg(belongs_to_account),
 	sqlc.arg(created_by_user)
 );
 
@@ -24,7 +24,7 @@ SELECT EXISTS (
 	FROM meal_plans
 	WHERE meal_plans.archived_at IS NULL
 		AND meal_plans.id = sqlc.arg(meal_plan_id)
-		AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household)
+		AND meal_plans.belongs_to_account = sqlc.arg(belongs_to_account)
 );
 
 -- name: FinalizeMealPlan :exec
@@ -42,7 +42,7 @@ SELECT
 	meal_plans.created_at,
 	meal_plans.last_updated_at,
 	meal_plans.archived_at,
-	meal_plans.belongs_to_household,
+	meal_plans.belongs_to_account,
 	meal_plans.created_by_user
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
@@ -81,7 +81,7 @@ ORDER BY
 -- name: GetFinalizedMealPlansWithoutGroceryListInit :many
 SELECT
 	meal_plans.id,
-	meal_plans.belongs_to_household
+	meal_plans.belongs_to_account
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
 	AND meal_plans.status = 'finalized'
@@ -99,14 +99,14 @@ SELECT
 	meal_plans.created_at,
 	meal_plans.last_updated_at,
 	meal_plans.archived_at,
-	meal_plans.belongs_to_household,
+	meal_plans.belongs_to_account,
 	meal_plans.created_by_user
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
   AND meal_plans.id = sqlc.arg(id)
-  AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household);
+  AND meal_plans.belongs_to_account = sqlc.arg(belongs_to_account);
 
--- name: GetMealPlansForHousehold :many
+-- name: GetMealPlansForAccount :many
 SELECT
 	meal_plans.id,
 	meal_plans.notes,
@@ -118,7 +118,7 @@ SELECT
 	meal_plans.created_at,
 	meal_plans.last_updated_at,
 	meal_plans.archived_at,
-	meal_plans.belongs_to_household,
+	meal_plans.belongs_to_account,
 	meal_plans.created_by_user,
 	(
 		SELECT COUNT(meal_plans.id)
@@ -136,13 +136,13 @@ SELECT
 				OR meal_plans.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plans.archived_at = NULL)
-			AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household)
+			AND meal_plans.belongs_to_account = sqlc.arg(belongs_to_account)
 	) AS filtered_count,
 	(
 		SELECT COUNT(meal_plans.id)
 		FROM meal_plans
 		WHERE meal_plans.archived_at IS NULL
-			AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household)
+			AND meal_plans.belongs_to_account = sqlc.arg(belongs_to_account)
 	) AS total_count
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
@@ -157,7 +157,7 @@ WHERE meal_plans.archived_at IS NULL
 		OR meal_plans.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plans.archived_at = NULL)
-	AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household)
+	AND meal_plans.belongs_to_account = sqlc.arg(belongs_to_account)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
@@ -173,12 +173,12 @@ SELECT
 	meal_plans.created_at,
 	meal_plans.last_updated_at,
 	meal_plans.archived_at,
-	meal_plans.belongs_to_household,
+	meal_plans.belongs_to_account,
 	meal_plans.created_by_user
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id)
-	AND meal_plans.belongs_to_household = sqlc.arg(household_id)
+	AND meal_plans.belongs_to_account = sqlc.arg(account_id)
 	AND meal_plans.status = 'awaiting_votes'
 	AND NOW() > meal_plans.voting_deadline;
 
@@ -203,5 +203,5 @@ UPDATE meal_plans SET
 	voting_deadline = sqlc.arg(voting_deadline),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_household = sqlc.arg(belongs_to_household)
+	AND belongs_to_account = sqlc.arg(belongs_to_account)
 	AND id = sqlc.arg(id);

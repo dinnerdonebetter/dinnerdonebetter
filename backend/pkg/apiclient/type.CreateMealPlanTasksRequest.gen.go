@@ -4,6 +4,6 @@ package apiclient
 
 type (
 	CreateMealPlanTasksRequest struct {
-		HouseholdID string `json:"householdID"`
+		AccountID string `json:"accountID"`
 	}
 )

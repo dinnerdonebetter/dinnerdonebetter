@@ -1,4 +1,4 @@
-package households
+package accounts
 
 import (
 	"fmt"
@@ -16,39 +16,39 @@ import (
 )
 
 const (
-	serviceName string = "households_service"
+	serviceName string = "accounts_service"
 )
 
-var _ types.HouseholdDataService = (*service)(nil)
+var _ types.AccountDataService = (*service)(nil)
 
 type (
-	// service handles to-do list households.
+	// service handles to-do list accounts.
 	service struct {
-		logger                         logging.Logger
-		householdDataManager           types.HouseholdDataManager
-		householdMembershipDataManager types.HouseholdUserMembershipDataManager
-		tracer                         tracing.Tracer
-		encoderDecoder                 encoding.ServerEncoderDecoder
-		dataChangesPublisher           messagequeue.Publisher
-		secretGenerator                random.Generator
-		sessionContextDataFetcher      func(*http.Request) (*sessions.ContextData, error)
-		userIDFetcher                  func(*http.Request) string
-		householdIDFetcher             func(*http.Request) string
+		logger                       logging.Logger
+		accountDataManager           types.AccountDataManager
+		accountMembershipDataManager types.AccountUserMembershipDataManager
+		tracer                       tracing.Tracer
+		encoderDecoder               encoding.ServerEncoderDecoder
+		dataChangesPublisher         messagequeue.Publisher
+		secretGenerator              random.Generator
+		sessionContextDataFetcher    func(*http.Request) (*sessions.ContextData, error)
+		userIDFetcher                func(*http.Request) string
+		accountIDFetcher             func(*http.Request) string
 	}
 )
 
-// ProvideService builds a new HouseholdsService.
+// ProvideService builds a new AccountsService.
 func ProvideService(
 	logger logging.Logger,
-	householdDataManager types.HouseholdDataManager,
-	householdMembershipDataManager types.HouseholdUserMembershipDataManager,
+	accountDataManager types.AccountDataManager,
+	accountMembershipDataManager types.AccountUserMembershipDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
 	secretGenerator random.Generator,
 	queueConfig *msgconfig.QueuesConfig,
-) (types.HouseholdDataService, error) {
+) (types.AccountDataService, error) {
 	if queueConfig == nil {
 		return nil, fmt.Errorf("nil queue config provided")
 	}
@@ -59,16 +59,16 @@ func ProvideService(
 	}
 
 	s := &service{
-		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
-		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(HouseholdIDURIParamKey),
-		userIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		sessionContextDataFetcher:      sessions.FetchContextFromRequest,
-		householdDataManager:           householdDataManager,
-		householdMembershipDataManager: householdMembershipDataManager,
-		encoderDecoder:                 encoder,
-		dataChangesPublisher:           dataChangesPublisher,
-		secretGenerator:                secretGenerator,
-		tracer:                         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:                       logging.EnsureLogger(logger).WithName(serviceName),
+		accountIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(AccountIDURIParamKey),
+		userIDFetcher:                routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
+		sessionContextDataFetcher:    sessions.FetchContextFromRequest,
+		accountDataManager:           accountDataManager,
+		accountMembershipDataManager: accountMembershipDataManager,
+		encoderDecoder:               encoder,
+		dataChangesPublisher:         dataChangesPublisher,
+		secretGenerator:              secretGenerator,
+		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return s, nil

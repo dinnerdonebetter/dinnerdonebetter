@@ -69,14 +69,14 @@ func (q *Querier) GetServiceSettingConfiguration(ctx context.Context, serviceSet
 	}
 
 	serviceSettingConfiguration := &types.ServiceSettingConfiguration{
-		CreatedAt:          result.CreatedAt,
-		LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
-		ID:                 result.ID,
-		Value:              result.Value,
-		Notes:              result.Notes,
-		BelongsToUser:      result.BelongsToUser,
-		BelongsToHousehold: result.BelongsToHousehold,
+		CreatedAt:        result.CreatedAt,
+		LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
+		ID:               result.ID,
+		Value:            result.Value,
+		Notes:            result.Notes,
+		BelongsToUser:    result.BelongsToUser,
+		BelongsToAccount: result.BelongsToAccount,
 		ServiceSetting: types.ServiceSetting{
 			CreatedAt:     result.ServiceSettingCreatedAt,
 			DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
@@ -129,14 +129,14 @@ func (q *Querier) GetServiceSettingConfigurationForUserByName(ctx context.Contex
 	}
 
 	serviceSettingConfiguration := &types.ServiceSettingConfiguration{
-		CreatedAt:          result.CreatedAt,
-		LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
-		ID:                 result.ID,
-		Value:              result.Value,
-		Notes:              result.Notes,
-		BelongsToUser:      result.BelongsToUser,
-		BelongsToHousehold: result.BelongsToHousehold,
+		CreatedAt:        result.CreatedAt,
+		LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
+		ID:               result.ID,
+		Value:            result.Value,
+		Notes:            result.Notes,
+		BelongsToUser:    result.BelongsToUser,
+		BelongsToAccount: result.BelongsToAccount,
 		ServiceSetting: types.ServiceSetting{
 			CreatedAt:     result.ServiceSettingCreatedAt,
 			DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
@@ -154,18 +154,18 @@ func (q *Querier) GetServiceSettingConfigurationForUserByName(ctx context.Contex
 	return serviceSettingConfiguration, nil
 }
 
-// GetServiceSettingConfigurationForHouseholdByName fetches a service setting configuration from the database.
-func (q *Querier) GetServiceSettingConfigurationForHouseholdByName(ctx context.Context, householdID, settingName string) (*types.ServiceSettingConfiguration, error) {
+// GetServiceSettingConfigurationForAccountByName fetches a service setting configuration from the database.
+func (q *Querier) GetServiceSettingConfigurationForAccountByName(ctx context.Context, accountID, settingName string) (*types.ServiceSettingConfiguration, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	if settingName == "" {
 		return nil, ErrInvalidIDProvided
@@ -173,9 +173,9 @@ func (q *Querier) GetServiceSettingConfigurationForHouseholdByName(ctx context.C
 	logger = logger.WithValue(keys.ServiceSettingNameKey, settingName)
 	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
 
-	result, err := q.generatedQuerier.GetServiceSettingConfigurationForHouseholdBySettingName(ctx, q.db, &generated.GetServiceSettingConfigurationForHouseholdBySettingNameParams{
-		Name:               settingName,
-		BelongsToHousehold: householdID,
+	result, err := q.generatedQuerier.GetServiceSettingConfigurationForAccountBySettingName(ctx, q.db, &generated.GetServiceSettingConfigurationForAccountBySettingNameParams{
+		Name:             settingName,
+		BelongsToAccount: accountID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching service setting configuration")
@@ -189,14 +189,14 @@ func (q *Querier) GetServiceSettingConfigurationForHouseholdByName(ctx context.C
 	}
 
 	serviceSettingConfiguration := &types.ServiceSettingConfiguration{
-		CreatedAt:          result.CreatedAt,
-		LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
-		ID:                 result.ID,
-		Value:              result.Value,
-		Notes:              result.Notes,
-		BelongsToUser:      result.BelongsToUser,
-		BelongsToHousehold: result.BelongsToHousehold,
+		CreatedAt:        result.CreatedAt,
+		LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
+		ID:               result.ID,
+		Value:            result.Value,
+		Notes:            result.Notes,
+		BelongsToUser:    result.BelongsToUser,
+		BelongsToAccount: result.BelongsToAccount,
 		ServiceSetting: types.ServiceSetting{
 			CreatedAt:     result.ServiceSettingCreatedAt,
 			DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
@@ -252,14 +252,14 @@ func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, us
 		}
 
 		serviceSettingConfiguration := &types.ServiceSettingConfiguration{
-			CreatedAt:          result.CreatedAt,
-			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
-			ID:                 result.ID,
-			Value:              result.Value,
-			Notes:              result.Notes,
-			BelongsToUser:      result.BelongsToUser,
-			BelongsToHousehold: result.BelongsToHousehold,
+			CreatedAt:        result.CreatedAt,
+			LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
+			ID:               result.ID,
+			Value:            result.Value,
+			Notes:            result.Notes,
+			BelongsToUser:    result.BelongsToUser,
+			BelongsToAccount: result.BelongsToAccount,
 			ServiceSetting: types.ServiceSetting{
 				CreatedAt:     result.ServiceSettingCreatedAt,
 				DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
@@ -280,18 +280,18 @@ func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, us
 	return x, nil
 }
 
-// GetServiceSettingConfigurationsForHousehold fetches a list of service setting configurations from the database that meet a particular filter.
-func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+// GetServiceSettingConfigurationsForAccount fetches a list of service setting configurations from the database that meet a particular filter.
+func (q *Querier) GetServiceSettingConfigurationsForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -304,7 +304,7 @@ func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 	}
 
 	// TODO: properly apply query filter to this
-	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForHousehold(ctx, q.db, householdID)
+	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForAccount(ctx, q.db, accountID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service setting configurations list retrieval query")
 	}
@@ -318,14 +318,14 @@ func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 		}
 
 		serviceSettingConfiguration := &types.ServiceSettingConfiguration{
-			CreatedAt:          result.CreatedAt,
-			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
-			ID:                 result.ID,
-			Value:              result.Value,
-			Notes:              result.Notes,
-			BelongsToUser:      result.BelongsToUser,
-			BelongsToHousehold: result.BelongsToHousehold,
+			CreatedAt:        result.CreatedAt,
+			LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
+			ID:               result.ID,
+			Value:            result.Value,
+			Notes:            result.Notes,
+			BelongsToUser:    result.BelongsToUser,
+			BelongsToAccount: result.BelongsToAccount,
 			ServiceSetting: types.ServiceSetting{
 				CreatedAt:     result.ServiceSettingCreatedAt,
 				DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
@@ -357,7 +357,7 @@ func (q *Querier) CreateServiceSettingConfiguration(ctx context.Context, input *
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, input.ID)
 
-	// begin household creation transaction
+	// begin account creation transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
@@ -365,34 +365,34 @@ func (q *Querier) CreateServiceSettingConfiguration(ctx context.Context, input *
 
 	// create the service setting configuration.
 	if err = q.generatedQuerier.CreateServiceSettingConfiguration(ctx, q.db, &generated.CreateServiceSettingConfigurationParams{
-		ID:                 input.ID,
-		Value:              input.Value,
-		Notes:              input.Notes,
-		ServiceSettingID:   input.ServiceSettingID,
-		BelongsToUser:      input.BelongsToUser,
-		BelongsToHousehold: input.BelongsToHousehold,
+		ID:               input.ID,
+		Value:            input.Value,
+		Notes:            input.Notes,
+		ServiceSettingID: input.ServiceSettingID,
+		BelongsToUser:    input.BelongsToUser,
+		BelongsToAccount: input.BelongsToAccount,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing service setting configuration creation query")
 	}
 
 	x := &types.ServiceSettingConfiguration{
-		ID:                 input.ID,
-		Value:              input.Value,
-		Notes:              input.Notes,
-		ServiceSetting:     types.ServiceSetting{ID: input.ServiceSettingID},
-		BelongsToUser:      input.BelongsToUser,
-		BelongsToHousehold: input.BelongsToHousehold,
-		CreatedAt:          q.currentTime(),
+		ID:               input.ID,
+		Value:            input.Value,
+		Notes:            input.Notes,
+		ServiceSetting:   types.ServiceSetting{ID: input.ServiceSettingID},
+		BelongsToUser:    input.BelongsToUser,
+		BelongsToAccount: input.BelongsToAccount,
+		CreatedAt:        q.currentTime(),
 	}
 
 	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &input.BelongsToHousehold,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeServiceSettingConfigurations,
-		RelevantID:         x.ID,
-		EventType:          types.AuditLogEventTypeCreated,
-		BelongsToUser:      input.BelongsToUser,
+		BelongsToAccount: &input.BelongsToAccount,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeServiceSettingConfigurations,
+		RelevantID:       x.ID,
+		EventType:        types.AuditLogEventTypeCreated,
+		BelongsToUser:    input.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
@@ -418,31 +418,31 @@ func (q *Querier) UpdateServiceSettingConfiguration(ctx context.Context, updated
 	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, updated.ID)
 
-	// begin household creation transaction
+	// begin account creation transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	if _, err = q.generatedQuerier.UpdateServiceSettingConfiguration(ctx, q.db, &generated.UpdateServiceSettingConfigurationParams{
-		Value:              updated.Value,
-		Notes:              updated.Notes,
-		ServiceSettingID:   updated.ServiceSetting.ID,
-		BelongsToUser:      updated.BelongsToUser,
-		BelongsToHousehold: updated.BelongsToHousehold,
-		ID:                 updated.ID,
+		Value:            updated.Value,
+		Notes:            updated.Notes,
+		ServiceSettingID: updated.ServiceSetting.ID,
+		BelongsToUser:    updated.BelongsToUser,
+		BelongsToAccount: updated.BelongsToAccount,
+		ID:               updated.ID,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting configuration")
 	}
 
 	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &updated.BelongsToHousehold,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeServiceSettingConfigurations,
-		RelevantID:         updated.ID,
-		EventType:          types.AuditLogEventTypeUpdated,
-		BelongsToUser:      updated.BelongsToUser,
+		BelongsToAccount: &updated.BelongsToAccount,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeServiceSettingConfigurations,
+		RelevantID:       updated.ID,
+		EventType:        types.AuditLogEventTypeUpdated,
+		BelongsToUser:    updated.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
@@ -470,7 +470,7 @@ func (q *Querier) ArchiveServiceSettingConfiguration(ctx context.Context, servic
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
-	// begin household creation transaction
+	// begin account creation transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")

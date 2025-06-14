@@ -13,53 +13,53 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_GetHouseholdInvitationByID(T *testing.T) {
+func TestClient_GetAccountInvitationByID(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%s/invitations/%s"
+	const expectedPathFormat = "/api/v1/accounts/%s/invitations/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
-		householdInvitationID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
+		accountInvitationID := fake.BuildFakeID()
 
-		data := &HouseholdInvitation{}
-		expected := &APIResponse[*HouseholdInvitation]{
+		data := &AccountInvitation{}
+		expected := &APIResponse[*AccountInvitation]{
 			Data: data,
 		}
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, householdID, householdInvitationID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, accountID, accountInvitationID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.GetHouseholdInvitationByID(ctx, householdID, householdInvitationID)
+		actual, err := c.GetAccountInvitationByID(ctx, accountID, accountInvitationID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, data, actual)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		householdInvitationID := fake.BuildFakeID()
+		accountInvitationID := fake.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetHouseholdInvitationByID(ctx, "", householdInvitationID)
+		actual, err := c.GetAccountInvitationByID(ctx, "", accountInvitationID)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
 	})
 
-	T.Run("with invalid householdInvitation ID", func(t *testing.T) {
+	T.Run("with invalid accountInvitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.GetHouseholdInvitationByID(ctx, householdID, "")
+		actual, err := c.GetAccountInvitationByID(ctx, accountID, "")
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -69,11 +69,11 @@ func TestClient_GetHouseholdInvitationByID(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
-		householdInvitationID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
+		accountInvitationID := fake.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetHouseholdInvitationByID(ctx, householdID, householdInvitationID)
+		actual, err := c.GetAccountInvitationByID(ctx, accountID, accountInvitationID)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -83,12 +83,12 @@ func TestClient_GetHouseholdInvitationByID(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
-		householdInvitationID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
+		accountInvitationID := fake.BuildFakeID()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, householdID, householdInvitationID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, accountID, accountInvitationID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetHouseholdInvitationByID(ctx, householdID, householdInvitationID)
+		actual, err := c.GetAccountInvitationByID(ctx, accountID, accountInvitationID)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

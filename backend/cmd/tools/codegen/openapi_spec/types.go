@@ -70,7 +70,7 @@ var skipTypes = map[string]bool{
 	"OAuth2ClientToken":                    true,
 	"RecipeMediaCreationRequestInput":      true,
 	"RecipeMediaUpdateRequestInput":        true,
-	"ChangeActiveHouseholdInput":           true,
+	"ChangeActiveAccountInput":             true,
 	// one day...
 	"NamedID":                     true,
 	"OptionalRange":               true,

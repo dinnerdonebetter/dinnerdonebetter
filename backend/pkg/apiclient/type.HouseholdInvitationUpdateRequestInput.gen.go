@@ -3,7 +3,7 @@
 package apiclient
 
 type (
-	HouseholdInvitationUpdateRequestInput struct {
+	AccountInvitationUpdateRequestInput struct {
 		Note  string `json:"note"`
 		Token string `json:"token"`
 	}

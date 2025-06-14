@@ -1,4 +1,4 @@
-package households
+package accounts
 
 import (
 	"errors"
@@ -21,17 +21,17 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                         logging.NewNoopLogger(),
-		householdDataManager:           &mocktypes.HouseholdDataManagerMock{},
-		householdMembershipDataManager: &mocktypes.HouseholdUserMembershipDataManagerMock{},
-		householdIDFetcher:             func(req *http.Request) string { return "" },
-		encoderDecoder:                 encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		secretGenerator:                random.NewGenerator(nil, nil),
-		tracer:                         tracing.NewTracerForTest("test"),
+		logger:                       logging.NewNoopLogger(),
+		accountDataManager:           &mocktypes.AccountDataManagerMock{},
+		accountMembershipDataManager: &mocktypes.AccountUserMembershipDataManagerMock{},
+		accountIDFetcher:             func(req *http.Request) string { return "" },
+		encoderDecoder:               encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
+		secretGenerator:              random.NewGenerator(nil, nil),
+		tracer:                       tracing.NewTracerForTest("test"),
 	}
 }
 
-func TestProvideHouseholdsService(T *testing.T) {
+func TestProvideAccountsService(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -40,7 +40,7 @@ func TestProvideHouseholdsService(T *testing.T) {
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			HouseholdIDURIParamKey,
+			AccountIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
@@ -54,8 +54,8 @@ func TestProvideHouseholdsService(T *testing.T) {
 
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
-			&mocktypes.HouseholdDataManagerMock{},
-			&mocktypes.HouseholdUserMembershipDataManagerMock{},
+			&mocktypes.AccountDataManagerMock{},
+			&mocktypes.AccountUserMembershipDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -82,8 +82,8 @@ func TestProvideHouseholdsService(T *testing.T) {
 
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
-			&mocktypes.HouseholdDataManagerMock{},
-			&mocktypes.HouseholdUserMembershipDataManagerMock{},
+			&mocktypes.AccountDataManagerMock{},
+			&mocktypes.AccountUserMembershipDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,

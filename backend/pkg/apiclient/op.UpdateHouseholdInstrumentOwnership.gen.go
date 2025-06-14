@@ -12,10 +12,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
-func (c *Client) UpdateHouseholdInstrumentOwnership(
+func (c *Client) UpdateAccountInstrumentOwnership(
 	ctx context.Context,
-	householdInstrumentOwnershipID string,
-	input *HouseholdInstrumentOwnershipUpdateRequestInput,
+	accountInstrumentOwnershipID string,
+	input *AccountInstrumentOwnershipUpdateRequestInput,
 	reqMods ...RequestModifier,
 ) error {
 	ctx, span := c.tracer.StartSpan(ctx)
@@ -23,25 +23,25 @@ func (c *Client) UpdateHouseholdInstrumentOwnership(
 
 	logger := c.logger.Clone()
 
-	if householdInstrumentOwnershipID == "" {
+	if accountInstrumentOwnershipID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/households/instruments/%s", householdInstrumentOwnershipID))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/accounts/instruments/%s", accountInstrumentOwnershipID))
 	req, err := c.buildDataRequest(ctx, http.MethodPut, u, input)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building request to create a HouseholdInstrumentOwnership")
+		return observability.PrepareAndLogError(err, logger, span, "building request to create a AccountInstrumentOwnership")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *APIResponse[*HouseholdInstrumentOwnership]
+	var apiResponse *APIResponse[*AccountInstrumentOwnership]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "loading HouseholdInstrumentOwnership creation response")
+		return observability.PrepareAndLogError(err, logger, span, "loading AccountInstrumentOwnership creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

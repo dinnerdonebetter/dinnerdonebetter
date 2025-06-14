@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestClient_ArchiveHouseholdInstrumentOwnership(T *testing.T) {
+func TestClient_ArchiveAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
 	T.Run("TODO", func(t *testing.T) {

@@ -31,10 +31,10 @@ func TestMealPlanDatabaseCreationInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanDatabaseCreationInput{
-			ID:                 t.Name(),
-			VotingDeadline:     time.Now().Add(24 * time.Hour),
-			BelongsToHousehold: t.Name(),
-			CreatedByUser:      t.Name(),
+			ID:               t.Name(),
+			VotingDeadline:   time.Now().Add(24 * time.Hour),
+			BelongsToAccount: t.Name(),
+			CreatedByUser:    t.Name(),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(context.Background()))

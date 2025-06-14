@@ -49,7 +49,7 @@ func (s *service) CreateServiceSettingConfigurationHandler(res http.ResponseWrit
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ServiceSettingConfigurationCreationRequestInput)
@@ -59,7 +59,7 @@ func (s *service) CreateServiceSettingConfigurationHandler(res http.ResponseWrit
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
-	providedInput.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	providedInput.BelongsToAccount = sessionCtxData.ActiveAccountID
 	providedInput.BelongsToUser = sessionCtxData.Requester.UserID
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
@@ -128,7 +128,7 @@ func (s *service) GetServiceSettingConfigurationsForUserByNameHandler(res http.R
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	settingName := s.serviceSettingNameFetcher(req)
 	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
@@ -181,7 +181,7 @@ func (s *service) GetServiceSettingConfigurationsForUserHandler(res http.Respons
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	filter := filtering.ExtractQueryFilterFromRequest(req)
 
@@ -208,8 +208,8 @@ func (s *service) GetServiceSettingConfigurationsForUserHandler(res http.Respons
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// GetServiceSettingConfigurationsForHouseholdHandler returns a GET handler that returns a service setting configuration.
-func (s *service) GetServiceSettingConfigurationsForHouseholdHandler(res http.ResponseWriter, req *http.Request) {
+// GetServiceSettingConfigurationsForAccountHandler returns a GET handler that returns a service setting configuration.
+func (s *service) GetServiceSettingConfigurationsForAccountHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -234,7 +234,7 @@ func (s *service) GetServiceSettingConfigurationsForHouseholdHandler(res http.Re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	filter := filtering.ExtractQueryFilterFromRequest(req)
 
@@ -244,7 +244,7 @@ func (s *service) GetServiceSettingConfigurationsForHouseholdHandler(res http.Re
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	// fetch service setting configurations from database.
-	x, err := s.serviceSettingConfigurationDataManager.GetServiceSettingConfigurationsForHousehold(ctx, sessionCtxData.ActiveHouseholdID, filter)
+	x, err := s.serviceSettingConfigurationDataManager.GetServiceSettingConfigurationsForAccount(ctx, sessionCtxData.ActiveAccountID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -292,7 +292,7 @@ func (s *service) UpdateServiceSettingConfigurationHandler(res http.ResponseWrit
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ServiceSettingConfigurationUpdateRequestInput)
@@ -385,7 +385,7 @@ func (s *service) ArchiveServiceSettingConfigurationHandler(res http.ResponseWri
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine service setting ID.
 	serviceSettingConfigurationID := s.serviceSettingConfigurationIDFetcher(req)

@@ -10,47 +10,47 @@ import (
 )
 
 type (
-	// HouseholdUserMembership defines a relationship between a user and a household.
-	HouseholdUserMembership struct {
+	// AccountUserMembership defines a relationship between a user and a account.
+	AccountUserMembership struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt          time.Time  `json:"createdAt"`
-		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
-		ArchivedAt         *time.Time `json:"archivedAt"`
-		ID                 string     `json:"id"`
-		BelongsToUser      string     `json:"belongsToUser"`
-		BelongsToHousehold string     `json:"belongsToHousehold"`
-		HouseholdRole      string     `json:"householdRole"`
-		DefaultHousehold   bool       `json:"defaultHousehold"`
+		CreatedAt        time.Time  `json:"createdAt"`
+		LastUpdatedAt    *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt       *time.Time `json:"archivedAt"`
+		ID               string     `json:"id"`
+		BelongsToUser    string     `json:"belongsToUser"`
+		BelongsToAccount string     `json:"belongsToAccount"`
+		AccountRole      string     `json:"accountRole"`
+		DefaultAccount   bool       `json:"defaultAccount"`
 	}
 
-	// HouseholdUserMembershipWithUser defines a relationship between a user and a household.
-	HouseholdUserMembershipWithUser struct {
+	// AccountUserMembershipWithUser defines a relationship between a user and a account.
+	AccountUserMembershipWithUser struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt          time.Time  `json:"createdAt"`
-		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
-		BelongsToUser      *User      `json:"belongsToUser"`
-		ArchivedAt         *time.Time `json:"archivedAt"`
-		ID                 string     `json:"id"`
-		BelongsToHousehold string     `json:"belongsToHousehold"`
-		HouseholdRole      string     `json:"householdRole"`
-		DefaultHousehold   bool       `json:"defaultHousehold"`
+		CreatedAt        time.Time  `json:"createdAt"`
+		LastUpdatedAt    *time.Time `json:"lastUpdatedAt"`
+		BelongsToUser    *User      `json:"belongsToUser"`
+		ArchivedAt       *time.Time `json:"archivedAt"`
+		ID               string     `json:"id"`
+		BelongsToAccount string     `json:"belongsToAccount"`
+		AccountRole      string     `json:"accountRole"`
+		DefaultAccount   bool       `json:"defaultAccount"`
 	}
 
-	// HouseholdUserMembershipDatabaseCreationInput represents what a User could set as input for updating household user memberships.
-	HouseholdUserMembershipDatabaseCreationInput struct {
+	// AccountUserMembershipDatabaseCreationInput represents what a User could set as input for updating account user memberships.
+	AccountUserMembershipDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID            string `json:"-"`
-		Reason        string `json:"-"`
-		UserID        string `json:"-"`
-		HouseholdID   string `json:"-"`
-		HouseholdRole string `json:"-"`
+		ID          string `json:"-"`
+		Reason      string `json:"-"`
+		UserID      string `json:"-"`
+		AccountID   string `json:"-"`
+		AccountRole string `json:"-"`
 	}
 
-	// HouseholdOwnershipTransferInput represents what a User could set as input for updating household user memberships.
-	HouseholdOwnershipTransferInput struct {
+	// AccountOwnershipTransferInput represents what a User could set as input for updating account user memberships.
+	AccountOwnershipTransferInput struct {
 		_ struct{} `json:"-"`
 
 		Reason       string `json:"reason"`
@@ -58,7 +58,7 @@ type (
 		NewOwner     string `json:"newOwner"`
 	}
 
-	// ModifyUserPermissionsInput  represents what a User could set as input for updating household user memberships.
+	// ModifyUserPermissionsInput  represents what a User could set as input for updating account user memberships.
 	ModifyUserPermissionsInput struct {
 		_ struct{} `json:"-"`
 
@@ -66,22 +66,22 @@ type (
 		NewRole string `json:"newRole"`
 	}
 
-	// HouseholdUserMembershipDataManager describes a structure capable of storing householdUserMemberships permanently.
-	HouseholdUserMembershipDataManager interface {
+	// AccountUserMembershipDataManager describes a structure capable of storing accountUserMemberships permanently.
+	AccountUserMembershipDataManager interface {
 		BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error)
-		GetDefaultHouseholdIDForUser(ctx context.Context, userID string) (string, error)
-		MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID string) error
-		UserIsMemberOfHousehold(ctx context.Context, userID, householdID string) (bool, error)
-		ModifyUserPermissions(ctx context.Context, householdID, userID string, input *ModifyUserPermissionsInput) error
-		TransferHouseholdOwnership(ctx context.Context, householdID string, input *HouseholdOwnershipTransferInput) error
-		RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error
+		GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error)
+		MarkAccountAsUserDefault(ctx context.Context, userID, accountID string) error
+		UserIsMemberOfAccount(ctx context.Context, userID, accountID string) (bool, error)
+		ModifyUserPermissions(ctx context.Context, accountID, userID string, input *ModifyUserPermissionsInput) error
+		TransferAccountOwnership(ctx context.Context, accountID string, input *AccountOwnershipTransferInput) error
+		RemoveUserFromAccount(ctx context.Context, userID, accountID string) error
 	}
 )
 
-var _ validation.ValidatableWithContext = (*HouseholdOwnershipTransferInput)(nil)
+var _ validation.ValidatableWithContext = (*AccountOwnershipTransferInput)(nil)
 
-// ValidateWithContext validates a HouseholdOwnershipTransferInput.
-func (x *HouseholdOwnershipTransferInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a AccountOwnershipTransferInput.
+func (x *AccountOwnershipTransferInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.CurrentOwner, validation.Required),
 		validation.Field(&x.NewOwner, validation.Required),

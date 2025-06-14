@@ -13,41 +13,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_TransferHouseholdOwnership(T *testing.T) {
+func TestClient_TransferAccountOwnership(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%s/transfer"
+	const expectedPathFormat = "/api/v1/accounts/%s/transfer"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		data := &Household{}
-		expected := &APIResponse[*Household]{
+		data := &Account{}
+		expected := &APIResponse[*Account]{
 			Data: data,
 		}
 
-		exampleInput := &HouseholdOwnershipTransferInput{}
+		exampleInput := &AccountOwnershipTransferInput{}
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, householdID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, accountID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.TransferHouseholdOwnership(ctx, householdID, exampleInput)
+		actual, err := c.TransferAccountOwnership(ctx, accountID, exampleInput)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, data, actual)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleInput := &HouseholdOwnershipTransferInput{}
+		exampleInput := &AccountOwnershipTransferInput{}
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.TransferHouseholdOwnership(ctx, "", exampleInput)
+		actual, err := c.TransferAccountOwnership(ctx, "", exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -57,12 +57,12 @@ func TestClient_TransferHouseholdOwnership(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdOwnershipTransferInput{}
+		exampleInput := &AccountOwnershipTransferInput{}
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.TransferHouseholdOwnership(ctx, householdID, exampleInput)
+		actual, err := c.TransferAccountOwnership(ctx, accountID, exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -72,13 +72,13 @@ func TestClient_TransferHouseholdOwnership(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdOwnershipTransferInput{}
+		exampleInput := &AccountOwnershipTransferInput{}
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, householdID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, accountID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.TransferHouseholdOwnership(ctx, householdID, exampleInput)
+		actual, err := c.TransferAccountOwnership(ctx, accountID, exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

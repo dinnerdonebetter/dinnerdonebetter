@@ -28,7 +28,7 @@ func BuildFakeMealPlan() *types.MealPlan {
 		Status:                 string(types.MealPlanStatusAwaitingVotes),
 		VotingDeadline:         now,
 		CreatedAt:              BuildFakeTime(),
-		BelongsToHousehold:     fake.UUID(),
+		BelongsToAccount:       fake.UUID(),
 		TasksCreated:           false,
 		GroceryListInitialized: false,
 		ElectionMethod:         types.MealPlanElectionMethodSchulze,

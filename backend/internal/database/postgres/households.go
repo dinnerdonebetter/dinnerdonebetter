@@ -17,32 +17,32 @@ import (
 )
 
 const (
-	resourceTypeHouseholds = "households"
+	resourceTypeAccounts = "accounts"
 )
 
 var (
-	_ types.HouseholdDataManager = (*Querier)(nil)
+	_ types.AccountDataManager = (*Querier)(nil)
 )
 
-// GetHousehold fetches a household from the database.
-func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.Household, error) {
+// GetAccount fetches a account from the database.
+func (q *Querier) GetAccount(ctx context.Context, accountID string) (*types.Account, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	results, err := q.generatedQuerier.GetHouseholdByIDWithMemberships(ctx, q.db, householdID)
+	results, err := q.generatedQuerier.GetAccountByIDWithMemberships(ctx, q.db, accountID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing households list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing accounts list retrieval query")
 	}
 
-	var household *types.Household
+	var account *types.Account
 	for _, result := range results {
-		if household == nil {
-			household = &types.Household{
+		if account == nil {
+			account = &types.Account{
 				CreatedAt:                  result.CreatedAt,
 				SubscriptionPlanID:         database.StringPointerFromNullString(result.SubscriptionPlanID),
 				LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -66,7 +66,7 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 			}
 		}
 
-		household.Members = append(household.Members, &types.HouseholdUserMembershipWithUser{
+		account.Members = append(account.Members, &types.AccountUserMembershipWithUser{
 			CreatedAt:     result.MembershipCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.MembershipLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.MembershipArchivedAt),
@@ -92,21 +92,21 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 				ServiceRole:                result.UserServiceRole,
 				RequiresPasswordChange:     result.UserRequiresPasswordChange,
 			},
-			BelongsToHousehold: result.MembershipBelongsToHousehold,
-			HouseholdRole:      result.MembershipHouseholdRole,
-			DefaultHousehold:   result.MembershipDefaultHousehold,
+			BelongsToAccount: result.MembershipBelongsToAccount,
+			AccountRole:      result.MembershipAccountRole,
+			DefaultAccount:   result.MembershipDefaultAccount,
 		})
 	}
 
-	if household == nil {
+	if account == nil {
 		return nil, sql.ErrNoRows
 	}
 
-	return household, nil
+	return account, nil
 }
 
-// getHouseholdsForUser fetches a list of households from the database that meet a particular filter.
-func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQLQueryExecutor, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Household], err error) {
+// getAccountsForUser fetches a list of accounts from the database that meet a particular filter.
+func (q *Querier) getAccountsForUser(ctx context.Context, querier database.SQLQueryExecutor, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Account], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -124,11 +124,11 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.Household]{
+	x = &filtering.QueryFilteredResult[types.Account]{
 		Pagination: filter.ToPagination(),
 	}
 
-	args := &generated.GetHouseholdsForUserParams{
+	args := &generated.GetAccountsForUserParams{
 		BelongsToUser:   userID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -138,9 +138,9 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	}
-	results, err := q.generatedQuerier.GetHouseholdsForUser(ctx, querier, args)
+	results, err := q.generatedQuerier.GetAccountsForUser(ctx, querier, args)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing households list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing accounts list retrieval query")
 	}
 
 	if len(results) == 0 {
@@ -148,7 +148,7 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &types.Household{
+		x.Data = append(x.Data, &types.Account{
 			CreatedAt:                  result.CreatedAt,
 			SubscriptionPlanID:         database.StringPointerFromNullString(result.SubscriptionPlanID),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -176,13 +176,13 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	return x, nil
 }
 
-// GetHouseholds fetches a list of households from the database that meet a particular filter.
-func (q *Querier) GetHouseholds(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Household], err error) {
-	return q.getHouseholdsForUser(ctx, q.db, userID, filter)
+// GetAccounts fetches a list of accounts from the database that meet a particular filter.
+func (q *Querier) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Account], err error) {
+	return q.getAccountsForUser(ctx, q.db, userID, filter)
 }
 
-// CreateHousehold creates a household in the database.
-func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
+// CreateAccount creates a account in the database.
+func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabaseCreationInput) (*types.Account, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -192,17 +192,17 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 
 	logger := q.logger.WithValue(keys.UserIDKey, input.BelongsToUser)
 
-	// begin household creation transaction
+	// begin account creation transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	// create the household.
-	if writeErr := q.generatedQuerier.CreateHousehold(ctx, tx, &generated.CreateHouseholdParams{
+	// create the account.
+	if writeErr := q.generatedQuerier.CreateAccount(ctx, tx, &generated.CreateAccountParams{
 		City:              input.City,
 		Name:              input.Name,
-		BillingStatus:     types.UnpaidHouseholdBillingStatus,
+		BillingStatus:     types.UnpaidAccountBillingStatus,
 		ContactPhone:      input.ContactPhone,
 		AddressLine1:      input.AddressLine1,
 		AddressLine2:      input.AddressLine2,
@@ -216,14 +216,14 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		Longitude:         database.NullStringFromFloat64Pointer(input.Longitude),
 	}); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareError(writeErr, span, "creating household")
+		return nil, observability.PrepareError(writeErr, span, "creating account")
 	}
 
-	household := &types.Household{
+	account := &types.Account{
 		ID:            input.ID,
 		Name:          input.Name,
 		BelongsToUser: input.BelongsToUser,
-		BillingStatus: types.UnpaidHouseholdBillingStatus,
+		BillingStatus: types.UnpaidAccountBillingStatus,
 		ContactPhone:  input.ContactPhone,
 		AddressLine1:  input.AddressLine1,
 		AddressLine2:  input.AddressLine2,
@@ -237,35 +237,35 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 	}
 
 	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &household.ID,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeHouseholds,
-		RelevantID:         household.ID,
-		EventType:          types.AuditLogEventTypeCreated,
-		BelongsToUser:      household.BelongsToUser,
+		BelongsToAccount: &account.ID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccounts,
+		RelevantID:       account.ID,
+		EventType:        types.AuditLogEventTypeCreated,
+		BelongsToUser:    account.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	householdMembershipID := identifiers.New()
-	if err = q.generatedQuerier.AddUserToHousehold(ctx, tx, &generated.AddUserToHouseholdParams{
-		ID:                 householdMembershipID,
-		BelongsToUser:      household.BelongsToUser,
-		BelongsToHousehold: household.ID,
-		HouseholdRole:      authorization.HouseholdAdminRole.String(),
+	accountMembershipID := identifiers.New()
+	if err = q.generatedQuerier.AddUserToAccount(ctx, tx, &generated.AddUserToAccountParams{
+		ID:               accountMembershipID,
+		BelongsToUser:    account.BelongsToUser,
+		BelongsToAccount: account.ID,
+		AccountRole:      authorization.AccountAdminRole.String(),
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing household membership creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing account membership creation query")
 	}
 
 	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &household.ID,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeHouseholdUserMemberships,
-		RelevantID:         householdMembershipID,
-		EventType:          types.AuditLogEventTypeCreated,
-		BelongsToUser:      household.BelongsToUser,
+		BelongsToAccount: &account.ID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccountUserMemberships,
+		RelevantID:       accountMembershipID,
+		EventType:        types.AuditLogEventTypeCreated,
+		BelongsToUser:    account.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
@@ -275,35 +275,35 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, household.ID)
-	logger.Info("household created")
+	tracing.AttachToSpan(span, keys.AccountIDKey, account.ID)
+	logger.Info("account created")
 
-	return household, nil
+	return account, nil
 }
 
-// UpdateHousehold updates a particular household. Note that UpdateHousehold expects the provided input to have a valid ID.
-func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household) error {
+// UpdateAccount updates a particular account. Note that UpdateAccount expects the provided input to have a valid ID.
+func (q *Querier) UpdateAccount(ctx context.Context, updated *types.Account) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.HouseholdIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.AccountIDKey, updated.ID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, updated.ID)
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	household, err := q.GetHousehold(ctx, updated.ID)
+	account, err := q.GetAccount(ctx, updated.ID)
 	if err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(err, span, "fetching household")
+		return observability.PrepareError(err, span, "fetching account")
 	}
 
-	if _, err = q.generatedQuerier.UpdateHousehold(ctx, q.db, &generated.UpdateHouseholdParams{
+	if _, err = q.generatedQuerier.UpdateAccount(ctx, q.db, &generated.UpdateAccountParams{
 		Name:          updated.Name,
 		ContactPhone:  updated.ContactPhone,
 		AddressLine1:  updated.AddressLine1,
@@ -317,17 +317,17 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 		Latitude:      database.NullStringFromFloat64Pointer(updated.Latitude),
 		Longitude:     database.NullStringFromFloat64Pointer(updated.Longitude),
 	}); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating household")
+		return observability.PrepareAndLogError(err, logger, span, "updating account")
 	}
 
 	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &updated.ID,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeHouseholds,
-		RelevantID:         updated.ID,
-		EventType:          types.AuditLogEventTypeUpdated,
-		BelongsToUser:      household.BelongsToUser,
-		Changes:            buildChangesForHousehold(household, updated),
+		BelongsToAccount: &updated.ID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccounts,
+		RelevantID:       updated.ID,
+		EventType:        types.AuditLogEventTypeUpdated,
+		BelongsToUser:    account.BelongsToUser,
+		Changes:          buildChangesForAccount(account, updated),
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
@@ -337,80 +337,80 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("household updated")
+	logger.Info("account updated")
 
 	return nil
 }
 
-func buildChangesForHousehold(household, updated *types.Household) map[string]types.ChangeLog {
+func buildChangesForAccount(account, updated *types.Account) map[string]types.ChangeLog {
 	changes := map[string]types.ChangeLog{}
 
-	if household.Name != updated.Name {
+	if account.Name != updated.Name {
 		changes["name"] = types.ChangeLog{
-			OldValue: household.Name,
+			OldValue: account.Name,
 			NewValue: updated.Name,
 		}
 	}
 
-	if household.ContactPhone != updated.ContactPhone {
+	if account.ContactPhone != updated.ContactPhone {
 		changes["contact_phone"] = types.ChangeLog{
-			OldValue: household.ContactPhone,
+			OldValue: account.ContactPhone,
 			NewValue: updated.ContactPhone,
 		}
 	}
 
-	if household.AddressLine1 != updated.AddressLine1 {
+	if account.AddressLine1 != updated.AddressLine1 {
 		changes["address_line_1"] = types.ChangeLog{
-			OldValue: household.AddressLine1,
+			OldValue: account.AddressLine1,
 			NewValue: updated.AddressLine1,
 		}
 	}
 
-	if household.AddressLine2 != updated.AddressLine2 {
+	if account.AddressLine2 != updated.AddressLine2 {
 		changes["address_line_2"] = types.ChangeLog{
-			OldValue: household.AddressLine2,
+			OldValue: account.AddressLine2,
 			NewValue: updated.AddressLine2,
 		}
 	}
 
-	if household.City != updated.City {
+	if account.City != updated.City {
 		changes["city"] = types.ChangeLog{
-			OldValue: household.City,
+			OldValue: account.City,
 			NewValue: updated.City,
 		}
 	}
 
-	if household.State != updated.State {
+	if account.State != updated.State {
 		changes["state"] = types.ChangeLog{
-			OldValue: household.State,
+			OldValue: account.State,
 			NewValue: updated.State,
 		}
 	}
 
-	if household.ZipCode != updated.ZipCode {
+	if account.ZipCode != updated.ZipCode {
 		changes["zip_code"] = types.ChangeLog{
-			OldValue: household.ZipCode,
+			OldValue: account.ZipCode,
 			NewValue: updated.ZipCode,
 		}
 	}
 
-	if household.Country != updated.Country {
+	if account.Country != updated.Country {
 		changes["country"] = types.ChangeLog{
-			OldValue: household.Country,
+			OldValue: account.Country,
 			NewValue: updated.Country,
 		}
 	}
 
-	if household.Latitude != updated.Latitude {
+	if account.Latitude != updated.Latitude {
 		changes["latitude"] = types.ChangeLog{
-			OldValue: fmt.Sprintf("%v", household.Latitude),
+			OldValue: fmt.Sprintf("%v", account.Latitude),
 			NewValue: fmt.Sprintf("%v", updated.Latitude),
 		}
 	}
 
-	if household.Longitude != updated.Longitude {
+	if account.Longitude != updated.Longitude {
 		changes["longitude"] = types.ChangeLog{
-			OldValue: fmt.Sprintf("%v", household.Longitude),
+			OldValue: fmt.Sprintf("%v", account.Longitude),
 			NewValue: fmt.Sprintf("%v", updated.Longitude),
 		}
 	}
@@ -418,41 +418,41 @@ func buildChangesForHousehold(household, updated *types.Household) map[string]ty
 	return changes
 }
 
-// ArchiveHousehold archives a household from the database by its ID.
-func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {
+// ArchiveAccount archives a account from the database by its ID.
+func (q *Querier) ArchiveAccount(ctx context.Context, accountID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if householdID == "" || userID == "" {
+	if accountID == "" || userID == "" {
 		return ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = q.generatedQuerier.ArchiveHousehold(ctx, q.db, &generated.ArchiveHouseholdParams{
+	if _, err = q.generatedQuerier.ArchiveAccount(ctx, q.db, &generated.ArchiveAccountParams{
 		BelongsToUser: userID,
-		ID:            householdID,
+		ID:            accountID,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareAndLogError(err, logger, span, "archiving household")
+		return observability.PrepareAndLogError(err, logger, span, "archiving account")
 	}
 
 	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &householdID,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeHouseholds,
-		RelevantID:         householdID,
-		EventType:          types.AuditLogEventTypeCreated,
-		BelongsToUser:      userID,
+		BelongsToAccount: &accountID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeAccounts,
+		RelevantID:       accountID,
+		EventType:        types.AuditLogEventTypeCreated,
+		BelongsToUser:    userID,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
@@ -462,7 +462,7 @@ func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID stri
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("household archived")
+	logger.Info("account archived")
 
 	return nil
 }

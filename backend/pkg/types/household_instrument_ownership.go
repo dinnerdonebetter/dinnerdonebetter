@@ -12,58 +12,58 @@ import (
 )
 
 const (
-	// HouseholdInstrumentOwnershipCreatedServiceEventType indicates a household instrument ownership was created.
-	HouseholdInstrumentOwnershipCreatedServiceEventType = "household_instrument_ownership_created"
-	// HouseholdInstrumentOwnershipUpdatedServiceEventType indicates a household instrument ownership was updated.
-	HouseholdInstrumentOwnershipUpdatedServiceEventType = "household_instrument_ownership_updated"
-	// HouseholdInstrumentOwnershipArchivedServiceEventType indicates a household instrument ownership was archived.
-	HouseholdInstrumentOwnershipArchivedServiceEventType = "household_instrument_ownership_archived"
+	// AccountInstrumentOwnershipCreatedServiceEventType indicates a account instrument ownership was created.
+	AccountInstrumentOwnershipCreatedServiceEventType = "account_instrument_ownership_created"
+	// AccountInstrumentOwnershipUpdatedServiceEventType indicates a account instrument ownership was updated.
+	AccountInstrumentOwnershipUpdatedServiceEventType = "account_instrument_ownership_updated"
+	// AccountInstrumentOwnershipArchivedServiceEventType indicates a account instrument ownership was archived.
+	AccountInstrumentOwnershipArchivedServiceEventType = "account_instrument_ownership_archived"
 )
 
 func init() {
-	gob.Register(new(HouseholdInstrumentOwnership))
-	gob.Register(new(HouseholdInstrumentOwnershipCreationRequestInput))
-	gob.Register(new(HouseholdInstrumentOwnershipUpdateRequestInput))
+	gob.Register(new(AccountInstrumentOwnership))
+	gob.Register(new(AccountInstrumentOwnershipCreationRequestInput))
+	gob.Register(new(AccountInstrumentOwnershipUpdateRequestInput))
 }
 
 type (
-	// HouseholdInstrumentOwnership represents a household instrument ownership.
-	HouseholdInstrumentOwnership struct {
+	// AccountInstrumentOwnership represents a account instrument ownership.
+	AccountInstrumentOwnership struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt          time.Time       `json:"createdAt"`
-		ArchivedAt         *time.Time      `json:"archivedAt"`
-		LastUpdatedAt      *time.Time      `json:"lastUpdatedAt"`
-		ID                 string          `json:"id"`
-		Notes              string          `json:"notes"`
-		BelongsToHousehold string          `json:"belongsToHousehold"`
-		Instrument         ValidInstrument `json:"instrument"`
-		Quantity           uint16          `json:"quantity"`
+		CreatedAt        time.Time       `json:"createdAt"`
+		ArchivedAt       *time.Time      `json:"archivedAt"`
+		LastUpdatedAt    *time.Time      `json:"lastUpdatedAt"`
+		ID               string          `json:"id"`
+		Notes            string          `json:"notes"`
+		BelongsToAccount string          `json:"belongsToAccount"`
+		Instrument       ValidInstrument `json:"instrument"`
+		Quantity         uint16          `json:"quantity"`
 	}
 
-	// HouseholdInstrumentOwnershipCreationRequestInput represents what a user could set as input for creating household instrument ownerships.
-	HouseholdInstrumentOwnershipCreationRequestInput struct {
+	// AccountInstrumentOwnershipCreationRequestInput represents what a user could set as input for creating account instrument ownerships.
+	AccountInstrumentOwnershipCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Notes              string `json:"notes"`
-		ValidInstrumentID  string `json:"validInstrumentID"`
-		BelongsToHousehold string `json:"belongsToHousehold"`
-		Quantity           uint16 `json:"quantity"`
+		Notes             string `json:"notes"`
+		ValidInstrumentID string `json:"validInstrumentID"`
+		BelongsToAccount  string `json:"belongsToAccount"`
+		Quantity          uint16 `json:"quantity"`
 	}
 
-	// HouseholdInstrumentOwnershipDatabaseCreationInput represents what a user could set as input for creating household instrument ownerships.
-	HouseholdInstrumentOwnershipDatabaseCreationInput struct {
+	// AccountInstrumentOwnershipDatabaseCreationInput represents what a user could set as input for creating account instrument ownerships.
+	AccountInstrumentOwnershipDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                 string `json:"-"`
-		Notes              string `json:"-"`
-		ValidInstrumentID  string `json:"-"`
-		BelongsToHousehold string `json:"-"`
-		Quantity           uint16 `json:"-"`
+		ID                string `json:"-"`
+		Notes             string `json:"-"`
+		ValidInstrumentID string `json:"-"`
+		BelongsToAccount  string `json:"-"`
+		Quantity          uint16 `json:"-"`
 	}
 
-	// HouseholdInstrumentOwnershipUpdateRequestInput represents what a user could set as input for updating household instrument ownerships.
-	HouseholdInstrumentOwnershipUpdateRequestInput struct {
+	// AccountInstrumentOwnershipUpdateRequestInput represents what a user could set as input for updating account instrument ownerships.
+	AccountInstrumentOwnershipUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
 		Notes             *string `json:"notes"`
@@ -71,28 +71,28 @@ type (
 		ValidInstrumentID *string `json:"validInstrumentID"`
 	}
 
-	// HouseholdInstrumentOwnershipDataManager describes a structure capable of storing household instrument ownerships permanently.
-	HouseholdInstrumentOwnershipDataManager interface {
-		HouseholdInstrumentOwnershipExists(ctx context.Context, householdInstrumentOwnershipID, householdID string) (bool, error)
-		GetHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) (*HouseholdInstrumentOwnership, error)
-		GetHouseholdInstrumentOwnerships(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[HouseholdInstrumentOwnership], error)
-		CreateHouseholdInstrumentOwnership(ctx context.Context, input *HouseholdInstrumentOwnershipDatabaseCreationInput) (*HouseholdInstrumentOwnership, error)
-		UpdateHouseholdInstrumentOwnership(ctx context.Context, updated *HouseholdInstrumentOwnership) error
-		ArchiveHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) error
+	// AccountInstrumentOwnershipDataManager describes a structure capable of storing account instrument ownerships permanently.
+	AccountInstrumentOwnershipDataManager interface {
+		AccountInstrumentOwnershipExists(ctx context.Context, accountInstrumentOwnershipID, accountID string) (bool, error)
+		GetAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) (*AccountInstrumentOwnership, error)
+		GetAccountInstrumentOwnerships(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AccountInstrumentOwnership], error)
+		CreateAccountInstrumentOwnership(ctx context.Context, input *AccountInstrumentOwnershipDatabaseCreationInput) (*AccountInstrumentOwnership, error)
+		UpdateAccountInstrumentOwnership(ctx context.Context, updated *AccountInstrumentOwnership) error
+		ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error
 	}
 
-	// HouseholdInstrumentOwnershipDataService describes a structure capable of serving traffic related to household instrument ownerships.
-	HouseholdInstrumentOwnershipDataService interface {
-		ListHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
-		CreateHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
-		ReadHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
-		UpdateHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
-		ArchiveHouseholdInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
+	// AccountInstrumentOwnershipDataService describes a structure capable of serving traffic related to account instrument ownerships.
+	AccountInstrumentOwnershipDataService interface {
+		ListAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
+		CreateAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
+		ReadAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
+		UpdateAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
+		ArchiveAccountInstrumentOwnershipHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
-// Update merges an HouseholdInstrumentOwnershipUpdateRequestInput with a household instrument ownership.
-func (x *HouseholdInstrumentOwnership) Update(input *HouseholdInstrumentOwnershipUpdateRequestInput) {
+// Update merges an AccountInstrumentOwnershipUpdateRequestInput with a account instrument ownership.
+func (x *AccountInstrumentOwnership) Update(input *AccountInstrumentOwnershipUpdateRequestInput) {
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes
 	}
@@ -106,10 +106,10 @@ func (x *HouseholdInstrumentOwnership) Update(input *HouseholdInstrumentOwnershi
 	}
 }
 
-var _ validation.ValidatableWithContext = (*HouseholdInstrumentOwnershipCreationRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*AccountInstrumentOwnershipCreationRequestInput)(nil)
 
-// ValidateWithContext validates a HouseholdInstrumentOwnershipCreationRequestInput.
-func (x *HouseholdInstrumentOwnershipCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a AccountInstrumentOwnershipCreationRequestInput.
+func (x *AccountInstrumentOwnershipCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
@@ -118,10 +118,10 @@ func (x *HouseholdInstrumentOwnershipCreationRequestInput) ValidateWithContext(c
 	)
 }
 
-var _ validation.ValidatableWithContext = (*HouseholdInstrumentOwnershipDatabaseCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*AccountInstrumentOwnershipDatabaseCreationInput)(nil)
 
-// ValidateWithContext validates a HouseholdInstrumentOwnershipDatabaseCreationInput.
-func (x *HouseholdInstrumentOwnershipDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a AccountInstrumentOwnershipDatabaseCreationInput.
+func (x *AccountInstrumentOwnershipDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
@@ -131,10 +131,10 @@ func (x *HouseholdInstrumentOwnershipDatabaseCreationInput) ValidateWithContext(
 	)
 }
 
-var _ validation.ValidatableWithContext = (*HouseholdInstrumentOwnershipUpdateRequestInput)(nil)
+var _ validation.ValidatableWithContext = (*AccountInstrumentOwnershipUpdateRequestInput)(nil)
 
-// ValidateWithContext validates a HouseholdInstrumentOwnershipUpdateRequestInput.
-func (x *HouseholdInstrumentOwnershipUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a AccountInstrumentOwnershipUpdateRequestInput.
+func (x *AccountInstrumentOwnershipUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

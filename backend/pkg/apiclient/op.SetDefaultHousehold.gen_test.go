@@ -13,37 +13,37 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_SetDefaultHousehold(T *testing.T) {
+func TestClient_SetDefaultAccount(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%s/default"
+	const expectedPathFormat = "/api/v1/accounts/%s/default"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		data := &Household{}
-		expected := &APIResponse[*Household]{
+		data := &Account{}
+		expected := &APIResponse[*Account]{
 			Data: data,
 		}
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, householdID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, accountID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.SetDefaultHousehold(ctx, householdID)
+		actual, err := c.SetDefaultAccount(ctx, accountID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, data, actual)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.SetDefaultHousehold(ctx, "")
+		actual, err := c.SetDefaultAccount(ctx, "")
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -53,10 +53,10 @@ func TestClient_SetDefaultHousehold(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.SetDefaultHousehold(ctx, householdID)
+		actual, err := c.SetDefaultAccount(ctx, accountID)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -66,11 +66,11 @@ func TestClient_SetDefaultHousehold(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, householdID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, accountID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.SetDefaultHousehold(ctx, householdID)
+		actual, err := c.SetDefaultAccount(ctx, accountID)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

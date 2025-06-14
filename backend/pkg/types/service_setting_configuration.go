@@ -30,49 +30,49 @@ type (
 	ServiceSettingConfiguration struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt          time.Time      `json:"createdAt"`
-		LastUpdatedAt      *time.Time     `json:"lastUpdatedAt"`
-		ArchivedAt         *time.Time     `json:"archivedAt"`
-		ID                 string         `json:"id"`
-		Value              string         `json:"value"`
-		Notes              string         `json:"notes"`
-		BelongsToUser      string         `json:"belongsToUser"`
-		BelongsToHousehold string         `json:"belongsToHousehold"`
-		ServiceSetting     ServiceSetting `json:"serviceSetting"`
+		CreatedAt        time.Time      `json:"createdAt"`
+		LastUpdatedAt    *time.Time     `json:"lastUpdatedAt"`
+		ArchivedAt       *time.Time     `json:"archivedAt"`
+		ID               string         `json:"id"`
+		Value            string         `json:"value"`
+		Notes            string         `json:"notes"`
+		BelongsToUser    string         `json:"belongsToUser"`
+		BelongsToAccount string         `json:"belongsToAccount"`
+		ServiceSetting   ServiceSetting `json:"serviceSetting"`
 	}
 
 	// ServiceSettingConfigurationCreationRequestInput represents what a user could set as input for creating settings configurations.
 	ServiceSettingConfigurationCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Value              string `json:"value"`
-		Notes              string `json:"notes"`
-		ServiceSettingID   string `json:"serviceSettingID"`
-		BelongsToUser      string `json:"belongsToUser"`
-		BelongsToHousehold string `json:"belongsToHousehold"`
+		Value            string `json:"value"`
+		Notes            string `json:"notes"`
+		ServiceSettingID string `json:"serviceSettingID"`
+		BelongsToUser    string `json:"belongsToUser"`
+		BelongsToAccount string `json:"belongsToAccount"`
 	}
 
 	// ServiceSettingConfigurationDatabaseCreationInput represents what a user could set as input for creating service settings configurations.
 	ServiceSettingConfigurationDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ID                 string `json:"-"`
-		Value              string `json:"-"`
-		Notes              string `json:"-"`
-		ServiceSettingID   string `json:"-"`
-		BelongsToUser      string `json:"-"`
-		BelongsToHousehold string `json:"-"`
+		ID               string `json:"-"`
+		Value            string `json:"-"`
+		Notes            string `json:"-"`
+		ServiceSettingID string `json:"-"`
+		BelongsToUser    string `json:"-"`
+		BelongsToAccount string `json:"-"`
 	}
 
 	// ServiceSettingConfigurationUpdateRequestInput represents what a user could set as input for updating service settings configurations.
 	ServiceSettingConfigurationUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Value              *string `json:"value"`
-		Notes              *string `json:"notes"`
-		ServiceSettingID   *string `json:"serviceSettingID"`
-		BelongsToUser      *string `json:"belongsToUser"`
-		BelongsToHousehold *string `json:"belongsToHousehold"`
+		Value            *string `json:"value"`
+		Notes            *string `json:"notes"`
+		ServiceSettingID *string `json:"serviceSettingID"`
+		BelongsToUser    *string `json:"belongsToUser"`
+		BelongsToAccount *string `json:"belongsToAccount"`
 	}
 
 	// ServiceSettingConfigurationDataManager describes a structure capable of storing settings permanently.
@@ -80,9 +80,9 @@ type (
 		ServiceSettingConfigurationExists(ctx context.Context, serviceSettingConfigurationID string) (bool, error)
 		GetServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) (*ServiceSettingConfiguration, error)
 		GetServiceSettingConfigurationForUserByName(ctx context.Context, userID, serviceSettingConfigurationName string) (*ServiceSettingConfiguration, error)
-		GetServiceSettingConfigurationForHouseholdByName(ctx context.Context, householdID, serviceSettingConfigurationName string) (*ServiceSettingConfiguration, error)
+		GetServiceSettingConfigurationForAccountByName(ctx context.Context, accountID, serviceSettingConfigurationName string) (*ServiceSettingConfiguration, error)
 		GetServiceSettingConfigurationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSettingConfiguration], error)
-		GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSettingConfiguration], error)
+		GetServiceSettingConfigurationsForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[ServiceSettingConfiguration], error)
 		CreateServiceSettingConfiguration(ctx context.Context, input *ServiceSettingConfigurationDatabaseCreationInput) (*ServiceSettingConfiguration, error)
 		UpdateServiceSettingConfiguration(ctx context.Context, updated *ServiceSettingConfiguration) error
 		ArchiveServiceSettingConfiguration(ctx context.Context, serviceSettingConfigurationID string) error
@@ -92,7 +92,7 @@ type (
 	ServiceSettingConfigurationDataService interface {
 		CreateServiceSettingConfigurationHandler(http.ResponseWriter, *http.Request)
 		GetServiceSettingConfigurationsForUserHandler(http.ResponseWriter, *http.Request)
-		GetServiceSettingConfigurationsForHouseholdHandler(http.ResponseWriter, *http.Request)
+		GetServiceSettingConfigurationsForAccountHandler(http.ResponseWriter, *http.Request)
 		GetServiceSettingConfigurationsForUserByNameHandler(http.ResponseWriter, *http.Request)
 		UpdateServiceSettingConfigurationHandler(http.ResponseWriter, *http.Request)
 		ArchiveServiceSettingConfigurationHandler(http.ResponseWriter, *http.Request)
@@ -117,8 +117,8 @@ func (x *ServiceSettingConfiguration) Update(input *ServiceSettingConfigurationU
 		x.BelongsToUser = *input.BelongsToUser
 	}
 
-	if input.BelongsToHousehold != nil && *input.BelongsToHousehold != x.BelongsToHousehold {
-		x.BelongsToHousehold = *input.BelongsToHousehold
+	if input.BelongsToAccount != nil && *input.BelongsToAccount != x.BelongsToAccount {
+		x.BelongsToAccount = *input.BelongsToAccount
 	}
 }
 

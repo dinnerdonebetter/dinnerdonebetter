@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (c *Client) GetServiceSettingConfigurationsForHousehold(
+func (c *Client) GetServiceSettingConfigurationsForAccount(
 	ctx context.Context,
 	filter *QueryFilter,
 	reqMods ...RequestModifier,
@@ -26,7 +26,7 @@ func (c *Client) GetServiceSettingConfigurationsForHousehold(
 
 	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, values, "/api/v1/settings/configurations/household")
+	u := c.BuildURL(ctx, values, "/api/v1/settings/configurations/account")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of ServiceSettingConfiguration")

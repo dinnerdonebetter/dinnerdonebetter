@@ -9,55 +9,55 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ types.HouseholdUserMembershipDataManager = (*HouseholdUserMembershipDataManagerMock)(nil)
+var _ types.AccountUserMembershipDataManager = (*AccountUserMembershipDataManagerMock)(nil)
 
-// HouseholdUserMembershipDataManagerMock is a mocked types.HouseholdUserMembershipDataManager for testing.
-type HouseholdUserMembershipDataManagerMock struct {
+// AccountUserMembershipDataManagerMock is a mocked types.AccountUserMembershipDataManager for testing.
+type AccountUserMembershipDataManagerMock struct {
 	mock.Mock
 }
 
 // BuildSessionContextDataForUser satisfies our interface contract.
-func (m *HouseholdUserMembershipDataManagerMock) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
+func (m *AccountUserMembershipDataManagerMock) BuildSessionContextDataForUser(ctx context.Context, userID string) (*sessions.ContextData, error) {
 	returnValues := m.Called(ctx, userID)
 
 	return returnValues.Get(0).(*sessions.ContextData), returnValues.Error(1)
 }
 
-// GetDefaultHouseholdIDForUser satisfies our interface contract.
-func (m *HouseholdUserMembershipDataManagerMock) GetDefaultHouseholdIDForUser(ctx context.Context, userID string) (string, error) {
+// GetDefaultAccountIDForUser satisfies our interface contract.
+func (m *AccountUserMembershipDataManagerMock) GetDefaultAccountIDForUser(ctx context.Context, userID string) (string, error) {
 	returnValues := m.Called(ctx, userID)
 
 	return returnValues.Get(0).(string), returnValues.Error(1)
 }
 
-// MarkHouseholdAsUserDefault implements the interface.
-func (m *HouseholdUserMembershipDataManagerMock) MarkHouseholdAsUserDefault(ctx context.Context, userID, householdID string) error {
-	return m.Called(ctx, userID, householdID).Error(0)
+// MarkAccountAsUserDefault implements the interface.
+func (m *AccountUserMembershipDataManagerMock) MarkAccountAsUserDefault(ctx context.Context, userID, accountID string) error {
+	return m.Called(ctx, userID, accountID).Error(0)
 }
 
-// UserIsMemberOfHousehold implements the interface.
-func (m *HouseholdUserMembershipDataManagerMock) UserIsMemberOfHousehold(ctx context.Context, userID, householdID string) (bool, error) {
-	returnValues := m.Called(ctx, userID, householdID)
+// UserIsMemberOfAccount implements the interface.
+func (m *AccountUserMembershipDataManagerMock) UserIsMemberOfAccount(ctx context.Context, userID, accountID string) (bool, error) {
+	returnValues := m.Called(ctx, userID, accountID)
 
 	return returnValues.Bool(0), returnValues.Error(1)
 }
 
-// AddUserToHousehold implements the interface.
-func (m *HouseholdUserMembershipDataManagerMock) AddUserToHousehold(ctx context.Context, input *types.HouseholdUserMembershipDatabaseCreationInput) error {
+// AddUserToAccount implements the interface.
+func (m *AccountUserMembershipDataManagerMock) AddUserToAccount(ctx context.Context, input *types.AccountUserMembershipDatabaseCreationInput) error {
 	return m.Called(ctx, input).Error(0)
 }
 
-// RemoveUserFromHousehold implements the interface.
-func (m *HouseholdUserMembershipDataManagerMock) RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error {
-	return m.Called(ctx, userID, householdID).Error(0)
+// RemoveUserFromAccount implements the interface.
+func (m *AccountUserMembershipDataManagerMock) RemoveUserFromAccount(ctx context.Context, userID, accountID string) error {
+	return m.Called(ctx, userID, accountID).Error(0)
 }
 
 // ModifyUserPermissions implements the interface.
-func (m *HouseholdUserMembershipDataManagerMock) ModifyUserPermissions(ctx context.Context, householdID, userID string, input *types.ModifyUserPermissionsInput) error {
-	return m.Called(ctx, userID, householdID, input).Error(0)
+func (m *AccountUserMembershipDataManagerMock) ModifyUserPermissions(ctx context.Context, accountID, userID string, input *types.ModifyUserPermissionsInput) error {
+	return m.Called(ctx, userID, accountID, input).Error(0)
 }
 
-// TransferHouseholdOwnership implements the interface.
-func (m *HouseholdUserMembershipDataManagerMock) TransferHouseholdOwnership(ctx context.Context, householdID string, input *types.HouseholdOwnershipTransferInput) error {
-	return m.Called(ctx, householdID, input).Error(0)
+// TransferAccountOwnership implements the interface.
+func (m *AccountUserMembershipDataManagerMock) TransferAccountOwnership(ctx context.Context, accountID string, input *types.AccountOwnershipTransferInput) error {
+	return m.Called(ctx, accountID, input).Error(0)
 }

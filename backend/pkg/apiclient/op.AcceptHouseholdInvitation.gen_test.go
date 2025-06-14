@@ -12,40 +12,40 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestClient_AcceptHouseholdInvitation(T *testing.T) {
+func TestClient_AcceptAccountInvitation(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/household_invitations/%s/accept"
+	const expectedPathFormat = "/api/v1/account_invitations/%s/accept"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdInvitationID := fake.BuildFakeID()
+		accountInvitationID := fake.BuildFakeID()
 
-		data := &HouseholdInvitation{}
-		expected := &APIResponse[*HouseholdInvitation]{
+		data := &AccountInvitation{}
+		expected := &APIResponse[*AccountInvitation]{
 			Data: data,
 		}
 
-		exampleInput := &HouseholdInvitationUpdateRequestInput{}
+		exampleInput := &AccountInvitationUpdateRequestInput{}
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, householdInvitationID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, accountInvitationID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		err := c.AcceptHouseholdInvitation(ctx, householdInvitationID, exampleInput)
+		err := c.AcceptAccountInvitation(ctx, accountInvitationID, exampleInput)
 
 		assert.NoError(t, err)
 
 	})
 
-	T.Run("with invalid householdInvitation ID", func(t *testing.T) {
+	T.Run("with invalid accountInvitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleInput := &HouseholdInvitationUpdateRequestInput{}
+		exampleInput := &AccountInvitationUpdateRequestInput{}
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		err := c.AcceptHouseholdInvitation(ctx, "", exampleInput)
+		err := c.AcceptAccountInvitation(ctx, "", exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -54,12 +54,12 @@ func TestClient_AcceptHouseholdInvitation(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdInvitationID := fake.BuildFakeID()
+		accountInvitationID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdInvitationUpdateRequestInput{}
+		exampleInput := &AccountInvitationUpdateRequestInput{}
 
 		c := buildTestClientWithInvalidURL(t)
-		err := c.AcceptHouseholdInvitation(ctx, householdInvitationID, exampleInput)
+		err := c.AcceptAccountInvitation(ctx, accountInvitationID, exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -68,13 +68,13 @@ func TestClient_AcceptHouseholdInvitation(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdInvitationID := fake.BuildFakeID()
+		accountInvitationID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdInvitationUpdateRequestInput{}
+		exampleInput := &AccountInvitationUpdateRequestInput{}
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, householdInvitationID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, accountInvitationID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		err := c.AcceptHouseholdInvitation(ctx, householdInvitationID, exampleInput)
+		err := c.AcceptAccountInvitation(ctx, accountInvitationID, exampleInput)
 
 		assert.Error(t, err)
 	})

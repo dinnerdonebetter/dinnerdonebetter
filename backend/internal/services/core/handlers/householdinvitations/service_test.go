@@ -1,4 +1,4 @@
-package householdinvitations
+package accountinvitations
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/platform/routing/mock"
-	householdsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/households"
+	accountsservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/accounts"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -22,14 +22,14 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                       logging.NewNoopLogger(),
-		householdInvitationIDFetcher: func(req *http.Request) string { return "" },
-		encoderDecoder:               encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		tracer:                       tracing.NewTracerForTest("test"),
+		logger:                     logging.NewNoopLogger(),
+		accountInvitationIDFetcher: func(req *http.Request) string { return "" },
+		encoderDecoder:             encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
+		tracer:                     tracing.NewTracerForTest("test"),
 	}
 }
 
-func TestProvideHouseholdInvitationsService(T *testing.T) {
+func TestProvideAccountInvitationsService(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -38,11 +38,11 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			householdsservice.HouseholdIDURIParamKey,
+			accountsservice.AccountIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			HouseholdInvitationIDURIParamKey,
+			AccountInvitationIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
 		msgCfg := &msgconfig.QueuesConfig{DataChangesTopicName: "data_changes"}
@@ -50,10 +50,10 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
-		actual, err := ProvideHouseholdInvitationsService(
+		actual, err := ProvideAccountInvitationsService(
 			logging.NewNoopLogger(),
 			&mocktypes.UserDataManagerMock{},
-			&mocktypes.HouseholdInvitationDataManagerMock{},
+			&mocktypes.AccountInvitationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -76,10 +76,10 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		pp := &mockpublishers.PublisherProvider{}
 		pp.On("ProvidePublisher", msgCfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
-		actual, err := ProvideHouseholdInvitationsService(
+		actual, err := ProvideAccountInvitationsService(
 			logging.NewNoopLogger(),
 			&mocktypes.UserDataManagerMock{},
-			&mocktypes.HouseholdInvitationDataManagerMock{},
+			&mocktypes.AccountInvitationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

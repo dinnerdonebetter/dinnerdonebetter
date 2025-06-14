@@ -10,7 +10,7 @@
 
 - user submits a meal plan
 - if one of the following happens:
-  - every member of the household votes for every option in the meal plan
+  - every member of the account votes for every option in the meal plan
   - the voting period for the meal plan expires
 - the meal plan is finalized by the meal plan finalizer
 - once the meal plan is finalized, the meal plan task creator (for creating prep tasks) and the grocery list initializer (for creating a grocery list) can run on the meal plan in question

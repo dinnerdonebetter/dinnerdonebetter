@@ -1,4 +1,4 @@
 /*
-Package households provides a series of HTTP handlers for managing households in a compatible database.
+Package accounts provides a series of HTTP handlers for managing accounts in a compatible database.
 */
-package households
+package accounts

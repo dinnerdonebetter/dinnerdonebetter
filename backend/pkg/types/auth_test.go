@@ -11,15 +11,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestChangeActiveHouseholdInput_ValidateWithContext(T *testing.T) {
+func TestChangeActiveAccountInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		x := &ChangeActiveHouseholdInput{
-			HouseholdID: "123",
+		x := &ChangeActiveAccountInput{
+			AccountID: "123",
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -40,20 +40,20 @@ func TestSessionContextData_AttachToLogger(T *testing.T) {
 	})
 }
 
-func TestSessionContextData_HouseholdRolePermissionsChecker(T *testing.T) {
+func TestSessionContextData_AccountRolePermissionsChecker(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		x := &sessions.ContextData{
-			ActiveHouseholdID: t.Name(),
-			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-				t.Name(): authorization.NewHouseholdRolePermissionChecker(t.Name()),
+			ActiveAccountID: t.Name(),
+			AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+				t.Name(): authorization.NewAccountRolePermissionChecker(t.Name()),
 			},
 		}
 
-		assert.NotNil(t, x.HouseholdRolePermissionsChecker())
+		assert.NotNil(t, x.AccountRolePermissionsChecker())
 	})
 }
 
@@ -64,7 +64,7 @@ func TestSessionContextData_ServiceRolePermissionChecker(T *testing.T) {
 		t.Parallel()
 
 		x := &sessions.ContextData{
-			ActiveHouseholdID: t.Name(),
+			ActiveAccountID: t.Name(),
 			Requester: sessions.RequesterInfo{
 				ServicePermissions: authorization.NewServiceRolePermissionChecker(t.Name()),
 			},

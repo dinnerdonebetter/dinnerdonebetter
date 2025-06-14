@@ -53,7 +53,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	providedInput := new(types.WebhookCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
@@ -73,7 +73,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 	input := converters.ConvertWebhookCreationRequestInputToWebhookDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 	tracing.AttachToSpan(span, keys.WebhookIDKey, input.ID)
-	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
+	input.BelongsToAccount = sessionCtxData.ActiveAccountID
 
 	createTimer := timing.NewMetric("database").WithDesc("create").Start()
 	webhook, err := s.webhookDataManager.CreateWebhook(ctx, input)
@@ -87,10 +87,10 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.WebhookCreatedServiceEventType,
-		Webhook:     webhook,
-		HouseholdID: sessionCtxData.ActiveHouseholdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType: types.WebhookCreatedServiceEventType,
+		Webhook:   webhook,
+		AccountID: sessionCtxData.ActiveAccountID,
+		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -134,11 +134,11 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// find the webhooks.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	webhooks, err := s.webhookDataManager.GetWebhooks(ctx, sessionCtxData.ActiveHouseholdID, filter)
+	webhooks, err := s.webhookDataManager.GetWebhooks(ctx, sessionCtxData.ActiveAccountID, filter)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			webhooks = &filtering.QueryFilteredResult[types.Webhook]{
@@ -189,21 +189,21 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine relevant webhook ID.
 	webhookID := s.webhookIDFetcher(req)
 	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, sessionCtxData.ActiveAccountID)
+	logger = logger.WithValue(keys.AccountIDKey, sessionCtxData.ActiveAccountID)
 
 	logger.Info("fetching webhook")
 
 	// fetch the webhook from the database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	webhook, err := s.webhookDataManager.GetWebhook(ctx, webhookID, sessionCtxData.ActiveHouseholdID)
+	webhook, err := s.webhookDataManager.GetWebhook(ctx, webhookID, sessionCtxData.ActiveAccountID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			logger.Debug("No rows found in webhook database")
@@ -255,8 +255,8 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := sessionCtxData.ActiveHouseholdID
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	accountID := sessionCtxData.ActiveAccountID
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	// determine relevant webhook ID.
 	webhookID := s.webhookIDFetcher(req)
@@ -264,7 +264,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
+	exists, err := s.webhookDataManager.WebhookExists(ctx, webhookID, accountID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -278,7 +278,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	existenceTimer.Stop()
 
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	if err = s.webhookDataManager.ArchiveWebhook(ctx, webhookID, householdID); err != nil {
+	if err = s.webhookDataManager.ArchiveWebhook(ctx, webhookID, accountID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving webhook in database")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -287,9 +287,9 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.WebhookTriggerEventArchivedServiceEventType,
-		HouseholdID: householdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType: types.WebhookTriggerEventArchivedServiceEventType,
+		AccountID: accountID,
+		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -331,8 +331,8 @@ func (s *service) AddWebhookTriggerEventHandler(res http.ResponseWriter, req *ht
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := sessionCtxData.ActiveHouseholdID
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	accountID := sessionCtxData.ActiveAccountID
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	// determine relevant webhook ID.
 	webhookID := s.webhookIDFetcher(req)
@@ -356,7 +356,7 @@ func (s *service) AddWebhookTriggerEventHandler(res http.ResponseWriter, req *ht
 	}
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
+	exists, err := s.webhookDataManager.WebhookExists(ctx, webhookID, accountID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -372,7 +372,7 @@ func (s *service) AddWebhookTriggerEventHandler(res http.ResponseWriter, req *ht
 	input := converters.ConvertWebhookTriggerEventCreationRequestInputToWebhookTriggerEventDatabaseCreationInput(providedInput)
 
 	archiveTimer := timing.NewMetric("database").WithDesc("add").Start()
-	event, err := s.webhookDataManager.AddWebhookTriggerEvent(ctx, householdID, input)
+	event, err := s.webhookDataManager.AddWebhookTriggerEvent(ctx, accountID, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving webhook trigger event in database")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -382,9 +382,9 @@ func (s *service) AddWebhookTriggerEventHandler(res http.ResponseWriter, req *ht
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.WebhookTriggerEventCreatedServiceEventType,
-		HouseholdID: householdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType: types.WebhookTriggerEventCreatedServiceEventType,
+		AccountID: accountID,
+		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -427,8 +427,8 @@ func (s *service) ArchiveWebhookTriggerEventHandler(res http.ResponseWriter, req
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	householdID := sessionCtxData.ActiveHouseholdID
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	accountID := sessionCtxData.ActiveAccountID
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	// determine relevant webhook ID.
 	webhookID := s.webhookIDFetcher(req)
@@ -441,7 +441,7 @@ func (s *service) ArchiveWebhookTriggerEventHandler(res http.ResponseWriter, req
 	logger = logger.WithValue(keys.WebhookTriggerEventIDKey, webhookTriggerEventID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
+	exists, err := s.webhookDataManager.WebhookExists(ctx, webhookID, accountID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -464,9 +464,9 @@ func (s *service) ArchiveWebhookTriggerEventHandler(res http.ResponseWriter, req
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.WebhookArchivedServiceEventType,
-		HouseholdID: householdID,
-		UserID:      sessionCtxData.Requester.UserID,
+		EventType: types.WebhookArchivedServiceEventType,
+		AccountID: accountID,
+		UserID:    sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

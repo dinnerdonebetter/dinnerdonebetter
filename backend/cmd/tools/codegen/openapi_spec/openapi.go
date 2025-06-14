@@ -24,9 +24,9 @@ func baseSpec() *openapi.Spec {
 							Implicit: &openapi.OauthFlowsDefsImplicit{
 								AuthorizationURL: "/oauth2/authorize",
 								Scopes: map[string]string{
-									serviceAdmin:    "service-level administrator capabilities",
-									householdAdmin:  "household-level administrator capabilities",
-									householdMember: "household-level user capabilities",
+									serviceAdmin:  "service-level administrator capabilities",
+									accountAdmin:  "account-level administrator capabilities",
+									accountMember: "account-level user capabilities",
 								},
 							},
 						}},

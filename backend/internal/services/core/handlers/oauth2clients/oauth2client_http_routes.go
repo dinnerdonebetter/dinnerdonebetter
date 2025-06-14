@@ -52,7 +52,7 @@ func (s *service) CreateOAuth2ClientHandler(res http.ResponseWriter, req *http.R
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// fetch creation input from session context data.
 	input := new(types.OAuth2ClientCreationRequestInput)
@@ -109,7 +109,7 @@ func (s *service) CreateOAuth2ClientHandler(res http.ResponseWriter, req *http.R
 	dcm := &types.DataChangeMessage{
 		EventType:      types.OAuth2ClientCreatedServiceEventType,
 		OAuth2ClientID: client.ID,
-		HouseholdID:    sessionCtxData.ActiveHouseholdID,
+		AccountID:      sessionCtxData.ActiveAccountID,
 		UserID:         sessionCtxData.Requester.UserID,
 	}
 
@@ -157,7 +157,7 @@ func (s *service) ReadOAuth2ClientHandler(res http.ResponseWriter, req *http.Req
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine OAuth2 client ID.
 	oauth2ClientID := s.urlClientIDExtractor(req)
@@ -218,7 +218,7 @@ func (s *service) ListOAuth2ClientsHandler(res http.ResponseWriter, req *http.Re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// fetch OAuth2 clients.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
@@ -272,7 +272,7 @@ func (s *service) ArchiveOAuth2ClientHandler(res http.ResponseWriter, req *http.
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine OAuth2 client ID.
 	oauth2ClientID := s.urlClientIDExtractor(req)
@@ -297,7 +297,7 @@ func (s *service) ArchiveOAuth2ClientHandler(res http.ResponseWriter, req *http.
 	dcm := &types.DataChangeMessage{
 		EventType:      types.OAuth2ClientArchivedServiceEventType,
 		OAuth2ClientID: oauth2ClientID,
-		HouseholdID:    sessionCtxData.ActiveHouseholdID,
+		AccountID:      sessionCtxData.ActiveAccountID,
 		UserID:         sessionCtxData.Requester.UserID,
 	}
 

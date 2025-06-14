@@ -9,11 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (c *Client) CreateHousehold(
+func (c *Client) CreateAccount(
 	ctx context.Context,
-	input *HouseholdCreationRequestInput,
+	input *AccountCreationRequestInput,
 	reqMods ...RequestModifier,
-) (*Household, error) {
+) (*Account, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -23,19 +23,19 @@ func (c *Client) CreateHousehold(
 		return nil, ErrNilInputProvided
 	}
 
-	u := c.BuildURL(ctx, nil, "/api/v1/households")
+	u := c.BuildURL(ctx, nil, "/api/v1/accounts")
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a Household")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a Account")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *APIResponse[*Household]
+	var apiResponse *APIResponse[*Account]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading Household creation response")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading Account creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

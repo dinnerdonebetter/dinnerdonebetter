@@ -106,7 +106,7 @@ func TestWebhookDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 			Events: []*WebhookTriggerEventDatabaseCreationInput{
 				{},
 			},
-			BelongsToHousehold: name,
+			BelongsToAccount: name,
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

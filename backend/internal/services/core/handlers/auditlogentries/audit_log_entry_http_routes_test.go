@@ -238,7 +238,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 	})
 }
 
-func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T) {
+func TestAuditLogEntriesService_ListAccountAuditLogEntriesHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -250,14 +250,14 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForHousehold",
+			"GetAuditLogEntriesForAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
-		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
+		helper.service.ListAccountAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.AuditLogEntry]
@@ -278,9 +278,9 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForHouseholdAndResourceType",
+			"GetAuditLogEntriesForAccountAndResourceType",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			[]string{helper.exampleAuditLogEntry.ResourceType},
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
@@ -290,7 +290,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 		q.Set(types.AuditLogResourceTypesQueryParamKey, helper.exampleAuditLogEntry.ResourceType)
 		helper.req.URL.RawQuery = q.Encode()
 
-		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
+		helper.service.ListAccountAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.AuditLogEntry]
@@ -308,7 +308,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
+		helper.service.ListAccountAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.AuditLogEntry]
@@ -324,14 +324,14 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForHousehold",
+			"GetAuditLogEntriesForAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
-		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
+		helper.service.ListAccountAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.AuditLogEntry]
@@ -349,14 +349,14 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForHousehold",
+			"GetAuditLogEntriesForAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
-		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
+		helper.service.ListAccountAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.AuditLogEntry]

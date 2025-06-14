@@ -47,17 +47,17 @@ func handleDataChangeMessage(
 
 	wg.Add(1)
 	go func() {
-		if changeMessage.HouseholdID != "" && !slices.Contains(nonWebhookEventTypes, changeMessage.EventType) {
-			relevantWebhooks, err := dataManager.GetWebhooksForHouseholdAndEvent(ctx, changeMessage.HouseholdID, changeMessage.EventType)
+		if changeMessage.AccountID != "" && !slices.Contains(nonWebhookEventTypes, changeMessage.EventType) {
+			relevantWebhooks, err := dataManager.GetWebhooksForAccountAndEvent(ctx, changeMessage.AccountID, changeMessage.EventType)
 			if err != nil {
 				observability.AcknowledgeError(err, logger, span, "getting webhooks")
 			}
 
 			for _, webhook := range relevantWebhooks {
 				if err = webhookExecutionRequestPublisher.Publish(ctx, &types.WebhookExecutionRequest{
-					WebhookID:   webhook.ID,
-					HouseholdID: changeMessage.HouseholdID,
-					Payload:     changeMessage,
+					WebhookID: webhook.ID,
+					AccountID: changeMessage.AccountID,
+					Payload:   changeMessage,
 				}); err != nil {
 					observability.AcknowledgeError(err, logger, span, "publishing webhook execution request")
 				}
@@ -341,13 +341,13 @@ func handleOutboundNotifications(
 			return observability.PrepareError(fmt.Errorf("meal plan is nil"), span, "publishing meal plan created email")
 		}
 
-		var household *types.Household
-		household, err = dataManager.GetHousehold(ctx, mealPlan.BelongsToHousehold)
+		var account *types.Account
+		account, err = dataManager.GetAccount(ctx, mealPlan.BelongsToAccount)
 		if err != nil {
-			return observability.PrepareError(err, span, "getting household")
+			return observability.PrepareError(err, span, "getting account")
 		}
 
-		for _, member := range household.Members {
+		for _, member := range account.Members {
 			if member.BelongsToUser.EmailAddressVerifiedAt != nil {
 				msg, err = eatingemails.BuildMealPlanCreatedEmail(user, mealPlan, envCfg)
 				if err != nil {
@@ -397,13 +397,13 @@ func handleOutboundNotifications(
 
 		outboundEmailMessages = append(outboundEmailMessages, msg)
 
-	case types.HouseholdInvitationCreatedServiceEventType:
-		emailType = "household invitation created"
-		if changeMessage.HouseholdInvitation == nil {
-			return observability.PrepareError(fmt.Errorf("household invitation is nil"), span, "publishing password reset token redemption email")
+	case types.AccountInvitationCreatedServiceEventType:
+		emailType = "account invitation created"
+		if changeMessage.AccountInvitation == nil {
+			return observability.PrepareError(fmt.Errorf("account invitation is nil"), span, "publishing password reset token redemption email")
 		}
 
-		msg, err = coreemails.BuildInviteMemberEmail(user, changeMessage.HouseholdInvitation, envCfg)
+		msg, err = coreemails.BuildInviteMemberEmail(user, changeMessage.AccountInvitation, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building email message")
 		}

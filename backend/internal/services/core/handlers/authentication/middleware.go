@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	zuckModeUserHeader      = "X-DDB-Zuck-Mode-User"
-	zuckModeHouseholdHeader = "X-DDB-Zuck-Mode-Household"
+	zuckModeUserHeader    = "X-DDB-Zuck-Mode-User"
+	zuckModeAccountHeader = "X-DDB-Zuck-Mode-Account"
 )
 
 var (
@@ -25,7 +25,7 @@ var (
 	ErrUserNotAuthorizedToImpersonateOthers = errors.New("user not authorized to impersonate others")
 )
 
-func (s *service) determineZuckMode(ctx context.Context, req *http.Request, sessionContextData *sessions.ContextData) (userID, householdID string, err error) {
+func (s *service) determineZuckMode(ctx context.Context, req *http.Request, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -41,17 +41,17 @@ func (s *service) determineZuckMode(ctx context.Context, req *http.Request, sess
 			return "", "", err
 		}
 
-		if zuckHouseholdID := req.Header.Get(zuckModeHouseholdHeader); zuckHouseholdID == "" {
-			householdID, err = s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, zuckUserID)
+		if zuckAccountID := req.Header.Get(zuckModeAccountHeader); zuckAccountID == "" {
+			accountID, err = s.accountMembershipManager.GetDefaultAccountIDForUser(ctx, zuckUserID)
 			if err != nil {
-				observability.AcknowledgeError(err, logger, span, "fetching household info for zuck mode")
+				observability.AcknowledgeError(err, logger, span, "fetching account info for zuck mode")
 				return "", "", err
 			}
 		} else {
-			return zuckUserID, zuckHouseholdID, nil
+			return zuckUserID, zuckAccountID, nil
 		}
 
-		return zuckUserID, householdID, nil
+		return zuckUserID, accountID, nil
 	}
 
 	return "", "", nil
@@ -85,7 +85,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		if token != nil {
 			if userID := token.GetUserID(); userID != "" {
 				userAttributionTimer := timing.NewMetric("user attribution").WithDesc("attributing user to request").Start()
-				sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
+				sessionCtxData, sessionCtxDataErr := s.accountMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 				if sessionCtxDataErr != nil {
 					observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
 					errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -93,7 +93,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 					return
 				}
 
-				zuckUserID, zuckHouseholdID, zuckErr := s.determineZuckMode(ctx, req, sessionCtxData)
+				zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, req, sessionCtxData)
 				if zuckErr != nil {
 					observability.AcknowledgeError(zuckErr, logger, span, "fetching user info for zuck mode")
 					errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -105,9 +105,9 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 					sessionCtxData.Requester.UserID = zuckUserID
 				}
 
-				if zuckHouseholdID != "" {
-					sessionCtxData.ActiveHouseholdID = zuckHouseholdID
-					sessionCtxData.HouseholdPermissions[zuckHouseholdID] = authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String())
+				if zuckAccountID != "" {
+					sessionCtxData.ActiveAccountID = zuckAccountID
+					sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String())
 				}
 
 				userAttributionTimer.Stop()
@@ -144,8 +144,8 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 
 			canImpersonateUsers := sessionCtxData.ServiceRolePermissionChecker().CanImpersonateUsers()
 
-			if _, authorizedForHousehold := sessionCtxData.HouseholdPermissions[sessionCtxData.ActiveHouseholdID]; !authorizedForHousehold && !canImpersonateUsers {
-				logger.Info("user trying to access household they are not authorized for")
+			if _, authorizedForAccount := sessionCtxData.AccountPermissions[sessionCtxData.ActiveAccountID]; !authorizedForAccount && !canImpersonateUsers {
+				logger.Info("user trying to access account they are not authorized for")
 				s.rejectedRequestCounter.Add(ctx, 1)
 				http.Redirect(res, req, "/", http.StatusUnauthorized)
 				return
@@ -193,17 +193,17 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			isServiceAdmin := sessionContextData.Requester.ServicePermissions.IsServiceAdmin()
 			logger = logger.WithValue("is_service_admin", isServiceAdmin)
 
-			if _, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]; !allowed && !isServiceAdmin {
+			if _, allowed := sessionContextData.AccountPermissions[sessionContextData.ActiveAccountID]; !allowed && !isServiceAdmin {
 				permissionCheckTimer.Stop()
-				logger.Info("not authorized for household")
+				logger.Info("not authorized for account")
 				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, unauthorizedResponse, http.StatusUnauthorized)
 				return
 			}
 
 			for _, perm := range permissions {
 				doesNotHaveServicePermission := !sessionContextData.ServiceRolePermissionChecker().HasPermission(perm)
-				doesNotHaveHouseholdPermission := !sessionContextData.HouseholdRolePermissionsChecker().HasPermission(perm)
-				if doesNotHaveServicePermission && doesNotHaveHouseholdPermission {
+				doesNotHaveAccountPermission := !sessionContextData.AccountRolePermissionsChecker().HasPermission(perm)
+				if doesNotHaveServicePermission && doesNotHaveAccountPermission {
 					permissionCheckTimer.Stop()
 					logger.WithValue("deficient_permission", perm.ID()).Info("request filtered out")
 					s.encoderDecoder.EncodeResponseWithStatus(ctx, res, unauthorizedResponse, http.StatusUnauthorized)

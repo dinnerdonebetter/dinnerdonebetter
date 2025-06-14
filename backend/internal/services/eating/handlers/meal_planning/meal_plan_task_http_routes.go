@@ -43,7 +43,7 @@ func (s *service) CreateMealPlanTaskHandler(res http.ResponseWriter, req *http.R
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.MealPlanTaskCreationRequestInput)
@@ -86,7 +86,7 @@ func (s *service) CreateMealPlanTaskHandler(res http.ResponseWriter, req *http.R
 		EventType:    types.MealPlanCreatedServiceEventType,
 		MealPlanID:   mealPlanID,
 		MealPlanTask: mealPlanTask,
-		HouseholdID:  sessionCtxData.ActiveHouseholdID,
+		AccountID:    sessionCtxData.ActiveAccountID,
 		UserID:       sessionCtxData.Requester.UserID,
 	}
 
@@ -126,7 +126,7 @@ func (s *service) ReadMealPlanTaskHandler(res http.ResponseWriter, req *http.Req
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -192,7 +192,7 @@ func (s *service) ListMealPlanTasksByMealPlanHandler(res http.ResponseWriter, re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -248,7 +248,7 @@ func (s *service) MealPlanTaskStatusChangeHandler(res http.ResponseWriter, req *
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
@@ -304,7 +304,7 @@ func (s *service) MealPlanTaskStatusChangeHandler(res http.ResponseWriter, req *
 		EventType:      types.MealPlanTaskStatusChangedServiceEventType,
 		MealPlanTask:   mealPlanTask,
 		MealPlanTaskID: mealPlanTaskID,
-		HouseholdID:    sessionCtxData.ActiveHouseholdID,
+		AccountID:      sessionCtxData.ActiveAccountID,
 		UserID:         sessionCtxData.Requester.UserID,
 	}
 

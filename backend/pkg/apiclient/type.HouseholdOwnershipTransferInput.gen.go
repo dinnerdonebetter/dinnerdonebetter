@@ -3,7 +3,7 @@
 package apiclient
 
 type (
-	HouseholdOwnershipTransferInput struct {
+	AccountOwnershipTransferInput struct {
 		CurrentOwner string `json:"currentOwner"`
 		NewOwner     string `json:"newOwner"`
 		Reason       string `json:"reason"`

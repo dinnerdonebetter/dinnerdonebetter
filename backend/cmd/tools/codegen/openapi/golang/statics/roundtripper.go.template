@@ -23,14 +23,14 @@ const (
 type defaultRoundTripper struct {
 	baseRoundTripper        http.RoundTripper
 	impersonatedUserID      string
-	impersonatedHouseholdID string
+	impersonatedAccountID string
 }
 
 // newDefaultRoundTripper constructs a new http.RoundTripper.
-func newDefaultRoundTripper(timeout time.Duration, impersonatedUserID, impersonatedHouseholdID string) http.RoundTripper {
+func newDefaultRoundTripper(timeout time.Duration, impersonatedUserID, impersonatedAccountID string) http.RoundTripper {
 	return &defaultRoundTripper{
 		impersonatedUserID:      impersonatedUserID,
-		impersonatedHouseholdID: impersonatedHouseholdID,
+		impersonatedAccountID: impersonatedAccountID,
 		baseRoundTripper:        tracing.BuildTracedHTTPTransport(timeout),
 	}
 }
@@ -43,8 +43,8 @@ func (t *defaultRoundTripper) RoundTrip(req *http.Request) (*http.Response, erro
 		req.Header.Set(zuckModeUserHeader, t.impersonatedUserID)
 	}
 
-	if t.impersonatedHouseholdID != "" {
-		req.Header.Set(zuckModeHouseholdHeader, t.impersonatedHouseholdID)
+	if t.impersonatedAccountID != "" {
+		req.Header.Set(zuckModeAccountHeader, t.impersonatedAccountID)
 	}
 
 	return t.baseRoundTripper.RoundTrip(req)

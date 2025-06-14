@@ -8,32 +8,32 @@ import (
 	fake "github.com/brianvoe/gofakeit/v7"
 )
 
-// BuildFakeHouseholdInvitation builds a faked HouseholdInvitation.
-func BuildFakeHouseholdInvitation() *types.HouseholdInvitation {
-	return &types.HouseholdInvitation{
-		FromUser:             *BuildFakeUser(),
-		ToEmail:              fake.Email(),
-		ToName:               buildUniqueString(),
-		ToUser:               func(s string) *string { return &s }(buildUniqueString()),
-		Note:                 buildUniqueString(),
-		StatusNote:           buildUniqueString(),
-		Token:                fake.UUID(),
-		DestinationHousehold: *BuildFakeHousehold(),
-		ID:                   BuildFakeID(),
-		ExpiresAt:            BuildFakeTime(),
-		Status:               string(types.PendingHouseholdInvitationStatus),
-		CreatedAt:            BuildFakeTime(),
+// BuildFakeAccountInvitation builds a faked AccountInvitation.
+func BuildFakeAccountInvitation() *types.AccountInvitation {
+	return &types.AccountInvitation{
+		FromUser:           *BuildFakeUser(),
+		ToEmail:            fake.Email(),
+		ToName:             buildUniqueString(),
+		ToUser:             func(s string) *string { return &s }(buildUniqueString()),
+		Note:               buildUniqueString(),
+		StatusNote:         buildUniqueString(),
+		Token:              fake.UUID(),
+		DestinationAccount: *BuildFakeAccount(),
+		ID:                 BuildFakeID(),
+		ExpiresAt:          BuildFakeTime(),
+		Status:             string(types.PendingAccountInvitationStatus),
+		CreatedAt:          BuildFakeTime(),
 	}
 }
 
-// BuildFakeHouseholdInvitationsList builds a faked HouseholdInvitationList.
-func BuildFakeHouseholdInvitationsList() *filtering.QueryFilteredResult[types.HouseholdInvitation] {
-	var examples []*types.HouseholdInvitation
+// BuildFakeAccountInvitationsList builds a faked AccountInvitationList.
+func BuildFakeAccountInvitationsList() *filtering.QueryFilteredResult[types.AccountInvitation] {
+	var examples []*types.AccountInvitation
 	for i := 0; i < exampleQuantity; i++ {
-		examples = append(examples, BuildFakeHouseholdInvitation())
+		examples = append(examples, BuildFakeAccountInvitation())
 	}
 
-	return &filtering.QueryFilteredResult[types.HouseholdInvitation]{
+	return &filtering.QueryFilteredResult[types.AccountInvitation]{
 		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
@@ -44,15 +44,15 @@ func BuildFakeHouseholdInvitationsList() *filtering.QueryFilteredResult[types.Ho
 	}
 }
 
-func BuildFakeHouseholdInvitationUpdateRequestInput() *types.HouseholdInvitationUpdateRequestInput {
-	return &types.HouseholdInvitationUpdateRequestInput{
+func BuildFakeAccountInvitationUpdateRequestInput() *types.AccountInvitationUpdateRequestInput {
+	return &types.AccountInvitationUpdateRequestInput{
 		Token: BuildFakeID(),
 		Note:  fake.Sentence(3),
 	}
 }
 
-// BuildFakeHouseholdInvitationCreationRequestInput builds a faked HouseholdInvitationCreationRequestInput from a webhook.
-func BuildFakeHouseholdInvitationCreationRequestInput() *types.HouseholdInvitationCreationRequestInput {
-	invitation := BuildFakeHouseholdInvitation()
-	return converters.ConvertHouseholdInvitationToHouseholdInvitationCreationInput(invitation)
+// BuildFakeAccountInvitationCreationRequestInput builds a faked AccountInvitationCreationRequestInput from a webhook.
+func BuildFakeAccountInvitationCreationRequestInput() *types.AccountInvitationCreationRequestInput {
+	invitation := BuildFakeAccountInvitation()
+	return converters.ConvertAccountInvitationToAccountInvitationCreationInput(invitation)
 }

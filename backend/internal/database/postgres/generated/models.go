@@ -496,8 +496,8 @@ type Oauth2ClientTokenScopes string
 
 const (
 	Oauth2ClientTokenScopesUnknown         Oauth2ClientTokenScopes = "unknown"
-	Oauth2ClientTokenScopesHouseholdMember Oauth2ClientTokenScopes = "household_member"
-	Oauth2ClientTokenScopesHouseholdAdmin  Oauth2ClientTokenScopes = "household_admin"
+	Oauth2ClientTokenScopesAccountMember Oauth2ClientTokenScopes = "account_member"
+	Oauth2ClientTokenScopesAccountAdmin  Oauth2ClientTokenScopes = "account_admin"
 	Oauth2ClientTokenScopesServiceAdmin    Oauth2ClientTokenScopes = "service_admin"
 )
 
@@ -539,8 +539,8 @@ func (ns NullOauth2ClientTokenScopes) Value() (driver.Value, error) {
 func (e Oauth2ClientTokenScopes) Valid() bool {
 	switch e {
 	case Oauth2ClientTokenScopesUnknown,
-		Oauth2ClientTokenScopesHouseholdMember,
-		Oauth2ClientTokenScopesHouseholdAdmin,
+		Oauth2ClientTokenScopesAccountMember,
+		Oauth2ClientTokenScopesAccountAdmin,
 		Oauth2ClientTokenScopesServiceAdmin:
 		return true
 	}
@@ -550,8 +550,8 @@ func (e Oauth2ClientTokenScopes) Valid() bool {
 func AllOauth2ClientTokenScopesValues() []Oauth2ClientTokenScopes {
 	return []Oauth2ClientTokenScopes{
 		Oauth2ClientTokenScopesUnknown,
-		Oauth2ClientTokenScopesHouseholdMember,
-		Oauth2ClientTokenScopesHouseholdAdmin,
+		Oauth2ClientTokenScopesAccountMember,
+		Oauth2ClientTokenScopesAccountAdmin,
 		Oauth2ClientTokenScopesServiceAdmin,
 	}
 }
@@ -688,7 +688,7 @@ type SettingType string
 
 const (
 	SettingTypeUser       SettingType = "user"
-	SettingTypeHousehold  SettingType = "household"
+	SettingTypeAccount  SettingType = "account"
 	SettingTypeMembership SettingType = "membership"
 )
 
@@ -730,7 +730,7 @@ func (ns NullSettingType) Value() (driver.Value, error) {
 func (e SettingType) Valid() bool {
 	switch e {
 	case SettingTypeUser,
-		SettingTypeHousehold,
+		SettingTypeAccount,
 		SettingTypeMembership:
 		return true
 	}
@@ -740,7 +740,7 @@ func (e SettingType) Valid() bool {
 func AllSettingTypeValues() []SettingType {
 	return []SettingType{
 		SettingTypeUser,
-		SettingTypeHousehold,
+		SettingTypeAccount,
 		SettingTypeMembership,
 	}
 }
@@ -1132,15 +1132,15 @@ func AllWebhookEventValues() []WebhookEvent {
 	}
 }
 
-type HouseholdUserMemberships struct {
+type AccountUserMemberships struct {
+	ID                 string
+	BelongsToAccount string
+	BelongsToUser      string
+	DefaultAccount   bool
+	AccountRole      string
 	CreatedAt          time.Time
 	LastUpdatedAt      sql.NullTime
 	ArchivedAt         sql.NullTime
-	ID                 string
-	BelongsToHousehold string
-	BelongsToUser      string
-	HouseholdRole      string
-	DefaultHousehold   bool
 }
 
 type MealPlanEvents struct {
@@ -1156,34 +1156,34 @@ type MealPlanEvents struct {
 }
 
 type MealPlanOptionVotes struct {
+	ID                      string
+	Rank                    int32
+	Abstain                 bool
+	Notes                   string
+	ByUser                  string
 	CreatedAt               time.Time
 	LastUpdatedAt           sql.NullTime
 	ArchivedAt              sql.NullTime
-	ID                      string
-	Notes                   string
-	ByUser                  string
 	BelongsToMealPlanOption string
-	Rank                    int32
-	Abstain                 bool
 }
 
 type Oauth2ClientTokens struct {
-	AccessExpiresAt     time.Time
-	CodeExpiresAt       time.Time
-	RefreshExpiresAt    time.Time
-	RefreshCreatedAt    time.Time
-	CodeCreatedAt       time.Time
-	AccessCreatedAt     time.Time
+	ID                  string
+	ClientID            string
+	BelongsToUser       string
+	RedirectUri         string
+	Scope               Oauth2ClientTokenScopes
+	Code                string
 	CodeChallenge       string
 	CodeChallengeMethod string
-	Scope               Oauth2ClientTokenScopes
-	ClientID            string
+	CodeCreatedAt       time.Time
+	CodeExpiresAt       time.Time
 	Access              string
-	Code                string
-	ID                  string
+	AccessCreatedAt     time.Time
+	AccessExpiresAt     time.Time
 	Refresh             string
-	RedirectUri         string
-	BelongsToUser       string
+	RefreshCreatedAt    time.Time
+	RefreshExpiresAt    time.Time
 }
 
 type Oauth2Clients struct {
@@ -1197,31 +1197,31 @@ type Oauth2Clients struct {
 }
 
 type RecipeRatings struct {
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 	ID            string
 	RecipeID      string
-	Notes         string
-	ByUser        string
 	Taste         sql.NullString
 	Difficulty    sql.NullString
 	Cleanup       sql.NullString
 	Instructions  sql.NullString
 	Overall       sql.NullString
-}
-
-type ServiceSettings struct {
+	Notes         string
+	ByUser        string
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
+}
+
+type ServiceSettings struct {
 	ID            string
 	Name          string
 	Type          SettingType
 	Description   string
-	Enumeration   string
 	DefaultValue  sql.NullString
+	Enumeration   string
 	AdminsOnly    bool
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 type UserNotifications struct {
@@ -1234,25 +1234,25 @@ type UserNotifications struct {
 }
 
 type ValidVessels struct {
-	CreatedAt                      time.Time
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	LastIndexedAt                  sql.NullTime
 	ID                             string
 	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
+	UsableForStorage               bool
 	Slug                           string
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
 	Capacity                       string
-	Shape                          VesselShape
+	CapacityUnit                   sql.NullString
+	WidthInMillimeters             sql.NullString
 	LengthInMillimeters            sql.NullString
 	HeightInMillimeters            sql.NullString
-	WidthInMillimeters             sql.NullString
-	CapacityUnit                   sql.NullString
-	IncludeInGeneratedInstructions bool
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
+	Shape                          VesselShape
+	LastIndexedAt                  sql.NullTime
+	CreatedAt                      time.Time
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
 }
 
 type Webhooks struct {
@@ -1264,5 +1264,5 @@ type Webhooks struct {
 	CreatedAt          time.Time
 	LastUpdatedAt      sql.NullTime
 	ArchivedAt         sql.NullTime
-	BelongsToHousehold string
+	BelongsToAccount string
 }

@@ -19,15 +19,15 @@ func BuildFakeWebhook() *types.Webhook {
 	events := []*types.WebhookTriggerEvent{fakeEvent}
 
 	return &types.Webhook{
-		ID:                 webhookID,
-		Name:               fake.UUID(),
-		ContentType:        "application/json",
-		URL:                fake.URL(),
-		Method:             http.MethodPost,
-		Events:             events,
-		CreatedAt:          BuildFakeTime(),
-		ArchivedAt:         nil,
-		BelongsToHousehold: fake.UUID(),
+		ID:               webhookID,
+		Name:             fake.UUID(),
+		ContentType:      "application/json",
+		URL:              fake.URL(),
+		Method:           http.MethodPost,
+		Events:           events,
+		CreatedAt:        BuildFakeTime(),
+		ArchivedAt:       nil,
+		BelongsToAccount: fake.UUID(),
 	}
 }
 

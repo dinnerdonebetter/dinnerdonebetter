@@ -13,41 +13,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_CreateHouseholdInvitation(T *testing.T) {
+func TestClient_CreateAccountInvitation(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/%s/invite"
+	const expectedPathFormat = "/api/v1/accounts/%s/invite"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		data := &HouseholdInvitation{}
-		expected := &APIResponse[*HouseholdInvitation]{
+		data := &AccountInvitation{}
+		expected := &APIResponse[*AccountInvitation]{
 			Data: data,
 		}
 
-		exampleInput := &HouseholdInvitationCreationRequestInput{}
+		exampleInput := &AccountInvitationCreationRequestInput{}
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, householdID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, accountID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.CreateHouseholdInvitation(ctx, householdID, exampleInput)
+		actual, err := c.CreateAccountInvitation(ctx, accountID, exampleInput)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
 		assert.Equal(t, data, actual)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleInput := &HouseholdInvitationCreationRequestInput{}
+		exampleInput := &AccountInvitationCreationRequestInput{}
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		actual, err := c.CreateHouseholdInvitation(ctx, "", exampleInput)
+		actual, err := c.CreateAccountInvitation(ctx, "", exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -57,12 +57,12 @@ func TestClient_CreateHouseholdInvitation(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdInvitationCreationRequestInput{}
+		exampleInput := &AccountInvitationCreationRequestInput{}
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.CreateHouseholdInvitation(ctx, householdID, exampleInput)
+		actual, err := c.CreateAccountInvitation(ctx, accountID, exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -72,13 +72,13 @@ func TestClient_CreateHouseholdInvitation(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdID := fake.BuildFakeID()
+		accountID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdInvitationCreationRequestInput{}
+		exampleInput := &AccountInvitationCreationRequestInput{}
 
-		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, householdID)
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, accountID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.CreateHouseholdInvitation(ctx, householdID, exampleInput)
+		actual, err := c.CreateAccountInvitation(ctx, accountID, exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

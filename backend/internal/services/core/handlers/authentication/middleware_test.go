@@ -32,8 +32,8 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    helper.exampleAccount.ID,
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
 		mockUserDataManager := &mocktypes.UserDataManagerMock{}
@@ -79,8 +79,8 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    helper.exampleAccount.ID,
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
 		mockUserDataManager := &mocktypes.UserDataManagerMock{}
@@ -125,7 +125,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, mh)
 	})
 
-	T.Run("without authorization for household", func(t *testing.T) {
+	T.Run("without authorization for account", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -137,11 +137,11 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    helper.exampleAccount.ID,
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
-		sessionCtxData.HouseholdPermissions = map[string]authorization.HouseholdRolePermissionsChecker{}
+		sessionCtxData.AccountPermissions = map[string]authorization.AccountRolePermissionsChecker{}
 		helper.service.sessionContextDataFetcher = func(*http.Request) (*sessions.ContextData, error) {
 			return sessionCtxData, nil
 		}
@@ -177,8 +177,8 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    helper.exampleAccount.ID,
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.req.Context(), sessions.SessionContextDataKey, sessionCtxData))
@@ -190,7 +190,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 			testutils.HTTPRequestMatcher,
 		).Return()
 
-		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(mockHandler).ServeHTTP(helper.res, helper.req)
+		helper.service.PermissionFilterMiddleware(authorization.InviteUserToAccountPermission)(mockHandler).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -209,12 +209,12 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 			return nil, errors.New("blah")
 		}
 
-		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
+		helper.service.PermissionFilterMiddleware(authorization.InviteUserToAccountPermission)(nil).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
-	T.Run("unauthorized for household", func(t *testing.T) {
+	T.Run("unauthorized for account", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -229,8 +229,8 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 				ServicePermissions:       authorization.NewServiceRolePermissionChecker(),
 			},
-			ActiveHouseholdID:    "different household, lol",
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    "different account, lol",
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.req.Context(), sessions.SessionContextDataKey, sessionCtxData))
@@ -238,7 +238,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 			return sessionCtxData, nil
 		}
 
-		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
+		helper.service.PermissionFilterMiddleware(authorization.InviteUserToAccountPermission)(nil).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -256,11 +256,11 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 				UserID:                   helper.exampleUser.ID,
 				AccountStatus:            helper.exampleUser.AccountStatus,
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(authorization.InviteUserToHouseholdPermission.ID()),
+				ServicePermissions:       authorization.NewServiceRolePermissionChecker(authorization.InviteUserToAccountPermission.ID()),
 			},
-			ActiveHouseholdID: helper.exampleHousehold.ID,
-			HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-				helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.InviteUserToHouseholdPermission.ID()),
+			ActiveAccountID: helper.exampleAccount.ID,
+			AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+				helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.InviteUserToAccountPermission.ID()),
 			},
 		}
 
@@ -269,7 +269,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 			return sessionCtxData, nil
 		}
 
-		helper.service.PermissionFilterMiddleware(authorization.ArchiveHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
+		helper.service.PermissionFilterMiddleware(authorization.ArchiveAccountPermission)(nil).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -293,8 +293,8 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    helper.exampleAccount.ID,
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.req.Context(), sessions.SessionContextDataKey, sessionCtxData))
@@ -328,8 +328,8 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    helper.exampleAccount.ID,
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.req.Context(), sessions.SessionContextDataKey, sessionCtxData))
@@ -354,8 +354,8 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
+			ActiveAccountID:    helper.exampleAccount.ID,
+			AccountPermissions: helper.examplePermCheckers,
 		}
 
 		helper.req = helper.req.WithContext(context.WithValue(helper.req.Context(), sessions.SessionContextDataKey, sessionCtxData))

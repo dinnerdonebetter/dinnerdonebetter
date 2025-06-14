@@ -17,26 +17,26 @@ type WebhookDataManagerMock struct {
 }
 
 // WebhookExists satisfies our WebhookDataManagerMock interface.
-func (m *WebhookDataManagerMock) WebhookExists(ctx context.Context, webhookID, householdID string) (bool, error) {
-	returnValues := m.Called(ctx, webhookID, householdID)
+func (m *WebhookDataManagerMock) WebhookExists(ctx context.Context, webhookID, accountID string) (bool, error) {
+	returnValues := m.Called(ctx, webhookID, accountID)
 	return returnValues.Bool(0), returnValues.Error(1)
 }
 
 // GetWebhook satisfies our WebhookDataManagerMock interface.
-func (m *WebhookDataManagerMock) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
-	returnValues := m.Called(ctx, webhookID, householdID)
+func (m *WebhookDataManagerMock) GetWebhook(ctx context.Context, webhookID, accountID string) (*types.Webhook, error) {
+	returnValues := m.Called(ctx, webhookID, accountID)
 	return returnValues.Get(0).(*types.Webhook), returnValues.Error(1)
 }
 
 // GetWebhooks satisfies our WebhookDataManagerMock interface.
-func (m *WebhookDataManagerMock) GetWebhooks(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
-	returnValues := m.Called(ctx, householdID, filter)
+func (m *WebhookDataManagerMock) GetWebhooks(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
+	returnValues := m.Called(ctx, accountID, filter)
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[types.Webhook]), returnValues.Error(1)
 }
 
-// GetWebhooksForHouseholdAndEvent satisfies our WebhookDataManagerMock interface.
-func (m *WebhookDataManagerMock) GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID, eventType string) ([]*types.Webhook, error) {
-	returnValues := m.Called(ctx, householdID, eventType)
+// GetWebhooksForAccountAndEvent satisfies our WebhookDataManagerMock interface.
+func (m *WebhookDataManagerMock) GetWebhooksForAccountAndEvent(ctx context.Context, accountID, eventType string) ([]*types.Webhook, error) {
+	returnValues := m.Called(ctx, accountID, eventType)
 	return returnValues.Get(0).([]*types.Webhook), returnValues.Error(1)
 }
 
@@ -52,13 +52,13 @@ func (m *WebhookDataManagerMock) CreateWebhook(ctx context.Context, input *types
 }
 
 // ArchiveWebhook satisfies our WebhookDataManagerMock interface.
-func (m *WebhookDataManagerMock) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
-	return m.Called(ctx, webhookID, householdID).Error(0)
+func (m *WebhookDataManagerMock) ArchiveWebhook(ctx context.Context, webhookID, accountID string) error {
+	return m.Called(ctx, webhookID, accountID).Error(0)
 }
 
 // AddWebhookTriggerEvent satisfies our WebhookDataManagerMock interface.
-func (m *WebhookDataManagerMock) AddWebhookTriggerEvent(ctx context.Context, householdID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
-	returnValues := m.Called(ctx, householdID, input)
+func (m *WebhookDataManagerMock) AddWebhookTriggerEvent(ctx context.Context, accountID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
+	returnValues := m.Called(ctx, accountID, input)
 	return returnValues.Get(0).(*types.WebhookTriggerEvent), returnValues.Error(1)
 }
 

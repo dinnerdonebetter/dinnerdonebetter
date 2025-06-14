@@ -1,4 +1,4 @@
-package households
+package accounts
 
 import (
 	"bytes"
@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
+func TestAccountsService_ListAccountsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -32,32 +32,32 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleHouseholdList := fakes.BuildFakeHouseholdsList()
+		exampleAccountList := fakes.BuildFakeAccountsList()
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHouseholds",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccounts",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return(exampleHouseholdList, nil)
-		helper.service.householdDataManager = householdDataManager
+		).Return(exampleAccountList, nil)
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.ListHouseholdsHandler(helper.res, helper.req)
+		helper.service.ListAccountsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.Household]
+		var actual *types.APIResponse[[]*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		for i := range exampleHouseholdList.Data {
-			exampleHouseholdList.Data[i].WebhookEncryptionKey = ""
-			for j := range exampleHouseholdList.Data[i].Members {
-				exampleHouseholdList.Data[i].Members[j].BelongsToUser.TwoFactorSecret = ""
+		for i := range exampleAccountList.Data {
+			exampleAccountList.Data[i].WebhookEncryptionKey = ""
+			for j := range exampleAccountList.Data[i].Members {
+				exampleAccountList.Data[i].Members[j].BelongsToUser.TwoFactorSecret = ""
 			}
 		}
-		assert.Equal(t, actual.Data, exampleHouseholdList.Data)
+		assert.Equal(t, actual.Data, exampleAccountList.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -66,10 +66,10 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHouseholdsHandler(helper.res, helper.req)
+		helper.service.ListAccountsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -80,53 +80,53 @@ func TestHouseholdsService_ListHouseholdsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHouseholds",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccounts",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return((*filtering.QueryFilteredResult[types.Household])(nil), sql.ErrNoRows)
-		helper.service.householdDataManager = householdDataManager
+		).Return((*filtering.QueryFilteredResult[types.Account])(nil), sql.ErrNoRows)
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.ListHouseholdsHandler(helper.res, helper.req)
+		helper.service.ListAccountsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.Household]
+		var actual *types.APIResponse[[]*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
-	T.Run("with error fetching households from database", func(t *testing.T) {
+	T.Run("with error fetching accounts from database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHouseholds",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccounts",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 			mock.IsType(&filtering.QueryFilter{}),
-		).Return((*filtering.QueryFilteredResult[types.Household])(nil), errors.New("blah"))
-		helper.service.householdDataManager = householdDataManager
+		).Return((*filtering.QueryFilteredResult[types.Account])(nil), errors.New("blah"))
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.ListHouseholdsHandler(helper.res, helper.req)
+		helper.service.ListAccountsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 }
 
-func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
+func TestAccountsService_CreateAccountHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -135,7 +135,7 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -143,13 +143,13 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"CreateHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"CreateAccount",
 			testutils.ContextMatcher,
-			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
-		).Return(helper.exampleHousehold, nil)
-		helper.service.householdDataManager = householdDataManager
+			mock.IsType(&types.AccountDatabaseCreationInput{}),
+		).Return(helper.exampleAccount, nil)
+		helper.service.accountDataManager = accountDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -159,16 +159,16 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHouseholdHandler(helper.res, helper.req)
+		helper.service.CreateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		helper.exampleAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccount)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -177,7 +177,7 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -187,10 +187,10 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHouseholdHandler(helper.res, helper.req)
+		helper.service.CreateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -207,10 +207,10 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHouseholdHandler(helper.res, helper.req)
+		helper.service.CreateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -222,7 +222,7 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.HouseholdCreationRequestInput{}
+		exampleCreationInput := &types.AccountCreationRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -230,22 +230,22 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHouseholdHandler(helper.res, helper.req)
+		helper.service.CreateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with error creating household in database", func(t *testing.T) {
+	T.Run("with error creating account in database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -253,23 +253,23 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"CreateHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"CreateAccount",
 			testutils.ContextMatcher,
-			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
-		).Return((*types.Household)(nil), errors.New("blah"))
-		helper.service.householdDataManager = householdDataManager
+			mock.IsType(&types.AccountDatabaseCreationInput{}),
+		).Return((*types.Account)(nil), errors.New("blah"))
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.CreateHouseholdHandler(helper.res, helper.req)
+		helper.service.CreateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
 	T.Run("with error publishing event", func(t *testing.T) {
@@ -278,7 +278,7 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -286,13 +286,13 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"CreateHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"CreateAccount",
 			testutils.ContextMatcher,
-			mock.IsType(&types.HouseholdDatabaseCreationInput{}),
-		).Return(helper.exampleHousehold, nil)
-		helper.service.householdDataManager = householdDataManager
+			mock.IsType(&types.AccountDatabaseCreationInput{}),
+		).Return(helper.exampleAccount, nil)
+		helper.service.accountDataManager = accountDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -302,20 +302,20 @@ func TestHouseholdsService_CreateHouseholdHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHouseholdHandler(helper.res, helper.req)
+		helper.service.CreateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		helper.exampleAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccount)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountDataManager, dataChangesPublisher)
 	})
 }
 
-func TestHouseholdsService_InfoHandler(T *testing.T) {
+func TestAccountsService_InfoHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -323,24 +323,24 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleHousehold, nil)
-		helper.service.householdDataManager = householdDataManager
+			helper.exampleAccount.ID,
+		).Return(helper.exampleAccount, nil)
+		helper.service.accountDataManager = accountDataManager
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		helper.exampleAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccount)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -352,34 +352,34 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such household in database", func(t *testing.T) {
+	T.Run("with no such account in database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return((*types.Household)(nil), sql.ErrNoRows)
-		helper.service.householdDataManager = householdDataManager
+			helper.exampleAccount.ID,
+		).Return((*types.Account)(nil), sql.ErrNoRows)
+		helper.service.accountDataManager = accountDataManager
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -387,27 +387,27 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return((*types.Household)(nil), errors.New("blah"))
-		helper.service.householdDataManager = householdDataManager
+			helper.exampleAccount.ID,
+		).Return((*types.Account)(nil), errors.New("blah"))
+		helper.service.accountDataManager = accountDataManager
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 }
 
-func TestHouseholdsService_ReadHouseholdHandler(T *testing.T) {
+func TestAccountsService_ReadAccountHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -415,24 +415,24 @@ func TestHouseholdsService_ReadHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleHousehold, nil)
-		helper.service.householdDataManager = householdDataManager
+			helper.exampleAccount.ID,
+		).Return(helper.exampleAccount, nil)
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.ReadHouseholdHandler(helper.res, helper.req)
+		helper.service.ReadAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		helper.exampleAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccount)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -441,37 +441,37 @@ func TestHouseholdsService_ReadHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHouseholdHandler(helper.res, helper.req)
+		helper.service.ReadAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such household in database", func(t *testing.T) {
+	T.Run("with no such account in database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return((*types.Household)(nil), sql.ErrNoRows)
-		helper.service.householdDataManager = householdDataManager
+			helper.exampleAccount.ID,
+		).Return((*types.Account)(nil), sql.ErrNoRows)
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.ReadHouseholdHandler(helper.res, helper.req)
+		helper.service.ReadAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -479,27 +479,27 @@ func TestHouseholdsService_ReadHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return((*types.Household)(nil), errors.New("blah"))
-		helper.service.householdDataManager = householdDataManager
+			helper.exampleAccount.ID,
+		).Return((*types.Account)(nil), errors.New("blah"))
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.ReadHouseholdHandler(helper.res, helper.req)
+		helper.service.ReadAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 }
 
-func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
+func TestAccountsService_UpdateAccountHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -508,7 +508,7 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -516,18 +516,18 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleHousehold, nil)
-		householdDataManager.On(
-			"UpdateHousehold",
+			helper.exampleAccount.ID,
+		).Return(helper.exampleAccount, nil)
+		accountDataManager.On(
+			"UpdateAccount",
 			testutils.ContextMatcher,
-			mock.IsType(&types.Household{}),
+			mock.IsType(&types.Account{}),
 		).Return(nil)
-		helper.service.householdDataManager = householdDataManager
+		helper.service.accountDataManager = accountDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -537,16 +537,16 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
+		helper.service.UpdateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		helper.exampleAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccount)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -555,7 +555,7 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -565,10 +565,10 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
+		helper.service.UpdateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -585,10 +585,10 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
+		helper.service.UpdateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -600,7 +600,7 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := &types.HouseholdUpdateRequestInput{}
+		exampleCreationInput := &types.AccountUpdateRequestInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -608,10 +608,10 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
+		helper.service.UpdateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -623,7 +623,7 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -631,32 +631,32 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return((*types.Household)(nil), sql.ErrNoRows)
-		helper.service.householdDataManager = householdDataManager
+			helper.exampleAccount.ID,
+		).Return((*types.Account)(nil), sql.ErrNoRows)
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
+		helper.service.UpdateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
-	T.Run("with error querying for household", func(t *testing.T) {
+	T.Run("with error querying for account", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -664,32 +664,32 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return((*types.Household)(nil), errors.New("blah"))
-		helper.service.householdDataManager = householdDataManager
+			helper.exampleAccount.ID,
+		).Return((*types.Account)(nil), errors.New("blah"))
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
+		helper.service.UpdateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
-	T.Run("with error updating household", func(t *testing.T) {
+	T.Run("with error updating account", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -697,31 +697,31 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.exampleHousehold = fakes.BuildFakeHousehold()
-		helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+		helper.exampleAccount = fakes.BuildFakeAccount()
+		helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleHousehold, nil)
-		householdDataManager.On(
-			"UpdateHousehold",
+			helper.exampleAccount.ID,
+		).Return(helper.exampleAccount, nil)
+		accountDataManager.On(
+			"UpdateAccount",
 			testutils.ContextMatcher,
-			mock.IsType(&types.Household{}),
+			mock.IsType(&types.Account{}),
 		).Return(errors.New("blah"))
-		helper.service.householdDataManager = householdDataManager
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
+		helper.service.UpdateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
 	T.Run("with publishing data change message", func(t *testing.T) {
@@ -730,7 +730,7 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeHouseholdUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeAccountUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -738,18 +738,18 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"GetHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"GetAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-		).Return(helper.exampleHousehold, nil)
-		householdDataManager.On(
-			"UpdateHousehold",
+			helper.exampleAccount.ID,
+		).Return(helper.exampleAccount, nil)
+		accountDataManager.On(
+			"UpdateAccount",
 			testutils.ContextMatcher,
-			mock.IsType(&types.Household{}),
+			mock.IsType(&types.Account{}),
 		).Return(nil)
-		helper.service.householdDataManager = householdDataManager
+		helper.service.accountDataManager = accountDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -759,20 +759,20 @@ func TestHouseholdsService_UpdateHouseholdHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.UpdateHouseholdHandler(helper.res, helper.req)
+		helper.service.UpdateAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		helper.exampleHousehold.WebhookEncryptionKey = ""
-		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		helper.exampleAccount.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleAccount)
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountDataManager, dataChangesPublisher)
 	})
 }
 
-func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
+func TestAccountsService_ArchiveAccountHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -780,14 +780,14 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"ArchiveHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"ArchiveAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
-		helper.service.householdDataManager = householdDataManager
+		helper.service.accountDataManager = accountDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -797,14 +797,14 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -813,38 +813,38 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with no such household in database", func(t *testing.T) {
+	T.Run("with no such account in database", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"ArchiveHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"ArchiveAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			helper.exampleUser.ID,
 		).Return(sql.ErrNoRows)
-		helper.service.householdDataManager = householdDataManager
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -852,24 +852,24 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"ArchiveHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"ArchiveAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
-		helper.service.householdDataManager = householdDataManager
+		helper.service.accountDataManager = accountDataManager
 
-		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager)
+		mock.AssertExpectationsForObjects(t, accountDataManager)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
@@ -877,14 +877,14 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdDataManager := &mocktypes.HouseholdDataManagerMock{}
-		householdDataManager.On(
-			"ArchiveHousehold",
+		accountDataManager := &mocktypes.AccountDataManagerMock{}
+		accountDataManager.On(
+			"ArchiveAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			helper.exampleUser.ID,
 		).Return(nil)
-		helper.service.householdDataManager = householdDataManager
+		helper.service.accountDataManager = accountDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -894,18 +894,18 @@ func TestHouseholdsService_ArchiveHouseholdHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHouseholdHandler(helper.res, helper.req)
+		helper.service.ArchiveAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountDataManager, dataChangesPublisher)
 	})
 }
 
-func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
+func TestAccountsService_ModifyMemberPermissionsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -922,15 +922,15 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
 			"ModifyUserPermissions",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			exampleInput,
 		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -943,11 +943,11 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with missing input", func(t *testing.T) {
@@ -964,7 +964,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -987,7 +987,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1011,7 +1011,7 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1031,25 +1031,25 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
 			"ModifyUserPermissions",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			exampleInput,
 		).Return(errors.New("blah"))
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
@@ -1066,15 +1066,15 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
 			"ModifyUserPermissions",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			exampleInput,
 		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1087,15 +1087,15 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager, dataChangesPublisher)
 	})
 }
 
-func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
+func TestAccountsService_TransferAccountOwnershipHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -1104,7 +1104,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
+		exampleInput := fakes.BuildFakeTransferAccountOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1112,14 +1112,14 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
-			"TransferHouseholdOwnership",
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
+			"TransferAccountOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			exampleInput,
 		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1129,14 +1129,14 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.TransferHouseholdOwnershipHandler(helper.res, helper.req)
+		helper.service.TransferAccountOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager, dataChangesPublisher)
 	})
 
 	T.Run("without input", func(t *testing.T) {
@@ -1150,10 +1150,10 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.TransferHouseholdOwnershipHandler(helper.res, helper.req)
+		helper.service.TransferAccountOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1165,7 +1165,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := &types.HouseholdOwnershipTransferInput{}
+		exampleInput := &types.AccountOwnershipTransferInput{}
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1173,10 +1173,10 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.TransferHouseholdOwnershipHandler(helper.res, helper.req)
+		helper.service.TransferAccountOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1189,7 +1189,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
+		exampleInput := fakes.BuildFakeTransferAccountOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1197,10 +1197,10 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.TransferHouseholdOwnershipHandler(helper.res, helper.req)
+		helper.service.TransferAccountOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1212,7 +1212,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
+		exampleInput := fakes.BuildFakeTransferAccountOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1220,24 +1220,24 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
-			"TransferHouseholdOwnership",
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
+			"TransferAccountOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			exampleInput,
 		).Return(errors.New("blah"))
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
-		helper.service.TransferHouseholdOwnershipHandler(helper.res, helper.req)
+		helper.service.TransferAccountOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
@@ -1246,7 +1246,7 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
+		exampleInput := fakes.BuildFakeTransferAccountOwnershipInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
 
 		var err error
@@ -1254,14 +1254,14 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
-			"TransferHouseholdOwnership",
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
+			"TransferAccountOwnership",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			exampleInput,
 		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1271,18 +1271,18 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.TransferHouseholdOwnershipHandler(helper.res, helper.req)
+		helper.service.TransferAccountOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager, dataChangesPublisher)
 	})
 }
 
-func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
+func TestAccountsService_RemoveMemberHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -1292,14 +1292,14 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 
 		exampleReason := t.Name()
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
-			"RemoveUserFromHousehold",
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
+			"RemoveUserFromAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1314,11 +1314,11 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1330,7 +1330,7 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1344,24 +1344,24 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		exampleReason := t.Name()
 		helper.req.URL.RawQuery = fmt.Sprintf("reason=%s", url.QueryEscape(exampleReason))
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
-			"RemoveUserFromHousehold",
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
+			"RemoveUserFromAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(errors.New("blah"))
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
@@ -1371,14 +1371,14 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 
 		exampleReason := t.Name()
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
-			"RemoveUserFromHousehold",
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
+			"RemoveUserFromAccount",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1393,15 +1393,15 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager, dataChangesPublisher)
 	})
 }
 
-func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
+func TestAccountsService_MarkAsDefaultAccountHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -1409,14 +1409,14 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
-			"MarkHouseholdAsUserDefault",
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
+			"MarkAccountAsUserDefault",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1426,14 +1426,14 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
+		helper.service.MarkAsDefaultAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1442,10 +1442,10 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
+		helper.service.MarkAsDefaultAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1456,24 +1456,24 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
-			"MarkHouseholdAsUserDefault",
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
+			"MarkAccountAsUserDefault",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(errors.New("blah"))
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
-		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
+		helper.service.MarkAsDefaultAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
@@ -1481,14 +1481,14 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		householdMembershipDataManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
-		householdMembershipDataManager.On(
-			"MarkHouseholdAsUserDefault",
+		accountMembershipDataManager := &mocktypes.AccountUserMembershipDataManagerMock{}
+		accountMembershipDataManager.On(
+			"MarkAccountAsUserDefault",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(nil)
-		helper.service.householdMembershipDataManager = householdMembershipDataManager
+		helper.service.accountMembershipDataManager = accountMembershipDataManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -1498,13 +1498,13 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
+		helper.service.MarkAsDefaultAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.Household]
+		var actual *types.APIResponse[*types.Account]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, accountMembershipDataManager, dataChangesPublisher)
 	})
 }

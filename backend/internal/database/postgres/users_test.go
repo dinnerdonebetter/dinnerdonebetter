@@ -204,8 +204,8 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	for _, user := range createdUsers {
 		assert.NoError(t, dbc.DeleteUser(ctx, user.ID))
 
-		var y *filtering.QueryFilteredResult[types.Household]
-		y, err = dbc.GetHouseholds(ctx, user.ID, nil)
+		var y *filtering.QueryFilteredResult[types.Account]
+		y, err = dbc.GetAccounts(ctx, user.ID, nil)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)

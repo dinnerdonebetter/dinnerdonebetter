@@ -13,29 +13,29 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_GetReceivedHouseholdInvitations(T *testing.T) {
+func TestClient_GetReceivedAccountInvitations(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/household_invitations/received"
+	const expectedPathFormat = "/api/v1/account_invitations/received"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
-		list := []*HouseholdInvitation{}
-		exampleResponse := &APIResponse[[]*HouseholdInvitation]{
+		list := []*AccountInvitation{}
+		exampleResponse := &APIResponse[[]*AccountInvitation]{
 			Pagination: fake.BuildFakeForTest[*Pagination](t),
 			Data:       list,
 		}
-		expected := &QueryFilteredResult[HouseholdInvitation]{
+		expected := &QueryFilteredResult[AccountInvitation]{
 			Pagination: *exampleResponse.Pagination,
 			Data:       list,
 		}
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleResponse)
-		actual, err := c.GetReceivedHouseholdInvitations(ctx, nil)
+		actual, err := c.GetReceivedAccountInvitations(ctx, nil)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -48,7 +48,7 @@ func TestClient_GetReceivedHouseholdInvitations(T *testing.T) {
 		ctx := context.Background()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetReceivedHouseholdInvitations(ctx, nil)
+		actual, err := c.GetReceivedAccountInvitations(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -61,7 +61,7 @@ func TestClient_GetReceivedHouseholdInvitations(T *testing.T) {
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetReceivedHouseholdInvitations(ctx, nil)
+		actual, err := c.GetReceivedAccountInvitations(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

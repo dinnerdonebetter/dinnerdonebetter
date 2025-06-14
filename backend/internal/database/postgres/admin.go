@@ -13,7 +13,7 @@ import (
 
 var _ types.AdminUserDataManager = (*Querier)(nil)
 
-// UpdateUserAccountStatus updates a user's household status.
+// UpdateUserAccountStatus updates a user's account status.
 func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, input *types.UserAccountStatusUpdateInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

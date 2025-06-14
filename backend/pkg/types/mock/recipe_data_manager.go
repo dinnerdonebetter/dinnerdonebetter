@@ -58,8 +58,8 @@ func (m *RecipeDataManagerMock) UpdateRecipe(ctx context.Context, updated *types
 }
 
 // ArchiveRecipe is a mock function.
-func (m *RecipeDataManagerMock) ArchiveRecipe(ctx context.Context, recipeID, householdID string) error {
-	return m.Called(ctx, recipeID, householdID).Error(0)
+func (m *RecipeDataManagerMock) ArchiveRecipe(ctx context.Context, recipeID, accountID string) error {
+	return m.Called(ctx, recipeID, accountID).Error(0)
 }
 
 // MarkRecipeAsIndexed is a mock function.

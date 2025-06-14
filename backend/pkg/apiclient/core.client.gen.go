@@ -21,22 +21,22 @@ const (
 	defaultTimeout = 30 * time.Second
 	clientName     = "ddb_api_client_v1"
 
-	zuckModeUserHeader      = "X-DDB-Zuck-Mode-User"
-	zuckModeHouseholdHeader = "X-DDB-Zuck-Mode-Household"
+	zuckModeUserHeader    = "X-DDB-Zuck-Mode-User"
+	zuckModeAccountHeader = "X-DDB-Zuck-Mode-Account"
 )
 
 // Client is a client for interacting with v1 of our HTTP API.
 type Client struct {
-	logger                  logging.Logger
-	tracer                  tracing.Tracer
-	contentType             encoding.ContentType
-	encoder                 encoding.ClientEncoder
-	authedClient            *http.Client
-	unauthenticatedClient   *http.Client
-	url                     *url.URL
-	impersonatedUserID      string
-	impersonatedHouseholdID string
-	debug                   bool
+	logger                logging.Logger
+	tracer                tracing.Tracer
+	contentType           encoding.ContentType
+	encoder               encoding.ClientEncoder
+	authedClient          *http.Client
+	unauthenticatedClient *http.Client
+	url                   *url.URL
+	impersonatedUserID    string
+	impersonatedAccountID string
+	debug                 bool
 }
 
 // AuthenticatedClient returns the authenticated *apiclient.Client that we use to make most requests.

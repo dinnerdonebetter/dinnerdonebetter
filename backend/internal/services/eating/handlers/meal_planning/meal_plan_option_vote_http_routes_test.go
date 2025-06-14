@@ -67,7 +67,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -80,7 +80,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(true, nil)
 		helper.service.mealPlanningDataManager = dbManager
 
@@ -296,7 +296,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
 
@@ -354,7 +354,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanEvent.ID,
 			helper.exampleMealPlanOption.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(true, nil)
 
 		dataChangesPublisher.On(
@@ -368,7 +368,7 @@ func TestMealPlanOptionVotesService_CreateMealPlanOptionVoteHandler(T *testing.T
 			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
 

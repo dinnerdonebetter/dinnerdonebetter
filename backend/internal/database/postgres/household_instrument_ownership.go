@@ -13,74 +13,74 @@ import (
 )
 
 var (
-	_ types.HouseholdInstrumentOwnershipDataManager = (*Querier)(nil)
+	_ types.AccountInstrumentOwnershipDataManager = (*Querier)(nil)
 )
 
-// HouseholdInstrumentOwnershipExists fetches whether a household instrument ownership exists from the database.
-func (q *Querier) HouseholdInstrumentOwnershipExists(ctx context.Context, householdInstrumentOwnershipID, householdID string) (exists bool, err error) {
+// AccountInstrumentOwnershipExists fetches whether a account instrument ownership exists from the database.
+func (q *Querier) AccountInstrumentOwnershipExists(ctx context.Context, accountInstrumentOwnershipID, accountID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if householdInstrumentOwnershipID == "" {
+	if accountInstrumentOwnershipID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
-	if householdID == "" {
+	if accountID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.CheckHouseholdInstrumentOwnershipExistence(ctx, q.db, &generated.CheckHouseholdInstrumentOwnershipExistenceParams{
-		ID:                 householdInstrumentOwnershipID,
-		BelongsToHousehold: householdID,
+	result, err := q.generatedQuerier.CheckAccountInstrumentOwnershipExistence(ctx, q.db, &generated.CheckAccountInstrumentOwnershipExistenceParams{
+		ID:               accountInstrumentOwnershipID,
+		BelongsToAccount: accountID,
 	})
 	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "performing household instrument ownership existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing account instrument ownership existence check")
 	}
 
 	return result, nil
 }
 
-// GetHouseholdInstrumentOwnership fetches a household instrument ownership from the database.
-func (q *Querier) GetHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) (*types.HouseholdInstrumentOwnership, error) {
+// GetAccountInstrumentOwnership fetches a account instrument ownership from the database.
+func (q *Querier) GetAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) (*types.AccountInstrumentOwnership, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if householdInstrumentOwnershipID == "" {
+	if accountInstrumentOwnershipID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.GetHouseholdInstrumentOwnership(ctx, q.db, &generated.GetHouseholdInstrumentOwnershipParams{
-		ID:                 householdInstrumentOwnershipID,
-		BelongsToHousehold: householdID,
+	result, err := q.generatedQuerier.GetAccountInstrumentOwnership(ctx, q.db, &generated.GetAccountInstrumentOwnershipParams{
+		ID:               accountInstrumentOwnershipID,
+		BelongsToAccount: accountID,
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household instrument ownership")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account instrument ownership")
 	}
 
-	householdInstrumentOwnership := &types.HouseholdInstrumentOwnership{
-		CreatedAt:          result.CreatedAt,
-		ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
-		LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
-		ID:                 result.ID,
-		Notes:              result.Notes,
-		BelongsToHousehold: result.BelongsToHousehold,
-		Quantity:           uint16(result.Quantity),
+	accountInstrumentOwnership := &types.AccountInstrumentOwnership{
+		CreatedAt:        result.CreatedAt,
+		ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ID:               result.ID,
+		Notes:            result.Notes,
+		BelongsToAccount: result.BelongsToAccount,
+		Quantity:         uint16(result.Quantity),
 		Instrument: types.ValidInstrument{
 			CreatedAt:                      result.ValidInstrumentCreatedAt,
 			LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
@@ -97,11 +97,11 @@ func (q *Querier) GetHouseholdInstrumentOwnership(ctx context.Context, household
 		},
 	}
 
-	return householdInstrumentOwnership, nil
+	return accountInstrumentOwnership, nil
 }
 
-// GetHouseholdInstrumentOwnerships fetches a list of household instrument ownerships from the database that meet a particular filter.
-func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, householdID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership], err error) {
+// GetAccountInstrumentOwnerships fetches a list of account instrument ownerships from the database that meet a particular filter.
+func (q *Querier) GetAccountInstrumentOwnerships(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.AccountInstrumentOwnership], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -113,18 +113,18 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.HouseholdInstrumentOwnership]{
+	x = &filtering.QueryFilteredResult[types.AccountInstrumentOwnership]{
 		Pagination: filter.ToPagination(),
 	}
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	results, err := q.generatedQuerier.GetHouseholdInstrumentOwnerships(ctx, q.db, &generated.GetHouseholdInstrumentOwnershipsParams{
-		HouseholdID:     householdID,
+	results, err := q.generatedQuerier.GetAccountInstrumentOwnerships(ctx, q.db, &generated.GetAccountInstrumentOwnershipsParams{
+		AccountID:       accountID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -134,18 +134,18 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household instrument ownerships")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account instrument ownerships")
 	}
 
 	for _, result := range results {
-		householdInstrumentOwnership := &types.HouseholdInstrumentOwnership{
-			CreatedAt:          result.CreatedAt,
-			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
-			ID:                 result.ID,
-			Notes:              result.Notes,
-			BelongsToHousehold: result.BelongsToHousehold,
-			Quantity:           uint16(result.Quantity),
+		accountInstrumentOwnership := &types.AccountInstrumentOwnership{
+			CreatedAt:        result.CreatedAt,
+			ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ID:               result.ID,
+			Notes:            result.Notes,
+			BelongsToAccount: result.BelongsToAccount,
+			Quantity:         uint16(result.Quantity),
 			Instrument: types.ValidInstrument{
 				CreatedAt:                      result.ValidInstrumentCreatedAt,
 				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
@@ -162,7 +162,7 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 			},
 		}
 
-		x.Data = append(x.Data, householdInstrumentOwnership)
+		x.Data = append(x.Data, accountInstrumentOwnership)
 		x.FilteredCount = uint64(result.FilteredCount)
 		x.TotalCount = uint64(result.TotalCount)
 	}
@@ -170,95 +170,95 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 	return x, nil
 }
 
-// CreateHouseholdInstrumentOwnership creates a household instrument ownership in the database.
-func (q *Querier) CreateHouseholdInstrumentOwnership(ctx context.Context, input *types.HouseholdInstrumentOwnershipDatabaseCreationInput) (*types.HouseholdInstrumentOwnership, error) {
+// CreateAccountInstrumentOwnership creates a account instrument ownership in the database.
+func (q *Querier) CreateAccountInstrumentOwnership(ctx context.Context, input *types.AccountInstrumentOwnershipDatabaseCreationInput) (*types.AccountInstrumentOwnership, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, input.ID)
-	logger := q.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, input.ID)
+	logger := q.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, input.ID)
 
-	// create the household instrument ownership.
-	if err := q.generatedQuerier.CreateHouseholdInstrumentOwnership(ctx, q.db, &generated.CreateHouseholdInstrumentOwnershipParams{
-		ID:                 input.ID,
-		Notes:              input.Notes,
-		ValidInstrumentID:  input.ValidInstrumentID,
-		BelongsToHousehold: input.BelongsToHousehold,
-		Quantity:           int32(input.Quantity),
+	// create the account instrument ownership.
+	if err := q.generatedQuerier.CreateAccountInstrumentOwnership(ctx, q.db, &generated.CreateAccountInstrumentOwnershipParams{
+		ID:                input.ID,
+		Notes:             input.Notes,
+		ValidInstrumentID: input.ValidInstrumentID,
+		BelongsToAccount:  input.BelongsToAccount,
+		Quantity:          int32(input.Quantity),
 	}); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing household instrument ownership creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing account instrument ownership creation query")
 	}
 
-	x := &types.HouseholdInstrumentOwnership{
-		ID:                 input.ID,
-		Notes:              input.Notes,
-		Quantity:           input.Quantity,
-		Instrument:         types.ValidInstrument{ID: input.ValidInstrumentID},
-		BelongsToHousehold: input.BelongsToHousehold,
-		CreatedAt:          q.currentTime(),
+	x := &types.AccountInstrumentOwnership{
+		ID:               input.ID,
+		Notes:            input.Notes,
+		Quantity:         input.Quantity,
+		Instrument:       types.ValidInstrument{ID: input.ValidInstrumentID},
+		BelongsToAccount: input.BelongsToAccount,
+		CreatedAt:        q.currentTime(),
 	}
 
-	logger.Info("household instrument ownership created")
+	logger.Info("account instrument ownership created")
 
 	return x, nil
 }
 
-// UpdateHouseholdInstrumentOwnership updates a particular household instrument ownership.
-func (q *Querier) UpdateHouseholdInstrumentOwnership(ctx context.Context, updated *types.HouseholdInstrumentOwnership) error {
+// UpdateAccountInstrumentOwnership updates a particular account instrument ownership.
+func (q *Querier) UpdateAccountInstrumentOwnership(ctx context.Context, updated *types.AccountInstrumentOwnership) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, updated.ID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, updated.ID)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateHouseholdInstrumentOwnership(ctx, q.db, &generated.UpdateHouseholdInstrumentOwnershipParams{
-		Notes:              updated.Notes,
-		ValidInstrumentID:  updated.Instrument.ID,
-		ID:                 updated.ID,
-		BelongsToHousehold: updated.BelongsToHousehold,
-		Quantity:           int32(updated.Quantity),
+	if _, err := q.generatedQuerier.UpdateAccountInstrumentOwnership(ctx, q.db, &generated.UpdateAccountInstrumentOwnershipParams{
+		Notes:             updated.Notes,
+		ValidInstrumentID: updated.Instrument.ID,
+		ID:                updated.ID,
+		BelongsToAccount:  updated.BelongsToAccount,
+		Quantity:          int32(updated.Quantity),
 	}); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership")
+		return observability.PrepareAndLogError(err, logger, span, "updating account instrument ownership")
 	}
 
-	logger.Info("household instrument ownership updated")
+	logger.Info("account instrument ownership updated")
 
 	return nil
 }
 
-// ArchiveHouseholdInstrumentOwnership archives a household instrument ownership from the database by its ID.
-func (q *Querier) ArchiveHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) error {
+// ArchiveAccountInstrumentOwnership archives a account instrument ownership from the database by its ID.
+func (q *Querier) ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if householdInstrumentOwnershipID == "" {
+	if accountInstrumentOwnershipID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	logger = logger.WithValue(keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, accountInstrumentOwnershipID)
 
-	if householdID == "" {
+	if accountID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	if _, err := q.generatedQuerier.ArchiveHouseholdInstrumentOwnership(ctx, q.db, &generated.ArchiveHouseholdInstrumentOwnershipParams{
-		ID:                 householdInstrumentOwnershipID,
-		BelongsToHousehold: householdID,
+	if _, err := q.generatedQuerier.ArchiveAccountInstrumentOwnership(ctx, q.db, &generated.ArchiveAccountInstrumentOwnershipParams{
+		ID:               accountInstrumentOwnershipID,
+		BelongsToAccount: accountID,
 	}); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving household instrument ownership")
+		return observability.PrepareAndLogError(err, logger, span, "archiving account instrument ownership")
 	}
 
-	logger.Info("household instrument ownership archived")
+	logger.Info("account instrument ownership archived")
 
 	return nil
 }

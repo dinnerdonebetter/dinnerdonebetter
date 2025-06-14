@@ -11,14 +11,14 @@ INSERT INTO service_setting_configurations (
 	notes,
 	service_setting_id,
 	belongs_to_user,
-	belongs_to_household
+	belongs_to_account
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(value),
 	sqlc.arg(notes),
 	sqlc.arg(service_setting_id),
 	sqlc.arg(belongs_to_user),
-	sqlc.arg(belongs_to_household)
+	sqlc.arg(belongs_to_account)
 );
 
 -- name: CheckServiceSettingConfigurationExistence :one
@@ -45,7 +45,7 @@ SELECT
 	service_settings.last_updated_at as service_setting_last_updated_at,
 	service_settings.archived_at as service_setting_archived_at,
 	service_setting_configurations.belongs_to_user,
-	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.belongs_to_account,
 	service_setting_configurations.created_at,
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
@@ -55,7 +55,7 @@ WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_setting_configurations.id = sqlc.arg(id);
 
--- name: GetServiceSettingConfigurationForHouseholdBySettingName :one
+-- name: GetServiceSettingConfigurationForAccountBySettingName :one
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -71,7 +71,7 @@ SELECT
 	service_settings.last_updated_at as service_setting_last_updated_at,
 	service_settings.archived_at as service_setting_archived_at,
 	service_setting_configurations.belongs_to_user,
-	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.belongs_to_account,
 	service_setting_configurations.created_at,
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
@@ -80,7 +80,7 @@ FROM service_setting_configurations
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_settings.name = sqlc.arg(name)
-	AND service_setting_configurations.belongs_to_household = sqlc.arg(belongs_to_household);
+	AND service_setting_configurations.belongs_to_account = sqlc.arg(belongs_to_account);
 
 -- name: GetServiceSettingConfigurationForUserBySettingName :one
 SELECT
@@ -98,7 +98,7 @@ SELECT
 	service_settings.last_updated_at as service_setting_last_updated_at,
 	service_settings.archived_at as service_setting_archived_at,
 	service_setting_configurations.belongs_to_user,
-	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.belongs_to_account,
 	service_setting_configurations.created_at,
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
@@ -109,7 +109,7 @@ WHERE service_settings.archived_at IS NULL
 	AND service_settings.name = sqlc.arg(name)
 	AND service_setting_configurations.belongs_to_user = sqlc.arg(belongs_to_user);
 
--- name: GetServiceSettingConfigurationsForHousehold :many
+-- name: GetServiceSettingConfigurationsForAccount :many
 SELECT
 	service_setting_configurations.id,
 	service_setting_configurations.value,
@@ -125,7 +125,7 @@ SELECT
 	service_settings.last_updated_at as service_setting_last_updated_at,
 	service_settings.archived_at as service_setting_archived_at,
 	service_setting_configurations.belongs_to_user,
-	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.belongs_to_account,
 	service_setting_configurations.created_at,
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
@@ -133,7 +133,7 @@ FROM service_setting_configurations
 	JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
-	AND service_setting_configurations.belongs_to_household = sqlc.arg(belongs_to_household);
+	AND service_setting_configurations.belongs_to_account = sqlc.arg(belongs_to_account);
 
 -- name: GetServiceSettingConfigurationsForUser :many
 SELECT
@@ -151,7 +151,7 @@ SELECT
 	service_settings.last_updated_at as service_setting_last_updated_at,
 	service_settings.archived_at as service_setting_archived_at,
 	service_setting_configurations.belongs_to_user,
-	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.belongs_to_account,
 	service_setting_configurations.created_at,
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
@@ -167,7 +167,7 @@ UPDATE service_setting_configurations SET
 	notes = sqlc.arg(notes),
 	service_setting_id = sqlc.arg(service_setting_id),
 	belongs_to_user = sqlc.arg(belongs_to_user),
-	belongs_to_household = sqlc.arg(belongs_to_household),
+	belongs_to_account = sqlc.arg(belongs_to_account),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);

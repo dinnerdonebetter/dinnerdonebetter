@@ -51,7 +51,7 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *apicli
 			Birthday:              time.Now().Format(time.RFC3339),
 			EmailAddress:          fmt.Sprintf("test+%d@whatever.com", hashStringToNumber(t.Name())),
 			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
-			HouseholdName:         fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
 			LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
 			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
 			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
@@ -106,7 +106,7 @@ func initializeOAuth2PoweredClient(ctx context.Context, input *apiclient.UserLog
 		return nil, err
 	}
 
-	if err = c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)); err != nil {
+	if err = c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"account_member"}, tokenResponse.Token)); err != nil {
 		return nil, err
 	}
 

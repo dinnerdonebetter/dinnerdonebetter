@@ -12,9 +12,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
-func (c *Client) UpdateHouseholdMemberPermissions(
+func (c *Client) UpdateAccountMemberPermissions(
 	ctx context.Context,
-	householdID string,
+	accountID string,
 	userID string,
 	input *ModifyUserPermissionsInput,
 	reqMods ...RequestModifier,
@@ -24,11 +24,11 @@ func (c *Client) UpdateHouseholdMemberPermissions(
 
 	logger := c.logger.Clone()
 
-	if householdID == "" {
+	if accountID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
 	if userID == "" {
 		return ErrInvalidIDProvided
@@ -36,7 +36,7 @@ func (c *Client) UpdateHouseholdMemberPermissions(
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/households/%s/members/%s/permissions", householdID, userID))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/accounts/%s/members/%s/permissions", accountID, userID))
 	req, err := c.buildDataRequest(ctx, http.MethodPatch, u, input)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building request to create a UserPermissionsResponse")

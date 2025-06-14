@@ -57,7 +57,7 @@ func createMealPlanForTest(t *testing.T, ctx context.Context, exampleMealPlan *t
 	}
 	assert.Equal(t, exampleMealPlan, created)
 
-	mealPlan, err := dbc.GetMealPlan(ctx, created.ID, created.BelongsToHousehold)
+	mealPlan, err := dbc.GetMealPlan(ctx, created.ID, created.BelongsToAccount)
 	require.NoError(t, err)
 
 	exampleMealPlan.CreatedAt = mealPlan.CreatedAt
@@ -86,7 +86,7 @@ func createMealPlanForTest(t *testing.T, ctx context.Context, exampleMealPlan *t
 	require.Equal(t, exampleMealPlan.Status, mealPlan.Status)
 	require.Equal(t, exampleMealPlan.Notes, mealPlan.Notes)
 	require.Equal(t, exampleMealPlan.ElectionMethod, mealPlan.ElectionMethod)
-	require.Equal(t, exampleMealPlan.BelongsToHousehold, mealPlan.BelongsToHousehold)
+	require.Equal(t, exampleMealPlan.BelongsToAccount, mealPlan.BelongsToAccount)
 	require.Equal(t, exampleMealPlan.CreatedByUser, mealPlan.CreatedByUser)
 	require.Equal(t, exampleMealPlan.GroceryListInitialized, mealPlan.GroceryListInitialized)
 	require.Equal(t, exampleMealPlan.TasksCreated, mealPlan.TasksCreated)
@@ -142,15 +142,15 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	}(t)
 
 	user := createUserForTest(t, ctx, nil, dbc)
-	householdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, householdID)
+	require.NotEmpty(t, accountID)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
 
 	exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
-	exampleMealPlan.BelongsToHousehold = householdID
+	exampleMealPlan.BelongsToAccount = accountID
 	createdMealPlans := []*types.MealPlan{}
 
 	// create
@@ -159,12 +159,12 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
 		input := buildMealPlanForIntegrationTest(user.ID, meal)
-		input.BelongsToHousehold = householdID
+		input.BelongsToAccount = accountID
 		createdMealPlans = append(createdMealPlans, createMealPlanForTest(t, ctx, input, dbc))
 	}
 
 	// fetch as list
-	mealPlans, err := dbc.GetMealPlansForHousehold(ctx, householdID, nil)
+	mealPlans, err := dbc.GetMealPlansForAccount(ctx, accountID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, mealPlans.Data)
 	assert.Equal(t, len(createdMealPlans), len(mealPlans.Data))
@@ -175,23 +175,23 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	assert.NoError(t, err)
 	_, err = dbc.GetFinalizedMealPlansWithUninitializedGroceryLists(ctx)
 	assert.NoError(t, err)
-	_, err = dbc.FetchMissingVotesForMealPlan(ctx, createdMealPlans[0].ID, householdID)
+	_, err = dbc.FetchMissingVotesForMealPlan(ctx, createdMealPlans[0].ID, accountID)
 	assert.NoError(t, err)
 
 	// delete
 	for _, mealPlan := range createdMealPlans {
-		_, err = dbc.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, householdID)
+		_, err = dbc.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, accountID)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, database.ErrAlreadyFinalized)
-		assert.NoError(t, dbc.ArchiveMealPlan(ctx, mealPlan.ID, householdID))
+		assert.NoError(t, dbc.ArchiveMealPlan(ctx, mealPlan.ID, accountID))
 
 		var exists bool
-		exists, err = dbc.MealPlanExists(ctx, mealPlan.ID, householdID)
+		exists, err = dbc.MealPlanExists(ctx, mealPlan.ID, accountID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
 
 		var y *types.MealPlan
-		y, err = dbc.GetMealPlan(ctx, mealPlan.ID, householdID)
+		y, err = dbc.GetMealPlan(ctx, mealPlan.ID, accountID)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)
@@ -206,15 +206,15 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.MealPlanExists(ctx, "", exampleHouseholdID)
+		actual, err := c.MealPlanExists(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.False(t, actual)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -234,16 +234,16 @@ func TestQuerier_GetMealPlan(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetMealPlan(ctx, "", exampleHouseholdID)
+		actual, err := c.GetMealPlan(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlanID := fakes.BuildFakeID()
@@ -298,7 +298,7 @@ func TestQuerier_ArchiveMealPlan(T *testing.T) {
 		assert.Error(t, c.ArchiveMealPlan(ctx, "", exampleAccountID))
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
@@ -316,17 +316,17 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleAccount := fakes.BuildFakeAccount()
 		ctx := context.Background()
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.AttemptToFinalizeMealPlan(ctx, "", exampleHousehold.ID)
+		actual, err := c.AttemptToFinalizeMealPlan(ctx, "", exampleAccount.ID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
@@ -348,16 +348,16 @@ func TestQuerier_FetchMissingVotesForMealPlan(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
-		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleAccount := fakes.BuildFakeAccount()
 
-		actual, err := c.FetchMissingVotesForMealPlan(ctx, "", exampleHousehold.ID)
+		actual, err := c.FetchMissingVotesForMealPlan(ctx, "", exampleAccount.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with missing household ID", func(t *testing.T) {
+	T.Run("with missing account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()

@@ -6,7 +6,7 @@ INSERT INTO audit_log_entries (
 	event_type,
 	changes,
 	belongs_to_user,
-	belongs_to_household
+	belongs_to_account
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(resource_type),
@@ -14,7 +14,7 @@ INSERT INTO audit_log_entries (
 	sqlc.arg(event_type),
 	sqlc.arg(changes),
 	sqlc.narg(belongs_to_user),
-	sqlc.narg(belongs_to_household)
+	sqlc.narg(belongs_to_account)
 );
 
 -- name: GetAuditLogEntry :one
@@ -25,7 +25,7 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at
 FROM audit_log_entries
 WHERE audit_log_entries.id = sqlc.arg(id);
@@ -38,7 +38,7 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at,
 	(
 		SELECT COUNT(audit_log_entries.id)
@@ -69,7 +69,7 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at,
 	(
 		SELECT COUNT(audit_log_entries.id)
@@ -95,7 +95,7 @@ WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT 
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
--- name: GetAuditLogEntriesForHousehold :many
+-- name: GetAuditLogEntriesForAccount :many
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -103,7 +103,7 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at,
 	(
 		SELECT COUNT(audit_log_entries.id)
@@ -111,22 +111,22 @@ SELECT
 		WHERE
 			audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
+			AND audit_log_entries.belongs_to_account = sqlc.arg(belongs_to_account)
 	) AS filtered_count,
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
 		WHERE
-			audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
+			audit_log_entries.belongs_to_account = sqlc.arg(belongs_to_account)
 	) AS total_count
 FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
+	AND audit_log_entries.belongs_to_account = sqlc.arg(belongs_to_account)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
--- name: GetAuditLogEntriesForHouseholdAndResourceType :many
+-- name: GetAuditLogEntriesForAccountAndResourceType :many
 SELECT
 	audit_log_entries.id,
 	audit_log_entries.resource_type,
@@ -134,7 +134,7 @@ SELECT
 	audit_log_entries.event_type,
 	audit_log_entries.changes,
 	audit_log_entries.belongs_to_user,
-	audit_log_entries.belongs_to_household,
+	audit_log_entries.belongs_to_account,
 	audit_log_entries.created_at,
 	(
 		SELECT COUNT(audit_log_entries.id)
@@ -142,20 +142,20 @@ SELECT
 		WHERE
 			audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
+			AND audit_log_entries.belongs_to_account = sqlc.arg(belongs_to_account)
 			AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
 	) AS filtered_count,
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
 		WHERE
-			audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
+			audit_log_entries.belongs_to_account = sqlc.arg(belongs_to_account)
 			AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
 	) AS total_count
 FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
+	AND audit_log_entries.belongs_to_account = sqlc.arg(belongs_to_account)
 	AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);

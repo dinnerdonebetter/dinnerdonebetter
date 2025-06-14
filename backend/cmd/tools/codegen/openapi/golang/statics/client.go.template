@@ -22,7 +22,7 @@ const (
 	clientName     = "ddb_api_client_v1"
 
 	zuckModeUserHeader      = "X-DDB-Zuck-Mode-User"
-	zuckModeHouseholdHeader = "X-DDB-Zuck-Mode-Household"
+	zuckModeAccountHeader = "X-DDB-Zuck-Mode-Account"
 )
 
 // Client is a client for interacting with v1 of our HTTP API.
@@ -35,7 +35,7 @@ type Client struct {
 	unauthenticatedClient   *http.Client
 	url                     *url.URL
 	impersonatedUserID      string
-	impersonatedHouseholdID string
+	impersonatedAccountID string
 	debug                   bool
 }
 

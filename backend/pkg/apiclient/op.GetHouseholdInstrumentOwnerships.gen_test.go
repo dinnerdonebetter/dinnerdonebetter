@@ -13,29 +13,29 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_GetHouseholdInstrumentOwnerships(T *testing.T) {
+func TestClient_GetAccountInstrumentOwnerships(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/instruments"
+	const expectedPathFormat = "/api/v1/accounts/instruments"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
-		list := []*HouseholdInstrumentOwnership{}
-		exampleResponse := &APIResponse[[]*HouseholdInstrumentOwnership]{
+		list := []*AccountInstrumentOwnership{}
+		exampleResponse := &APIResponse[[]*AccountInstrumentOwnership]{
 			Pagination: fake.BuildFakeForTest[*Pagination](t),
 			Data:       list,
 		}
-		expected := &QueryFilteredResult[HouseholdInstrumentOwnership]{
+		expected := &QueryFilteredResult[AccountInstrumentOwnership]{
 			Pagination: *exampleResponse.Pagination,
 			Data:       list,
 		}
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleResponse)
-		actual, err := c.GetHouseholdInstrumentOwnerships(ctx, nil)
+		actual, err := c.GetAccountInstrumentOwnerships(ctx, nil)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -48,7 +48,7 @@ func TestClient_GetHouseholdInstrumentOwnerships(T *testing.T) {
 		ctx := context.Background()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetHouseholdInstrumentOwnerships(ctx, nil)
+		actual, err := c.GetAccountInstrumentOwnerships(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -61,7 +61,7 @@ func TestClient_GetHouseholdInstrumentOwnerships(T *testing.T) {
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetHouseholdInstrumentOwnerships(ctx, nil)
+		actual, err := c.GetAccountInstrumentOwnerships(ctx, nil)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

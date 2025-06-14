@@ -24,7 +24,7 @@ var (
 )
 
 // WebhookExists fetches whether a webhook exists from the database.
-func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID string) (exists bool, err error) {
+func (q *Querier) WebhookExists(ctx context.Context, webhookID, accountID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -36,15 +36,15 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 
-	if householdID == "" {
+	if accountID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
 	result, err := q.generatedQuerier.CheckWebhookExistence(ctx, q.db, &generated.CheckWebhookExistenceParams{
-		BelongsToHousehold: householdID,
-		ID:                 webhookID,
+		BelongsToAccount: accountID,
+		ID:               webhookID,
 	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing webhook existence check")
@@ -54,7 +54,7 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 }
 
 // GetWebhook fetches a webhook from the database.
-func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
+func (q *Querier) GetWebhook(ctx context.Context, webhookID, accountID string) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -66,15 +66,15 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
 	results, err := q.generatedQuerier.GetWebhook(ctx, q.db, &generated.GetWebhookParams{
-		BelongsToHousehold: householdID,
-		ID:                 webhookID,
+		BelongsToAccount: accountID,
+		ID:               webhookID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook")
@@ -95,7 +95,7 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 		webhook.URL = result.WebhookUrl
 		webhook.Method = result.WebhookMethod
 		webhook.ID = result.WebhookID
-		webhook.BelongsToHousehold = result.WebhookBelongsToHousehold
+		webhook.BelongsToAccount = result.WebhookBelongsToAccount
 		webhook.ContentType = result.WebhookContentType
 
 		webhook.Events = append(webhook.Events, &types.WebhookTriggerEvent{
@@ -111,17 +111,17 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 }
 
 // GetWebhooks fetches a list of webhooks from the database that meet a particular filter.
-func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
+func (q *Querier) GetWebhooks(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -132,15 +132,15 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *f
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetWebhooksForHousehold(ctx, q.db, &generated.GetWebhooksForHouseholdParams{
-		BelongsToHousehold: householdID,
-		CreatedBefore:      database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:       database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:      database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:       database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:        database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:         database.NullInt32FromUint8Pointer(filter.Limit),
-		IncludeArchived:    database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	results, err := q.generatedQuerier.GetWebhooksForAccount(ctx, q.db, &generated.GetWebhooksForAccountParams{
+		BelongsToAccount: accountID,
+		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:     database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:      database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:       database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived:  database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")
@@ -148,15 +148,15 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *f
 
 	for _, result := range results {
 		x.Data = append(x.Data, &types.Webhook{
-			CreatedAt:          result.CreatedAt,
-			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
-			Name:               result.Name,
-			URL:                result.URL,
-			Method:             result.Method,
-			ID:                 result.ID,
-			BelongsToHousehold: result.BelongsToHousehold,
-			ContentType:        result.ContentType,
+			CreatedAt:        result.CreatedAt,
+			ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
+			Name:             result.Name,
+			URL:              result.URL,
+			Method:           result.Method,
+			ID:               result.ID,
+			BelongsToAccount: result.BelongsToAccount,
+			ContentType:      result.ContentType,
 		})
 
 		x.FilteredCount = uint64(result.FilteredCount)
@@ -166,22 +166,22 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *f
 	return x, nil
 }
 
-// GetWebhooksForHouseholdAndEvent fetches a list of webhooks from the database that meet a particular filter.
-func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID, eventType string) ([]*types.Webhook, error) {
+// GetWebhooksForAccountAndEvent fetches a list of webhooks from the database that meet a particular filter.
+func (q *Querier) GetWebhooksForAccountAndEvent(ctx context.Context, accountID, eventType string) ([]*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	databaseResults, err := q.generatedQuerier.GetWebhooksForHouseholdAndEvent(ctx, q.db, &generated.GetWebhooksForHouseholdAndEventParams{
-		BelongsToHousehold: householdID,
-		TriggerEvent:       generated.WebhookEvent(eventType),
+	databaseResults, err := q.generatedQuerier.GetWebhooksForAccountAndEvent(ctx, q.db, &generated.GetWebhooksForAccountAndEventParams{
+		BelongsToAccount: accountID,
+		TriggerEvent:     generated.WebhookEvent(eventType),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")
@@ -190,15 +190,15 @@ func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, household
 	results := []*types.Webhook{}
 	for _, result := range databaseResults {
 		results = append(results, &types.Webhook{
-			CreatedAt:          result.CreatedAt,
-			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
-			Name:               result.Name,
-			URL:                result.URL,
-			Method:             result.Method,
-			ID:                 result.ID,
-			BelongsToHousehold: result.BelongsToHousehold,
-			ContentType:        result.ContentType,
+			CreatedAt:        result.CreatedAt,
+			ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
+			Name:             result.Name,
+			URL:              result.URL,
+			Method:           result.Method,
+			ID:               result.ID,
+			BelongsToAccount: result.BelongsToAccount,
+			ContentType:      result.ContentType,
 		})
 	}
 
@@ -215,8 +215,8 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, input.BelongsToHousehold)
-	logger = logger.WithValue(keys.HouseholdIDKey, input.BelongsToHousehold)
+	tracing.AttachToSpan(span, keys.AccountIDKey, input.BelongsToAccount)
+	logger = logger.WithValue(keys.AccountIDKey, input.BelongsToAccount)
 
 	logger.Debug("CreateWebhook invoked")
 
@@ -226,33 +226,33 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 	}
 
 	if err = q.generatedQuerier.CreateWebhook(ctx, tx, &generated.CreateWebhookParams{
-		ID:                 input.ID,
-		Name:               input.Name,
-		ContentType:        input.ContentType,
-		URL:                input.URL,
-		Method:             input.Method,
-		BelongsToHousehold: input.BelongsToHousehold,
+		ID:               input.ID,
+		Name:             input.Name,
+		ContentType:      input.ContentType,
+		URL:              input.URL,
+		Method:           input.Method,
+		BelongsToAccount: input.BelongsToAccount,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing webhook creation query")
 	}
 
 	x := &types.Webhook{
-		ID:                 input.ID,
-		Name:               input.Name,
-		ContentType:        input.ContentType,
-		URL:                input.URL,
-		Method:             input.Method,
-		BelongsToHousehold: input.BelongsToHousehold,
-		CreatedAt:          q.currentTime(),
+		ID:               input.ID,
+		Name:             input.Name,
+		ContentType:      input.ContentType,
+		URL:              input.URL,
+		Method:           input.Method,
+		BelongsToAccount: input.BelongsToAccount,
+		CreatedAt:        q.currentTime(),
 	}
 
 	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &x.BelongsToHousehold,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeWebhooks,
-		RelevantID:         x.ID,
-		EventType:          types.AuditLogEventTypeCreated,
+		BelongsToAccount: &x.BelongsToAccount,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeWebhooks,
+		RelevantID:       x.ID,
+		EventType:        types.AuditLogEventTypeCreated,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
@@ -262,7 +262,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 		evt := input.Events[i]
 		evt.BelongsToWebhook = input.ID
 
-		e, webhookTriggerEventCreationErr := q.createWebhookTriggerEvent(ctx, tx, x.BelongsToHousehold, evt)
+		e, webhookTriggerEventCreationErr := q.createWebhookTriggerEvent(ctx, tx, x.BelongsToAccount, evt)
 		if webhookTriggerEventCreationErr != nil {
 			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareAndLogError(webhookTriggerEventCreationErr, logger, span, "performing webhook creation query")
@@ -281,7 +281,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 }
 
 // createWebhookTriggerEvent creates a webhook trigger event in a database.
-func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier database.SQLQueryExecutor, householdID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
+func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier database.SQLQueryExecutor, accountID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -292,11 +292,11 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 	}
 	tracing.AttachToSpan(span, keys.WebhookIDKey, input.BelongsToWebhook)
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
 	if err := q.generatedQuerier.CreateWebhookTriggerEvent(ctx, querier, &generated.CreateWebhookTriggerEventParams{
 		ID:               input.ID,
@@ -307,11 +307,11 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 	}
 
 	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &householdID,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeWebhookTriggerEvents,
-		RelevantID:         input.ID,
-		EventType:          types.AuditLogEventTypeCreated,
+		BelongsToAccount: &accountID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeWebhookTriggerEvents,
+		RelevantID:       input.ID,
+		EventType:        types.AuditLogEventTypeCreated,
 	}); err != nil {
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
@@ -328,7 +328,7 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 }
 
 // ArchiveWebhook archives a webhook from the database.
-func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
+func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -337,14 +337,14 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 	}
 	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 
-	if householdID == "" {
+	if accountID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
 	logger := q.logger.WithValues(map[string]any{
-		keys.WebhookIDKey:   webhookID,
-		keys.HouseholdIDKey: householdID,
+		keys.WebhookIDKey: webhookID,
+		keys.AccountIDKey: accountID,
 	})
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -353,19 +353,19 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 	}
 
 	if _, err = q.generatedQuerier.ArchiveWebhook(ctx, tx, &generated.ArchiveWebhookParams{
-		BelongsToHousehold: householdID,
-		ID:                 webhookID,
+		BelongsToAccount: accountID,
+		ID:               webhookID,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
 	}
 
 	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
-		BelongsToHousehold: &householdID,
-		ID:                 identifiers.New(),
-		ResourceType:       resourceTypeWebhooks,
-		RelevantID:         webhookID,
-		EventType:          types.AuditLogEventTypeArchived,
+		BelongsToAccount: &accountID,
+		ID:               identifiers.New(),
+		ResourceType:     resourceTypeWebhooks,
+		RelevantID:       webhookID,
+		EventType:        types.AuditLogEventTypeArchived,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
@@ -381,14 +381,14 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 }
 
 // AddWebhookTriggerEvent adds a webhook trigger event from the database.
-func (q *Querier) AddWebhookTriggerEvent(ctx context.Context, householdID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
+func (q *Querier) AddWebhookTriggerEvent(ctx context.Context, accountID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == "" {
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -398,7 +398,7 @@ func (q *Querier) AddWebhookTriggerEvent(ctx context.Context, householdID string
 	logger := q.logger.WithValues(map[string]any{
 		keys.WebhookIDKey:             input.BelongsToWebhook,
 		keys.WebhookTriggerEventIDKey: input.ID,
-		keys.HouseholdIDKey:           householdID,
+		keys.AccountIDKey:             accountID,
 	})
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -406,7 +406,7 @@ func (q *Querier) AddWebhookTriggerEvent(ctx context.Context, householdID string
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	e, err := q.createWebhookTriggerEvent(ctx, tx, householdID, input)
+	e, err := q.createWebhookTriggerEvent(ctx, tx, accountID, input)
 	if err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing webhook creation query")

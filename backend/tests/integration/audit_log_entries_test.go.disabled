@@ -19,7 +19,7 @@ func (s *TestSuite) TestAuditLogEntries_Listing() {
 
 			assert.Equal(t, 4, len(actual.Data))
 
-			actual, err = testClients.userClient.GetAuditLogEntriesForHousehold(ctx, nil)
+			actual, err = testClients.userClient.GetAuditLogEntriesForAccount(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			assert.Equal(t, 2, len(actual.Data))

@@ -5,9 +5,9 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput creates a HouseholdDatabaseCreationInput from a HouseholdCreationRequestInput.
-func ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput(input *types.HouseholdCreationRequestInput) *types.HouseholdDatabaseCreationInput {
-	x := &types.HouseholdDatabaseCreationInput{
+// ConvertAccountCreationInputToAccountDatabaseCreationInput creates a AccountDatabaseCreationInput from a AccountCreationRequestInput.
+func ConvertAccountCreationInputToAccountDatabaseCreationInput(input *types.AccountCreationRequestInput) *types.AccountDatabaseCreationInput {
+	x := &types.AccountDatabaseCreationInput{
 		ID:           identifiers.New(),
 		Name:         input.Name,
 		AddressLine1: input.AddressLine1,
@@ -24,9 +24,9 @@ func ConvertHouseholdCreationInputToHouseholdDatabaseCreationInput(input *types.
 	return x
 }
 
-// ConvertHouseholdToHouseholdUpdateRequestInput creates a HouseholdUpdateRequestInput from a Household.
-func ConvertHouseholdToHouseholdUpdateRequestInput(input *types.Household) *types.HouseholdUpdateRequestInput {
-	x := &types.HouseholdUpdateRequestInput{
+// ConvertAccountToAccountUpdateRequestInput creates a AccountUpdateRequestInput from a Account.
+func ConvertAccountToAccountUpdateRequestInput(input *types.Account) *types.AccountUpdateRequestInput {
+	x := &types.AccountUpdateRequestInput{
 		Name:          &input.Name,
 		AddressLine1:  &input.AddressLine1,
 		AddressLine2:  &input.AddressLine2,
@@ -43,37 +43,37 @@ func ConvertHouseholdToHouseholdUpdateRequestInput(input *types.Household) *type
 	return x
 }
 
-// ConvertHouseholdToHouseholdCreationRequestInput builds a faked HouseholdCreationRequestInput from a household.
-func ConvertHouseholdToHouseholdCreationRequestInput(household *types.Household) *types.HouseholdCreationRequestInput {
-	return &types.HouseholdCreationRequestInput{
-		Name:         household.Name,
-		AddressLine1: household.AddressLine1,
-		AddressLine2: household.AddressLine2,
-		City:         household.City,
-		State:        household.State,
-		ZipCode:      household.ZipCode,
-		Country:      household.Country,
-		Latitude:     household.Latitude,
-		Longitude:    household.Longitude,
-		ContactPhone: household.ContactPhone,
+// ConvertAccountToAccountCreationRequestInput builds a faked AccountCreationRequestInput from a account.
+func ConvertAccountToAccountCreationRequestInput(account *types.Account) *types.AccountCreationRequestInput {
+	return &types.AccountCreationRequestInput{
+		Name:         account.Name,
+		AddressLine1: account.AddressLine1,
+		AddressLine2: account.AddressLine2,
+		City:         account.City,
+		State:        account.State,
+		ZipCode:      account.ZipCode,
+		Country:      account.Country,
+		Latitude:     account.Latitude,
+		Longitude:    account.Longitude,
+		ContactPhone: account.ContactPhone,
 	}
 }
 
-// ConvertHouseholdToHouseholdDatabaseCreationInput builds a faked HouseholdCreationRequestInput.
-func ConvertHouseholdToHouseholdDatabaseCreationInput(household *types.Household) *types.HouseholdDatabaseCreationInput {
-	return &types.HouseholdDatabaseCreationInput{
-		ID:                   household.ID,
-		Name:                 household.Name,
-		AddressLine1:         household.AddressLine1,
-		AddressLine2:         household.AddressLine2,
-		City:                 household.City,
-		State:                household.State,
-		ZipCode:              household.ZipCode,
-		Country:              household.Country,
-		Latitude:             household.Latitude,
-		Longitude:            household.Longitude,
-		ContactPhone:         household.ContactPhone,
-		BelongsToUser:        household.BelongsToUser,
-		WebhookEncryptionKey: household.WebhookEncryptionKey,
+// ConvertAccountToAccountDatabaseCreationInput builds a faked AccountCreationRequestInput.
+func ConvertAccountToAccountDatabaseCreationInput(account *types.Account) *types.AccountDatabaseCreationInput {
+	return &types.AccountDatabaseCreationInput{
+		ID:                   account.ID,
+		Name:                 account.Name,
+		AddressLine1:         account.AddressLine1,
+		AddressLine2:         account.AddressLine2,
+		City:                 account.City,
+		State:                account.State,
+		ZipCode:              account.ZipCode,
+		Country:              account.Country,
+		Latitude:             account.Latitude,
+		Longitude:            account.Longitude,
+		ContactPhone:         account.ContactPhone,
+		BelongsToUser:        account.BelongsToUser,
+		WebhookEncryptionKey: account.WebhookEncryptionKey,
 	}
 }

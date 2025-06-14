@@ -29,23 +29,23 @@ var _ types.MealDataService = (*service)(nil)
 type (
 	// service handles meals.
 	service struct {
-		logger                                logging.Logger
-		dataChangesPublisher                  messagequeue.Publisher
-		encoderDecoder                        encoding.ServerEncoderDecoder
-		tracer                                tracing.Tracer
-		mealPlanningDataManager               types.MealPlanningDataManager
-		searchIndex                           textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
-		householdInstrumentOwnershipIDFetcher func(*http.Request) string
-		userIngredientPreferenceIDFetcher     func(*http.Request) string
-		mealPlanIDFetcher                     func(*http.Request) string
-		mealPlanGroceryListItemIDFetcher      func(*http.Request) string
-		mealPlanEventIDFetcher                func(*http.Request) string
-		mealIDFetcher                         func(*http.Request) string
-		mealPlanOptionIDFetcher               func(*http.Request) string
-		mealPlanTaskIDFetcher                 func(*http.Request) string
-		mealPlanOptionVoteIDFetcher           func(*http.Request) string
-		sessionContextDataFetcher             func(*http.Request) (*sessions.ContextData, error)
-		useSearchService                      bool
+		logger                              logging.Logger
+		dataChangesPublisher                messagequeue.Publisher
+		encoderDecoder                      encoding.ServerEncoderDecoder
+		tracer                              tracing.Tracer
+		mealPlanningDataManager             types.MealPlanningDataManager
+		searchIndex                         textsearch.IndexSearcher[eatingindexing.MealSearchSubset]
+		accountInstrumentOwnershipIDFetcher func(*http.Request) string
+		userIngredientPreferenceIDFetcher   func(*http.Request) string
+		mealPlanIDFetcher                   func(*http.Request) string
+		mealPlanGroceryListItemIDFetcher    func(*http.Request) string
+		mealPlanEventIDFetcher              func(*http.Request) string
+		mealIDFetcher                       func(*http.Request) string
+		mealPlanOptionIDFetcher             func(*http.Request) string
+		mealPlanTaskIDFetcher               func(*http.Request) string
+		mealPlanOptionVoteIDFetcher         func(*http.Request) string
+		sessionContextDataFetcher           func(*http.Request) (*sessions.ContextData, error)
+		useSearchService                    bool
 	}
 )
 
@@ -78,23 +78,23 @@ func ProvideService(
 	}
 
 	svc := &service{
-		useSearchService:                      cfg.UseSearchService,
-		logger:                                logging.EnsureLogger(logger).WithName(serviceName),
-		mealPlanIDFetcher:                     routeParamManager.BuildRouteParamStringIDFetcher(MealPlanIDURIParamKey),
-		mealPlanGroceryListItemIDFetcher:      routeParamManager.BuildRouteParamStringIDFetcher(MealPlanGroceryListItemIDURIParamKey),
-		mealPlanEventIDFetcher:                routeParamManager.BuildRouteParamStringIDFetcher(MealPlanEventIDURIParamKey),
-		mealIDFetcher:                         routeParamManager.BuildRouteParamStringIDFetcher(MealIDURIParamKey),
-		mealPlanOptionIDFetcher:               routeParamManager.BuildRouteParamStringIDFetcher(MealPlanOptionIDURIParamKey),
-		mealPlanTaskIDFetcher:                 routeParamManager.BuildRouteParamStringIDFetcher(MealPlanTaskIDURIParamKey),
-		mealPlanOptionVoteIDFetcher:           routeParamManager.BuildRouteParamStringIDFetcher(MealPlanOptionVoteIDURIParamKey),
-		householdInstrumentOwnershipIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInstrumentOwnershipIDURIParamKey),
-		userIngredientPreferenceIDFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(UserIngredientPreferenceIDURIParamKey),
-		sessionContextDataFetcher:             sessions.FetchContextFromRequest,
-		dataChangesPublisher:                  dataChangesPublisher,
-		encoderDecoder:                        encoder,
-		mealPlanningDataManager:               mealPlanningDataManager,
-		tracer:                                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		searchIndex:                           searchIndex,
+		useSearchService:                    cfg.UseSearchService,
+		logger:                              logging.EnsureLogger(logger).WithName(serviceName),
+		mealPlanIDFetcher:                   routeParamManager.BuildRouteParamStringIDFetcher(MealPlanIDURIParamKey),
+		mealPlanGroceryListItemIDFetcher:    routeParamManager.BuildRouteParamStringIDFetcher(MealPlanGroceryListItemIDURIParamKey),
+		mealPlanEventIDFetcher:              routeParamManager.BuildRouteParamStringIDFetcher(MealPlanEventIDURIParamKey),
+		mealIDFetcher:                       routeParamManager.BuildRouteParamStringIDFetcher(MealIDURIParamKey),
+		mealPlanOptionIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(MealPlanOptionIDURIParamKey),
+		mealPlanTaskIDFetcher:               routeParamManager.BuildRouteParamStringIDFetcher(MealPlanTaskIDURIParamKey),
+		mealPlanOptionVoteIDFetcher:         routeParamManager.BuildRouteParamStringIDFetcher(MealPlanOptionVoteIDURIParamKey),
+		accountInstrumentOwnershipIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(AccountInstrumentOwnershipIDURIParamKey),
+		userIngredientPreferenceIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(UserIngredientPreferenceIDURIParamKey),
+		sessionContextDataFetcher:           sessions.FetchContextFromRequest,
+		dataChangesPublisher:                dataChangesPublisher,
+		encoderDecoder:                      encoder,
+		mealPlanningDataManager:             mealPlanningDataManager,
+		tracer:                              tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		searchIndex:                         searchIndex,
 	}
 
 	return svc, nil

@@ -64,7 +64,7 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 }
 
 func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
-	s.runTest("should be possible to impersonate users without specifying household ID", func(testClients *testClientWrapper) func() {
+	s.runTest("should be possible to impersonate users without specifying account ID", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -88,8 +88,8 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 			createdWebhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 
-			household, err := testClients.userClient.GetActiveHousehold(ctx)
-			requireNotNilAndNoProblems(t, household, err)
+			account, err := testClients.userClient.GetActiveAccount(ctx)
+			requireNotNilAndNoProblems(t, account, err)
 
 			user, err := testClients.userClient.GetSelf(ctx)
 			requireNotNilAndNoProblems(t, user, err)

@@ -15,8 +15,8 @@ const (
 	MealPlanOptionVoteIDURIParamKey = "mealPlanOptionVoteID"
 	// MealPlanTaskIDURIParamKey is a standard string that we'll use to refer to meal plan task IDs with.
 	MealPlanTaskIDURIParamKey = "mealPlanTaskID"
-	// HouseholdInstrumentOwnershipIDURIParamKey is a standard string that we'll use to refer to household instrument ownership IDs with.
-	HouseholdInstrumentOwnershipIDURIParamKey = "householdInstrumentOwnershipID"
+	// AccountInstrumentOwnershipIDURIParamKey is a standard string that we'll use to refer to account instrument ownership IDs with.
+	AccountInstrumentOwnershipIDURIParamKey = "accountInstrumentOwnershipID"
 	// UserIngredientPreferenceIDURIParamKey is a standard string that we'll use to refer to user ingredient preference IDs with.
 	UserIngredientPreferenceIDURIParamKey = "userIngredientPreferenceID"
 )
@@ -30,7 +30,7 @@ var (
 		MealPlanOptionIDURIParamKey,
 		MealPlanOptionVoteIDURIParamKey,
 		MealPlanTaskIDURIParamKey,
-		HouseholdInstrumentOwnershipIDURIParamKey,
+		AccountInstrumentOwnershipIDURIParamKey,
 		UserIngredientPreferenceIDURIParamKey,
 	}
 )

@@ -12,42 +12,42 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
-func (c *Client) GetHouseholdInvitationByID(
+func (c *Client) GetAccountInvitationByID(
 	ctx context.Context,
-	householdID string,
-	householdInvitationID string,
+	accountID string,
+	accountInvitationID string,
 	reqMods ...RequestModifier,
-) (*HouseholdInvitation, error) {
+) (*AccountInvitation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
-	if householdID == "" {
-		return nil, buildInvalidIDError("household")
+	if accountID == "" {
+		return nil, buildInvalidIDError("account")
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	if householdInvitationID == "" {
-		return nil, buildInvalidIDError("householdInvitation")
+	if accountInvitationID == "" {
+		return nil, buildInvalidIDError("accountInvitation")
 	}
-	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
-	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
+	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
+	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/households/%s/invitations/%s", householdID, householdInvitationID))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/accounts/%s/invitations/%s", accountID, accountInvitationID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a HouseholdInvitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch a AccountInvitation")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *APIResponse[*HouseholdInvitation]
+	var apiResponse *APIResponse[*AccountInvitation]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading HouseholdInvitation response")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading AccountInvitation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

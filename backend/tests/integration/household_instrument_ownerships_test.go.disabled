@@ -12,17 +12,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func checkHouseholdInstrumentOwnershipEquality(t *testing.T, expected, actual *types.HouseholdInstrumentOwnership) {
+func checkAccountInstrumentOwnershipEquality(t *testing.T, expected, actual *types.AccountInstrumentOwnership) {
 	t.Helper()
 
 	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for household instrument ownership %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
-	assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Vessel.ID for household instrument ownership %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected Quantity for household instrument ownership %s to be %v, but it was %v", expected.ID, expected.Quantity, actual.Quantity)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for account instrument ownership %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Vessel.ID for account instrument ownership %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected Quantity for account instrument ownership %s to be %v, but it was %v", expected.ID, expected.Quantity, actual.Quantity)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func (s *TestSuite) TestHouseholdInstrumentOwnerships_CompleteLifecycle() {
+func (s *TestSuite) TestAccountInstrumentOwnerships_CompleteLifecycle() {
 	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
@@ -32,32 +32,32 @@ func (s *TestSuite) TestHouseholdInstrumentOwnerships_CompleteLifecycle() {
 
 			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.adminClient)
 
-			exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-			exampleHouseholdInstrumentOwnership.Instrument = *createdValidInstrument
-			exampleHouseholdInstrumentOwnershipInput := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipCreationRequestInput(exampleHouseholdInstrumentOwnership)
-			createdHouseholdInstrumentOwnership, err := testClients.adminClient.CreateHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnershipInput)
+			exampleAccountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
+			exampleAccountInstrumentOwnership.Instrument = *createdValidInstrument
+			exampleAccountInstrumentOwnershipInput := converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipCreationRequestInput(exampleAccountInstrumentOwnership)
+			createdAccountInstrumentOwnership, err := testClients.adminClient.CreateAccountInstrumentOwnership(ctx, exampleAccountInstrumentOwnershipInput)
 			require.NoError(t, err)
-			checkHouseholdInstrumentOwnershipEquality(t, exampleHouseholdInstrumentOwnership, createdHouseholdInstrumentOwnership)
+			checkAccountInstrumentOwnershipEquality(t, exampleAccountInstrumentOwnership, createdAccountInstrumentOwnership)
 
-			newHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-			newHouseholdInstrumentOwnership.Instrument = *createdValidInstrument
-			updateInput := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequestInput(newHouseholdInstrumentOwnership)
-			createdHouseholdInstrumentOwnership.Update(updateInput)
-			assert.NoError(t, testClients.adminClient.UpdateHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID, updateInput))
+			newAccountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
+			newAccountInstrumentOwnership.Instrument = *createdValidInstrument
+			updateInput := converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipUpdateRequestInput(newAccountInstrumentOwnership)
+			createdAccountInstrumentOwnership.Update(updateInput)
+			assert.NoError(t, testClients.adminClient.UpdateAccountInstrumentOwnership(ctx, createdAccountInstrumentOwnership.ID, updateInput))
 
-			actual, err := testClients.adminClient.GetHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID)
+			actual, err := testClients.adminClient.GetAccountInstrumentOwnership(ctx, createdAccountInstrumentOwnership.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			// assert household instrument ownership equality
-			checkHouseholdInstrumentOwnershipEquality(t, newHouseholdInstrumentOwnership, actual)
+			// assert account instrument ownership equality
+			checkAccountInstrumentOwnershipEquality(t, newAccountInstrumentOwnership, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.adminClient.ArchiveHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID))
+			assert.NoError(t, testClients.adminClient.ArchiveAccountInstrumentOwnership(ctx, createdAccountInstrumentOwnership.ID))
 		}
 	})
 }
 
-func (s *TestSuite) TestHouseholdInstrumentOwnerships_Listing() {
+func (s *TestSuite) TestAccountInstrumentOwnerships_Listing() {
 	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
@@ -65,22 +65,22 @@ func (s *TestSuite) TestHouseholdInstrumentOwnerships_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			var expected []*types.HouseholdInstrumentOwnership
+			var expected []*types.AccountInstrumentOwnership
 			for i := 0; i < 5; i++ {
 				createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.adminClient)
 
-				exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-				exampleHouseholdInstrumentOwnership.Instrument = *createdValidInstrument
-				exampleHouseholdInstrumentOwnershipInput := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipCreationRequestInput(exampleHouseholdInstrumentOwnership)
-				createdHouseholdInstrumentOwnership, err := testClients.adminClient.CreateHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnershipInput)
+				exampleAccountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
+				exampleAccountInstrumentOwnership.Instrument = *createdValidInstrument
+				exampleAccountInstrumentOwnershipInput := converters.ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipCreationRequestInput(exampleAccountInstrumentOwnership)
+				createdAccountInstrumentOwnership, err := testClients.adminClient.CreateAccountInstrumentOwnership(ctx, exampleAccountInstrumentOwnershipInput)
 				require.NoError(t, err)
-				checkHouseholdInstrumentOwnershipEquality(t, exampleHouseholdInstrumentOwnership, createdHouseholdInstrumentOwnership)
+				checkAccountInstrumentOwnershipEquality(t, exampleAccountInstrumentOwnership, createdAccountInstrumentOwnership)
 
-				expected = append(expected, createdHouseholdInstrumentOwnership)
+				expected = append(expected, createdAccountInstrumentOwnership)
 			}
 
-			// assert household instrument ownership list equality
-			actual, err := testClients.adminClient.GetHouseholdInstrumentOwnerships(ctx, nil)
+			// assert account instrument ownership list equality
+			actual, err := testClients.adminClient.GetAccountInstrumentOwnerships(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,
@@ -90,8 +90,8 @@ func (s *TestSuite) TestHouseholdInstrumentOwnerships_Listing() {
 				len(actual.Data),
 			)
 
-			for _, createdHouseholdInstrumentOwnership := range expected {
-				assert.NoError(t, testClients.adminClient.ArchiveHouseholdInstrumentOwnership(ctx, createdHouseholdInstrumentOwnership.ID))
+			for _, createdAccountInstrumentOwnership := range expected {
+				assert.NoError(t, testClients.adminClient.ArchiveAccountInstrumentOwnership(ctx, createdAccountInstrumentOwnership.ID))
 			}
 		}
 	})

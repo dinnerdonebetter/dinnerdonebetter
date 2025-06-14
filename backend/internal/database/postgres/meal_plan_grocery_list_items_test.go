@@ -69,16 +69,16 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 	}(t)
 
 	user := createUserForTest(t, ctx, nil, dbc)
-	householdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, householdID)
+	require.NotEmpty(t, accountID)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
 	meal := createMealForTest(t, ctx, nil, dbc)
 
 	exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
-	exampleMealPlan.BelongsToHousehold = householdID
+	exampleMealPlan.BelongsToAccount = accountID
 	mealPlan := createMealPlanForTest(t, ctx, exampleMealPlan, dbc)
 
 	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
@@ -108,7 +108,7 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 		assert.NoError(t, dbc.ArchiveMealPlanGroceryListItem(ctx, mealPlanGroceryListItem.ID))
 
 		var exists bool
-		exists, err = dbc.MealPlanGroceryListItemExists(ctx, mealPlanGroceryListItem.ID, householdID)
+		exists, err = dbc.MealPlanGroceryListItemExists(ctx, mealPlanGroceryListItem.ID, accountID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
 	}

@@ -23,7 +23,7 @@ type oauth2ClientsServiceHTTPRoutesTestHelper struct {
 	res                 *httptest.ResponseRecorder
 	service             *service
 	exampleUser         *types.User
-	exampleHousehold    *types.Household
+	exampleAccount      *types.Account
 	exampleOAuth2Client *types.OAuth2Client
 	exampleInput        *types.OAuth2ClientCreationRequestInput
 }
@@ -36,8 +36,8 @@ func buildTestHelper(t *testing.T) *oauth2ClientsServiceHTTPRoutesTestHelper {
 	helper.ctx = context.Background()
 	helper.service = buildTestService(t)
 	helper.exampleUser = fakes.BuildFakeUser()
-	helper.exampleHousehold = fakes.BuildFakeHousehold()
-	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
+	helper.exampleAccount = fakes.BuildFakeAccount()
+	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
 	helper.exampleOAuth2Client = fakes.BuildFakeOAuth2Client()
 	helper.exampleInput = converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(helper.exampleOAuth2Client)
 
@@ -48,9 +48,9 @@ func buildTestHelper(t *testing.T) *oauth2ClientsServiceHTTPRoutesTestHelper {
 			AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
 		},
-		ActiveHouseholdID: helper.exampleHousehold.ID,
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
-			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
+		ActiveAccountID: helper.exampleAccount.ID,
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{
+			helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 		},
 	}
 

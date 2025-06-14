@@ -9,11 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (c *Client) GetHouseholdInstrumentOwnerships(
+func (c *Client) GetAccountInstrumentOwnerships(
 	ctx context.Context,
 	filter *QueryFilter,
 	reqMods ...RequestModifier,
-) (*QueryFilteredResult[HouseholdInstrumentOwnership], error) {
+) (*QueryFilteredResult[AccountInstrumentOwnership], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -26,26 +26,26 @@ func (c *Client) GetHouseholdInstrumentOwnerships(
 
 	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, values, "/api/v1/households/instruments")
+	u := c.BuildURL(ctx, values, "/api/v1/accounts/instruments")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of HouseholdInstrumentOwnership")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of AccountInstrumentOwnership")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *APIResponse[[]*HouseholdInstrumentOwnership]
+	var apiResponse *APIResponse[[]*AccountInstrumentOwnership]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of HouseholdInstrumentOwnership")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of AccountInstrumentOwnership")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
 
-	result := &QueryFilteredResult[HouseholdInstrumentOwnership]{
+	result := &QueryFilteredResult[AccountInstrumentOwnership]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

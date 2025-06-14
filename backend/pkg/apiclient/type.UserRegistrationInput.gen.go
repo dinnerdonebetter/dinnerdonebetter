@@ -7,7 +7,7 @@ type (
 		Birthday              string `json:"birthday"`
 		EmailAddress          string `json:"emailAddress"`
 		FirstName             string `json:"firstName"`
-		HouseholdName         string `json:"householdName"`
+		AccountName           string `json:"accountName"`
 		InvitationID          string `json:"invitationID"`
 		InvitationToken       string `json:"invitationToken"`
 		LastName              string `json:"lastName"`

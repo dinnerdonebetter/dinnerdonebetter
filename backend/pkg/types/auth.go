@@ -43,8 +43,8 @@ const (
 	UserLoggedInServiceEventType = "user_logged_in"
 	// UserLoggedOutServiceEventType indicates a user has logged in.
 	UserLoggedOutServiceEventType = "user_logged_out"
-	// UserChangedActiveHouseholdServiceEventType indicates a user has logged in.
-	UserChangedActiveHouseholdServiceEventType = "changed_active_household"
+	// UserChangedActiveAccountServiceEventType indicates a user has logged in.
+	UserChangedActiveAccountServiceEventType = "changed_active_account"
 	// UserEmailAddressVerifiedEventType indicates a user created a password reset token.
 	UserEmailAddressVerifiedEventType = "user_email_address_verified"
 	// UserEmailAddressVerificationEmailRequestedEventType indicates a user created a password reset token.
@@ -59,7 +59,7 @@ type (
 		UserID                   string `json:"userID"`
 		AccountStatus            string `json:"accountStatus,omitempty"`
 		AccountStatusExplanation string `json:"accountStatusExplanation"`
-		ActiveHousehold          string `json:"activeHousehold,omitempty"`
+		ActiveAccount            string `json:"activeAccount,omitempty"`
 		UserIsAuthenticated      bool   `json:"isAuthenticated"`
 	}
 
@@ -67,9 +67,9 @@ type (
 	TokenResponse struct {
 		_ struct{} `json:"-"`
 
-		UserID      string `json:"userID"`
-		HouseholdID string `json:"householdID"`
-		Token       string `json:"token"`
+		UserID    string `json:"userID"`
+		AccountID string `json:"accountID"`
+		Token     string `json:"token"`
 	}
 
 	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.
@@ -86,11 +86,11 @@ type (
 		Permissions map[string]bool `json:"permissions"`
 	}
 
-	// ChangeActiveHouseholdInput represents what a User could set as input for switching households.
-	ChangeActiveHouseholdInput struct {
+	// ChangeActiveAccountInput represents what a User could set as input for switching accounts.
+	ChangeActiveAccountInput struct {
 		_ struct{} `json:"-"`
 
-		HouseholdID string `json:"householdID"`
+		AccountID string `json:"accountID"`
 	}
 
 	// AuthDataService describes a structure capable of handling passwords and authorization requests.
@@ -110,12 +110,12 @@ type (
 	}
 )
 
-var _ validation.ValidatableWithContext = (*ChangeActiveHouseholdInput)(nil)
+var _ validation.ValidatableWithContext = (*ChangeActiveAccountInput)(nil)
 
-// ValidateWithContext validates a ChangeActiveHouseholdInput.
-func (x *ChangeActiveHouseholdInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a ChangeActiveAccountInput.
+func (x *ChangeActiveAccountInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
-		validation.Field(&x.HouseholdID, validation.Required),
+		validation.Field(&x.AccountID, validation.Required),
 	)
 }
 

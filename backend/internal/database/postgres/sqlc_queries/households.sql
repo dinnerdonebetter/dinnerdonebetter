@@ -1,26 +1,26 @@
--- name: AddToHouseholdDuringCreation :exec
-INSERT INTO household_user_memberships (
+-- name: AddToAccountDuringCreation :exec
+INSERT INTO account_user_memberships (
 	id,
-	belongs_to_household,
+	belongs_to_account,
 	belongs_to_user,
-	household_role
+	account_role
 ) VALUES (
 	sqlc.arg(id),
-	sqlc.arg(belongs_to_household),
+	sqlc.arg(belongs_to_account),
 	sqlc.arg(belongs_to_user),
-	sqlc.arg(household_role)
+	sqlc.arg(account_role)
 );
 
--- name: ArchiveHousehold :execrows
-UPDATE households SET
+-- name: ArchiveAccount :execrows
+UPDATE accounts SET
 	last_updated_at = NOW(),
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(belongs_to_user)
 	AND id = sqlc.arg(id);
 
--- name: CreateHousehold :exec
-INSERT INTO households (
+-- name: CreateAccount :exec
+INSERT INTO accounts (
 	id,
 	name,
 	billing_status,
@@ -52,29 +52,29 @@ INSERT INTO households (
 	sqlc.arg(webhook_hmac_secret)
 );
 
--- name: GetHouseholdByIDWithMemberships :many
+-- name: GetAccountByIDWithMemberships :many
 SELECT
-	households.id,
-	households.name,
-	households.billing_status,
-	households.contact_phone,
-	households.payment_processor_customer_id,
-	households.subscription_plan_id,
-	households.belongs_to_user,
-	households.time_zone,
-	households.address_line_1,
-	households.address_line_2,
-	households.city,
-	households.state,
-	households.zip_code,
-	households.country,
-	households.latitude,
-	households.longitude,
-	households.last_payment_provider_sync_occurred_at,
-	households.webhook_hmac_secret,
-	households.created_at,
-	households.last_updated_at,
-	households.archived_at,
+	accounts.id,
+	accounts.name,
+	accounts.billing_status,
+	accounts.contact_phone,
+	accounts.payment_processor_customer_id,
+	accounts.subscription_plan_id,
+	accounts.belongs_to_user,
+	accounts.time_zone,
+	accounts.address_line_1,
+	accounts.address_line_2,
+	accounts.city,
+	accounts.state,
+	accounts.zip_code,
+	accounts.country,
+	accounts.latitude,
+	accounts.longitude,
+	accounts.last_payment_provider_sync_occurred_at,
+	accounts.webhook_hmac_secret,
+	accounts.created_at,
+	accounts.last_updated_at,
+	accounts.archived_at,
 	users.id as user_id,
 	users.username as user_username,
 	users.avatar_src as user_avatar_src,
@@ -98,87 +98,87 @@ SELECT
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
-	household_user_memberships.id as membership_id,
-	household_user_memberships.belongs_to_household as membership_belongs_to_household,
-	household_user_memberships.belongs_to_user as membership_belongs_to_user,
-	household_user_memberships.default_household as membership_default_household,
-	household_user_memberships.household_role as membership_household_role,
-	household_user_memberships.created_at as membership_created_at,
-	household_user_memberships.last_updated_at as membership_last_updated_at,
-	household_user_memberships.archived_at as membership_archived_at
-FROM households
-	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-	JOIN users ON household_user_memberships.belongs_to_user = users.id
-WHERE households.archived_at IS NULL
-	AND household_user_memberships.archived_at IS NULL
-	AND households.id = sqlc.arg(id);
+	account_user_memberships.id as membership_id,
+	account_user_memberships.belongs_to_account as membership_belongs_to_account,
+	account_user_memberships.belongs_to_user as membership_belongs_to_user,
+	account_user_memberships.default_account as membership_default_account,
+	account_user_memberships.account_role as membership_account_role,
+	account_user_memberships.created_at as membership_created_at,
+	account_user_memberships.last_updated_at as membership_last_updated_at,
+	account_user_memberships.archived_at as membership_archived_at
+FROM accounts
+	JOIN account_user_memberships ON account_user_memberships.belongs_to_account = accounts.id
+	JOIN users ON account_user_memberships.belongs_to_user = users.id
+WHERE accounts.archived_at IS NULL
+	AND account_user_memberships.archived_at IS NULL
+	AND accounts.id = sqlc.arg(id);
 
--- name: GetHouseholdsForUser :many
+-- name: GetAccountsForUser :many
 SELECT
-	households.id,
-	households.name,
-	households.billing_status,
-	households.contact_phone,
-	households.payment_processor_customer_id,
-	households.subscription_plan_id,
-	households.belongs_to_user,
-	households.time_zone,
-	households.address_line_1,
-	households.address_line_2,
-	households.city,
-	households.state,
-	households.zip_code,
-	households.country,
-	households.latitude,
-	households.longitude,
-	households.last_payment_provider_sync_occurred_at,
-	households.webhook_hmac_secret,
-	households.created_at,
-	households.last_updated_at,
-	households.archived_at,
+	accounts.id,
+	accounts.name,
+	accounts.billing_status,
+	accounts.contact_phone,
+	accounts.payment_processor_customer_id,
+	accounts.subscription_plan_id,
+	accounts.belongs_to_user,
+	accounts.time_zone,
+	accounts.address_line_1,
+	accounts.address_line_2,
+	accounts.city,
+	accounts.state,
+	accounts.zip_code,
+	accounts.country,
+	accounts.latitude,
+	accounts.longitude,
+	accounts.last_payment_provider_sync_occurred_at,
+	accounts.webhook_hmac_secret,
+	accounts.created_at,
+	accounts.last_updated_at,
+	accounts.archived_at,
 	(
-		SELECT COUNT(households.id)
-		FROM households
-		WHERE households.archived_at IS NULL
+		SELECT COUNT(accounts.id)
+		FROM accounts
+		WHERE accounts.archived_at IS NULL
 			AND
-			households.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-			AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			accounts.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND accounts.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
-				households.last_updated_at IS NULL
-				OR households.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+				accounts.last_updated_at IS NULL
+				OR accounts.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
 			)
 			AND (
-				households.last_updated_at IS NULL
-				OR households.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+				accounts.last_updated_at IS NULL
+				OR accounts.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
-			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR households.archived_at = NULL)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR accounts.archived_at = NULL)
 	) AS filtered_count,
 	(
-		SELECT COUNT(households.id)
-		FROM households
-		WHERE households.archived_at IS NULL
-			AND household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
+		SELECT COUNT(accounts.id)
+		FROM accounts
+		WHERE accounts.archived_at IS NULL
+			AND account_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
 	) AS total_count
-FROM households
-JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-WHERE households.archived_at IS NULL
-	AND household_user_memberships.archived_at IS NULL
-	AND households.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-	AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+FROM accounts
+JOIN account_user_memberships ON account_user_memberships.belongs_to_account = accounts.id
+WHERE accounts.archived_at IS NULL
+	AND account_user_memberships.archived_at IS NULL
+	AND accounts.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND accounts.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
-		households.last_updated_at IS NULL
-		OR households.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+		accounts.last_updated_at IS NULL
+		OR accounts.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
-		households.last_updated_at IS NULL
-		OR households.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+		accounts.last_updated_at IS NULL
+		OR accounts.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	AND household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
+	AND account_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
--- name: UpdateHousehold :execrows
-UPDATE households SET
+-- name: UpdateAccount :execrows
+UPDATE accounts SET
 	name = sqlc.arg(name),
 	contact_phone = sqlc.arg(contact_phone),
 	address_line_1 = sqlc.arg(address_line_1),
@@ -194,8 +194,8 @@ WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(belongs_to_user)
 	AND id = sqlc.arg(id);
 
--- name: UpdateHouseholdWebhookEncryptionKey :execrows
-UPDATE households SET
+-- name: UpdateAccountWebhookEncryptionKey :execrows
+UPDATE accounts SET
 	webhook_hmac_secret = sqlc.arg(webhook_hmac_secret),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL

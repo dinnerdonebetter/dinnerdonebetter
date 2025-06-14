@@ -62,13 +62,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// create a userClient for the meal plan household
-			_, householdAdminUserClient := createUserAndClientForTest(ctx, t, nil)
+			// create a userClient for the meal plan account
+			_, accountAdminUserClient := createUserAndClientForTest(ctx, t, nil)
 
-			// create household members
-			currentStatus, statusErr := householdAdminUserClient.GetAuthStatus(s.ctx)
+			// create account members
+			currentStatus, statusErr := accountAdminUserClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			relevantHouseholdID := currentStatus.ActiveHousehold
+			relevantAccountID := currentStatus.ActiveAccount
 
 			createdUsers := []*types.User{}
 			createdClients := []*apiclient.Client{}
@@ -76,31 +76,31 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			for i := 0; i < 2; i++ {
 				u, c := createUserAndClientForTest(ctx, t, nil)
 
-				invitation, err := householdAdminUserClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := accountAdminUserClient.CreateAccountInvitation(ctx, relevantAccountID, &types.AccountInvitationCreationRequestInput{
 					Note:    t.Name(),
 					ToEmail: u.EmailAddress,
 				})
 				require.NoError(t, err)
 
-				sentInvitations, err := householdAdminUserClient.GetSentHouseholdInvitations(ctx, nil)
+				sentInvitations, err := accountAdminUserClient.GetSentAccountInvitations(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
 				assert.NotEmpty(t, sentInvitations.Data)
 
-				invitations, err := c.GetReceivedHouseholdInvitations(ctx, nil)
+				invitations, err := c.GetReceivedAccountInvitations(ctx, nil)
 				requireNotNilAndNoProblems(t, invitations, err)
 				assert.NotEmpty(t, invitations.Data)
 
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+				require.NoError(t, c.AcceptAccountInvitation(ctx, invitation.ID, &types.AccountInvitationUpdateRequestInput{
 					Token: invitation.Token,
 					Note:  t.Name(),
 				}))
-				_, err = c.SetDefaultHousehold(ctx, relevantHouseholdID)
+				_, err = c.SetDefaultAccount(ctx, relevantAccountID)
 				require.NoError(t, err)
 
 				tokenResponse, err := c.LoginForToken(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 				require.NoError(t, err)
 
-				require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
+				require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"account_member"}, tokenResponse.Token)))
 
 				createdUsers = append(createdUsers, u)
 				createdClients = append(createdClients, c)
@@ -109,7 +109,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.adminClient, householdAdminUserClient, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.adminClient, accountAdminUserClient, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -145,11 +145,11 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			}
 
 			exampleMealPlanInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
-			mealPlanCreationResult, err := householdAdminUserClient.CreateMealPlan(ctx, exampleMealPlanInput)
+			mealPlanCreationResult, err := accountAdminUserClient.CreateMealPlan(ctx, exampleMealPlanInput)
 			require.NotEmpty(t, mealPlanCreationResult.ID)
 			require.NoError(t, err)
 
-			createdMealPlan, err := householdAdminUserClient.GetMealPlan(ctx, mealPlanCreationResult.ID)
+			createdMealPlan, err := accountAdminUserClient.GetMealPlan(ctx, mealPlanCreationResult.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
@@ -218,7 +218,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesB)
 
-			createdMealPlanOptionVotesC, err := householdAdminUserClient.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userCVotes)
+			createdMealPlanOptionVotesC, err := accountAdminUserClient.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userCVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesC)
 
@@ -229,7 +229,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			require.NoError(t, err)
 			require.NotNil(t, runRes)
 
-			createdMealPlan, err = householdAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = accountAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, string(types.MealPlanStatusFinalized), createdMealPlan.Status)
 
@@ -255,13 +255,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			// create a userClient for the meal plan household
-			_, householdAdminUserClient := createUserAndClientForTest(ctx, t, nil)
+			// create a userClient for the meal plan account
+			_, accountAdminUserClient := createUserAndClientForTest(ctx, t, nil)
 
-			// create household members
-			currentStatus, statusErr := householdAdminUserClient.GetAuthStatus(s.ctx)
+			// create account members
+			currentStatus, statusErr := accountAdminUserClient.GetAuthStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			relevantHouseholdID := currentStatus.ActiveHousehold
+			relevantAccountID := currentStatus.ActiveAccount
 
 			createdUsers := []*types.User{}
 			createdClients := []*apiclient.Client{}
@@ -269,31 +269,31 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			for i := 0; i < 2; i++ {
 				u, c := createUserAndClientForTest(ctx, t, nil)
 
-				invitation, err := householdAdminUserClient.CreateHouseholdInvitation(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := accountAdminUserClient.CreateAccountInvitation(ctx, relevantAccountID, &types.AccountInvitationCreationRequestInput{
 					Note:    t.Name(),
 					ToEmail: u.EmailAddress,
 				})
 				require.NoError(t, err)
 
-				sentInvitations, err := householdAdminUserClient.GetSentHouseholdInvitations(ctx, nil)
+				sentInvitations, err := accountAdminUserClient.GetSentAccountInvitations(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
 				assert.NotEmpty(t, sentInvitations.Data)
 
-				invitations, err := c.GetReceivedHouseholdInvitations(ctx, nil)
+				invitations, err := c.GetReceivedAccountInvitations(ctx, nil)
 				requireNotNilAndNoProblems(t, invitations, err)
 				assert.NotEmpty(t, invitations.Data)
 
-				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, &types.HouseholdInvitationUpdateRequestInput{
+				require.NoError(t, c.AcceptAccountInvitation(ctx, invitation.ID, &types.AccountInvitationUpdateRequestInput{
 					Token: invitation.Token,
 					Note:  t.Name(),
 				}))
-				_, err = c.SetDefaultHousehold(ctx, relevantHouseholdID)
+				_, err = c.SetDefaultAccount(ctx, relevantAccountID)
 				require.NoError(t, err)
 
 				tokenResponse, err := c.LoginForToken(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
 				require.NoError(t, err)
 
-				require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"household_member"}, tokenResponse.Token)))
+				require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"account_member"}, tokenResponse.Token)))
 
 				createdUsers = append(createdUsers, u)
 				createdClients = append(createdClients, c)
@@ -302,7 +302,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			// create meals for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.adminClient, householdAdminUserClient, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.adminClient, accountAdminUserClient, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -338,11 +338,11 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			}
 
 			exampleMealPlanInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
-			createdMealPlan, err := householdAdminUserClient.CreateMealPlan(ctx, exampleMealPlanInput)
+			createdMealPlan, err := accountAdminUserClient.CreateMealPlan(ctx, exampleMealPlanInput)
 			require.NotEmpty(t, createdMealPlan.ID)
 			require.NoError(t, err)
 
-			createdMealPlan, err = householdAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = accountAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
@@ -390,7 +390,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesB)
 
-			createdMealPlan, err = householdAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = accountAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, string(types.MealPlanStatusAwaitingVotes), createdMealPlan.Status)
 
@@ -401,7 +401,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			require.NoError(t, err)
 			require.NotNil(t, runRes)
 
-			createdMealPlan, err = householdAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = accountAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, string(types.MealPlanStatusFinalized), createdMealPlan.Status)
 
@@ -434,7 +434,7 @@ func (s *TestSuite) TestMealPlans_Listing() {
 			}
 
 			// assert meal plan list equality
-			actual, err := testClients.userClient.GetMealPlansForHousehold(ctx, nil)
+			actual, err := testClients.userClient.GetMealPlansForAccount(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
 				t,

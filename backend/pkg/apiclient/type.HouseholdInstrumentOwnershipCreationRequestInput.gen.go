@@ -3,10 +3,10 @@
 package apiclient
 
 type (
-	HouseholdInstrumentOwnershipCreationRequestInput struct {
-		BelongsToHousehold string `json:"belongsToHousehold"`
-		Notes              string `json:"notes"`
-		ValidInstrumentID  string `json:"validInstrumentID"`
-		Quantity           uint64 `json:"quantity"`
+	AccountInstrumentOwnershipCreationRequestInput struct {
+		BelongsToAccount  string `json:"belongsToAccount"`
+		Notes             string `json:"notes"`
+		ValidInstrumentID string `json:"validInstrumentID"`
+		Quantity          uint64 `json:"quantity"`
 	}
 )

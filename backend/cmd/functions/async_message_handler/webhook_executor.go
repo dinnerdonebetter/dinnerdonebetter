@@ -27,12 +27,12 @@ func handleWebhookExecutionRequest(
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	household, err := dataManager.GetHousehold(ctx, webhookExecutionRequest.HouseholdID)
+	account, err := dataManager.GetAccount(ctx, webhookExecutionRequest.AccountID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "getting household")
+		return observability.PrepareAndLogError(err, logger, span, "getting account")
 	}
 
-	webhook, err := dataManager.GetWebhook(ctx, webhookExecutionRequest.WebhookID, webhookExecutionRequest.HouseholdID)
+	webhook, err := dataManager.GetWebhook(ctx, webhookExecutionRequest.WebhookID, webhookExecutionRequest.AccountID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting webhook")
 		return nil
@@ -59,7 +59,7 @@ func handleWebhookExecutionRequest(
 
 	req.Header.Set("Content-Type", webhook.ContentType)
 
-	decryptedKey, err := hex.DecodeString(household.WebhookEncryptionKey)
+	decryptedKey, err := hex.DecodeString(account.WebhookEncryptionKey)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "decoding webhook encryption key")
 	}

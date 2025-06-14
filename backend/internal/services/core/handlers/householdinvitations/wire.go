@@ -1,4 +1,4 @@
-package householdinvitations
+package accountinvitations
 
 import (
 	"github.com/google/wire"
@@ -7,6 +7,6 @@ import (
 var (
 	// Providers are our collection of what we provide to other services.
 	Providers = wire.NewSet(
-		ProvideHouseholdInvitationsService,
+		ProvideAccountInvitationsService,
 	)
 )

@@ -147,17 +147,17 @@ func TestImpersonatingUser(T *testing.T) {
 	})
 }
 
-func TestImpersonatingHousehold(T *testing.T) {
+func TestImpersonatingAccount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		c, _ := buildSimpleTestClient(t)
-		exampleHouseholdID := fake.BuildFakeID()
+		exampleAccountID := fake.BuildFakeID()
 
-		require.NoError(t, c.SetOptions(ImpersonatingHousehold(exampleHouseholdID)))
-		assert.Equal(t, c.impersonatedHouseholdID, exampleHouseholdID)
+		require.NoError(t, c.SetOptions(ImpersonatingAccount(exampleAccountID)))
+		assert.Equal(t, c.impersonatedAccountID, exampleAccountID)
 	})
 }
 
@@ -168,11 +168,11 @@ func TestWithoutImpersonating(T *testing.T) {
 		t.Parallel()
 
 		c, _ := buildSimpleTestClient(t)
-		c.impersonatedHouseholdID = fake.BuildFakeID()
+		c.impersonatedAccountID = fake.BuildFakeID()
 		c.impersonatedUserID = fake.BuildFakeID()
 
 		require.NoError(t, c.SetOptions(WithoutImpersonating()))
-		assert.Empty(t, c.impersonatedHouseholdID)
+		assert.Empty(t, c.impersonatedAccountID)
 		assert.Empty(t, c.impersonatedUserID)
 	})
 }

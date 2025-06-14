@@ -398,7 +398,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 	})
 }
 
-func TestServiceSettingConfigurationsService_GetServiceSettingConfigurationsForHouseholdHandler(T *testing.T) {
+func TestServiceSettingConfigurationsService_GetServiceSettingConfigurationsForAccountHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -408,14 +408,14 @@ func TestServiceSettingConfigurationsService_GetServiceSettingConfigurationsForH
 
 		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
-			"GetServiceSettingConfigurationsForHousehold",
+			"GetServiceSettingConfigurationsForAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			testutils.QueryFilterMatcher,
 		).Return(helper.exampleServiceSettingConfigurationList, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.ServiceSettingConfiguration]
@@ -432,7 +432,7 @@ func TestServiceSettingConfigurationsService_GetServiceSettingConfigurationsForH
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -448,14 +448,14 @@ func TestServiceSettingConfigurationsService_GetServiceSettingConfigurationsForH
 
 		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
-			"GetServiceSettingConfigurationsForHousehold",
+			"GetServiceSettingConfigurationsForAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			testutils.QueryFilterMatcher,
 		).Return((*filtering.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]
@@ -473,14 +473,14 @@ func TestServiceSettingConfigurationsService_GetServiceSettingConfigurationsForH
 
 		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
-			"GetServiceSettingConfigurationsForHousehold",
+			"GetServiceSettingConfigurationsForAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			testutils.QueryFilterMatcher,
 		).Return((*filtering.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		helper.service.GetServiceSettingConfigurationsForHouseholdHandler(helper.res, helper.req)
+		helper.service.GetServiceSettingConfigurationsForAccountHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.ServiceSettingConfiguration]

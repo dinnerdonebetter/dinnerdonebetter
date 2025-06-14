@@ -12,40 +12,40 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestClient_UpdateHouseholdInstrumentOwnership(T *testing.T) {
+func TestClient_UpdateAccountInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households/instruments/%s"
+	const expectedPathFormat = "/api/v1/accounts/instruments/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdInstrumentOwnershipID := fake.BuildFakeID()
+		accountInstrumentOwnershipID := fake.BuildFakeID()
 
-		data := &HouseholdInstrumentOwnership{}
-		expected := &APIResponse[*HouseholdInstrumentOwnership]{
+		data := &AccountInstrumentOwnership{}
+		expected := &APIResponse[*AccountInstrumentOwnership]{
 			Data: data,
 		}
 
-		exampleInput := &HouseholdInstrumentOwnershipUpdateRequestInput{}
+		exampleInput := &AccountInstrumentOwnershipUpdateRequestInput{}
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, householdInstrumentOwnershipID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, accountInstrumentOwnershipID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		err := c.UpdateHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, exampleInput)
+		err := c.UpdateAccountInstrumentOwnership(ctx, accountInstrumentOwnershipID, exampleInput)
 
 		assert.NoError(t, err)
 
 	})
 
-	T.Run("with invalid householdInstrumentOwnership ID", func(t *testing.T) {
+	T.Run("with invalid accountInstrumentOwnership ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleInput := &HouseholdInstrumentOwnershipUpdateRequestInput{}
+		exampleInput := &AccountInstrumentOwnershipUpdateRequestInput{}
 
 		ctx := context.Background()
 		c, _ := buildSimpleTestClient(t)
-		err := c.UpdateHouseholdInstrumentOwnership(ctx, "", exampleInput)
+		err := c.UpdateAccountInstrumentOwnership(ctx, "", exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -54,12 +54,12 @@ func TestClient_UpdateHouseholdInstrumentOwnership(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdInstrumentOwnershipID := fake.BuildFakeID()
+		accountInstrumentOwnershipID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdInstrumentOwnershipUpdateRequestInput{}
+		exampleInput := &AccountInstrumentOwnershipUpdateRequestInput{}
 
 		c := buildTestClientWithInvalidURL(t)
-		err := c.UpdateHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, exampleInput)
+		err := c.UpdateAccountInstrumentOwnership(ctx, accountInstrumentOwnershipID, exampleInput)
 
 		assert.Error(t, err)
 	})
@@ -68,13 +68,13 @@ func TestClient_UpdateHouseholdInstrumentOwnership(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		householdInstrumentOwnershipID := fake.BuildFakeID()
+		accountInstrumentOwnershipID := fake.BuildFakeID()
 
-		exampleInput := &HouseholdInstrumentOwnershipUpdateRequestInput{}
+		exampleInput := &AccountInstrumentOwnershipUpdateRequestInput{}
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, householdInstrumentOwnershipID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, accountInstrumentOwnershipID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		err := c.UpdateHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, exampleInput)
+		err := c.UpdateAccountInstrumentOwnership(ctx, accountInstrumentOwnershipID, exampleInput)
 
 		assert.Error(t, err)
 	})

@@ -33,21 +33,21 @@ type (
 
 	// service handles our users.
 	service struct {
-		householdUserMembershipDataManager types.HouseholdUserMembershipDataManager
-		householdInvitationDataManager     types.HouseholdInvitationDataManager
-		passwordResetTokenDataManager      types.PasswordResetTokenDataManager
-		tracer                             tracing.Tracer
-		authenticator                      authentication.Authenticator
-		logger                             logging.Logger
-		encoderDecoder                     encoding.ServerEncoderDecoder
-		dataChangesPublisher               messagequeue.Publisher
-		analyticsReporter                  analytics.EventReporter
-		userDataManager                    types.UserDataManager
-		secretGenerator                    random.Generator
-		userIDFetcher                      func(*http.Request) string
-		authSettings                       *authservice.Config
-		sessionContextDataFetcher          func(*http.Request) (*sessions.ContextData, error)
-		featureFlagManager                 featureflags.FeatureFlagManager
+		accountUserMembershipDataManager types.AccountUserMembershipDataManager
+		accountInvitationDataManager     types.AccountInvitationDataManager
+		passwordResetTokenDataManager    types.PasswordResetTokenDataManager
+		tracer                           tracing.Tracer
+		authenticator                    authentication.Authenticator
+		logger                           logging.Logger
+		encoderDecoder                   encoding.ServerEncoderDecoder
+		dataChangesPublisher             messagequeue.Publisher
+		analyticsReporter                analytics.EventReporter
+		userDataManager                  types.UserDataManager
+		secretGenerator                  random.Generator
+		userIDFetcher                    func(*http.Request) string
+		authSettings                     *authservice.Config
+		sessionContextDataFetcher        func(*http.Request) (*sessions.ContextData, error)
+		featureFlagManager               featureflags.FeatureFlagManager
 	}
 )
 
@@ -56,8 +56,8 @@ func ProvideUsersService(
 	authSettings *authservice.Config,
 	logger logging.Logger,
 	userDataManager types.UserDataManager,
-	householdInvitationDataManager types.HouseholdInvitationDataManager,
-	householdUserMembershipDataManager types.HouseholdUserMembershipDataManager,
+	accountInvitationDataManager types.AccountInvitationDataManager,
+	accountUserMembershipDataManager types.AccountUserMembershipDataManager,
 	authenticator authentication.Authenticator,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
@@ -79,21 +79,21 @@ func ProvideUsersService(
 	}
 
 	s := &service{
-		logger:                             logging.EnsureLogger(logger).WithName(serviceName),
-		userDataManager:                    userDataManager,
-		householdInvitationDataManager:     householdInvitationDataManager,
-		authenticator:                      authenticator,
-		userIDFetcher:                      routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		sessionContextDataFetcher:          sessions.FetchContextFromRequest,
-		encoderDecoder:                     encoder,
-		authSettings:                       authSettings,
-		secretGenerator:                    secretGenerator,
-		householdUserMembershipDataManager: householdUserMembershipDataManager,
-		tracer:                             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		dataChangesPublisher:               dataChangesPublisher,
-		passwordResetTokenDataManager:      passwordResetTokenDataManager,
-		featureFlagManager:                 featureFlagManager,
-		analyticsReporter:                  analyticsReporter,
+		logger:                           logging.EnsureLogger(logger).WithName(serviceName),
+		userDataManager:                  userDataManager,
+		accountInvitationDataManager:     accountInvitationDataManager,
+		authenticator:                    authenticator,
+		userIDFetcher:                    routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
+		sessionContextDataFetcher:        sessions.FetchContextFromRequest,
+		encoderDecoder:                   encoder,
+		authSettings:                     authSettings,
+		secretGenerator:                  secretGenerator,
+		accountUserMembershipDataManager: accountUserMembershipDataManager,
+		tracer:                           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		dataChangesPublisher:             dataChangesPublisher,
+		passwordResetTokenDataManager:    passwordResetTokenDataManager,
+		featureFlagManager:               featureFlagManager,
+		analyticsReporter:                analyticsReporter,
 	}
 
 	return s, nil

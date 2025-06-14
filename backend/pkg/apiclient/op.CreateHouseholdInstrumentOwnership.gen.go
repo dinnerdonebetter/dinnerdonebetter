@@ -9,11 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (c *Client) CreateHouseholdInstrumentOwnership(
+func (c *Client) CreateAccountInstrumentOwnership(
 	ctx context.Context,
-	input *HouseholdInstrumentOwnershipCreationRequestInput,
+	input *AccountInstrumentOwnershipCreationRequestInput,
 	reqMods ...RequestModifier,
-) (*HouseholdInstrumentOwnership, error) {
+) (*AccountInstrumentOwnership, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -23,19 +23,19 @@ func (c *Client) CreateHouseholdInstrumentOwnership(
 		return nil, ErrNilInputProvided
 	}
 
-	u := c.BuildURL(ctx, nil, "/api/v1/households/instruments")
+	u := c.BuildURL(ctx, nil, "/api/v1/accounts/instruments")
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a HouseholdInstrumentOwnership")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a AccountInstrumentOwnership")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *APIResponse[*HouseholdInstrumentOwnership]
+	var apiResponse *APIResponse[*AccountInstrumentOwnership]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading HouseholdInstrumentOwnership creation response")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading AccountInstrumentOwnership creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

@@ -21,7 +21,7 @@ func BuildFakeUserAccountStatusUpdateInput() *types.UserAccountStatusUpdateInput
 func BuildFakeModifyUserPermissionsInput() *types.ModifyUserPermissionsInput {
 	return &types.ModifyUserPermissionsInput{
 		Reason:  fake.Sentence(10),
-		NewRole: authorization.HouseholdMemberRoleName,
+		NewRole: authorization.AccountMemberRoleName,
 	}
 }
 

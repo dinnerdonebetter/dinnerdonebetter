@@ -4,8 +4,8 @@ package apiclient
 
 type (
 	TokenResponse struct {
-		HouseholdID string `json:"householdID"`
-		Token       string `json:"token"`
-		UserID      string `json:"userID"`
+		AccountID string `json:"accountID"`
+		Token     string `json:"token"`
+		UserID    string `json:"userID"`
 	}
 )

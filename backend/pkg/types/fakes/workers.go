@@ -23,7 +23,7 @@ func BuildFakeFinalizeMealPlansResponse() *types.FinalizeMealPlansResponse {
 // BuildFakeCreateMealPlanTasksRequest builds a faked Webhook.
 func BuildFakeCreateMealPlanTasksRequest() *types.CreateMealPlanTasksRequest {
 	return &types.CreateMealPlanTasksRequest{
-		HouseholdID: BuildFakeID(),
+		AccountID: BuildFakeID(),
 	}
 }
 
@@ -37,7 +37,7 @@ func BuildFakeCreateMealPlanTasksResponse() *types.CreateMealPlanTasksResponse {
 // BuildFakeInitializeMealPlanGroceryListRequest builds a faked FinalizeMealPlansResponse.
 func BuildFakeInitializeMealPlanGroceryListRequest() *types.InitializeMealPlanGroceryListRequest {
 	return &types.InitializeMealPlanGroceryListRequest{
-		HouseholdID: BuildFakeID(),
+		AccountID: BuildFakeID(),
 	}
 }
 

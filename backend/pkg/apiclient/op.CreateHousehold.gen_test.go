@@ -11,26 +11,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_CreateHousehold(T *testing.T) {
+func TestClient_CreateAccount(T *testing.T) {
 	T.Parallel()
 
-	const expectedPathFormat = "/api/v1/households"
+	const expectedPathFormat = "/api/v1/accounts"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 
-		data := &Household{}
-		expected := &APIResponse[*Household]{
+		data := &Account{}
+		expected := &APIResponse[*Account]{
 			Data: data,
 		}
 
-		exampleInput := &HouseholdCreationRequestInput{}
+		exampleInput := &AccountCreationRequestInput{}
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat)
 		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
-		actual, err := c.CreateHousehold(ctx, exampleInput)
+		actual, err := c.CreateAccount(ctx, exampleInput)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
@@ -42,10 +42,10 @@ func TestClient_CreateHousehold(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleInput := &HouseholdCreationRequestInput{}
+		exampleInput := &AccountCreationRequestInput{}
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.CreateHousehold(ctx, exampleInput)
+		actual, err := c.CreateAccount(ctx, exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)
@@ -56,11 +56,11 @@ func TestClient_CreateHousehold(T *testing.T) {
 
 		ctx := context.Background()
 
-		exampleInput := &HouseholdCreationRequestInput{}
+		exampleInput := &AccountCreationRequestInput{}
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.CreateHousehold(ctx, exampleInput)
+		actual, err := c.CreateAccount(ctx, exampleInput)
 
 		require.Nil(t, actual)
 		assert.Error(t, err)

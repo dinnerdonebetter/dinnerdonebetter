@@ -7,10 +7,10 @@ type (
 		Webhooks                         map[string][]Webhook                     `json:"webhooks"`
 		ServiceSettingConfigurations     map[string][]ServiceSettingConfiguration `json:"serviceSettingConfigurations"`
 		AuditLogEntries                  map[string][]AuditLogEntry               `json:"auditLogEntries"`
-		ReceivedInvites                  []HouseholdInvitation                    `json:"receivedInvites"`
-		SentInvites                      []HouseholdInvitation                    `json:"sentInvites"`
+		ReceivedInvites                  []AccountInvitation                      `json:"receivedInvites"`
+		SentInvites                      []AccountInvitation                      `json:"sentInvites"`
 		UserServiceSettingConfigurations []ServiceSettingConfiguration            `json:"userServiceSettingConfigurations"`
 		UserAuditLogEntries              []AuditLogEntry                          `json:"userAuditLogEntries"`
-		Households                       []Household                              `json:"households"`
+		Accounts                         []Account                                `json:"accounts"`
 	}
 )

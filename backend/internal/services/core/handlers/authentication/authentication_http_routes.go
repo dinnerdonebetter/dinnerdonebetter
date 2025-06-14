@@ -131,16 +131,16 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
-		defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
+		defaultAccountID, err := s.accountMembershipManager.GetDefaultAccountIDForUser(ctx, user.ID)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "fetching user memberships")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
-		responseDetails.CurrentHouseholdID = defaultHouseholdID
+		responseDetails.CurrentAccountID = defaultAccountID
 
-		responseCode, err := s.postLogin(ctx, user, defaultHouseholdID)
+		responseCode, err := s.postLogin(ctx, user, defaultAccountID)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "handling login status")
 			errRes := types.NewAPIErrorResponse(staticError, types.ErrTalkingToDatabase, responseDetails)
@@ -160,9 +160,9 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		responseValue := &types.APIResponse[*types.TokenResponse]{
 			Details: responseDetails,
 			Data: &types.TokenResponse{
-				HouseholdID: defaultHouseholdID,
-				UserID:      user.ID,
-				Token:       token,
+				AccountID: defaultAccountID,
+				UserID:    user.ID,
+				Token:     token,
 			},
 		}
 
@@ -170,14 +170,14 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 	}
 }
 
-func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseholdID string) (int, error) {
+func (s *service) postLogin(ctx context.Context, user *types.User, defaultAccountID string) (int, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.UserLoggedInServiceEventType,
-		HouseholdID: defaultHouseholdID,
-		UserID:      user.ID,
+		EventType: types.UserLoggedInServiceEventType,
+		AccountID: defaultAccountID,
+		UserID:    user.ID,
 	}
 
 	if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -186,10 +186,10 @@ func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseh
 	}
 
 	if err := s.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
-		"username":          user.Username,
-		"default_household": defaultHouseholdID,
-		"first_name":        user.FirstName,
-		"last_name":         user.LastName,
+		"username":        user.Username,
+		"default_account": defaultAccountID,
+		"first_name":      user.FirstName,
+		"last_name":       user.LastName,
 	}); err != nil {
 		return http.StatusAccepted, observability.PrepareError(err, span, "identifying user for analytics")
 	}
@@ -392,15 +392,15 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	}
 	getUserTimer.Stop()
 
-	defaultHouseholdTimer := timing.NewMetric("database").WithDesc("get default household for user").Start()
-	defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	defaultAccountTimer := timing.NewMetric("database").WithDesc("get default account for user").Start()
+	defaultAccountID, err := s.accountMembershipManager.GetDefaultAccountIDForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user memberships")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
-	defaultHouseholdTimer.Stop()
+	defaultAccountTimer.Stop()
 
 	var token string
 	token, err = s.tokenIssuer.IssueToken(ctx, user, s.config.TokenLifetime)
@@ -414,13 +414,13 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	responseValue := &types.APIResponse[*types.TokenResponse]{
 		Details: responseDetails,
 		Data: &types.TokenResponse{
-			HouseholdID: defaultHouseholdID,
-			UserID:      user.ID,
-			Token:       token,
+			AccountID: defaultAccountID,
+			UserID:    user.ID,
+			Token:     token,
 		},
 	}
 
-	responseCode, err := s.postLogin(ctx, user, defaultHouseholdID)
+	responseCode, err := s.postLogin(ctx, user, defaultAccountID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "handling login status")
 		errorResponse := &types.APIResponse[any]{
@@ -485,10 +485,10 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	statusResponse := &types.UserStatusResponse{
-		ActiveHousehold:          sessionCtxData.ActiveHouseholdID,
+		ActiveAccount:            sessionCtxData.ActiveAccountID,
 		AccountStatus:            sessionCtxData.Requester.AccountStatus,
 		AccountStatusExplanation: sessionCtxData.Requester.AccountStatusExplanation,
 		UserIsAuthenticated:      true,

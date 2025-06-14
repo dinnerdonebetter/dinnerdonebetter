@@ -35,9 +35,9 @@ const SessionContextDataKey routing.ContextKey = "session_context_data"
 type ContextData struct {
 	_ struct{} `json:"-"`
 
-	HouseholdPermissions map[string]authorization.HouseholdRolePermissionsChecker `json:"-"`
-	Requester            RequesterInfo                                            `json:"-"`
-	ActiveHouseholdID    string                                                   `json:"-"`
+	AccountPermissions map[string]authorization.AccountRolePermissionsChecker `json:"-"`
+	Requester          RequesterInfo                                          `json:"-"`
+	ActiveAccountID    string                                                 `json:"-"`
 }
 
 // RequesterInfo contains data relevant to the user making a request.
@@ -62,14 +62,14 @@ func (x *ContextData) GetServicePermissions() authorization.ServiceRolePermissio
 	return x.Requester.ServicePermissions
 }
 
-// GetActiveHouseholdID is a simple getter.
-func (x *ContextData) GetActiveHouseholdID() string {
-	return x.ActiveHouseholdID
+// GetActiveAccountID is a simple getter.
+func (x *ContextData) GetActiveAccountID() string {
+	return x.ActiveAccountID
 }
 
-// HouseholdRolePermissionsChecker returns the relevant HouseholdRolePermissionsChecker.
-func (x *ContextData) HouseholdRolePermissionsChecker() authorization.HouseholdRolePermissionsChecker {
-	return x.HouseholdPermissions[x.ActiveHouseholdID]
+// AccountRolePermissionsChecker returns the relevant AccountRolePermissionsChecker.
+func (x *ContextData) AccountRolePermissionsChecker() authorization.AccountRolePermissionsChecker {
+	return x.AccountPermissions[x.ActiveAccountID]
 }
 
 // ServiceRolePermissionChecker returns the relevant ServiceRolePermissionChecker.
@@ -81,7 +81,7 @@ func (x *ContextData) ServiceRolePermissionChecker() authorization.ServiceRolePe
 func (x *ContextData) AttachToLogger(logger logging.Logger) logging.Logger {
 	if x != nil {
 		logger = logger.WithValue(keys.RequesterIDKey, x.Requester.UserID).
-			WithValue(keys.ActiveHouseholdIDKey, x.ActiveHouseholdID)
+			WithValue(keys.ActiveAccountIDKey, x.ActiveAccountID)
 	}
 
 	return logger

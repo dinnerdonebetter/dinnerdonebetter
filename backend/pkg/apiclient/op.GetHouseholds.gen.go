@@ -9,11 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (c *Client) GetHouseholds(
+func (c *Client) GetAccounts(
 	ctx context.Context,
 	filter *QueryFilter,
 	reqMods ...RequestModifier,
-) (*QueryFilteredResult[Household], error) {
+) (*QueryFilteredResult[Account], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -26,26 +26,26 @@ func (c *Client) GetHouseholds(
 
 	values := filter.ToValues()
 
-	u := c.BuildURL(ctx, values, "/api/v1/households")
+	u := c.BuildURL(ctx, values, "/api/v1/accounts")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of Household")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to fetch list of Account")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *APIResponse[[]*Household]
+	var apiResponse *APIResponse[[]*Account]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of Household")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading response for list of Account")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {
 		return nil, err
 	}
 
-	result := &QueryFilteredResult[Household]{
+	result := &QueryFilteredResult[Account]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
 	}

@@ -4,9 +4,9 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreationInput creates a HouseholdInvitationDatabaseCreationInput from a HouseholdInvitationCreationRequestInput.
-func ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreationInput(input *types.HouseholdInvitationCreationRequestInput) *types.HouseholdInvitationDatabaseCreationInput {
-	x := &types.HouseholdInvitationDatabaseCreationInput{
+// ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput creates a AccountInvitationDatabaseCreationInput from a AccountInvitationCreationRequestInput.
+func ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput(input *types.AccountInvitationCreationRequestInput) *types.AccountInvitationDatabaseCreationInput {
+	x := &types.AccountInvitationDatabaseCreationInput{
 		ToEmail: input.ToEmail,
 		ToName:  input.ToName,
 	}
@@ -18,35 +18,35 @@ func ConvertHouseholdInvitationCreationInputToHouseholdInvitationDatabaseCreatio
 	return x
 }
 
-// ConvertHouseholdInvitationToHouseholdInvitationCreationInput builds a faked HouseholdInvitationCreationRequestInput.
-func ConvertHouseholdInvitationToHouseholdInvitationCreationInput(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationCreationRequestInput {
-	return &types.HouseholdInvitationCreationRequestInput{
-		Note:      householdInvitation.Note,
-		ToName:    householdInvitation.ToName,
-		ToEmail:   householdInvitation.ToEmail,
-		ExpiresAt: &householdInvitation.ExpiresAt,
+// ConvertAccountInvitationToAccountInvitationCreationInput builds a faked AccountInvitationCreationRequestInput.
+func ConvertAccountInvitationToAccountInvitationCreationInput(accountInvitation *types.AccountInvitation) *types.AccountInvitationCreationRequestInput {
+	return &types.AccountInvitationCreationRequestInput{
+		Note:      accountInvitation.Note,
+		ToName:    accountInvitation.ToName,
+		ToEmail:   accountInvitation.ToEmail,
+		ExpiresAt: &accountInvitation.ExpiresAt,
 	}
 }
 
-// ConvertHouseholdInvitationToHouseholdInvitationUpdateInput builds a faked HouseholdInvitationUpdateRequestInput.
-func ConvertHouseholdInvitationToHouseholdInvitationUpdateInput(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationUpdateRequestInput {
-	return &types.HouseholdInvitationUpdateRequestInput{
-		Token: householdInvitation.Token,
-		Note:  householdInvitation.Note,
+// ConvertAccountInvitationToAccountInvitationUpdateInput builds a faked AccountInvitationUpdateRequestInput.
+func ConvertAccountInvitationToAccountInvitationUpdateInput(accountInvitation *types.AccountInvitation) *types.AccountInvitationUpdateRequestInput {
+	return &types.AccountInvitationUpdateRequestInput{
+		Token: accountInvitation.Token,
+		Note:  accountInvitation.Note,
 	}
 }
 
-// ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput builds a faked HouseholdInvitationCreationRequestInput.
-func ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput(householdInvitation *types.HouseholdInvitation) *types.HouseholdInvitationDatabaseCreationInput {
-	return &types.HouseholdInvitationDatabaseCreationInput{
-		ID:                     householdInvitation.ID,
-		FromUser:               householdInvitation.FromUser.ID,
-		ToUser:                 householdInvitation.ToUser,
-		ToName:                 householdInvitation.ToName,
-		Note:                   householdInvitation.Note,
-		ToEmail:                householdInvitation.ToEmail,
-		Token:                  householdInvitation.Token,
-		DestinationHouseholdID: householdInvitation.DestinationHousehold.ID,
-		ExpiresAt:              householdInvitation.ExpiresAt,
+// ConvertAccountInvitationToAccountInvitationDatabaseCreationInput builds a faked AccountInvitationCreationRequestInput.
+func ConvertAccountInvitationToAccountInvitationDatabaseCreationInput(accountInvitation *types.AccountInvitation) *types.AccountInvitationDatabaseCreationInput {
+	return &types.AccountInvitationDatabaseCreationInput{
+		ID:                   accountInvitation.ID,
+		FromUser:             accountInvitation.FromUser.ID,
+		ToUser:               accountInvitation.ToUser,
+		ToName:               accountInvitation.ToName,
+		Note:                 accountInvitation.Note,
+		ToEmail:              accountInvitation.ToEmail,
+		Token:                accountInvitation.Token,
+		DestinationAccountID: accountInvitation.DestinationAccount.ID,
+		ExpiresAt:            accountInvitation.ExpiresAt,
 	}
 }

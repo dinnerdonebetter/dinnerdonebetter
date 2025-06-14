@@ -11,7 +11,7 @@ import (
 // BuildFakeSessionContextData builds a faked ContextData.
 func BuildFakeSessionContextData() *sessions.ContextData {
 	return &sessions.ContextData{
-		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{},
+		AccountPermissions: map[string]authorization.AccountRolePermissionsChecker{},
 		Requester: sessions.RequesterInfo{
 			ServicePermissions:       nil,
 			AccountStatus:            string(types.GoodStandingUserAccountStatus),
@@ -20,7 +20,7 @@ func BuildFakeSessionContextData() *sessions.ContextData {
 			EmailAddress:             fake.Email(),
 			Username:                 buildUniqueString(),
 		},
-		ActiveHouseholdID: BuildFakeID(),
+		ActiveAccountID: BuildFakeID(),
 	}
 }
 
@@ -28,23 +28,23 @@ func BuildFakeSessionContextData() *sessions.ContextData {
 func BuildFakeUserPermissionModificationInput() *types.ModifyUserPermissionsInput {
 	return &types.ModifyUserPermissionsInput{
 		Reason:  fake.Sentence(10),
-		NewRole: authorization.HouseholdMemberRole.String(),
+		NewRole: authorization.AccountMemberRole.String(),
 	}
 }
 
-// BuildFakeTransferHouseholdOwnershipInput builds a faked HouseholdOwnershipTransferInput.
-func BuildFakeTransferHouseholdOwnershipInput() *types.HouseholdOwnershipTransferInput {
-	return &types.HouseholdOwnershipTransferInput{
+// BuildFakeTransferAccountOwnershipInput builds a faked AccountOwnershipTransferInput.
+func BuildFakeTransferAccountOwnershipInput() *types.AccountOwnershipTransferInput {
+	return &types.AccountOwnershipTransferInput{
 		Reason:       fake.Sentence(10),
 		CurrentOwner: fake.UUID(),
 		NewOwner:     fake.UUID(),
 	}
 }
 
-// BuildFakeChangeActiveHouseholdInput builds a faked ChangeActiveHouseholdInput.
-func BuildFakeChangeActiveHouseholdInput() *types.ChangeActiveHouseholdInput {
-	return &types.ChangeActiveHouseholdInput{
-		HouseholdID: fake.UUID(),
+// BuildFakeChangeActiveAccountInput builds a faked ChangeActiveAccountInput.
+func BuildFakeChangeActiveAccountInput() *types.ChangeActiveAccountInput {
+	return &types.ChangeActiveAccountInput{
+		AccountID: fake.UUID(),
 	}
 }
 
@@ -54,7 +54,7 @@ func BuildFakeUserStatusResponse() *types.UserStatusResponse {
 		UserID:                   BuildFakeID(),
 		AccountStatus:            string(types.GoodStandingUserAccountStatus),
 		AccountStatusExplanation: "",
-		ActiveHousehold:          BuildFakeID(),
+		ActiveAccount:            BuildFakeID(),
 		UserIsAuthenticated:      true,
 	}
 }
@@ -62,9 +62,9 @@ func BuildFakeUserStatusResponse() *types.UserStatusResponse {
 // BuildFakeTokenResponse builds a faked TokenResponse.
 func BuildFakeTokenResponse() *types.TokenResponse {
 	return &types.TokenResponse{
-		UserID:      BuildFakeID(),
-		HouseholdID: BuildFakeID(),
-		Token:       fake.UUID(),
+		UserID:    BuildFakeID(),
+		AccountID: BuildFakeID(),
+		Token:     fake.UUID(),
 	}
 }
 

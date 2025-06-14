@@ -35,7 +35,7 @@ func TestBuildInviteMemberEmail(T *testing.T) {
 		t.Parallel()
 
 		user := fakes.BuildFakeUser()
-		invitation := fakes.BuildFakeHouseholdInvitation()
+		invitation := fakes.BuildFakeAccountInvitation()
 
 		actual, err := BuildInviteMemberEmail(user, invitation, &email.EnvironmentConfig{})
 		assert.NoError(t, err)

@@ -182,7 +182,7 @@ func TestMealPlansService_ReadMealPlanHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(helper.exampleMealPlan, nil)
 		helper.service.mealPlanningDataManager = mealPlanDataManager
 
@@ -222,7 +222,7 @@ func TestMealPlansService_ReadMealPlanHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return((*types.MealPlan)(nil), sql.ErrNoRows)
 		helper.service.mealPlanningDataManager = mealPlanDataManager
 
@@ -247,7 +247,7 @@ func TestMealPlansService_ReadMealPlanHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return((*types.MealPlan)(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = mealPlanDataManager
 
@@ -275,9 +275,9 @@ func TestMealPlansService_ListMealPlanHandler(T *testing.T) {
 
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
-			"GetMealPlansForHousehold",
+			"GetMealPlansForAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return(exampleMealPlanList, nil)
 		helper.service.mealPlanningDataManager = mealPlanDataManager
@@ -315,9 +315,9 @@ func TestMealPlansService_ListMealPlanHandler(T *testing.T) {
 
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
-			"GetMealPlansForHousehold",
+			"GetMealPlansForAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.MealPlan])(nil), sql.ErrNoRows)
 		helper.service.mealPlanningDataManager = mealPlanDataManager
@@ -340,9 +340,9 @@ func TestMealPlansService_ListMealPlanHandler(T *testing.T) {
 
 		mealPlanDataManager := mocktypes.NewMealPlanningDataManagerMock()
 		mealPlanDataManager.MealPlanDataManagerMock.On(
-			"GetMealPlansForHousehold",
+			"GetMealPlansForAccount",
 			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 			mock.IsType(&filtering.QueryFilter{}),
 		).Return((*filtering.QueryFilteredResult[types.MealPlan])(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = mealPlanDataManager
@@ -381,7 +381,7 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(helper.exampleMealPlan, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
@@ -487,7 +487,7 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return((*types.MealPlan)(nil), sql.ErrNoRows)
 		helper.service.mealPlanningDataManager = mealPlanDataManager
 
@@ -521,7 +521,7 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return((*types.MealPlan)(nil), errors.New("blah"))
 		helper.service.mealPlanningDataManager = mealPlanDataManager
 
@@ -555,7 +555,7 @@ func TestMealPlansService_UpdateMealPlanHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(helper.exampleMealPlan, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
@@ -590,14 +590,14 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 			"MealPlanExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(true, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
 			"ArchiveMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(nil)
 		helper.service.mealPlanningDataManager = dbManager
 
@@ -644,7 +644,7 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 			"MealPlanExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(false, nil)
 		helper.service.mealPlanningDataManager = mealPlanDataManager
 
@@ -669,7 +669,7 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 			"MealPlanExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.mealPlanningDataManager = mealPlanDataManager
 
@@ -694,14 +694,14 @@ func TestMealPlansService_ArchiveMealPlanHandler(T *testing.T) {
 			"MealPlanExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(true, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
 			"ArchiveMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(errors.New("blah"))
 		helper.service.mealPlanningDataManager = dbManager
 
@@ -731,14 +731,14 @@ func TestMealPlansService_FinalizeMealPlanHandler(T *testing.T) {
 			"GetMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(helper.exampleMealPlan, nil)
 
 		dbManager.MealPlanDataManagerMock.On(
 			"AttemptToFinalizeMealPlan",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
-			helper.exampleHousehold.ID,
+			helper.exampleAccount.ID,
 		).Return(true, nil)
 		helper.service.mealPlanningDataManager = dbManager
 

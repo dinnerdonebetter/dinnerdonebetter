@@ -12,10 +12,10 @@ import (
 type Querier interface {
 	AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id string) error
 	AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id string) error
-	AddToHouseholdDuringCreation(ctx context.Context, db DBTX, arg *AddToHouseholdDuringCreationParams) error
-	AddUserToHousehold(ctx context.Context, db DBTX, arg *AddUserToHouseholdParams) error
-	ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHouseholdParams) (int64, error)
-	ArchiveHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *ArchiveHouseholdInstrumentOwnershipParams) (int64, error)
+	AddToAccountDuringCreation(ctx context.Context, db DBTX, arg *AddToAccountDuringCreationParams) error
+	AddUserToAccount(ctx context.Context, db DBTX, arg *AddUserToAccountParams) error
+	ArchiveAccount(ctx context.Context, db DBTX, arg *ArchiveAccountParams) (int64, error)
+	ArchiveAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *ArchiveAccountInstrumentOwnershipParams) (int64, error)
 	ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealParams) (int64, error)
 	ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) (int64, error)
 	ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *ArchiveMealPlanEventParams) (int64, error)
@@ -54,10 +54,10 @@ type Querier interface {
 	ArchiveValidVessel(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) (int64, error)
 	ArchiveWebhookTriggerEvent(ctx context.Context, db DBTX, arg *ArchiveWebhookTriggerEventParams) (int64, error)
-	AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) (int64, error)
+	AttachAccountInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachAccountInvitationsToUserIDParams) (int64, error)
 	ChangeMealPlanTaskStatus(ctx context.Context, db DBTX, arg *ChangeMealPlanTaskStatusParams) error
-	CheckHouseholdInstrumentOwnershipExistence(ctx context.Context, db DBTX, arg *CheckHouseholdInstrumentOwnershipExistenceParams) (bool, error)
-	CheckHouseholdInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error)
+	CheckAccountInstrumentOwnershipExistence(ctx context.Context, db DBTX, arg *CheckAccountInstrumentOwnershipExistenceParams) (bool, error)
+	CheckAccountInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckMealExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckMealPlanEventExistence(ctx context.Context, db DBTX, arg *CheckMealPlanEventExistenceParams) (bool, error)
 	CheckMealPlanExistence(ctx context.Context, db DBTX, arg *CheckMealPlanExistenceParams) (bool, error)
@@ -96,10 +96,10 @@ type Querier interface {
 	CheckValidityOfValidIngredientStateIngredientPair(ctx context.Context, db DBTX, arg *CheckValidityOfValidIngredientStateIngredientPairParams) (bool, error)
 	CheckWebhookExistence(ctx context.Context, db DBTX, arg *CheckWebhookExistenceParams) (bool, error)
 	CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateAuditLogEntryParams) error
-	CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error
-	CreateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateHouseholdInstrumentOwnershipParams) error
-	CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *CreateHouseholdInvitationParams) error
-	CreateHouseholdUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateHouseholdUserMembershipForNewUserParams) error
+	CreateAccount(ctx context.Context, db DBTX, arg *CreateAccountParams) error
+	CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error
+	CreateAccountInvitation(ctx context.Context, db DBTX, arg *CreateAccountInvitationParams) error
+	CreateAccountUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateAccountUserMembershipForNewUserParams) error
 	CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error
 	CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error
 	CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPlanParams) error
@@ -160,24 +160,24 @@ type Querier interface {
 	GetAllRecipeStepIngredientsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetAllRecipeStepIngredientsForRecipeRow, error)
 	GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error)
 	GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow, error)
-	GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdParams) ([]*GetAuditLogEntriesForHouseholdRow, error)
-	GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdAndResourceTypeParams) ([]*GetAuditLogEntriesForHouseholdAndResourceTypeRow, error)
+	GetAuditLogEntriesForAccount(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountParams) ([]*GetAuditLogEntriesForAccountRow, error)
+	GetAuditLogEntriesForAccountAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountAndResourceTypeParams) ([]*GetAuditLogEntriesForAccountAndResourceTypeRow, error)
 	GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserParams) ([]*GetAuditLogEntriesForUserRow, error)
 	GetAuditLogEntriesForUserAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserAndResourceTypeParams) ([]*GetAuditLogEntriesForUserAndResourceTypeRow, error)
 	GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error)
-	GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error)
+	GetDefaultAccountIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error)
 	GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX, id string) (sql.NullString, error)
 	GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error)
 	GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansForPlanningRow, error)
 	GetFinalizedMealPlansWithoutGroceryListInit(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansWithoutGroceryListInitRow, error)
-	GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetHouseholdByIDWithMembershipsRow, error)
-	GetHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipParams) (*GetHouseholdInstrumentOwnershipRow, error)
-	GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipsParams) ([]*GetHouseholdInstrumentOwnershipsRow, error)
-	GetHouseholdInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByEmailAndTokenParams) (*GetHouseholdInvitationByEmailAndTokenRow, error)
-	GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByHouseholdAndIDParams) (*GetHouseholdInvitationByHouseholdAndIDRow, error)
-	GetHouseholdInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByTokenAndIDParams) (*GetHouseholdInvitationByTokenAndIDRow, error)
-	GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*HouseholdUserMemberships, error)
-	GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHouseholdsForUserParams) ([]*GetHouseholdsForUserRow, error)
+	GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetAccountByIDWithMembershipsRow, error)
+	GetAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipParams) (*GetAccountInstrumentOwnershipRow, error)
+	GetAccountInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipsParams) ([]*GetAccountInstrumentOwnershipsRow, error)
+	GetAccountInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetAccountInvitationByEmailAndTokenParams) (*GetAccountInvitationByEmailAndTokenRow, error)
+	GetAccountInvitationByAccountAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByAccountAndIDParams) (*GetAccountInvitationByAccountAndIDRow, error)
+	GetAccountInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByTokenAndIDParams) (*GetAccountInvitationByTokenAndIDRow, error)
+	GetAccountUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*AccountUserMemberships, error)
+	GetAccountsForUser(ctx context.Context, db DBTX, arg *GetAccountsForUserParams) ([]*GetAccountsForUserRow, error)
 	GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error)
 	GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error)
 	GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanEventParams) (*MealPlanEvents, error)
@@ -192,7 +192,7 @@ type Querier interface {
 	GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealPlanOptionsParams) ([]*GetMealPlanOptionsRow, error)
 	GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error)
 	GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskRow, error)
-	GetMealPlansForHousehold(ctx context.Context, db DBTX, arg *GetMealPlansForHouseholdParams) ([]*GetMealPlansForHouseholdRow, error)
+	GetMealPlansForAccount(ctx context.Context, db DBTX, arg *GetMealPlansForAccountParams) ([]*GetMealPlansForAccountRow, error)
 	GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error)
 	GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error)
 	GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
@@ -241,9 +241,9 @@ type Querier interface {
 	GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetServiceSetting(ctx context.Context, db DBTX, id string) (*ServiceSettings, error)
 	GetServiceSettingConfigurationByID(ctx context.Context, db DBTX, id string) (*GetServiceSettingConfigurationByIDRow, error)
-	GetServiceSettingConfigurationForHouseholdBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForHouseholdBySettingNameParams) (*GetServiceSettingConfigurationForHouseholdBySettingNameRow, error)
+	GetServiceSettingConfigurationForAccountBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForAccountBySettingNameParams) (*GetServiceSettingConfigurationForAccountBySettingNameRow, error)
 	GetServiceSettingConfigurationForUserBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForUserBySettingNameParams) (*GetServiceSettingConfigurationForUserBySettingNameRow, error)
-	GetServiceSettingConfigurationsForHousehold(ctx context.Context, db DBTX, belongsToHousehold string) ([]*GetServiceSettingConfigurationsForHouseholdRow, error)
+	GetServiceSettingConfigurationsForAccount(ctx context.Context, db DBTX, belongsToAccount string) ([]*GetServiceSettingConfigurationsForAccountRow, error)
 	GetServiceSettingConfigurationsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetServiceSettingConfigurationsForUserRow, error)
 	GetServiceSettings(ctx context.Context, db DBTX, arg *GetServiceSettingsParams) ([]*GetServiceSettingsRow, error)
 	GetUserByEmail(ctx context.Context, db DBTX, emailAddress string) (*GetUserByEmailRow, error)
@@ -309,23 +309,23 @@ type Querier interface {
 	GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVesselsParams) ([]*GetValidVesselsRow, error)
 	GetValidVesselsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidVesselsWithIDsRow, error)
 	GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) ([]*GetWebhookRow, error)
-	GetWebhooksForHousehold(ctx context.Context, db DBTX, arg *GetWebhooksForHouseholdParams) ([]*GetWebhooksForHouseholdRow, error)
-	GetWebhooksForHouseholdAndEvent(ctx context.Context, db DBTX, arg *GetWebhooksForHouseholdAndEventParams) ([]*Webhooks, error)
+	GetWebhooksForAccount(ctx context.Context, db DBTX, arg *GetWebhooksForAccountParams) ([]*GetWebhooksForAccountRow, error)
+	GetWebhooksForAccountAndEvent(ctx context.Context, db DBTX, arg *GetWebhooksForAccountAndEventParams) ([]*Webhooks, error)
 	ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*ListAllMealPlanTasksByMealPlanRow, error)
 	ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, recipeID string) ([]*ListAllRecipePrepTasksByRecipeRow, error)
 	ListIncompleteMealPlanTasksByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTasksByMealPlanOptionRow, error)
 	MarkEmailAddressAsUnverified(ctx context.Context, db DBTX, id string) error
 	MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *MarkEmailAddressAsVerifiedParams) error
-	MarkHouseholdUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkHouseholdUserMembershipAsUserDefaultParams) error
+	MarkAccountUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkAccountUserMembershipAsUserDefaultParams) error
 	MarkMealPlanAsGroceryListInitialized(ctx context.Context, db DBTX, id string) error
 	MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error
 	MarkTwoFactorSecretAsUnverified(ctx context.Context, db DBTX, arg *MarkTwoFactorSecretAsUnverifiedParams) error
 	MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, id string) error
 	MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX, arg *MealPlanEventIsEligibleForVotingParams) (bool, error)
-	ModifyHouseholdUserPermissions(ctx context.Context, db DBTX, arg *ModifyHouseholdUserPermissionsParams) error
+	ModifyAccountUserPermissions(ctx context.Context, db DBTX, arg *ModifyAccountUserPermissionsParams) error
 	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)
 	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
-	RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error
+	RemoveUserFromAccount(ctx context.Context, db DBTX, arg *RemoveUserFromAccountParams) error
 	SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error)
 	SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*ServiceSettings, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
@@ -339,13 +339,13 @@ type Querier interface {
 	SearchValidIngredientPreparationsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientPreparationsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientPreparationsByPreparationAndIngredientNameRow, error)
 	SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientsByPreparationAndIngredientNameRow, error)
 	SearchValidMeasurementUnitsByIngredientID(ctx context.Context, db DBTX, arg *SearchValidMeasurementUnitsByIngredientIDParams) ([]*SearchValidMeasurementUnitsByIngredientIDRow, error)
-	SetHouseholdInvitationStatus(ctx context.Context, db DBTX, arg *SetHouseholdInvitationStatusParams) error
+	SetAccountInvitationStatus(ctx context.Context, db DBTX, arg *SetAccountInvitationStatusParams) error
 	SetUserAccountStatus(ctx context.Context, db DBTX, arg *SetUserAccountStatusParams) (int64, error)
-	TransferHouseholdMembership(ctx context.Context, db DBTX, arg *TransferHouseholdMembershipParams) error
-	TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *TransferHouseholdOwnershipParams) error
-	UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) (int64, error)
-	UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateHouseholdInstrumentOwnershipParams) (int64, error)
-	UpdateHouseholdWebhookEncryptionKey(ctx context.Context, db DBTX, arg *UpdateHouseholdWebhookEncryptionKeyParams) (int64, error)
+	TransferAccountMembership(ctx context.Context, db DBTX, arg *TransferAccountMembershipParams) error
+	TransferAccountOwnership(ctx context.Context, db DBTX, arg *TransferAccountOwnershipParams) error
+	UpdateAccount(ctx context.Context, db DBTX, arg *UpdateAccountParams) (int64, error)
+	UpdateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateAccountInstrumentOwnershipParams) (int64, error)
+	UpdateAccountWebhookEncryptionKey(ctx context.Context, db DBTX, arg *UpdateAccountWebhookEncryptionKeyParams) (int64, error)
 	UpdateMealLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
 	UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) (int64, error)
 	UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateMealPlanEventParams) (int64, error)
@@ -392,7 +392,7 @@ type Querier interface {
 	UpdateValidPreparationVessel(ctx context.Context, db DBTX, arg *UpdateValidPreparationVesselParams) (int64, error)
 	UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateValidVesselParams) (int64, error)
 	UpdateValidVesselLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
-	UserIsHouseholdMember(ctx context.Context, db DBTX, arg *UserIsHouseholdMemberParams) (bool, error)
+	UserIsAccountMember(ctx context.Context, db DBTX, arg *UserIsAccountMemberParams) (bool, error)
 	ValidIngredientMeasurementUnitPairIsValid(ctx context.Context, db DBTX, arg *ValidIngredientMeasurementUnitPairIsValidParams) (bool, error)
 	ValidIngredientPreparationPairIsValid(ctx context.Context, db DBTX, arg *ValidIngredientPreparationPairIsValidParams) (bool, error)
 	ValidPreparationInstrumentPairIsValid(ctx context.Context, db DBTX, arg *ValidPreparationInstrumentPairIsValidParams) (bool, error)

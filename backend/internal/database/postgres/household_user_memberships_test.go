@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestQuerier_Integration_HouseholdUserMemberships(t *testing.T) {
+func TestQuerier_Integration_AccountUserMemberships(t *testing.T) {
 	if !runningContainerTests {
 		t.SkipNow()
 	}
@@ -32,63 +32,63 @@ func TestQuerier_Integration_HouseholdUserMemberships(t *testing.T) {
 	}(t)
 
 	exampleUser := createUserForTest(t, ctx, nil, dbc)
-	households, err := dbc.GetHouseholds(ctx, exampleUser.ID, nil)
+	accounts, err := dbc.GetAccounts(ctx, exampleUser.ID, nil)
 	assert.NoError(t, err)
-	assert.Len(t, households.Data, 1)
+	assert.Len(t, accounts.Data, 1)
 
-	household := fakes.BuildFakeHousehold()
-	household.BelongsToUser = exampleUser.ID
-	exampleHousehold := createHouseholdForTest(t, ctx, household, dbc)
+	account := fakes.BuildFakeAccount()
+	account.BelongsToUser = exampleUser.ID
+	exampleAccount := createAccountForTest(t, ctx, account, dbc)
 
 	memberUserIDs := []string{exampleUser.ID}
 
 	for i := 0; i < exampleQuantity; i++ {
 		newMember := createUserForTest(t, ctx, nil, dbc)
-		assert.NoError(t, dbc.addUserToHousehold(ctx, dbc.db, &types.HouseholdUserMembershipDatabaseCreationInput{
-			ID:            identifiers.New(),
-			Reason:        "testing",
-			UserID:        newMember.ID,
-			HouseholdID:   exampleHousehold.ID,
-			HouseholdRole: "household_member",
+		assert.NoError(t, dbc.addUserToAccount(ctx, dbc.db, &types.AccountUserMembershipDatabaseCreationInput{
+			ID:          identifiers.New(),
+			Reason:      "testing",
+			UserID:      newMember.ID,
+			AccountID:   exampleAccount.ID,
+			AccountRole: "account_member",
 		}))
 		memberUserIDs = append(memberUserIDs, newMember.ID)
 	}
 
-	household, err = dbc.GetHousehold(ctx, exampleHousehold.ID)
+	account, err = dbc.GetAccount(ctx, exampleAccount.ID)
 	assert.NoError(t, err)
 
-	householdMemberUserIDs := []string{}
-	for _, member := range household.Members {
-		householdMemberUserIDs = append(householdMemberUserIDs, member.BelongsToUser.ID)
+	accountMemberUserIDs := []string{}
+	for _, member := range account.Members {
+		accountMemberUserIDs = append(accountMemberUserIDs, member.BelongsToUser.ID)
 	}
 
-	assert.Subset(t, memberUserIDs, householdMemberUserIDs)
+	assert.Subset(t, memberUserIDs, accountMemberUserIDs)
 
-	isMember, err := dbc.UserIsMemberOfHousehold(ctx, memberUserIDs[0], exampleHousehold.ID)
+	isMember, err := dbc.UserIsMemberOfAccount(ctx, memberUserIDs[0], exampleAccount.ID)
 	assert.NoError(t, err)
 	assert.True(t, isMember)
 
-	assert.NoError(t, dbc.MarkHouseholdAsUserDefault(ctx, memberUserIDs[1], exampleHousehold.ID))
-	defaultHouseholdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, memberUserIDs[1])
+	assert.NoError(t, dbc.MarkAccountAsUserDefault(ctx, memberUserIDs[1], exampleAccount.ID))
+	defaultAccountID, err := dbc.GetDefaultAccountIDForUser(ctx, memberUserIDs[1])
 	assert.NoError(t, err)
-	assert.Equal(t, exampleHousehold.ID, defaultHouseholdID)
+	assert.Equal(t, exampleAccount.ID, defaultAccountID)
 
 	sessionCtxData, err := dbc.BuildSessionContextDataForUser(ctx, memberUserIDs[1])
 	assert.NoError(t, err)
 	assert.NotNil(t, sessionCtxData)
-	assert.Equal(t, exampleHousehold.ID, sessionCtxData.ActiveHouseholdID)
+	assert.Equal(t, exampleAccount.ID, sessionCtxData.ActiveAccountID)
 
-	assert.NoError(t, dbc.RemoveUserFromHousehold(ctx, memberUserIDs[len(memberUserIDs)-1], exampleHousehold.ID))
+	assert.NoError(t, dbc.RemoveUserFromAccount(ctx, memberUserIDs[len(memberUserIDs)-1], exampleAccount.ID))
 
-	assert.NoError(t, dbc.TransferHouseholdOwnership(ctx, exampleHousehold.ID, &types.HouseholdOwnershipTransferInput{
+	assert.NoError(t, dbc.TransferAccountOwnership(ctx, exampleAccount.ID, &types.AccountOwnershipTransferInput{
 		Reason:       "testing",
 		CurrentOwner: exampleUser.ID,
 		NewOwner:     memberUserIDs[1],
 	}))
 
-	assert.NoError(t, dbc.ModifyUserPermissions(ctx, exampleHousehold.ID, memberUserIDs[0], &types.ModifyUserPermissionsInput{
+	assert.NoError(t, dbc.ModifyUserPermissions(ctx, exampleAccount.ID, memberUserIDs[0], &types.ModifyUserPermissionsInput{
 		Reason:  "testing",
-		NewRole: "household_admin",
+		NewRole: "account_admin",
 	}))
 }
 
@@ -107,7 +107,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetDefaultHouseholdIDForUser(T *testing.T) {
+func TestQuerier_GetDefaultAccountIDForUser(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid user ID", func(t *testing.T) {
@@ -116,27 +116,27 @@ func TestQuerier_GetDefaultHouseholdIDForUser(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetDefaultHouseholdIDForUser(ctx, "")
+		actual, err := c.GetDefaultAccountIDForUser(ctx, "")
 		assert.Error(t, err)
 		assert.Zero(t, actual)
 	})
 }
 
-func TestQuerier_MarkHouseholdAsUserDefault(T *testing.T) {
+func TestQuerier_MarkAccountAsUserDefault(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleAccount := fakes.BuildFakeAccount()
 
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.MarkHouseholdAsUserDefault(ctx, "", exampleHousehold.ID))
+		assert.Error(t, c.MarkAccountAsUserDefault(ctx, "", exampleAccount.ID))
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -144,27 +144,27 @@ func TestQuerier_MarkHouseholdAsUserDefault(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.MarkHouseholdAsUserDefault(ctx, exampleUser.ID, ""))
+		assert.Error(t, c.MarkAccountAsUserDefault(ctx, exampleUser.ID, ""))
 	})
 }
 
-func TestQuerier_UserIsMemberOfHousehold(T *testing.T) {
+func TestQuerier_UserIsMemberOfAccount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.UserIsMemberOfHousehold(ctx, "", exampleHouseholdID)
+		actual, err := c.UserIsMemberOfAccount(ctx, "", exampleAccountID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -172,7 +172,7 @@ func TestQuerier_UserIsMemberOfHousehold(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.UserIsMemberOfHousehold(ctx, exampleUserID, "")
+		actual, err := c.UserIsMemberOfAccount(ctx, exampleUserID, "")
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -181,7 +181,7 @@ func TestQuerier_UserIsMemberOfHousehold(T *testing.T) {
 func TestQuerier_ModifyUserPermissions(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household id", func(t *testing.T) {
+	T.Run("with invalid account id", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -198,15 +198,15 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 
 		ctx := context.Background()
 		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ModifyUserPermissions(ctx, exampleHouseholdID, exampleUserID, nil))
+		assert.Error(t, c.ModifyUserPermissions(ctx, exampleAccountID, exampleUserID, nil))
 	})
 }
 
-func TestSQLQuerier_addUserToHousehold(T *testing.T) {
+func TestSQLQuerier_addUserToAccount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -216,28 +216,28 @@ func TestSQLQuerier_addUserToHousehold(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		err := c.addUserToHousehold(ctx, c.db, nil)
+		err := c.addUserToAccount(ctx, c.db, nil)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
-func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
+func TestQuerier_RemoveUserFromAccount(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleHousehold := fakes.BuildFakeHousehold()
+		exampleAccount := fakes.BuildFakeAccount()
 
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.RemoveUserFromHousehold(ctx, "", exampleHousehold.ID))
+		assert.Error(t, c.RemoveUserFromAccount(ctx, "", exampleAccount.ID))
 	})
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -245,7 +245,7 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.RemoveUserFromHousehold(ctx, exampleUser.ID, ""))
+		assert.Error(t, c.RemoveUserFromAccount(ctx, exampleUser.ID, ""))
 	})
 
 	T.Run("with error creating transaction", func(t *testing.T) {
@@ -253,12 +253,12 @@ func TestQuerier_RemoveUserFromHousehold(T *testing.T) {
 
 		ctx := context.Background()
 		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.RemoveUserFromHousehold(ctx, exampleUserID, exampleHouseholdID))
+		assert.Error(t, c.RemoveUserFromAccount(ctx, exampleUserID, exampleAccountID))
 	})
 }

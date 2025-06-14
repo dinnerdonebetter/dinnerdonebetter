@@ -25,7 +25,7 @@ message ArbitraryQueueMessageResponse {
 message AuditLogEntry {
   google.protobuf.Timestamp CreatedAt = 1;
   map<string, ChangeLog> Changes = 2;
-  string BelongsToHousehold = 3;
+  string BelongsToAccount = 3;
   string ID = 4;
   string ResourceType = 5;
   string RelevantID = 6;
@@ -35,7 +35,7 @@ message AuditLogEntry {
 
 message ResponseMeta {
   string TraceID = 1;
-  string CurrentHouseholdID = 2;
+  string CurrentAccountID = 2;
 }
 
 // BEGIN requests and responses
@@ -57,19 +57,19 @@ message ExchangeTokenRequest {
 message ExchangeTokenResponse {
   ResponseMeta Meta = 1;
   string UserID = 2;
-  string HouseholdID = 3;
+  string AccountID = 3;
   string AccessToken = 4;
   string RefreshToken = 5;
   google.protobuf.Timestamp ExpiresUTC = 6;
 }
 
-// AcceptHouseholdInvitation
-message AcceptHouseholdInvitationRequest {
-  string householdInvitationID = 1;
-  HouseholdInvitationUpdateRequestInput input = 2;
+// AcceptAccountInvitation
+message AcceptAccountInvitationRequest {
+  string accountInvitationID = 1;
+  AccountInvitationUpdateRequestInput input = 2;
 }
 
-message AcceptHouseholdInvitationResponse {
+message AcceptAccountInvitationResponse {
   ResponseMeta Meta = 1;
 }
 
@@ -101,21 +101,21 @@ message AggregateUserDataReportResponse {
   ResponseMeta Meta = 1;
 }
 
-// ArchiveHousehold
-message ArchiveHouseholdRequest {
-  string householdID = 1;
+// ArchiveAccount
+message ArchiveAccountRequest {
+  string accountID = 1;
 }
 
-message ArchiveHouseholdResponse {
+message ArchiveAccountResponse {
   ResponseMeta Meta = 1;
 }
 
-// ArchiveHouseholdInstrumentOwnership
-message ArchiveHouseholdInstrumentOwnershipRequest {
-  string householdInstrumentOwnershipID = 1;
+// ArchiveAccountInstrumentOwnership
+message ArchiveAccountInstrumentOwnershipRequest {
+  string accountInstrumentOwnershipID = 1;
 }
 
-message ArchiveHouseholdInstrumentOwnershipResponse {
+message ArchiveAccountInstrumentOwnershipResponse {
   ResponseMeta Meta = 1;
 }
 
@@ -321,7 +321,7 @@ message ArchiveUserIngredientPreferenceResponse {
 
 // ArchiveUserMembership
 message ArchiveUserMembershipRequest {
-  string householdID = 1;
+  string accountID = 1;
   string userID = 2;
 }
 
@@ -465,13 +465,13 @@ message ArchiveWebhookTriggerEventResponse {
   ResponseMeta Meta = 1;
 }
 
-// CancelHouseholdInvitation
-message CancelHouseholdInvitationRequest {
-  string householdInvitationID = 1;
-  HouseholdInvitationUpdateRequestInput input = 2;
+// CancelAccountInvitation
+message CancelAccountInvitationRequest {
+  string accountInvitationID = 1;
+  AccountInvitationUpdateRequestInput input = 2;
 }
 
-message CancelHouseholdInvitationResponse {
+message CancelAccountInvitationResponse {
   ResponseMeta Meta = 1;
 }
 
@@ -503,31 +503,31 @@ message CloneRecipeResponse {
   Recipe Result = 2;
 }
 
-// CreateHousehold
-message CreateHouseholdRequest {
+// CreateAccount
+message CreateAccountRequest {
 
 }
 
-message CreateHouseholdResponse {
+message CreateAccountResponse {
   ResponseMeta Meta = 1;
 }
 
-// CreateHouseholdInstrumentOwnership
-message CreateHouseholdInstrumentOwnershipRequest {
+// CreateAccountInstrumentOwnership
+message CreateAccountInstrumentOwnershipRequest {
 
 }
 
-message CreateHouseholdInstrumentOwnershipResponse {
+message CreateAccountInstrumentOwnershipResponse {
   ResponseMeta Meta = 1;
 }
 
-// CreateHouseholdInvitation
-message CreateHouseholdInvitationRequest {
-  string householdID = 1;
-  HouseholdInvitationCreationRequestInput input = 2;
+// CreateAccountInvitation
+message CreateAccountInvitationRequest {
+  string accountID = 1;
+  AccountInvitationCreationRequestInput input = 2;
 }
 
-message CreateHouseholdInvitationResponse {
+message CreateAccountInvitationResponse {
   ResponseMeta Meta = 1;
 }
 
@@ -954,21 +954,21 @@ message FinalizeMealPlanResponse {
   ResponseMeta Meta = 1;
 }
 
-// GetActiveHousehold
-message GetActiveHouseholdRequest {
+// GetActiveAccount
+message GetActiveAccountRequest {
 
 }
 
-message GetActiveHouseholdResponse {
+message GetActiveAccountResponse {
   ResponseMeta Meta = 1;
 }
 
-// GetAuditLogEntriesForHousehold
-message GetAuditLogEntriesForHouseholdRequest {
+// GetAuditLogEntriesForAccount
+message GetAuditLogEntriesForAccountRequest {
   QueryFilter Filter = 1;
 }
 
-message GetAuditLogEntriesForHouseholdResponse {
+message GetAuditLogEntriesForAccountResponse {
   ResponseMeta Meta = 1;
   QueryFilter Filter = 2;
   repeated AuditLogEntry Results = 3;
@@ -1003,64 +1003,64 @@ message GetAuthStatusResponse {
   ResponseMeta Meta = 1;
 }
 
-// GetHousehold
-message GetHouseholdRequest {
-  string householdID = 1;
+// GetAccount
+message GetAccountRequest {
+  string accountID = 1;
 }
 
-message GetHouseholdResponse {
+message GetAccountResponse {
   ResponseMeta Meta = 1;
 }
 
-// GetHouseholdInstrumentOwnership
-message GetHouseholdInstrumentOwnershipRequest {
-  string householdInstrumentOwnershipID = 1;
+// GetAccountInstrumentOwnership
+message GetAccountInstrumentOwnershipRequest {
+  string accountInstrumentOwnershipID = 1;
 }
 
-message GetHouseholdInstrumentOwnershipResponse {
+message GetAccountInstrumentOwnershipResponse {
   ResponseMeta Meta = 1;
 }
 
-// GetHouseholdInstrumentOwnerships
-message GetHouseholdInstrumentOwnershipsRequest {
+// GetAccountInstrumentOwnerships
+message GetAccountInstrumentOwnershipsRequest {
   QueryFilter Filter = 1;
 }
 
-message GetHouseholdInstrumentOwnershipsResponse {
+message GetAccountInstrumentOwnershipsResponse {
   ResponseMeta Meta = 1;
   QueryFilter Filter = 2;
-  repeated HouseholdInstrumentOwnership Results = 3;
+  repeated AccountInstrumentOwnership Results = 3;
 }
 
-// GetHouseholdInvitation
-message GetHouseholdInvitationRequest {
-  string householdInvitationID = 1;
+// GetAccountInvitation
+message GetAccountInvitationRequest {
+  string accountInvitationID = 1;
 }
 
-message GetHouseholdInvitationResponse {
+message GetAccountInvitationResponse {
   ResponseMeta Meta = 1;
 }
 
-// GetHouseholdInvitationByID
-message GetHouseholdInvitationByIDRequest {
-  string householdID = 1;
-  string householdInvitationID = 2;
+// GetAccountInvitationByID
+message GetAccountInvitationByIDRequest {
+  string accountID = 1;
+  string accountInvitationID = 2;
 }
 
-message GetHouseholdInvitationByIDResponse {
+message GetAccountInvitationByIDResponse {
   ResponseMeta Meta = 1;
-  HouseholdInvitation Result = 2;
+  AccountInvitation Result = 2;
 }
 
-// GetHouseholds
-message GetHouseholdsRequest {
+// GetAccounts
+message GetAccountsRequest {
   QueryFilter Filter = 1;
 }
 
-message GetHouseholdsResponse {
+message GetAccountsResponse {
   ResponseMeta Meta = 1;
   QueryFilter Filter = 2;
-  repeated Household Results = 3;
+  repeated Account Results = 3;
 }
 
 // GetMeal
@@ -1197,12 +1197,12 @@ message GetMealPlanTasksResponse {
   repeated MealPlanTask Results = 3;
 }
 
-// GetMealPlansForHousehold
-message GetMealPlansForHouseholdRequest {
+// GetMealPlansForAccount
+message GetMealPlansForAccountRequest {
   QueryFilter Filter = 1;
 }
 
-message GetMealPlansForHouseholdResponse {
+message GetMealPlansForAccountResponse {
   ResponseMeta Meta = 1;
   QueryFilter Filter = 2;
   repeated MealPlan Results = 3;
@@ -1286,15 +1286,15 @@ message GetRandomValidVesselResponse {
   ResponseMeta Meta = 1;
 }
 
-// GetReceivedHouseholdInvitations
-message GetReceivedHouseholdInvitationsRequest {
+// GetReceivedAccountInvitations
+message GetReceivedAccountInvitationsRequest {
   QueryFilter Filter = 1;
 }
 
-message GetReceivedHouseholdInvitationsResponse {
+message GetReceivedAccountInvitationsResponse {
   ResponseMeta Meta = 1;
   QueryFilter Filter = 2;
-  repeated HouseholdInvitation Results = 3;
+  repeated AccountInvitation Results = 3;
 }
 
 // GetRecipe
@@ -1521,15 +1521,15 @@ message GetSelfResponse {
   ResponseMeta Meta = 1;
 }
 
-// GetSentHouseholdInvitations
-message GetSentHouseholdInvitationsRequest {
+// GetSentAccountInvitations
+message GetSentAccountInvitationsRequest {
   QueryFilter Filter = 1;
 }
 
-message GetSentHouseholdInvitationsResponse {
+message GetSentAccountInvitationsResponse {
   ResponseMeta Meta = 1;
   QueryFilter Filter = 2;
-  repeated HouseholdInvitation Results = 3;
+  repeated AccountInvitation Results = 3;
 }
 
 // GetServiceSetting
@@ -1553,12 +1553,12 @@ message GetServiceSettingConfigurationByNameResponse {
   repeated ServiceSettingConfiguration Results = 3;
 }
 
-// GetServiceSettingConfigurationsForHousehold
-message GetServiceSettingConfigurationsForHouseholdRequest {
+// GetServiceSettingConfigurationsForAccount
+message GetServiceSettingConfigurationsForAccountRequest {
   QueryFilter Filter = 1;
 }
 
-message GetServiceSettingConfigurationsForHouseholdResponse {
+message GetServiceSettingConfigurationsForAccountResponse {
   ResponseMeta Meta = 1;
   QueryFilter Filter = 2;
   repeated ServiceSettingConfiguration Results = 3;
@@ -2086,13 +2086,13 @@ message RefreshTOTPSecretResponse {
   ResponseMeta Meta = 1;
 }
 
-// RejectHouseholdInvitation
-message RejectHouseholdInvitationRequest {
-  string householdInvitationID = 1;
-  HouseholdInvitationUpdateRequestInput input = 2;
+// RejectAccountInvitation
+message RejectAccountInvitationRequest {
+  string accountInvitationID = 1;
+  AccountInvitationUpdateRequestInput input = 2;
 }
 
-message RejectHouseholdInvitationResponse {
+message RejectAccountInvitationResponse {
   ResponseMeta Meta = 1;
 }
 
@@ -2308,53 +2308,53 @@ message SearchValidMeasurementUnitsByIngredientResponse {
   repeated ValidMeasurementUnit Results = 3;
 }
 
-// SetDefaultHousehold
-message SetDefaultHouseholdRequest {
-  string HouseholdID = 1;
+// SetDefaultAccount
+message SetDefaultAccountRequest {
+  string AccountID = 1;
 }
 
-message SetDefaultHouseholdResponse {
+message SetDefaultAccountResponse {
   ResponseMeta Meta = 1;
 }
 
-// TransferHouseholdOwnership
-message TransferHouseholdOwnershipRequest {
-  string householdID = 1;
-  HouseholdOwnershipTransferInput input = 2;
+// TransferAccountOwnership
+message TransferAccountOwnershipRequest {
+  string accountID = 1;
+  AccountOwnershipTransferInput input = 2;
 }
 
-message TransferHouseholdOwnershipResponse {
+message TransferAccountOwnershipResponse {
   ResponseMeta Meta = 1;
 }
 
-// UpdateHousehold
-message UpdateHouseholdRequest {
-  string householdID = 1;
-  HouseholdUpdateRequestInput input = 2;
+// UpdateAccount
+message UpdateAccountRequest {
+  string accountID = 1;
+  AccountUpdateRequestInput input = 2;
 }
 
-message UpdateHouseholdResponse {
+message UpdateAccountResponse {
   ResponseMeta Meta = 1;
 }
 
-// UpdateHouseholdInstrumentOwnership
-message UpdateHouseholdInstrumentOwnershipRequest {
-  string householdInstrumentOwnershipID = 1;
-  HouseholdInstrumentOwnershipUpdateRequestInput input = 2;
+// UpdateAccountInstrumentOwnership
+message UpdateAccountInstrumentOwnershipRequest {
+  string accountInstrumentOwnershipID = 1;
+  AccountInstrumentOwnershipUpdateRequestInput input = 2;
 }
 
-message UpdateHouseholdInstrumentOwnershipResponse {
+message UpdateAccountInstrumentOwnershipResponse {
   ResponseMeta Meta = 1;
 }
 
-// UpdateHouseholdMemberPermissions
-message UpdateHouseholdMemberPermissionsRequest {
-  string householdID = 1;
+// UpdateAccountMemberPermissions
+message UpdateAccountMemberPermissionsRequest {
+  string accountID = 1;
   string userID = 2;
   ModifyUserPermissionsInput input = 3;
 }
 
-message UpdateHouseholdMemberPermissionsResponse {
+message UpdateAccountMemberPermissionsResponse {
   ResponseMeta Meta = 1;
 }
 
@@ -2765,8 +2765,8 @@ message UpdateUserAvatarRequest {
   string Base64EncodedData = 1;
 }
 
-message ChangeActiveHouseholdInput {
-  string HouseholdID = 1;
+message ChangeActiveAccountInput {
+  string AccountID = 1;
 }
 
 message ChangeLog {
@@ -2779,15 +2779,15 @@ message CoreUserDataCollection {
   // map<string, Webhook> Webhooks = 1;
   // map<string, ServiceSettingConfiguration> ServiceSettingConfigurations = 2;
   // map<string, AuditLogEntry> AuditLogEntries = 3;
-  repeated HouseholdInvitation ReceivedInvites = 4;
-  repeated HouseholdInvitation SentInvites = 5;
+  repeated AccountInvitation ReceivedInvites = 4;
+  repeated AccountInvitation SentInvites = 5;
   repeated ServiceSettingConfiguration UserServiceSettingConfigurations = 6;
   repeated AuditLogEntry UserAuditLogEntries = 7;
-  repeated Household Households = 8;
+  repeated Account Accounts = 8;
 }
 
 message CreateMealPlanTasksRequest {
-  string HouseholdID = 1;
+  string AccountID = 1;
 }
 
 message CreateMealPlanTasksResponse {
@@ -2796,7 +2796,7 @@ message CreateMealPlanTasksResponse {
 
 message DataChangeMessage {
   string RequestID = 1;
-  HouseholdInvitation HouseholdInvitation = 2;
+  AccountInvitation AccountInvitation = 2;
   ValidMeasurementUnitConversion ValidMeasurementUnitConversion = 3;
   ValidInstrument ValidInstrument = 4;
   ValidIngredient ValidIngredient = 5;
@@ -2816,7 +2816,7 @@ message DataChangeMessage {
   MealPlan MealPlan = 19;
   MealPlanTask MealPlanTask = 20;
   MealPlanEvent MealPlanEvent = 21;
-  Household Household = 22;
+  Account Account = 22;
   MealPlanOption MealPlanOption = 23;
   ValidIngredientMeasurementUnit ValidIngredientMeasurementUnit = 24;
   MealPlanOptionVote MealPlanOptionVote = 25;
@@ -2824,23 +2824,23 @@ message DataChangeMessage {
   Webhook Webhook = 27;
   ValidIngredientPreparation ValidIngredientPreparation = 28;
   ValidMeasurementUnit ValidMeasurementUnit = 29;
-  HouseholdUserMembership UserMembership = 30;
+  AccountUserMembership UserMembership = 30;
   RecipeStepCompletionCondition RecipeStepCompletionCondition = 31;
   RecipeStepVessel RecipeStepVessel = 32;
   PasswordResetToken PasswordResetToken = 33;
   ValidIngredientStateIngredient ValidIngredientStateIngredient = 34;
   ServiceSetting ServiceSetting = 35;
   ServiceSettingConfiguration ServiceSettingConfiguration = 36;
-  HouseholdInstrumentOwnership HouseholdInstrumentOwnership = 37;
+  AccountInstrumentOwnership AccountInstrumentOwnership = 37;
   RecipeRating RecipeRating = 38;
   ValidVessel ValidVessel = 39;
   ValidPreparationVessel ValidPreparationVessel = 40;
   UserNotification UserNotification = 41;
   string UserNotificationID = 42;
   string RecipeStepVesselID = 43;
-  string HouseholdInvitationID = 44;
+  string AccountInvitationID = 44;
   string UserID = 45;
-  string HouseholdID = 46;
+  string AccountID = 46;
   string ValidMeasurementUnitID = 47;
   string ValidPreparationInstrumentID = 48;
   string MealPlanOptionVoteID = 49;
@@ -2862,7 +2862,7 @@ message DataChangeMessage {
   string MealPlanEventID = 65;
   string EmailVerificationToken = 66;
   string UserIngredientPreferenceID = 67;
-  string HouseholdInstrumentOwnershipID = 68;
+  string AccountInstrumentOwnershipID = 68;
   string RecipeRatingID = 69;
   string OAuth2ClientID = 70;
   repeated UserIngredientPreference UserIngredientPreferences = 71;
@@ -2873,7 +2873,7 @@ message DataDeletionResponse {
 }
 
 message EatingUserDataCollection {
-  // map[string][]HouseholdInstrumentOwnership HouseholdInstrumentOwnerships = 1;
+  // map[string][]AccountInstrumentOwnership AccountInstrumentOwnerships = 1;
   // map[string][]MealPlan MealPlans = 2;
   string ReportID = 3;
   repeated RecipeRating RecipeRatings = 4;
@@ -2908,7 +2908,7 @@ message Float32RangeWithOptionalMaxUpdateRequestInput {
   float Max = 2;
 }
 
-message Household {
+message Account {
   google.protobuf.Timestamp CreatedAt = 1;
   string SubscriptionPlanID = 2;
   google.protobuf.Timestamp LastUpdatedAt = 3;
@@ -2928,10 +2928,10 @@ message Household {
   string ID = 17;
   string Name = 18;
   string WebhookEncryptionKey = 19;
-  repeated HouseholdUserMembershipWithUser Members = 20;
+  repeated AccountUserMembershipWithUser Members = 20;
 }
 
-message HouseholdCreationRequestInput {
+message AccountCreationRequestInput {
   float Latitude = 1;
   float Longitude = 2;
   string Name = 3;
@@ -2944,31 +2944,31 @@ message HouseholdCreationRequestInput {
   string Country = 10;
 }
 
-message HouseholdInstrumentOwnership {
+message AccountInstrumentOwnership {
   google.protobuf.Timestamp CreatedAt = 1;
   google.protobuf.Timestamp ArchivedAt = 2;
   google.protobuf.Timestamp LastUpdatedAt = 3;
   string ID = 4;
   string Notes = 5;
-  string BelongsToHousehold = 6;
+  string BelongsToAccount = 6;
   ValidInstrument Instrument = 7;
   uint32 Quantity = 8;
 }
 
-message HouseholdInstrumentOwnershipCreationRequestInput {
+message AccountInstrumentOwnershipCreationRequestInput {
   string Notes = 1;
   string ValidInstrumentID = 2;
-  string BelongsToHousehold = 3;
+  string BelongsToAccount = 3;
   uint32 Quantity = 4;
 }
 
-message HouseholdInstrumentOwnershipUpdateRequestInput {
+message AccountInstrumentOwnershipUpdateRequestInput {
   string Notes = 1;
   uint32 Quantity = 2;
   string ValidInstrumentID = 3;
 }
 
-message HouseholdInvitation {
+message AccountInvitation {
   google.protobuf.Timestamp CreatedAt = 1;
   google.protobuf.Timestamp LastUpdatedAt = 2;
   google.protobuf.Timestamp ArchivedAt = 3;
@@ -2981,29 +2981,29 @@ message HouseholdInvitation {
   string Note = 10;
   string ToName = 11;
   google.protobuf.Timestamp ExpiresAt = 12;
-  Household DestinationHousehold = 13;
+  Account DestinationAccount = 13;
   User FromUser = 14;
 }
 
-message HouseholdInvitationCreationRequestInput {
+message AccountInvitationCreationRequestInput {
   google.protobuf.Timestamp ExpiresAt = 1;
   string Note = 2;
   string ToEmail = 3;
   string ToName = 4;
 }
 
-message HouseholdInvitationUpdateRequestInput {
+message AccountInvitationUpdateRequestInput {
   string Token = 1;
   string Note = 2;
 }
 
-message HouseholdOwnershipTransferInput {
+message AccountOwnershipTransferInput {
   string Reason = 1;
   string CurrentOwner = 2;
   string NewOwner = 3;
 }
 
-message HouseholdUpdateRequestInput {
+message AccountUpdateRequestInput {
   string Name = 1;
   string ContactPhone = 2;
   string AddressLine1 = 3;
@@ -3017,30 +3017,30 @@ message HouseholdUpdateRequestInput {
   string BelongsToUser = 11;
 }
 
-message HouseholdUserMembership {
+message AccountUserMembership {
   google.protobuf.Timestamp CreatedAt = 1;
   google.protobuf.Timestamp LastUpdatedAt = 2;
   google.protobuf.Timestamp ArchivedAt = 3;
   string ID = 4;
   string BelongsToUser = 5;
-  string BelongsToHousehold = 6;
-  string HouseholdRole = 7;
-  bool DefaultHousehold = 8;
+  string BelongsToAccount = 6;
+  string AccountRole = 7;
+  bool DefaultAccount = 8;
 }
 
-message HouseholdUserMembershipWithUser {
+message AccountUserMembershipWithUser {
   google.protobuf.Timestamp CreatedAt = 1;
   google.protobuf.Timestamp LastUpdatedAt = 2;
   User BelongsToUser = 3;
   google.protobuf.Timestamp ArchivedAt = 4;
   string ID = 5;
-  string BelongsToHousehold = 6;
-  string HouseholdRole = 7;
-  bool DefaultHousehold = 8;
+  string BelongsToAccount = 6;
+  string AccountRole = 7;
+  bool DefaultAccount = 8;
 }
 
 message InitializeMealPlanGroceryListRequest {
-  string HouseholdID = 1;
+  string AccountID = 1;
 }
 
 message InitializeMealPlanGroceryListResponse {
@@ -3095,7 +3095,7 @@ message MealPlan {
   string Status = 6;
   string Notes = 7;
   string ElectionMethod = 8;
-  string BelongsToHousehold = 9;
+  string BelongsToAccount = 9;
   string CreatedByUser = 10;
   repeated MealPlanEvent Events = 11;
   bool GroceryListInitialized = 12;
@@ -3276,7 +3276,7 @@ message MealPlanTaskStatusChangeRequestInput {
 }
 
 message MealPlanUpdateRequestInput {
-  string BelongsToHousehold = 1;
+  string BelongsToAccount = 1;
   string Notes = 2;
   google.protobuf.Timestamp VotingDeadline = 3;
 }
@@ -3878,7 +3878,7 @@ message RecipeUpdateRequestInput {
 }
 
 message ResponseDetails {
-  string CurrentHouseholdID = 1;
+  string CurrentAccountID = 1;
   string TraceID = 2;
 }
 
@@ -3903,7 +3903,7 @@ message ServiceSettingConfiguration {
   string Value = 5;
   string Notes = 6;
   string BelongsToUser = 7;
-  string BelongsToHousehold = 8;
+  string BelongsToAccount = 8;
   ServiceSetting ServiceSetting = 9;
 }
 
@@ -3912,7 +3912,7 @@ message ServiceSettingConfigurationCreationRequestInput {
   string Notes = 2;
   string ServiceSettingID = 3;
   string BelongsToUser = 4;
-  string BelongsToHousehold = 5;
+  string BelongsToAccount = 5;
 }
 
 message ServiceSettingConfigurationUpdateRequestInput {
@@ -3920,7 +3920,7 @@ message ServiceSettingConfigurationUpdateRequestInput {
   string Notes = 2;
   string ServiceSettingID = 3;
   string BelongsToUser = 4;
-  string BelongsToHousehold = 5;
+  string BelongsToAccount = 5;
 }
 
 message ServiceSettingCreationRequestInput {
@@ -3953,7 +3953,7 @@ message TOTPSecretVerificationResponse {
 
 message TokenResponse {
   string UserID = 1;
-  string HouseholdID = 2;
+  string AccountID = 2;
   string AccessToken = 3;
   string RefreshToken = 4;
   google.protobuf.Timestamp ExpiresUTC = 5;
@@ -4117,7 +4117,7 @@ message UserRegistrationInput {
   string Username = 6;
   string FirstName = 7;
   string LastName = 8;
-  string HouseholdName = 9;
+  string AccountName = 9;
   bool AcceptedTOS = 10;
   bool AcceptedPrivacyPolicy = 11;
 }
@@ -4126,7 +4126,7 @@ message UserStatusResponse {
   string UserID = 1;
   string AccountStatus = 2;
   string AccountStatusExplanation = 3;
-  string ActiveHousehold = 4;
+  string ActiveAccount = 4;
   bool UserIsAuthenticated = 5;
 }
 
@@ -4655,7 +4655,7 @@ message Webhook {
   string URL = 5;
   string Method = 6;
   string ID = 7;
-  string BelongsToHousehold = 8;
+  string BelongsToAccount = 8;
   string ContentType = 9;
   repeated WebhookTriggerEvent Events = 10;
 }
@@ -4672,7 +4672,7 @@ message WebhookExecutionRequest {
   string RequestID = 1;
   google.protobuf.Any Payload = 2;
   string WebhookID = 3;
-  string HouseholdID = 4;
+  string AccountID = 4;
   string TriggerEvent = 5;
 }
 

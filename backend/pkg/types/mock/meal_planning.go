@@ -16,7 +16,7 @@ type (
 		*MealPlanTaskDataManagerMock
 		*MealPlanGroceryListItemDataManagerMock
 		*UserIngredientPreferenceDataManagerMock
-		*HouseholdInstrumentOwnershipDataManagerMock
+		*AccountInstrumentOwnershipDataManagerMock
 	}
 )
 
@@ -24,15 +24,15 @@ var _ types.MealPlanningDataManager = (*MealPlanningDataManagerMock)(nil)
 
 func NewMealPlanningDataManagerMock() *MealPlanningDataManagerMock {
 	return &MealPlanningDataManagerMock{
-		MealDataManagerMock:                         &MealDataManagerMock{},
-		MealPlanDataManagerMock:                     &MealPlanDataManagerMock{},
-		MealPlanEventDataManagerMock:                &MealPlanEventDataManagerMock{},
-		MealPlanOptionDataManagerMock:               &MealPlanOptionDataManagerMock{},
-		MealPlanOptionVoteDataManagerMock:           &MealPlanOptionVoteDataManagerMock{},
-		MealPlanTaskDataManagerMock:                 &MealPlanTaskDataManagerMock{},
-		MealPlanGroceryListItemDataManagerMock:      &MealPlanGroceryListItemDataManagerMock{},
-		UserIngredientPreferenceDataManagerMock:     &UserIngredientPreferenceDataManagerMock{},
-		HouseholdInstrumentOwnershipDataManagerMock: &HouseholdInstrumentOwnershipDataManagerMock{},
+		MealDataManagerMock:                       &MealDataManagerMock{},
+		MealPlanDataManagerMock:                   &MealPlanDataManagerMock{},
+		MealPlanEventDataManagerMock:              &MealPlanEventDataManagerMock{},
+		MealPlanOptionDataManagerMock:             &MealPlanOptionDataManagerMock{},
+		MealPlanOptionVoteDataManagerMock:         &MealPlanOptionVoteDataManagerMock{},
+		MealPlanTaskDataManagerMock:               &MealPlanTaskDataManagerMock{},
+		MealPlanGroceryListItemDataManagerMock:    &MealPlanGroceryListItemDataManagerMock{},
+		UserIngredientPreferenceDataManagerMock:   &UserIngredientPreferenceDataManagerMock{},
+		AccountInstrumentOwnershipDataManagerMock: &AccountInstrumentOwnershipDataManagerMock{},
 	}
 }
 
@@ -46,6 +46,6 @@ func (m *MealPlanningDataManagerMock) AssertExpectations(t mock.TestingT) bool {
 		m.MealPlanTaskDataManagerMock,
 		m.MealPlanGroceryListItemDataManagerMock,
 		m.UserIngredientPreferenceDataManagerMock,
-		m.HouseholdInstrumentOwnershipDataManagerMock,
+		m.AccountInstrumentOwnershipDataManagerMock,
 	)
 }

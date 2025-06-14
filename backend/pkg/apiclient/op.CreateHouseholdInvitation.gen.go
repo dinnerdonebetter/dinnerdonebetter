@@ -12,12 +12,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
-func (c *Client) CreateHouseholdInvitation(
+func (c *Client) CreateAccountInvitation(
 	ctx context.Context,
-	householdID string,
-	input *HouseholdInvitationCreationRequestInput,
+	accountID string,
+	input *AccountInvitationCreationRequestInput,
 	reqMods ...RequestModifier,
-) (*HouseholdInvitation, error) {
+) (*AccountInvitation, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -27,25 +27,25 @@ func (c *Client) CreateHouseholdInvitation(
 		return nil, ErrNilInputProvided
 	}
 
-	if householdID == "" {
-		return nil, buildInvalidIDError("household")
+	if accountID == "" {
+		return nil, buildInvalidIDError("account")
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/households/%s/invite", householdID))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/accounts/%s/invite", accountID))
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a HouseholdInvitation")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a AccountInvitation")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *APIResponse[*HouseholdInvitation]
+	var apiResponse *APIResponse[*AccountInvitation]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading HouseholdInvitation creation response")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading AccountInvitation creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

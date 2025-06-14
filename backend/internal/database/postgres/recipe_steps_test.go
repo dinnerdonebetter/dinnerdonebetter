@@ -219,9 +219,9 @@ func TestQuerier_Integration_RecipeSteps(t *testing.T) {
 	}(t)
 
 	user := createUserForTest(t, ctx, nil, dbc)
-	householdID, err := dbc.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, householdID)
+	require.NotEmpty(t, accountID)
 
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)

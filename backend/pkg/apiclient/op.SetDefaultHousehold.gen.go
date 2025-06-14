@@ -12,36 +12,36 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
-func (c *Client) SetDefaultHousehold(
+func (c *Client) SetDefaultAccount(
 	ctx context.Context,
-	householdID string,
+	accountID string,
 
 	reqMods ...RequestModifier,
-) (*Household, error) {
+) (*Account, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
-	if householdID == "" {
-		return nil, buildInvalidIDError("household")
+	if accountID == "" {
+		return nil, buildInvalidIDError("account")
 	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/households/%s/default", householdID))
+	u := c.BuildURL(ctx, nil, fmt.Sprintf("/api/v1/accounts/%s/default", accountID))
 	req, err := c.buildDataRequest(ctx, http.MethodPost, u, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a Household")
+		return nil, observability.PrepareAndLogError(err, logger, span, "building request to create a Account")
 	}
 
 	for _, mod := range reqMods {
 		mod(req)
 	}
 
-	var apiResponse *APIResponse[*Household]
+	var apiResponse *APIResponse[*Account]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "loading Household creation response")
+		return nil, observability.PrepareAndLogError(err, logger, span, "loading Account creation response")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

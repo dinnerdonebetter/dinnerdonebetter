@@ -14,48 +14,48 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createHouseholdInvitationForTest(t *testing.T, ctx context.Context, exampleHouseholdInvitation *types.HouseholdInvitation, dbc *Querier) *types.HouseholdInvitation {
+func createAccountInvitationForTest(t *testing.T, ctx context.Context, exampleAccountInvitation *types.AccountInvitation, dbc *Querier) *types.AccountInvitation {
 	t.Helper()
 
 	// create
-	if exampleHouseholdInvitation == nil {
+	if exampleAccountInvitation == nil {
 		fromUser := createUserForTest(t, ctx, nil, dbc)
 		toUser := createUserForTest(t, ctx, nil, dbc)
-		household := createHouseholdForTest(t, ctx, nil, dbc)
-		exampleHouseholdInvitation = fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
-		exampleHouseholdInvitation.DestinationHousehold = *household
-		exampleHouseholdInvitation.FromUser = *fromUser
-		exampleHouseholdInvitation.ToUser = &toUser.ID
+		account := createAccountForTest(t, ctx, nil, dbc)
+		exampleAccountInvitation = fakes.BuildFakeAccountInvitation()
+		exampleAccountInvitation.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
+		exampleAccountInvitation.DestinationAccount = *account
+		exampleAccountInvitation.FromUser = *fromUser
+		exampleAccountInvitation.ToUser = &toUser.ID
 	}
-	dbInput := converters.ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput(exampleHouseholdInvitation)
+	dbInput := converters.ConvertAccountInvitationToAccountInvitationDatabaseCreationInput(exampleAccountInvitation)
 
-	created, err := dbc.CreateHouseholdInvitation(ctx, dbInput)
+	created, err := dbc.CreateAccountInvitation(ctx, dbInput)
 	assert.NoError(t, err)
 	require.NotNil(t, created)
-	exampleHouseholdInvitation.CreatedAt = created.CreatedAt
-	exampleHouseholdInvitation.StatusNote = created.StatusNote
-	exampleHouseholdInvitation.FromUser = created.FromUser
-	assert.Equal(t, exampleHouseholdInvitation.DestinationHousehold.ID, created.DestinationHousehold.ID)
-	exampleHouseholdInvitation.DestinationHousehold = created.DestinationHousehold
-	assert.Equal(t, exampleHouseholdInvitation, created)
+	exampleAccountInvitation.CreatedAt = created.CreatedAt
+	exampleAccountInvitation.StatusNote = created.StatusNote
+	exampleAccountInvitation.FromUser = created.FromUser
+	assert.Equal(t, exampleAccountInvitation.DestinationAccount.ID, created.DestinationAccount.ID)
+	exampleAccountInvitation.DestinationAccount = created.DestinationAccount
+	assert.Equal(t, exampleAccountInvitation, created)
 
-	householdInvitation, err := dbc.GetHouseholdInvitationByHouseholdAndID(ctx, created.DestinationHousehold.ID, created.ID)
+	accountInvitation, err := dbc.GetAccountInvitationByAccountAndID(ctx, created.DestinationAccount.ID, created.ID)
 	assert.NoError(t, err)
-	require.NotNil(t, householdInvitation)
-	exampleHouseholdInvitation.CreatedAt = householdInvitation.CreatedAt
-	exampleHouseholdInvitation.ExpiresAt = householdInvitation.ExpiresAt
-	assert.Equal(t, exampleHouseholdInvitation.FromUser.ID, householdInvitation.FromUser.ID)
-	exampleHouseholdInvitation.FromUser = householdInvitation.FromUser
-	assert.Equal(t, exampleHouseholdInvitation.DestinationHousehold.ID, householdInvitation.DestinationHousehold.ID)
-	exampleHouseholdInvitation.DestinationHousehold = householdInvitation.DestinationHousehold
+	require.NotNil(t, accountInvitation)
+	exampleAccountInvitation.CreatedAt = accountInvitation.CreatedAt
+	exampleAccountInvitation.ExpiresAt = accountInvitation.ExpiresAt
+	assert.Equal(t, exampleAccountInvitation.FromUser.ID, accountInvitation.FromUser.ID)
+	exampleAccountInvitation.FromUser = accountInvitation.FromUser
+	assert.Equal(t, exampleAccountInvitation.DestinationAccount.ID, accountInvitation.DestinationAccount.ID)
+	exampleAccountInvitation.DestinationAccount = accountInvitation.DestinationAccount
 
-	assert.Equal(t, householdInvitation, exampleHouseholdInvitation)
+	assert.Equal(t, accountInvitation, exampleAccountInvitation)
 
 	return created
 }
 
-func TestQuerier_Integration_HouseholdInvitations(t *testing.T) {
+func TestQuerier_Integration_AccountInvitations(t *testing.T) {
 	if !runningContainerTests {
 		t.SkipNow()
 	}
@@ -72,85 +72,85 @@ func TestQuerier_Integration_HouseholdInvitations(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	household := createHouseholdForTest(t, ctx, nil, dbc)
+	account := createAccountForTest(t, ctx, nil, dbc)
 
 	fromUser := createUserForTest(t, ctx, nil, dbc)
 	toUserA := createUserForTest(t, ctx, nil, dbc)
 	toUserB := createUserForTest(t, ctx, nil, dbc)
 	toUserC := createUserForTest(t, ctx, nil, dbc)
 
-	toBeCancelledInput := fakes.BuildFakeHouseholdInvitation()
-	toBeCancelledInput.DestinationHousehold = *household
+	toBeCancelledInput := fakes.BuildFakeAccountInvitation()
+	toBeCancelledInput.DestinationAccount = *account
 	toBeCancelledInput.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
 	toBeCancelledInput.FromUser = *fromUser
 	toBeCancelledInput.ToUser = &toUserA.ID
-	toBeCancelled := createHouseholdInvitationForTest(t, ctx, toBeCancelledInput, dbc)
+	toBeCancelled := createAccountInvitationForTest(t, ctx, toBeCancelledInput, dbc)
 
-	toBeRejectedInput := fakes.BuildFakeHouseholdInvitation()
-	toBeRejectedInput.DestinationHousehold = *household
+	toBeRejectedInput := fakes.BuildFakeAccountInvitation()
+	toBeRejectedInput.DestinationAccount = *account
 	toBeRejectedInput.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
 	toBeRejectedInput.FromUser = *fromUser
 	toBeRejectedInput.ToUser = &toUserB.ID
-	toBeRejected := createHouseholdInvitationForTest(t, ctx, toBeRejectedInput, dbc)
+	toBeRejected := createAccountInvitationForTest(t, ctx, toBeRejectedInput, dbc)
 
-	toBeAcceptedInput := fakes.BuildFakeHouseholdInvitation()
-	toBeAcceptedInput.DestinationHousehold = *household
+	toBeAcceptedInput := fakes.BuildFakeAccountInvitation()
+	toBeAcceptedInput.DestinationAccount = *account
 	toBeAcceptedInput.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
 	toBeAcceptedInput.FromUser = *fromUser
 	toBeAcceptedInput.ToUser = &toUserC.ID
 	toBeAcceptedInput.ToEmail = toUserC.EmailAddress
-	toBeAccepted := createHouseholdInvitationForTest(t, ctx, toBeAcceptedInput, dbc)
+	toBeAccepted := createAccountInvitationForTest(t, ctx, toBeAcceptedInput, dbc)
 
-	outboundInvites, err := dbc.GetPendingHouseholdInvitationsFromUser(ctx, fromUser.ID, nil)
+	outboundInvites, err := dbc.GetPendingAccountInvitationsFromUser(ctx, fromUser.ID, nil)
 	assert.NoError(t, err)
 	assert.Len(t, outboundInvites.Data, 3)
 
-	inboundInvites, err := dbc.GetPendingHouseholdInvitationsForUser(ctx, toUserC.ID, nil)
+	inboundInvites, err := dbc.GetPendingAccountInvitationsForUser(ctx, toUserC.ID, nil)
 	assert.NoError(t, err)
 	assert.Len(t, inboundInvites.Data, 1)
 
-	exists, err := dbc.HouseholdInvitationExists(ctx, toBeCancelled.ID)
+	exists, err := dbc.AccountInvitationExists(ctx, toBeCancelled.ID)
 	assert.NoError(t, err)
 	assert.True(t, exists)
 
-	invite, err := dbc.GetHouseholdInvitationByEmailAndToken(ctx, toUserC.EmailAddress, toBeAccepted.Token)
+	invite, err := dbc.GetAccountInvitationByEmailAndToken(ctx, toUserC.EmailAddress, toBeAccepted.Token)
 	assert.NoError(t, err)
 	assert.NotNil(t, invite)
 
 	// create invite for nonexistent user
-	forNewUserInput := fakes.BuildFakeHouseholdInvitation()
-	forNewUserInput.DestinationHousehold = *household
+	forNewUserInput := fakes.BuildFakeAccountInvitation()
+	forNewUserInput.DestinationAccount = *account
 	forNewUserInput.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
 	forNewUserInput.FromUser = *fromUser
 	forNewUserInput.ToUser = nil
 	forNewUserInput.ToEmail = fakes.BuildFakeUser().EmailAddress
-	forNewUser := createHouseholdInvitationForTest(t, ctx, forNewUserInput, dbc)
+	forNewUser := createAccountInvitationForTest(t, ctx, forNewUserInput, dbc)
 
 	fakeUser := fakes.BuildFakeUser()
 	fakeUser.EmailAddress = forNewUserInput.ToEmail
 	dbInput := converters.ConvertUserToUserDatabaseCreationInput(fakeUser)
 	dbInput.InvitationToken = forNewUser.Token
-	dbInput.DestinationHouseholdID = household.ID
+	dbInput.DestinationAccountID = account.ID
 
 	createdUser, err := dbc.CreateUser(ctx, dbInput)
 	assert.NoError(t, err)
 	assert.NotNil(t, createdUser)
 
-	assert.NoError(t, dbc.CancelHouseholdInvitation(ctx, toBeCancelled.ID, "testing"))
-	assert.NoError(t, dbc.RejectHouseholdInvitation(ctx, toBeRejected.ID, "testing"))
-	assert.NoError(t, dbc.AcceptHouseholdInvitation(ctx, toBeAccepted.ID, toBeAccepted.Token, "testing"))
+	assert.NoError(t, dbc.CancelAccountInvitation(ctx, toBeCancelled.ID, "testing"))
+	assert.NoError(t, dbc.RejectAccountInvitation(ctx, toBeRejected.ID, "testing"))
+	assert.NoError(t, dbc.AcceptAccountInvitation(ctx, toBeAccepted.ID, toBeAccepted.Token, "testing"))
 }
 
-func TestQuerier_HouseholdInvitationExists(T *testing.T) {
+func TestQuerier_AccountInvitationExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		actual, err := c.HouseholdInvitationExists(ctx, "")
+		actual, err := c.AccountInvitationExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
 
@@ -158,97 +158,97 @@ func TestQuerier_HouseholdInvitationExists(T *testing.T) {
 	})
 }
 
-func TestQuerier_GetHouseholdInvitationByTokenAndID(T *testing.T) {
+func TestQuerier_GetAccountInvitationByTokenAndID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHouseholdInvitationByTokenAndID(ctx, "", exampleHouseholdID)
+		actual, err := c.GetAccountInvitationByTokenAndID(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid household invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHouseholdInvitationByTokenAndID(ctx, exampleHouseholdID, "")
+		actual, err := c.GetAccountInvitationByTokenAndID(ctx, exampleAccountID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 }
 
-func TestQuerier_GetHouseholdInvitationByHouseholdAndID(T *testing.T) {
+func TestQuerier_GetAccountInvitationByAccountAndID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHouseholdInvitationByHouseholdAndID(ctx, "", exampleHouseholdID)
+		actual, err := c.GetAccountInvitationByAccountAndID(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid household invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHouseholdInvitationByHouseholdAndID(ctx, exampleHouseholdID, "")
+		actual, err := c.GetAccountInvitationByAccountAndID(ctx, exampleAccountID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 }
 
-func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {
+func TestQuerier_GetAccountInvitationByEmailAndToken(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household ID", func(t *testing.T) {
+	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHouseholdInvitationByEmailAndToken(ctx, "", exampleHouseholdID)
+		actual, err := c.GetAccountInvitationByEmailAndToken(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with invalid household invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleHouseholdID := fakes.BuildFakeID()
+		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetHouseholdInvitationByEmailAndToken(ctx, exampleHouseholdID, "")
+		actual, err := c.GetAccountInvitationByEmailAndToken(ctx, exampleAccountID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
 }
 
-func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
+func TestQuerier_CreateAccountInvitation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -257,7 +257,7 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.CreateHouseholdInvitation(ctx, nil)
+		actual, err := c.CreateAccountInvitation(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -266,20 +266,20 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household invitation ID", func(t *testing.T) {
+	T.Run("with invalid account invitation ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
+		exampleAccountInvitation := fakes.BuildFakeAccountInvitation()
 
 		c, _ := buildTestClient(t)
 
-		err := c.setInvitationStatus(ctx, c.db, "", exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
+		err := c.setInvitationStatus(ctx, c.db, "", exampleAccountInvitation.Note, exampleAccountInvitation.Status)
 		assert.Error(t, err)
 	})
 }
 
-func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
+func TestSQLQuerier_AcceptAccountInvitation(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid invitation ID", func(t *testing.T) {
@@ -290,7 +290,7 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		err := c.AcceptHouseholdInvitation(ctx, "", exampleToken, t.Name())
+		err := c.AcceptAccountInvitation(ctx, "", exampleToken, t.Name())
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)
@@ -300,11 +300,11 @@ func TestSQLQuerier_AcceptHouseholdInvitation(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
+		exampleAccountInvitation := fakes.BuildFakeAccountInvitation()
 
 		c, db := buildTestClient(t)
 
-		err := c.AcceptHouseholdInvitation(ctx, exampleHouseholdInvitation.ID, "", exampleHouseholdInvitation.Note)
+		err := c.AcceptAccountInvitation(ctx, exampleAccountInvitation.ID, "", exampleAccountInvitation.Note)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)

@@ -36,7 +36,7 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	var request *types.FinalizeMealPlansRequest
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, &request); err != nil {
@@ -99,7 +99,7 @@ func (s *service) MealPlanGroceryListInitializationHandler(res http.ResponseWrit
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	if err = s.mealPlanGroceryListInitializerWorker.Work(ctx); err != nil {
 		observability.AcknowledgeError(err, logger, span, "finalizing expired meal plans")
@@ -143,7 +143,7 @@ func (s *service) MealPlanTaskCreationHandler(res http.ResponseWriter, req *http
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
 	if err = s.mealPlanTaskCreatorWorker.Work(ctx); err != nil {
 		observability.AcknowledgeError(err, logger, span, "finalizing expired meal plans")

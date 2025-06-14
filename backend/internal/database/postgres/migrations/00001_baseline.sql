@@ -17,14 +17,14 @@ CREATE TYPE invitation_state AS ENUM (
 
 CREATE TYPE oauth2_client_token_scopes AS ENUM (
     'unknown',
-    'household_member',
-    'household_admin',
+    'account_member',
+    'account_admin',
     'service_admin'
 );
 
 CREATE TYPE setting_type AS ENUM (
     'user',
-    'household',
+    'account',
     'membership'
 );
 
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS users (
     UNIQUE(username)
 );
 
-CREATE TABLE IF NOT EXISTS households (
+CREATE TABLE IF NOT EXISTS accounts (
     id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     billing_status TEXT DEFAULT 'unpaid'::TEXT NOT NULL,
@@ -87,21 +87,21 @@ CREATE TABLE IF NOT EXISTS households (
     UNIQUE(belongs_to_user, name)
 );
 
-CREATE TABLE IF NOT EXISTS household_user_memberships (
+CREATE TABLE IF NOT EXISTS account_user_memberships (
     id TEXT NOT NULL PRIMARY KEY,
-    belongs_to_household TEXT NOT NULL REFERENCES households("id") ON DELETE CASCADE,
+    belongs_to_account TEXT NOT NULL REFERENCES accounts("id") ON DELETE CASCADE,
     belongs_to_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE,
-    default_household BOOLEAN DEFAULT FALSE NOT NULL,
-    household_role TEXT DEFAULT 'household_user'::TEXT NOT NULL,
+    default_account BOOLEAN DEFAULT FALSE NOT NULL,
+    account_role TEXT DEFAULT 'account_user'::TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
-    UNIQUE(belongs_to_household, belongs_to_user)
+    UNIQUE(belongs_to_account, belongs_to_user)
 );
 
-CREATE TABLE IF NOT EXISTS household_invitations (
+CREATE TABLE IF NOT EXISTS account_invitations (
     id TEXT NOT NULL PRIMARY KEY,
-    destination_household TEXT NOT NULL REFERENCES households("id") ON DELETE CASCADE,
+    destination_account TEXT NOT NULL REFERENCES accounts("id") ON DELETE CASCADE,
     to_email TEXT NOT NULL,
     to_user TEXT  REFERENCES users("id") ON DELETE CASCADE,
     from_user TEXT NOT NULL  REFERENCES users("id") ON DELETE CASCADE,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS household_invitations (
     archived_at TIMESTAMP WITH TIME ZONE,
     expires_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + '7 days'::INTERVAL) NOT NULL,
     to_name TEXT DEFAULT ''::TEXT NOT NULL,
-    UNIQUE(to_user, from_user, destination_household)
+    UNIQUE(to_user, from_user, destination_account)
 );
 
 CREATE TABLE IF NOT EXISTS service_settings (
@@ -137,11 +137,11 @@ CREATE TABLE IF NOT EXISTS service_setting_configurations (
     notes TEXT DEFAULT ''::TEXT NOT NULL,
     service_setting_id TEXT NOT NULL REFERENCES service_settings("id") ON DELETE CASCADE,
     belongs_to_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE,
-    belongs_to_household TEXT NOT NULL REFERENCES households("id") ON DELETE CASCADE,
+    belongs_to_account TEXT NOT NULL REFERENCES accounts("id") ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
-    UNIQUE(belongs_to_user, belongs_to_household, service_setting_id)
+    UNIQUE(belongs_to_user, belongs_to_account, service_setting_id)
 );
 
 CREATE TABLE IF NOT EXISTS oauth2_clients (
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS webhooks (
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
-    belongs_to_household TEXT NOT NULL REFERENCES households("id") ON DELETE CASCADE
+    belongs_to_account TEXT NOT NULL REFERENCES accounts("id") ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS webhook_trigger_events (
@@ -217,10 +217,10 @@ CREATE TABLE IF NOT EXISTS sessions (
 
 CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions USING btree (expiry);
 CREATE INDEX IF NOT EXISTS webhook_trigger_events_belongs_to_webhook_index ON webhook_trigger_events USING btree (belongs_to_webhook);
-CREATE INDEX IF NOT EXISTS household_invitations_destination_household ON household_invitations USING btree (destination_household);
-CREATE INDEX IF NOT EXISTS household_invitations_from_user ON household_invitations USING btree (from_user);
-CREATE INDEX IF NOT EXISTS household_invitations_to_user ON household_invitations USING btree (to_user);
-CREATE INDEX IF NOT EXISTS household_user_memberships_belongs_to_household ON household_user_memberships USING btree (belongs_to_household);
-CREATE INDEX IF NOT EXISTS household_user_memberships_belongs_to_user ON household_user_memberships USING btree (belongs_to_user);
-CREATE INDEX IF NOT EXISTS households_belongs_to_user ON households USING btree (belongs_to_user);
+CREATE INDEX IF NOT EXISTS account_invitations_destination_account ON account_invitations USING btree (destination_account);
+CREATE INDEX IF NOT EXISTS account_invitations_from_user ON account_invitations USING btree (from_user);
+CREATE INDEX IF NOT EXISTS account_invitations_to_user ON account_invitations USING btree (to_user);
+CREATE INDEX IF NOT EXISTS account_user_memberships_belongs_to_account ON account_user_memberships USING btree (belongs_to_account);
+CREATE INDEX IF NOT EXISTS account_user_memberships_belongs_to_user ON account_user_memberships USING btree (belongs_to_user);
+CREATE INDEX IF NOT EXISTS accounts_belongs_to_user ON accounts USING btree (belongs_to_user);
 CREATE INDEX IF NOT EXISTS password_reset_token_belongs_to_user ON password_reset_tokens USING btree (belongs_to_user);
