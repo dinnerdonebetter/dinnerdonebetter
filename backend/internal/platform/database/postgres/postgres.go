@@ -158,14 +158,17 @@ func (q *Client) rollbackTransaction(ctx context.Context, tx database.SQLQueryEx
 	q.logger.Debug("transaction rolled back")
 }
 
-func fetchAllRows[T any](fetchFunc func(*filtering.QueryFilter) (*filtering.QueryFilteredResult[T], error)) ([]T, error) {
+func FetchAllRows[T any](fetchFunc func(*filtering.QueryFilter) (*filtering.QueryFilteredResult[T], error), initialFilter *filtering.QueryFilter) ([]T, error) {
 	var done bool
 	allData := []T{}
 
-	filter := &filtering.QueryFilter{
-		Page:            pointer.To(uint16(1)),
-		Limit:           pointer.To(uint8(math.MaxUint8)),
-		IncludeArchived: pointer.To(true),
+	var filter = initialFilter
+	if filter == nil {
+		filter = &filtering.QueryFilter{
+			Page:            pointer.To(uint16(1)),
+			Limit:           pointer.To(uint8(math.MaxUint8)),
+			IncludeArchived: pointer.To(true),
+		}
 	}
 
 	for !done {

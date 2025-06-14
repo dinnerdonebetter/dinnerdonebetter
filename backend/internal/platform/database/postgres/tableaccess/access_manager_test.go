@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -66,6 +67,19 @@ func hashStringToNumber(s string) uint64 {
 	return h.Sum64()
 }
 
+func buildConnectionString(t *testing.T, container *postgres.PostgresContainer, dbName, username, password string) string {
+	t.Helper()
+	ctx := t.Context()
+
+	containerPort, err := container.MappedPort(ctx, "5432/tcp")
+	require.NoError(t, err)
+
+	host, err := container.Host(ctx)
+	require.NoError(t, err)
+
+	return fmt.Sprintf("postgres://%s:%s@%s/%s", username, password, net.JoinHostPort(host, containerPort.Port()), dbName)
+}
+
 func buildDatabaseConnectionForTest(t *testing.T, ctx context.Context) (*sql.DB, *postgres.PostgresContainer) {
 	t.Helper()
 
@@ -95,35 +109,10 @@ func buildDatabaseConnectionForTest(t *testing.T, ctx context.Context) (*sql.DB,
 	return db, container
 }
 
-func createDatabaseForTest(t *testing.T, db *sql.DB, database string) {
-	t.Helper()
-
-	_, err := db.Exec(fmt.Sprintf("CREATE DATABASE %s;", database))
-	require.NoError(t, err)
-}
-
-func createDatabaseUserForTest(t *testing.T, db *sql.DB, username, password string) {
-	t.Helper()
-
-	_, err := db.Exec(fmt.Sprintf("CREATE USER %s WITH PASSWORD '%s';", username, password))
-	require.NoError(t, err)
-}
-
-func grantRolesToUserForTest(t *testing.T, db *sql.DB, username string) {
-	t.Helper()
-
-	_, err := db.Exec(fmt.Sprintf("GRANT pg_read_all_data TO %s;", username))
-	require.NoError(t, err)
-
-	_, err = db.Exec(fmt.Sprintf("GRANT pg_write_all_data TO %s;", username))
-	require.NoError(t, err)
-}
-
 func TestNewManager(T *testing.T) {
-	T.SkipNow()
+	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
-		t.SkipNow() // experimental
 		t.Parallel()
 
 		ctx := context.Background()
@@ -131,39 +120,24 @@ func TestNewManager(T *testing.T) {
 		adminDB, container := buildDatabaseConnectionForTest(t, ctx)
 		defer container.Stop(ctx, pointer.To(10*time.Second))
 
-		connStr, err := container.ConnectionString(ctx, "sslmode=disable")
-		require.NoError(t, err)
-		require.NotEmpty(t, connStr)
+		mgr := NewManager(adminDB)
 
-		const (
-			databaseName = "exampledb"
-			username     = "username"
-			password     = "password123"
-		)
+		username := "example"
+		password := "hunter2"
+		databaseName := "records"
 
-		createDatabaseForTest(t, adminDB, databaseName)
-		createDatabaseUserForTest(t, adminDB, username, password)
-		grantRolesToUserForTest(t, adminDB, username)
+		assert.NoError(t, mgr.CreateUser(ctx, username, password))
+		assert.NoError(t, mgr.CreateDatabase(ctx, databaseName, username))
 
-		dbHost, err := container.Host(ctx)
-		require.NoError(t, err)
-		dbPort, err := container.MappedPort(ctx, "5432")
+		canAccess, err := mgr.UserCanAccessDatabase(ctx, username, databaseName)
+		assert.NoError(t, err)
+		assert.True(t, canAccess)
+
+		db2, err := sql.Open("pgx", buildConnectionString(t, container, databaseName, username, password))
 		require.NoError(t, err)
 
-		createdUserDB, err := sql.Open("pgx", fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", username, password, net.JoinHostPort(dbHost, dbPort.Port()), databaseName))
-		require.NoError(t, err)
-
-		_, err = createdUserDB.ExecContext(ctx, `
-CREATE TABLE IF NOT EXISTS example (
-    id TEXT NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    last_updated_at TIMESTAMP WITH TIME ZONE,
-    archived_at TIMESTAMP WITH TIME ZONE
-);
-`)
-		require.NoError(t, err)
-
-		println("")
+		var dbName string
+		db2.QueryRowContext(ctx, `SELECT current_database()`).Scan(&dbName)
+		assert.Equal(t, databaseName, dbName)
 	})
 }
