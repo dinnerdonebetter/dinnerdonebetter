@@ -6,7 +6,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
 func (c *Client) CreateValidInstrument(

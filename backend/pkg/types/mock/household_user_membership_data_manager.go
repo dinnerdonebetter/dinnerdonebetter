@@ -3,7 +3,7 @@ package mocktypes
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"

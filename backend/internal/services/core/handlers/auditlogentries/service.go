@@ -3,11 +3,11 @@ package auditlogentries
 import (
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/lib/routing"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 

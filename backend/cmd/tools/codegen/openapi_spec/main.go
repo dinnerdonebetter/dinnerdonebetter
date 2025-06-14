@@ -13,7 +13,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/build/services/api"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
@@ -209,7 +209,7 @@ func main() {
 
 	spec.Paths = paths
 
-	schemas, err := parseTypes("pkg/types", "internal/lib/database/filtering")
+	schemas, err := parseTypes("pkg/types", "internal/platform/database/filtering")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	serverutils "github.com/dinnerdonebetter/backend/internal/lib/server/http/utils"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	serverutils "github.com/dinnerdonebetter/backend/internal/platform/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 

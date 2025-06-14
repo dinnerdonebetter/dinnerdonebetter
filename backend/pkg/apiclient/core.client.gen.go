@@ -8,11 +8,11 @@ import (
 	"path"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
-	logging "github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	logging "github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"github.com/moul/http2curl"
 )

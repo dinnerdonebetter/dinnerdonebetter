@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/analytics"
-	"github.com/dinnerdonebetter/backend/internal/lib/email"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
+	"github.com/dinnerdonebetter/backend/internal/platform/email"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
 func handleEmailRequest(

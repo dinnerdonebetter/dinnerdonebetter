@@ -2,7 +2,7 @@ package searchdataindexscheduler
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/indexing"
+	"github.com/dinnerdonebetter/backend/internal/platform/search/text/indexing"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 )

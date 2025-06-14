@@ -3,7 +3,7 @@ package users
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
+	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

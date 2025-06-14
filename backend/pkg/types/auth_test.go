@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 
 	"github.com/stretchr/testify/assert"
 )

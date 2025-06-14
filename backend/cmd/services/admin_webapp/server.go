@@ -9,10 +9,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/pages"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/cookies"
-	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication/cookies"
+	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 
 	"github.com/jellydator/ttlcache/v3"

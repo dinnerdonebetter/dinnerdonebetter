@@ -10,9 +10,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/config/envvars"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
 
 	"github.com/stretchr/testify/assert"

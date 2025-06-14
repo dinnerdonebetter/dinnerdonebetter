@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
-	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
+	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"

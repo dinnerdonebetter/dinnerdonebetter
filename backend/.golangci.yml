@@ -338,23 +338,23 @@ issues:
       linters:
         - forcetypeassert
 
-    - path: internal/lib/encoding/mock
+    - path: internal/platform/encoding/mock
       linters:
         - forcetypeassert
 
-    - path: internal/lib/messagequeue/mock
+    - path: internal/platform/messagequeue/mock
       linters:
         - forcetypeassert
 
-    - path: internal/lib/routing/mock
+    - path: internal/platform/routing/mock
       linters:
         - forcetypeassert
 
-    - path: internal/lib/search/mock
+    - path: internal/platform/search/mock
       linters:
         - forcetypeassert
 
-    - path: internal/lib/uploads/mock
+    - path: internal/platform/uploads/mock
       linters:
         - forcetypeassert
 
@@ -376,18 +376,18 @@ issues:
         - gocritic
       text: "rangeValCopy: each iteration copies"
 
-    - path: internal/lib/email/sendgrid
+    - path: internal/platform/email/sendgrid
       linters:
         - paralleltest
 
-    - path: internal/lib/featureflags/posthog
+    - path: internal/platform/featureflags/posthog
       linters:
         - paralleltest
 
     ## BEGIN SPECIAL SNOWFLAKES
 
     # TODO: could I maybe get rid of these?
-    - path: internal/lib/uploads/images/mock.go
+    - path: internal/platform/uploads/images/mock.go
       linters:
         - forcetypeassert
 
@@ -405,7 +405,7 @@ issues:
         - gosec
 
     # I forget why we did this
-    - path: internal/lib/featureflags/launchdarkly/mock_client.go
+    - path: internal/platform/featureflags/launchdarkly/mock_client.go
       linters:
         - gocritic
 

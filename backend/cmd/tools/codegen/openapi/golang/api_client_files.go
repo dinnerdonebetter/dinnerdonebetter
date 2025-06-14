@@ -10,8 +10,8 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
-	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 
 	"github.com/swaggest/openapi-go/openapi31"
 )
@@ -412,19 +412,19 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	return result, nil
 }`
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/lib/observability",
+				"github.com/dinnerdonebetter/backend/internal/platform/observability",
 			)
 
 			if (!f.containsSearchQuery() && len(f.Params) > 0) || (f.containsSearchQuery() && len(f.Params) > 1) {
 				imports = append(imports,
-					"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
+					"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing",
 				)
 			}
 
 			for _, z := range f.Params {
 				if z.Name == textsearch.QueryKeySearch {
 					imports = append(imports,
-						"github.com/dinnerdonebetter/backend/internal/lib/search/text",
+						"github.com/dinnerdonebetter/backend/internal/platform/search/text",
 					)
 				}
 			}
@@ -432,7 +432,7 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 			if shouldFormatPath {
 				imports = append(imports,
 					"fmt",
-					"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
+					"github.com/dinnerdonebetter/backend/internal/platform/observability/keys")
 			}
 		} else {
 			// GET routes that don't return lists
@@ -477,15 +477,15 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 	return apiResponse.Data, nil
 }`
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/lib/observability",
+				"github.com/dinnerdonebetter/backend/internal/platform/observability",
 			)
 			if shouldFormatPath {
 				imports = append(imports, "fmt")
 			}
 			if len(f.Params) > 0 {
 				imports = append(imports,
-					"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
-					"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
+					"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing",
+					"github.com/dinnerdonebetter/backend/internal/platform/observability/keys")
 			}
 		}
 	case http.MethodPost:
@@ -538,15 +538,15 @@ func (f *APIClientFunction) Render() (file string, imports []string, err error) 
 }`
 
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/lib/observability",
+			"github.com/dinnerdonebetter/backend/internal/platform/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/platform/observability/keys")
 		}
 
 	case http.MethodPut:
@@ -592,15 +592,15 @@ reqMods ...RequestModifier,
 	return nil
 }`
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/lib/observability",
+			"github.com/dinnerdonebetter/backend/internal/platform/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/platform/observability/keys")
 		}
 
 	case http.MethodPatch:
@@ -646,15 +646,15 @@ reqMods ...RequestModifier,
 	return nil
 }`
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/lib/observability",
+			"github.com/dinnerdonebetter/backend/internal/platform/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/platform/observability/keys")
 		}
 
 	case http.MethodDelete:
@@ -699,15 +699,15 @@ reqMods ...RequestModifier,
 	return  nil
 }`
 		imports = append(imports,
-			"github.com/dinnerdonebetter/backend/internal/lib/observability",
+			"github.com/dinnerdonebetter/backend/internal/platform/observability",
 		)
 		if shouldFormatPath {
 			imports = append(imports, "fmt")
 		}
 		if len(f.Params) > 0 {
 			imports = append(imports,
-				"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing",
-				"github.com/dinnerdonebetter/backend/internal/lib/observability/keys")
+				"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing",
+				"github.com/dinnerdonebetter/backend/internal/platform/observability/keys")
 		}
 	}
 
@@ -880,7 +880,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 				"net/http",
 				"github.com/stretchr/testify/assert",
 				"github.com/stretchr/testify/require",
-				"github.com/dinnerdonebetter/backend/internal/lib/fake",
+				"github.com/dinnerdonebetter/backend/internal/platform/fake",
 			)
 
 			if isSearchOp {
@@ -970,7 +970,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 				"net/http",
 				"github.com/stretchr/testify/assert",
 				"github.com/stretchr/testify/require",
-				"github.com/dinnerdonebetter/backend/internal/lib/fake",
+				"github.com/dinnerdonebetter/backend/internal/platform/fake",
 			)
 		}
 
@@ -1064,7 +1064,7 @@ func TestClient_{{ .Name }}(T *testing.T) {
 			"context",
 			"net/http",
 			"github.com/stretchr/testify/assert",
-			"github.com/dinnerdonebetter/backend/internal/lib/fake",
+			"github.com/dinnerdonebetter/backend/internal/platform/fake",
 		)
 
 		if f.Method != http.MethodPut && f.Method != http.MethodPatch {

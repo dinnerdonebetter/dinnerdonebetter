@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 
 	"github.com/stretchr/testify/assert"
 )

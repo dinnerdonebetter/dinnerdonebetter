@@ -6,8 +6,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 )
 
 func (c *Client) SearchForValidIngredientStates(

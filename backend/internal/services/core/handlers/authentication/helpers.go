@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 

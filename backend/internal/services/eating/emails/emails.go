@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/email"
-	"github.com/dinnerdonebetter/backend/internal/lib/internalerrors"
+	"github.com/dinnerdonebetter/backend/internal/platform/email"
+	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/matcornic/hermes/v2"

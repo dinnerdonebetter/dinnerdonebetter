@@ -5,12 +5,12 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/email"
-	"github.com/dinnerdonebetter/backend/internal/lib/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/platform/email"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	servertiming "github.com/mitchellh/go-server-timing"

@@ -3,10 +3,10 @@ package workers
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/lib/encoding/mock"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	mockencoding "github.com/dinnerdonebetter/backend/internal/platform/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 )

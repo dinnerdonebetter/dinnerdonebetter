@@ -8,8 +8,8 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	"github.com/swaggest/openapi-go/openapi31"
 )

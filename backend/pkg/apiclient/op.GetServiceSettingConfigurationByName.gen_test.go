@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/fake"
+	"github.com/dinnerdonebetter/backend/internal/platform/fake"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

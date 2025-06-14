@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/routing"
+	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 
 	"maragu.dev/gomponents"
 	ghttp "maragu.dev/gomponents/http"

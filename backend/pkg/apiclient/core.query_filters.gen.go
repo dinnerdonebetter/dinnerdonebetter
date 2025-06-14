@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
-	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 )
 
 const (

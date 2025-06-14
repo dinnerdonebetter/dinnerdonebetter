@@ -8,10 +8,10 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/lib/random"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/random"
 
 	"golang.org/x/oauth2"
 )

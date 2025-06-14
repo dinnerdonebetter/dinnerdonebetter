@@ -9,7 +9,6 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.26.0
 	github.com/GuiaBolso/darwin v0.0.0-20191218124601-fd6d2aa3d244
 	github.com/KimMachineGun/automemlimit v0.7.0
-	github.com/Masterminds/squirrel v1.5.4
 	github.com/XSAM/otelsql v0.37.0
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/algolia/algoliasearch-client-go/v3 v3.31.4
@@ -214,8 +213,6 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
-	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
-	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/launchdarkly/ccache v1.1.0 // indirect
 	github.com/launchdarkly/eventsource v1.8.0 // indirect
 	github.com/launchdarkly/go-jsonstream/v3 v3.1.0 // indirect

@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/keys"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 )
 
 func (c *Client) SearchValidMeasurementUnitsByIngredient(

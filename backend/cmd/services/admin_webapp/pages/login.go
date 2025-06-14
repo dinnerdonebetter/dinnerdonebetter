@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin_webapp/components"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 
 	"maragu.dev/gomponents"

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/cookies"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication/cookies"
 )
 
 type (

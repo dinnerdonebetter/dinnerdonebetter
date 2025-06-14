@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"

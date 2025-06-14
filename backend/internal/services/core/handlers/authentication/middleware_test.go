@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/sessions"
-	mockmetrics "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/mock"
-	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
+	mockmetrics "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/mock"
+	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 

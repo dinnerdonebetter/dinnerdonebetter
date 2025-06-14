@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	textsearch "github.com/dinnerdonebetter/backend/internal/lib/search/text"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"

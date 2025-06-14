@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/lib/database/filtering"
-	"github.com/dinnerdonebetter/backend/internal/lib/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
 	openapi "github.com/swaggest/openapi-go/openapi31"
 )
