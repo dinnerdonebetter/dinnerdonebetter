@@ -47,7 +47,7 @@ func (q *Client) Migrate(ctx context.Context) error {
 	defer span.End()
 
 	if q.config == nil {
-		return ErrNilInputProvided
+		return database.ErrNilInputProvided
 	}
 
 	if !q.IsReady(ctx) {

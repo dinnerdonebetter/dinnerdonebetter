@@ -3,11 +3,11 @@ package keys
 const (
 	// RequesterIDKey is the standard key for referring to a requesting user's ID.
 	RequesterIDKey = "request.made_by"
-	// AccountIDKey is the standard key for referring to a account ID.
+	// AccountIDKey is the standard key for referring to an account ID.
 	AccountIDKey = "account.id"
-	// AccountInvitationIDKey is the standard key for referring to a account ID.
+	// AccountInvitationIDKey is the standard key for referring to an account ID.
 	AccountInvitationIDKey = "account_invitation.id"
-	// AccountInvitationTokenKey is the standard key for referring to a account invitation token.
+	// AccountInvitationTokenKey is the standard key for referring to an account invitation token.
 	AccountInvitationTokenKey = "account_invitation.token"
 	// ActiveAccountIDKey is the standard key for referring to an active account ID.
 	ActiveAccountIDKey = "active_account.id"
@@ -185,7 +185,7 @@ const (
 	// UserIngredientPreferenceIDKey is the standard key for referring to a user ingredient preference's ID.
 	UserIngredientPreferenceIDKey = "user_ingredient_preference.id"
 
-	// AccountInstrumentOwnershipIDKey is the standard key for referring to a account instrument ownership's ID.
+	// AccountInstrumentOwnershipIDKey is the standard key for referring to an account instrument ownership's ID.
 	AccountInstrumentOwnershipIDKey = "account_instrument_ownership.id"
 
 	// RecipeRatingIDKey is the standard key for referring to a recipe rating's ID.

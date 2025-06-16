@@ -142,7 +142,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadAccountInviteHandler returns a GET handler that returns a account invitation.
+// ReadAccountInviteHandler returns a GET handler that returns an account invitation.
 func (s *service) ReadAccountInviteHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

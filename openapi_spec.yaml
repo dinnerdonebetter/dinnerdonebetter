@@ -223,7 +223,7 @@ paths:
       - audit log entries
   /api/v1/audit_log_entries/for_account:
     get:
-      description: Retrieves audit log entries for a account
+      description: Retrieves audit log entries for an account
       operationId: GetAuditLogEntriesForAccount
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -1259,7 +1259,7 @@ paths:
       tags:
       - accounts
     post:
-      description: Creates a account
+      description: Creates an account
       operationId: CreateAccount
       requestBody:
         content:
@@ -1326,7 +1326,7 @@ paths:
       - accounts
   /api/v1/accounts/{accountID}:
     delete:
-      description: Archives a account
+      description: Archives an account
       operationId: ArchiveAccount
       parameters:
       - in: path
@@ -1389,7 +1389,7 @@ paths:
       tags:
       - accounts
     get:
-      description: Fetches a account
+      description: Fetches an account
       operationId: GetAccount
       parameters:
       - in: path
@@ -1452,7 +1452,7 @@ paths:
       tags:
       - accounts
     put:
-      description: Updates a account
+      description: Updates an account
       operationId: UpdateAccount
       parameters:
       - in: path
@@ -1589,7 +1589,7 @@ paths:
       - accounts
   /api/v1/accounts/{accountID}/invitations/{accountInvitationID}:
     get:
-      description: Fetches a account invitation by its ID
+      description: Fetches an account invitation by its ID
       operationId: GetAccountInvitationByID
       parameters:
       - in: path
@@ -1659,7 +1659,7 @@ paths:
       - invitations
   /api/v1/accounts/{accountID}/invite:
     post:
-      description: Create a account invitation
+      description: Create an account invitation
       operationId: CreateAccountInvitation
       parameters:
       - in: path
@@ -1732,7 +1732,7 @@ paths:
       - accounts
   /api/v1/accounts/{accountID}/members/{userID}:
     delete:
-      description: Archive a account user membership
+      description: Archive an account user membership
       operationId: ArchiveUserMembership
       parameters:
       - in: path
@@ -1802,7 +1802,7 @@ paths:
       - account members
   /api/v1/accounts/{accountID}/members/{userID}/permissions:
     patch:
-      description: Update a account member's account permissions
+      description: Update an account member's account permissions
       operationId: UpdateAccountMemberPermissions
       parameters:
       - in: path
@@ -2012,7 +2012,7 @@ paths:
       - accounts
   /api/v1/accounts/instruments:
     get:
-      description: creates a account instrument
+      description: creates an account instrument
       operationId: GetAccountInstrumentOwnerships
       parameters:
       - description: How many results should appear in output, max is 250.
@@ -2128,7 +2128,7 @@ paths:
       - accounts
       - account instrument ownerships
     post:
-      description: Creates a account instrument ownership
+      description: Creates an account instrument ownership
       operationId: CreateAccountInstrumentOwnership
       requestBody:
         content:
@@ -2196,7 +2196,7 @@ paths:
       - account instrument ownerships
   /api/v1/accounts/instruments/{accountInstrumentOwnershipID}:
     delete:
-      description: Archives a account instrument ownership
+      description: Archives an account instrument ownership
       operationId: ArchiveAccountInstrumentOwnership
       parameters:
       - in: path
@@ -2260,7 +2260,7 @@ paths:
       - accounts
       - account instrument ownerships
     get:
-      description: Fetches a account instrument ownership
+      description: Fetches an account instrument ownership
       operationId: GetAccountInstrumentOwnership
       parameters:
       - in: path
@@ -2324,7 +2324,7 @@ paths:
       - accounts
       - account instrument ownerships
     put:
-      description: Updates a account instrument ownership
+      description: Updates an account instrument ownership
       operationId: UpdateAccountInstrumentOwnership
       parameters:
       - in: path

@@ -1,10 +1,12 @@
 package database
 
 import (
+	"testing"
+
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestFetchAllRows(T *testing.T) {

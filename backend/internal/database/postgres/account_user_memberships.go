@@ -385,7 +385,7 @@ func (q *Querier) addUserToAccount(ctx context.Context, querier database.SQLQuer
 	return nil
 }
 
-// removeUserFromAccount removes a user's membership to a account.
+// removeUserFromAccount removes a user's membership to an account.
 func (q *Querier) removeUserFromAccount(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, userID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -447,7 +447,7 @@ func (q *Querier) removeUserFromAccount(ctx context.Context, querier database.SQ
 	return nil
 }
 
-// RemoveUserFromAccount removes a user's membership to a account.
+// RemoveUserFromAccount removes a user's membership to an account.
 func (q *Querier) RemoveUserFromAccount(ctx context.Context, userID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

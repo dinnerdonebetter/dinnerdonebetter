@@ -24,9 +24,9 @@ INSERT INTO account_user_memberships (
 `
 
 type AddUserToAccountParams struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
-	BelongsToUser      string
+	BelongsToUser    string
 	AccountRole      string
 }
 
@@ -72,9 +72,9 @@ INSERT INTO account_user_memberships (
 `
 
 type CreateAccountUserMembershipForNewUserParams struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
-	BelongsToUser      string
+	BelongsToUser    string
 	DefaultAccount   bool
 	AccountRole      string
 }
@@ -88,21 +88,6 @@ func (q *Queries) CreateAccountUserMembershipForNewUser(ctx context.Context, db 
 		arg.AccountRole,
 	)
 	return err
-}
-
-const getDefaultAccountIDForUser = `-- name: GetDefaultAccountIDForUser :one
-SELECT accounts.id
-FROM accounts
-	JOIN account_user_memberships ON account_user_memberships.belongs_to_account = accounts.id
-WHERE account_user_memberships.belongs_to_user = $1
-	AND account_user_memberships.default_account = TRUE
-`
-
-func (q *Queries) GetDefaultAccountIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error) {
-	row := db.QueryRowContext(ctx, getDefaultAccountIDForUser, belongsToUser)
-	var id string
-	err := row.Scan(&id)
-	return id, err
 }
 
 const getAccountUserMembershipsForUser = `-- name: GetAccountUserMembershipsForUser :many
@@ -153,6 +138,21 @@ func (q *Queries) GetAccountUserMembershipsForUser(ctx context.Context, db DBTX,
 	return items, nil
 }
 
+const getDefaultAccountIDForUser = `-- name: GetDefaultAccountIDForUser :one
+SELECT accounts.id
+FROM accounts
+	JOIN account_user_memberships ON account_user_memberships.belongs_to_account = accounts.id
+WHERE account_user_memberships.belongs_to_user = $1
+	AND account_user_memberships.default_account = TRUE
+`
+
+func (q *Queries) GetDefaultAccountIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error) {
+	row := db.QueryRowContext(ctx, getDefaultAccountIDForUser, belongsToUser)
+	var id string
+	err := row.Scan(&id)
+	return id, err
+}
+
 const markAccountUserMembershipAsUserDefault = `-- name: MarkAccountUserMembershipAsUserDefault :exec
 UPDATE account_user_memberships SET
 	default_account = (belongs_to_user = $1 AND belongs_to_account = $2)
@@ -161,7 +161,7 @@ WHERE archived_at IS NULL
 `
 
 type MarkAccountUserMembershipAsUserDefaultParams struct {
-	BelongsToUser      string
+	BelongsToUser    string
 	BelongsToAccount string
 }
 
@@ -180,7 +180,7 @@ WHERE belongs_to_account = $2
 type ModifyAccountUserPermissionsParams struct {
 	AccountRole      string
 	BelongsToAccount string
-	BelongsToUser      string
+	BelongsToUser    string
 }
 
 func (q *Queries) ModifyAccountUserPermissions(ctx context.Context, db DBTX, arg *ModifyAccountUserPermissionsParams) error {
@@ -199,7 +199,7 @@ WHERE account_user_memberships.archived_at IS NULL
 
 type RemoveUserFromAccountParams struct {
 	BelongsToAccount string
-	BelongsToUser      string
+	BelongsToUser    string
 }
 
 func (q *Queries) RemoveUserFromAccount(ctx context.Context, db DBTX, arg *RemoveUserFromAccountParams) error {
@@ -216,7 +216,7 @@ WHERE archived_at IS NULL
 `
 
 type TransferAccountMembershipParams struct {
-	BelongsToUser      string
+	BelongsToUser    string
 	BelongsToAccount string
 }
 
@@ -234,8 +234,8 @@ WHERE archived_at IS NULL
 `
 
 type TransferAccountOwnershipParams struct {
-	NewOwner    string
-	OldOwner    string
+	NewOwner  string
+	OldOwner  string
 	AccountID string
 }
 
@@ -256,7 +256,7 @@ SELECT EXISTS (
 
 type UserIsAccountMemberParams struct {
 	BelongsToAccount string
-	BelongsToUser      string
+	BelongsToUser    string
 }
 
 func (q *Queries) UserIsAccountMember(ctx context.Context, db DBTX, arg *UserIsAccountMemberParams) (bool, error) {

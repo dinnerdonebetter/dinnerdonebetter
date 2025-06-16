@@ -20,7 +20,7 @@ WHERE archived_at IS NULL
 `
 
 type ArchiveAccountInstrumentOwnershipParams struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
 }
 
@@ -43,7 +43,7 @@ SELECT EXISTS (
 `
 
 type CheckAccountInstrumentOwnershipExistenceParams struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
 }
 
@@ -71,11 +71,11 @@ INSERT INTO account_instrument_ownerships (
 `
 
 type CreateAccountInstrumentOwnershipParams struct {
-	ID                 string
-	Notes              string
-	Quantity           int32
-	ValidInstrumentID  string
-	BelongsToAccount string
+	ID                string
+	Notes             string
+	Quantity          int32
+	ValidInstrumentID string
+	BelongsToAccount  string
 }
 
 func (q *Queries) CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error {
@@ -119,7 +119,7 @@ WHERE account_instrument_ownerships.archived_at IS NULL
 `
 
 type GetAccountInstrumentOwnershipParams struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
 }
 
@@ -140,7 +140,7 @@ type GetAccountInstrumentOwnershipRow struct {
 	ValidInstrumentCreatedAt                      time.Time
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
 	ValidInstrumentArchivedAt                     sql.NullTime
-	BelongsToAccount                            string
+	BelongsToAccount                              string
 	CreatedAt                                     time.Time
 	LastUpdatedAt                                 sql.NullTime
 	ArchivedAt                                    sql.NullTime
@@ -251,7 +251,7 @@ type GetAccountInstrumentOwnershipsParams struct {
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
 	IncludeArchived sql.NullBool
-	AccountID     string
+	AccountID       string
 	QueryOffset     sql.NullInt32
 	QueryLimit      sql.NullInt32
 }
@@ -273,7 +273,7 @@ type GetAccountInstrumentOwnershipsRow struct {
 	ValidInstrumentCreatedAt                      time.Time
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
 	ValidInstrumentArchivedAt                     sql.NullTime
-	BelongsToAccount                            string
+	BelongsToAccount                              string
 	CreatedAt                                     time.Time
 	LastUpdatedAt                                 sql.NullTime
 	ArchivedAt                                    sql.NullTime
@@ -348,11 +348,11 @@ WHERE archived_at IS NULL
 `
 
 type UpdateAccountInstrumentOwnershipParams struct {
-	Notes              string
-	Quantity           int32
-	ValidInstrumentID  string
-	ID                 string
-	BelongsToAccount string
+	Notes             string
+	Quantity          int32
+	ValidInstrumentID string
+	ID                string
+	BelongsToAccount  string
 }
 
 func (q *Queries) UpdateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateAccountInstrumentOwnershipParams) (int64, error) {

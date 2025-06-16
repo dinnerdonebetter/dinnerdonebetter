@@ -11,22 +11,22 @@ import (
 )
 
 const (
-	// AccountInvitationCreatedServiceEventType indicates a account invitation was created.
+	// AccountInvitationCreatedServiceEventType indicates an account invitation was created.
 	AccountInvitationCreatedServiceEventType = "account_invitation_created"
-	// AccountInvitationCanceledServiceEventType indicates a account invitation was created.
+	// AccountInvitationCanceledServiceEventType indicates an account invitation was created.
 	AccountInvitationCanceledServiceEventType = "account_invitation_canceled"
-	// AccountInvitationAcceptedServiceEventType indicates a account invitation was created.
+	// AccountInvitationAcceptedServiceEventType indicates an account invitation was created.
 	AccountInvitationAcceptedServiceEventType = "account_invitation_accepted"
-	// AccountInvitationRejectedServiceEventType indicates a account invitation was created.
+	// AccountInvitationRejectedServiceEventType indicates an account invitation was created.
 	AccountInvitationRejectedServiceEventType = "account_invitation_rejected"
 
-	// PendingAccountInvitationStatus indicates a account invitation is pending.
+	// PendingAccountInvitationStatus indicates an account invitation is pending.
 	PendingAccountInvitationStatus AccountInvitationStatus = "pending"
-	// CancelledAccountInvitationStatus indicates a account invitation was accepted.
+	// CancelledAccountInvitationStatus indicates an account invitation was accepted.
 	CancelledAccountInvitationStatus AccountInvitationStatus = "cancelled"
-	// AcceptedAccountInvitationStatus indicates a account invitation was accepted.
+	// AcceptedAccountInvitationStatus indicates an account invitation was accepted.
 	AcceptedAccountInvitationStatus AccountInvitationStatus = "accepted"
-	// RejectedAccountInvitationStatus indicates a account invitation was rejected.
+	// RejectedAccountInvitationStatus indicates an account invitation was rejected.
 	RejectedAccountInvitationStatus AccountInvitationStatus = "rejected"
 )
 
@@ -59,7 +59,7 @@ type (
 		DestinationAccountID string    `json:"-"`
 	}
 
-	// AccountInvitation represents a account invitation.
+	// AccountInvitation represents an account invitation.
 	AccountInvitation struct {
 		_ struct{} `json:"-"`
 

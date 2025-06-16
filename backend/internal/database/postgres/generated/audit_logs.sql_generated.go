@@ -35,12 +35,12 @@ INSERT INTO audit_log_entries (
 `
 
 type CreateAuditLogEntryParams struct {
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	Changes            json.RawMessage
-	BelongsToUser      sql.NullString
+	ID               string
+	ResourceType     string
+	RelevantID       string
+	EventType        AuditLogEventType
+	Changes          json.RawMessage
+	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
 }
 
@@ -90,24 +90,24 @@ OFFSET $4
 `
 
 type GetAuditLogEntriesForAccountParams struct {
-	CreatedAfter       sql.NullTime
-	CreatedBefore      sql.NullTime
+	CreatedAfter     sql.NullTime
+	CreatedBefore    sql.NullTime
 	BelongsToAccount sql.NullString
-	QueryOffset        sql.NullInt32
-	QueryLimit         sql.NullInt32
+	QueryOffset      sql.NullInt32
+	QueryLimit       sql.NullInt32
 }
 
 type GetAuditLogEntriesForAccountRow struct {
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	Changes            json.RawMessage
-	BelongsToUser      sql.NullString
+	ID               string
+	ResourceType     string
+	RelevantID       string
+	EventType        AuditLogEventType
+	Changes          json.RawMessage
+	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
-	CreatedAt          time.Time
-	FilteredCount      int64
-	TotalCount         int64
+	CreatedAt        time.Time
+	FilteredCount    int64
+	TotalCount       int64
 }
 
 func (q *Queries) GetAuditLogEntriesForAccount(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountParams) ([]*GetAuditLogEntriesForAccountRow, error) {
@@ -186,25 +186,25 @@ OFFSET $5
 `
 
 type GetAuditLogEntriesForAccountAndResourceTypeParams struct {
-	CreatedAfter       sql.NullTime
-	CreatedBefore      sql.NullTime
+	CreatedAfter     sql.NullTime
+	CreatedBefore    sql.NullTime
 	BelongsToAccount sql.NullString
-	Resources          []string
-	QueryOffset        sql.NullInt32
-	QueryLimit         sql.NullInt32
+	Resources        []string
+	QueryOffset      sql.NullInt32
+	QueryLimit       sql.NullInt32
 }
 
 type GetAuditLogEntriesForAccountAndResourceTypeRow struct {
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	Changes            json.RawMessage
-	BelongsToUser      sql.NullString
+	ID               string
+	ResourceType     string
+	RelevantID       string
+	EventType        AuditLogEventType
+	Changes          json.RawMessage
+	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
-	CreatedAt          time.Time
-	FilteredCount      int64
-	TotalCount         int64
+	CreatedAt        time.Time
+	FilteredCount    int64
+	TotalCount       int64
 }
 
 func (q *Queries) GetAuditLogEntriesForAccountAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountAndResourceTypeParams) ([]*GetAuditLogEntriesForAccountAndResourceTypeRow, error) {
@@ -289,16 +289,16 @@ type GetAuditLogEntriesForUserParams struct {
 }
 
 type GetAuditLogEntriesForUserRow struct {
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	Changes            json.RawMessage
-	BelongsToUser      sql.NullString
+	ID               string
+	ResourceType     string
+	RelevantID       string
+	EventType        AuditLogEventType
+	Changes          json.RawMessage
+	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
-	CreatedAt          time.Time
-	FilteredCount      int64
-	TotalCount         int64
+	CreatedAt        time.Time
+	FilteredCount    int64
+	TotalCount       int64
 }
 
 func (q *Queries) GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserParams) ([]*GetAuditLogEntriesForUserRow, error) {
@@ -386,16 +386,16 @@ type GetAuditLogEntriesForUserAndResourceTypeParams struct {
 }
 
 type GetAuditLogEntriesForUserAndResourceTypeRow struct {
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	Changes            json.RawMessage
-	BelongsToUser      sql.NullString
+	ID               string
+	ResourceType     string
+	RelevantID       string
+	EventType        AuditLogEventType
+	Changes          json.RawMessage
+	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
-	CreatedAt          time.Time
-	FilteredCount      int64
-	TotalCount         int64
+	CreatedAt        time.Time
+	FilteredCount    int64
+	TotalCount       int64
 }
 
 func (q *Queries) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserAndResourceTypeParams) ([]*GetAuditLogEntriesForUserAndResourceTypeRow, error) {
@@ -454,14 +454,14 @@ WHERE audit_log_entries.id = $1
 `
 
 type GetAuditLogEntryRow struct {
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	Changes            json.RawMessage
-	BelongsToUser      sql.NullString
+	ID               string
+	ResourceType     string
+	RelevantID       string
+	EventType        AuditLogEventType
+	Changes          json.RawMessage
+	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
-	CreatedAt          time.Time
+	CreatedAt        time.Time
 }
 
 func (q *Queries) GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error) {

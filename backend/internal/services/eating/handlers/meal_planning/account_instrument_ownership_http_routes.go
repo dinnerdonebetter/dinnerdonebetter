@@ -92,7 +92,7 @@ func (s *service) CreateAccountInstrumentOwnershipHandler(res http.ResponseWrite
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
-// ReadAccountInstrumentOwnershipHandler returns a GET handler that returns a account instrument ownership.
+// ReadAccountInstrumentOwnershipHandler returns a GET handler that returns an account instrument ownership.
 func (s *service) ReadAccountInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -200,7 +200,7 @@ func (s *service) ListAccountInstrumentOwnershipHandler(res http.ResponseWriter,
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// UpdateAccountInstrumentOwnershipHandler returns a handler that updates a account instrument ownership.
+// UpdateAccountInstrumentOwnershipHandler returns a handler that updates an account instrument ownership.
 func (s *service) UpdateAccountInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -291,7 +291,7 @@ func (s *service) UpdateAccountInstrumentOwnershipHandler(res http.ResponseWrite
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// ArchiveAccountInstrumentOwnershipHandler returns a handler that archives a account instrument ownership.
+// ArchiveAccountInstrumentOwnershipHandler returns a handler that archives an account instrument ownership.
 func (s *service) ArchiveAccountInstrumentOwnershipHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

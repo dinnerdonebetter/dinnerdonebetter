@@ -2,9 +2,10 @@ package database
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	"math"
 )
 
 func FetchAllRows[T any](fetchFunc func(*filtering.QueryFilter) (*filtering.QueryFilteredResult[T], error), initialFilter *filtering.QueryFilter) ([]T, error) {

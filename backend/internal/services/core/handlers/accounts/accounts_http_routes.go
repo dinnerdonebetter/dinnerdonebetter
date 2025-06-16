@@ -237,7 +237,7 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// ReadAccountHandler returns a GET handler that returns a account.
+// ReadAccountHandler returns a GET handler that returns an account.
 func (s *service) ReadAccountHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -307,7 +307,7 @@ func (s *service) ReadAccountHandler(res http.ResponseWriter, req *http.Request)
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// UpdateAccountHandler returns a handler that updates a account.
+// UpdateAccountHandler returns a handler that updates an account.
 func (s *service) UpdateAccountHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -407,7 +407,7 @@ func (s *service) UpdateAccountHandler(res http.ResponseWriter, req *http.Reques
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-// ArchiveAccountHandler returns a handler that archives a account.
+// ArchiveAccountHandler returns a handler that archives an account.
 func (s *service) ArchiveAccountHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()

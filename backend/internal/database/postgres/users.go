@@ -392,7 +392,7 @@ func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 	return nil
 }
 
-// CreateUser creates a user. TODO: this should return a account as well.
+// CreateUser creates a user. TODO: this should return an account as well.
 func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

@@ -182,7 +182,7 @@ queries_lint:
 .PHONY: golang_lint
 golang_lint: sqlc_struct_check
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
-	$(LINTER) run --config=.golangci.yml --timeout 15m ./...
+	$(LINTER) run --config=.golangci.yml --timeout 20m ./...
 
 .PHONY: lint_terraform
 lint_terraform: terraformat
@@ -322,6 +322,9 @@ run_admin_app: ensure_air_installed
 .PHONY: line_count
 line_count: ensure_scc_installed
 	@scc --include-ext go --exclude-dir vendor
+
+disable-go:
+	find "$(DIR)" -maxdepth 1 -type f -name '*.go' -exec bash -c 'mv -- "$$1" "$$1.disabled"' _ {} \;
 
 # OPERATIONS
 

@@ -26,9 +26,9 @@ INSERT INTO account_user_memberships (
 `
 
 type AddToAccountDuringCreationParams struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
-	BelongsToUser      string
+	BelongsToUser    string
 	AccountRole      string
 }
 
@@ -243,10 +243,10 @@ type GetAccountByIDWithMembershipsRow struct {
 	UserLastUpdatedAt                 sql.NullTime
 	UserArchivedAt                    sql.NullTime
 	MembershipID                      string
-	MembershipBelongsToAccount      string
+	MembershipBelongsToAccount        string
 	MembershipBelongsToUser           string
-	MembershipDefaultAccount        bool
-	MembershipAccountRole           string
+	MembershipDefaultAccount          bool
+	MembershipAccountRole             string
 	MembershipCreatedAt               time.Time
 	MembershipLastUpdatedAt           sql.NullTime
 	MembershipArchivedAt              sql.NullTime

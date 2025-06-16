@@ -20,7 +20,7 @@ WHERE archived_at IS NULL
 `
 
 type ArchiveWebhookParams struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
 }
 
@@ -43,7 +43,7 @@ SELECT EXISTS(
 `
 
 type CheckWebhookExistenceParams struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
 }
 
@@ -73,11 +73,11 @@ INSERT INTO webhooks (
 `
 
 type CreateWebhookParams struct {
-	ID                 string
-	Name               string
-	ContentType        string
-	URL                string
-	Method             string
+	ID               string
+	Name             string
+	ContentType      string
+	URL              string
+	Method           string
 	BelongsToAccount string
 }
 
@@ -119,7 +119,7 @@ WHERE webhook_trigger_events.archived_at IS NULL
 
 type GetWebhookParams struct {
 	BelongsToAccount string
-	ID                 string
+	ID               string
 }
 
 type GetWebhookRow struct {
@@ -136,7 +136,7 @@ type GetWebhookRow struct {
 	WebhookCreatedAt                    time.Time
 	WebhookLastUpdatedAt                sql.NullTime
 	WebhookArchivedAt                   sql.NullTime
-	WebhookBelongsToAccount           string
+	WebhookBelongsToAccount             string
 }
 
 func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) ([]*GetWebhookRow, error) {
@@ -239,33 +239,33 @@ OFFSET $7
 `
 
 type GetWebhooksForAccountParams struct {
-	CreatedAfter       sql.NullTime
-	CreatedBefore      sql.NullTime
-	UpdatedBefore      sql.NullTime
-	UpdatedAfter       sql.NullTime
-	IncludeArchived    sql.NullBool
+	CreatedAfter     sql.NullTime
+	CreatedBefore    sql.NullTime
+	UpdatedBefore    sql.NullTime
+	UpdatedAfter     sql.NullTime
+	IncludeArchived  sql.NullBool
 	BelongsToAccount string
-	QueryOffset        sql.NullInt32
-	QueryLimit         sql.NullInt32
+	QueryOffset      sql.NullInt32
+	QueryLimit       sql.NullInt32
 }
 
 type GetWebhooksForAccountRow struct {
-	ID                 string
-	Name               string
-	ContentType        string
-	URL                string
-	Method             string
-	ID_2               string
-	TriggerEvent       WebhookEvent
-	BelongsToWebhook   string
-	CreatedAt          time.Time
-	ArchivedAt         sql.NullTime
-	CreatedAt_2        time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt_2       sql.NullTime
+	ID               string
+	Name             string
+	ContentType      string
+	URL              string
+	Method           string
+	ID_2             string
+	TriggerEvent     WebhookEvent
+	BelongsToWebhook string
+	CreatedAt        time.Time
+	ArchivedAt       sql.NullTime
+	CreatedAt_2      time.Time
+	LastUpdatedAt    sql.NullTime
+	ArchivedAt_2     sql.NullTime
 	BelongsToAccount string
-	FilteredCount      int64
-	TotalCount         int64
+	FilteredCount    int64
+	TotalCount       int64
 }
 
 func (q *Queries) GetWebhooksForAccount(ctx context.Context, db DBTX, arg *GetWebhooksForAccountParams) ([]*GetWebhooksForAccountRow, error) {
@@ -337,7 +337,7 @@ WHERE webhook_trigger_events.archived_at IS NULL
 `
 
 type GetWebhooksForAccountAndEventParams struct {
-	TriggerEvent       WebhookEvent
+	TriggerEvent     WebhookEvent
 	BelongsToAccount string
 }
 

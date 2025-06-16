@@ -24,7 +24,7 @@ var (
 	_ types.AccountDataManager = (*Querier)(nil)
 )
 
-// GetAccount fetches a account from the database.
+// GetAccount fetches an account from the database.
 func (q *Querier) GetAccount(ctx context.Context, accountID string) (*types.Account, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -181,7 +181,7 @@ func (q *Querier) GetAccounts(ctx context.Context, userID string, filter *filter
 	return q.getAccountsForUser(ctx, q.db, userID, filter)
 }
 
-// CreateAccount creates a account in the database.
+// CreateAccount creates an account in the database.
 func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabaseCreationInput) (*types.Account, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -418,7 +418,7 @@ func buildChangesForAccount(account, updated *types.Account) map[string]types.Ch
 	return changes
 }
 
-// ArchiveAccount archives a account from the database by its ID.
+// ArchiveAccount archives an account from the database by its ID.
 func (q *Querier) ArchiveAccount(ctx context.Context, accountID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

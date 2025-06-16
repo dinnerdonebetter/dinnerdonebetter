@@ -43,7 +43,7 @@ func ConvertAccountToAccountUpdateRequestInput(input *types.Account) *types.Acco
 	return x
 }
 
-// ConvertAccountToAccountCreationRequestInput builds a faked AccountCreationRequestInput from a account.
+// ConvertAccountToAccountCreationRequestInput builds a faked AccountCreationRequestInput from an account.
 func ConvertAccountToAccountCreationRequestInput(account *types.Account) *types.AccountCreationRequestInput {
 	return &types.AccountCreationRequestInput{
 		Name:         account.Name,

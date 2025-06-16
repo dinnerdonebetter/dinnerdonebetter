@@ -12,25 +12,25 @@ import (
 )
 
 const (
-	// AccountCreatedServiceEventType indicates a account was created.
+	// AccountCreatedServiceEventType indicates an account was created.
 	AccountCreatedServiceEventType = "account_created"
-	// AccountUpdatedServiceEventType indicates a account was updated.
+	// AccountUpdatedServiceEventType indicates an account was updated.
 	AccountUpdatedServiceEventType = "account_updated"
-	// AccountArchivedServiceEventType indicates a account was archived.
+	// AccountArchivedServiceEventType indicates an account was archived.
 	AccountArchivedServiceEventType = "account_archived"
-	// AccountMemberRemovedServiceEventType indicates a account member was removed.
+	// AccountMemberRemovedServiceEventType indicates an account member was removed.
 	AccountMemberRemovedServiceEventType = "account_member_removed"
-	// AccountMembershipPermissionsUpdatedServiceEventType indicates a account member's permissions were modified.
+	// AccountMembershipPermissionsUpdatedServiceEventType indicates an account member's permissions were modified.
 	AccountMembershipPermissionsUpdatedServiceEventType = "account_membership_permissions_updated"
-	// AccountOwnershipTransferredServiceEventType indicates a account was transferred to another owner.
+	// AccountOwnershipTransferredServiceEventType indicates an account was transferred to another owner.
 	AccountOwnershipTransferredServiceEventType = "account_ownership_transferred"
 
-	// UnpaidAccountBillingStatus indicates a account is not paid.
+	// UnpaidAccountBillingStatus indicates an account is not paid.
 	UnpaidAccountBillingStatus = "unpaid"
 )
 
 type (
-	// Account represents a account.
+	// Account represents an account.
 	Account struct {
 		_ struct{} `json:"-"`
 
@@ -132,7 +132,7 @@ type (
 	}
 )
 
-// Update merges a AccountUpdateRequestInput with a account.
+// Update merges a AccountUpdateRequestInput with an account.
 func (x *Account) Update(input *AccountUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name

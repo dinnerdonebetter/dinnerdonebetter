@@ -26,9 +26,9 @@ const (
 	// MealPlanFinalizedServiceEventType indicates a meal plan was finalized.
 	MealPlanFinalizedServiceEventType = "meal_plan_finalized"
 
-	// MealPlanStatusAwaitingVotes indicates a account invitation is pending.
+	// MealPlanStatusAwaitingVotes indicates an account invitation is pending.
 	MealPlanStatusAwaitingVotes MealPlanStatus = "awaiting_votes"
-	// MealPlanStatusFinalized indicates a account invitation was accepted.
+	// MealPlanStatusFinalized indicates an account invitation was accepted.
 	MealPlanStatusFinalized MealPlanStatus = "finalized"
 )
 

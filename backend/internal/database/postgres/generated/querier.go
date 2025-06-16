@@ -95,11 +95,11 @@ type Querier interface {
 	CheckValidVesselExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidityOfValidIngredientStateIngredientPair(ctx context.Context, db DBTX, arg *CheckValidityOfValidIngredientStateIngredientPairParams) (bool, error)
 	CheckWebhookExistence(ctx context.Context, db DBTX, arg *CheckWebhookExistenceParams) (bool, error)
-	CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateAuditLogEntryParams) error
 	CreateAccount(ctx context.Context, db DBTX, arg *CreateAccountParams) error
 	CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error
 	CreateAccountInvitation(ctx context.Context, db DBTX, arg *CreateAccountInvitationParams) error
 	CreateAccountUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateAccountUserMembershipForNewUserParams) error
+	CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateAuditLogEntryParams) error
 	CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error
 	CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error
 	CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPlanParams) error
@@ -152,6 +152,14 @@ type Querier interface {
 	DestroyAllData(ctx context.Context, db DBTX) error
 	FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMealPlanParams) error
 	FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error
+	GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetAccountByIDWithMembershipsRow, error)
+	GetAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipParams) (*GetAccountInstrumentOwnershipRow, error)
+	GetAccountInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipsParams) ([]*GetAccountInstrumentOwnershipsRow, error)
+	GetAccountInvitationByAccountAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByAccountAndIDParams) (*GetAccountInvitationByAccountAndIDRow, error)
+	GetAccountInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetAccountInvitationByEmailAndTokenParams) (*GetAccountInvitationByEmailAndTokenRow, error)
+	GetAccountInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByTokenAndIDParams) (*GetAccountInvitationByTokenAndIDRow, error)
+	GetAccountUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*AccountUserMemberships, error)
+	GetAccountsForUser(ctx context.Context, db DBTX, arg *GetAccountsForUserParams) ([]*GetAccountsForUserRow, error)
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)
 	GetAllMealPlanEventsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*MealPlanEvents, error)
 	GetAllMealPlanOptionsForMealPlanEvent(ctx context.Context, db DBTX, arg *GetAllMealPlanOptionsForMealPlanEventParams) ([]*GetAllMealPlanOptionsForMealPlanEventRow, error)
@@ -170,14 +178,6 @@ type Querier interface {
 	GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error)
 	GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansForPlanningRow, error)
 	GetFinalizedMealPlansWithoutGroceryListInit(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansWithoutGroceryListInitRow, error)
-	GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetAccountByIDWithMembershipsRow, error)
-	GetAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipParams) (*GetAccountInstrumentOwnershipRow, error)
-	GetAccountInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipsParams) ([]*GetAccountInstrumentOwnershipsRow, error)
-	GetAccountInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetAccountInvitationByEmailAndTokenParams) (*GetAccountInvitationByEmailAndTokenRow, error)
-	GetAccountInvitationByAccountAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByAccountAndIDParams) (*GetAccountInvitationByAccountAndIDRow, error)
-	GetAccountInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByTokenAndIDParams) (*GetAccountInvitationByTokenAndIDRow, error)
-	GetAccountUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*AccountUserMemberships, error)
-	GetAccountsForUser(ctx context.Context, db DBTX, arg *GetAccountsForUserParams) ([]*GetAccountsForUserRow, error)
 	GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error)
 	GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error)
 	GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanEventParams) (*MealPlanEvents, error)
@@ -314,9 +314,9 @@ type Querier interface {
 	ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*ListAllMealPlanTasksByMealPlanRow, error)
 	ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, recipeID string) ([]*ListAllRecipePrepTasksByRecipeRow, error)
 	ListIncompleteMealPlanTasksByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTasksByMealPlanOptionRow, error)
+	MarkAccountUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkAccountUserMembershipAsUserDefaultParams) error
 	MarkEmailAddressAsUnverified(ctx context.Context, db DBTX, id string) error
 	MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *MarkEmailAddressAsVerifiedParams) error
-	MarkAccountUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkAccountUserMembershipAsUserDefaultParams) error
 	MarkMealPlanAsGroceryListInitialized(ctx context.Context, db DBTX, id string) error
 	MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error
 	MarkTwoFactorSecretAsUnverified(ctx context.Context, db DBTX, arg *MarkTwoFactorSecretAsUnverifiedParams) error

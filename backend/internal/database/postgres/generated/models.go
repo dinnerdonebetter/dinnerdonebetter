@@ -495,10 +495,10 @@ func AllMealPlanStatusValues() []MealPlanStatus {
 type Oauth2ClientTokenScopes string
 
 const (
-	Oauth2ClientTokenScopesUnknown         Oauth2ClientTokenScopes = "unknown"
+	Oauth2ClientTokenScopesUnknown       Oauth2ClientTokenScopes = "unknown"
 	Oauth2ClientTokenScopesAccountMember Oauth2ClientTokenScopes = "account_member"
 	Oauth2ClientTokenScopesAccountAdmin  Oauth2ClientTokenScopes = "account_admin"
-	Oauth2ClientTokenScopesServiceAdmin    Oauth2ClientTokenScopes = "service_admin"
+	Oauth2ClientTokenScopesServiceAdmin  Oauth2ClientTokenScopes = "service_admin"
 )
 
 func (e *Oauth2ClientTokenScopes) Scan(src interface{}) error {
@@ -688,7 +688,7 @@ type SettingType string
 
 const (
 	SettingTypeUser       SettingType = "user"
-	SettingTypeAccount  SettingType = "account"
+	SettingTypeAccount    SettingType = "account"
 	SettingTypeMembership SettingType = "membership"
 )
 
@@ -1133,14 +1133,14 @@ func AllWebhookEventValues() []WebhookEvent {
 }
 
 type AccountUserMemberships struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
-	BelongsToUser      string
+	BelongsToUser    string
 	DefaultAccount   bool
 	AccountRole      string
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
+	CreatedAt        time.Time
+	LastUpdatedAt    sql.NullTime
+	ArchivedAt       sql.NullTime
 }
 
 type MealPlanEvents struct {
@@ -1256,13 +1256,13 @@ type ValidVessels struct {
 }
 
 type Webhooks struct {
-	ID                 string
-	Name               string
-	ContentType        string
-	URL                string
-	Method             string
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
+	ID               string
+	Name             string
+	ContentType      string
+	URL              string
+	Method           string
+	CreatedAt        time.Time
+	LastUpdatedAt    sql.NullTime
+	ArchivedAt       sql.NullTime
 	BelongsToAccount string
 }

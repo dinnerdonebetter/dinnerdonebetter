@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	// AccountRole describes a role a user has for a account context.
+	// AccountRole describes a role a user has for an account context.
 	AccountRole role
 
 	// AccountRolePermissionsChecker checks permissions for one or more account Roles.
@@ -19,7 +19,7 @@ type (
 const (
 	// AccountMemberRole is a role for a plain account participant.
 	AccountMemberRole AccountRole = iota
-	// AccountAdminRole is a role for someone who can manipulate the specifics of a account.
+	// AccountAdminRole is a role for someone who can manipulate the specifics of an account.
 	AccountAdminRole AccountRole = iota
 
 	AccountAdminRoleName  = "account_admin"

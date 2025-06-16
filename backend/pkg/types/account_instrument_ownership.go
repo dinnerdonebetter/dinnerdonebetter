@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	// AccountInstrumentOwnershipCreatedServiceEventType indicates a account instrument ownership was created.
+	// AccountInstrumentOwnershipCreatedServiceEventType indicates an account instrument ownership was created.
 	AccountInstrumentOwnershipCreatedServiceEventType = "account_instrument_ownership_created"
-	// AccountInstrumentOwnershipUpdatedServiceEventType indicates a account instrument ownership was updated.
+	// AccountInstrumentOwnershipUpdatedServiceEventType indicates an account instrument ownership was updated.
 	AccountInstrumentOwnershipUpdatedServiceEventType = "account_instrument_ownership_updated"
-	// AccountInstrumentOwnershipArchivedServiceEventType indicates a account instrument ownership was archived.
+	// AccountInstrumentOwnershipArchivedServiceEventType indicates an account instrument ownership was archived.
 	AccountInstrumentOwnershipArchivedServiceEventType = "account_instrument_ownership_archived"
 )
 
@@ -27,7 +27,7 @@ func init() {
 }
 
 type (
-	// AccountInstrumentOwnership represents a account instrument ownership.
+	// AccountInstrumentOwnership represents an account instrument ownership.
 	AccountInstrumentOwnership struct {
 		_ struct{} `json:"-"`
 
@@ -91,7 +91,7 @@ type (
 	}
 )
 
-// Update merges an AccountInstrumentOwnershipUpdateRequestInput with a account instrument ownership.
+// Update merges an AccountInstrumentOwnershipUpdateRequestInput with an account instrument ownership.
 func (x *AccountInstrumentOwnership) Update(input *AccountInstrumentOwnershipUpdateRequestInput) {
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes

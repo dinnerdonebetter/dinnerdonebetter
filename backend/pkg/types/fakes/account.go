@@ -70,7 +70,7 @@ func BuildFakeAccountOwnershipTransferInput() *types.AccountOwnershipTransferInp
 	}
 }
 
-// BuildFakeAccountUpdateRequestInput builds a faked AccountUpdateRequestInput from a account.
+// BuildFakeAccountUpdateRequestInput builds a faked AccountUpdateRequestInput from an account.
 func BuildFakeAccountUpdateRequestInput() *types.AccountUpdateRequestInput {
 	account := BuildFakeAccount()
 	return converters.ConvertAccountToAccountUpdateRequestInput(account)

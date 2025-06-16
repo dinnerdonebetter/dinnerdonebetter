@@ -17,7 +17,7 @@ UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_
 
 type ArchiveMealPlanParams struct {
 	BelongsToAccount string
-	ID                 string
+	ID               string
 }
 
 func (q *Queries) ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) (int64, error) {
@@ -39,7 +39,7 @@ SELECT EXISTS (
 `
 
 type CheckMealPlanExistenceParams struct {
-	MealPlanID         string
+	MealPlanID       string
 	BelongsToAccount string
 }
 
@@ -69,12 +69,12 @@ INSERT INTO meal_plans (
 `
 
 type CreateMealPlanParams struct {
-	ID                 string
-	Notes              string
-	Status             MealPlanStatus
-	VotingDeadline     time.Time
+	ID               string
+	Notes            string
+	Status           MealPlanStatus
+	VotingDeadline   time.Time
 	BelongsToAccount string
-	CreatedByUser      string
+	CreatedByUser    string
 }
 
 func (q *Queries) CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPlanParams) error {
@@ -136,7 +136,7 @@ type GetExpiredAndUnresolvedMealPlansRow struct {
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
-	BelongsToAccount     string
+	BelongsToAccount       string
 	CreatedByUser          string
 }
 
@@ -252,7 +252,7 @@ WHERE meal_plans.archived_at IS NULL
 `
 
 type GetFinalizedMealPlansWithoutGroceryListInitRow struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
 }
 
@@ -300,7 +300,7 @@ WHERE meal_plans.archived_at IS NULL
 `
 
 type GetMealPlanParams struct {
-	ID                 string
+	ID               string
 	BelongsToAccount string
 }
 
@@ -315,7 +315,7 @@ type GetMealPlanRow struct {
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
-	BelongsToAccount     string
+	BelongsToAccount       string
 	CreatedByUser          string
 }
 
@@ -362,8 +362,8 @@ WHERE meal_plans.archived_at IS NULL
 `
 
 type GetMealPlanPastVotingDeadlineParams struct {
-	MealPlanID  string
-	AccountID string
+	MealPlanID string
+	AccountID  string
 }
 
 type GetMealPlanPastVotingDeadlineRow struct {
@@ -377,7 +377,7 @@ type GetMealPlanPastVotingDeadlineRow struct {
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
-	BelongsToAccount     string
+	BelongsToAccount       string
 	CreatedByUser          string
 }
 
@@ -458,14 +458,14 @@ OFFSET $7
 `
 
 type GetMealPlansForAccountParams struct {
-	CreatedAfter       sql.NullTime
-	CreatedBefore      sql.NullTime
-	UpdatedBefore      sql.NullTime
-	UpdatedAfter       sql.NullTime
-	IncludeArchived    sql.NullBool
+	CreatedAfter     sql.NullTime
+	CreatedBefore    sql.NullTime
+	UpdatedBefore    sql.NullTime
+	UpdatedAfter     sql.NullTime
+	IncludeArchived  sql.NullBool
 	BelongsToAccount string
-	QueryOffset        sql.NullInt32
-	QueryLimit         sql.NullInt32
+	QueryOffset      sql.NullInt32
+	QueryLimit       sql.NullInt32
 }
 
 type GetMealPlansForAccountRow struct {
@@ -479,7 +479,7 @@ type GetMealPlansForAccountRow struct {
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
-	BelongsToAccount     string
+	BelongsToAccount       string
 	CreatedByUser          string
 	FilteredCount          int64
 	TotalCount             int64
@@ -570,11 +570,11 @@ WHERE archived_at IS NULL
 `
 
 type UpdateMealPlanParams struct {
-	Notes              string
-	Status             MealPlanStatus
-	VotingDeadline     time.Time
+	Notes            string
+	Status           MealPlanStatus
+	VotingDeadline   time.Time
 	BelongsToAccount string
-	ID                 string
+	ID               string
 }
 
 func (q *Queries) UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) (int64, error) {

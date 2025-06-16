@@ -280,7 +280,7 @@ describe('basic', () => {
     expect(client.aggregateUserDataReport()).rejects.toEqual(expectedError.error);
   });
 
-  it('should Archive a account user membership', () => {
+  it('should Archive an account user membership', () => {
     let accountID = fakeID();
     let userID = fakeID();
 
@@ -299,7 +299,7 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to Archive a account user membership', () => {
+  it('should raise errors appropriately when trying to Archive an account user membership', () => {
     let accountID = fakeID();
     let userID = fakeID();
 
@@ -310,7 +310,7 @@ describe('basic', () => {
     expect(client.archiveUserMembership(accountID, userID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to Archive a account user membership', () => {
+  it('should raise service errors appropriately when trying to Archive an account user membership', () => {
     let accountID = fakeID();
     let userID = fakeID();
 
@@ -399,7 +399,7 @@ describe('basic', () => {
     expect(client.cloneRecipe(recipeID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should Create a account invitation', () => {
+  it('should Create an account invitation', () => {
     let accountID = fakeID();
 
     const exampleInput = new AccountInvitationCreationRequestInput();
@@ -420,7 +420,7 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during Create a account invitation', () => {
+  it('should appropriately raise errors when they occur during Create an account invitation', () => {
     let accountID = fakeID();
 
     const exampleInput = new AccountInvitationCreationRequestInput();
@@ -432,7 +432,7 @@ describe('basic', () => {
     expect(client.createAccountInvitation(accountID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during Create a account invitation', () => {
+  it('should appropriately raise service errors when they occur during Create an account invitation', () => {
     let accountID = fakeID();
 
     const exampleInput = new AccountInvitationCreationRequestInput();
@@ -975,7 +975,7 @@ describe('basic', () => {
     expect(client.getAuditLogEntryByID(auditLogEntryID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should Retrieves audit log entries for a account', () => {
+  it('should Retrieves audit log entries for an account', () => {
     const exampleResponse = new APIResponse<Array<AuditLogEntry>>({
       details: {
         currentAccountID: 'test',
@@ -1000,7 +1000,7 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to Retrieves audit log entries for a account', () => {
+  it('should raise errors appropriately when trying to Retrieves audit log entries for an account', () => {
     const expectedError = buildObligatoryError('getAuditLogEntriesForAccount user error');
     const exampleResponse = new APIResponse<Array<AuditLogEntry>>(expectedError);
     mock.onGet(`${baseURL}/api/v1/audit_log_entries/for_account`).reply(200, exampleResponse);
@@ -1008,7 +1008,7 @@ describe('basic', () => {
     expect(client.getAuditLogEntriesForAccount()).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to Retrieves audit log entries for a account', () => {
+  it('should raise service errors appropriately when trying to Retrieves audit log entries for an account', () => {
     const expectedError = buildObligatoryError('getAuditLogEntriesForAccount service error');
     const exampleResponse = new APIResponse<Array<AuditLogEntry>>(expectedError);
     mock.onGet(`${baseURL}/api/v1/audit_log_entries/for_account`).reply(500, exampleResponse);
@@ -1842,7 +1842,7 @@ describe('basic', () => {
     expect(client.transferAccountOwnership(accountID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it("should Update a account member's account permissions", () => {
+  it("should Update an account member's account permissions", () => {
     let accountID = fakeID();
     let userID = fakeID();
 
@@ -1866,7 +1866,7 @@ describe('basic', () => {
       });
   });
 
-  it("should appropriately raise errors when they occur during Update a account member's account permissions", () => {
+  it("should appropriately raise errors when they occur during Update an account member's account permissions", () => {
     let accountID = fakeID();
     let userID = fakeID();
 
@@ -1883,7 +1883,7 @@ describe('basic', () => {
     );
   });
 
-  it("should appropriately raise service errors when they occur during Update a account member's account permissions", () => {
+  it("should appropriately raise service errors when they occur during Update an account member's account permissions", () => {
     let accountID = fakeID();
     let userID = fakeID();
 
@@ -3431,7 +3431,7 @@ describe('basic', () => {
     expect(client.archiveWebhookTriggerEvent(webhookID, webhookTriggerEventID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should archive a account instrument ownership', () => {
+  it('should archive an account instrument ownership', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
@@ -3451,7 +3451,7 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to archive a account instrument ownership', () => {
+  it('should raise errors appropriately when trying to archive an account instrument ownership', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const expectedError = buildObligatoryError('archiveAccountInstrumentOwnership user error');
@@ -3465,7 +3465,7 @@ describe('basic', () => {
     );
   });
 
-  it('should raise service errors appropriately when trying to archive a account instrument ownership', () => {
+  it('should raise service errors appropriately when trying to archive an account instrument ownership', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const expectedError = buildObligatoryError('archiveAccountInstrumentOwnership service error');
@@ -3479,7 +3479,7 @@ describe('basic', () => {
     );
   });
 
-  it('should archive a account', () => {
+  it('should archive an account', () => {
     let accountID = fakeID();
 
     const exampleResponse = new APIResponse<Account>();
@@ -3497,7 +3497,7 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to archive a account', () => {
+  it('should raise errors appropriately when trying to archive an account', () => {
     let accountID = fakeID();
 
     const expectedError = buildObligatoryError('archiveAccount user error');
@@ -3507,7 +3507,7 @@ describe('basic', () => {
     expect(client.archiveAccount(accountID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to archive a account', () => {
+  it('should raise service errors appropriately when trying to archive an account', () => {
     let accountID = fakeID();
 
     const expectedError = buildObligatoryError('archiveAccount service error');
@@ -5114,7 +5114,7 @@ describe('basic', () => {
     expect(client.createWebhookTriggerEvent(webhookID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should create a account instrument ownership', () => {
+  it('should create an account instrument ownership', () => {
     const exampleInput = new AccountInstrumentOwnershipCreationRequestInput();
 
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
@@ -5133,7 +5133,7 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during create a account instrument ownership', () => {
+  it('should appropriately raise errors when they occur during create an account instrument ownership', () => {
     const exampleInput = new AccountInstrumentOwnershipCreationRequestInput();
 
     const expectedError = buildObligatoryError('createAccountInstrumentOwnership user error');
@@ -5143,7 +5143,7 @@ describe('basic', () => {
     expect(client.createAccountInstrumentOwnership(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during create a account instrument ownership', () => {
+  it('should appropriately raise service errors when they occur during create an account instrument ownership', () => {
     const exampleInput = new AccountInstrumentOwnershipCreationRequestInput();
 
     const expectedError = buildObligatoryError('createAccountInstrumentOwnership service error');
@@ -5153,7 +5153,7 @@ describe('basic', () => {
     expect(client.createAccountInstrumentOwnership(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should create a account', () => {
+  it('should create an account', () => {
     const exampleInput = new AccountCreationRequestInput();
 
     const exampleResponse = new APIResponse<Account>();
@@ -5172,7 +5172,7 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during create a account', () => {
+  it('should appropriately raise errors when they occur during create an account', () => {
     const exampleInput = new AccountCreationRequestInput();
 
     const expectedError = buildObligatoryError('createAccount user error');
@@ -5182,7 +5182,7 @@ describe('basic', () => {
     expect(client.createAccount(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during create a account', () => {
+  it('should appropriately raise service errors when they occur during create an account', () => {
     const exampleInput = new AccountCreationRequestInput();
 
     const expectedError = buildObligatoryError('createAccount service error');
@@ -5285,7 +5285,7 @@ describe('basic', () => {
     expect(client.createUser(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should creates a account instrument', () => {
+  it('should creates an account instrument', () => {
     const exampleResponse = new APIResponse<Array<AccountInstrumentOwnership>>({
       details: {
         currentAccountID: 'test',
@@ -5310,7 +5310,7 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to creates a account instrument', () => {
+  it('should raise errors appropriately when trying to creates an account instrument', () => {
     const expectedError = buildObligatoryError('getAccountInstrumentOwnerships user error');
     const exampleResponse = new APIResponse<Array<AccountInstrumentOwnership>>(expectedError);
     mock.onGet(`${baseURL}/api/v1/accounts/instruments`).reply(200, exampleResponse);
@@ -5318,7 +5318,7 @@ describe('basic', () => {
     expect(client.getAccountInstrumentOwnerships()).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to creates a account instrument', () => {
+  it('should raise service errors appropriately when trying to creates an account instrument', () => {
     const expectedError = buildObligatoryError('getAccountInstrumentOwnerships service error');
     const exampleResponse = new APIResponse<Array<AccountInstrumentOwnership>>(expectedError);
     mock.onGet(`${baseURL}/api/v1/accounts/instruments`).reply(500, exampleResponse);
@@ -9154,7 +9154,7 @@ describe('basic', () => {
     expect(client.getWebhooks()).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch a account instrument ownership', () => {
+  it('should fetch an account instrument ownership', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
@@ -9174,7 +9174,7 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch a account instrument ownership', () => {
+  it('should raise errors appropriately when trying to fetch an account instrument ownership', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const expectedError = buildObligatoryError('getAccountInstrumentOwnership user error');
@@ -9186,7 +9186,7 @@ describe('basic', () => {
     expect(client.getAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch a account instrument ownership', () => {
+  it('should raise service errors appropriately when trying to fetch an account instrument ownership', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const expectedError = buildObligatoryError('getAccountInstrumentOwnership service error');
@@ -9198,7 +9198,7 @@ describe('basic', () => {
     expect(client.getAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch a account invitation by its ID', () => {
+  it('should fetch an account invitation by its ID', () => {
     let accountID = fakeID();
     let accountInvitationID = fakeID();
 
@@ -9219,7 +9219,7 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch a account invitation by its ID', () => {
+  it('should raise errors appropriately when trying to fetch an account invitation by its ID', () => {
     let accountID = fakeID();
     let accountInvitationID = fakeID();
 
@@ -9232,7 +9232,7 @@ describe('basic', () => {
     expect(client.getAccountInvitationByID(accountID, accountInvitationID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch a account invitation by its ID', () => {
+  it('should raise service errors appropriately when trying to fetch an account invitation by its ID', () => {
     let accountID = fakeID();
     let accountInvitationID = fakeID();
 
@@ -9245,7 +9245,7 @@ describe('basic', () => {
     expect(client.getAccountInvitationByID(accountID, accountInvitationID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch a account', () => {
+  it('should fetch an account', () => {
     let accountID = fakeID();
 
     const exampleResponse = new APIResponse<Account>();
@@ -9263,7 +9263,7 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch a account', () => {
+  it('should raise errors appropriately when trying to fetch an account', () => {
     let accountID = fakeID();
 
     const expectedError = buildObligatoryError('getAccount user error');
@@ -9273,7 +9273,7 @@ describe('basic', () => {
     expect(client.getAccount(accountID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch a account', () => {
+  it('should raise service errors appropriately when trying to fetch an account', () => {
     let accountID = fakeID();
 
     const expectedError = buildObligatoryError('getAccount service error');
@@ -11422,7 +11422,7 @@ describe('basic', () => {
     expect(client.updateValidVessel(validVesselID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should update a account instrument ownership', () => {
+  it('should update an account instrument ownership', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const exampleInput = new AccountInstrumentOwnershipUpdateRequestInput();
@@ -11445,7 +11445,7 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during update a account instrument ownership', () => {
+  it('should appropriately raise errors when they occur during update an account instrument ownership', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const exampleInput = new AccountInstrumentOwnershipUpdateRequestInput();
@@ -11461,7 +11461,7 @@ describe('basic', () => {
     );
   });
 
-  it('should appropriately raise service errors when they occur during update a account instrument ownership', () => {
+  it('should appropriately raise service errors when they occur during update an account instrument ownership', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const exampleInput = new AccountInstrumentOwnershipUpdateRequestInput();
@@ -11477,7 +11477,7 @@ describe('basic', () => {
     );
   });
 
-  it('should update a account', () => {
+  it('should update an account', () => {
     let accountID = fakeID();
 
     const exampleInput = new AccountUpdateRequestInput();
@@ -11498,7 +11498,7 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during update a account', () => {
+  it('should appropriately raise errors when they occur during update an account', () => {
     let accountID = fakeID();
 
     const exampleInput = new AccountUpdateRequestInput();
@@ -11510,7 +11510,7 @@ describe('basic', () => {
     expect(client.updateAccount(accountID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during update a account', () => {
+  it('should appropriately raise service errors when they occur during update an account', () => {
     let accountID = fakeID();
 
     const exampleInput = new AccountUpdateRequestInput();

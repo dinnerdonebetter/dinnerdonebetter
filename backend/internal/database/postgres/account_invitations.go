@@ -21,7 +21,7 @@ var (
 	_ types.AccountInvitationDataManager = (*Querier)(nil)
 )
 
-// AccountInvitationExists fetches whether a account invitation exists from the database.
+// AccountInvitationExists fetches whether an account invitation exists from the database.
 func (q *Querier) AccountInvitationExists(ctx context.Context, accountInvitationID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -577,12 +577,12 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 	return nil
 }
 
-// CancelAccountInvitation cancels a account invitation by its ID with a note.
+// CancelAccountInvitation cancels an account invitation by its ID with a note.
 func (q *Querier) CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
 	return q.setInvitationStatus(ctx, q.db, accountInvitationID, note, string(types.CancelledAccountInvitationStatus))
 }
 
-// AcceptAccountInvitation accepts a account invitation by its ID with a note.
+// AcceptAccountInvitation accepts an account invitation by its ID with a note.
 func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitationID, token, note string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -633,7 +633,7 @@ func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitation
 	return nil
 }
 
-// RejectAccountInvitation rejects a account invitation by its ID with a note.
+// RejectAccountInvitation rejects an account invitation by its ID with a note.
 func (q *Querier) RejectAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
 	return q.setInvitationStatus(ctx, q.db, accountInvitationID, note, string(types.RejectedAccountInvitationStatus))
 }

@@ -16,7 +16,7 @@ var (
 	_ types.AccountInstrumentOwnershipDataManager = (*Querier)(nil)
 )
 
-// AccountInstrumentOwnershipExists fetches whether a account instrument ownership exists from the database.
+// AccountInstrumentOwnershipExists fetches whether an account instrument ownership exists from the database.
 func (q *Querier) AccountInstrumentOwnershipExists(ctx context.Context, accountInstrumentOwnershipID, accountID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -46,7 +46,7 @@ func (q *Querier) AccountInstrumentOwnershipExists(ctx context.Context, accountI
 	return result, nil
 }
 
-// GetAccountInstrumentOwnership fetches a account instrument ownership from the database.
+// GetAccountInstrumentOwnership fetches an account instrument ownership from the database.
 func (q *Querier) GetAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) (*types.AccountInstrumentOwnership, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -170,7 +170,7 @@ func (q *Querier) GetAccountInstrumentOwnerships(ctx context.Context, accountID 
 	return x, nil
 }
 
-// CreateAccountInstrumentOwnership creates a account instrument ownership in the database.
+// CreateAccountInstrumentOwnership creates an account instrument ownership in the database.
 func (q *Querier) CreateAccountInstrumentOwnership(ctx context.Context, input *types.AccountInstrumentOwnershipDatabaseCreationInput) (*types.AccountInstrumentOwnership, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -232,7 +232,7 @@ func (q *Querier) UpdateAccountInstrumentOwnership(ctx context.Context, updated 
 	return nil
 }
 
-// ArchiveAccountInstrumentOwnership archives a account instrument ownership from the database by its ID.
+// ArchiveAccountInstrumentOwnership archives an account instrument ownership from the database by its ID.
 func (q *Querier) ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

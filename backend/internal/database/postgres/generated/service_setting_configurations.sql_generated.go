@@ -61,11 +61,11 @@ INSERT INTO service_setting_configurations (
 `
 
 type CreateServiceSettingConfigurationParams struct {
-	ID                 string
-	Value              string
-	Notes              string
-	ServiceSettingID   string
-	BelongsToUser      string
+	ID               string
+	Value            string
+	Notes            string
+	ServiceSettingID string
+	BelongsToUser    string
 	BelongsToAccount string
 }
 
@@ -123,7 +123,7 @@ type GetServiceSettingConfigurationByIDRow struct {
 	ServiceSettingLastUpdatedAt sql.NullTime
 	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
-	BelongsToAccount          string
+	BelongsToAccount            string
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
@@ -184,7 +184,7 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingConfigurationForAccountBySettingNameParams struct {
-	Name               string
+	Name             string
 	BelongsToAccount string
 }
 
@@ -203,7 +203,7 @@ type GetServiceSettingConfigurationForAccountBySettingNameRow struct {
 	ServiceSettingLastUpdatedAt sql.NullTime
 	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
-	BelongsToAccount          string
+	BelongsToAccount            string
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
@@ -283,7 +283,7 @@ type GetServiceSettingConfigurationForUserBySettingNameRow struct {
 	ServiceSettingLastUpdatedAt sql.NullTime
 	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
-	BelongsToAccount          string
+	BelongsToAccount            string
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
@@ -357,7 +357,7 @@ type GetServiceSettingConfigurationsForAccountRow struct {
 	ServiceSettingLastUpdatedAt sql.NullTime
 	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
-	BelongsToAccount          string
+	BelongsToAccount            string
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
@@ -447,7 +447,7 @@ type GetServiceSettingConfigurationsForUserRow struct {
 	ServiceSettingLastUpdatedAt sql.NullTime
 	ServiceSettingArchivedAt    sql.NullTime
 	BelongsToUser               string
-	BelongsToAccount          string
+	BelongsToAccount            string
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
@@ -508,12 +508,12 @@ WHERE archived_at IS NULL
 `
 
 type UpdateServiceSettingConfigurationParams struct {
-	Value              string
-	Notes              string
-	ServiceSettingID   string
-	BelongsToUser      string
+	Value            string
+	Notes            string
+	ServiceSettingID string
+	BelongsToUser    string
 	BelongsToAccount string
-	ID                 string
+	ID               string
 }
 
 func (q *Queries) UpdateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *UpdateServiceSettingConfigurationParams) (int64, error) {

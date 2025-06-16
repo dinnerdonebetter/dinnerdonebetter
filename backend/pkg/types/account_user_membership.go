@@ -10,7 +10,7 @@ import (
 )
 
 type (
-	// AccountUserMembership defines a relationship between a user and a account.
+	// AccountUserMembership defines a relationship between a user and an account.
 	AccountUserMembership struct {
 		_ struct{} `json:"-"`
 
@@ -24,7 +24,7 @@ type (
 		DefaultAccount   bool       `json:"defaultAccount"`
 	}
 
-	// AccountUserMembershipWithUser defines a relationship between a user and a account.
+	// AccountUserMembershipWithUser defines a relationship between a user and an account.
 	AccountUserMembershipWithUser struct {
 		_ struct{} `json:"-"`
 
