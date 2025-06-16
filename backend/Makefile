@@ -323,7 +323,7 @@ run_admin_app: ensure_air_installed
 line_count: ensure_scc_installed
 	@scc --include-ext go --exclude-dir vendor
 
-disable-go:
+disable:
 	find "$(DIR)" -maxdepth 1 -type f -name '*.go' -exec bash -c 'mv -- "$$1" "$$1.disabled"' _ {} \;
 
 # OPERATIONS
