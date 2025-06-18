@@ -28,7 +28,6 @@ func main() {
 	databaseToUse := *databaseFlag
 
 	queryOutput := map[string][]*Query{
-		"internal/database/postgres/sqlc_queries/admin.sql":                                        buildAdminQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/webhooks.sql":                                     buildWebhooksQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/user_notifications.sql":                           buildUserNotificationQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/webhook_trigger_events.sql":                       buildWebhookTriggerEventsQueries(databaseToUse),
@@ -73,12 +72,13 @@ func main() {
 		"internal/database/postgres/sqlc_queries/meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/maintenance.sql":                                  buildMaintenanceQueries(databaseToUse),
 		// moved files
-		"internal/platform/database/postgres/implementations/auth/sqlc_queries/accounts.sql":                 buildAccountsQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/auth/sqlc_queries/users.sql":                    buildUsersQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/auth/sqlc_queries/account_user_memberships.sql": buildAccountUserMembershipsQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/auth/sqlc_queries/password_reset_tokens.sql":    buildPasswordResetTokensQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/auth/sqlc_queries/account_invitations.sql":      buildAccountInvitationsQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/auditlogentries/sqlc_queries/audit_logs.sql":    buildAuditLogEntryQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/admin.sql":                    buildAdminQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/audit_logs.sql":               buildAuditLogEntryQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/accounts.sql":                 buildAccountsQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_invitations.sql":      buildAccountInvitationsQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_user_memberships.sql": buildAccountUserMembershipsQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/users.sql":                    buildUsersQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/password_reset_tokens.sql":    buildPasswordResetTokensQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

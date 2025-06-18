@@ -2,10 +2,13 @@ package testing
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"hash/fnv"
 	"io"
 	"log"
+	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -18,26 +21,22 @@ import (
 	"gopkg.in/matryer/try.v1"
 )
 
-func hashStringToNumber(s string) uint64 {
-	// Create a new FNV-1a 64-bit hash object
+var RunContainerTests = strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) != "false" // on by default
+
+func hashStringToNumber(t *testing.T, s string) uint64 {
+	t.Helper()
 	h := fnv.New64a()
 
-	// Write the bytes of the string into the hash object
 	_, err := h.Write([]byte(s))
-	if err != nil {
-		// Handle error if necessary
-		panic(err)
-	}
+	require.NoError(t, err)
 
-	// Return the resulting hash value as a number (uint64)
 	return h.Sum64()
 }
 
 func reverseString(input string) string {
 	runes := []rune(input)
-	length := len(runes)
 
-	for i, j := 0, length-1; i < j; i, j = i+1, j-1 {
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
 		runes[i], runes[j] = runes[j], runes[i]
 	}
 
@@ -61,10 +60,10 @@ const (
 	defaultPostgresImage = "postgres:17"
 )
 
-func BuildDatabaseClientForTest(t *testing.T, ctx context.Context) *postgres.PostgresContainer {
+func BuildDatabaseClientForTest(t *testing.T, ctx context.Context) (*postgres.PostgresContainer, *sql.DB) {
 	t.Helper()
 
-	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t.Name()))
+	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t, t.Name()))
 	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
 
 	var container *postgres.PostgresContainer
@@ -93,12 +92,15 @@ func BuildDatabaseClientForTest(t *testing.T, ctx context.Context) *postgres.Pos
 	}
 	require.NoError(t, dbConfig.LoadConnectionDetailsFromURL(connStr))
 
-	return container
+	db, err := dbConfig.ConnectToDatabase()
+	require.NoError(t, err)
+
+	return container, db
 }
 
 /*
 
-func createUserForTest(t *testing.T, ctx context.Context, exampleUser *types.User, dbc *Querier) *types.User {
+func CreateUserForTest(t *testing.T, ctx context.Context, exampleUser *types.User, dbc *Querier) *types.User {
 	t.Helper()
 
 	// create
@@ -124,7 +126,7 @@ func createUserForTest(t *testing.T, ctx context.Context, exampleUser *types.Use
 	return created
 }
 
-func createAccountForTest(t *testing.T, ctx context.Context, exampleAccount *types.Account, dbc *Querier) *types.Account {
+func CreateAccountForTest(t *testing.T, ctx context.Context, exampleAccount *types.Account, dbc *Querier) *types.Account {
 	t.Helper()
 
 	// create

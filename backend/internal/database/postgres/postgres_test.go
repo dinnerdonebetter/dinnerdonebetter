@@ -87,25 +87,19 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 }
 
 func hashStringToNumber(s string) uint64 {
-	// Create a new FNV-1a 64-bit hash object
 	h := fnv.New64a()
 
-	// Write the bytes of the string into the hash object
-	_, err := h.Write([]byte(s))
-	if err != nil {
-		// Handle error if necessary
+	if _, err := h.Write([]byte(s)); err != nil {
 		panic(err)
 	}
 
-	// Return the resulting hash value as a number (uint64)
 	return h.Sum64()
 }
 
 func reverseString(input string) string {
 	runes := []rune(input)
-	length := len(runes)
 
-	for i, j := 0, length-1; i < j; i, j = i+1, j-1 {
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
 		runes[i], runes[j] = runes[j], runes[i]
 	}
 

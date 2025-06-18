@@ -2,6 +2,7 @@ package databasecfg
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net"
 	"net/url"
@@ -9,7 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/XSAM/otelsql"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"go.opentelemetry.io/otel/attribute"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 const (
@@ -68,6 +72,24 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 // LoadConnectionDetailsFromURL wraps an inner function.
 func (cfg *Config) LoadConnectionDetailsFromURL(u string) error {
 	return cfg.ConnectionDetails.LoadFromURL(u)
+}
+
+func (cfg *Config) ConnectToDatabase() (*sql.DB, error) {
+	db, err := otelsql.Open("pgx", cfg.ConnectionDetails.String(), otelsql.WithAttributes(
+		attribute.KeyValue{
+			Key:   semconv.ServiceNameKey,
+			Value: attribute.StringValue("database"),
+		},
+	))
+	if err != nil {
+		return nil, fmt.Errorf("connecting to postgres database: %w", err)
+	}
+
+	db.SetMaxIdleConns(5)
+	db.SetMaxOpenConns(7)
+	db.SetConnMaxLifetime(30 * time.Minute)
+
+	return db, nil
 }
 
 // ValidateWithContext validates an DatabaseSettings struct.
