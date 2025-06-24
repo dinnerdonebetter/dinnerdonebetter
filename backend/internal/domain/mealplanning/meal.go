@@ -3,6 +3,8 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
+	"errors"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"net/http"
 	"time"
 
@@ -40,6 +42,10 @@ const (
 	MealArchivedServiceEventType = "meal_archived"
 )
 
+var (
+	errOneMainMinimumRequired = errors.New("at least one main required for meal creation")
+)
+
 func init() {
 	gob.Register(new(Meal))
 	gob.Register(new(MealCreationRequestInput))
@@ -51,16 +57,16 @@ type (
 	Meal struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt            time.Time                   `json:"createdAt"`
-		ArchivedAt           *time.Time                  `json:"archivedAt"`
-		LastUpdatedAt        *time.Time                  `json:"lastUpdatedAt"`
-		EstimatedPortions    Float32RangeWithOptionalMax `json:"estimatedPortions"`
-		ID                   string                      `json:"id"`
-		Description          string                      `json:"description"`
-		CreatedByUser        string                      `json:"createdByUser"`
-		Name                 string                      `json:"name"`
-		Components           []*MealComponent            `json:"components"`
-		EligibleForMealPlans bool                        `json:"eligibleForMealPlans"`
+		CreatedAt            time.Time                         `json:"createdAt"`
+		ArchivedAt           *time.Time                        `json:"archivedAt"`
+		LastUpdatedAt        *time.Time                        `json:"lastUpdatedAt"`
+		EstimatedPortions    types.Float32RangeWithOptionalMax `json:"estimatedPortions"`
+		ID                   string                            `json:"id"`
+		Description          string                            `json:"description"`
+		CreatedByUser        string                            `json:"createdByUser"`
+		Name                 string                            `json:"name"`
+		Components           []*MealComponent                  `json:"components"`
+		EligibleForMealPlans bool                              `json:"eligibleForMealPlans"`
 	}
 
 	// MealComponent is a recipe with some extra data attached to it.
@@ -76,7 +82,7 @@ type (
 	MealCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedPortions    Float32RangeWithOptionalMax          `json:"estimatedPortions"`
+		EstimatedPortions    types.Float32RangeWithOptionalMax    `json:"estimatedPortions"`
 		Name                 string                               `json:"name"`
 		Description          string                               `json:"description"`
 		Components           []*MealComponentCreationRequestInput `json:"components"`
@@ -96,7 +102,7 @@ type (
 	MealDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedPortions    Float32RangeWithOptionalMax           `json:"-"`
+		EstimatedPortions    types.Float32RangeWithOptionalMax     `json:"-"`
 		ID                   string                                `json:"-"`
 		Name                 string                                `json:"-"`
 		Description          string                                `json:"-"`
@@ -118,12 +124,12 @@ type (
 	MealUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Name                 *string                                       `json:"name,omitempty"`
-		Description          *string                                       `json:"description,omitempty"`
-		CreatedByUser        *string                                       `json:"-"`
-		EstimatedPortions    Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimatedPortions"`
-		EligibleForMealPlans *bool                                         `json:"eligibleForMealPlans"`
-		Components           []*MealComponentUpdateRequestInput            `json:"recipes,omitempty"`
+		Name                 *string                                             `json:"name,omitempty"`
+		Description          *string                                             `json:"description,omitempty"`
+		CreatedByUser        *string                                             `json:"-"`
+		EstimatedPortions    types.Float32RangeWithOptionalMaxUpdateRequestInput `json:"estimatedPortions"`
+		EligibleForMealPlans *bool                                               `json:"eligibleForMealPlans"`
+		Components           []*MealComponentUpdateRequestInput                  `json:"recipes,omitempty"`
 	}
 
 	// MealComponentUpdateRequestInput represents what a user could set as input for creating meal recipes.

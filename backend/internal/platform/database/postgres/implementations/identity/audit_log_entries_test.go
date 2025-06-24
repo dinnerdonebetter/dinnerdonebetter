@@ -2,11 +2,11 @@ package identity
 
 import (
 	"context"
-	auditlogentries "github.com/dinnerdonebetter/backend/internal/domain/auth"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/auditlogentries/generated"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	auditlogentries "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/auditlogentries/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"

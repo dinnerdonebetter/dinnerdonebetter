@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -22,7 +23,7 @@ func TestMealPlanGroceryListItemCreationRequestInput_ValidateWithContext(T *test
 			ValidIngredientID:      t.Name(),
 			ValidMeasurementUnitID: t.Name(),
 			Status:                 MealPlanGroceryListItemStatusUnknown,
-			QuantityNeeded:         Float32RangeWithOptionalMax{Min: 1.23},
+			QuantityNeeded:         types.Float32RangeWithOptionalMax{Min: 1.23},
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -41,7 +42,7 @@ func TestMealPlanGroceryListItemDatabaseCreationInput_ValidateWithContext(T *tes
 			BelongsToMealPlan:      t.Name(),
 			ValidIngredientID:      t.Name(),
 			ValidMeasurementUnitID: t.Name(),
-			QuantityNeeded: Float32RangeWithOptionalMax{
+			QuantityNeeded: types.Float32RangeWithOptionalMax{
 				Min: 1.23,
 				Max: pointer.To(float32(1.23)),
 			},
@@ -63,7 +64,7 @@ func TestMealPlanGroceryListItemUpdateRequestInput_ValidateWithContext(T *testin
 			BelongsToMealPlan:      pointer.To(t.Name()),
 			ValidIngredientID:      pointer.To(t.Name()),
 			ValidMeasurementUnitID: pointer.To(t.Name()),
-			QuantityNeeded: Float32RangeWithOptionalMaxUpdateRequestInput{
+			QuantityNeeded: types.Float32RangeWithOptionalMaxUpdateRequestInput{
 				Min: pointer.To(float32(1.23)),
 				Max: pointer.To(float32(1.23)),
 			},
@@ -82,7 +83,7 @@ func TestMealPlanGroceryListItem_Update(T *testing.T) {
 
 		x := &MealPlanGroceryListItem{
 			PurchasedMeasurementUnit: &ValidMeasurementUnit{},
-			QuantityNeeded:           Float32RangeWithOptionalMax{Max: pointer.To(float32(1.23))},
+			QuantityNeeded:           types.Float32RangeWithOptionalMax{Max: pointer.To(float32(1.23))},
 		}
 		input := &MealPlanGroceryListItemUpdateRequestInput{}
 

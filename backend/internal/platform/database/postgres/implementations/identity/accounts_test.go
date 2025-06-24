@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/auth"
+	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"

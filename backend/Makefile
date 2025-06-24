@@ -44,7 +44,7 @@ clean:
 	rm -rf $(ARTIFACTS_DIR)
 
 $(ARTIFACTS_DIR):
-	@mkdir --parents $(ARTIFACTS_DIR)
+	@mkdir -p $(ARTIFACTS_DIR)
 
 clean-$(ARTIFACTS_DIR):
 	@rm -rf $(ARTIFACTS_DIR)

@@ -3,6 +3,7 @@ package settings
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"slices"
 	"time"
@@ -18,6 +19,10 @@ const (
 	ServiceSettingCreatedServiceEventType = "service_setting_created"
 	// ServiceSettingArchivedServiceEventType indicates a service setting was archived.
 	ServiceSettingArchivedServiceEventType = "service_setting_archived"
+)
+
+var (
+	errDefaultValueMustBeEnumerationValue = errors.New("default value must be in enumeration")
 )
 
 func init() {

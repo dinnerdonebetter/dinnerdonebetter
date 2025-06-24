@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -25,7 +25,7 @@ type Querier struct {
 }
 
 // ProvideAuthRepository provides a new client.
-func ProvideAuthRepository(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, db *sql.DB) (auth.Repository, error) {
+func ProvideAuthRepository(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, db *sql.DB) (identity.Repository, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("auth_db_client"))
 
 	ctx, span := tracer.StartSpan(ctx)

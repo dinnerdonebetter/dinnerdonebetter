@@ -2,10 +2,10 @@ package identity
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/auth"
+	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"

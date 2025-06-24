@@ -2,13 +2,13 @@ package identity
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"testing"
 	"time"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/auth"
+	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 

@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
@@ -30,6 +31,10 @@ const (
 	MealPlanStatusAwaitingVotes MealPlanStatus = "awaiting_votes"
 	// MealPlanStatusFinalized indicates an account invitation was accepted.
 	MealPlanStatusFinalized MealPlanStatus = "finalized"
+)
+
+var (
+	errInvalidVotingDeadline = errors.New("invalid voting deadline")
 )
 
 func init() {

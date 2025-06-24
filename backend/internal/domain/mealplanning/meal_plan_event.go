@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
@@ -32,6 +33,10 @@ const (
 	SupperMealName = "supper"
 	// DinnerMealName represents dinner.
 	DinnerMealName = "dinner"
+)
+
+var (
+	errStartsAfterItEnds = errors.New("invalid start and end dates")
 )
 
 func init() {
