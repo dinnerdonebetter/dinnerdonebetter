@@ -5,17 +5,12 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	auditlogentries "github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/auditlogentries/generated"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -23,32 +18,7 @@ const (
 	auditLogEntriesCreatedForUsersByDefault = 3
 )
 
-type sqlmockExpecterWrapper struct {
-	sqlmock.Sqlmock
-}
-
-func (e *sqlmockExpecterWrapper) AssertExpectations(t mock.TestingT) bool {
-	return assert.NoError(t, e.Sqlmock.ExpectationsWereMet(), "not all database expectations were met")
-}
-
-func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
-	t.Helper()
-
-	fakeDB, sqlMock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
-	require.NoError(t, err)
-
-	c := &Querier{
-		db:               fakeDB,
-		logger:           logging.NewNoopLogger(),
-		generatedQuerier: generated.New(),
-		timeFunc:         defaultTimeFunc,
-		tracer:           tracing.NewTracerForTest("test"),
-	}
-
-	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
-}
-
-func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *auditlogentries.AuditLogEntry, user *types.User, account *types.Account, dbc *Querier) *auditlogentries.AuditLogEntry {
+func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *types.User, account *types.Account, dbc *Querier) *types.AuditLogEntry {
 	t.Helper()
 
 	if user == nil {
@@ -83,12 +53,12 @@ func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier datab
 }
 
 func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
-	if !database.RunContainerTests {
+	if !pgtesting.RunContainerTests {
 		t.SkipNow()
 	}
 
 	ctx := context.Background()
-	dbc, container := buildDatabaseClientForTest(t, ctx)
+	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -105,7 +75,7 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 	exampleAuditLogEntry := fakes.BuildFakeAuditLogEntry()
 	exampleAuditLogEntry.BelongsToAccount = &account.ID
 	exampleAuditLogEntry.BelongsToUser = user.ID
-	createdAuditLogEntries := []*auditlogentries.AuditLogEntry{}
+	createdAuditLogEntries := []*types.AuditLogEntry{}
 
 	// create
 	createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, dbc.db, exampleAuditLogEntry, user, account, dbc))
@@ -135,23 +105,11 @@ func TestQuerier_GetAuditLogEntry(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAuditLogEntry(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-}
-
-func TestQuerier_GetAuditLogEntryThatNeedSearchIndexing(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		_, db := buildTestClient(t)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -162,7 +120,7 @@ func TestQuerier_CreateAuditLogEntry(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.createAuditLogEntry(ctx, c.db, nil)
 		assert.Error(t, err)

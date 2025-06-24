@@ -34,7 +34,7 @@ func TestAPIResponse_EncodeToJSON(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		example := &APIResponse[*User]{
+		example := &APIResponse[string]{
 			Error: &APIError{
 				Message: t.Name(),
 				Code:    ErrDataNotFound,

@@ -15,6 +15,9 @@ var (
 
 	// ErrUserAlreadyExists indicates that a user with that username has already been created.
 	ErrUserAlreadyExists = errors.New("user already exists")
+
+	// ErrNilInputProvided indicates nil input was provided in an unacceptable context.
+	ErrNilInputProvided = errors.New("nil input provided")
 )
 
 type (

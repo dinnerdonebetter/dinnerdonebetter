@@ -6,18 +6,15 @@ import (
 	"time"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
-func createAccountInvitationForTest(t *testing.T, ctx context.Context, exampleAccountInvitation *types.AccountInvitation, dbc *Querier) *types.AccountInvitation {
+func createAccountInvitationForTest(t *testing.T, ctx context.Context, exampleAccountInvitation *types.AccountInvitation, dbc types.Repository) *types.AccountInvitation {
 	t.Helper()
 
 	// create
@@ -64,10 +61,7 @@ func TestQuerier_Integration_AccountInvitations(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	container, db := pgtesting.BuildDatabaseClientForTest(t, ctx)
-
-	dbc, err := ProvideAuthRepository(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db)
-	require.NoError(t, err)
+	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -154,13 +148,11 @@ func TestQuerier_AccountInvitationExists(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.AccountInvitationExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -173,7 +165,7 @@ func TestQuerier_GetAccountInvitationByTokenAndID(T *testing.T) {
 		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByTokenAndID(ctx, "", exampleAccountID)
 		assert.Error(t, err)
@@ -186,7 +178,7 @@ func TestQuerier_GetAccountInvitationByTokenAndID(T *testing.T) {
 		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByTokenAndID(ctx, exampleAccountID, "")
 		assert.Error(t, err)
@@ -203,7 +195,7 @@ func TestQuerier_GetAccountInvitationByAccountAndID(T *testing.T) {
 		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByAccountAndID(ctx, "", exampleAccountID)
 		assert.Error(t, err)
@@ -216,7 +208,7 @@ func TestQuerier_GetAccountInvitationByAccountAndID(T *testing.T) {
 		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByAccountAndID(ctx, exampleAccountID, "")
 		assert.Error(t, err)
@@ -233,7 +225,7 @@ func TestQuerier_GetAccountInvitationByEmailAndToken(T *testing.T) {
 		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByEmailAndToken(ctx, "", exampleAccountID)
 		assert.Error(t, err)
@@ -246,7 +238,7 @@ func TestQuerier_GetAccountInvitationByEmailAndToken(T *testing.T) {
 		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByEmailAndToken(ctx, exampleAccountID, "")
 		assert.Error(t, err)
@@ -261,7 +253,7 @@ func TestQuerier_CreateAccountInvitation(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateAccountInvitation(ctx, nil)
 		assert.Error(t, err)
@@ -278,7 +270,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 		ctx := context.Background()
 		exampleAccountInvitation := fakes.BuildFakeAccountInvitation()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		err := c.setInvitationStatus(ctx, c.db, "", exampleAccountInvitation.Note, exampleAccountInvitation.Status)
 		assert.Error(t, err)
@@ -294,12 +286,10 @@ func TestSQLQuerier_AcceptAccountInvitation(T *testing.T) {
 		ctx := context.Background()
 		exampleToken := fakes.BuildFakeID()
 
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		err := c.AcceptAccountInvitation(ctx, "", exampleToken, t.Name())
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 
 	T.Run("with invalid token", func(t *testing.T) {
@@ -308,12 +298,10 @@ func TestSQLQuerier_AcceptAccountInvitation(T *testing.T) {
 		ctx := context.Background()
 		exampleAccountInvitation := fakes.BuildFakeAccountInvitation()
 
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		err := c.AcceptAccountInvitation(ctx, exampleAccountInvitation.ID, "", exampleAccountInvitation.Note)
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -326,12 +314,10 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 		ctx := context.Background()
 		exampleUser := fakes.BuildFakeUser()
 
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		err := c.attachInvitationsToUser(ctx, c.db, "", exampleUser.ID)
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 
 	T.Run("with invalid user ID", func(t *testing.T) {
@@ -340,11 +326,9 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 		ctx := context.Background()
 		exampleUser := fakes.BuildFakeUser()
 
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		err := c.attachInvitationsToUser(ctx, c.db, exampleUser.EmailAddress, "")
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

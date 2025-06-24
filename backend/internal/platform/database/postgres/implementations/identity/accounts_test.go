@@ -7,16 +7,16 @@ import (
 	"testing"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func createAccountForTest(t *testing.T, ctx context.Context, exampleAccount *types.Account, dbc *Querier) *types.Account {
+func createAccountForTest(t *testing.T, ctx context.Context, exampleAccount *types.Account, dbc types.Repository) *types.Account {
 	t.Helper()
 
 	// create
@@ -50,12 +50,12 @@ func createAccountForTest(t *testing.T, ctx context.Context, exampleAccount *typ
 }
 
 func TestQuerier_Integration_Accounts(t *testing.T) {
-	if !database.RunContainerTests {
+	if !pgtesting.RunContainerTests {
 		t.SkipNow()
 	}
 
 	ctx := context.Background()
-	dbc, container := buildDatabaseClientForTest(t, ctx)
+	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -123,25 +123,9 @@ func TestQuerier_GetAccount(T *testing.T) {
 		exampleAccount := fakes.BuildFakeAccount()
 		exampleAccount.BelongsToUser = exampleUserID
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccount(ctx, "")
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-	})
-
-	T.Run("with invalid user ID", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleUserID := fakes.BuildFakeID()
-		exampleAccount := fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUserID
-
-		c, _ := buildTestClient(t)
-
-		actual, err := c.GetAccount(ctx, exampleAccount.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -156,7 +140,7 @@ func TestQuerier_GetAccounts(T *testing.T) {
 		filter := filtering.DefaultQueryFilter()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccounts(ctx, "", filter)
 		assert.Error(t, err)
@@ -171,7 +155,7 @@ func TestQuerier_CreateAccount(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateAccount(ctx, nil)
 		assert.Error(t, err)
@@ -190,7 +174,7 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		exampleAccount.BelongsToUser = exampleUserID
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateAccount(ctx, nil))
 	})
@@ -205,7 +189,7 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveAccount(ctx, "", exampleUserID))
 	})
@@ -216,7 +200,7 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 		exampleAccountID := fakes.BuildFakeID()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveAccount(ctx, exampleAccountID, ""))
 	})

@@ -20,7 +20,7 @@ func TestRecipeStepCompletionCondition_Update(T *testing.T) {
 		input := &RecipeStepCompletionConditionUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.types.Optional = pointer.To(true)
+		input.Optional = pointer.To(true)
 
 		x.Update(input)
 	})
@@ -35,7 +35,7 @@ func TestRecipeStepCompletionConditionCreationRequestInput_Validate(T *testing.T
 		x := &RecipeStepCompletionConditionCreationRequestInput{
 			IngredientStateID:   t.Name(),
 			BelongsToRecipeStep: t.Name(),
-			types.Optional:      fake.Bool(),
+			Optional:            fake.Bool(),
 			Ingredients:         []uint64{123},
 		}
 
@@ -172,7 +172,7 @@ func TestRecipeStepCompletionConditionUpdateRequestInput_Validate(T *testing.T) 
 		x := &RecipeStepCompletionConditionUpdateRequestInput{
 			IngredientStateID:   pointer.To(t.Name()),
 			BelongsToRecipeStep: pointer.To(t.Name()),
-			types.Optional:      pointer.To(fake.Bool()),
+			Optional:            pointer.To(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

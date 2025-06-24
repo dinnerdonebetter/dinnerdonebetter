@@ -595,6 +595,10 @@ func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitation
 	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
 
+	if token == "" {
+		return database.ErrNilInputProvided
+	}
+
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")

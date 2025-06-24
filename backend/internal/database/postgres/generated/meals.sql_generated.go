@@ -69,9 +69,9 @@ type CreateMealParams struct {
 	Name                 string
 	Description          string
 	MinEstimatedPortions string
-	CreatedByUser        string
 	MaxEstimatedPortions sql.NullString
 	EligibleForMealPlans bool
+	CreatedByUser        string
 }
 
 func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error {
@@ -116,25 +116,25 @@ WHERE meals.archived_at IS NULL
 `
 
 type GetMealRow struct {
-	CreatedAt                  time.Time
-	ComponentCreatedAt         time.Time
-	ComponentArchivedAt        sql.NullTime
-	ComponentLastUpdatedAt     sql.NullTime
-	ArchivedAt                 sql.NullTime
-	LastUpdatedAt              sql.NullTime
+	ID                         string
+	Name                       string
+	Description                string
+	MinEstimatedPortions       string
+	MaxEstimatedPortions       sql.NullString
+	EligibleForMealPlans       bool
 	LastIndexedAt              sql.NullTime
-	ComponentMealID            string
+	CreatedAt                  time.Time
+	LastUpdatedAt              sql.NullTime
+	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                string
-	ID                         string
+	ComponentMealID            string
 	ComponentRecipeID          string
 	ComponentMealComponentType ComponentType
 	ComponentRecipeScale       string
-	MinEstimatedPortions       string
-	Description                string
-	Name                       string
-	MaxEstimatedPortions       sql.NullString
-	EligibleForMealPlans       bool
+	ComponentCreatedAt         time.Time
+	ComponentLastUpdatedAt     sql.NullTime
+	ComponentArchivedAt        sql.NullTime
 }
 
 func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error) {
@@ -244,19 +244,19 @@ type GetMealsParams struct {
 }
 
 type GetMealsRow struct {
-	CreatedAt            time.Time
-	ArchivedAt           sql.NullTime
-	LastIndexedAt        sql.NullTime
-	LastUpdatedAt        sql.NullTime
+	ID                   string
+	Name                 string
 	Description          string
 	MinEstimatedPortions string
-	Name                 string
-	ID                   string
-	CreatedByUser        string
 	MaxEstimatedPortions sql.NullString
+	EligibleForMealPlans bool
+	LastIndexedAt        sql.NullTime
+	CreatedAt            time.Time
+	LastUpdatedAt        sql.NullTime
+	ArchivedAt           sql.NullTime
+	CreatedByUser        string
 	FilteredCount        int64
 	TotalCount           int64
-	EligibleForMealPlans bool
 }
 
 func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error) {
@@ -366,26 +366,26 @@ type GetMealsCreatedByUserParams struct {
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	IncludeArchived sql.NullBool
 	CreatedByUser   string
 	QueryOffset     sql.NullInt32
 	QueryLimit      sql.NullInt32
-	IncludeArchived sql.NullBool
 }
 
 type GetMealsCreatedByUserRow struct {
-	CreatedAt            time.Time
-	ArchivedAt           sql.NullTime
-	LastIndexedAt        sql.NullTime
-	LastUpdatedAt        sql.NullTime
+	ID                   string
+	Name                 string
 	Description          string
 	MinEstimatedPortions string
-	Name                 string
-	ID                   string
-	CreatedByUser        string
 	MaxEstimatedPortions sql.NullString
+	EligibleForMealPlans bool
+	LastIndexedAt        sql.NullTime
+	CreatedAt            time.Time
+	LastUpdatedAt        sql.NullTime
+	ArchivedAt           sql.NullTime
+	CreatedByUser        string
 	FilteredCount        int64
 	TotalCount           int64
-	EligibleForMealPlans bool
 }
 
 func (q *Queries) GetMealsCreatedByUser(ctx context.Context, db DBTX, arg *GetMealsCreatedByUserParams) ([]*GetMealsCreatedByUserRow, error) {
@@ -535,34 +535,34 @@ type SearchForMealsParams struct {
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	IncludeArchived sql.NullBool
 	Query           string
 	QueryOffset     sql.NullInt32
 	QueryLimit      sql.NullInt32
-	IncludeArchived sql.NullBool
 }
 
 type SearchForMealsRow struct {
-	CreatedAt                  time.Time
-	ComponentCreatedAt         time.Time
-	ComponentArchivedAt        sql.NullTime
-	ComponentLastUpdatedAt     sql.NullTime
-	ArchivedAt                 sql.NullTime
-	LastUpdatedAt              sql.NullTime
-	LastIndexedAt              sql.NullTime
-	ComponentRecipeScale       string
-	ComponentMealComponentType ComponentType
+	ID                         string
 	Name                       string
+	Description                string
+	MinEstimatedPortions       string
+	MaxEstimatedPortions       sql.NullString
+	EligibleForMealPlans       bool
+	LastIndexedAt              sql.NullTime
+	CreatedAt                  time.Time
+	LastUpdatedAt              sql.NullTime
+	ArchivedAt                 sql.NullTime
 	CreatedByUser              string
 	ComponentID                string
 	ComponentMealID            string
 	ComponentRecipeID          string
-	Description                string
-	ID                         string
-	MinEstimatedPortions       string
-	MaxEstimatedPortions       sql.NullString
+	ComponentMealComponentType ComponentType
+	ComponentRecipeScale       string
+	ComponentCreatedAt         time.Time
+	ComponentLastUpdatedAt     sql.NullTime
+	ComponentArchivedAt        sql.NullTime
 	FilteredCount              int64
 	TotalCount                 int64
-	EligibleForMealPlans       bool
 }
 
 func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error) {

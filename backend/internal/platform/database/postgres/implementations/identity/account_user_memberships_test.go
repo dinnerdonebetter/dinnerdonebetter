@@ -6,26 +6,20 @@ import (
 	"testing"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestQuerier_Integration_AccountUserMemberships(t *testing.T) {
-	if !database.RunContainerTests {
+	if !pgtesting.RunContainerTests {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
-	dbc, container := buildDatabaseClientForTest(t, ctx)
-
-	databaseURI, err := container.ConnectionString(ctx)
-	require.NoError(t, err)
-	require.NotEmpty(t, databaseURI)
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
 
 	defer func(t *testing.T) {
 		t.Helper()
@@ -100,7 +94,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.BuildSessionContextDataForUser(ctx, "")
 		assert.Error(t, err)
@@ -115,7 +109,7 @@ func TestQuerier_GetDefaultAccountIDForUser(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetDefaultAccountIDForUser(ctx, "")
 		assert.Error(t, err)
@@ -132,7 +126,7 @@ func TestQuerier_MarkAccountAsUserDefault(T *testing.T) {
 		ctx := context.Background()
 		exampleAccount := fakes.BuildFakeAccount()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkAccountAsUserDefault(ctx, "", exampleAccount.ID))
 	})
@@ -143,7 +137,7 @@ func TestQuerier_MarkAccountAsUserDefault(T *testing.T) {
 		ctx := context.Background()
 		exampleUser := fakes.BuildFakeUser()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkAccountAsUserDefault(ctx, exampleUser.ID, ""))
 	})
@@ -158,7 +152,7 @@ func TestQuerier_UserIsMemberOfAccount(T *testing.T) {
 		ctx := context.Background()
 		exampleAccountID := fakes.BuildFakeID()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.UserIsMemberOfAccount(ctx, "", exampleAccountID)
 		assert.False(t, actual)
@@ -171,7 +165,7 @@ func TestQuerier_UserIsMemberOfAccount(T *testing.T) {
 		ctx := context.Background()
 		exampleUserID := fakes.BuildFakeID()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.UserIsMemberOfAccount(ctx, exampleUserID, "")
 		assert.False(t, actual)
@@ -189,7 +183,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ModifyUserPermissions(ctx, "", exampleUserID, exampleInput))
 	})
@@ -201,7 +195,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		exampleAccountID := fakes.BuildFakeID()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ModifyUserPermissions(ctx, exampleAccountID, exampleUserID, nil))
 	})
@@ -215,12 +209,10 @@ func TestSQLQuerier_addUserToAccount(T *testing.T) {
 
 		ctx := context.Background()
 
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		err := c.addUserToAccount(ctx, c.db, nil)
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -233,7 +225,7 @@ func TestQuerier_RemoveUserFromAccount(T *testing.T) {
 		ctx := context.Background()
 		exampleAccount := fakes.BuildFakeAccount()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.RemoveUserFromAccount(ctx, "", exampleAccount.ID))
 	})
@@ -244,7 +236,7 @@ func TestQuerier_RemoveUserFromAccount(T *testing.T) {
 		ctx := context.Background()
 		exampleUser := fakes.BuildFakeUser()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.RemoveUserFromAccount(ctx, exampleUser.ID, ""))
 	})
@@ -256,7 +248,7 @@ func TestQuerier_RemoveUserFromAccount(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		exampleAccountID := fakes.BuildFakeID()
 
-		c, db := buildTestClient(t)
+		c, db := buildMockSQLTestClient(t)
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
 

@@ -72,13 +72,13 @@ func main() {
 		"internal/database/postgres/sqlc_queries/meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/maintenance.sql":                                  buildMaintenanceQueries(databaseToUse),
 		// moved files
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/admin.sql":                    buildAdminQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/audit_logs.sql":               buildAuditLogEntryQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/accounts.sql":                 buildAccountsQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_invitations.sql":      buildAccountInvitationsQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_user_memberships.sql": buildAccountUserMembershipsQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/users.sql":                    buildUsersQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/accounts.sql":                 buildAccountsQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/audit_logs.sql":               buildAuditLogEntryQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/admin.sql":                    buildAdminQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/password_reset_tokens.sql":    buildPasswordResetTokensQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/users.sql":                    buildUsersQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag

@@ -5,12 +5,11 @@ import (
 	"testing"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -41,12 +40,12 @@ func createPasswordResetTokenForTest(t *testing.T, ctx context.Context, exampleP
 }
 
 func TestQuerier_Integration_PasswordResetTokens(t *testing.T) {
-	if !database.RunContainerTests {
+	if !pgtesting.RunContainerTests {
 		t.SkipNow()
 	}
 
 	ctx := context.Background()
-	dbc, container := buildDatabaseClientForTest(t, ctx)
+	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -86,7 +85,7 @@ func TestSQLQuerier_GetPasswordResetTokenByToken(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetPasswordResetTokenByToken(ctx, "")
 		assert.Error(t, err)
@@ -101,7 +100,7 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.CreatePasswordResetToken(ctx, nil)
 		assert.Error(t, err)
@@ -116,11 +115,9 @@ func TestSQLQuerier_RedeemPasswordResetToken(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual := c.RedeemPasswordResetToken(ctx, "")
 		assert.Error(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

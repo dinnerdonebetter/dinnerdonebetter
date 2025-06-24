@@ -46,7 +46,7 @@ sql:
             nullable: true
 
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations"
+    schema: "internal/platform/database/postgres/migrations/migration_files"
     queries:
       - "internal/platform/database/postgres/implementations/identity/sqlc_queries"
     strict_function_checks: true

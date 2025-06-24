@@ -2,11 +2,11 @@ package mealplanning
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"math"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"

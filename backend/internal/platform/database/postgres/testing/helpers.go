@@ -1,7 +1,6 @@
 package testing
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"hash/fnv"
@@ -14,6 +13,7 @@ import (
 
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -23,7 +23,7 @@ import (
 
 var RunContainerTests = strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) != "false" // on by default
 
-func hashStringToNumber(t *testing.T, s string) uint64 {
+func HashStringToNumber(t *testing.T, s string) uint64 {
 	t.Helper()
 	h := fnv.New64a()
 
@@ -60,11 +60,13 @@ const (
 	defaultPostgresImage = "postgres:17"
 )
 
-func BuildDatabaseClientForTest(t *testing.T, ctx context.Context) (*postgres.PostgresContainer, *sql.DB) {
+func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql.DB) {
 	t.Helper()
 
-	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t, t.Name()))
+	dbUsername := fmt.Sprintf("%d", HashStringToNumber(t, t.Name()))
 	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
+
+	ctx := t.Context()
 
 	var container *postgres.PostgresContainer
 	err := try.Do(func(attempt int) (bool, error) {
