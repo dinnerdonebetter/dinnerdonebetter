@@ -2,6 +2,7 @@ package settings
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
 	"strings"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
@@ -231,11 +232,11 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 		CreatedAt:    q.currentTime(),
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
 		ID:           identifiers.New(),
 		ResourceType: resourceTypeServiceSettings,
 		RelevantID:   x.ID,
-		EventType:    types.AuditLogEventTypeCreated,
+		EventType:    auditlogentries.AuditLogEventTypeCreated,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
@@ -258,7 +259,7 @@ func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID st
 	logger := q.logger.Clone()
 
 	if serviceSettingID == "" {
-		return ErrInvalidIDProvided
+		return database.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
@@ -273,11 +274,11 @@ func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID st
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
 		ID:           identifiers.New(),
 		ResourceType: resourceTypeServiceSettings,
 		RelevantID:   serviceSettingID,
-		EventType:    types.AuditLogEventTypeArchived,
+		EventType:    auditlogentries.AuditLogEventTypeArchived,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")

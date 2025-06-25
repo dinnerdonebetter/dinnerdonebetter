@@ -72,7 +72,7 @@ func main() {
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_invitations.sql":            buildAccountInvitationsQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_user_memberships.sql":       buildAccountUserMembershipsQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/accounts.sql":                       buildAccountsQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/audit_logs.sql":                     buildAuditLogEntryQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/auditlogentries/sqlc_queries/audit_logs.sql":              buildAuditLogEntryQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/admin.sql":                          buildAdminQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/password_reset_tokens.sql":          buildPasswordResetTokensQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/users.sql":                          buildUsersQueries(databaseToUse),

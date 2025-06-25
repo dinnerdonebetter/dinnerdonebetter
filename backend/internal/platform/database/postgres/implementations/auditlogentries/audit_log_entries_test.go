@@ -1,36 +1,34 @@
 package auditlogentries
 
-/*
-
 import (
 	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	types "github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries/fakes"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-
-
 const (
 	auditLogEntriesCreatedForUsersByDefault = 3
 )
 
-func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *types.User, account *types.Account, dbc *Querier) *types.AuditLogEntry {
+func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *identity.User, account *identity.Account, dbc *Querier) *types.AuditLogEntry {
 	t.Helper()
 
 	if user == nil {
-		user = createUserForTest(t, ctx, nil, dbc)
+		user = pgtesting.CreateUserForTest(t, ctx, nil, dbc.db)
 	}
 
 	if account == nil {
-		account = createAccountForTest(t, ctx, nil, dbc)
+		account = pgtesting.CreateAccountForTest(t, ctx, nil, user.ID, dbc.db)
 	}
 
 	// create
@@ -73,8 +71,10 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := createUserForTest(t, ctx, nil, dbc)
-	account := createAccountForTest(t, ctx, nil, dbc)
+	user := pgtesting.CreateUserForTest(t, ctx, nil, dbc.db)
+	exampleAccount := identityfakes.BuildFakeAccount()
+	exampleAccount.BelongsToUser = user.ID
+	account := pgtesting.CreateAccountForTest(t, ctx, exampleAccount, user.ID, dbc.db)
 
 	exampleAuditLogEntry := fakes.BuildFakeAuditLogEntry()
 	exampleAuditLogEntry.BelongsToAccount = &account.ID
@@ -131,5 +131,3 @@ func TestQuerier_CreateAuditLogEntry(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 }
-
-*/

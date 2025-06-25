@@ -2,6 +2,7 @@ package settings
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
 	"strings"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
@@ -352,7 +353,7 @@ func (q *Querier) CreateServiceSettingConfiguration(ctx context.Context, input *
 	defer span.End()
 
 	if input == nil {
-		return nil, ErrNilInputProvided
+		return nil, database.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, input.ID)
@@ -386,12 +387,12 @@ func (q *Querier) CreateServiceSettingConfiguration(ctx context.Context, input *
 		CreatedAt:        q.currentTime(),
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &input.BelongsToAccount,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeServiceSettingConfigurations,
 		RelevantID:       x.ID,
-		EventType:        types.AuditLogEventTypeCreated,
+		EventType:        auditlogentries.AuditLogEventTypeCreated,
 		BelongsToUser:    input.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
@@ -413,7 +414,7 @@ func (q *Querier) UpdateServiceSettingConfiguration(ctx context.Context, updated
 	defer span.End()
 
 	if updated == nil {
-		return ErrNilInputProvided
+		return database.ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, updated.ID)
@@ -436,12 +437,12 @@ func (q *Querier) UpdateServiceSettingConfiguration(ctx context.Context, updated
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting configuration")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &updated.BelongsToAccount,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeServiceSettingConfigurations,
 		RelevantID:       updated.ID,
-		EventType:        types.AuditLogEventTypeUpdated,
+		EventType:        auditlogentries.AuditLogEventTypeUpdated,
 		BelongsToUser:    updated.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
@@ -465,7 +466,7 @@ func (q *Querier) ArchiveServiceSettingConfiguration(ctx context.Context, servic
 	logger := q.logger.Clone()
 
 	if serviceSettingConfigurationID == "" {
-		return ErrInvalidIDProvided
+		return database.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)

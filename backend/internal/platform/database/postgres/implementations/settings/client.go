@@ -3,6 +3,7 @@ package settings
 import (
 	"context"
 	"database/sql"
+	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
@@ -16,28 +17,30 @@ import (
 
 // Querier is the audit log entry client.
 type Querier struct {
-	tracer           tracing.Tracer
-	logger           logging.Logger
-	generatedQuerier generated.Querier
-	secretGenerator  random.Generator
-	timeFunc         func() time.Time
-	db               *sql.DB
+	tracer            tracing.Tracer
+	logger            logging.Logger
+	generatedQuerier  generated.Querier
+	auditLogEntryRepo auditlogentries.Repository
+	secretGenerator   random.Generator
+	timeFunc          func() time.Time
+	db                *sql.DB
 }
 
 // ProvideSettingsRepository provides a new client.
-func ProvideSettingsRepository(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, db *sql.DB) (settings.Repository, error) {
+func ProvideSettingsRepository(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, auditLogEntryRepo auditlogentries.Repository, db *sql.DB) (settings.Repository, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("auth_db_client"))
 
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
 	c := &Querier{
-		db:               db,
-		tracer:           tracer,
-		timeFunc:         defaultTimeFunc,
-		generatedQuerier: generated.New(),
-		secretGenerator:  random.NewGenerator(logger, tracerProvider),
-		logger:           logging.EnsureLogger(logger).WithName("querier"),
+		db:                db,
+		tracer:            tracer,
+		timeFunc:          defaultTimeFunc,
+		generatedQuerier:  generated.New(),
+		auditLogEntryRepo: auditLogEntryRepo,
+		secretGenerator:   random.NewGenerator(logger, tracerProvider),
+		logger:            logging.EnsureLogger(logger).WithName("querier"),
 	}
 
 	return c, nil

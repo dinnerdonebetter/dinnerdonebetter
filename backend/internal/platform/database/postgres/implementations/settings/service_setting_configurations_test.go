@@ -3,12 +3,13 @@ package settings
 import (
 	"context"
 	"database/sql"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/settings"
+	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -19,9 +20,11 @@ func createServiceSettingConfigurationForTest(t *testing.T, ctx context.Context,
 
 	// create
 	if exampleServiceSettingConfiguration == nil {
-		user := createUserForTest(t, ctx, nil, dbc)
-		accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
+		user := pgtesting.CreateUserForTest(t, ctx, nil, dbc.db)
+		generatedIdentity := generated.New()
+		accountID, err := generatedIdentity.GetDefaultAccountIDForUser(ctx, dbc.db, user.ID)
 		require.NoError(t, err)
+
 		serviceSetting := createServiceSettingForTest(t, ctx, nil, dbc)
 		exampleServiceSettingConfiguration = fakes.BuildFakeServiceSettingConfiguration()
 		exampleServiceSettingConfiguration.ServiceSetting = *serviceSetting
@@ -53,7 +56,7 @@ func TestQuerier_Integration_ServiceSettingConfigurations(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	dbc, container := buildDatabaseClientForTest(t, ctx)
+	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -64,9 +67,11 @@ func TestQuerier_Integration_ServiceSettingConfigurations(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := createUserForTest(t, ctx, nil, dbc)
-	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
+	user := pgtesting.CreateUserForTest(t, ctx, nil, dbc.db)
+	generatedIdentity := generated.New()
+	accountID, err := generatedIdentity.GetDefaultAccountIDForUser(ctx, dbc.db, user.ID)
 	require.NoError(t, err)
+
 	serviceSetting := createServiceSettingForTest(t, ctx, nil, dbc)
 	exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
 	exampleServiceSettingConfiguration.ServiceSetting = *serviceSetting

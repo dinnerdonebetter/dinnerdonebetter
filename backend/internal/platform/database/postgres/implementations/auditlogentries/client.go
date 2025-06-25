@@ -7,7 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/auditlogentries/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"

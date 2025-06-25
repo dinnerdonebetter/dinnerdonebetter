@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
+	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
+	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,11 +25,15 @@ func createServiceSettingForTest(t *testing.T, ctx context.Context, exampleServi
 	dbInput := converters.ConvertServiceSettingToServiceSettingDatabaseCreationInput(exampleServiceSetting)
 
 	created, err := dbc.CreateServiceSetting(ctx, dbInput)
+	require.NoError(t, err)
+	require.NotNil(t, created)
+
 	exampleServiceSetting.CreatedAt = created.CreatedAt
-	assert.NoError(t, err)
 	assert.Equal(t, exampleServiceSetting, created)
 
 	serviceSetting, err := dbc.GetServiceSetting(ctx, created.ID)
+	require.NoError(t, err)
+	require.NotNil(t, serviceSetting)
 	exampleServiceSetting.CreatedAt = serviceSetting.CreatedAt
 
 	assert.NoError(t, err)
@@ -38,12 +43,12 @@ func createServiceSettingForTest(t *testing.T, ctx context.Context, exampleServi
 }
 
 func TestQuerier_Integration_ServiceSettings(t *testing.T) {
-	if !runningContainerTests {
+	if !pgtesting.RunContainerTests {
 		t.SkipNow()
 	}
 
 	ctx := context.Background()
-	dbc, container := buildDatabaseClientForTest(t, ctx)
+	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
 	require.NoError(t, err)
@@ -103,7 +108,7 @@ func TestQuerier_ServiceSettingExists(T *testing.T) {
 
 		ctx := context.Background()
 
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.ServiceSettingExists(ctx, "")
 		assert.Error(t, err)
@@ -118,7 +123,7 @@ func TestQuerier_GetServiceSetting(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.GetServiceSetting(ctx, "")
 		assert.Error(t, err)
@@ -133,7 +138,7 @@ func TestQuerier_SearchForServiceSettings(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.SearchForServiceSettings(ctx, "")
 		assert.Error(t, err)
@@ -148,7 +153,7 @@ func TestQuerier_CreateServiceSetting(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateServiceSetting(ctx, nil)
 		assert.Error(t, err)
@@ -163,7 +168,7 @@ func TestQuerier_ArchiveServiceSetting(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, _ := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveServiceSetting(ctx, ""))
 	})

@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"hash/fnv"
@@ -11,9 +12,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -100,65 +105,131 @@ func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql
 	return container, db
 }
 
-/*
-
-func CreateUserForTest(t *testing.T, ctx context.Context, exampleUser *types.User, dbc *Querier) *types.User {
+func CreateUserForTest(t *testing.T, ctx context.Context, exampleUser *identity.User, db *sql.DB) *identity.User {
 	t.Helper()
 
 	// create
 	if exampleUser == nil {
 		exampleUser = fakes.BuildFakeUser()
 	}
-	dbInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
-
 	exampleUser.TwoFactorSecretVerifiedAt = nil
-	created, err := dbc.CreateUser(ctx, dbInput)
+
+	dbc := generated.New()
+
+	err := dbc.CreateUser(ctx, db, &generated.CreateUserParams{
+		ID:                            exampleUser.ID,
+		Username:                      exampleUser.Username,
+		AvatarSrc:                     database.NullStringFromStringPointer(exampleUser.AvatarSrc),
+		EmailAddress:                  exampleUser.EmailAddress,
+		HashedPassword:                exampleUser.HashedPassword,
+		RequiresPasswordChange:        exampleUser.RequiresPasswordChange,
+		TwoFactorSecret:               exampleUser.TwoFactorSecret,
+		TwoFactorSecretVerifiedAt:     database.NullTimeFromTimePointer(exampleUser.TwoFactorSecretVerifiedAt),
+		ServiceRole:                   exampleUser.ServiceRole,
+		UserAccountStatus:             exampleUser.AccountStatus,
+		UserAccountStatusExplanation:  exampleUser.AccountStatusExplanation,
+		Birthday:                      database.NullTimeFromTimePointer(exampleUser.Birthday),
+		EmailAddressVerificationToken: database.NullStringFromString("token"),
+		FirstName:                     exampleUser.FirstName,
+		LastName:                      exampleUser.LastName,
+	})
+	require.NoError(t, err)
+
+	dbCreated, err := dbc.GetUserByID(ctx, db, exampleUser.ID)
+	require.NoError(t, err)
+
+	created := &identity.User{
+		CreatedAt:                  dbCreated.CreatedAt,
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(dbCreated.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(dbCreated.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(dbCreated.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(dbCreated.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(dbCreated.TwoFactorSecretVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(dbCreated.AvatarSrc),
+		Birthday:                   database.TimePointerFromNullTime(dbCreated.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(dbCreated.ArchivedAt),
+		AccountStatusExplanation:   dbCreated.UserAccountStatusExplanation,
+		TwoFactorSecret:            dbCreated.TwoFactorSecret,
+		HashedPassword:             dbCreated.HashedPassword,
+		ID:                         dbCreated.ID,
+		AccountStatus:              dbCreated.UserAccountStatus,
+		Username:                   dbCreated.Username,
+		FirstName:                  dbCreated.FirstName,
+		LastName:                   dbCreated.LastName,
+		EmailAddress:               dbCreated.EmailAddress,
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(dbCreated.EmailAddressVerifiedAt),
+		ServiceRole:                dbCreated.ServiceRole,
+		RequiresPasswordChange:     dbCreated.RequiresPasswordChange,
+	}
 	exampleUser.CreatedAt = created.CreatedAt
+	exampleUser.Birthday = created.Birthday
 	exampleUser.TwoFactorSecretVerifiedAt = created.TwoFactorSecretVerifiedAt
-	assert.NoError(t, err)
 	assert.Equal(t, exampleUser, created)
-
-	user, err := dbc.GetUser(ctx, created.ID)
-	exampleUser.CreatedAt = user.CreatedAt
-	exampleUser.Birthday = user.Birthday
-
-	assert.NoError(t, err)
-	assert.Equal(t, user, exampleUser)
 
 	return created
 }
 
-func CreateAccountForTest(t *testing.T, ctx context.Context, exampleAccount *types.Account, dbc *Querier) *types.Account {
+func CreateAccountForTest(t *testing.T, ctx context.Context, exampleAccount *identity.Account, userID string, db *sql.DB) *identity.Account {
 	t.Helper()
 
 	// create
 	if exampleAccount == nil {
-		exampleUser := createUserForTest(t, ctx, nil, dbc)
 		exampleAccount = fakes.BuildFakeAccount()
-		exampleAccount.BelongsToUser = exampleUser.ID
+		exampleAccount.BelongsToUser = userID
 	}
 	exampleAccount.PaymentProcessorCustomerID = ""
 	exampleAccount.Members = nil
-	dbInput := converters.ConvertAccountToAccountDatabaseCreationInput(exampleAccount)
 
-	created, err := dbc.CreateAccount(ctx, dbInput)
-	assert.NoError(t, err)
-	require.NotNil(t, created)
+	dbc := generated.New()
+
+	require.NoError(t, dbc.CreateAccount(ctx, db, &generated.CreateAccountParams{
+		ID:                exampleAccount.ID,
+		Name:              exampleAccount.Name,
+		BillingStatus:     exampleAccount.BillingStatus,
+		ContactPhone:      exampleAccount.ContactPhone,
+		BelongsToUser:     exampleAccount.BelongsToUser,
+		AddressLine1:      exampleAccount.AddressLine1,
+		AddressLine2:      exampleAccount.AddressLine2,
+		City:              exampleAccount.City,
+		State:             exampleAccount.State,
+		ZipCode:           exampleAccount.ZipCode,
+		Country:           exampleAccount.Country,
+		Latitude:          database.NullStringFromFloat64Pointer(exampleAccount.Latitude),
+		Longitude:         database.NullStringFromFloat64Pointer(exampleAccount.Longitude),
+		WebhookHmacSecret: exampleAccount.WebhookEncryptionKey,
+	}))
+
+	dbCreated, err := dbc.GetAccountsForUser(ctx, db, &generated.GetAccountsForUserParams{
+		BelongsToUser: userID,
+	})
+	require.NoError(t, err)
+	require.Len(t, dbCreated, 1)
+
+	created := &identity.Account{
+		CreatedAt:                  dbCreated[0].CreatedAt,
+		SubscriptionPlanID:         database.StringPointerFromNullString(dbCreated[0].SubscriptionPlanID),
+		LastUpdatedAt:              database.TimePointerFromNullTime(dbCreated[0].LastUpdatedAt),
+		ArchivedAt:                 database.TimePointerFromNullTime(dbCreated[0].ArchivedAt),
+		Longitude:                  database.Float64PointerFromNullString(dbCreated[0].Longitude),
+		Latitude:                   database.Float64PointerFromNullString(dbCreated[0].Latitude),
+		State:                      dbCreated[0].State,
+		ContactPhone:               dbCreated[0].ContactPhone,
+		City:                       dbCreated[0].City,
+		AddressLine1:               dbCreated[0].AddressLine1,
+		ZipCode:                    dbCreated[0].ZipCode,
+		Country:                    dbCreated[0].Country,
+		BillingStatus:              dbCreated[0].BillingStatus,
+		AddressLine2:               dbCreated[0].AddressLine2,
+		PaymentProcessorCustomerID: dbCreated[0].PaymentProcessorCustomerID,
+		BelongsToUser:              dbCreated[0].BelongsToUser,
+		ID:                         dbCreated[0].ID,
+		Name:                       dbCreated[0].Name,
+		WebhookEncryptionKey:       dbCreated[0].WebhookHmacSecret,
+	}
+
 	exampleAccount.CreatedAt = created.CreatedAt
 	exampleAccount.WebhookEncryptionKey = created.WebhookEncryptionKey
 	assert.Equal(t, exampleAccount, created)
 
-	account, err := dbc.GetAccount(ctx, created.ID)
-	require.NoError(t, err)
-	require.NotNil(t, account)
-
-	exampleAccount.CreatedAt = account.CreatedAt
-	exampleAccount.Members = account.Members
-	exampleAccount.WebhookEncryptionKey = account.WebhookEncryptionKey
-
-	assert.Equal(t, exampleAccount, account)
-
 	return created
 }
-
-*/

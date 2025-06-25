@@ -5,7 +5,7 @@ import (
 	"time"
 
 	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/auditlogentries/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"

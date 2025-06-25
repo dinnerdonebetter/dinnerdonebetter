@@ -230,7 +230,7 @@ codegen: codegen-ts codegen-go
 
 .PHONY: querier
 querier: queries queries_lint
-	rm --recursive --force internal/database/postgres/generated/*.go
+	rm -rf internal/database/postgres/generated/*.go
 	$(SQL_GENERATOR) generate --no-remote
 
 .PHONY: sqlc_struct_check

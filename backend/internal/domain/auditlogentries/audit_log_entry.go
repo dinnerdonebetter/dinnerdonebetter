@@ -2,6 +2,7 @@ package auditlogentries
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -53,5 +54,6 @@ type (
 		GetAuditLogEntriesForUserAndResourceTypes(ctx context.Context, userID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AuditLogEntry], error)
 		GetAuditLogEntriesForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AuditLogEntry], error)
 		GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Context, accountID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AuditLogEntry], error)
+		CreateAuditLogEntry(ctx context.Context, querier database.SQLQueryExecutor, input *AuditLogEntryDatabaseCreationInput) (*AuditLogEntry, error)
 	}
 )
