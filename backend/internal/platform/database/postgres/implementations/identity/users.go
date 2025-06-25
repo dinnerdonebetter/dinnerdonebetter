@@ -472,7 +472,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    input.ID,
@@ -557,7 +557,7 @@ func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQL
 		return nil, observability.PrepareError(err, span, "creating account")
 	}
 
-	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err := q.CreateAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountCreationInput.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
@@ -581,7 +581,7 @@ func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQL
 		return nil, observability.PrepareError(err, span, "writing account user membership")
 	}
 
-	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err := q.CreateAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountCreationInput.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
@@ -652,7 +652,7 @@ func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername st
 		return observability.PrepareAndLogError(err, logger, span, "updating username")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -712,7 +712,7 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 		return observability.PrepareAndLogError(err, logger, span, "updating user email address")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -786,7 +786,7 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *t
 		changes["birthday"] = types.ChangeLog{NewValue: input.Birthday.Format(time.Kitchen), OldValue: user.Birthday.Format(time.Kitchen)}
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -835,7 +835,7 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 		return observability.PrepareAndLogError(err, logger, span, "updating user avatar")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -886,7 +886,7 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 		return observability.PrepareAndLogError(err, logger, span, "updating user password")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -937,7 +937,7 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 		return observability.PrepareAndLogError(err, logger, span, "updating user 2FA secret")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -980,7 +980,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -1033,7 +1033,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -1044,7 +1044,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -1097,7 +1097,7 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 		return sql.ErrNoRows
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -1211,7 +1211,7 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 		return observability.PrepareAndLogError(err, logger, span, "writing verified email address status to database")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -1270,7 +1270,7 @@ func (q *Querier) MarkUserEmailAddressAsUnverified(ctx context.Context, userID s
 		return observability.PrepareAndLogError(err, logger, span, "writing email address verification status to database")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,

@@ -24,7 +24,6 @@ func main() {
 	pflag.Parse()
 
 	runErrors := &multierror.Error{}
-
 	databaseToUse := *databaseFlag
 
 	queryOutput := map[string][]*Query{
@@ -33,8 +32,6 @@ func main() {
 		"internal/database/postgres/sqlc_queries/webhook_trigger_events.sql":                       buildWebhookTriggerEventsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/oauth2_client_tokens.sql":                         buildOAuth2ClientTokensQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/oauth2_clients.sql":                               buildOAuth2ClientsQueries(databaseToUse),
-		"internal/database/postgres/sqlc_queries/service_settings.sql":                             buildServiceSettingQueries(databaseToUse),
-		"internal/database/postgres/sqlc_queries/service_setting_configurations.sql":               buildServiceSettingConfigurationQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/valid_ingredients.sql":                            buildValidIngredientsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/valid_instruments.sql":                            buildValidInstrumentsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/valid_preparations.sql":                           buildValidPreparationsQueries(databaseToUse),
@@ -72,13 +69,15 @@ func main() {
 		"internal/database/postgres/sqlc_queries/meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/maintenance.sql":                                  buildMaintenanceQueries(databaseToUse),
 		// moved files
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_invitations.sql":      buildAccountInvitationsQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_user_memberships.sql": buildAccountUserMembershipsQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/accounts.sql":                 buildAccountsQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/audit_logs.sql":               buildAuditLogEntryQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/admin.sql":                    buildAdminQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/password_reset_tokens.sql":    buildPasswordResetTokensQueries(databaseToUse),
-		"internal/platform/database/postgres/implementations/identity/sqlc_queries/users.sql":                    buildUsersQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_invitations.sql":            buildAccountInvitationsQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_user_memberships.sql":       buildAccountUserMembershipsQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/accounts.sql":                       buildAccountsQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/audit_logs.sql":                     buildAuditLogEntryQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/admin.sql":                          buildAdminQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/password_reset_tokens.sql":          buildPasswordResetTokensQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/identity/sqlc_queries/users.sql":                          buildUsersQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/settings/sqlc_queries/service_settings.sql":               buildServiceSettingQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/settings/sqlc_queries/service_setting_configurations.sql": buildServiceSettingConfigurationQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag
@@ -88,11 +87,11 @@ func main() {
 		if err != nil {
 			if errors.Is(err, os.ErrNotExist) {
 				if _, err = os.Create(filePath); err != nil {
-					log.Fatal(err)
+					log.Fatal(fmt.Errorf("creating file: %w", err))
 				}
 			}
 			if err != nil {
-				log.Fatal(err)
+				log.Fatal(fmt.Errorf("opening existing file: %w", err))
 			}
 		}
 

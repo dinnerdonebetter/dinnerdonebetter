@@ -1,4 +1,4 @@
-package identity
+package auditlogentries
 
 import (
 	"context"

@@ -15,6 +15,8 @@ var (
 	_ types.PasswordResetTokenDataManager = (*Querier)(nil)
 )
 
+// TODO: create AuditLogEntries here
+
 // GetPasswordResetTokenByToken fetches a password reset token from the database by its token.
 func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string) (*types.PasswordResetToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

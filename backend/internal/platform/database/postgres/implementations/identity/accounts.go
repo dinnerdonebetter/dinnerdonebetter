@@ -236,7 +236,7 @@ func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabas
 		CreatedAt:     q.currentTime(),
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &account.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
@@ -259,7 +259,7 @@ func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabas
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing account membership creation query")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &account.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
@@ -320,7 +320,7 @@ func (q *Querier) UpdateAccount(ctx context.Context, updated *types.Account) err
 		return observability.PrepareAndLogError(err, logger, span, "updating account")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &updated.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
@@ -446,7 +446,7 @@ func (q *Querier) ArchiveAccount(ctx context.Context, accountID, userID string) 
 		return observability.PrepareAndLogError(err, logger, span, "archiving account")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,

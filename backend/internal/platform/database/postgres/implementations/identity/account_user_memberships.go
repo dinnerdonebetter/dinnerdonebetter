@@ -123,7 +123,7 @@ func (q *Querier) markAccountAsUserDefault(ctx context.Context, querier database
 		return observability.PrepareAndLogError(err, logger, span, "assigning user default account")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
@@ -227,7 +227,7 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, accountID, userID s
 		return observability.PrepareAndLogError(err, logger, span, "modifying user account permissions")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
@@ -290,7 +290,7 @@ func (q *Querier) TransferAccountOwnership(ctx context.Context, accountID string
 		return observability.PrepareAndLogError(err, logger, span, "transferring account to new owner")
 	}
 
-	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
@@ -370,7 +370,7 @@ func (q *Querier) addUserToAccount(ctx context.Context, querier database.SQLQuer
 		return observability.PrepareAndLogError(err, logger, span, "performing user account membership creation query")
 	}
 
-	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err := q.CreateAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &input.AccountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
@@ -410,7 +410,7 @@ func (q *Querier) removeUserFromAccount(ctx context.Context, querier database.SQ
 		return observability.PrepareAndLogError(err, logger, span, "removing user from account")
 	}
 
-	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err := q.CreateAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
