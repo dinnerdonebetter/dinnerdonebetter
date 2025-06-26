@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"hash/fnv"
 	"io"
 	"log"
@@ -187,7 +189,7 @@ func CreateAccountForTest(t *testing.T, ctx context.Context, exampleAccount *ide
 		Name:              exampleAccount.Name,
 		BillingStatus:     exampleAccount.BillingStatus,
 		ContactPhone:      exampleAccount.ContactPhone,
-		BelongsToUser:     exampleAccount.BelongsToUser,
+		BelongsToUser:     userID,
 		AddressLine1:      exampleAccount.AddressLine1,
 		AddressLine2:      exampleAccount.AddressLine2,
 		City:              exampleAccount.City,
@@ -197,6 +199,14 @@ func CreateAccountForTest(t *testing.T, ctx context.Context, exampleAccount *ide
 		Latitude:          database.NullStringFromFloat64Pointer(exampleAccount.Latitude),
 		Longitude:         database.NullStringFromFloat64Pointer(exampleAccount.Longitude),
 		WebhookHmacSecret: exampleAccount.WebhookEncryptionKey,
+	}))
+
+	require.NoError(t, dbc.CreateAccountUserMembershipForNewUser(ctx, db, &generated.CreateAccountUserMembershipForNewUserParams{
+		ID:               identifiers.New(),
+		BelongsToAccount: exampleAccount.ID,
+		BelongsToUser:    userID,
+		DefaultAccount:   true,
+		AccountRole:      authorization.AccountAdminRole.String(),
 	}))
 
 	dbCreated, err := dbc.GetAccountsForUser(ctx, db, &generated.GetAccountsForUserParams{

@@ -16,10 +16,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	auditLogEntriesCreatedForUsersByDefault = 3
-)
-
 func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *identity.User, account *identity.Account, dbc *Querier) *types.AuditLogEntry {
 	t.Helper()
 
@@ -94,12 +90,12 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 	auditLogEntries, err := dbc.GetAuditLogEntriesForUser(ctx, user.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, auditLogEntries.Data)
-	assert.Equal(t, len(createdAuditLogEntries)+auditLogEntriesCreatedForUsersByDefault, len(auditLogEntries.Data))
+	assert.Equal(t, len(createdAuditLogEntries), len(auditLogEntries.Data))
 
 	auditLogEntries, err = dbc.GetAuditLogEntriesForAccount(ctx, account.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, auditLogEntries.Data)
-	assert.Equal(t, len(createdAuditLogEntries)+auditLogEntriesCreatedForUsersByDefault-1, len(auditLogEntries.Data))
+	assert.Equal(t, len(createdAuditLogEntries), len(auditLogEntries.Data))
 }
 
 func TestQuerier_GetAuditLogEntry(T *testing.T) {
