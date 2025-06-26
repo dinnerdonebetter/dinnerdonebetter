@@ -68,15 +68,13 @@ func TestQuerier_Integration_ServiceSettingConfigurations(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, ctx, nil, dbc.db)
-	generatedIdentity := generated.New()
-	accountID, err := generatedIdentity.GetDefaultAccountIDForUser(ctx, dbc.db, user.ID)
-	require.NoError(t, err)
+	account := pgtesting.CreateAccountForTest(t, ctx, nil, user.ID, dbc.db)
 
 	serviceSetting := createServiceSettingForTest(t, ctx, nil, dbc)
 	exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
 	exampleServiceSettingConfiguration.ServiceSetting = *serviceSetting
 	exampleServiceSettingConfiguration.BelongsToUser = user.ID
-	exampleServiceSettingConfiguration.BelongsToAccount = accountID
+	exampleServiceSettingConfiguration.BelongsToAccount = account.ID
 	createdServiceSettingConfigurations := []*types.ServiceSettingConfiguration{}
 
 	// create
@@ -122,14 +120,13 @@ func TestQuerier_ServiceSettingConfigurationExists(T *testing.T) {
 func TestQuerier_GetServiceSettingConfiguration(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid service setting ID", func(t *testing.T) {
+	T.Run("with invalid service setting configuration ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.GetServiceSettingConfiguration(ctx, exampleServiceSettingConfiguration.ID)
+		actual, err := c.GetServiceSettingConfiguration(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -170,14 +167,13 @@ func TestQuerier_GetServiceSettingConfigurationForAccountByName(T *testing.T) {
 func TestQuerier_GetServiceSettingConfigurationsForUser(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid service setting ID", func(t *testing.T) {
+	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.GetServiceSettingConfigurationsForUser(ctx, exampleUserID, nil)
+		actual, err := c.GetServiceSettingConfigurationsForUser(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
