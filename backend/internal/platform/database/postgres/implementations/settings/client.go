@@ -3,9 +3,9 @@ package settings
 import (
 	"context"
 	"database/sql"
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/settings/generated"

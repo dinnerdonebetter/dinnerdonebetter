@@ -22,7 +22,6 @@ type Querier interface {
 	CreateAccount(ctx context.Context, db DBTX, arg *CreateAccountParams) error
 	CreateAccountInvitation(ctx context.Context, db DBTX, arg *CreateAccountInvitationParams) error
 	CreateAccountUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateAccountUserMembershipForNewUserParams) error
-	CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateAuditLogEntryParams) error
 	CreatePasswordResetToken(ctx context.Context, db DBTX, arg *CreatePasswordResetTokenParams) error
 	CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error
 	DeleteUser(ctx context.Context, db DBTX, id string) (int64, error)
@@ -33,11 +32,6 @@ type Querier interface {
 	GetAccountUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*AccountUserMemberships, error)
 	GetAccountsForUser(ctx context.Context, db DBTX, arg *GetAccountsForUserParams) ([]*GetAccountsForUserRow, error)
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)
-	GetAuditLogEntriesForAccount(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountParams) ([]*GetAuditLogEntriesForAccountRow, error)
-	GetAuditLogEntriesForAccountAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForAccountAndResourceTypeParams) ([]*GetAuditLogEntriesForAccountAndResourceTypeRow, error)
-	GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserParams) ([]*GetAuditLogEntriesForUserRow, error)
-	GetAuditLogEntriesForUserAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserAndResourceTypeParams) ([]*GetAuditLogEntriesForUserAndResourceTypeRow, error)
-	GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error)
 	GetDefaultAccountIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error)
 	GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX, id string) (sql.NullString, error)
 	GetPasswordResetToken(ctx context.Context, db DBTX, token string) (*GetPasswordResetTokenRow, error)

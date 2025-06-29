@@ -24,8 +24,8 @@ type Querier struct {
 	db               *sql.DB
 }
 
-// ProvideAuthRepository provides a new client.
-func ProvideAuthRepository(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, db *sql.DB) (auditlogentries.Repository, error) {
+// ProvideAuditLogRepository provides a new client.
+func ProvideAuditLogRepository(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, db *sql.DB) (auditlogentries.Repository, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("auth_db_client"))
 
 	ctx, span := tracer.StartSpan(ctx)

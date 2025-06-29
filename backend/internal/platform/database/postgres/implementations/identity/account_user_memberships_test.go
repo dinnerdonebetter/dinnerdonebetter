@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
@@ -39,7 +39,7 @@ func TestQuerier_Integration_AccountUserMemberships(t *testing.T) {
 
 	for i := 0; i < exampleQuantity; i++ {
 		newMember := createUserForTest(t, ctx, nil, dbc)
-		assert.NoError(t, dbc.addUserToAccount(ctx, dbc.db, &types.AccountUserMembershipDatabaseCreationInput{
+		assert.NoError(t, dbc.addUserToAccount(ctx, dbc.db, &identity.AccountUserMembershipDatabaseCreationInput{
 			ID:          identifiers.New(),
 			Reason:      "testing",
 			UserID:      newMember.ID,
@@ -75,13 +75,13 @@ func TestQuerier_Integration_AccountUserMemberships(t *testing.T) {
 
 	assert.NoError(t, dbc.RemoveUserFromAccount(ctx, memberUserIDs[len(memberUserIDs)-1], exampleAccount.ID))
 
-	assert.NoError(t, dbc.TransferAccountOwnership(ctx, exampleAccount.ID, &types.AccountOwnershipTransferInput{
+	assert.NoError(t, dbc.TransferAccountOwnership(ctx, exampleAccount.ID, &identity.AccountOwnershipTransferInput{
 		Reason:       "testing",
 		CurrentOwner: exampleUser.ID,
 		NewOwner:     memberUserIDs[1],
 	}))
 
-	assert.NoError(t, dbc.ModifyUserPermissions(ctx, exampleAccount.ID, memberUserIDs[0], &types.ModifyUserPermissionsInput{
+	assert.NoError(t, dbc.ModifyUserPermissions(ctx, exampleAccount.ID, memberUserIDs[0], &identity.ModifyUserPermissionsInput{
 		Reason:  "testing",
 		NewRole: "account_admin",
 	}))

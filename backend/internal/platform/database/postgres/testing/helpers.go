@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"hash/fnv"
 	"io"
 	"log"
@@ -14,11 +12,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

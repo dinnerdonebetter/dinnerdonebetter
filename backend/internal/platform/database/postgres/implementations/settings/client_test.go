@@ -1,20 +1,16 @@
 package settings
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/auditlogentries"
 	"testing"
 	"time"
 
-	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/settings/generated"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 )
@@ -22,31 +18,6 @@ import (
 const (
 	exampleQuantity = 3
 )
-
-type sqlmockExpecterWrapper struct {
-	sqlmock.Sqlmock
-}
-
-func (e *sqlmockExpecterWrapper) AssertExpectations(t mock.TestingT) bool {
-	return assert.NoError(t, e.Sqlmock.ExpectationsWereMet(), "not all database expectations were met")
-}
-
-func buildMockSQLTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
-	t.Helper()
-
-	fakeDB, sqlMock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
-	require.NoError(t, err)
-
-	c := &Querier{
-		db:               fakeDB,
-		logger:           logging.NewNoopLogger(),
-		generatedQuerier: generated.New(),
-		timeFunc:         defaultTimeFunc,
-		tracer:           tracing.NewTracerForTest("test"),
-	}
-
-	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
-}
 
 func buildDatabaseClientForTest(t *testing.T) (*Querier, *postgres.PostgresContainer) {
 	t.Helper()
@@ -67,7 +38,7 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *postgres.PostgresConta
 	require.NoError(t, config.LoadConnectionDetailsFromURL(container.MustConnectionString(ctx)))
 	require.NoError(t, migrations.NewMigrator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db, config).Migrate(ctx))
 
-	auditLogEntryRepo, err := auditlogentries.ProvideAuthRepository(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db)
+	auditLogEntryRepo, err := auditlogentries.ProvideAuditLogRepository(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db)
 	require.NoError(t, err)
 
 	c, err := ProvideSettingsRepository(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, db)

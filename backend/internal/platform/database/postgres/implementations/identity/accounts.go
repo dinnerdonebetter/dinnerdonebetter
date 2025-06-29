@@ -6,7 +6,8 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
@@ -21,11 +22,11 @@ const (
 )
 
 var (
-	_ types.AccountDataManager = (*Querier)(nil)
+	_ identity.AccountDataManager = (*Querier)(nil)
 )
 
 // GetAccount fetches an account from the database.
-func (q *Querier) GetAccount(ctx context.Context, accountID string) (*types.Account, error) {
+func (q *Querier) GetAccount(ctx context.Context, accountID string) (*identity.Account, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -39,10 +40,10 @@ func (q *Querier) GetAccount(ctx context.Context, accountID string) (*types.Acco
 		return nil, observability.PrepareError(err, span, "executing accounts list retrieval query")
 	}
 
-	var account *types.Account
+	var account *identity.Account
 	for _, result := range results {
 		if account == nil {
-			account = &types.Account{
+			account = &identity.Account{
 				CreatedAt:                  result.CreatedAt,
 				SubscriptionPlanID:         database.StringPointerFromNullString(result.SubscriptionPlanID),
 				LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -66,12 +67,12 @@ func (q *Querier) GetAccount(ctx context.Context, accountID string) (*types.Acco
 			}
 		}
 
-		account.Members = append(account.Members, &types.AccountUserMembershipWithUser{
+		account.Members = append(account.Members, &identity.AccountUserMembershipWithUser{
 			CreatedAt:     result.MembershipCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.MembershipLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.MembershipArchivedAt),
 			ID:            result.MembershipID,
-			BelongsToUser: &types.User{
+			BelongsToUser: &identity.User{
 				CreatedAt:                  result.UserCreatedAt,
 				PasswordLastChangedAt:      database.TimePointerFromNullTime(result.UserPasswordLastChangedAt),
 				LastUpdatedAt:              database.TimePointerFromNullTime(result.UserLastUpdatedAt),
@@ -106,7 +107,7 @@ func (q *Querier) GetAccount(ctx context.Context, accountID string) (*types.Acco
 }
 
 // getAccountsForUser fetches a list of accounts from the database that meet a particular filter.
-func (q *Querier) getAccountsForUser(ctx context.Context, querier database.SQLQueryExecutor, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Account], err error) {
+func (q *Querier) getAccountsForUser(ctx context.Context, querier database.SQLQueryExecutor, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[identity.Account], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -124,7 +125,7 @@ func (q *Querier) getAccountsForUser(ctx context.Context, querier database.SQLQu
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.Account]{
+	x = &filtering.QueryFilteredResult[identity.Account]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -148,7 +149,7 @@ func (q *Querier) getAccountsForUser(ctx context.Context, querier database.SQLQu
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &types.Account{
+		x.Data = append(x.Data, &identity.Account{
 			CreatedAt:                  result.CreatedAt,
 			SubscriptionPlanID:         database.StringPointerFromNullString(result.SubscriptionPlanID),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -177,12 +178,12 @@ func (q *Querier) getAccountsForUser(ctx context.Context, querier database.SQLQu
 }
 
 // GetAccounts fetches a list of accounts from the database that meet a particular filter.
-func (q *Querier) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.Account], err error) {
+func (q *Querier) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[identity.Account], err error) {
 	return q.getAccountsForUser(ctx, q.db, userID, filter)
 }
 
 // CreateAccount creates an account in the database.
-func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabaseCreationInput) (*types.Account, error) {
+func (q *Querier) CreateAccount(ctx context.Context, input *identity.AccountDatabaseCreationInput) (*identity.Account, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -202,7 +203,7 @@ func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabas
 	if writeErr := q.generatedQuerier.CreateAccount(ctx, tx, &generated.CreateAccountParams{
 		City:              input.City,
 		Name:              input.Name,
-		BillingStatus:     types.UnpaidAccountBillingStatus,
+		BillingStatus:     identity.UnpaidAccountBillingStatus,
 		ContactPhone:      input.ContactPhone,
 		AddressLine1:      input.AddressLine1,
 		AddressLine2:      input.AddressLine2,
@@ -219,11 +220,11 @@ func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabas
 		return nil, observability.PrepareError(writeErr, span, "creating account")
 	}
 
-	account := &types.Account{
+	account := &identity.Account{
 		ID:            input.ID,
 		Name:          input.Name,
 		BelongsToUser: input.BelongsToUser,
-		BillingStatus: types.UnpaidAccountBillingStatus,
+		BillingStatus: identity.UnpaidAccountBillingStatus,
 		ContactPhone:  input.ContactPhone,
 		AddressLine1:  input.AddressLine1,
 		AddressLine2:  input.AddressLine2,
@@ -236,12 +237,12 @@ func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabas
 		CreatedAt:     q.currentTime(),
 	}
 
-	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &account.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
 		RelevantID:       account.ID,
-		EventType:        types.AuditLogEventTypeCreated,
+		EventType:        auditlogentries.AuditLogEventTypeCreated,
 		BelongsToUser:    account.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
@@ -259,12 +260,12 @@ func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabas
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing account membership creation query")
 	}
 
-	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &account.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
 		RelevantID:       accountMembershipID,
-		EventType:        types.AuditLogEventTypeCreated,
+		EventType:        auditlogentries.AuditLogEventTypeCreated,
 		BelongsToUser:    account.BelongsToUser,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
@@ -282,7 +283,7 @@ func (q *Querier) CreateAccount(ctx context.Context, input *types.AccountDatabas
 }
 
 // UpdateAccount updates a particular account. Note that UpdateAccount expects the provided input to have a valid ID.
-func (q *Querier) UpdateAccount(ctx context.Context, updated *types.Account) error {
+func (q *Querier) UpdateAccount(ctx context.Context, updated *identity.Account) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -320,12 +321,12 @@ func (q *Querier) UpdateAccount(ctx context.Context, updated *types.Account) err
 		return observability.PrepareAndLogError(err, logger, span, "updating account")
 	}
 
-	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &updated.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
 		RelevantID:       updated.ID,
-		EventType:        types.AuditLogEventTypeUpdated,
+		EventType:        auditlogentries.AuditLogEventTypeUpdated,
 		BelongsToUser:    account.BelongsToUser,
 		Changes:          buildChangesForAccount(account, updated),
 	}); err != nil {
@@ -342,74 +343,74 @@ func (q *Querier) UpdateAccount(ctx context.Context, updated *types.Account) err
 	return nil
 }
 
-func buildChangesForAccount(account, updated *types.Account) map[string]types.ChangeLog {
-	changes := map[string]types.ChangeLog{}
+func buildChangesForAccount(account, updated *identity.Account) map[string]auditlogentries.ChangeLog {
+	changes := map[string]auditlogentries.ChangeLog{}
 
 	if account.Name != updated.Name {
-		changes["name"] = types.ChangeLog{
+		changes["name"] = auditlogentries.ChangeLog{
 			OldValue: account.Name,
 			NewValue: updated.Name,
 		}
 	}
 
 	if account.ContactPhone != updated.ContactPhone {
-		changes["contact_phone"] = types.ChangeLog{
+		changes["contact_phone"] = auditlogentries.ChangeLog{
 			OldValue: account.ContactPhone,
 			NewValue: updated.ContactPhone,
 		}
 	}
 
 	if account.AddressLine1 != updated.AddressLine1 {
-		changes["address_line_1"] = types.ChangeLog{
+		changes["address_line_1"] = auditlogentries.ChangeLog{
 			OldValue: account.AddressLine1,
 			NewValue: updated.AddressLine1,
 		}
 	}
 
 	if account.AddressLine2 != updated.AddressLine2 {
-		changes["address_line_2"] = types.ChangeLog{
+		changes["address_line_2"] = auditlogentries.ChangeLog{
 			OldValue: account.AddressLine2,
 			NewValue: updated.AddressLine2,
 		}
 	}
 
 	if account.City != updated.City {
-		changes["city"] = types.ChangeLog{
+		changes["city"] = auditlogentries.ChangeLog{
 			OldValue: account.City,
 			NewValue: updated.City,
 		}
 	}
 
 	if account.State != updated.State {
-		changes["state"] = types.ChangeLog{
+		changes["state"] = auditlogentries.ChangeLog{
 			OldValue: account.State,
 			NewValue: updated.State,
 		}
 	}
 
 	if account.ZipCode != updated.ZipCode {
-		changes["zip_code"] = types.ChangeLog{
+		changes["zip_code"] = auditlogentries.ChangeLog{
 			OldValue: account.ZipCode,
 			NewValue: updated.ZipCode,
 		}
 	}
 
 	if account.Country != updated.Country {
-		changes["country"] = types.ChangeLog{
+		changes["country"] = auditlogentries.ChangeLog{
 			OldValue: account.Country,
 			NewValue: updated.Country,
 		}
 	}
 
 	if account.Latitude != updated.Latitude {
-		changes["latitude"] = types.ChangeLog{
+		changes["latitude"] = auditlogentries.ChangeLog{
 			OldValue: fmt.Sprintf("%v", account.Latitude),
 			NewValue: fmt.Sprintf("%v", updated.Latitude),
 		}
 	}
 
 	if account.Longitude != updated.Longitude {
-		changes["longitude"] = types.ChangeLog{
+		changes["longitude"] = auditlogentries.ChangeLog{
 			OldValue: fmt.Sprintf("%v", account.Longitude),
 			NewValue: fmt.Sprintf("%v", updated.Longitude),
 		}
@@ -446,12 +447,12 @@ func (q *Querier) ArchiveAccount(ctx context.Context, accountID, userID string) 
 		return observability.PrepareAndLogError(err, logger, span, "archiving account")
 	}
 
-	if _, err = q.CreateAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
 		RelevantID:       accountID,
-		EventType:        types.AuditLogEventTypeCreated,
+		EventType:        auditlogentries.AuditLogEventTypeCreated,
 		BelongsToUser:    userID,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)

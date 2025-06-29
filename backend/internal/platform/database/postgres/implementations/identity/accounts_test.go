@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createAccountForTest(t *testing.T, ctx context.Context, exampleAccount *types.Account, dbc types.Repository) *types.Account {
+func createAccountForTest(t *testing.T, ctx context.Context, exampleAccount *identity.Account, dbc identity.Repository) *identity.Account {
 	t.Helper()
 
 	// create
@@ -72,7 +72,7 @@ func TestQuerier_Integration_Accounts(t *testing.T) {
 	exampleAccount.Members = nil
 	exampleAccount.BelongsToUser = exampleUser.ID
 	exampleAccount.PaymentProcessorCustomerID = ""
-	createdAccounts := []*types.Account{}
+	createdAccounts := []*identity.Account{}
 
 	// create
 	createdAccounts = append(createdAccounts, createAccountForTest(t, ctx, exampleAccount, dbc))
@@ -101,7 +101,7 @@ func TestQuerier_Integration_Accounts(t *testing.T) {
 	for _, account := range createdAccounts {
 		assert.NoError(t, dbc.ArchiveAccount(ctx, account.ID, exampleUser.ID))
 
-		var y *types.Account
+		var y *identity.Account
 		y, err = dbc.GetAccount(ctx, account.ID)
 		assert.Nil(t, y)
 		assert.Error(t, err)

@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	_ types.AccountInvitationDataManager = (*Querier)(nil)
+	_ identity.AccountInvitationDataManager = (*Querier)(nil)
 )
 
 // AccountInvitationExists fetches whether an account invitation exists from the database.
@@ -43,7 +43,7 @@ func (q *Querier) AccountInvitationExists(ctx context.Context, accountInvitation
 }
 
 // GetAccountInvitationByAccountAndID fetches an invitation from the database.
-func (q *Querier) GetAccountInvitationByAccountAndID(ctx context.Context, accountID, accountInvitationID string) (*types.AccountInvitation, error) {
+func (q *Querier) GetAccountInvitationByAccountAndID(ctx context.Context, accountID, accountInvitationID string) (*identity.AccountInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -69,7 +69,7 @@ func (q *Querier) GetAccountInvitationByAccountAndID(ctx context.Context, accoun
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account invitation")
 	}
 
-	accountInvitation := &types.AccountInvitation{
+	accountInvitation := &identity.AccountInvitation{
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -82,7 +82,7 @@ func (q *Querier) GetAccountInvitationByAccountAndID(ctx context.Context, accoun
 		Note:          result.Note,
 		ToName:        result.ToName,
 		ExpiresAt:     result.ExpiresAt,
-		DestinationAccount: types.Account{
+		DestinationAccount: identity.Account{
 			CreatedAt:                  result.AccountCreatedAt,
 			SubscriptionPlanID:         database.StringPointerFromNullString(result.AccountSubscriptionPlanID),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.AccountLastUpdatedAt),
@@ -103,7 +103,7 @@ func (q *Querier) GetAccountInvitationByAccountAndID(ctx context.Context, accoun
 			Name:                       result.AccountName,
 			Members:                    nil,
 		},
-		FromUser: types.User{
+		FromUser: identity.User{
 			CreatedAt:                  result.UserCreatedAt,
 			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.UserPasswordLastChangedAt),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.UserLastUpdatedAt),
@@ -132,7 +132,7 @@ func (q *Querier) GetAccountInvitationByAccountAndID(ctx context.Context, accoun
 }
 
 // GetAccountInvitationByTokenAndID fetches an invitation from the database.
-func (q *Querier) GetAccountInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*types.AccountInvitation, error) {
+func (q *Querier) GetAccountInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*identity.AccountInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -158,7 +158,7 @@ func (q *Querier) GetAccountInvitationByTokenAndID(ctx context.Context, token, i
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account invitation")
 	}
 
-	accountInvitation := &types.AccountInvitation{
+	accountInvitation := &identity.AccountInvitation{
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -171,7 +171,7 @@ func (q *Querier) GetAccountInvitationByTokenAndID(ctx context.Context, token, i
 		Note:          result.Note,
 		ToName:        result.ToName,
 		ExpiresAt:     result.ExpiresAt,
-		DestinationAccount: types.Account{
+		DestinationAccount: identity.Account{
 			CreatedAt:                  result.AccountCreatedAt,
 			SubscriptionPlanID:         database.StringPointerFromNullString(result.AccountSubscriptionPlanID),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.AccountLastUpdatedAt),
@@ -192,7 +192,7 @@ func (q *Querier) GetAccountInvitationByTokenAndID(ctx context.Context, token, i
 			Name:                       result.AccountName,
 			Members:                    nil,
 		},
-		FromUser: types.User{
+		FromUser: identity.User{
 			CreatedAt:                  result.UserCreatedAt,
 			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.UserPasswordLastChangedAt),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.UserLastUpdatedAt),
@@ -221,7 +221,7 @@ func (q *Querier) GetAccountInvitationByTokenAndID(ctx context.Context, token, i
 }
 
 // GetAccountInvitationByEmailAndToken fetches an invitation from the database.
-func (q *Querier) GetAccountInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*types.AccountInvitation, error) {
+func (q *Querier) GetAccountInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*identity.AccountInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -247,7 +247,7 @@ func (q *Querier) GetAccountInvitationByEmailAndToken(ctx context.Context, email
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account invitation")
 	}
 
-	invitation := &types.AccountInvitation{
+	invitation := &identity.AccountInvitation{
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -260,7 +260,7 @@ func (q *Querier) GetAccountInvitationByEmailAndToken(ctx context.Context, email
 		Note:          result.Note,
 		ToName:        result.ToName,
 		ExpiresAt:     result.ExpiresAt,
-		DestinationAccount: types.Account{
+		DestinationAccount: identity.Account{
 			CreatedAt:                  result.AccountCreatedAt,
 			SubscriptionPlanID:         database.StringPointerFromNullString(result.AccountSubscriptionPlanID),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.AccountLastUpdatedAt),
@@ -281,7 +281,7 @@ func (q *Querier) GetAccountInvitationByEmailAndToken(ctx context.Context, email
 			Name:                       result.AccountName,
 			Members:                    nil,
 		},
-		FromUser: types.User{
+		FromUser: identity.User{
 			CreatedAt:                  result.UserCreatedAt,
 			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.UserPasswordLastChangedAt),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.UserLastUpdatedAt),
@@ -310,7 +310,7 @@ func (q *Querier) GetAccountInvitationByEmailAndToken(ctx context.Context, email
 }
 
 // CreateAccountInvitation creates an invitation in a database.
-func (q *Querier) CreateAccountInvitation(ctx context.Context, input *types.AccountInvitationDatabaseCreationInput) (*types.AccountInvitation, error) {
+func (q *Querier) CreateAccountInvitation(ctx context.Context, input *identity.AccountInvitationDatabaseCreationInput) (*identity.AccountInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -335,17 +335,17 @@ func (q *Querier) CreateAccountInvitation(ctx context.Context, input *types.Acco
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing account invitation creation query")
 	}
 
-	x := &types.AccountInvitation{
+	x := &identity.AccountInvitation{
 		ID:                 input.ID,
-		FromUser:           types.User{ID: input.FromUser},
+		FromUser:           identity.User{ID: input.FromUser},
 		ToUser:             input.ToUser,
 		Note:               input.Note,
 		ToName:             input.ToName,
 		ToEmail:            input.ToEmail,
 		Token:              input.Token,
 		StatusNote:         "",
-		Status:             string(types.PendingAccountInvitationStatus),
-		DestinationAccount: types.Account{ID: input.DestinationAccountID},
+		Status:             string(identity.PendingAccountInvitationStatus),
+		DestinationAccount: identity.Account{ID: input.DestinationAccountID},
 		ExpiresAt:          input.ExpiresAt,
 		CreatedAt:          q.currentTime(),
 	}
@@ -359,7 +359,7 @@ func (q *Querier) CreateAccountInvitation(ctx context.Context, input *types.Acco
 }
 
 // GetPendingAccountInvitationsFromUser fetches pending account invitations sent from a given user.
-func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInvitation], error) {
+func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -369,7 +369,7 @@ func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, user
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	x := &filtering.QueryFilteredResult[types.AccountInvitation]{
+	x := &filtering.QueryFilteredResult[identity.AccountInvitation]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -381,7 +381,7 @@ func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, user
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
-		Status:          generated.InvitationState(types.PendingAccountInvitationStatus),
+		Status:          generated.InvitationState(identity.PendingAccountInvitationStatus),
 		FromUser:        userID,
 	})
 	if err != nil {
@@ -389,7 +389,7 @@ func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, user
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &types.AccountInvitation{
+		x.Data = append(x.Data, &identity.AccountInvitation{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -402,7 +402,7 @@ func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, user
 			Note:          result.Note,
 			ToName:        result.ToName,
 			ExpiresAt:     result.ExpiresAt,
-			DestinationAccount: types.Account{
+			DestinationAccount: identity.Account{
 				CreatedAt:                  result.AccountCreatedAt,
 				SubscriptionPlanID:         database.StringPointerFromNullString(result.AccountSubscriptionPlanID),
 				LastUpdatedAt:              database.TimePointerFromNullTime(result.AccountLastUpdatedAt),
@@ -423,7 +423,7 @@ func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, user
 				Name:                       result.AccountName,
 				Members:                    nil,
 			},
-			FromUser: types.User{
+			FromUser: identity.User{
 				CreatedAt:                  result.UserCreatedAt,
 				PasswordLastChangedAt:      database.TimePointerFromNullTime(result.UserPasswordLastChangedAt),
 				LastUpdatedAt:              database.TimePointerFromNullTime(result.UserLastUpdatedAt),
@@ -456,7 +456,7 @@ func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, user
 }
 
 // GetPendingAccountInvitationsForUser fetches pending account invitations sent to a given user.
-func (q *Querier) GetPendingAccountInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.AccountInvitation], error) {
+func (q *Querier) GetPendingAccountInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -466,7 +466,7 @@ func (q *Querier) GetPendingAccountInvitationsForUser(ctx context.Context, userI
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	x := &filtering.QueryFilteredResult[types.AccountInvitation]{
+	x := &filtering.QueryFilteredResult[identity.AccountInvitation]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -478,7 +478,7 @@ func (q *Querier) GetPendingAccountInvitationsForUser(ctx context.Context, userI
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
-		Status:          generated.InvitationState(types.PendingAccountInvitationStatus),
+		Status:          generated.InvitationState(identity.PendingAccountInvitationStatus),
 		ToUser:          database.NullStringFromString(userID),
 	})
 	if err != nil {
@@ -486,7 +486,7 @@ func (q *Querier) GetPendingAccountInvitationsForUser(ctx context.Context, userI
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &types.AccountInvitation{
+		x.Data = append(x.Data, &identity.AccountInvitation{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -499,7 +499,7 @@ func (q *Querier) GetPendingAccountInvitationsForUser(ctx context.Context, userI
 			Note:          result.Note,
 			ToName:        result.ToName,
 			ExpiresAt:     result.ExpiresAt,
-			DestinationAccount: types.Account{
+			DestinationAccount: identity.Account{
 				CreatedAt:                  result.AccountCreatedAt,
 				SubscriptionPlanID:         database.StringPointerFromNullString(result.AccountSubscriptionPlanID),
 				LastUpdatedAt:              database.TimePointerFromNullTime(result.AccountLastUpdatedAt),
@@ -520,7 +520,7 @@ func (q *Querier) GetPendingAccountInvitationsForUser(ctx context.Context, userI
 				Name:                       result.AccountName,
 				Members:                    nil,
 			},
-			FromUser: types.User{
+			FromUser: identity.User{
 				CreatedAt:                  result.UserCreatedAt,
 				PasswordLastChangedAt:      database.TimePointerFromNullTime(result.UserPasswordLastChangedAt),
 				LastUpdatedAt:              database.TimePointerFromNullTime(result.UserLastUpdatedAt),
@@ -579,7 +579,7 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 
 // CancelAccountInvitation cancels an account invitation by its ID with a note.
 func (q *Querier) CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
-	return q.setInvitationStatus(ctx, q.db, accountInvitationID, note, string(types.CancelledAccountInvitationStatus))
+	return q.setInvitationStatus(ctx, q.db, accountInvitationID, note, string(identity.CancelledAccountInvitationStatus))
 }
 
 // AcceptAccountInvitation accepts an account invitation by its ID with a note.
@@ -604,7 +604,7 @@ func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitation
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = q.setInvitationStatus(ctx, tx, accountInvitationID, note, string(types.AcceptedAccountInvitationStatus)); err != nil {
+	if err = q.setInvitationStatus(ctx, tx, accountInvitationID, note, string(identity.AcceptedAccountInvitationStatus)); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
 	}
@@ -615,7 +615,7 @@ func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitation
 		return observability.PrepareAndLogError(err, logger, span, "fetching account invitation")
 	}
 
-	addUserInput := &types.AccountUserMembershipDatabaseCreationInput{
+	addUserInput := &identity.AccountUserMembershipDatabaseCreationInput{
 		ID:          identifiers.New(),
 		Reason:      fmt.Sprintf("accepted account invitation %q", accountInvitationID),
 		AccountID:   invitation.DestinationAccount.ID,
@@ -639,7 +639,7 @@ func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitation
 
 // RejectAccountInvitation rejects an account invitation by its ID with a note.
 func (q *Querier) RejectAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
-	return q.setInvitationStatus(ctx, q.db, accountInvitationID, note, string(types.RejectedAccountInvitationStatus))
+	return q.setInvitationStatus(ctx, q.db, accountInvitationID, note, string(identity.RejectedAccountInvitationStatus))
 }
 
 func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
@@ -673,7 +673,7 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	return nil
 }
 
-func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.UserDatabaseCreationInput) error {
+func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *identity.UserDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -700,7 +700,7 @@ func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.
 
 	logger.Debug("created membership via invitation")
 
-	if err := q.setInvitationStatus(ctx, querier, invitation.ID, "", string(types.AcceptedAccountInvitationStatus)); err != nil {
+	if err := q.setInvitationStatus(ctx, querier, invitation.ID, "", string(identity.AcceptedAccountInvitationStatus)); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
 	}

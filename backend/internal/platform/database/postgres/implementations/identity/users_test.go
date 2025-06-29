@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createUserForTest(t *testing.T, ctx context.Context, exampleUser *types.User, dbc types.Repository) *types.User {
+func createUserForTest(t *testing.T, ctx context.Context, exampleUser *identity.User, dbc identity.Repository) *identity.User {
 	t.Helper()
 
 	// create
@@ -67,7 +67,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	exampleUser := fakes.BuildFakeUser()
 	exampleUser.Username = fmt.Sprintf("%d", pgtesting.HashStringToNumber(t, exampleUser.Username))
 	exampleUser.TwoFactorSecretVerifiedAt = nil
-	createdUsers := []*types.User{}
+	createdUsers := []*identity.User{}
 
 	// create
 	createdUsers = append(createdUsers, createUserForTest(t, ctx, exampleUser, dbc))
@@ -108,7 +108,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 
 	// update first user's details
 	newFirstName, newLastName, birthday := "new_first", "new_last", time.Now()
-	assert.NoError(t, dbc.UpdateUserDetails(ctx, firstUser.ID, &types.UserDetailsDatabaseUpdateInput{
+	assert.NoError(t, dbc.UpdateUserDetails(ctx, firstUser.ID, &identity.UserDetailsDatabaseUpdateInput{
 		FirstName: newFirstName,
 		LastName:  newLastName,
 		Birthday:  birthday,
@@ -196,7 +196,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	for _, user := range createdUsers {
 		assert.NoError(t, dbc.ArchiveUser(ctx, user.ID))
 
-		var y *types.User
+		var y *identity.User
 		y, err = dbc.GetUser(ctx, user.ID)
 		assert.Nil(t, y)
 		assert.Error(t, err)
@@ -207,7 +207,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	for _, user := range createdUsers {
 		assert.NoError(t, dbc.DeleteUser(ctx, user.ID))
 
-		var y *filtering.QueryFilteredResult[types.Account]
+		var y *filtering.QueryFilteredResult[identity.Account]
 		y, err = dbc.GetAccounts(ctx, user.ID, nil)
 		assert.Nil(t, y)
 		assert.Error(t, err)

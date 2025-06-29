@@ -2,9 +2,9 @@ package settings
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"

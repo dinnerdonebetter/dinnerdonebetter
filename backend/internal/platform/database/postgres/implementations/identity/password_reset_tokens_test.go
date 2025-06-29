@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createPasswordResetTokenForTest(t *testing.T, ctx context.Context, examplePasswordResetToken *types.PasswordResetToken, dbc *Querier) *types.PasswordResetToken {
+func createPasswordResetTokenForTest(t *testing.T, ctx context.Context, examplePasswordResetToken *identity.PasswordResetToken, dbc *Querier) *identity.PasswordResetToken {
 	t.Helper()
 
 	// create
@@ -60,7 +60,7 @@ func TestQuerier_Integration_PasswordResetTokens(t *testing.T) {
 
 	examplePasswordResetToken := fakes.BuildFakePasswordResetToken()
 	examplePasswordResetToken.BelongsToUser = user.ID
-	createdPasswordResetTokens := []*types.PasswordResetToken{}
+	createdPasswordResetTokens := []*identity.PasswordResetToken{}
 
 	// create
 	createdPasswordResetTokens = append(createdPasswordResetTokens, createPasswordResetTokenForTest(t, ctx, examplePasswordResetToken, dbc))

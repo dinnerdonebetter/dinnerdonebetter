@@ -2,9 +2,9 @@ package auditlogentries
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 )
 

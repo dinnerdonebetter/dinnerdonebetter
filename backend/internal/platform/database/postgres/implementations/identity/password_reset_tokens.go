@@ -3,7 +3,7 @@ package identity
 import (
 	"context"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -12,13 +12,13 @@ import (
 )
 
 var (
-	_ types.PasswordResetTokenDataManager = (*Querier)(nil)
+	_ identity.PasswordResetTokenDataManager = (*Querier)(nil)
 )
 
 // TODO: create AuditLogEntries here
 
 // GetPasswordResetTokenByToken fetches a password reset token from the database by its token.
-func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string) (*types.PasswordResetToken, error) {
+func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string) (*identity.PasswordResetToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -32,7 +32,7 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 		return nil, observability.PrepareAndLogError(err, q.logger, span, "getting password reset token")
 	}
 
-	passwordResetToken := &types.PasswordResetToken{
+	passwordResetToken := &identity.PasswordResetToken{
 		CreatedAt:     result.CreatedAt,
 		ExpiresAt:     result.ExpiresAt,
 		RedeemedAt:    database.TimePointerFromNullTime(result.RedeemedAt),
@@ -46,7 +46,7 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 }
 
 // CreatePasswordResetToken creates a password reset token in the database.
-func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.PasswordResetTokenDatabaseCreationInput) (*types.PasswordResetToken, error) {
+func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *identity.PasswordResetTokenDatabaseCreationInput) (*identity.PasswordResetToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -65,7 +65,7 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing password reset token creation query")
 	}
 
-	x := &types.PasswordResetToken{
+	x := &identity.PasswordResetToken{
 		ID:            input.ID,
 		Token:         input.Token,
 		ExpiresAt:     input.ExpiresAt,

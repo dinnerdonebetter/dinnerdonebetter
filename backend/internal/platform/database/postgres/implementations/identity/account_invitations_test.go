@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createAccountInvitationForTest(t *testing.T, ctx context.Context, exampleAccountInvitation *types.AccountInvitation, dbc types.Repository) *types.AccountInvitation {
+func createAccountInvitationForTest(t *testing.T, ctx context.Context, exampleAccountInvitation *identity.AccountInvitation, dbc identity.Repository) *identity.AccountInvitation {
 	t.Helper()
 
 	// create

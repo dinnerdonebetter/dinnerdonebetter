@@ -30,8 +30,6 @@ func main() {
 		"internal/database/postgres/sqlc_queries/webhooks.sql":                                     buildWebhooksQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/user_notifications.sql":                           buildUserNotificationQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/webhook_trigger_events.sql":                       buildWebhookTriggerEventsQueries(databaseToUse),
-		"internal/database/postgres/sqlc_queries/oauth2_client_tokens.sql":                         buildOAuth2ClientTokensQueries(databaseToUse),
-		"internal/database/postgres/sqlc_queries/oauth2_clients.sql":                               buildOAuth2ClientsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/valid_ingredients.sql":                            buildValidIngredientsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/valid_instruments.sql":                            buildValidInstrumentsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/valid_preparations.sql":                           buildValidPreparationsQueries(databaseToUse),
@@ -69,6 +67,8 @@ func main() {
 		"internal/database/postgres/sqlc_queries/meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/maintenance.sql":                                  buildMaintenanceQueries(databaseToUse),
 		// moved files
+		"internal/platform/database/postgres/implementations/oauth/sqlc_queries/oauth2_client_tokens.sql":              buildOAuth2ClientTokensQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/oauth/sqlc_queries/oauth2_clients.sql":                    buildOAuth2ClientsQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_invitations.sql":            buildAccountInvitationsQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/account_user_memberships.sql":       buildAccountUserMembershipsQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/accounts.sql":                       buildAccountsQueries(databaseToUse),

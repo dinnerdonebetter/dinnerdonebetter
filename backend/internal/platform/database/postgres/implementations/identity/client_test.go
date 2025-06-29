@@ -4,7 +4,8 @@ import (
 	"testing"
 	"time"
 
-	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
@@ -66,7 +67,10 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *postgres.PostgresConta
 	require.NoError(t, config.LoadConnectionDetailsFromURL(container.MustConnectionString(ctx)))
 	require.NoError(t, migrations.NewMigrator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db, config).Migrate(ctx))
 
-	c, err := ProvideAuthRepository(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db)
+	auditLogRepo, err := auditlogentries.ProvideAuditLogRepository(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db)
+	require.NoError(t, err)
+
+	c, err := ProvideAuthRepository(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogRepo, db)
 	require.NoError(t, err)
 
 	return c.(*Querier), container
@@ -75,7 +79,7 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *postgres.PostgresConta
 func buildInertClientForTest(t *testing.T) *Querier {
 	t.Helper()
 
-	c, err := ProvideAuthRepository(t.Context(), logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil)
+	c, err := ProvideAuthRepository(t.Context(), logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, nil)
 	require.NoError(t, err)
 
 	return c.(*Querier)

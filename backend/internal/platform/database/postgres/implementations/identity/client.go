@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
@@ -16,28 +17,30 @@ import (
 
 // Querier is the audit log entry client.
 type Querier struct {
-	tracer           tracing.Tracer
-	logger           logging.Logger
-	generatedQuerier generated.Querier
-	secretGenerator  random.Generator
-	timeFunc         func() time.Time
-	db               *sql.DB
+	tracer            tracing.Tracer
+	logger            logging.Logger
+	generatedQuerier  generated.Querier
+	auditLogEntryRepo auditlogentries.Repository
+	secretGenerator   random.Generator
+	timeFunc          func() time.Time
+	db                *sql.DB
 }
 
 // ProvideAuthRepository provides a new client.
-func ProvideAuthRepository(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, db *sql.DB) (identity.Repository, error) {
+func ProvideAuthRepository(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, auditLogEntryRepo auditlogentries.Repository, db *sql.DB) (identity.Repository, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("auth_db_client"))
 
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
 	c := &Querier{
-		db:               db,
-		tracer:           tracer,
-		timeFunc:         defaultTimeFunc,
-		generatedQuerier: generated.New(),
-		secretGenerator:  random.NewGenerator(logger, tracerProvider),
-		logger:           logging.EnsureLogger(logger).WithName("querier"),
+		db:                db,
+		tracer:            tracer,
+		timeFunc:          defaultTimeFunc,
+		generatedQuerier:  generated.New(),
+		auditLogEntryRepo: auditLogEntryRepo,
+		secretGenerator:   random.NewGenerator(logger, tracerProvider),
+		logger:            logging.EnsureLogger(logger).WithName("querier"),
 	}
 
 	return c, nil

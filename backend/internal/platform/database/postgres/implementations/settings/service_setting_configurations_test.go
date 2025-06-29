@@ -3,12 +3,12 @@ package settings
 import (
 	"context"
 	"database/sql"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
 	"testing"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,6 +41,8 @@ func createServiceSettingConfigurationForTest(t *testing.T, ctx context.Context,
 	assert.Equal(t, exampleServiceSettingConfiguration, created)
 
 	serviceSettingConfiguration, err := dbc.GetServiceSettingConfiguration(ctx, created.ID)
+	require.NotNil(t, serviceSettingConfiguration)
+	require.NoError(t, err)
 	exampleServiceSettingConfiguration.CreatedAt = serviceSettingConfiguration.CreatedAt
 	exampleServiceSettingConfiguration.ServiceSetting = serviceSettingConfiguration.ServiceSetting
 
