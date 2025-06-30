@@ -3,23 +3,24 @@ package converters
 import (
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput creates a RecipePrepTaskUpdateRequestInput from a RecipePrepTask.
-func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *types.RecipePrepTask) *types.RecipePrepTaskUpdateRequestInput {
-	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
+func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *mealplanning.RecipePrepTask) *mealplanning.RecipePrepTaskUpdateRequestInput {
+	taskSteps := []*mealplanning.RecipePrepTaskStepUpdateRequestInput{}
 	for _, x := range input.TaskSteps {
 		y := x
-		taskSteps = append(taskSteps, &types.RecipePrepTaskStepUpdateRequestInput{
+		taskSteps = append(taskSteps, &mealplanning.RecipePrepTaskStepUpdateRequestInput{
 			BelongsToRecipeStep:     &y.BelongsToRecipeStep,
 			BelongsToRecipePrepTask: &y.BelongsToRecipePrepTask,
 			SatisfiesRecipeStep:     &y.SatisfiesRecipeStep,
 		})
 	}
-	x := &types.RecipePrepTaskUpdateRequestInput{
+	x := &mealplanning.RecipePrepTaskUpdateRequestInput{
 		Name:                        &input.Name,
 		Description:                 &input.Description,
 		Notes:                       &input.Notes,
@@ -39,16 +40,16 @@ func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *types.Recipe
 }
 
 // ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationInput(input *types.RecipePrepTaskCreationRequestInput) *types.RecipePrepTaskDatabaseCreationInput {
-	taskSteps := []*types.RecipePrepTaskStepDatabaseCreationInput{}
+func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationInput(input *mealplanning.RecipePrepTaskCreationRequestInput) *mealplanning.RecipePrepTaskDatabaseCreationInput {
+	taskSteps := []*mealplanning.RecipePrepTaskStepDatabaseCreationInput{}
 	for _, x := range input.RecipeSteps {
-		taskSteps = append(taskSteps, &types.RecipePrepTaskStepDatabaseCreationInput{
+		taskSteps = append(taskSteps, &mealplanning.RecipePrepTaskStepDatabaseCreationInput{
 			BelongsToRecipeStep: x.BelongsToRecipeStep,
 			SatisfiesRecipeStep: x.SatisfiesRecipeStep,
 		})
 	}
 
-	x := &types.RecipePrepTaskDatabaseCreationInput{
+	x := &mealplanning.RecipePrepTaskDatabaseCreationInput{
 		ID:                              identifiers.New(),
 		Name:                            input.Name,
 		Description:                     input.Description,
@@ -66,8 +67,8 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 }
 
 // ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput(recipe *types.RecipeDatabaseCreationInput, input *types.RecipePrepTaskWithinRecipeCreationRequestInput) (*types.RecipePrepTaskDatabaseCreationInput, error) {
-	x := &types.RecipePrepTaskDatabaseCreationInput{
+func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput(recipe *mealplanning.RecipeDatabaseCreationInput, input *mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput) (*mealplanning.RecipePrepTaskDatabaseCreationInput, error) {
+	x := &mealplanning.RecipePrepTaskDatabaseCreationInput{
 		ID:                              identifiers.New(),
 		Name:                            input.Name,
 		Description:                     input.Description,
@@ -80,10 +81,10 @@ func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDataba
 		TimeBufferBeforeRecipeInSeconds: input.TimeBufferBeforeRecipeInSeconds,
 	}
 
-	x.TaskSteps = []*types.RecipePrepTaskStepDatabaseCreationInput{}
+	x.TaskSteps = []*mealplanning.RecipePrepTaskStepDatabaseCreationInput{}
 	for i, ts := range input.RecipeSteps {
 		if rs := recipe.FindStepByIndex(ts.BelongsToRecipeStepIndex); rs != nil {
-			x.TaskSteps = append(x.TaskSteps, &types.RecipePrepTaskStepDatabaseCreationInput{
+			x.TaskSteps = append(x.TaskSteps, &mealplanning.RecipePrepTaskStepDatabaseCreationInput{
 				ID:                      identifiers.New(),
 				BelongsToRecipeStep:     rs.ID,
 				BelongsToRecipePrepTask: x.ID,
@@ -98,13 +99,13 @@ func ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDataba
 }
 
 // ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput builds a RecipePrepTaskDatabaseCreationInput from a recipe prep task.
-func ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(input *types.RecipePrepTask) *types.RecipePrepTaskDatabaseCreationInput {
-	taskSteps := []*types.RecipePrepTaskStepDatabaseCreationInput{}
+func ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(input *mealplanning.RecipePrepTask) *mealplanning.RecipePrepTaskDatabaseCreationInput {
+	taskSteps := []*mealplanning.RecipePrepTaskStepDatabaseCreationInput{}
 	for _, step := range input.TaskSteps {
 		taskSteps = append(taskSteps, ConvertRecipePrepTaskStepToRecipePrepTaskStepDatabaseCreationInput(step))
 	}
 
-	return &types.RecipePrepTaskDatabaseCreationInput{
+	return &mealplanning.RecipePrepTaskDatabaseCreationInput{
 		ID:                              input.ID,
 		Name:                            input.Name,
 		Description:                     input.Description,
@@ -119,20 +120,20 @@ func ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(input *types.Rec
 	}
 }
 
-func ConvertRecipePrepTaskStepToRecipePrepTaskStepCreationRequestInput(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepCreationRequestInput {
-	return &types.RecipePrepTaskStepCreationRequestInput{
+func ConvertRecipePrepTaskStepToRecipePrepTaskStepCreationRequestInput(input *mealplanning.RecipePrepTaskStep) *mealplanning.RecipePrepTaskStepCreationRequestInput {
+	return &mealplanning.RecipePrepTaskStepCreationRequestInput{
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		SatisfiesRecipeStep: input.SatisfiesRecipeStep,
 	}
 }
 
-func ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(input *types.RecipePrepTask) *types.RecipePrepTaskCreationRequestInput {
-	taskSteps := []*types.RecipePrepTaskStepCreationRequestInput{}
+func ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(input *mealplanning.RecipePrepTask) *mealplanning.RecipePrepTaskCreationRequestInput {
+	taskSteps := []*mealplanning.RecipePrepTaskStepCreationRequestInput{}
 	for _, x := range input.TaskSteps {
 		taskSteps = append(taskSteps, ConvertRecipePrepTaskStepToRecipePrepTaskStepCreationRequestInput(x))
 	}
 
-	return &types.RecipePrepTaskCreationRequestInput{
+	return &mealplanning.RecipePrepTaskCreationRequestInput{
 		Name:                            input.Name,
 		Description:                     input.Description,
 		Notes:                           input.Notes,
@@ -146,13 +147,13 @@ func ConvertRecipePrepTaskToRecipePrepTaskCreationRequestInput(input *types.Reci
 	}
 }
 
-func ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(recipe *types.Recipe, input *types.RecipePrepTask) *types.RecipePrepTaskWithinRecipeCreationRequestInput {
-	taskSteps := []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{}
+func ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(recipe *mealplanning.Recipe, input *mealplanning.RecipePrepTask) *mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput {
+	taskSteps := []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{}
 	for _, x := range input.TaskSteps {
 		taskSteps = append(taskSteps, ConvertRecipePrepTaskStepToRecipePrepTaskStepWithinRecipeCreationRequestInput(recipe, x))
 	}
 
-	return &types.RecipePrepTaskWithinRecipeCreationRequestInput{
+	return &mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
 		Name:                            input.Name,
 		Description:                     input.Description,
 		Notes:                           input.Notes,
@@ -166,28 +167,28 @@ func ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(recip
 	}
 }
 
-func ConvertRecipePrepTaskStepToRecipePrepTaskStepWithinRecipeCreationRequestInput(recipe *types.Recipe, input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepWithinRecipeCreationRequestInput {
+func ConvertRecipePrepTaskStepToRecipePrepTaskStepWithinRecipeCreationRequestInput(recipe *mealplanning.Recipe, input *mealplanning.RecipePrepTaskStep) *mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput {
 	var belongsToIndex uint32
 	if x := recipe.FindStepByID(input.BelongsToRecipeStep); x != nil {
 		belongsToIndex = x.Index
 	}
 
-	return &types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+	return &mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 		BelongsToRecipeStepIndex: belongsToIndex,
 		SatisfiesRecipeStep:      input.SatisfiesRecipeStep,
 	}
 }
 
-func ConvertRecipePrepTaskStepToRecipePrepTaskStepUpdateRequestInput(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepUpdateRequestInput {
-	return &types.RecipePrepTaskStepUpdateRequestInput{
+func ConvertRecipePrepTaskStepToRecipePrepTaskStepUpdateRequestInput(input *mealplanning.RecipePrepTaskStep) *mealplanning.RecipePrepTaskStepUpdateRequestInput {
+	return &mealplanning.RecipePrepTaskStepUpdateRequestInput{
 		BelongsToRecipeStep:     pointer.To(input.BelongsToRecipeStep),
 		BelongsToRecipePrepTask: pointer.To(input.BelongsToRecipePrepTask),
 		SatisfiesRecipeStep:     pointer.To(input.SatisfiesRecipeStep),
 	}
 }
 
-func ConvertRecipePrepTaskStepToRecipePrepTaskStepDatabaseCreationInput(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepDatabaseCreationInput {
-	return &types.RecipePrepTaskStepDatabaseCreationInput{
+func ConvertRecipePrepTaskStepToRecipePrepTaskStepDatabaseCreationInput(input *mealplanning.RecipePrepTaskStep) *mealplanning.RecipePrepTaskStepDatabaseCreationInput {
+	return &mealplanning.RecipePrepTaskStepDatabaseCreationInput{
 		ID:                      input.ID,
 		BelongsToRecipeStep:     input.BelongsToRecipeStep,
 		BelongsToRecipePrepTask: input.BelongsToRecipePrepTask,

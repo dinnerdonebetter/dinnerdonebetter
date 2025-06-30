@@ -1,13 +1,14 @@
 package converters
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput creates a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredientCreationRequestInput.
-func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input *types.RecipeStepIngredientCreationRequestInput) *types.RecipeStepIngredientDatabaseCreationInput {
-	x := &types.RecipeStepIngredientDatabaseCreationInput{
+func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input *mealplanning.RecipeStepIngredientCreationRequestInput) *mealplanning.RecipeStepIngredientDatabaseCreationInput {
+	x := &mealplanning.RecipeStepIngredientDatabaseCreationInput{
 		ID:                identifiers.New(),
 		IngredientID:      input.IngredientID,
 		Name:              input.Name,
@@ -31,8 +32,8 @@ func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDataba
 }
 
 // ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput creates a RecipeStepIngredientUpdateRequestInput from a RecipeStepIngredient.
-func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *types.RecipeStepIngredient) *types.RecipeStepIngredientUpdateRequestInput {
-	x := &types.RecipeStepIngredientUpdateRequestInput{
+func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientUpdateRequestInput {
+	x := &mealplanning.RecipeStepIngredientUpdateRequestInput{
 		IngredientID:        &input.Ingredient.ID,
 		RecipeStepProductID: input.RecipeStepProductID,
 		Name:                &input.Name,
@@ -55,8 +56,8 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 }
 
 // ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput builds a RecipeStepIngredientCreationRequestInput from a RecipeStepIngredient.
-func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input *types.RecipeStepIngredient) *types.RecipeStepIngredientCreationRequestInput {
-	return &types.RecipeStepIngredientCreationRequestInput{
+func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientCreationRequestInput {
+	return &mealplanning.RecipeStepIngredientCreationRequestInput{
 		Name:              input.Name,
 		Optional:          input.Optional,
 		IngredientID:      &input.Ingredient.ID,
@@ -75,8 +76,8 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input
 }
 
 // ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput builds a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredient.
-func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(input *types.RecipeStepIngredient) *types.RecipeStepIngredientDatabaseCreationInput {
-	return &types.RecipeStepIngredientDatabaseCreationInput{
+func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientDatabaseCreationInput {
+	return &mealplanning.RecipeStepIngredientDatabaseCreationInput{
 		ID:                input.ID,
 		Name:              input.Name,
 		Optional:          input.Optional,

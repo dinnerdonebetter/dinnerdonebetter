@@ -1,13 +1,14 @@
 package converters
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertValidPreparationToValidPreparationUpdateRequestInput creates a ValidPreparationUpdateRequestInput from a ValidPreparation.
-func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *types.ValidPreparation) *types.ValidPreparationUpdateRequestInput {
-	x := &types.ValidPreparationUpdateRequestInput{
+func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *mealplanning.ValidPreparation) *mealplanning.ValidPreparationUpdateRequestInput {
+	x := &mealplanning.ValidPreparationUpdateRequestInput{
 		Name:                  &input.Name,
 		Description:           &input.Description,
 		IconPath:              &input.IconPath,
@@ -38,8 +39,8 @@ func ConvertValidPreparationToValidPreparationUpdateRequestInput(input *types.Va
 }
 
 // ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreationInput creates a ValidPreparationDatabaseCreationInput from a ValidPreparationCreationRequestInput.
-func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreationInput(input *types.ValidPreparationCreationRequestInput) *types.ValidPreparationDatabaseCreationInput {
-	x := &types.ValidPreparationDatabaseCreationInput{
+func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreationInput(input *mealplanning.ValidPreparationCreationRequestInput) *mealplanning.ValidPreparationDatabaseCreationInput {
+	x := &mealplanning.ValidPreparationDatabaseCreationInput{
 		ID:                    identifiers.New(),
 		Name:                  input.Name,
 		Description:           input.Description,
@@ -71,8 +72,8 @@ func ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreati
 }
 
 // ConvertValidPreparationToValidPreparationCreationRequestInput builds a ValidPreparationCreationRequestInput from a ValidPreparation.
-func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparation *types.ValidPreparation) *types.ValidPreparationCreationRequestInput {
-	return &types.ValidPreparationCreationRequestInput{
+func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparation *mealplanning.ValidPreparation) *mealplanning.ValidPreparationCreationRequestInput {
+	return &mealplanning.ValidPreparationCreationRequestInput{
 		Name:                  validPreparation.Name,
 		Description:           validPreparation.Description,
 		IconPath:              validPreparation.IconPath,
@@ -101,8 +102,8 @@ func ConvertValidPreparationToValidPreparationCreationRequestInput(validPreparat
 }
 
 // ConvertValidPreparationToValidPreparationDatabaseCreationInput builds a ValidPreparationDatabaseCreationInput from a ValidPreparation.
-func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPreparation *types.ValidPreparation) *types.ValidPreparationDatabaseCreationInput {
-	return &types.ValidPreparationDatabaseCreationInput{
+func ConvertValidPreparationToValidPreparationDatabaseCreationInput(validPreparation *mealplanning.ValidPreparation) *mealplanning.ValidPreparationDatabaseCreationInput {
+	return &mealplanning.ValidPreparationDatabaseCreationInput{
 		ID:                    validPreparation.ID,
 		Name:                  validPreparation.Name,
 		Description:           validPreparation.Description,

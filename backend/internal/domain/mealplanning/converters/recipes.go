@@ -1,13 +1,14 @@
 package converters
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertRecipeToRecipeUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
-func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeUpdateRequestInput {
-	x := &types.RecipeUpdateRequestInput{
+func ConvertRecipeToRecipeUpdateRequestInput(input *mealplanning.Recipe) *mealplanning.RecipeUpdateRequestInput {
+	x := &mealplanning.RecipeUpdateRequestInput{
 		Name:                &input.Name,
 		Slug:                &input.Slug,
 		Source:              &input.Source,
@@ -28,8 +29,8 @@ func ConvertRecipeToRecipeUpdateRequestInput(input *types.Recipe) *types.RecipeU
 }
 
 // ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
-func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *types.RecipeCreationRequestInput) (*types.RecipeDatabaseCreationInput, error) {
-	x := &types.RecipeDatabaseCreationInput{
+func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *mealplanning.RecipeCreationRequestInput) (*mealplanning.RecipeDatabaseCreationInput, error) {
+	x := &mealplanning.RecipeDatabaseCreationInput{
 		ID:                 identifiers.New(),
 		AlsoCreateMeal:     input.AlsoCreateMeal,
 		Name:               input.Name,
@@ -67,18 +68,18 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *types
 }
 
 // ConvertRecipeToRecipeCreationRequestInput builds a RecipeCreationRequestInput from a recipe.
-func ConvertRecipeToRecipeCreationRequestInput(input *types.Recipe) *types.RecipeCreationRequestInput {
-	steps := []*types.RecipeStepCreationRequestInput{}
+func ConvertRecipeToRecipeCreationRequestInput(input *mealplanning.Recipe) *mealplanning.RecipeCreationRequestInput {
+	steps := []*mealplanning.RecipeStepCreationRequestInput{}
 	for _, step := range input.Steps {
 		steps = append(steps, ConvertRecipeStepToRecipeStepCreationRequestInput(step))
 	}
 
-	prepTasks := []*types.RecipePrepTaskWithinRecipeCreationRequestInput{}
+	prepTasks := []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{}
 	for _, prepTask := range input.PrepTasks {
 		prepTasks = append(prepTasks, ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(input, prepTask))
 	}
 
-	return &types.RecipeCreationRequestInput{
+	return &mealplanning.RecipeCreationRequestInput{
 		Name:               input.Name,
 		Slug:               input.Slug,
 		Source:             input.Source,
@@ -99,18 +100,18 @@ func ConvertRecipeToRecipeCreationRequestInput(input *types.Recipe) *types.Recip
 }
 
 // ConvertRecipeToRecipeDatabaseCreationInput builds a RecipeDatabaseCreationInput from a recipe.
-func ConvertRecipeToRecipeDatabaseCreationInput(input *types.Recipe) *types.RecipeDatabaseCreationInput {
-	steps := []*types.RecipeStepDatabaseCreationInput{}
+func ConvertRecipeToRecipeDatabaseCreationInput(input *mealplanning.Recipe) *mealplanning.RecipeDatabaseCreationInput {
+	steps := []*mealplanning.RecipeStepDatabaseCreationInput{}
 	for _, step := range input.Steps {
 		steps = append(steps, ConvertRecipeStepToRecipeStepDatabaseCreationInput(step))
 	}
 
-	prepTasks := []*types.RecipePrepTaskDatabaseCreationInput{}
+	prepTasks := []*mealplanning.RecipePrepTaskDatabaseCreationInput{}
 	for _, prepTask := range input.PrepTasks {
 		prepTasks = append(prepTasks, ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(prepTask))
 	}
 
-	return &types.RecipeDatabaseCreationInput{
+	return &mealplanning.RecipeDatabaseCreationInput{
 		ID:                 input.ID,
 		Name:               input.Name,
 		Slug:               input.Slug,

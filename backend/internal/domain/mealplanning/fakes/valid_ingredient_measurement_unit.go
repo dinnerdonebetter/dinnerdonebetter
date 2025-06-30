@@ -1,9 +1,8 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
 // BuildFakeValidIngredientMeasurementUnit builds a faked valid ingredient measurement unit.

@@ -1,13 +1,14 @@
 package converters
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput creates a RecipeStepInstrumentUpdateRequestInput from a RecipeStepInstrument.
-func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *types.RecipeStepInstrument) *types.RecipeStepInstrumentUpdateRequestInput {
-	x := &types.RecipeStepInstrumentUpdateRequestInput{
+func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *mealplanning.RecipeStepInstrument) *mealplanning.RecipeStepInstrumentUpdateRequestInput {
+	x := &mealplanning.RecipeStepInstrumentUpdateRequestInput{
 		InstrumentID:        &input.Instrument.ID,
 		Notes:               &input.Notes,
 		RecipeStepProductID: input.RecipeStepProductID,
@@ -26,8 +27,8 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentUpdateRequestInput(input *
 }
 
 // ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput creates a RecipeStepInstrumentDatabaseCreationInput from a RecipeStepInstrumentCreationRequestInput.
-func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(input *types.RecipeStepInstrumentCreationRequestInput) *types.RecipeStepInstrumentDatabaseCreationInput {
-	x := &types.RecipeStepInstrumentDatabaseCreationInput{
+func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(input *mealplanning.RecipeStepInstrumentCreationRequestInput) *mealplanning.RecipeStepInstrumentDatabaseCreationInput {
+	x := &mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 		ID:                              identifiers.New(),
 		InstrumentID:                    input.InstrumentID,
 		RecipeStepProductID:             input.RecipeStepProductID,
@@ -45,13 +46,13 @@ func ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDataba
 }
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput builds a RecipeStepInstrumentCreationRequestInput from a RecipeStepInstrument.
-func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(input *types.RecipeStepInstrument) *types.RecipeStepInstrumentCreationRequestInput {
+func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(input *mealplanning.RecipeStepInstrument) *mealplanning.RecipeStepInstrumentCreationRequestInput {
 	var instrumentID *string
 	if input.Instrument != nil {
 		instrumentID = &input.Instrument.ID
 	}
 
-	return &types.RecipeStepInstrumentCreationRequestInput{
+	return &mealplanning.RecipeStepInstrumentCreationRequestInput{
 		InstrumentID:        instrumentID,
 		Name:                input.Name,
 		RecipeStepProductID: input.RecipeStepProductID,
@@ -64,13 +65,13 @@ func ConvertRecipeStepInstrumentToRecipeStepInstrumentCreationRequestInput(input
 }
 
 // ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput builds a RecipeStepInstrumentDatabaseCreationInput from a RecipeStepInstrument.
-func ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(input *types.RecipeStepInstrument) *types.RecipeStepInstrumentDatabaseCreationInput {
+func ConvertRecipeStepInstrumentToRecipeStepInstrumentDatabaseCreationInput(input *mealplanning.RecipeStepInstrument) *mealplanning.RecipeStepInstrumentDatabaseCreationInput {
 	var instrumentID *string
 	if input.Instrument != nil {
 		instrumentID = &input.Instrument.ID
 	}
 
-	return &types.RecipeStepInstrumentDatabaseCreationInput{
+	return &mealplanning.RecipeStepInstrumentDatabaseCreationInput{
 		ID:                  input.ID,
 		InstrumentID:        instrumentID,
 		Name:                input.Name,

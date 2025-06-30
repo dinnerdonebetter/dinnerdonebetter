@@ -1,9 +1,9 @@
 package fakes
 
 import (
+	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
 // BuildFakeValidPreparationVessel builds a faked valid preparation instrument.

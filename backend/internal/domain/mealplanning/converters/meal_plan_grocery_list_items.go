@@ -1,13 +1,14 @@
 package converters
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput builds a MealPlanGroceryListItemDatabaseCreationInput from a MealPlanGroceryListItem.
-func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(input *types.MealPlanGroceryListItem) *types.MealPlanGroceryListItemDatabaseCreationInput {
-	x := &types.MealPlanGroceryListItemDatabaseCreationInput{
+func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(input *mealplanning.MealPlanGroceryListItem) *mealplanning.MealPlanGroceryListItemDatabaseCreationInput {
+	x := &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 		ID:                     input.ID,
 		BelongsToMealPlan:      input.BelongsToMealPlan,
 		ValidIngredientID:      input.Ingredient.ID,
@@ -31,8 +32,8 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInpu
 }
 
 // ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput builds a MealPlanGroceryListItemCreationRequestInput from a MealPlanGroceryListItem.
-func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput(input *types.MealPlanGroceryListItem) *types.MealPlanGroceryListItemCreationRequestInput {
-	x := &types.MealPlanGroceryListItemCreationRequestInput{
+func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput(input *mealplanning.MealPlanGroceryListItem) *mealplanning.MealPlanGroceryListItemCreationRequestInput {
+	x := &mealplanning.MealPlanGroceryListItemCreationRequestInput{
 		PurchasedUPC:           input.PurchasedUPC,
 		PurchasePrice:          input.PurchasePrice,
 		QuantityPurchased:      input.QuantityPurchased,
@@ -54,8 +55,8 @@ func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput
 	return x
 }
 
-func ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemDatabaseCreationInput(input *types.MealPlanGroceryListItemCreationRequestInput) *types.MealPlanGroceryListItemDatabaseCreationInput {
-	return &types.MealPlanGroceryListItemDatabaseCreationInput{
+func ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemDatabaseCreationInput(input *mealplanning.MealPlanGroceryListItemCreationRequestInput) *mealplanning.MealPlanGroceryListItemDatabaseCreationInput {
+	return &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 		ID:                         identifiers.New(),
 		PurchasePrice:              input.PurchasePrice,
 		PurchasedUPC:               input.PurchasedUPC,
@@ -73,13 +74,13 @@ func ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItem
 	}
 }
 
-func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(input *types.MealPlanGroceryListItem) *types.MealPlanGroceryListItemUpdateRequestInput {
+func ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(input *mealplanning.MealPlanGroceryListItem) *mealplanning.MealPlanGroceryListItemUpdateRequestInput {
 	var purchasedMeasurementUnitID *string
 	if input.PurchasedMeasurementUnit != nil {
 		purchasedMeasurementUnitID = &input.PurchasedMeasurementUnit.ID
 	}
 
-	return &types.MealPlanGroceryListItemUpdateRequestInput{
+	return &mealplanning.MealPlanGroceryListItemUpdateRequestInput{
 		BelongsToMealPlan:      &input.BelongsToMealPlan,
 		ValidIngredientID:      &input.Ingredient.ID,
 		ValidMeasurementUnitID: &input.MeasurementUnit.ID,

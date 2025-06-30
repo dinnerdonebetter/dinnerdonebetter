@@ -1,8 +1,8 @@
 package converters
 
 import (
+	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 // ConvertRecipeMediaToRecipeMediaUpdateRequestInput creates a RecipeMediaUpdateRequestInput from a RecipeMedia.

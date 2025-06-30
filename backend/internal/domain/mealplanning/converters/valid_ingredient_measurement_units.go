@@ -1,13 +1,14 @@
 package converters
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateRequestInput creates a ValidIngredientMeasurementUnitUpdateRequestInput from a ValidIngredientMeasurementUnit.
-func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateRequestInput(input *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitUpdateRequestInput {
-	x := &types.ValidIngredientMeasurementUnitUpdateRequestInput{
+func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateRequestInput(input *mealplanning.ValidIngredientMeasurementUnit) *mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput {
+	x := &mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput{
 		Notes:                  &input.Notes,
 		ValidMeasurementUnitID: &input.MeasurementUnit.ID,
 		ValidIngredientID:      &input.Ingredient.ID,
@@ -21,8 +22,8 @@ func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdate
 }
 
 // ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientMeasurementUnitDatabaseCreationInput creates a ValidIngredientMeasurementUnitDatabaseCreationInput from a ValidIngredientMeasurementUnitCreationRequestInput.
-func ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientMeasurementUnitDatabaseCreationInput(input *types.ValidIngredientMeasurementUnitCreationRequestInput) *types.ValidIngredientMeasurementUnitDatabaseCreationInput {
-	x := &types.ValidIngredientMeasurementUnitDatabaseCreationInput{
+func ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientMeasurementUnitDatabaseCreationInput(input *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput) *mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput {
+	x := &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 		ID:                     identifiers.New(),
 		Notes:                  input.Notes,
 		ValidMeasurementUnitID: input.ValidMeasurementUnitID,
@@ -34,8 +35,8 @@ func ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientM
 }
 
 // ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput builds a ValidIngredientMeasurementUnitCreationRequestInput from a ValidIngredientMeasurementUnit.
-func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitCreationRequestInput {
-	return &types.ValidIngredientMeasurementUnitCreationRequestInput{
+func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(validIngredientMeasurementUnit *mealplanning.ValidIngredientMeasurementUnit) *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput {
+	return &mealplanning.ValidIngredientMeasurementUnitCreationRequestInput{
 		Notes:                  validIngredientMeasurementUnit.Notes,
 		ValidMeasurementUnitID: validIngredientMeasurementUnit.MeasurementUnit.ID,
 		ValidIngredientID:      validIngredientMeasurementUnit.Ingredient.ID,
@@ -44,8 +45,8 @@ func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreati
 }
 
 // ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitDatabaseCreationInput builds a ValidIngredientMeasurementUnitDatabaseCreationInput from a ValidIngredientMeasurementUnit.
-func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitDatabaseCreationInput(validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) *types.ValidIngredientMeasurementUnitDatabaseCreationInput {
-	return &types.ValidIngredientMeasurementUnitDatabaseCreationInput{
+func ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitDatabaseCreationInput(validIngredientMeasurementUnit *mealplanning.ValidIngredientMeasurementUnit) *mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput {
+	return &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
 		ID:                     validIngredientMeasurementUnit.ID,
 		Notes:                  validIngredientMeasurementUnit.Notes,
 		ValidMeasurementUnitID: validIngredientMeasurementUnit.MeasurementUnit.ID,

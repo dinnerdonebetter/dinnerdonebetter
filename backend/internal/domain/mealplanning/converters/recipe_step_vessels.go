@@ -1,13 +1,14 @@
 package converters
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput creates a RecipeStepVesselUpdateRequestInput from a RecipeStepVessel.
-func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *types.RecipeStepVessel) *types.RecipeStepVesselUpdateRequestInput {
-	x := &types.RecipeStepVesselUpdateRequestInput{
+func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselUpdateRequestInput {
+	x := &mealplanning.RecipeStepVesselUpdateRequestInput{
 		VesselID:            &input.Vessel.ID,
 		Notes:               &input.Notes,
 		RecipeStepProductID: input.RecipeStepProductID,
@@ -25,8 +26,8 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *types.Re
 }
 
 // ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput creates a RecipeStepVesselDatabaseCreationInput from a RecipeStepVesselCreationRequestInput.
-func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input *types.RecipeStepVesselCreationRequestInput) *types.RecipeStepVesselDatabaseCreationInput {
-	x := &types.RecipeStepVesselDatabaseCreationInput{
+func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input *mealplanning.RecipeStepVesselCreationRequestInput) *mealplanning.RecipeStepVesselDatabaseCreationInput {
+	x := &mealplanning.RecipeStepVesselDatabaseCreationInput{
 		ID:                              identifiers.New(),
 		VesselID:                        input.VesselID,
 		RecipeStepProductID:             input.RecipeStepProductID,
@@ -43,13 +44,13 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 }
 
 // ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput builds a RecipeStepVesselCreationRequestInput from a RecipeStepVessel.
-func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *types.RecipeStepVessel) *types.RecipeStepVesselCreationRequestInput {
+func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselCreationRequestInput {
 	var instrumentID *string
 	if input.Vessel != nil {
 		instrumentID = &input.Vessel.ID
 	}
 
-	return &types.RecipeStepVesselCreationRequestInput{
+	return &mealplanning.RecipeStepVesselCreationRequestInput{
 		VesselID:             instrumentID,
 		Name:                 input.Name,
 		RecipeStepProductID:  input.RecipeStepProductID,
@@ -61,13 +62,13 @@ func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *types.
 }
 
 // ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput builds a RecipeStepVesselDatabaseCreationInput from a RecipeStepVessel.
-func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(input *types.RecipeStepVessel) *types.RecipeStepVesselDatabaseCreationInput {
+func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselDatabaseCreationInput {
 	var instrumentID *string
 	if input.Vessel != nil {
 		instrumentID = &input.Vessel.ID
 	}
 
-	return &types.RecipeStepVesselDatabaseCreationInput{
+	return &mealplanning.RecipeStepVesselDatabaseCreationInput{
 		ID:                   input.ID,
 		VesselID:             instrumentID,
 		Name:                 input.Name,

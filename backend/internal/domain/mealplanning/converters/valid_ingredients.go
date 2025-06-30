@@ -1,13 +1,14 @@
 package converters
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ConvertValidIngredientToValidIngredientUpdateRequestInput creates a ValidIngredientUpdateRequestInput from a ValidIngredient.
-func ConvertValidIngredientToValidIngredientUpdateRequestInput(x *types.ValidIngredient) *types.ValidIngredientUpdateRequestInput {
-	out := &types.ValidIngredientUpdateRequestInput{
+func ConvertValidIngredientToValidIngredientUpdateRequestInput(x *mealplanning.ValidIngredient) *mealplanning.ValidIngredientUpdateRequestInput {
+	out := &mealplanning.ValidIngredientUpdateRequestInput{
 		Name:                   &x.Name,
 		Description:            &x.Description,
 		Warning:                &x.Warning,
@@ -49,8 +50,8 @@ func ConvertValidIngredientToValidIngredientUpdateRequestInput(x *types.ValidIng
 }
 
 // ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput creates a DatabaseCreationInput from a ValidIngredientCreationRequestInput.
-func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(x *types.ValidIngredientCreationRequestInput) *types.ValidIngredientDatabaseCreationInput {
-	out := &types.ValidIngredientDatabaseCreationInput{
+func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(x *mealplanning.ValidIngredientCreationRequestInput) *mealplanning.ValidIngredientDatabaseCreationInput {
+	out := &mealplanning.ValidIngredientDatabaseCreationInput{
 		ID:                     identifiers.New(),
 		Name:                   x.Name,
 		Description:            x.Description,
@@ -93,8 +94,8 @@ func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreation
 }
 
 // ConvertValidIngredientToValidIngredientCreationRequestInput builds a ValidIngredientCreationRequestInput from a Ingredient.
-func ConvertValidIngredientToValidIngredientCreationRequestInput(x *types.ValidIngredient) *types.ValidIngredientCreationRequestInput {
-	return &types.ValidIngredientCreationRequestInput{
+func ConvertValidIngredientToValidIngredientCreationRequestInput(x *mealplanning.ValidIngredient) *mealplanning.ValidIngredientCreationRequestInput {
+	return &mealplanning.ValidIngredientCreationRequestInput{
 		Name:                   x.Name,
 		Description:            x.Description,
 		Warning:                x.Warning,
@@ -134,8 +135,8 @@ func ConvertValidIngredientToValidIngredientCreationRequestInput(x *types.ValidI
 }
 
 // ConvertValidIngredientToValidIngredientDatabaseCreationInput builds a ValidIngredientDatabaseCreationInput from a ValidIngredient.
-func ConvertValidIngredientToValidIngredientDatabaseCreationInput(x *types.ValidIngredient) *types.ValidIngredientDatabaseCreationInput {
-	return &types.ValidIngredientDatabaseCreationInput{
+func ConvertValidIngredientToValidIngredientDatabaseCreationInput(x *mealplanning.ValidIngredient) *mealplanning.ValidIngredientDatabaseCreationInput {
+	return &mealplanning.ValidIngredientDatabaseCreationInput{
 		ID:                     x.ID,
 		Name:                   x.Name,
 		Description:            x.Description,

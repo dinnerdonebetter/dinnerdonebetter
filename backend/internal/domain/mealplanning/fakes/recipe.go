@@ -1,17 +1,18 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // BuildFakeRecipe builds a faked recipe.
-func BuildFakeRecipe() *types.Recipe {
+func BuildFakeRecipe() *mealplanning.Recipe {
 	recipeID := BuildFakeID()
 
-	var steps []*types.RecipeStep
+	var steps []*mealplanning.RecipeStep
 	for i := 0; i < exampleQuantity; i++ {
 		step := BuildFakeRecipeStep()
 		step.Index = uint32(i)
@@ -29,7 +30,7 @@ func BuildFakeRecipe() *types.Recipe {
 		recipeMedia[i].BelongsToRecipe = &recipeID
 	}
 
-	return &types.Recipe{
+	return &mealplanning.Recipe{
 		ID:                 recipeID,
 		Name:               buildUniqueString(),
 		Slug:               buildUniqueString(),
@@ -50,18 +51,18 @@ func BuildFakeRecipe() *types.Recipe {
 		PluralPortionName:   buildUniqueString(),
 		EligibleForMeals:    true,
 		YieldsComponentType: "main",
-		SupportingRecipes:   []*types.Recipe{},
+		SupportingRecipes:   []*mealplanning.Recipe{},
 	}
 }
 
 // BuildFakeRecipesList builds a faked RecipeList.
-func BuildFakeRecipesList() *filtering.QueryFilteredResult[types.Recipe] {
-	var examples []*types.Recipe
+func BuildFakeRecipesList() *filtering.QueryFilteredResult[mealplanning.Recipe] {
+	var examples []*mealplanning.Recipe
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipe())
 	}
 
-	return &filtering.QueryFilteredResult[types.Recipe]{
+	return &filtering.QueryFilteredResult[mealplanning.Recipe]{
 		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
@@ -73,24 +74,24 @@ func BuildFakeRecipesList() *filtering.QueryFilteredResult[types.Recipe] {
 }
 
 // BuildFakeRecipeUpdateRequestInput builds a faked RecipeUpdateRequestInput from a recipe.
-func BuildFakeRecipeUpdateRequestInput() *types.RecipeUpdateRequestInput {
+func BuildFakeRecipeUpdateRequestInput() *mealplanning.RecipeUpdateRequestInput {
 	recipe := BuildFakeRecipe()
 	return converters.ConvertRecipeToRecipeUpdateRequestInput(recipe)
 }
 
 // BuildFakeRecipeCreationRequestInput builds a faked RecipeCreationRequestInput.
-func BuildFakeRecipeCreationRequestInput() *types.RecipeCreationRequestInput {
+func BuildFakeRecipeCreationRequestInput() *mealplanning.RecipeCreationRequestInput {
 	exampleRecipe := BuildFakeRecipe()
 	exampleCreationInput := converters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
 	examplePrepTask := BuildFakeRecipePrepTask()
 	examplePrepTaskInput := converters.ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(exampleRecipe, examplePrepTask)
-	examplePrepTaskInput.RecipeSteps = []*types.RecipePrepTaskStepWithinRecipeCreationRequestInput{
+	examplePrepTaskInput.RecipeSteps = []*mealplanning.RecipePrepTaskStepWithinRecipeCreationRequestInput{
 		{
 			BelongsToRecipeStepIndex: exampleCreationInput.Steps[0].Index,
 			SatisfiesRecipeStep:      false,
 		},
 	}
-	exampleCreationInput.PrepTasks = []*types.RecipePrepTaskWithinRecipeCreationRequestInput{
+	exampleCreationInput.PrepTasks = []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
 		examplePrepTaskInput,
 	}
 

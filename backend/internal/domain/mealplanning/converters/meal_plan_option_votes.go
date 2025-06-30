@@ -1,8 +1,6 @@
 package converters
 
-import (
-	"github.com/dinnerdonebetter/backend/pkg/types"
-)
+import types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 // ConvertMealPlanOptionVoteToMealPlanOptionVoteUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
 func ConvertMealPlanOptionVoteToMealPlanOptionVoteUpdateRequestInput(input *types.MealPlanOptionVote) *types.MealPlanOptionVoteUpdateRequestInput {
