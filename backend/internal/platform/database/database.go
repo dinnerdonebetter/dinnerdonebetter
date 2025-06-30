@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"io"
+	"time"
 )
 
 var (
@@ -43,5 +44,12 @@ type (
 	SQLQueryExecutorAndTransactionManager interface {
 		SQLQueryExecutor
 		SQLTransactionManager
+	}
+
+	Client interface {
+		DB() *sql.DB
+		Close() error
+		CurrentTime() time.Time
+		RollbackTransaction(ctx context.Context, tx SQLQueryExecutorAndTransactionManager)
 	}
 )

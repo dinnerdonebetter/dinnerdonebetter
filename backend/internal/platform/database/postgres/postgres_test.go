@@ -11,7 +11,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -238,7 +237,7 @@ func TestQuerier_currentTime(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		assert.NotEmpty(t, c.currentTime())
+		assert.NotEmpty(t, c.CurrentTime())
 	})
 
 	T.Run("handles nil", func(t *testing.T) {
@@ -246,7 +245,7 @@ func TestQuerier_currentTime(T *testing.T) {
 
 		var c *Client
 
-		assert.NotEmpty(t, c.currentTime())
+		assert.NotEmpty(t, c.CurrentTime())
 	})
 }
 
@@ -265,58 +264,6 @@ func TestQuerier_rollbackTransaction(T *testing.T) {
 		tx, err := c.db.BeginTx(ctx, nil)
 		require.NoError(t, err)
 
-		c.rollbackTransaction(ctx, tx)
-	})
-}
-
-func TestQuerier_handleRows(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(nil)
-
-		c, _ := buildTestClient(t)
-
-		err := c.checkRowsForErrorAndClose(ctx, mockRows)
-		assert.NoError(t, err)
-	})
-
-	T.Run("with row error", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		expected := errors.New("blah")
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Err").Return(expected)
-
-		c, _ := buildTestClient(t)
-
-		err := c.checkRowsForErrorAndClose(ctx, mockRows)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expected))
-	})
-
-	T.Run("with close error", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		expected := errors.New("blah")
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(expected)
-
-		c, _ := buildTestClient(t)
-
-		err := c.checkRowsForErrorAndClose(ctx, mockRows)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expected))
+		c.RollbackTransaction(ctx, tx)
 	})
 }

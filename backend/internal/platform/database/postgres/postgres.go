@@ -82,10 +82,13 @@ func (q *Client) DB() *sql.DB {
 }
 
 // Close closes the database connection.
-func (q *Client) Close() {
+func (q *Client) Close() error {
 	if err := q.db.Close(); err != nil {
 		q.logger.Error("closing database connection", err)
+		return err
 	}
+
+	return nil
 }
 
 // IsReady returns whether the database is ready for the querier.
@@ -117,7 +120,7 @@ func defaultTimeFunc() time.Time {
 	return time.Now()
 }
 
-func (q *Client) currentTime() time.Time {
+func (q *Client) CurrentTime() time.Time {
 	if q == nil || q.timeFunc == nil {
 		return defaultTimeFunc()
 	}
@@ -125,24 +128,7 @@ func (q *Client) currentTime() time.Time {
 	return q.timeFunc()
 }
 
-func (q *Client) checkRowsForErrorAndClose(ctx context.Context, rows database.ResultIterator) error {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if err := rows.Err(); err != nil {
-		q.logger.Error("row error", err)
-		return observability.PrepareAndLogError(err, q.logger, span, "row error")
-	}
-
-	if err := rows.Close(); err != nil {
-		q.logger.Error("closing database rows", err)
-		return observability.PrepareAndLogError(err, q.logger, span, "closing database rows")
-	}
-
-	return nil
-}
-
-func (q *Client) rollbackTransaction(ctx context.Context, tx database.SQLQueryExecutorAndTransactionManager) {
+func (q *Client) RollbackTransaction(ctx context.Context, tx database.SQLQueryExecutorAndTransactionManager) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

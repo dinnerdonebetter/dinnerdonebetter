@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/implementations/identity/generated"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/repositories/identity/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -67,7 +67,7 @@ const (
 	defaultPostgresImage = "postgres:17"
 )
 
-func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql.DB) {
+func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql.DB, *databasecfg.Config) {
 	t.Helper()
 
 	dbUsername := fmt.Sprintf("%d", HashStringToNumber(t, t.Name()))
@@ -76,7 +76,7 @@ func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql
 	ctx := t.Context()
 
 	var container *postgres.PostgresContainer
-	err := try.Do(func(attempt int) (bool, error) {
+	require.NoError(t, try.Do(func(attempt int) (bool, error) {
 		var containerErr error
 		container, containerErr = postgres.Run(
 			ctx,
@@ -88,15 +88,14 @@ func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql
 		)
 
 		return attempt < 5, containerErr
-	})
-	require.NoError(t, err)
+	}))
 	require.NotNil(t, container)
 
 	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
 	require.NoError(t, err)
 
 	dbConfig := &databasecfg.Config{
-		RunMigrations:            true,
+		RunMigrations:            false,
 		OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
 	}
 	require.NoError(t, dbConfig.LoadConnectionDetailsFromURL(connStr))
@@ -104,7 +103,7 @@ func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql
 	db, err := dbConfig.ConnectToDatabase()
 	require.NoError(t, err)
 
-	return container, db
+	return container, db, dbConfig
 }
 
 func CreateUserForTest(t *testing.T, exampleUser *identity.User, db *sql.DB) *identity.User {

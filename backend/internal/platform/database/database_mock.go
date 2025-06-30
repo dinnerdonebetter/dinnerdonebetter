@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -117,4 +118,24 @@ func (m *MockQueryExecutor) QueryContext(ctx context.Context, query string, quer
 func (m *MockQueryExecutor) QueryRowContext(ctx context.Context, query string, queryArgs ...any) *sql.Row {
 	args := m.Called(ctx, query, queryArgs)
 	return args.Get(0).(*sql.Row)
+}
+
+type MockClient struct {
+	mock.Mock
+}
+
+func (m *MockClient) DB() *sql.DB {
+	return nil
+}
+
+func (m *MockClient) Close() error {
+	return m.Called().Error(0)
+}
+
+func (m *MockClient) CurrentTime() time.Time {
+	return m.Called().Get(0).(time.Time)
+}
+
+func (m *MockClient) RollbackTransaction(ctx context.Context, tx SQLQueryExecutorAndTransactionManager) {
+	m.Called(ctx, tx)
 }

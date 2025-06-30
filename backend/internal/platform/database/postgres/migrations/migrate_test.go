@@ -27,7 +27,7 @@ func TestQuerier_Migrate(T *testing.T) {
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
 
-		c, db := pgtesting.BuildDatabaseClientForTest(t)
+		c, db, _ := pgtesting.BuildDatabaseClientForTest(t)
 
 		config := &databasecfg.Config{MaxPingAttempts: 1, PingWaitPeriod: time.Second}
 
