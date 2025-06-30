@@ -20,11 +20,11 @@ func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier datab
 	t.Helper()
 
 	if user == nil {
-		user = pgtesting.CreateUserForTest(t, ctx, nil, dbc.db)
+		user = pgtesting.CreateUserForTest(t, nil, dbc.db)
 	}
 
 	if account == nil {
-		account = pgtesting.CreateAccountForTest(t, ctx, nil, user.ID, dbc.db)
+		account = pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
 	}
 
 	// create
@@ -67,10 +67,10 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	user := pgtesting.CreateUserForTest(t, ctx, nil, dbc.db)
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
 	exampleAccount := identityfakes.BuildFakeAccount()
 	exampleAccount.BelongsToUser = user.ID
-	account := pgtesting.CreateAccountForTest(t, ctx, exampleAccount, user.ID, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, exampleAccount, user.ID, dbc.db)
 
 	exampleAuditLogEntry := fakes.BuildFakeAuditLogEntry()
 	exampleAuditLogEntry.BelongsToAccount = &account.ID

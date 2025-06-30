@@ -1,7 +1,6 @@
 package testing
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"hash/fnv"
@@ -108,8 +107,10 @@ func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql
 	return container, db
 }
 
-func CreateUserForTest(t *testing.T, ctx context.Context, exampleUser *identity.User, db *sql.DB) *identity.User {
+func CreateUserForTest(t *testing.T, exampleUser *identity.User, db *sql.DB) *identity.User {
 	t.Helper()
+
+	ctx := t.Context()
 
 	// create
 	if exampleUser == nil {
@@ -172,7 +173,7 @@ func CreateUserForTest(t *testing.T, ctx context.Context, exampleUser *identity.
 	return created
 }
 
-func CreateAccountForTest(t *testing.T, ctx context.Context, exampleAccount *identity.Account, userID string, db *sql.DB) *identity.Account {
+func CreateAccountForTest(t *testing.T, exampleAccount *identity.Account, userID string, db *sql.DB) *identity.Account {
 	t.Helper()
 
 	// create
@@ -183,6 +184,7 @@ func CreateAccountForTest(t *testing.T, ctx context.Context, exampleAccount *ide
 	exampleAccount.PaymentProcessorCustomerID = ""
 	exampleAccount.Members = nil
 
+	ctx := t.Context()
 	dbc := generated.New()
 
 	require.NoError(t, dbc.CreateAccount(ctx, db, &generated.CreateAccountParams{

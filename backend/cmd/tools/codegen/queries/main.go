@@ -27,9 +27,6 @@ func main() {
 	databaseToUse := *databaseFlag
 
 	queryOutput := map[string][]*Query{
-		"internal/database/postgres/sqlc_queries/webhooks.sql":                                     buildWebhooksQueries(databaseToUse),
-		"internal/database/postgres/sqlc_queries/user_notifications.sql":                           buildUserNotificationQueries(databaseToUse),
-		"internal/database/postgres/sqlc_queries/webhook_trigger_events.sql":                       buildWebhookTriggerEventsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/valid_ingredients.sql":                            buildValidIngredientsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/valid_instruments.sql":                            buildValidInstrumentsQueries(databaseToUse),
 		"internal/database/postgres/sqlc_queries/valid_preparations.sql":                           buildValidPreparationsQueries(databaseToUse),
@@ -78,6 +75,9 @@ func main() {
 		"internal/platform/database/postgres/implementations/identity/sqlc_queries/users.sql":                          buildUsersQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/settings/sqlc_queries/service_settings.sql":               buildServiceSettingQueries(databaseToUse),
 		"internal/platform/database/postgres/implementations/settings/sqlc_queries/service_setting_configurations.sql": buildServiceSettingConfigurationQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/webhooks/sqlc_queries/webhooks.sql":                       buildWebhooksQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/webhooks/sqlc_queries/webhook_trigger_events.sql":         buildWebhookTriggerEventsQueries(databaseToUse),
+		"internal/platform/database/postgres/implementations/notifications/sqlc_queries/user_notifications.sql":        buildUserNotificationQueries(databaseToUse),
 	}
 
 	checkOnly := *checkOnlyFlag
