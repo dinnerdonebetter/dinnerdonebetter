@@ -10,7 +10,6 @@ import (
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -70,16 +69,14 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, accountID)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
 	meal := createMealForTest(t, ctx, nil, dbc)
 
 	exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
-	exampleMealPlan.BelongsToAccount = accountID
+	exampleMealPlan.BelongsToAccount = account.ID
 	mealPlan := createMealPlanForTest(t, ctx, exampleMealPlan, dbc)
 
 	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
@@ -109,7 +106,7 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 		assert.NoError(t, dbc.ArchiveMealPlanGroceryListItem(ctx, mealPlanGroceryListItem.ID))
 
 		var exists bool
-		exists, err = dbc.MealPlanGroceryListItemExists(ctx, mealPlanGroceryListItem.ID, accountID)
+		exists, err = dbc.MealPlanGroceryListItemExists(ctx, mealPlanGroceryListItem.ID, account.ID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
 	}
@@ -139,13 +136,11 @@ func TestQuerier_fleshOutMealPlanGroceryListItem(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.fleshOutMealPlanGroceryListItem(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -162,28 +157,6 @@ func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 		actual, err := c.GetMealPlanGroceryListItem(ctx, exampleMealPlan.ID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-}
-
-func TestQuerier_createMealPlanGroceryListItem(T *testing.T) {
-	T.Parallel()
-
-	T.Run("with nil input", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-		tx, err := c.db.BeginTx(ctx, nil)
-		require.NoError(t, err)
-		require.NotNil(t, tx)
-
-		actual, err := c.createMealPlanGroceryListItem(ctx, tx, nil)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

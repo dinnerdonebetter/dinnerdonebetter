@@ -156,12 +156,10 @@ func TestQuerier_GetValidIngredientPreparationsForIngredient(T *testing.T) {
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleValidIngredient := fakes.BuildFakeValidIngredient()
-
 		ctx := context.Background()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.GetValidIngredientPreparationsForIngredient(ctx, exampleValidIngredient.ID, nil)
+		actual, err := c.GetValidIngredientPreparationsForIngredient(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -173,12 +171,10 @@ func TestQuerier_GetValidIngredientPreparationsForPreparation(T *testing.T) {
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
-
 		ctx := context.Background()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.GetValidIngredientPreparationsForPreparation(ctx, exampleValidPreparation.ID, nil)
+		actual, err := c.GetValidIngredientPreparationsForPreparation(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

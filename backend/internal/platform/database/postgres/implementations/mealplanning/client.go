@@ -29,7 +29,14 @@ type Querier struct {
 }
 
 // ProvideSettingsRepository provides a new client.
-func ProvideSettingsRepository(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, auditLogEntryRepo auditlogentries.Repository, db *sql.DB) (settings.Repository, error) {
+func ProvideSettingsRepository(
+	ctx context.Context,
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
+	auditLogEntryRepo auditlogentries.Repository,
+	identityRepo identity.Repository,
+	db *sql.DB,
+) (settings.Repository, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("auth_db_client"))
 
 	ctx, span := tracer.StartSpan(ctx)
@@ -41,6 +48,7 @@ func ProvideSettingsRepository(ctx context.Context, logger logging.Logger, trace
 		timeFunc:          defaultTimeFunc,
 		generatedQuerier:  generated.New(),
 		auditLogEntryRepo: auditLogEntryRepo,
+		identityRepo:      identityRepo,
 		secretGenerator:   random.NewGenerator(logger, tracerProvider),
 		logger:            logging.EnsureLogger(logger).WithName("querier"),
 	}

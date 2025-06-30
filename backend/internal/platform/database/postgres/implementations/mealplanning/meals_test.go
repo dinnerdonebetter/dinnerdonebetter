@@ -12,7 +12,6 @@ import (
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -162,13 +161,11 @@ func TestQuerier_CreateMeal(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateMeal(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -181,14 +178,12 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		exampleInput := converters.ConvertMealComponentToMealComponentDatabaseCreationInput(exampleMeal.Components[0])
 
 		err := c.CreateMealComponent(ctx, c.db, "", exampleInput)
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 
 	T.Run("with missing input", func(t *testing.T) {
@@ -197,12 +192,10 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		exampleMeal := fakes.BuildFakeMeal()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, nil)
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

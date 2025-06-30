@@ -198,13 +198,12 @@ func TestQuerier_SearchForValidIngredientsForPreparation(T *testing.T) {
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
 		ctx := context.Background()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForValidIngredientsForPreparation(ctx, exampleValidPreparation.ID, exampleValidIngredient.Name, nil)
+		actual, err := c.SearchForValidIngredientsForPreparation(ctx, "", exampleValidIngredient.Name, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

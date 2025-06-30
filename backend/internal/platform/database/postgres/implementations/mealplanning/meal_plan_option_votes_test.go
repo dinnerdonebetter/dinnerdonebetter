@@ -2,7 +2,6 @@ package mealplanning
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
@@ -12,7 +11,6 @@ import (
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -62,16 +60,14 @@ func TestQuerier_Integration_MealPlanOptionVotes(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, accountID)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
 	meal := createMealForTest(t, ctx, nil, dbc)
 
 	exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
-	exampleMealPlan.BelongsToAccount = accountID
+	exampleMealPlan.BelongsToAccount = account.ID
 	mealPlan := createMealPlanForTest(t, ctx, exampleMealPlan, dbc)
 	mealPlanEvent := mealPlan.Events[0]
 	mealPlanOption := mealPlanEvent.Options[0]
@@ -250,25 +246,6 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		actual, err := c.CreateMealPlanOptionVote(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error creating transaction", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-		exampleMealPlanOptionVote.ID = "1"
-		exampleInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(exampleMealPlanOptionVote)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin().WillReturnError(errors.New("blah"))
-
-		actual, err := c.CreateMealPlanOptionVote(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

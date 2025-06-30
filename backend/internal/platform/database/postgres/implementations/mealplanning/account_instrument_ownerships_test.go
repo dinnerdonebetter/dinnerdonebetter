@@ -61,14 +61,12 @@ func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, accountID)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
 
 	instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
 
 	exampleAccountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
-	exampleAccountInstrumentOwnership.BelongsToAccount = accountID
+	exampleAccountInstrumentOwnership.BelongsToAccount = account.ID
 	exampleAccountInstrumentOwnership.Instrument = *instrument
 	createdAccountInstrumentOwnerships := []*types.AccountInstrumentOwnership{}
 
@@ -82,28 +80,28 @@ func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 	for i := 0; i < exampleQuantity; i++ {
 		newInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeAccountInstrumentOwnership()
-		input.BelongsToAccount = accountID
+		input.BelongsToAccount = account.ID
 		input.Instrument = *newInstrument
 		createdAccountInstrumentOwnerships = append(createdAccountInstrumentOwnerships, createAccountInstrumentOwnershipForTest(t, ctx, input, dbc))
 	}
 
 	// fetch as list
-	accountInstrumentOwnerships, err := dbc.GetAccountInstrumentOwnerships(ctx, accountID, nil)
+	accountInstrumentOwnerships, err := dbc.GetAccountInstrumentOwnerships(ctx, account.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, accountInstrumentOwnerships.Data)
 	assert.Equal(t, len(createdAccountInstrumentOwnerships), len(accountInstrumentOwnerships.Data))
 
 	// delete
 	for _, accountInstrumentOwnership := range createdAccountInstrumentOwnerships {
-		assert.NoError(t, dbc.ArchiveAccountInstrumentOwnership(ctx, accountInstrumentOwnership.ID, accountID))
+		assert.NoError(t, dbc.ArchiveAccountInstrumentOwnership(ctx, accountInstrumentOwnership.ID, account.ID))
 
 		var exists bool
-		exists, err = dbc.AccountInstrumentOwnershipExists(ctx, accountInstrumentOwnership.ID, accountID)
+		exists, err = dbc.AccountInstrumentOwnershipExists(ctx, accountInstrumentOwnership.ID, account.ID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
 
 		var y *types.AccountInstrumentOwnership
-		y, err = dbc.GetAccountInstrumentOwnership(ctx, accountInstrumentOwnership.ID, accountID)
+		y, err = dbc.GetAccountInstrumentOwnership(ctx, accountInstrumentOwnership.ID, account.ID)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)

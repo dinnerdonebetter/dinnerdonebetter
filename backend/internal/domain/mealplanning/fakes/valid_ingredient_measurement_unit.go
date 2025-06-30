@@ -1,13 +1,15 @@
 package fakes
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // BuildFakeValidIngredientMeasurementUnit builds a faked valid ingredient measurement unit.
-func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurementUnit {
-	return &types.ValidIngredientMeasurementUnit{
+func BuildFakeValidIngredientMeasurementUnit() *mealplanning.ValidIngredientMeasurementUnit {
+	return &mealplanning.ValidIngredientMeasurementUnit{
 		ID:                BuildFakeID(),
 		Notes:             buildUniqueString(),
 		MeasurementUnit:   *BuildFakeValidMeasurementUnit(),
@@ -18,13 +20,13 @@ func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurement
 }
 
 // BuildFakeValidIngredientMeasurementUnitsList builds a faked ValidIngredientMeasurementUnitList.
-func BuildFakeValidIngredientMeasurementUnitsList() *filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit] {
-	var examples []*types.ValidIngredientMeasurementUnit
+func BuildFakeValidIngredientMeasurementUnitsList() *filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit] {
+	var examples []*mealplanning.ValidIngredientMeasurementUnit
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeValidIngredientMeasurementUnit())
 	}
 
-	return &filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
+	return &filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit]{
 		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
@@ -36,9 +38,9 @@ func BuildFakeValidIngredientMeasurementUnitsList() *filtering.QueryFilteredResu
 }
 
 // BuildFakeValidIngredientMeasurementUnitUpdateRequestInput builds a faked ValidIngredientMeasurementUnitUpdateRequestInput from a valid ingredient measurement unit.
-func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *types.ValidIngredientMeasurementUnitUpdateRequestInput {
+func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput {
 	validIngredientMeasurementUnit := BuildFakeValidIngredientMeasurementUnit()
-	return &types.ValidIngredientMeasurementUnitUpdateRequestInput{
+	return &mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput{
 		Notes:                  &validIngredientMeasurementUnit.Notes,
 		ValidMeasurementUnitID: &validIngredientMeasurementUnit.MeasurementUnit.ID,
 		ValidIngredientID:      &validIngredientMeasurementUnit.Ingredient.ID,
@@ -50,7 +52,7 @@ func BuildFakeValidIngredientMeasurementUnitUpdateRequestInput() *types.ValidIng
 }
 
 // BuildFakeValidIngredientMeasurementUnitCreationRequestInput builds a faked ValidIngredientMeasurementUnitCreationRequestInput.
-func BuildFakeValidIngredientMeasurementUnitCreationRequestInput() *types.ValidIngredientMeasurementUnitCreationRequestInput {
+func BuildFakeValidIngredientMeasurementUnitCreationRequestInput() *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput {
 	validIngredientMeasurementUnit := BuildFakeValidIngredientMeasurementUnit()
 	return converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitCreationRequestInput(validIngredientMeasurementUnit)
 }

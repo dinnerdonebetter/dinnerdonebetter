@@ -57,9 +57,6 @@ func TestQuerier_Integration_RecipeMedia(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, accountID)
 
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)

@@ -220,9 +220,6 @@ func TestQuerier_Integration_RecipeSteps(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, accountID)
 
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
@@ -330,19 +327,6 @@ func TestQuerier_GetRecipeStep(T *testing.T) {
 
 func TestQuerier_getRecipeStepByID(T *testing.T) {
 	T.Parallel()
-
-	T.Run("with invalid recipe ID", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-
-		ctx := context.Background()
-		c := buildInertClientForTest(t)
-
-		actual, err := c.getRecipeStepByID(ctx, c.db, exampleRecipeStep.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-	})
 
 	T.Run("with invalid recipe step ID", func(t *testing.T) {
 		t.Parallel()

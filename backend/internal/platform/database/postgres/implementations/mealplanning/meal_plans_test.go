@@ -8,11 +8,9 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -143,9 +141,8 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, accountID)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	accountID := account.ID
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
@@ -183,7 +180,7 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	for _, mealPlan := range createdMealPlans {
 		_, err = dbc.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, accountID)
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, database.ErrAlreadyFinalized)
+		assert.ErrorIs(t, err, ErrAlreadyFinalized)
 		assert.NoError(t, dbc.ArchiveMealPlan(ctx, mealPlan.ID, accountID))
 
 		var exists bool
@@ -317,12 +314,12 @@ func TestQuerier_AttemptToFinalizeCompleteMealPlan(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccount := fakes.BuildFakeAccount()
+		exampleAccountID := fakes.BuildFakeID()
 		ctx := context.Background()
 
 		c := buildInertClientForTest(t)
 
-		actual, err := c.AttemptToFinalizeMealPlan(ctx, "", exampleAccount.ID)
+		actual, err := c.AttemptToFinalizeMealPlan(ctx, "", exampleAccountID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})
@@ -348,27 +345,23 @@ func TestQuerier_FetchMissingVotesForMealPlan(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
-		exampleAccount := fakes.BuildFakeAccount()
+		c := buildInertClientForTest(t)
+		exampleAccountID := fakes.BuildFakeID()
 
-		actual, err := c.FetchMissingVotesForMealPlan(ctx, "", exampleAccount.ID)
+		actual, err := c.FetchMissingVotesForMealPlan(ctx, "", exampleAccountID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 
 	T.Run("with missing account ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
 		actual, err := c.FetchMissingVotesForMealPlan(ctx, exampleMealPlan.ID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

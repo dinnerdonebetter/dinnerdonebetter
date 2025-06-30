@@ -12,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -60,9 +59,6 @@ func TestQuerier_Integration_RecipePrepTasks(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, accountID)
 
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
@@ -178,11 +174,9 @@ func TestQuerier_UpdateRecipePrepTask(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateRecipePrepTask(ctx, nil))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -195,10 +189,8 @@ func TestQuerier_ArchiveRecipePrepTask(T *testing.T) {
 		ctx := context.Background()
 		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveRecipePrepTask(ctx, "", exampleRecipePrepTask.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

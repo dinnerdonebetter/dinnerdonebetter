@@ -10,7 +10,6 @@ import (
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -83,16 +82,14 @@ func TestQuerier_Integration_MealPlanEvents(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	accountID, err := dbc.GetDefaultAccountIDForUser(ctx, user.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, accountID)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
 
 	recipe := createRecipeForTest(t, ctx, nil, dbc, true)
 	buildMealForIntegrationTest(user.ID, recipe)
 	meal := createMealForTest(t, ctx, nil, dbc)
 
 	exampleMealPlan := buildMealPlanForIntegrationTest(user.ID, meal)
-	exampleMealPlan.BelongsToAccount = accountID
+	exampleMealPlan.BelongsToAccount = account.ID
 	mealPlan := createMealPlanForTest(t, ctx, exampleMealPlan, dbc)
 
 	newMeal := createMealForTest(t, ctx, nil, dbc)
@@ -128,7 +125,7 @@ func TestQuerier_Integration_MealPlanEvents(t *testing.T) {
 		assert.NoError(t, dbc.ArchiveMealPlanEvent(ctx, mealPlan.ID, mealPlanEvent.ID))
 
 		var exists bool
-		exists, err = dbc.MealPlanEventExists(ctx, mealPlanEvent.ID, accountID)
+		exists, err = dbc.MealPlanEventExists(ctx, mealPlanEvent.ID, account.ID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
 	}
@@ -144,13 +141,11 @@ func TestQuerier_MealPlanEventExists(T *testing.T) {
 
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		actual, err := c.MealPlanEventExists(ctx, "", exampleMealPlanEventID)
 		assert.Error(t, err)
 		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 
 	T.Run("with invalid meal plan event ID", func(t *testing.T) {
@@ -228,28 +223,6 @@ func TestQuerier_GetMealPlanEvents(T *testing.T) {
 	})
 }
 
-func TestQuerier_createMealPlanEvent(T *testing.T) {
-	T.Parallel()
-
-	T.Run("with invalid input", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-		tx, err := c.db.BeginTx(ctx, nil)
-		require.NoError(t, err)
-		require.NotNil(t, tx)
-
-		actual, err := c.createMealPlanEvent(ctx, tx, nil)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_CreateMealPlanEvent(T *testing.T) {
 	T.Parallel()
 
@@ -272,12 +245,10 @@ func TestQuerier_UpdateMealPlanEvent(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c := buildInertClientForTest(t)
 
 		err := c.UpdateMealPlanEvent(ctx, nil)
 		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
