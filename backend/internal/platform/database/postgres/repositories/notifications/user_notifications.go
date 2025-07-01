@@ -3,7 +3,7 @@ package notifications
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -178,11 +178,11 @@ func (q *Querier) CreateUserNotification(ctx context.Context, input *types.UserN
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, x.ID)
 	logger.Info("user notification created")
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUserNotifications,
 		RelevantID:    x.ID,
-		EventType:     auditlogentries.AuditLogEventTypeCreated,
+		EventType:     audit.AuditLogEventTypeCreated,
 		BelongsToUser: x.BelongsToUser,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
@@ -220,11 +220,11 @@ func (q *Querier) UpdateUserNotification(ctx context.Context, updated *types.Use
 		return observability.PrepareAndLogError(err, logger, span, "updating user notification")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUserNotifications,
 		RelevantID:    updated.ID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: updated.BelongsToUser,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)

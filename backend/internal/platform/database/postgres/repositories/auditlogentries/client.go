@@ -3,7 +3,7 @@ package auditlogentries
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/repositories/auditlogentries/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -30,7 +30,7 @@ func ProvideAuditLogRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	client database.Client,
-) auditlogentries.Repository {
+) audit.Repository {
 	c := &Querier{
 		Client:           client,
 		db:               client.DB(),

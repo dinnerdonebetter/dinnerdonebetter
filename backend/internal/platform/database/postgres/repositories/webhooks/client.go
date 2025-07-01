@@ -3,7 +3,7 @@ package webhooks
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/repositories/webhooks/generated"
@@ -21,7 +21,7 @@ type Querier struct {
 	tracer            tracing.Tracer
 	logger            logging.Logger
 	generatedQuerier  generated.Querier
-	auditLogEntryRepo auditlogentries.Repository
+	auditLogEntryRepo audit.Repository
 	db                *sql.DB
 }
 
@@ -29,7 +29,7 @@ type Querier struct {
 func ProvideWebhooksRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	auditLogEntryRepo auditlogentries.Repository,
+	auditLogEntryRepo audit.Repository,
 	client database.Client,
 ) webhooks.Repository {
 	c := &Querier{

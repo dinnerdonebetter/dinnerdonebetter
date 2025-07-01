@@ -1,4 +1,4 @@
-package auditlogentries
+package audit
 
 import (
 	"context"

@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -124,13 +124,13 @@ func (q *Querier) markAccountAsUserDefault(ctx context.Context, querier database
 		return observability.PrepareAndLogError(err, logger, span, "assigning user default account")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
-		EventType:        auditlogentries.AuditLogEventTypeUpdated,
+		EventType:        audit.AuditLogEventTypeUpdated,
 		BelongsToUser:    userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"default_account": {
 				OldValue: "false",
 				NewValue: "true",
@@ -228,13 +228,13 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, accountID, userID s
 		return observability.PrepareAndLogError(err, logger, span, "modifying user account permissions")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
-		EventType:        auditlogentries.AuditLogEventTypeUpdated,
+		EventType:        audit.AuditLogEventTypeUpdated,
 		BelongsToUser:    userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"account_role": {
 				OldValue: existingRole,
 				NewValue: input.NewRole,
@@ -291,13 +291,13 @@ func (q *Querier) TransferAccountOwnership(ctx context.Context, accountID string
 		return observability.PrepareAndLogError(err, logger, span, "transferring account to new owner")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
-		EventType:        auditlogentries.AuditLogEventTypeUpdated,
+		EventType:        audit.AuditLogEventTypeUpdated,
 		BelongsToUser:    input.NewOwner,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"belongs_to_user": {
 				OldValue: input.CurrentOwner,
 				NewValue: input.NewOwner,
@@ -371,11 +371,11 @@ func (q *Querier) addUserToAccount(ctx context.Context, querier database.SQLQuer
 		return observability.PrepareAndLogError(err, logger, span, "performing user account membership creation query")
 	}
 
-	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &input.AccountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
-		EventType:        auditlogentries.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeCreated,
 		BelongsToUser:    input.UserID,
 	}); err != nil {
 		return observability.PrepareError(err, span, "creating audit log entry")
@@ -411,11 +411,11 @@ func (q *Querier) removeUserFromAccount(ctx context.Context, querier database.SQ
 		return observability.PrepareAndLogError(err, logger, span, "removing user from account")
 	}
 
-	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
-		EventType:        auditlogentries.AuditLogEventTypeArchived,
+		EventType:        audit.AuditLogEventTypeArchived,
 		BelongsToUser:    userID,
 	}); err != nil {
 		q.RollbackTransaction(ctx, querier)

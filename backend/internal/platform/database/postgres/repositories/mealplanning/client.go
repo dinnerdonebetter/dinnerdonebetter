@@ -3,7 +3,7 @@ package mealplanning
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	settings "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -23,7 +23,7 @@ type Querier struct {
 	logger            logging.Logger
 	generatedQuerier  generated.Querier
 	identityRepo      identity.Repository
-	auditLogEntryRepo auditlogentries.Repository
+	auditLogEntryRepo audit.Repository
 	db                *sql.DB
 }
 
@@ -31,7 +31,7 @@ type Querier struct {
 func ProvideSettingsRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	auditLogEntryRepo auditlogentries.Repository,
+	auditLogEntryRepo audit.Repository,
 	identityRepo identity.Repository,
 	client database.Client,
 ) settings.Repository {

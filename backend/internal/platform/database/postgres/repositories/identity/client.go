@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/repositories/identity/generated"
@@ -23,7 +23,7 @@ type Querier struct {
 	tracer            tracing.Tracer
 	logger            logging.Logger
 	generatedQuerier  generated.Querier
-	auditLogEntryRepo auditlogentries.Repository
+	auditLogEntryRepo audit.Repository
 	secretGenerator   random.Generator
 	timeFunc          func() time.Time
 	db                *sql.DB
@@ -33,7 +33,7 @@ type Querier struct {
 func ProvideIdentityRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	auditLogEntryRepo auditlogentries.Repository,
+	auditLogEntryRepo audit.Repository,
 	client database.Client,
 ) identity.Repository {
 	c := &Querier{

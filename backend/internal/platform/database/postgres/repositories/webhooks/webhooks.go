@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -248,12 +248,12 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 		CreatedAt:        q.CurrentTime(),
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &x.BelongsToAccount,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeWebhooks,
 		RelevantID:       x.ID,
-		EventType:        auditlogentries.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeCreated,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
@@ -307,12 +307,12 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing webhook trigger event creation query")
 	}
 
-	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeWebhookTriggerEvents,
 		RelevantID:       input.ID,
-		EventType:        auditlogentries.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeCreated,
 	}); err != nil {
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
@@ -361,12 +361,12 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, accountID strin
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeWebhooks,
 		RelevantID:       webhookID,
-		EventType:        auditlogentries.AuditLogEventTypeArchived,
+		EventType:        audit.AuditLogEventTypeArchived,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
@@ -455,11 +455,11 @@ func (q *Querier) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, web
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook trigger event")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:           identifiers.New(),
 		ResourceType: resourceTypeWebhookTriggerEvents,
 		RelevantID:   webhookID,
-		EventType:    auditlogentries.AuditLogEventTypeArchived,
+		EventType:    audit.AuditLogEventTypeArchived,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")

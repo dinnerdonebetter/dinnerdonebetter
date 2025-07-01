@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -472,11 +472,11 @@ func (q *Querier) CreateUser(ctx context.Context, input *identity.UserDatabaseCr
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    input.ID,
-		EventType:     auditlogentries.AuditLogEventTypeCreated,
+		EventType:     audit.AuditLogEventTypeCreated,
 		BelongsToUser: input.ID,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
@@ -557,12 +557,12 @@ func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQL
 		return nil, observability.PrepareError(err, span, "creating account")
 	}
 
-	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountCreationInput.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
 		RelevantID:       accountCreationInput.ID,
-		EventType:        auditlogentries.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeCreated,
 		BelongsToUser:    accountCreationInput.BelongsToUser,
 	}); err != nil {
 		q.RollbackTransaction(ctx, querier)
@@ -581,12 +581,12 @@ func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQL
 		return nil, observability.PrepareError(err, span, "writing account user membership")
 	}
 
-	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountCreationInput.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
 		RelevantID:       accountMembershipID,
-		EventType:        auditlogentries.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeCreated,
 		BelongsToUser:    accountCreationInput.BelongsToUser,
 	}); err != nil {
 		q.RollbackTransaction(ctx, querier)
@@ -652,13 +652,13 @@ func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername st
 		return observability.PrepareAndLogError(err, logger, span, "updating username")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"username": {
 				OldValue: user.Username,
 				NewValue: newUsername,
@@ -712,13 +712,13 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 		return observability.PrepareAndLogError(err, logger, span, "updating user email address")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"email_address": {
 				OldValue: user.EmailAddress,
 				NewValue: newEmailAddress,
@@ -773,24 +773,24 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *i
 		return observability.PrepareAndLogError(err, logger, span, "updating user details")
 	}
 
-	changes := map[string]auditlogentries.ChangeLog{}
+	changes := map[string]audit.ChangeLog{}
 	if input.FirstName != user.FirstName {
-		changes["first_name"] = auditlogentries.ChangeLog{NewValue: input.FirstName, OldValue: user.FirstName}
+		changes["first_name"] = audit.ChangeLog{NewValue: input.FirstName, OldValue: user.FirstName}
 	}
 
 	if input.LastName != user.LastName {
-		changes["last_name"] = auditlogentries.ChangeLog{NewValue: input.LastName, OldValue: user.LastName}
+		changes["last_name"] = audit.ChangeLog{NewValue: input.LastName, OldValue: user.LastName}
 	}
 
 	if input.Birthday.Format(time.Kitchen) != user.Birthday.Format(time.Kitchen) {
-		changes["birthday"] = auditlogentries.ChangeLog{NewValue: input.Birthday.Format(time.Kitchen), OldValue: user.Birthday.Format(time.Kitchen)}
+		changes["birthday"] = audit.ChangeLog{NewValue: input.Birthday.Format(time.Kitchen), OldValue: user.Birthday.Format(time.Kitchen)}
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
 		Changes:       changes,
 	}); err != nil {
@@ -835,13 +835,13 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 		return observability.PrepareAndLogError(err, logger, span, "updating user avatar")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"avatar": {},
 		},
 	}); err != nil {
@@ -886,13 +886,13 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 		return observability.PrepareAndLogError(err, logger, span, "updating user password")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"password": {},
 		},
 	}); err != nil {
@@ -937,13 +937,13 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 		return observability.PrepareAndLogError(err, logger, span, "updating user 2FA secret")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"two_factor_secret": {},
 		},
 	}); err != nil {
@@ -980,13 +980,13 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"two_factor_secret": {
 				OldValue: "unverified",
 				NewValue: "verified",
@@ -1033,24 +1033,24 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeArchived,
+		EventType:     audit.AuditLogEventTypeArchived,
 		BelongsToUser: userID,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeCreated,
+		EventType:     audit.AuditLogEventTypeCreated,
 		BelongsToUser: userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"two_factor_secret": {
 				OldValue: "verified",
 				NewValue: "unverified",
@@ -1097,11 +1097,11 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 		return sql.ErrNoRows
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeArchived,
+		EventType:     audit.AuditLogEventTypeArchived,
 		BelongsToUser: userID,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
@@ -1211,13 +1211,13 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 		return observability.PrepareAndLogError(err, logger, span, "writing verified email address status to database")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"email_address_verification": {
 				OldValue: "unverified",
 				NewValue: "verified",
@@ -1270,13 +1270,13 @@ func (q *Querier) MarkUserEmailAddressAsUnverified(ctx context.Context, userID s
 		return observability.PrepareAndLogError(err, logger, span, "writing email address verification status to database")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
-		EventType:     auditlogentries.AuditLogEventTypeUpdated,
+		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]auditlogentries.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"email_address_verification": {
 				OldValue: "verified",
 				NewValue: "unverified",

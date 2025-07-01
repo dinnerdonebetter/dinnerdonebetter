@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -232,11 +232,11 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 		CreatedAt:    q.CurrentTime(),
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:           identifiers.New(),
 		ResourceType: resourceTypeServiceSettings,
 		RelevantID:   x.ID,
-		EventType:    auditlogentries.AuditLogEventTypeCreated,
+		EventType:    audit.AuditLogEventTypeCreated,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
@@ -274,11 +274,11 @@ func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID st
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:           identifiers.New(),
 		ResourceType: resourceTypeServiceSettings,
 		RelevantID:   serviceSettingID,
-		EventType:    auditlogentries.AuditLogEventTypeArchived,
+		EventType:    audit.AuditLogEventTypeArchived,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")

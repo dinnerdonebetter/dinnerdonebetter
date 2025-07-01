@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -387,12 +387,12 @@ func (q *Querier) CreateServiceSettingConfiguration(ctx context.Context, input *
 		CreatedAt:        q.CurrentTime(),
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &input.BelongsToAccount,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeServiceSettingConfigurations,
 		RelevantID:       x.ID,
-		EventType:        auditlogentries.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeCreated,
 		BelongsToUser:    input.BelongsToUser,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
@@ -437,12 +437,12 @@ func (q *Querier) UpdateServiceSettingConfiguration(ctx context.Context, updated
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting configuration")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &updated.BelongsToAccount,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeServiceSettingConfigurations,
 		RelevantID:       updated.ID,
-		EventType:        auditlogentries.AuditLogEventTypeUpdated,
+		EventType:        audit.AuditLogEventTypeUpdated,
 		BelongsToUser:    updated.BelongsToUser,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/repositories/auditlogentries/generated"
@@ -16,11 +16,11 @@ import (
 )
 
 var (
-	_ auditlogentries.AuditLogEntryDataManager = (*Querier)(nil)
+	_ audit.AuditLogEntryDataManager = (*Querier)(nil)
 )
 
 // GetAuditLogEntry fetches an audit log entry from the database.
-func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (*auditlogentries.AuditLogEntry, error) {
+func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (*audit.AuditLogEntry, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -37,7 +37,7 @@ func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) 
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entry")
 	}
 
-	auditLogEntry := &auditlogentries.AuditLogEntry{
+	auditLogEntry := &audit.AuditLogEntry{
 		CreatedAt:        result.CreatedAt,
 		BelongsToAccount: database.StringPointerFromNullString(result.BelongsToAccount),
 		ID:               result.ID,
@@ -55,7 +55,7 @@ func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) 
 }
 
 // GetAuditLogEntriesForUser fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[auditlogentries.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,7 +72,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 	}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &filtering.QueryFilteredResult[auditlogentries.AuditLogEntry]{
+	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -88,7 +88,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 	}
 
 	for _, result := range results {
-		auditLogEntry := &auditlogentries.AuditLogEntry{
+		auditLogEntry := &audit.AuditLogEntry{
 			CreatedAt:        result.CreatedAt,
 			BelongsToAccount: database.StringPointerFromNullString(result.BelongsToAccount),
 			ID:               result.ID,
@@ -111,7 +111,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 }
 
 // GetAuditLogEntriesForUserAndResourceTypes fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Context, userID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[auditlogentries.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Context, userID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -134,7 +134,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Context,
 	}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &filtering.QueryFilteredResult[auditlogentries.AuditLogEntry]{
+	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -151,7 +151,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Context,
 	}
 
 	for _, result := range results {
-		auditLogEntry := &auditlogentries.AuditLogEntry{
+		auditLogEntry := &audit.AuditLogEntry{
 			CreatedAt:        result.CreatedAt,
 			BelongsToAccount: database.StringPointerFromNullString(result.BelongsToAccount),
 			ID:               result.ID,
@@ -174,7 +174,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Context,
 }
 
 // GetAuditLogEntriesForAccount fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[auditlogentries.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -191,7 +191,7 @@ func (q *Querier) GetAuditLogEntriesForAccount(ctx context.Context, accountID st
 	}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &filtering.QueryFilteredResult[auditlogentries.AuditLogEntry]{
+	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -207,7 +207,7 @@ func (q *Querier) GetAuditLogEntriesForAccount(ctx context.Context, accountID st
 	}
 
 	for _, result := range results {
-		auditLogEntry := &auditlogentries.AuditLogEntry{
+		auditLogEntry := &audit.AuditLogEntry{
 			CreatedAt:        result.CreatedAt,
 			BelongsToAccount: database.StringPointerFromNullString(result.BelongsToAccount),
 			ID:               result.ID,
@@ -230,7 +230,7 @@ func (q *Querier) GetAuditLogEntriesForAccount(ctx context.Context, accountID st
 }
 
 // GetAuditLogEntriesForAccountAndResourceTypes fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Context, accountID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[auditlogentries.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Context, accountID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -253,7 +253,7 @@ func (q *Querier) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Conte
 	}
 
 	tracing.AttachQueryFilterToSpan(span, filter)
-	x := &filtering.QueryFilteredResult[auditlogentries.AuditLogEntry]{
+	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
 
@@ -270,7 +270,7 @@ func (q *Querier) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Conte
 	}
 
 	for _, result := range results {
-		auditLogEntry := &auditlogentries.AuditLogEntry{
+		auditLogEntry := &audit.AuditLogEntry{
 			CreatedAt:        result.CreatedAt,
 			BelongsToAccount: database.StringPointerFromNullString(result.BelongsToAccount),
 			ID:               result.ID,
@@ -293,7 +293,7 @@ func (q *Querier) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Conte
 }
 
 // CreateAuditLogEntry creates an audit log entry in a database.
-func (q *Querier) CreateAuditLogEntry(ctx context.Context, querier database.SQLQueryExecutor, input *auditlogentries.AuditLogEntryDatabaseCreationInput) (*auditlogentries.AuditLogEntry, error) {
+func (q *Querier) CreateAuditLogEntry(ctx context.Context, querier database.SQLQueryExecutor, input *audit.AuditLogEntryDatabaseCreationInput) (*audit.AuditLogEntry, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -326,7 +326,7 @@ func (q *Querier) CreateAuditLogEntry(ctx context.Context, querier database.SQLQ
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing audit log creation query")
 	}
 
-	x := &auditlogentries.AuditLogEntry{
+	x := &audit.AuditLogEntry{
 		ID:               input.ID,
 		Changes:          input.Changes,
 		BelongsToAccount: input.BelongsToAccount,

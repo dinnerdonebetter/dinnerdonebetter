@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -237,12 +237,12 @@ func (q *Querier) CreateAccount(ctx context.Context, input *identity.AccountData
 		CreatedAt:     q.CurrentTime(),
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &account.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
 		RelevantID:       account.ID,
-		EventType:        auditlogentries.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeCreated,
 		BelongsToUser:    account.BelongsToUser,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
@@ -260,12 +260,12 @@ func (q *Querier) CreateAccount(ctx context.Context, input *identity.AccountData
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing account membership creation query")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &account.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
 		RelevantID:       accountMembershipID,
-		EventType:        auditlogentries.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeCreated,
 		BelongsToUser:    account.BelongsToUser,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)
@@ -321,12 +321,12 @@ func (q *Querier) UpdateAccount(ctx context.Context, updated *identity.Account) 
 		return observability.PrepareAndLogError(err, logger, span, "updating account")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &updated.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
 		RelevantID:       updated.ID,
-		EventType:        auditlogentries.AuditLogEventTypeUpdated,
+		EventType:        audit.AuditLogEventTypeUpdated,
 		BelongsToUser:    account.BelongsToUser,
 		Changes:          buildChangesForAccount(account, updated),
 	}); err != nil {
@@ -343,74 +343,74 @@ func (q *Querier) UpdateAccount(ctx context.Context, updated *identity.Account) 
 	return nil
 }
 
-func buildChangesForAccount(account, updated *identity.Account) map[string]auditlogentries.ChangeLog {
-	changes := map[string]auditlogentries.ChangeLog{}
+func buildChangesForAccount(account, updated *identity.Account) map[string]audit.ChangeLog {
+	changes := map[string]audit.ChangeLog{}
 
 	if account.Name != updated.Name {
-		changes["name"] = auditlogentries.ChangeLog{
+		changes["name"] = audit.ChangeLog{
 			OldValue: account.Name,
 			NewValue: updated.Name,
 		}
 	}
 
 	if account.ContactPhone != updated.ContactPhone {
-		changes["contact_phone"] = auditlogentries.ChangeLog{
+		changes["contact_phone"] = audit.ChangeLog{
 			OldValue: account.ContactPhone,
 			NewValue: updated.ContactPhone,
 		}
 	}
 
 	if account.AddressLine1 != updated.AddressLine1 {
-		changes["address_line_1"] = auditlogentries.ChangeLog{
+		changes["address_line_1"] = audit.ChangeLog{
 			OldValue: account.AddressLine1,
 			NewValue: updated.AddressLine1,
 		}
 	}
 
 	if account.AddressLine2 != updated.AddressLine2 {
-		changes["address_line_2"] = auditlogentries.ChangeLog{
+		changes["address_line_2"] = audit.ChangeLog{
 			OldValue: account.AddressLine2,
 			NewValue: updated.AddressLine2,
 		}
 	}
 
 	if account.City != updated.City {
-		changes["city"] = auditlogentries.ChangeLog{
+		changes["city"] = audit.ChangeLog{
 			OldValue: account.City,
 			NewValue: updated.City,
 		}
 	}
 
 	if account.State != updated.State {
-		changes["state"] = auditlogentries.ChangeLog{
+		changes["state"] = audit.ChangeLog{
 			OldValue: account.State,
 			NewValue: updated.State,
 		}
 	}
 
 	if account.ZipCode != updated.ZipCode {
-		changes["zip_code"] = auditlogentries.ChangeLog{
+		changes["zip_code"] = audit.ChangeLog{
 			OldValue: account.ZipCode,
 			NewValue: updated.ZipCode,
 		}
 	}
 
 	if account.Country != updated.Country {
-		changes["country"] = auditlogentries.ChangeLog{
+		changes["country"] = audit.ChangeLog{
 			OldValue: account.Country,
 			NewValue: updated.Country,
 		}
 	}
 
 	if account.Latitude != updated.Latitude {
-		changes["latitude"] = auditlogentries.ChangeLog{
+		changes["latitude"] = audit.ChangeLog{
 			OldValue: fmt.Sprintf("%v", account.Latitude),
 			NewValue: fmt.Sprintf("%v", updated.Latitude),
 		}
 	}
 
 	if account.Longitude != updated.Longitude {
-		changes["longitude"] = auditlogentries.ChangeLog{
+		changes["longitude"] = audit.ChangeLog{
 			OldValue: fmt.Sprintf("%v", account.Longitude),
 			NewValue: fmt.Sprintf("%v", updated.Longitude),
 		}
@@ -447,12 +447,12 @@ func (q *Querier) ArchiveAccount(ctx context.Context, accountID, userID string) 
 		return observability.PrepareAndLogError(err, logger, span, "archiving account")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &auditlogentries.AuditLogEntryDatabaseCreationInput{
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
 		RelevantID:       accountID,
-		EventType:        auditlogentries.AuditLogEventTypeCreated,
+		EventType:        audit.AuditLogEventTypeCreated,
 		BelongsToUser:    userID,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)

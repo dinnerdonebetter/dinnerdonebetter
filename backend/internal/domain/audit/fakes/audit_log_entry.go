@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	types "github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 )
 

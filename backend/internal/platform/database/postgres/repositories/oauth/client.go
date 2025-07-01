@@ -3,7 +3,7 @@ package oauth
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption"
 	"github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/salsa20"
@@ -25,7 +25,7 @@ type Querier struct {
 	tracer                  tracing.Tracer
 	logger                  logging.Logger
 	generatedQuerier        generated.Querier
-	auditLogEntryRepo       auditlogentries.Repository
+	auditLogEntryRepo       audit.Repository
 	oauth2ClientTokenEncDec encryption.EncryptorDecryptor
 	secretGenerator         random.Generator
 	db                      *sql.DB
@@ -35,7 +35,7 @@ type Querier struct {
 func ProvideOAuthRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	auditLogEntryRepo auditlogentries.Repository,
+	auditLogEntryRepo audit.Repository,
 	cfg databasecfg.Config,
 	client database.Client,
 ) oauth.Repository {
