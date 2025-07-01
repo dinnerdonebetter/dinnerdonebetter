@@ -16,8 +16,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/repositories/identity/generated"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/assert"
@@ -117,9 +117,9 @@ func CreateUserForTest(t *testing.T, exampleUser *identity.User, db *sql.DB) *id
 	}
 	exampleUser.TwoFactorSecretVerifiedAt = nil
 
-	dbc := generated.New()
+	dbc := generated2.New()
 
-	err := dbc.CreateUser(ctx, db, &generated.CreateUserParams{
+	err := dbc.CreateUser(ctx, db, &generated2.CreateUserParams{
 		ID:                            exampleUser.ID,
 		Username:                      exampleUser.Username,
 		AvatarSrc:                     database.NullStringFromStringPointer(exampleUser.AvatarSrc),
@@ -184,9 +184,9 @@ func CreateAccountForTest(t *testing.T, exampleAccount *identity.Account, userID
 	exampleAccount.Members = nil
 
 	ctx := t.Context()
-	dbc := generated.New()
+	dbc := generated2.New()
 
-	require.NoError(t, dbc.CreateAccount(ctx, db, &generated.CreateAccountParams{
+	require.NoError(t, dbc.CreateAccount(ctx, db, &generated2.CreateAccountParams{
 		ID:                exampleAccount.ID,
 		Name:              exampleAccount.Name,
 		BillingStatus:     exampleAccount.BillingStatus,
@@ -203,7 +203,7 @@ func CreateAccountForTest(t *testing.T, exampleAccount *identity.Account, userID
 		WebhookHmacSecret: exampleAccount.WebhookEncryptionKey,
 	}))
 
-	require.NoError(t, dbc.CreateAccountUserMembershipForNewUser(ctx, db, &generated.CreateAccountUserMembershipForNewUserParams{
+	require.NoError(t, dbc.CreateAccountUserMembershipForNewUser(ctx, db, &generated2.CreateAccountUserMembershipForNewUserParams{
 		ID:               identifiers.New(),
 		BelongsToAccount: exampleAccount.ID,
 		BelongsToUser:    userID,
@@ -211,7 +211,7 @@ func CreateAccountForTest(t *testing.T, exampleAccount *identity.Account, userID
 		AccountRole:      authorization.AccountAdminRole.String(),
 	}))
 
-	dbCreated, err := dbc.GetAccountsForUser(ctx, db, &generated.GetAccountsForUserParams{
+	dbCreated, err := dbc.GetAccountsForUser(ctx, db, &generated2.GetAccountsForUserParams{
 		BelongsToUser: userID,
 	})
 	require.NoError(t, err)
