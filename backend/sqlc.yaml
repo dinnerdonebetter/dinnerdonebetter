@@ -48,14 +48,14 @@ sql:
   - engine: "postgresql"
     schema: "internal/platform/database/postgres/migrations/migration_files"
     queries:
-      - "internal/platform/database/postgres/repositories/audit/sqlc_queries"
+      - "internal/repositories/postgres/auditlogentries/sqlc_queries"
     strict_function_checks: true
     rules:
       - no-delete
     gen:
       go:
         package: "generated"
-        out: "internal/platform/database/postgres/repositories/audit/generated"
+        out: "internal/repositories/postgres/auditlogentries/generated"
         emit_db_tags: false
         emit_prepared_queries: false
         emit_interface: true
@@ -93,14 +93,14 @@ sql:
   - engine: "postgresql"
     schema: "internal/platform/database/postgres/migrations/migration_files"
     queries:
-      - "internal/platform/database/postgres/repositories/identity/sqlc_queries"
+      - "internal/repositories/postgres/identity/sqlc_queries"
     strict_function_checks: true
     rules:
       - no-delete
     gen:
       go:
         package: "generated"
-        out: "internal/platform/database/postgres/repositories/identity/generated"
+        out: "internal/repositories/postgres/identity/generated"
         emit_db_tags: false
         emit_prepared_queries: false
         emit_interface: true
@@ -137,14 +137,14 @@ sql:
   - engine: "postgresql"
     schema: "internal/platform/database/postgres/migrations/migration_files"
     queries:
-      - "internal/platform/database/postgres/repositories/settings/sqlc_queries"
+      - "internal/repositories/postgres/settings/sqlc_queries"
     strict_function_checks: true
     rules:
       - no-delete
     gen:
       go:
         package: "generated"
-        out: "internal/platform/database/postgres/repositories/settings/generated"
+        out: "internal/repositories/postgres/settings/generated"
         emit_db_tags: false
         emit_prepared_queries: false
         emit_interface: true
@@ -181,14 +181,14 @@ sql:
   - engine: "postgresql"
     schema: "internal/platform/database/postgres/migrations/migration_files"
     queries:
-      - "internal/platform/database/postgres/repositories/oauth/sqlc_queries"
+      - "internal/repositories/postgres/oauth/sqlc_queries"
     strict_function_checks: true
     rules:
       - no-delete
     gen:
       go:
         package: "generated"
-        out: "internal/platform/database/postgres/repositories/oauth/generated"
+        out: "internal/repositories/postgres/oauth/generated"
         emit_db_tags: false
         emit_prepared_queries: false
         emit_interface: true
@@ -225,14 +225,14 @@ sql:
   - engine: "postgresql"
     schema: "internal/platform/database/postgres/migrations/migration_files"
     queries:
-      - "internal/platform/database/postgres/repositories/webhooks/sqlc_queries"
+      - "internal/repositories/postgres/webhooks/sqlc_queries"
     strict_function_checks: true
     rules:
       - no-delete
     gen:
       go:
         package: "generated"
-        out: "internal/platform/database/postgres/repositories/webhooks/generated"
+        out: "internal/repositories/postgres/webhooks/generated"
         emit_db_tags: false
         emit_prepared_queries: false
         emit_interface: true
@@ -269,14 +269,14 @@ sql:
   - engine: "postgresql"
     schema: "internal/platform/database/postgres/migrations/migration_files"
     queries:
-      - "internal/platform/database/postgres/repositories/notifications/sqlc_queries"
+      - "internal/repositories/postgres/notifications/sqlc_queries"
     strict_function_checks: true
     rules:
       - no-delete
     gen:
       go:
         package: "generated"
-        out: "internal/platform/database/postgres/repositories/notifications/generated"
+        out: "internal/repositories/postgres/notifications/generated"
         emit_db_tags: false
         emit_prepared_queries: false
         emit_interface: true
@@ -313,14 +313,14 @@ sql:
   - engine: "postgresql"
     schema: "internal/platform/database/postgres/migrations/migration_files"
     queries:
-      - "internal/platform/database/postgres/repositories/mealplanning/sqlc_queries"
+      - "internal/repositories/postgres/mealplanning/sqlc_queries"
     strict_function_checks: true
     rules:
       - no-delete
     gen:
       go:
         package: "generated"
-        out: "internal/platform/database/postgres/repositories/mealplanning/generated"
+        out: "internal/repositories/postgres/mealplanning/generated"
         emit_db_tags: false
         emit_prepared_queries: false
         emit_interface: true
