@@ -4,7 +4,7 @@ import (
 	"context"
 	"image"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/stretchr/testify/mock"
 	"gonum.org/v1/gonum/graph/simple"

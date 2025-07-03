@@ -4,7 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -12,9 +14,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -58,21 +59,21 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 
 		grams := fakes.BuildFakeValidMeasurementUnit()
 
-		expectedMealPlans := []*types.MealPlan{
+		expectedMealPlans := []*mealplanning.MealPlan{
 			{
 				ID: fakes.BuildFakeID(),
-				Events: []*types.MealPlanEvent{
+				Events: []*mealplanning.MealPlanEvent{
 					{
-						Options: []*types.MealPlanOption{
+						Options: []*mealplanning.MealPlanOption{
 							{
 								Chosen: true,
-								Meal: types.Meal{
-									Components: []*types.MealComponent{
+								Meal: mealplanning.Meal{
+									Components: []*mealplanning.MealComponent{
 										{
-											Recipe: types.Recipe{
-												Steps: []*types.RecipeStep{
+											Recipe: mealplanning.Recipe{
+												Steps: []*mealplanning.RecipeStep{
 													{
-														Ingredients: []*types.RecipeStepIngredient{
+														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: onion,
 																Quantity: types.Float32RangeWithOptionalMax{
@@ -92,16 +93,16 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 						},
 					},
 					{
-						Options: []*types.MealPlanOption{
+						Options: []*mealplanning.MealPlanOption{
 							{
 								Chosen: true,
-								Meal: types.Meal{
-									Components: []*types.MealComponent{
+								Meal: mealplanning.Meal{
+									Components: []*mealplanning.MealComponent{
 										{
-											Recipe: types.Recipe{
-												Steps: []*types.RecipeStep{
+											Recipe: mealplanning.Recipe{
+												Steps: []*mealplanning.RecipeStep{
 													{
-														Ingredients: []*types.RecipeStepIngredient{
+														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: carrot,
 																Quantity: types.Float32RangeWithOptionalMax{
@@ -121,16 +122,16 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 						},
 					},
 					{
-						Options: []*types.MealPlanOption{
+						Options: []*mealplanning.MealPlanOption{
 							{
 								Chosen: true,
-								Meal: types.Meal{
-									Components: []*types.MealComponent{
+								Meal: mealplanning.Meal{
+									Components: []*mealplanning.MealComponent{
 										{
-											Recipe: types.Recipe{
-												Steps: []*types.RecipeStep{
+											Recipe: mealplanning.Recipe{
+												Steps: []*mealplanning.RecipeStep{
 													{
-														Ingredients: []*types.RecipeStepIngredient{
+														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: celery,
 																Quantity: types.Float32RangeWithOptionalMax{
@@ -150,16 +151,16 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 						},
 					},
 					{
-						Options: []*types.MealPlanOption{
+						Options: []*mealplanning.MealPlanOption{
 							{
 								Chosen: true,
-								Meal: types.Meal{
-									Components: []*types.MealComponent{
+								Meal: mealplanning.Meal{
+									Components: []*mealplanning.MealComponent{
 										{
-											Recipe: types.Recipe{
-												Steps: []*types.RecipeStep{
+											Recipe: mealplanning.Recipe{
+												Steps: []*mealplanning.RecipeStep{
 													{
-														Ingredients: []*types.RecipeStepIngredient{
+														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: salt,
 																Quantity: types.Float32RangeWithOptionalMax{
@@ -179,16 +180,16 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 						},
 					},
 					{
-						Options: []*types.MealPlanOption{
+						Options: []*mealplanning.MealPlanOption{
 							{
 								Chosen: true,
-								Meal: types.Meal{
-									Components: []*types.MealComponent{
+								Meal: mealplanning.Meal{
+									Components: []*mealplanning.MealComponent{
 										{
-											Recipe: types.Recipe{
-												Steps: []*types.RecipeStep{
+											Recipe: mealplanning.Recipe{
+												Steps: []*mealplanning.RecipeStep{
 													{
-														Ingredients: []*types.RecipeStepIngredient{
+														Ingredients: []*mealplanning.RecipeStepIngredient{
 															{
 																Ingredient: onion,
 																Quantity: types.Float32RangeWithOptionalMax{
@@ -212,13 +213,13 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		}
 
 		ctx := context.Background()
-		mdm := database.NewMockDatabase()
+		mdm := &mealplanningmock.Repository{}
 
-		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlansWithUninitializedGroceryLists", testutils.ContextMatcher).Return(expectedMealPlans, nil)
+		mdm.On("GetFinalizedMealPlansWithUninitializedGroceryLists", testutils.ContextMatcher).Return(expectedMealPlans, nil)
 
-		firstMealPlanExpectedGroceryListItemInputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{
+		firstMealPlanExpectedGroceryListItemInputs := []*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 			{
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
@@ -228,7 +229,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				},
 			},
 			{
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
@@ -238,7 +239,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				},
 			},
 			{
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
@@ -248,7 +249,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 				},
 			},
 			{
-				Status:                 types.MealPlanGroceryListItemStatusUnknown,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusUnknown,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlans[0].ID,
@@ -259,7 +260,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 			},
 		}
 
-		expectedInputSets := map[string][]*types.MealPlanGroceryListItemDatabaseCreationInput{
+		expectedInputSets := map[string][]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 			expectedMealPlans[0].ID: firstMealPlanExpectedGroceryListItemInputs,
 		}
 
@@ -274,8 +275,8 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		pup := &mockpublishers.Publisher{}
 		for _, inputs := range expectedInputSets {
 			for _, input := range inputs {
-				mdm.MealPlanGroceryListItemDataManagerMock.On("CreateMealPlanGroceryListItem", testutils.ContextMatcher, input).Return(fakes.BuildFakeMealPlanGroceryListItem(), nil)
-				pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*types.DataChangeMessage")).Return(nil)
+				mdm.On("CreateMealPlanGroceryListItem", testutils.ContextMatcher, input).Return(fakes.BuildFakeMealPlanGroceryListItem(), nil)
+				pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*mealplanning.DataChangeMessage")).Return(nil)
 			}
 		}
 

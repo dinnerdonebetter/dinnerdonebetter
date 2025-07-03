@@ -4,14 +4,15 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 const (
@@ -83,10 +84,12 @@ func (w *Worker) Work(ctx context.Context) (int64, error) {
 
 		if changed {
 			changedCount++
-			if err = w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-				MealPlanID: mealPlan.ID,
-				MealPlan:   mealPlan,
-				AccountID:  mealPlan.BelongsToAccount,
+			if err = w.postUpdatesPublisher.Publish(ctx, &audit.DataChangeMessage{
+				Context: map[string]any{
+					keys.MealPlanIDKey: mealPlan.ID,
+					"meal_plan":        mealPlan,
+				},
+				AccountID: mealPlan.BelongsToAccount,
 			}); err != nil {
 				logger.Error("writing data change message for finalized meal plan", err)
 			}

@@ -5,7 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -13,9 +16,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -34,7 +36,7 @@ func buildNewMealPlanTaskCreatorForTest(t *testing.T) *Worker {
 		logging.NewNoopLogger(),
 		tracing.NewNoopTracerProvider(),
 		&recipeanalysis.MockRecipeAnalyzer{},
-		database.NewMockDatabase(),
+		&mealplanningmock.Repository{},
 		pp,
 		metrics.NewNoopMetricsProvider(),
 		cfg,
@@ -55,8 +57,8 @@ func TestWorker_Work(T *testing.T) {
 
 		ctx := context.Background()
 
-		mdm := database.NewMockDatabase()
-		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
+		mdm := &mealplanningmock.Repository{}
+		mdm.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*mealplanning.FinalizedMealPlanDatabaseResult{}, nil)
 		w.dataManager = mdm
 
 		assert.NoError(t, w.Work(ctx))
@@ -90,17 +92,17 @@ func TestWorker_Work(T *testing.T) {
 		recipeStepID := fakes.BuildFakeID()
 
 		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipe := &types.Recipe{
+		exampleRecipe := &mealplanning.Recipe{
 			Name: "Recipe 1",
 			ID:   exampleRecipeID,
-			Steps: []*types.RecipeStep{
+			Steps: []*mealplanning.RecipeStep{
 				{
 					BelongsToRecipe: exampleRecipeID,
 					ID:              recipeStepID,
-					Preparation:     types.ValidPreparation{Name: "dice"},
-					Ingredients: []*types.RecipeStepIngredient{
+					Preparation:     mealplanning.ValidPreparation{Name: "dice"},
+					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
-							Ingredient: &types.ValidIngredient{
+							Ingredient: &mealplanning.ValidIngredient{
 								StorageTemperatureInCelsius: types.OptionalFloat32Range{
 									Min: pointer.To(float32(2.5)),
 								},
@@ -112,31 +114,31 @@ func TestWorker_Work(T *testing.T) {
 							Name:                "chicken breast",
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStepID,
-							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
+							MeasurementUnit:     mealplanning.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							Quantity: types.Float32RangeWithOptionalMax{
 								Max: pointer.To(float32(900)),
 								Min: 900,
 							},
 						},
 					},
-					Products: []*types.RecipeStepProduct{
+					Products: []*mealplanning.RecipeStepProduct{
 						{
 							Name:                "diced chicken breast",
-							Type:                types.RecipeStepProductIngredientType,
+							Type:                mealplanning.RecipeStepProductIngredientType,
 							BelongsToRecipeStep: recipeStepID,
 							ID:                  fakes.BuildFakeID(),
-							MeasurementUnit:     &types.ValidMeasurementUnit{},
+							MeasurementUnit:     &mealplanning.ValidMeasurementUnit{},
 						},
 					},
 				},
 			},
 		}
 
-		recipeMap := map[string]*types.Recipe{
+		recipeMap := map[string]*mealplanning.Recipe{
 			exampleRecipe.ID: exampleRecipe,
 		}
 
-		exampleFinalizedMealPlanResult := &types.FinalizedMealPlanDatabaseResult{
+		exampleFinalizedMealPlanResult := &mealplanning.FinalizedMealPlanDatabaseResult{
 			MealPlanID:       exampleMealPlan.ID,
 			MealPlanEventID:  exampleMealPlanEvent.ID,
 			MealPlanOptionID: exampleMealPlanOption.ID,
@@ -146,16 +148,16 @@ func TestWorker_Work(T *testing.T) {
 			},
 		}
 
-		exampleFinalizedMealPlanResults := []*types.FinalizedMealPlanDatabaseResult{exampleFinalizedMealPlanResult}
+		exampleFinalizedMealPlanResults := []*mealplanning.FinalizedMealPlanDatabaseResult{exampleFinalizedMealPlanResult}
 
 		createdMealPlanTasks := fakes.BuildFakeMealPlanTasksList().Data
 
-		mdm := database.NewMockDatabase()
-		mdm.MealPlanTaskDataManagerMock.On("CreateMealPlanTasksForMealPlanOption", testutils.ContextMatcher, testutils.MatchType[[]*types.MealPlanTaskDatabaseCreationInput]()).Return(createdMealPlanTasks, nil)
-		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
-		mdm.MealPlanTaskDataManagerMock.On("MarkMealPlanAsHavingTasksCreated", testutils.ContextMatcher, testutils.MatchType[string]()).Return(nil)
+		mdm := &mealplanningmock.Repository{}
+		mdm.On("CreateMealPlanTasksForMealPlanOption", testutils.ContextMatcher, testutils.MatchType[[]*mealplanning.MealPlanTaskDatabaseCreationInput]()).Return(createdMealPlanTasks, nil)
+		mdm.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return(exampleFinalizedMealPlanResults, nil)
+		mdm.On("MarkMealPlanAsHavingTasksCreated", testutils.ContextMatcher, testutils.MatchType[string]()).Return(nil)
 
-		expectedReturnResults := []*types.MealPlanTaskDatabaseCreationInput{
+		expectedReturnResults := []*mealplanning.MealPlanTaskDatabaseCreationInput{
 			{
 				CreationExplanation: t.Name(),
 				MealPlanOptionID:    exampleFinalizedMealPlanResult.MealPlanOptionID,
@@ -164,10 +166,10 @@ func TestWorker_Work(T *testing.T) {
 
 		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
 		for _, result := range exampleFinalizedMealPlanResults {
-			mdm.MealPlanEventDataManagerMock.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
+			mdm.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
 
 			for _, recipeID := range result.RecipeIDs {
-				mdm.RecipeDataManagerMock.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
+				mdm.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
 
 				mockAnalyzer.On(
 					"GenerateMealPlanTasksForRecipe",
@@ -183,7 +185,7 @@ func TestWorker_Work(T *testing.T) {
 		mmp.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.MatchType[*types.DataChangeMessage](),
+			testutils.MatchType[*audit.DataChangeMessage](),
 		).Return(nil)
 		w.postUpdatesPublisher = mmp
 

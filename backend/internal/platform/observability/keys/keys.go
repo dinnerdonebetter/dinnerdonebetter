@@ -85,6 +85,8 @@ const (
 	UserDataAggregationReportIDKey = "user_data_aggregation_report.id"
 	// IndexNameKey is the standard key for referring to a given search index.
 	IndexNameKey = "index.name"
+	// UseDatabaseKey is the standard key for referring to whether or not the database was used in search.
+	UseDatabaseKey = "use_database"
 
 	// ValidInstrumentIDKey is the standard key for referring to a valid instrument's ID.
 	ValidInstrumentIDKey = "valid_instrument.id"

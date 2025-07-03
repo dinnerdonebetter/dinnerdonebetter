@@ -4,11 +4,12 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -30,22 +31,22 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		salt := fakes.BuildFakeValidIngredient()
 		grams := fakes.BuildFakeValidMeasurementUnit()
 
-		expectedMealPlan := &types.MealPlan{
+		expectedMealPlan := &mealplanning.MealPlan{
 			ID: fakes.BuildFakeID(),
-			Events: []*types.MealPlanEvent{
+			Events: []*mealplanning.MealPlanEvent{
 				{
-					Options: []*types.MealPlanOption{
+					Options: []*mealplanning.MealPlanOption{
 						{
 							Chosen:    true,
 							MealScale: 1.0,
-							Meal: types.Meal{
-								Components: []*types.MealComponent{
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
 									{
 										RecipeScale: 1.0,
-										Recipe: types.Recipe{
-											Steps: []*types.RecipeStep{
+										Recipe: mealplanning.Recipe{
+											Steps: []*mealplanning.RecipeStep{
 												{
-													Ingredients: []*types.RecipeStepIngredient{
+													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
 															Quantity: types.Float32RangeWithOptionalMax{
@@ -65,18 +66,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 					},
 				},
 				{
-					Options: []*types.MealPlanOption{
+					Options: []*mealplanning.MealPlanOption{
 						{
 							Chosen:    true,
 							MealScale: 1.0,
-							Meal: types.Meal{
-								Components: []*types.MealComponent{
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
 									{
 										RecipeScale: 1.0,
-										Recipe: types.Recipe{
-											Steps: []*types.RecipeStep{
+										Recipe: mealplanning.Recipe{
+											Steps: []*mealplanning.RecipeStep{
 												{
-													Ingredients: []*types.RecipeStepIngredient{
+													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: carrot,
 															Quantity: types.Float32RangeWithOptionalMax{
@@ -96,18 +97,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 					},
 				},
 				{
-					Options: []*types.MealPlanOption{
+					Options: []*mealplanning.MealPlanOption{
 						{
 							Chosen:    true,
 							MealScale: 1.0,
-							Meal: types.Meal{
-								Components: []*types.MealComponent{
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
 									{
 										RecipeScale: 1.0,
-										Recipe: types.Recipe{
-											Steps: []*types.RecipeStep{
+										Recipe: mealplanning.Recipe{
+											Steps: []*mealplanning.RecipeStep{
 												{
-													Ingredients: []*types.RecipeStepIngredient{
+													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: celery,
 															Quantity: types.Float32RangeWithOptionalMax{
@@ -127,18 +128,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 					},
 				},
 				{
-					Options: []*types.MealPlanOption{
+					Options: []*mealplanning.MealPlanOption{
 						{
 							Chosen:    true,
 							MealScale: 1.0,
-							Meal: types.Meal{
-								Components: []*types.MealComponent{
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
 									{
 										RecipeScale: 1.0,
-										Recipe: types.Recipe{
-											Steps: []*types.RecipeStep{
+										Recipe: mealplanning.Recipe{
+											Steps: []*mealplanning.RecipeStep{
 												{
-													Ingredients: []*types.RecipeStepIngredient{
+													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: salt,
 															Quantity: types.Float32RangeWithOptionalMax{
@@ -158,18 +159,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 					},
 				},
 				{
-					Options: []*types.MealPlanOption{
+					Options: []*mealplanning.MealPlanOption{
 						{
 							Chosen:    true,
 							MealScale: 1.0,
-							Meal: types.Meal{
-								Components: []*types.MealComponent{
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
 									{
 										RecipeScale: 1.0,
-										Recipe: types.Recipe{
-											Steps: []*types.RecipeStep{
+										Recipe: mealplanning.Recipe{
+											Steps: []*mealplanning.RecipeStep{
 												{
-													Ingredients: []*types.RecipeStepIngredient{
+													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
 															Quantity: types.Float32RangeWithOptionalMax{
@@ -193,9 +194,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		ctx := context.Background()
 
-		expectedMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{
+		expectedMap := map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 			onion.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusNeeds,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -205,7 +206,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				},
 			},
 			carrot.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusNeeds,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -215,7 +216,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				},
 			},
 			celery.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusNeeds,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -225,7 +226,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				},
 			},
 			salt.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusNeeds,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -239,7 +240,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
 		assert.NoError(t, err)
 
-		actualMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{}
+		actualMap := map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{}
 		for i := range actual {
 			actualMap[actual[i].ValidIngredientID] = actual[i]
 			expectedMap[actual[i].ValidIngredientID].ID = actual[i].ID
@@ -261,22 +262,22 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		celery := fakes.BuildFakeValidIngredient()
 		grams := fakes.BuildFakeValidMeasurementUnit()
 
-		expectedMealPlan := &types.MealPlan{
+		expectedMealPlan := &mealplanning.MealPlan{
 			ID: fakes.BuildFakeID(),
-			Events: []*types.MealPlanEvent{
+			Events: []*mealplanning.MealPlanEvent{
 				{
-					Options: []*types.MealPlanOption{
+					Options: []*mealplanning.MealPlanOption{
 						{
 							Chosen:    true,
 							MealScale: 1.0,
-							Meal: types.Meal{
-								Components: []*types.MealComponent{
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
 									{
 										RecipeScale: 1.0,
-										Recipe: types.Recipe{
-											Steps: []*types.RecipeStep{
+										Recipe: mealplanning.Recipe{
+											Steps: []*mealplanning.RecipeStep{
 												{
-													Ingredients: []*types.RecipeStepIngredient{
+													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: onion,
 															Quantity: types.Float32RangeWithOptionalMax{
@@ -296,18 +297,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 					},
 				},
 				{
-					Options: []*types.MealPlanOption{
+					Options: []*mealplanning.MealPlanOption{
 						{
 							Chosen:    true,
 							MealScale: 1.0,
-							Meal: types.Meal{
-								Components: []*types.MealComponent{
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
 									{
 										RecipeScale: 2.0,
-										Recipe: types.Recipe{
-											Steps: []*types.RecipeStep{
+										Recipe: mealplanning.Recipe{
+											Steps: []*mealplanning.RecipeStep{
 												{
-													Ingredients: []*types.RecipeStepIngredient{
+													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: carrot,
 															Quantity: types.Float32RangeWithOptionalMax{
@@ -327,18 +328,18 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 					},
 				},
 				{
-					Options: []*types.MealPlanOption{
+					Options: []*mealplanning.MealPlanOption{
 						{
 							Chosen:    true,
 							MealScale: 1.0,
-							Meal: types.Meal{
-								Components: []*types.MealComponent{
+							Meal: mealplanning.Meal{
+								Components: []*mealplanning.MealComponent{
 									{
 										RecipeScale: 3.0,
-										Recipe: types.Recipe{
-											Steps: []*types.RecipeStep{
+										Recipe: mealplanning.Recipe{
+											Steps: []*mealplanning.RecipeStep{
 												{
-													Ingredients: []*types.RecipeStepIngredient{
+													Ingredients: []*mealplanning.RecipeStepIngredient{
 														{
 															Ingredient: celery,
 															Quantity: types.Float32RangeWithOptionalMax{
@@ -362,9 +363,9 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 
 		ctx := context.Background()
 
-		expectedMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{
+		expectedMap := map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
 			onion.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusNeeds,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -374,7 +375,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				},
 			},
 			carrot.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusNeeds,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -384,7 +385,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				},
 			},
 			celery.ID: {
-				Status:                 types.MealPlanGroceryListItemStatusNeeds,
+				Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
 				ValidMeasurementUnitID: grams.ID,
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
@@ -398,7 +399,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 		actual, err := listGenerator.GenerateGroceryListInputs(ctx, expectedMealPlan)
 		assert.NoError(t, err)
 
-		actualMap := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{}
+		actualMap := map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{}
 		for i := range actual {
 			actualMap[actual[i].ValidIngredientID] = actual[i]
 			expectedMap[actual[i].ValidIngredientID].ID = actual[i].ID

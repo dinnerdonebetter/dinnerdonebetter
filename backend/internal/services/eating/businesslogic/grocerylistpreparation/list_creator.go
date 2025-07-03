@@ -4,18 +4,19 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/shopspring/decimal"
 )
 
 // GroceryListCreator creates meal plan grocery lists for a given meal plan.
 type GroceryListCreator interface {
-	GenerateGroceryListInputs(ctx context.Context, mealPlan *types.MealPlan) ([]*types.MealPlanGroceryListItemDatabaseCreationInput, error)
+	GenerateGroceryListInputs(ctx context.Context, mealPlan *mealplanning.MealPlan) ([]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput, error)
 }
 
 type groceryListCreator struct {
@@ -30,11 +31,11 @@ func NewGroceryListCreator(logger logging.Logger, tracerProvider tracing.TracerP
 	}
 }
 
-func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, mealPlan *types.MealPlan) ([]*types.MealPlanGroceryListItemDatabaseCreationInput, error) {
+func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, mealPlan *mealplanning.MealPlan) ([]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
-	inputs := map[string]*types.MealPlanGroceryListItemDatabaseCreationInput{}
+	inputs := map[string]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{}
 	logger := g.logger.Clone().WithValue(keys.MealPlanIDKey, mealPlan.ID)
 
 	for _, event := range mealPlan.Events {
@@ -59,8 +60,8 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 										maxQty = &maximum
 									}
 
-									inputs[ingredient.Ingredient.ID] = &types.MealPlanGroceryListItemDatabaseCreationInput{
-										Status:                 types.MealPlanGroceryListItemStatusNeeds,
+									inputs[ingredient.Ingredient.ID] = &mealplanning.MealPlanGroceryListItemDatabaseCreationInput{
+										Status:                 mealplanning.MealPlanGroceryListItemStatusNeeds,
 										ValidMeasurementUnitID: ingredient.MeasurementUnit.ID,
 										ValidIngredientID:      ingredient.Ingredient.ID,
 										BelongsToMealPlan:      mealPlan.ID,
@@ -93,7 +94,7 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 		}
 	}
 
-	dbInputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{}
+	dbInputs := []*mealplanning.MealPlanGroceryListItemDatabaseCreationInput{}
 	for _, i := range inputs {
 		dbInputs = append(dbInputs, i)
 	}

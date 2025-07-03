@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

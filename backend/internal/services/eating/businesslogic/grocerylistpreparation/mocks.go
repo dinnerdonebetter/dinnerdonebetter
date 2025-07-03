@@ -3,7 +3,7 @@ package grocerylistpreparation
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -16,8 +16,8 @@ type MockGroceryListCreator struct {
 }
 
 // GenerateGroceryListInputs is a mock function.
-func (m *MockGroceryListCreator) GenerateGroceryListInputs(ctx context.Context, mealPlan *types.MealPlan) ([]*types.MealPlanGroceryListItemDatabaseCreationInput, error) {
+func (m *MockGroceryListCreator) GenerateGroceryListInputs(ctx context.Context, mealPlan *mealplanning.MealPlan) ([]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput, error) {
 	returnValues := m.Called(ctx, mealPlan)
 
-	return returnValues.Get(0).([]*types.MealPlanGroceryListItemDatabaseCreationInput), returnValues.Error(1)
+	return returnValues.Get(0).([]*mealplanning.MealPlanGroceryListItemDatabaseCreationInput), returnValues.Error(1)
 }

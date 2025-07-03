@@ -5,11 +5,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -32,8 +33,8 @@ func TestRecipeGrapher_makeGraphForRecipe(T *testing.T) {
 		g := newAnalyzerForTest(t)
 
 		ctx := context.Background()
-		r := &types.Recipe{
-			Steps: []*types.RecipeStep{
+		r := &mealplanning.Recipe{
+			Steps: []*mealplanning.RecipeStep{
 				{},
 			},
 		}
@@ -53,8 +54,8 @@ func TestRecipeGrapher_makeDAGForRecipe(T *testing.T) {
 		g := newAnalyzerForTest(t)
 
 		ctx := context.Background()
-		r := &types.Recipe{
-			Steps: []*types.RecipeStep{
+		r := &mealplanning.Recipe{
+			Steps: []*mealplanning.RecipeStep{
 				{},
 			},
 		}
@@ -92,17 +93,17 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 		recipeStepID := fakes.BuildFakeID()
 
 		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipe := &types.Recipe{
+		exampleRecipe := &mealplanning.Recipe{
 			Name: "Recipe 1",
 			ID:   exampleRecipeID,
-			Steps: []*types.RecipeStep{
+			Steps: []*mealplanning.RecipeStep{
 				{
 					BelongsToRecipe: exampleRecipeID,
 					ID:              recipeStepID,
-					Preparation:     types.ValidPreparation{Name: "dice"},
-					Ingredients: []*types.RecipeStepIngredient{
+					Preparation:     mealplanning.ValidPreparation{Name: "dice"},
+					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
-							Ingredient: &types.ValidIngredient{
+							Ingredient: &mealplanning.ValidIngredient{
 								StorageTemperatureInCelsius: types.OptionalFloat32Range{
 									Min: pointer.To(float32(2.5)),
 								},
@@ -114,27 +115,27 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							Name:                "chicken breast",
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStepID,
-							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
+							MeasurementUnit:     mealplanning.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 900,
 								Max: pointer.To(float32(900)),
 							},
 						},
 					},
-					Products: []*types.RecipeStepProduct{
+					Products: []*mealplanning.RecipeStepProduct{
 						{
 							Name:                "diced chicken breast",
-							Type:                types.RecipeStepProductIngredientType,
+							Type:                mealplanning.RecipeStepProductIngredientType,
 							BelongsToRecipeStep: recipeStepID,
 							ID:                  fakes.BuildFakeID(),
-							MeasurementUnit:     &types.ValidMeasurementUnit{},
+							MeasurementUnit:     &mealplanning.ValidMeasurementUnit{},
 						},
 					},
 				},
 			},
 		}
 
-		expected := []*types.MealPlanTaskDatabaseCreationInput{
+		expected := []*mealplanning.MealPlanTaskDatabaseCreationInput{
 			{
 				CreationExplanation: buildThawStepCreationExplanation(1, 0),
 				MealPlanOptionID:    exampleMealPlanOption.ID,
@@ -174,23 +175,23 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 		dicedCarrotRecipeStepProductID := fakes.BuildFakeID()
 		dicedCeleryRecipeStepProductID := fakes.BuildFakeID()
 
-		recipe := &types.Recipe{
+		recipe := &mealplanning.Recipe{
 			Name: "example recipe",
-			Steps: []*types.RecipeStep{
+			Steps: []*mealplanning.RecipeStep{
 				{
 					ID:          step1ID,
 					Preparation: *dice,
-					Ingredients: []*types.RecipeStepIngredient{
+					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
 							Ingredient: fakes.BuildFakeValidIngredient(),
 							Name:       "onion",
 						},
 					},
-					Products: []*types.RecipeStepProduct{
+					Products: []*mealplanning.RecipeStepProduct{
 						{
 							ID:   dicedOnionRecipeStepProductID,
 							Name: "diced onion",
-							Type: types.RecipeStepProductIngredientType,
+							Type: mealplanning.RecipeStepProductIngredientType,
 						},
 					},
 					Notes: "first step",
@@ -199,17 +200,17 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 				{
 					ID:          step2ID,
 					Preparation: *dice,
-					Ingredients: []*types.RecipeStepIngredient{
+					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
 							Ingredient: fakes.BuildFakeValidIngredient(),
 							Name:       "carrot",
 						},
 					},
-					Products: []*types.RecipeStepProduct{
+					Products: []*mealplanning.RecipeStepProduct{
 						{
 							ID:   dicedCarrotRecipeStepProductID,
 							Name: "diced carrot",
-							Type: types.RecipeStepProductIngredientType,
+							Type: mealplanning.RecipeStepProductIngredientType,
 						},
 					},
 					Notes: "second step",
@@ -218,17 +219,17 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 				{
 					ID:          step3ID,
 					Preparation: *dice,
-					Ingredients: []*types.RecipeStepIngredient{
+					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
 							Ingredient: fakes.BuildFakeValidIngredient(),
 							Name:       "celery",
 						},
 					},
-					Products: []*types.RecipeStepProduct{
+					Products: []*mealplanning.RecipeStepProduct{
 						{
 							ID:   dicedCeleryRecipeStepProductID,
 							Name: "diced celery",
-							Type: types.RecipeStepProductIngredientType,
+							Type: mealplanning.RecipeStepProductIngredientType,
 						},
 					},
 					Notes: "third step",
@@ -237,7 +238,7 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 				{
 					ID:          step4ID,
 					Preparation: *sautee,
-					Ingredients: []*types.RecipeStepIngredient{
+					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
 							Name:                "diced onion",
 							RecipeStepProductID: pointer.To(dicedOnionRecipeStepProductID),
@@ -251,11 +252,11 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 							RecipeStepProductID: pointer.To(dicedCeleryRecipeStepProductID),
 						},
 					},
-					Products: []*types.RecipeStepProduct{
+					Products: []*mealplanning.RecipeStepProduct{
 						{
 							ID:   dicedOnionRecipeStepProductID,
 							Name: "sauteed mire poix",
-							Type: types.RecipeStepProductIngredientType,
+							Type: mealplanning.RecipeStepProductIngredientType,
 						},
 					},
 					Notes: "fourth step",

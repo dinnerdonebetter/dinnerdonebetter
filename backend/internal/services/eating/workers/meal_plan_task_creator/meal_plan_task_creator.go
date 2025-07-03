@@ -3,7 +3,8 @@ package mealplantaskcreator
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	mealplanning "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -13,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/hashicorp/go-multierror"
 )
@@ -28,7 +28,7 @@ type Worker struct {
 	logger                  logging.Logger
 	tracer                  tracing.Tracer
 	analyzer                recipeanalysis.RecipeAnalyzer
-	dataManager             database.DataManager
+	dataManager             mealplanning.Repository
 	postUpdatesPublisher    messagequeue.Publisher
 	processedRecordsCounter metrics.Int64Counter
 }
@@ -37,7 +37,7 @@ func NewMealPlanTaskCreator(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	analyzer recipeanalysis.RecipeAnalyzer,
-	dataManager database.DataManager, // TODO: make this less potent
+	dataManager mealplanning.Repository,
 	publisherProvider messagequeue.PublisherProvider,
 	metricsProvider metrics.Provider,
 	cfg *msgconfig.QueuesConfig,
@@ -88,12 +88,14 @@ func (w *Worker) Work(ctx context.Context) error {
 
 		w.processedRecordsCounter.Add(ctx, int64(len(createdMealPlanTasks)))
 
-		for _, createdStep := range createdMealPlanTasks {
-			if publishErr := w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-				EventType:      types.MealPlanTaskCreatedServiceEventType,
-				MealPlanTask:   createdStep,
-				MealPlanTaskID: createdStep.ID,
-				MealPlanID:     mealPlanID,
+		for _, createdTask := range createdMealPlanTasks {
+			if publishErr := w.postUpdatesPublisher.Publish(ctx, &audit.DataChangeMessage{
+				EventType: mealplanning.MealPlanTaskCreatedServiceEventType,
+				Context: map[string]any{
+					keys.MealPlanIDKey:     mealPlanID,
+					keys.MealPlanTaskIDKey: createdTask.ID,
+					"meal_plan_task":       createdTask,
+				},
 			}); publishErr != nil {
 				observability.AcknowledgeError(publishErr, l, span, "publishing data change event")
 			}
@@ -108,7 +110,7 @@ func (w *Worker) Work(ctx context.Context) error {
 }
 
 // determineCreatableMealPlanTasks determines which meal plan tasks are creatable for a recipe.
-func (w *Worker) determineCreatableMealPlanTasks(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
+func (w *Worker) determineCreatableMealPlanTasks(ctx context.Context) (map[string][]*mealplanning.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -125,7 +127,7 @@ func (w *Worker) determineCreatableMealPlanTasks(ctx context.Context) (map[strin
 		logger.Info("determining creatable steps")
 	}
 
-	inputs := map[string][]*types.MealPlanTaskDatabaseCreationInput{}
+	inputs := map[string][]*mealplanning.MealPlanTaskDatabaseCreationInput{}
 	for _, result := range results {
 		l := logger.Clone().WithValues(map[string]any{
 			keys.MealPlanIDKey:       result.MealPlanID,
@@ -137,7 +139,7 @@ func (w *Worker) determineCreatableMealPlanTasks(ctx context.Context) (map[strin
 		l.Info("fetching meal plan event")
 
 		if _, ok := inputs[result.MealPlanID]; !ok {
-			inputs[result.MealPlanID] = []*types.MealPlanTaskDatabaseCreationInput{}
+			inputs[result.MealPlanID] = []*mealplanning.MealPlanTaskDatabaseCreationInput{}
 		}
 
 		for _, recipeID := range result.RecipeIDs {

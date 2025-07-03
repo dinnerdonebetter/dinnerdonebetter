@@ -3,7 +3,8 @@ package mealplangrocerylistinitializer
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -13,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/hashicorp/go-multierror"
 )
@@ -27,7 +27,7 @@ var _ workers.Worker = (*Worker)(nil)
 type Worker struct {
 	logger                  logging.Logger
 	tracer                  tracing.Tracer
-	dataManager             database.DataManager // TODO: make this less potent
+	dataManager             types.Repository // TODO: make this less potent
 	postUpdatesPublisher    messagequeue.Publisher
 	recordsProcessedCounter metrics.Int64Counter
 	groceryListCreator      grocerylistpreparation.GroceryListCreator
@@ -103,11 +103,13 @@ func (w *Worker) Work(ctx context.Context) error {
 			}
 			createdCount++
 
-			if err = w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
-				MealPlanGroceryListItem:   createdItem,
-				MealPlanGroceryListItemID: createdItem.ID,
-				EventType:                 types.MealPlanGroceryListItemCreatedServiceEventType,
-				MealPlanID:                dbInput.BelongsToMealPlan,
+			if err = w.postUpdatesPublisher.Publish(ctx, &audit.DataChangeMessage{
+				EventType: types.MealPlanGroceryListItemCreatedServiceEventType,
+				Context: map[string]any{
+					"groceryListItem":                 createdItem,
+					keys.MealPlanGroceryListItemIDKey: createdItem.ID,
+					keys.MealPlanIDKey:                dbInput.BelongsToMealPlan,
+				},
 			}); err != nil {
 				l.Error("failed to write update message for meal plan grocery list item", err)
 			}
