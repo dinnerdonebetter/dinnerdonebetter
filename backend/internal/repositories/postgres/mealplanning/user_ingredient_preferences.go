@@ -241,7 +241,7 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *mea
 
 	validIngredientIDs := []string{}
 	if input.ValidIngredientGroupID != "" {
-		group, err := q.recipeEnumsRepository.GetValidIngredientGroup(ctx, input.ValidIngredientGroupID)
+		group, err := q.recipeenumsRepository.GetValidIngredientGroup(ctx, input.ValidIngredientGroupID)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "getting valid ingredient group")
 		}

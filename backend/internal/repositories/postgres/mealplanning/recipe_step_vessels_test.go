@@ -77,7 +77,7 @@ func TestQuerier_Integration_RecipeStepVessels(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 	exampleRecipeStep := createdRecipe.Steps[0]
 
-	validVessel := recipeenums.CreateValidVesselForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+	validVessel := recipeenums.CreateValidVesselForTest(t, ctx, nil, dbc.recipeenumsRepository)
 	exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 	exampleRecipeStepVessel.Vessel = validVessel
 	exampleRecipeStepVessel.BelongsToRecipeStep = exampleRecipeStep.ID
@@ -90,7 +90,7 @@ func TestQuerier_Integration_RecipeStepVessels(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		validVessel = recipeenums.CreateValidVesselForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+		validVessel = recipeenums.CreateValidVesselForTest(t, ctx, nil, dbc.recipeenumsRepository)
 		input := fakes.BuildFakeRecipeStepVessel()
 		input.Vessel = validVessel
 		input.BelongsToRecipeStep = exampleRecipeStep.ID

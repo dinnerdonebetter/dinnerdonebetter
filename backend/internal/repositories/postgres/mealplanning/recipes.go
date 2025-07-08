@@ -550,7 +550,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *mealplanning.RecipeDa
 	}
 
 	if input.AlsoCreateMeal {
-		if _, err = q.CreateMealInDatabase(ctx, tx, &mealplanning.MealDatabaseCreationInput{
+		if _, err = q.createMeal(ctx, tx, &mealplanning.MealDatabaseCreationInput{
 			ID:          identifiers.New(),
 			Name:        x.Name,
 			Description: x.Description,

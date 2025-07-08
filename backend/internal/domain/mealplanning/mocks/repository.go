@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	"github.com/stretchr/testify/mock"
@@ -54,12 +53,6 @@ func (m *Repository) SearchForMeals(ctx context.Context, query string, filter *f
 // CreateMeal is a mock function.
 func (m *Repository) CreateMeal(ctx context.Context, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
 	returnValues := m.Called(ctx, input)
-	return returnValues.Get(0).(*mealplanning.Meal), returnValues.Error(1)
-}
-
-// CreateMealInDatabase is a mock function.
-func (m *Repository) CreateMealInDatabase(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
-	returnValues := m.Called(ctx, querier, input)
 	return returnValues.Get(0).(*mealplanning.Meal), returnValues.Error(1)
 }
 

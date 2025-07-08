@@ -78,8 +78,8 @@ func TestQuerier_Integration_RecipeStepIngredients(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 	exampleRecipeStep := createdRecipe.Steps[0]
 
-	validMeasurementUnit := recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeEnumsRepository)
-	validIngredient := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+	validMeasurementUnit := recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	validIngredient := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
 	exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 	exampleRecipeStepIngredient.Ingredient = validIngredient
 	exampleRecipeStepIngredient.MeasurementUnit = *validMeasurementUnit
@@ -93,8 +93,8 @@ func TestQuerier_Integration_RecipeStepIngredients(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		validMeasurementUnit = recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeEnumsRepository)
-		validIngredient = recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+		validMeasurementUnit = recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
+		validIngredient = recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
 		input := fakes.BuildFakeRecipeStepIngredient()
 		input.Ingredient = validIngredient
 		input.MeasurementUnit = *validMeasurementUnit

@@ -77,7 +77,7 @@ func TestQuerier_Integration_RecipeStepInstruments(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 	exampleRecipeStep := createdRecipe.Steps[0]
 
-	validInstrument := recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+	validInstrument := recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
 	exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 	exampleRecipeStepInstrument.Instrument = validInstrument
 	exampleRecipeStepInstrument.BelongsToRecipeStep = exampleRecipeStep.ID
@@ -90,7 +90,7 @@ func TestQuerier_Integration_RecipeStepInstruments(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		validInstrument = recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+		validInstrument = recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
 		input := fakes.BuildFakeRecipeStepInstrument()
 		input.Instrument = validInstrument
 		input.BelongsToRecipeStep = exampleRecipeStep.ID

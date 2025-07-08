@@ -5,12 +5,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	settings "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 const (
@@ -20,32 +20,32 @@ const (
 // Querier is the audit log entry client.
 type Querier struct {
 	database.Client
-	recipeEnumsRepository recipeenums.Repository
+	recipeenumsRepository recipeenums.Repository
 	tracer                tracing.Tracer
 	logger                logging.Logger
-	generatedQuerier      generated.Querier
+	generatedQuerier      generated2.Querier
 	identityRepo          identity.Repository
 	auditLogEntryRepo     audit.Repository
 	db                    *sql.DB
 }
 
-// ProvideRepository provides a new client.
-func ProvideRepository(
+// ProvideSettingsRepository provides a new client.
+func ProvideSettingsRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,
 	identityRepo identity.Repository,
-	recipeEnumsRepository recipeenums.Repository,
+	recipeenumsRepository recipeenums.Repository,
 	client database.Client,
-) mealplanning.Repository {
+) settings.Repository {
 	c := &Querier{
 		Client:                client,
 		db:                    client.DB(),
 		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		generatedQuerier:      generated.New(),
+		generatedQuerier:      generated2.New(),
 		auditLogEntryRepo:     auditLogEntryRepo,
 		identityRepo:          identityRepo,
-		recipeEnumsRepository: recipeEnumsRepository,
+		recipeenumsRepository: recipeenumsRepository,
 		logger:                logging.EnsureLogger(logger).WithName(o11yName),
 	}
 

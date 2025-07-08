@@ -328,7 +328,7 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 }
 
 // CreateMeal creates a meal in the database.
-func (q *Querier) CreateMealInDatabase(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
+func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -391,7 +391,7 @@ func (q *Querier) CreateMeal(ctx context.Context, input *mealplanning.MealDataba
 		return nil, observability.PrepareError(err, span, "beginning transaction")
 	}
 
-	x, err := q.CreateMealInDatabase(ctx, tx, input)
+	x, err := q.createMeal(ctx, tx, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "creating meal")
 	}

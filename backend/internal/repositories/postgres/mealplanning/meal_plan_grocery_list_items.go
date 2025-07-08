@@ -59,20 +59,20 @@ func (q *Querier) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanG
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
 
-	validIngredient, err := q.recipeEnumsRepository.GetValidIngredient(ctx, mealPlanGroceryListItem.Ingredient.ID)
+	validIngredient, err := q.recipeenumsRepository.GetValidIngredient(ctx, mealPlanGroceryListItem.Ingredient.ID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching grocery list item ingredient")
 	}
 	mealPlanGroceryListItem.Ingredient = *validIngredient
 
-	validMeasurementUnit, err := q.recipeEnumsRepository.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.MeasurementUnit.ID)
+	validMeasurementUnit, err := q.recipeenumsRepository.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.MeasurementUnit.ID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching grocery list item measurement unit")
 	}
 	mealPlanGroceryListItem.MeasurementUnit = *validMeasurementUnit
 
 	if mealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
-		purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.recipeEnumsRepository.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
+		purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.recipeenumsRepository.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
 		if getPurchasedMeasurementUnitErr != nil {
 			return nil, observability.PrepareAndLogError(getPurchasedMeasurementUnitErr, logger, span, "fetching grocery list item purchased measurement unit")
 		}
@@ -190,7 +190,7 @@ func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, me
 	}
 
 	if mealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
-		purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.recipeEnumsRepository.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
+		purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.recipeenumsRepository.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
 		if getPurchasedMeasurementUnitErr != nil {
 			return nil, observability.PrepareAndLogError(getPurchasedMeasurementUnitErr, logger, span, "fetching grocery list item purchased measurement unit")
 		}
@@ -300,7 +300,7 @@ func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, me
 		}
 
 		if mealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
-			purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.recipeEnumsRepository.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
+			purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.recipeenumsRepository.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
 			if getPurchasedMeasurementUnitErr != nil {
 				return nil, observability.PrepareAndLogError(getPurchasedMeasurementUnitErr, logger, span, "fetching grocery list item purchased measurement unit")
 			}

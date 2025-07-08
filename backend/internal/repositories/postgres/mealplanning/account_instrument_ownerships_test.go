@@ -64,7 +64,7 @@ func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
 	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
 
-	instrument := recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+	instrument := recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
 
 	exampleAccountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
 	exampleAccountInstrumentOwnership.BelongsToAccount = account.ID
@@ -79,7 +79,7 @@ func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		newInstrument := recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+		newInstrument := recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
 		input := fakes.BuildFakeAccountInstrumentOwnership()
 		input.BelongsToAccount = account.ID
 		input.Instrument = *newInstrument

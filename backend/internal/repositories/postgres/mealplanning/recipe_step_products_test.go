@@ -75,7 +75,7 @@ func TestQuerier_Integration_RecipeStepProducts(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 	exampleRecipeStep := createdRecipe.Steps[0]
 
-	validMeasurementUnit := recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+	validMeasurementUnit := recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
 	exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 	exampleRecipeStepProduct.MeasurementUnit = validMeasurementUnit
 	exampleRecipeStepProduct.BelongsToRecipeStep = exampleRecipeStep.ID
@@ -88,7 +88,7 @@ func TestQuerier_Integration_RecipeStepProducts(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		validMeasurementUnit = recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+		validMeasurementUnit = recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
 		input := fakes.BuildFakeRecipeStepProduct()
 		input.MeasurementUnit = validMeasurementUnit
 		input.BelongsToRecipeStep = exampleRecipeStep.ID
