@@ -3,10 +3,37 @@ MYSELF        := $(shell id -u)
 MY_GROUP      := $(shell id -g)
 DEV_NAMESPACE := dev
 
+# CONTAINER VERSIONS
+PROTOBUF_FORMAT := bufbuild/buf:1.5.0
+
+# COMMANDS
+CONTAINER_RUNNER      := docker
+RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD)
+RUN_CONTAINER_AS_USER := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP)
+FORMAT_PROTOBUFS      := $(RUN_CONTAINER) $(PROTOBUF_FORMAT)
+
 .PHONY: ensure_yamlfmt_installed
 ensure_yamlfmt_installed:
 ifeq (, $(shell which yamlfmt))
 	$(shell go install github.com/google/yamlfmt/cmd/yamlfmt@latest)
+endif
+
+.PHONY: ensure_protoc_installed
+ensure_protoc_installed:
+ifeq (, $(shell which protoc-gen-go-grpc))
+	$(shell brew installl protobuf)
+endif
+
+.PHONY: ensure_protoc-gen-go_installed
+ensure_protoc-gen-go_installed: ensure_protoc_installed
+ifeq (, $(shell which protoc-gen-go-grpc))
+	$(shell go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.4)
+endif
+
+.PHONY: ensure_protoc-gen-go-grpc_installed
+ensure_protoc-gen-go-grpc_installed: ensure_protoc_installed
+ifeq (, $(shell which protoc-gen-go-grpc))
+	$(shell go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1)
 endif
 
 .PHONY: setup
@@ -65,3 +92,30 @@ deploy_dev:
 .PHONY: nuke_dev
 nuke_dev:
 	kubectl delete deployments,cronjobs,configmaps,services,secrets --namespace $(DEV_NAMESPACE) --selector='managed_by!=terraform'
+
+.PHONY: format_proto
+format_proto:
+	$(FORMAT_PROTOBUFS) format --path proto --write
+
+# PATHS
+PROTO_FILES_PATH          := proto/*.proto
+PROTO_GO_OUTPUT_PATH      := backend
+PROTO_OUTPUT_BACKEND_PATH := backend/internal/grpc
+BACKEND_REPO_NAME         := github.com/dinnerdonebetter/backend
+GRPC_SERVICES             := core eating
+
+.PHONY: backend_proto
+backend_proto: ensure_protoc_installed ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed format_proto
+	mkdir -p $(PROTO_OUTPUT_BACKEND_PATH)
+	for svc in $(GRPC_SERVICES); do \
+		protoc --go_out=$(PROTO_GO_OUTPUT_PATH) \
+			--go-grpc_out=$(PROTO_GO_OUTPUT_PATH) \
+			--go_opt=module=$(BACKEND_REPO_NAME) \
+			--go-grpc_opt=module=$(BACKEND_REPO_NAME) \
+			--proto_path proto/ \
+			$(PROTO_FILES_PATH); \
+	done
+	(cd backend && $(MAKE) format_golang)
+
+.PHONY: proto
+proto: backend_proto
