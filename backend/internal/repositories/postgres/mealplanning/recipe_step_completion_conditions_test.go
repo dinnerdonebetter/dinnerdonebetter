@@ -33,7 +33,7 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 	require.NoError(t, getRecipeStepErr)
 	require.NotNil(t, recipeStep)
 
-	ingredientState, getIngredientStateErr := dbc.recipeenumsRepository.GetValidIngredientState(ctx, exampleRecipeStepCompletionCondition.IngredientState.ID)
+	ingredientState, getIngredientStateErr := dbc.recipeEnumsRepository.GetValidIngredientState(ctx, exampleRecipeStepCompletionCondition.IngredientState.ID)
 	require.NoError(t, getIngredientStateErr)
 	require.NotNil(t, ingredientState)
 
@@ -91,7 +91,7 @@ func TestQuerier_Integration_RecipeStepCompletionConditions(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 	exampleRecipeStep := createdRecipe.Steps[0]
 
-	ingredientState := recipeenums.CreateValidIngredientStateForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	ingredientState := recipeenums.CreateValidIngredientStateForTest(t, ctx, nil, dbc.recipeEnumsRepository)
 	exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 	exampleRecipeStepCompletionCondition.IngredientState = *ingredientState
 	exampleRecipeStepCompletionCondition.BelongsToRecipeStep = exampleRecipeStep.ID

@@ -1,0 +1,17 @@
+package recipes
+
+type Repository interface {
+	RecipeDataManager
+	RecipeManagementDataManager
+	RecipeMediaDataManager
+	RecipePrepTaskDataManager
+	RecipeRatingDataManager
+	RecipeStepDataManager
+	RecipeStepCompletionConditionDataManager
+	RecipeStepIngredientDataManager
+	RecipeStepVesselDataManager
+	RecipeStepProductDataManager
+	RecipeStepInstrumentDataManager
+	UserIngredientPreferenceDataManager
+	AccountInstrumentOwnershipDataManager
+}

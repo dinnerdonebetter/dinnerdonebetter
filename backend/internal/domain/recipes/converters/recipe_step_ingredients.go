@@ -1,0 +1,98 @@
+package converters
+
+import (
+	"github.com/dinnerdonebetter/backend/internal/domain/recipes"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
+)
+
+// ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput creates a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredientCreationRequestInput.
+func ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input *recipes.RecipeStepIngredientCreationRequestInput) *recipes.RecipeStepIngredientDatabaseCreationInput {
+	x := &recipes.RecipeStepIngredientDatabaseCreationInput{
+		ID:                identifiers.New(),
+		IngredientID:      input.IngredientID,
+		Name:              input.Name,
+		MeasurementUnitID: input.MeasurementUnitID,
+		Quantity: types.Float32RangeWithOptionalMax{
+			Max: input.Quantity.Max,
+			Min: input.Quantity.Min,
+		},
+		QuantityNotes:                   input.QuantityNotes,
+		IngredientNotes:                 input.IngredientNotes,
+		Optional:                        input.Optional,
+		OptionIndex:                     input.OptionIndex,
+		ProductOfRecipeStepIndex:        input.ProductOfRecipeStepIndex,
+		ProductOfRecipeStepProductIndex: input.ProductOfRecipeStepProductIndex,
+		VesselIndex:                     input.VesselIndex,
+		ToTaste:                         input.ToTaste,
+		ProductPercentageToUse:          input.ProductPercentageToUse,
+	}
+
+	return x
+}
+
+// ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput creates a RecipeStepIngredientUpdateRequestInput from a RecipeStepIngredient.
+func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *recipes.RecipeStepIngredient) *recipes.RecipeStepIngredientUpdateRequestInput {
+	x := &recipes.RecipeStepIngredientUpdateRequestInput{
+		IngredientID:        &input.Ingredient.ID,
+		RecipeStepProductID: input.RecipeStepProductID,
+		Name:                &input.Name,
+		MeasurementUnitID:   &input.MeasurementUnit.ID,
+		QuantityNotes:       &input.QuantityNotes,
+		IngredientNotes:     &input.IngredientNotes,
+		BelongsToRecipeStep: &input.BelongsToRecipeStep,
+		Quantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
+			Max: input.Quantity.Max,
+			Min: &input.Quantity.Min,
+		},
+		Optional:               &input.Optional,
+		OptionIndex:            &input.OptionIndex,
+		VesselIndex:            input.VesselIndex,
+		ToTaste:                &input.ToTaste,
+		ProductPercentageToUse: input.ProductPercentageToUse,
+	}
+
+	return x
+}
+
+// ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput builds a RecipeStepIngredientCreationRequestInput from a RecipeStepIngredient.
+func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input *recipes.RecipeStepIngredient) *recipes.RecipeStepIngredientCreationRequestInput {
+	return &recipes.RecipeStepIngredientCreationRequestInput{
+		Name:              input.Name,
+		Optional:          input.Optional,
+		IngredientID:      &input.Ingredient.ID,
+		MeasurementUnitID: input.MeasurementUnit.ID,
+		Quantity: types.Float32RangeWithOptionalMax{
+			Max: input.Quantity.Max,
+			Min: input.Quantity.Min,
+		},
+		QuantityNotes:          input.QuantityNotes,
+		IngredientNotes:        input.IngredientNotes,
+		OptionIndex:            input.OptionIndex,
+		VesselIndex:            input.VesselIndex,
+		ToTaste:                input.ToTaste,
+		ProductPercentageToUse: input.ProductPercentageToUse,
+	}
+}
+
+// ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput builds a RecipeStepIngredientDatabaseCreationInput from a RecipeStepIngredient.
+func ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(input *recipes.RecipeStepIngredient) *recipes.RecipeStepIngredientDatabaseCreationInput {
+	return &recipes.RecipeStepIngredientDatabaseCreationInput{
+		ID:                input.ID,
+		Name:              input.Name,
+		Optional:          input.Optional,
+		IngredientID:      &input.Ingredient.ID,
+		MeasurementUnitID: input.MeasurementUnit.ID,
+		Quantity: types.Float32RangeWithOptionalMax{
+			Max: input.Quantity.Max,
+			Min: input.Quantity.Min,
+		},
+		QuantityNotes:          input.QuantityNotes,
+		IngredientNotes:        input.IngredientNotes,
+		BelongsToRecipeStep:    input.BelongsToRecipeStep,
+		OptionIndex:            input.OptionIndex,
+		VesselIndex:            input.VesselIndex,
+		ToTaste:                input.ToTaste,
+		ProductPercentageToUse: input.ProductPercentageToUse,
+	}
+}

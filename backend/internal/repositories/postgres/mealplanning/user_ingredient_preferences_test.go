@@ -62,7 +62,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	ingredient := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	ingredient := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeEnumsRepository)
 
 	exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 	exampleUserIngredientPreference.BelongsToUser = user.ID
@@ -73,7 +73,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	createdUserIngredientPreferences = append(createdUserIngredientPreferences, createUserIngredientPreferenceForTest(t, ctx, exampleUserIngredientPreference, dbc))
 
 	// update
-	ingredient2 := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	ingredient2 := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeEnumsRepository)
 	updatedUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 	updatedUserIngredientPreference.ID = createdUserIngredientPreferences[0].ID
 	updatedUserIngredientPreference.BelongsToUser = user.ID
@@ -83,7 +83,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeUserIngredientPreference()
-		ingredient3 := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
+		ingredient3 := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeEnumsRepository)
 		input.BelongsToUser = user.ID
 		input.Ingredient = *ingredient3
 		createdUserIngredientPreferences = append(createdUserIngredientPreferences, createUserIngredientPreferenceForTest(t, ctx, input, dbc))

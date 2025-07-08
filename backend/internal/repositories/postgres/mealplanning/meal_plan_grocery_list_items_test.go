@@ -80,8 +80,8 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 	exampleMealPlan.BelongsToAccount = account.ID
 	mealPlan := createMealPlanForTest(t, ctx, exampleMealPlan, dbc)
 
-	ingredient := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
-	measurmentUnit := recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	ingredient := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+	measurmentUnit := recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeEnumsRepository)
 
 	exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 	exampleMealPlanGroceryListItem.BelongsToMealPlan = mealPlan.ID

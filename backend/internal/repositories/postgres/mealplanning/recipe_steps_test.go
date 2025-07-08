@@ -24,25 +24,25 @@ func buildRecipeStepForTestCreation(t *testing.T, ctx context.Context, recipeID 
 
 	recipeStepID := identifiers.New()
 
-	validIngredientState := recipeenumsrepo.CreateValidIngredientStateForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	validIngredientState := recipeenumsrepo.CreateValidIngredientStateForTest(t, ctx, nil, dbc.recipeEnumsRepository)
 
-	preparation := recipeenumsrepo.CreateValidPreparationForTest(t, ctx, nil, dbc.recipeenumsRepository)
-	ingredient := recipeenumsrepo.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
-	measurementUnit1 := recipeenumsrepo.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	preparation := recipeenumsrepo.CreateValidPreparationForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+	ingredient := recipeenumsrepo.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeEnumsRepository)
+	measurementUnit1 := recipeenumsrepo.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeEnumsRepository)
 	recipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 	recipeStepIngredient.Ingredient = ingredient
 	recipeStepIngredient.MeasurementUnit = *measurementUnit1
 	recipeStepIngredient.BelongsToRecipeStep = recipeStepID
 
-	instrument := recipeenumsrepo.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	instrument := recipeenumsrepo.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeEnumsRepository)
 	recipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 	recipeStepInstrument.Instrument = instrument
 	recipeStepInstrument.BelongsToRecipeStep = recipeStepID
 
-	measurementUnit2 := recipeenumsrepo.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	measurementUnit2 := recipeenumsrepo.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeEnumsRepository)
 	exampleVessel := recipeenumfakes.BuildFakeValidVessel()
 	exampleVessel.CapacityUnit = measurementUnit2
-	vessel := recipeenumsrepo.CreateValidVesselForTest(t, ctx, exampleVessel, dbc.recipeenumsRepository)
+	vessel := recipeenumsrepo.CreateValidVesselForTest(t, ctx, exampleVessel, dbc.recipeEnumsRepository)
 	recipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 	recipeStepVessel.Vessel = vessel
 	recipeStepVessel.BelongsToRecipeStep = recipeStepID
