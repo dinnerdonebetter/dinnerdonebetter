@@ -146,7 +146,10 @@ export function buildLoginRoute(config: {
 
           let written = false;
           try {
-            res.setHeader('Set-Cookie', config.cookieFunc(token, result.data.data.userID, result.data.data.accountID));
+            res.setHeader(
+              'Set-Cookie',
+              config.cookieFunc(token, result.data.data.userID, result.data.data.accountID),
+            );
           } catch (e) {
             res.status(401).send('');
             written = true;

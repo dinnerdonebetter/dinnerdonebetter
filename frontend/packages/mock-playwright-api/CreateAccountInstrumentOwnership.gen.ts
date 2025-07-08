@@ -17,7 +17,9 @@ export class MockCreateAccountInstrumentOwnershipResponseConfig extends Response
   }
 }
 
-export const mockCreateAccountInstrumentOwnership = (resCfg: MockCreateAccountInstrumentOwnershipResponseConfig) => {
+export const mockCreateAccountInstrumentOwnership = (
+  resCfg: MockCreateAccountInstrumentOwnershipResponseConfig,
+) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/accounts/instruments`,

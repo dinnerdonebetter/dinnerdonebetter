@@ -7,7 +7,9 @@ export interface IAccountInstrumentOwnershipCreationRequestInput {
   validInstrumentID: string;
 }
 
-export class AccountInstrumentOwnershipCreationRequestInput implements IAccountInstrumentOwnershipCreationRequestInput {
+export class AccountInstrumentOwnershipCreationRequestInput
+  implements IAccountInstrumentOwnershipCreationRequestInput
+{
   belongsToAccount: string;
   notes: string;
   quantity: number;

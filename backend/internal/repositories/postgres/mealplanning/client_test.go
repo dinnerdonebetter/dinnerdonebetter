@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/recipeenums"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -36,9 +35,7 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresC
 	identitiesRepo := identity.ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
 	require.NoError(t, err)
 
-	recipeenumsRepository := recipeenums.ProvideRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
-
-	c := ProvideSettingsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, identitiesRepo, recipeenumsRepository, pgc)
+	c := ProvideSettingsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, identitiesRepo, pgc)
 	require.NoError(t, err)
 
 	return c.(*Querier), container
@@ -47,7 +44,7 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresC
 func buildInertClientForTest(t *testing.T) *Querier {
 	t.Helper()
 
-	c := ProvideSettingsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, nil, nil, &database.MockClient{})
+	c := ProvideSettingsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, nil, &database.MockClient{})
 
 	return c.(*Querier)
 }

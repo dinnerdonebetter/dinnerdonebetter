@@ -3,7 +3,6 @@ package fakes
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
-	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
@@ -16,8 +15,8 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 	return &types.RecipeStepIngredient{
 		ID:                     BuildFakeID(),
 		Name:                   buildUniqueString(),
-		Ingredient:             recipeenumfakes.BuildFakeValidIngredient(),
-		MeasurementUnit:        *recipeenumfakes.BuildFakeValidMeasurementUnit(),
+		Ingredient:             BuildFakeValidIngredient(),
+		MeasurementUnit:        *BuildFakeValidMeasurementUnit(),
 		Quantity:               BuildFakeFloat32RangeWithOptionalMax(),
 		QuantityNotes:          buildUniqueString(),
 		Optional:               fake.Bool(),

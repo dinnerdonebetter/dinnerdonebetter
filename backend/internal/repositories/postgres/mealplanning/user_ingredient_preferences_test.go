@@ -9,7 +9,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/recipeenums"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -62,7 +61,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	}(t)
 
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
-	ingredient := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
 
 	exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 	exampleUserIngredientPreference.BelongsToUser = user.ID
@@ -73,7 +72,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	createdUserIngredientPreferences = append(createdUserIngredientPreferences, createUserIngredientPreferenceForTest(t, ctx, exampleUserIngredientPreference, dbc))
 
 	// update
-	ingredient2 := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	ingredient2 := createValidIngredientForTest(t, ctx, nil, dbc)
 	updatedUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 	updatedUserIngredientPreference.ID = createdUserIngredientPreferences[0].ID
 	updatedUserIngredientPreference.BelongsToUser = user.ID
@@ -83,7 +82,7 @@ func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeUserIngredientPreference()
-		ingredient3 := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
+		ingredient3 := createValidIngredientForTest(t, ctx, nil, dbc)
 		input.BelongsToUser = user.ID
 		input.Ingredient = *ingredient3
 		createdUserIngredientPreferences = append(createdUserIngredientPreferences, createUserIngredientPreferenceForTest(t, ctx, input, dbc))

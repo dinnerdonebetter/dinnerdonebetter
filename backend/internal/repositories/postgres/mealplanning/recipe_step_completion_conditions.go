@@ -6,7 +6,6 @@ import (
 	"time"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -101,7 +100,7 @@ func (q *Querier) GetRecipeStepCompletionCondition(ctx context.Context, recipeID
 				CreatedAt:     result.CreatedAt,
 				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-				IngredientState: recipeenums.ValidIngredientState{
+				IngredientState: types.ValidIngredientState{
 					CreatedAt:     result.ValidIngredientStateCreatedAt,
 					ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientStateArchivedAt),
 					LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
@@ -159,7 +158,7 @@ func (q *Querier) getRecipeStepCompletionConditionsForRecipe(ctx context.Context
 			CreatedAt:     result.CreatedAt,
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-			IngredientState: recipeenums.ValidIngredientState{
+			IngredientState: types.ValidIngredientState{
 				CreatedAt:     time.Time{},
 				ArchivedAt:    nil,
 				LastUpdatedAt: nil,
@@ -248,7 +247,7 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 			CreatedAt:     result.CreatedAt,
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
-			IngredientState: recipeenums.ValidIngredientState{
+			IngredientState: types.ValidIngredientState{
 				CreatedAt:     result.ValidIngredientStateCreatedAt,
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientStateArchivedAt),
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
@@ -314,7 +313,7 @@ func (q *Querier) createRecipeStepCompletionCondition(ctx context.Context, db da
 		Notes:               input.Notes,
 		Optional:            input.Optional,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		IngredientState:     recipeenums.ValidIngredientState{ID: input.IngredientStateID},
+		IngredientState:     types.ValidIngredientState{ID: input.IngredientStateID},
 		CreatedAt:           q.CurrentTime(),
 	}
 

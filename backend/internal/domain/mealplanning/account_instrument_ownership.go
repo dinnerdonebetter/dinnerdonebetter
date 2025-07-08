@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -32,14 +31,14 @@ type (
 	AccountInstrumentOwnership struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt        time.Time                   `json:"createdAt"`
-		ArchivedAt       *time.Time                  `json:"archivedAt"`
-		LastUpdatedAt    *time.Time                  `json:"lastUpdatedAt"`
-		ID               string                      `json:"id"`
-		Notes            string                      `json:"notes"`
-		BelongsToAccount string                      `json:"belongsToAccount"`
-		Instrument       recipeenums.ValidInstrument `json:"instrument"`
-		Quantity         uint16                      `json:"quantity"`
+		CreatedAt        time.Time       `json:"createdAt"`
+		ArchivedAt       *time.Time      `json:"archivedAt"`
+		LastUpdatedAt    *time.Time      `json:"lastUpdatedAt"`
+		ID               string          `json:"id"`
+		Notes            string          `json:"notes"`
+		BelongsToAccount string          `json:"belongsToAccount"`
+		Instrument       ValidInstrument `json:"instrument"`
+		Quantity         uint16          `json:"quantity"`
 	}
 
 	// AccountInstrumentOwnershipCreationRequestInput represents what a user could set as input for creating account instrument ownerships.
@@ -103,7 +102,7 @@ func (x *AccountInstrumentOwnership) Update(input *AccountInstrumentOwnershipUpd
 	}
 
 	if input.ValidInstrumentID != nil && *input.ValidInstrumentID != x.Instrument.ID {
-		x.Instrument = recipeenums.ValidInstrument{ID: *input.ValidInstrumentID}
+		x.Instrument = ValidInstrument{ID: *input.ValidInstrumentID}
 	}
 }
 

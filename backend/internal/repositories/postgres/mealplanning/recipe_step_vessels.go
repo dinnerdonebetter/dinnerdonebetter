@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -108,7 +107,7 @@ func (q *Querier) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepI
 	}
 
 	if result.ValidVesselID.Valid {
-		recipeStepVessel.Vessel = &recipeenums.ValidVessel{
+		recipeStepVessel.Vessel = &mealplanning.ValidVessel{
 			CreatedAt:                      result.ValidVesselCreatedAt.Time,
 			ArchivedAt:                     database.TimePointerFromNullTime(result.ValidVesselArchivedAt),
 			LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidVesselLastUpdatedAt),
@@ -130,7 +129,7 @@ func (q *Querier) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepI
 		}
 
 		if result.ValidMeasurementUnitID.Valid {
-			recipeStepVessel.Vessel.CapacityUnit = &recipeenums.ValidMeasurementUnit{
+			recipeStepVessel.Vessel.CapacityUnit = &mealplanning.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
@@ -215,7 +214,7 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 		}
 
 		if result.ValidVesselID.Valid {
-			recipeStepVessel.Vessel = &recipeenums.ValidVessel{
+			recipeStepVessel.Vessel = &mealplanning.ValidVessel{
 				CreatedAt:                      result.ValidVesselCreatedAt.Time,
 				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidVesselArchivedAt),
 				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidVesselLastUpdatedAt),
@@ -237,7 +236,7 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 			}
 
 			if result.ValidMeasurementUnitID.Valid {
-				recipeStepVessel.Vessel.CapacityUnit = &recipeenums.ValidMeasurementUnit{
+				recipeStepVessel.Vessel.CapacityUnit = &mealplanning.ValidMeasurementUnit{
 					CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
 					LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
 					ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
@@ -302,7 +301,7 @@ func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID st
 		}
 
 		if result.ValidVesselID.Valid {
-			recipeStepVessel.Vessel = &recipeenums.ValidVessel{
+			recipeStepVessel.Vessel = &mealplanning.ValidVessel{
 				CreatedAt:                      result.ValidVesselCreatedAt.Time,
 				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidVesselArchivedAt),
 				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidVesselLastUpdatedAt),
@@ -324,7 +323,7 @@ func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID st
 			}
 
 			if result.ValidMeasurementUnitID.Valid {
-				recipeStepVessel.Vessel.CapacityUnit = &recipeenums.ValidMeasurementUnit{
+				recipeStepVessel.Vessel.CapacityUnit = &mealplanning.ValidMeasurementUnit{
 					CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
 					LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
 					ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
@@ -391,7 +390,7 @@ func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.S
 	}
 
 	if input.VesselID != nil {
-		x.Vessel = &recipeenums.ValidVessel{ID: *input.VesselID}
+		x.Vessel = &mealplanning.ValidVessel{ID: *input.VesselID}
 	}
 
 	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, x.ID)

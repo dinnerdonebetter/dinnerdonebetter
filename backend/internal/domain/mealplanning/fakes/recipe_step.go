@@ -1,41 +1,39 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
-	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 // BuildFakeRecipeStep builds a faked recipe step.
-func BuildFakeRecipeStep() *mealplanning.RecipeStep {
+func BuildFakeRecipeStep() *types.RecipeStep {
 	recipeStepID := BuildFakeID()
 
-	var ingredients []*mealplanning.RecipeStepIngredient
+	var ingredients []*types.RecipeStepIngredient
 	for i := 0; i < exampleQuantity; i++ {
 		ing := BuildFakeRecipeStepIngredient()
 		ing.BelongsToRecipeStep = recipeStepID
 		ingredients = append(ingredients, ing)
 	}
 
-	var instruments []*mealplanning.RecipeStepInstrument
+	var instruments []*types.RecipeStepInstrument
 	for i := 0; i < exampleQuantity; i++ {
 		ing := BuildFakeRecipeStepInstrument()
 		ing.BelongsToRecipeStep = recipeStepID
 		instruments = append(instruments, ing)
 	}
 
-	var vessels []*mealplanning.RecipeStepVessel
+	var vessels []*types.RecipeStepVessel
 	for i := 0; i < exampleQuantity; i++ {
 		ing := BuildFakeRecipeStepVessel()
 		ing.BelongsToRecipeStep = recipeStepID
 		vessels = append(vessels, ing)
 	}
 
-	var products []*mealplanning.RecipeStepProduct
+	var products []*types.RecipeStepProduct
 	for i := 0; i < exampleQuantity; i++ {
 		p := BuildFakeRecipeStepProduct()
 		p.BelongsToRecipeStep = recipeStepID
@@ -43,13 +41,13 @@ func BuildFakeRecipeStep() *mealplanning.RecipeStep {
 	}
 
 	completionConditionID := BuildFakeID()
-	completionConditions := []*mealplanning.RecipeStepCompletionCondition{
+	completionConditions := []*types.RecipeStepCompletionCondition{
 		{
 			ID:                  completionConditionID,
 			BelongsToRecipeStep: recipeStepID,
-			IngredientState:     recipeenums.ValidIngredientState{},
+			IngredientState:     types.ValidIngredientState{},
 			Notes:               buildUniqueString(),
-			Ingredients: []*mealplanning.RecipeStepCompletionConditionIngredient{
+			Ingredients: []*types.RecipeStepCompletionConditionIngredient{
 				{
 					ID:                                     BuildFakeID(),
 					BelongsToRecipeStepCompletionCondition: completionConditionID,
@@ -60,10 +58,10 @@ func BuildFakeRecipeStep() *mealplanning.RecipeStep {
 		},
 	}
 
-	return &mealplanning.RecipeStep{
+	return &types.RecipeStep{
 		ID:                      recipeStepID,
 		Index:                   fake.Uint32(),
-		Preparation:             *recipeenumfakes.BuildFakeValidPreparation(),
+		Preparation:             *BuildFakeValidPreparation(),
 		EstimatedTimeInSeconds:  BuildFakeOptionalUint32Range(),
 		TemperatureInCelsius:    BuildFakeOptionalFloat32Range(),
 		Notes:                   buildUniqueString(),
@@ -82,13 +80,13 @@ func BuildFakeRecipeStep() *mealplanning.RecipeStep {
 }
 
 // BuildFakeRecipeStepsList builds a faked RecipeStepList.
-func BuildFakeRecipeStepsList() *filtering.QueryFilteredResult[mealplanning.RecipeStep] {
-	var examples []*mealplanning.RecipeStep
+func BuildFakeRecipeStepsList() *filtering.QueryFilteredResult[types.RecipeStep] {
+	var examples []*types.RecipeStep
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeRecipeStep())
 	}
 
-	return &filtering.QueryFilteredResult[mealplanning.RecipeStep]{
+	return &filtering.QueryFilteredResult[types.RecipeStep]{
 		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
@@ -100,13 +98,13 @@ func BuildFakeRecipeStepsList() *filtering.QueryFilteredResult[mealplanning.Reci
 }
 
 // BuildFakeRecipeStepUpdateRequestInput builds a faked RecipeStepUpdateRequestInput from a recipe step.
-func BuildFakeRecipeStepUpdateRequestInput() *mealplanning.RecipeStepUpdateRequestInput {
+func BuildFakeRecipeStepUpdateRequestInput() *types.RecipeStepUpdateRequestInput {
 	recipeStep := BuildFakeRecipeStep()
 	return converters.ConvertRecipeStepToRecipeStepUpdateRequestInput(recipeStep)
 }
 
 // BuildFakeRecipeStepCreationRequestInput builds a faked RecipeStepCreationRequestInput.
-func BuildFakeRecipeStepCreationRequestInput() *mealplanning.RecipeStepCreationRequestInput {
+func BuildFakeRecipeStepCreationRequestInput() *types.RecipeStepCreationRequestInput {
 	recipeStep := BuildFakeRecipeStep()
 	return converters.ConvertRecipeStepToRecipeStepCreationRequestInput(recipeStep)
 }

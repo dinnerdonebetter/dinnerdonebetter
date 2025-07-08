@@ -21,7 +21,9 @@ export class MockUpdateAccountInstrumentOwnershipResponseConfig extends Response
   }
 }
 
-export const mockUpdateAccountInstrumentOwnership = (resCfg: MockUpdateAccountInstrumentOwnershipResponseConfig) => {
+export const mockUpdateAccountInstrumentOwnership = (
+  resCfg: MockUpdateAccountInstrumentOwnershipResponseConfig,
+) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/accounts/instruments/${resCfg.accountInstrumentOwnershipID}`,

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
@@ -85,7 +84,7 @@ func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredien
 		BelongsToUser: result.BelongsToUser,
 		Rating:        int8(result.Rating),
 		Allergy:       result.Allergy,
-		Ingredient: recipeenums.ValidIngredient{
+		Ingredient: mealplanning.ValidIngredient{
 			CreatedAt:     result.ValidIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
@@ -178,7 +177,7 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 			BelongsToUser: result.BelongsToUser,
 			Rating:        int8(result.Rating),
 			Allergy:       result.Allergy,
-			Ingredient: recipeenums.ValidIngredient{
+			Ingredient: mealplanning.ValidIngredient{
 				CreatedAt:     result.ValidIngredientCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
@@ -241,7 +240,7 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *mea
 
 	validIngredientIDs := []string{}
 	if input.ValidIngredientGroupID != "" {
-		group, err := q.recipeenumsRepository.GetValidIngredientGroup(ctx, input.ValidIngredientGroupID)
+		group, err := q.GetValidIngredientGroup(ctx, input.ValidIngredientGroupID)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "getting valid ingredient group")
 		}
@@ -290,7 +289,7 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *mea
 			Notes:         input.Notes,
 			Allergy:       input.Allergy,
 			BelongsToUser: input.BelongsToUser,
-			Ingredient:    recipeenums.ValidIngredient{ID: input.ValidIngredientID},
+			Ingredient:    mealplanning.ValidIngredient{ID: input.ValidIngredientID},
 			CreatedAt:     q.CurrentTime(),
 		}
 

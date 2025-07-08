@@ -7,7 +7,6 @@ import (
 	"log"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
@@ -101,7 +100,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*mealplanning
 			ID:                   result.RecipeStepID,
 			Notes:                result.RecipeStepNotes,
 			ExplicitInstructions: result.RecipeStepExplicitInstructions,
-			Preparation: recipeenums.ValidPreparation{
+			Preparation: mealplanning.ValidPreparation{
 				CreatedAt: result.RecipeStepPreparationCreatedAt,
 				InstrumentCount: types.Uint16RangeWithOptionalMax{
 					Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),

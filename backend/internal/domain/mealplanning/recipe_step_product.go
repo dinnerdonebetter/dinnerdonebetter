@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -40,24 +39,24 @@ type (
 	RecipeStepProduct struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt                   time.Time                         `json:"createdAt"`
-		StorageTemperatureInCelsius types.OptionalFloat32Range        `json:"storageTemperatureInCelsius"`
-		StorageDurationInSeconds    types.OptionalUint32Range         `json:"storageDurationInSeconds"`
-		Quantity                    types.OptionalFloat32Range        `json:"quantity"`
-		ArchivedAt                  *time.Time                        `json:"archivedAt"`
-		LastUpdatedAt               *time.Time                        `json:"lastUpdatedAt"`
-		MeasurementUnit             *recipeenums.ValidMeasurementUnit `json:"measurementUnit"`
-		ContainedInVesselIndex      *uint16                           `json:"containedInVesselIndex"`
-		Name                        string                            `json:"name"`
-		BelongsToRecipeStep         string                            `json:"belongsToRecipeStep"`
-		Type                        string                            `json:"type"`
-		ID                          string                            `json:"id"`
-		StorageInstructions         string                            `json:"storageInstructions"`
-		QuantityNotes               string                            `json:"quantityNotes"`
-		Index                       uint16                            `json:"index"`
-		IsWaste                     bool                              `json:"isWaste"`
-		IsLiquid                    bool                              `json:"isLiquid"`
-		Compostable                 bool                              `json:"compostable"`
+		CreatedAt                   time.Time                  `json:"createdAt"`
+		StorageTemperatureInCelsius types.OptionalFloat32Range `json:"storageTemperatureInCelsius"`
+		StorageDurationInSeconds    types.OptionalUint32Range  `json:"storageDurationInSeconds"`
+		Quantity                    types.OptionalFloat32Range `json:"quantity"`
+		ArchivedAt                  *time.Time                 `json:"archivedAt"`
+		LastUpdatedAt               *time.Time                 `json:"lastUpdatedAt"`
+		MeasurementUnit             *ValidMeasurementUnit      `json:"measurementUnit"`
+		ContainedInVesselIndex      *uint16                    `json:"containedInVesselIndex"`
+		Name                        string                     `json:"name"`
+		BelongsToRecipeStep         string                     `json:"belongsToRecipeStep"`
+		Type                        string                     `json:"type"`
+		ID                          string                     `json:"id"`
+		StorageInstructions         string                     `json:"storageInstructions"`
+		QuantityNotes               string                     `json:"quantityNotes"`
+		Index                       uint16                     `json:"index"`
+		IsWaste                     bool                       `json:"isWaste"`
+		IsLiquid                    bool                       `json:"isLiquid"`
+		Compostable                 bool                       `json:"compostable"`
 	}
 
 	// RecipeStepProductCreationRequestInput represents what a user could set as input for creating recipe step products.
@@ -151,7 +150,7 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 	}
 
 	if input.MeasurementUnitID != nil && x.MeasurementUnit != nil && *input.MeasurementUnitID != x.MeasurementUnit.ID {
-		x.MeasurementUnit = &recipeenums.ValidMeasurementUnit{ID: *input.MeasurementUnitID}
+		x.MeasurementUnit = &ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	if input.Quantity.Min != nil && input.Quantity.Min != x.Quantity.Min {

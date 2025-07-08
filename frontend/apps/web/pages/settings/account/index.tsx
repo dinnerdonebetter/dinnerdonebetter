@@ -153,7 +153,12 @@ export const getServerSideProps: GetServerSideProps = async (
       fetchSettingConfigurationsForAccountTimer.end();
     });
 
-  const retrievedData = await Promise.all([userPromise, accountPromise, invitationsPromise, rawAccountSettingsPromise]);
+  const retrievedData = await Promise.all([
+    userPromise,
+    accountPromise,
+    invitationsPromise,
+    rawAccountSettingsPromise,
+  ]);
 
   const [user, account, invitations, rawAccountSettings] = retrievedData;
 
@@ -512,7 +517,9 @@ export default function AccountSettingsPage(props: AccountSettingsPageProps): JS
                 </Grid>
                 <Button
                   type="submit"
-                  disabled={!accountUpdateForm.isValid() || !user.emailAddressVerifiedAt || !accountDataHasChanged()}
+                  disabled={
+                    !accountUpdateForm.isValid() || !user.emailAddressVerifiedAt || !accountDataHasChanged()
+                  }
                   fullWidth
                 >
                   Update

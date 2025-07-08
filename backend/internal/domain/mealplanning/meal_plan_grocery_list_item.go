@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -49,14 +48,14 @@ type (
 		PurchasedUPC             *string                           `json:"purchasedUPC"`
 		ArchivedAt               *time.Time                        `json:"archivedAt"`
 		LastUpdatedAt            *time.Time                        `json:"lastUpdatedAt"`
-		PurchasedMeasurementUnit *recipeenums.ValidMeasurementUnit `json:"purchasedMeasurementUnit"`
+		PurchasedMeasurementUnit *ValidMeasurementUnit             `json:"purchasedMeasurementUnit"`
 		BelongsToMealPlan        string                            `json:"belongsToMealPlan"`
 		Status                   string                            `json:"status"`
 		StatusExplanation        string                            `json:"statusExplanation"`
 		ID                       string                            `json:"id"`
 		QuantityNeeded           types.Float32RangeWithOptionalMax `json:"quantityNeeded"`
-		MeasurementUnit          recipeenums.ValidMeasurementUnit  `json:"measurementUnit"`
-		Ingredient               recipeenums.ValidIngredient       `json:"ingredient"`
+		MeasurementUnit          ValidMeasurementUnit              `json:"measurementUnit"`
+		Ingredient               ValidIngredient                   `json:"ingredient"`
 	}
 
 	// MealPlanGroceryListItemCreationRequestInput represents what a user could set as input for creating meal plan grocery list items.
@@ -135,11 +134,11 @@ func (x *MealPlanGroceryListItem) Update(input *MealPlanGroceryListItemUpdateReq
 	}
 
 	if input.ValidIngredientID != nil && *input.ValidIngredientID != x.Ingredient.ID {
-		x.Ingredient = recipeenums.ValidIngredient{ID: *input.ValidIngredientID}
+		x.Ingredient = ValidIngredient{ID: *input.ValidIngredientID}
 	}
 
 	if input.ValidMeasurementUnitID != nil && *input.ValidMeasurementUnitID != x.MeasurementUnit.ID {
-		x.MeasurementUnit = recipeenums.ValidMeasurementUnit{ID: *input.ValidMeasurementUnitID}
+		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.ValidMeasurementUnitID}
 	}
 
 	if input.QuantityNeeded.Min != nil && *input.QuantityNeeded.Min != x.QuantityNeeded.Min {
@@ -156,7 +155,7 @@ func (x *MealPlanGroceryListItem) Update(input *MealPlanGroceryListItemUpdateReq
 	}
 
 	if input.PurchasedMeasurementUnitID != nil && *input.PurchasedMeasurementUnitID != x.PurchasedMeasurementUnit.ID {
-		x.PurchasedMeasurementUnit = &recipeenums.ValidMeasurementUnit{ID: *input.PurchasedMeasurementUnitID}
+		x.PurchasedMeasurementUnit = &ValidMeasurementUnit{ID: *input.PurchasedMeasurementUnitID}
 	}
 
 	if input.PurchasedUPC != nil && ((x.PurchasedUPC == nil) || (x.PurchasedUPC != nil && (*input.PurchasedUPC != *x.PurchasedUPC))) {

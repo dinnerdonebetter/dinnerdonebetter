@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/recipeenums"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -77,7 +76,7 @@ func TestQuerier_Integration_RecipeStepInstruments(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 	exampleRecipeStep := createdRecipe.Steps[0]
 
-	validInstrument := recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	validInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
 	exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 	exampleRecipeStepInstrument.Instrument = validInstrument
 	exampleRecipeStepInstrument.BelongsToRecipeStep = exampleRecipeStep.ID
@@ -90,7 +89,7 @@ func TestQuerier_Integration_RecipeStepInstruments(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		validInstrument = recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
+		validInstrument = createValidInstrumentForTest(t, ctx, nil, dbc)
 		input := fakes.BuildFakeRecipeStepInstrument()
 		input.Instrument = validInstrument
 		input.BelongsToRecipeStep = exampleRecipeStep.ID

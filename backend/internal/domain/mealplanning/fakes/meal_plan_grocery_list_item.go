@@ -3,7 +3,6 @@ package fakes
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
-	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 )
 
@@ -11,8 +10,8 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 	return &types.MealPlanGroceryListItem{
 		ID:                       BuildFakeID(),
 		BelongsToMealPlan:        BuildFakeID(),
-		Ingredient:               *recipeenumfakes.BuildFakeValidIngredient(),
-		MeasurementUnit:          *recipeenumfakes.BuildFakeValidMeasurementUnit(),
+		Ingredient:               *BuildFakeValidIngredient(),
+		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
 		QuantityNeeded:           BuildFakeFloat32RangeWithOptionalMax(),
 		QuantityPurchased:        nil,
 		PurchasedMeasurementUnit: nil,

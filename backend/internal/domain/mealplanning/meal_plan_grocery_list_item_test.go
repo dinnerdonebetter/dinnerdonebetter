@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -83,7 +82,7 @@ func TestMealPlanGroceryListItem_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanGroceryListItem{
-			PurchasedMeasurementUnit: &recipeenums.ValidMeasurementUnit{},
+			PurchasedMeasurementUnit: &ValidMeasurementUnit{},
 			QuantityNeeded:           types.Float32RangeWithOptionalMax{Max: pointer.To(float32(1.23))},
 		}
 		input := &MealPlanGroceryListItemUpdateRequestInput{}

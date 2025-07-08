@@ -437,7 +437,9 @@ export class DinnerDoneBetterAPIClient {
       }
 
       self.client
-        .delete<APIResponse<AccountInstrumentOwnership>>(`/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
+        .delete<APIResponse<AccountInstrumentOwnership>>(
+          `/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`,
+        )
         .then((res: AxiosResponse<APIResponse<AccountInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(res.data.error);
@@ -2932,7 +2934,9 @@ export class DinnerDoneBetterAPIClient {
       }
 
       self.client
-        .get<APIResponse<AccountInstrumentOwnership>>(`/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
+        .get<APIResponse<AccountInstrumentOwnership>>(
+          `/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`,
+        )
         .then((res: AxiosResponse<APIResponse<AccountInstrumentOwnership>>) => {
           if (res.data.error) {
             reject(res.data.error);

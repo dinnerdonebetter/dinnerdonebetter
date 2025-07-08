@@ -4,7 +4,6 @@ import (
 	"context"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -82,7 +81,7 @@ func (q *Querier) GetAccountInstrumentOwnership(ctx context.Context, accountInst
 		Notes:            result.Notes,
 		BelongsToAccount: result.BelongsToAccount,
 		Quantity:         uint16(result.Quantity),
-		Instrument: recipeenums.ValidInstrument{
+		Instrument: types.ValidInstrument{
 			CreatedAt:                      result.ValidInstrumentCreatedAt,
 			LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
 			ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
@@ -147,7 +146,7 @@ func (q *Querier) GetAccountInstrumentOwnerships(ctx context.Context, accountID 
 			Notes:            result.Notes,
 			BelongsToAccount: result.BelongsToAccount,
 			Quantity:         uint16(result.Quantity),
-			Instrument: recipeenums.ValidInstrument{
+			Instrument: types.ValidInstrument{
 				CreatedAt:                      result.ValidInstrumentCreatedAt,
 				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
 				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
@@ -197,7 +196,7 @@ func (q *Querier) CreateAccountInstrumentOwnership(ctx context.Context, input *t
 		ID:               input.ID,
 		Notes:            input.Notes,
 		Quantity:         input.Quantity,
-		Instrument:       recipeenums.ValidInstrument{ID: input.ValidInstrumentID},
+		Instrument:       types.ValidInstrument{ID: input.ValidInstrumentID},
 		BelongsToAccount: input.BelongsToAccount,
 		CreatedAt:        q.CurrentTime(),
 	}

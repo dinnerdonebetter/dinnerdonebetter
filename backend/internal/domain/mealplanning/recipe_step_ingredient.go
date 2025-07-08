@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -36,7 +35,7 @@ type (
 		CreatedAt                 time.Time                         `json:"createdAt"`
 		RecipeStepProductRecipeID *string                           `json:"productOfRecipeID"`
 		ArchivedAt                *time.Time                        `json:"archivedAt"`
-		Ingredient                *recipeenums.ValidIngredient      `json:"ingredient"`
+		Ingredient                *ValidIngredient                  `json:"ingredient"`
 		LastUpdatedAt             *time.Time                        `json:"lastUpdatedAt"`
 		VesselIndex               *uint16                           `json:"vesselIndex"`
 		ProductPercentageToUse    *float32                          `json:"productPercentageToUse"`
@@ -47,7 +46,7 @@ type (
 		IngredientNotes           string                            `json:"ingredientNotes"`
 		Name                      string                            `json:"name"`
 		Quantity                  types.Float32RangeWithOptionalMax `json:"quantity"`
-		MeasurementUnit           recipeenums.ValidMeasurementUnit  `json:"measurementUnit"`
+		MeasurementUnit           ValidMeasurementUnit              `json:"measurementUnit"`
 		OptionIndex               uint16                            `json:"optionIndex"`
 		Optional                  bool                              `json:"optional"`
 		ToTaste                   bool                              `json:"toTaste"`
@@ -139,7 +138,7 @@ type (
 // Update merges an RecipeStepIngredientUpdateRequestInput with a recipe step ingredient.
 func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestInput) {
 	if input.IngredientID != nil && (x.Ingredient == nil || (*input.IngredientID != "" && *input.IngredientID != x.Ingredient.ID)) {
-		x.Ingredient = &recipeenums.ValidIngredient{ID: *input.IngredientID}
+		x.Ingredient = &ValidIngredient{ID: *input.IngredientID}
 	}
 
 	if input.RecipeStepProductID != nil && (x.RecipeStepProductID == nil || (*input.RecipeStepProductID != "" && *input.RecipeStepProductID != *x.RecipeStepProductID)) {
@@ -155,7 +154,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 	}
 
 	if input.MeasurementUnitID != nil && *input.MeasurementUnitID != x.MeasurementUnit.ID {
-		x.MeasurementUnit = recipeenums.ValidMeasurementUnit{ID: *input.MeasurementUnitID}
+		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 
 	if input.Quantity.Min != nil && *input.Quantity.Min != x.Quantity.Min {

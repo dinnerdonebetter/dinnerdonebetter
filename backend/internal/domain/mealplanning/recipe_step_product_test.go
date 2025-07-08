@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -19,7 +18,7 @@ func TestRecipeStepProduct_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProduct{
-			MeasurementUnit:        &recipeenums.ValidMeasurementUnit{},
+			MeasurementUnit:        &ValidMeasurementUnit{},
 			ContainedInVesselIndex: pointer.To(uint16(3)),
 		}
 		input := &RecipeStepProductUpdateRequestInput{}

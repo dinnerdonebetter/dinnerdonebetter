@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -35,15 +34,15 @@ type (
 	UserIngredientPreference struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt     time.Time                   `json:"createdAt"`
-		LastUpdatedAt *time.Time                  `json:"lastUpdatedAt"`
-		ArchivedAt    *time.Time                  `json:"archivedAt"`
-		ID            string                      `json:"id"`
-		Notes         string                      `json:"notes"`
-		BelongsToUser string                      `json:"belongsToUser"`
-		Ingredient    recipeenums.ValidIngredient `json:"ingredient"`
-		Rating        int8                        `json:"rating"`
-		Allergy       bool                        `json:"allergy"`
+		CreatedAt     time.Time       `json:"createdAt"`
+		LastUpdatedAt *time.Time      `json:"lastUpdatedAt"`
+		ArchivedAt    *time.Time      `json:"archivedAt"`
+		ID            string          `json:"id"`
+		Notes         string          `json:"notes"`
+		BelongsToUser string          `json:"belongsToUser"`
+		Ingredient    ValidIngredient `json:"ingredient"`
+		Rating        int8            `json:"rating"`
+		Allergy       bool            `json:"allergy"`
 	}
 
 	// UserIngredientPreferenceCreationRequestInput represents what a user could set as input for creating user ingredient preferences.
@@ -105,7 +104,7 @@ func (x *UserIngredientPreference) Update(input *UserIngredientPreferenceUpdateR
 	}
 
 	if input.IngredientID != nil && *input.IngredientID != x.Ingredient.ID {
-		x.Ingredient = recipeenums.ValidIngredient{ID: *input.IngredientID}
+		x.Ingredient = ValidIngredient{ID: *input.IngredientID}
 	}
 
 	if input.Rating != nil && *input.Rating != x.Rating {
