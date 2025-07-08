@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -173,7 +174,7 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepUpdateRequestInput{
 			Index:       pointer.To(fake.Uint32()),
-			Preparation: &ValidPreparation{},
+			Preparation: &recipeenums.ValidPreparation{},
 			EstimatedTimeInSeconds: types.OptionalUint32Range{
 				Max: pointer.To(fake.Uint32()),
 				Min: pointer.To(fake.Uint32()),

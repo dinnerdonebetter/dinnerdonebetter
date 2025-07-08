@@ -7,6 +7,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
+	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -100,10 +102,10 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 				{
 					BelongsToRecipe: exampleRecipeID,
 					ID:              recipeStepID,
-					Preparation:     mealplanning.ValidPreparation{Name: "dice"},
+					Preparation:     recipeenums.ValidPreparation{Name: "dice"},
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
-							Ingredient: &mealplanning.ValidIngredient{
+							Ingredient: &recipeenums.ValidIngredient{
 								StorageTemperatureInCelsius: types.OptionalFloat32Range{
 									Min: pointer.To(float32(2.5)),
 								},
@@ -115,7 +117,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							Name:                "chicken breast",
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStepID,
-							MeasurementUnit:     mealplanning.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
+							MeasurementUnit:     recipeenums.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							Quantity: types.Float32RangeWithOptionalMax{
 								Min: 900,
 								Max: pointer.To(float32(900)),
@@ -128,7 +130,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductIngredientType,
 							BelongsToRecipeStep: recipeStepID,
 							ID:                  fakes.BuildFakeID(),
-							MeasurementUnit:     &mealplanning.ValidMeasurementUnit{},
+							MeasurementUnit:     &recipeenums.ValidMeasurementUnit{},
 						},
 					},
 				},
@@ -162,9 +164,9 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 		ctx := context.Background()
 		g := newAnalyzerForTest(t)
 
-		dice := fakes.BuildFakeValidPreparation()
+		dice := recipeenumfakes.BuildFakeValidPreparation()
 		dice.Name = "dice"
-		sautee := fakes.BuildFakeValidPreparation()
+		sautee := recipeenumfakes.BuildFakeValidPreparation()
 		sautee.Name = "sautee"
 
 		step1ID := fakes.BuildFakeID()
@@ -183,7 +185,7 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 					Preparation: *dice,
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
-							Ingredient: fakes.BuildFakeValidIngredient(),
+							Ingredient: recipeenumfakes.BuildFakeValidIngredient(),
 							Name:       "onion",
 						},
 					},
@@ -202,7 +204,7 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 					Preparation: *dice,
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
-							Ingredient: fakes.BuildFakeValidIngredient(),
+							Ingredient: recipeenumfakes.BuildFakeValidIngredient(),
 							Name:       "carrot",
 						},
 					},
@@ -221,7 +223,7 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 					Preparation: *dice,
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
-							Ingredient: fakes.BuildFakeValidIngredient(),
+							Ingredient: recipeenumfakes.BuildFakeValidIngredient(),
 							Name:       "celery",
 						},
 					},

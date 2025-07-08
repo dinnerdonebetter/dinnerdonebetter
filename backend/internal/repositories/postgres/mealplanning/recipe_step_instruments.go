@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -108,7 +109,7 @@ func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeS
 	}
 
 	if result.ValidInstrumentID.Valid {
-		recipeStepInstrument.Instrument = &mealplanning.ValidInstrument{
+		recipeStepInstrument.Instrument = &recipeenums.ValidInstrument{
 			CreatedAt:                      result.ValidInstrumentCreatedAt.Time,
 			LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
 			ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
@@ -192,7 +193,7 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 		}
 
 		if result.ValidInstrumentID.Valid {
-			recipeStepInstrument.Instrument = &mealplanning.ValidInstrument{
+			recipeStepInstrument.Instrument = &recipeenums.ValidInstrument{
 				CreatedAt:                      result.ValidInstrumentCreatedAt.Time,
 				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
 				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
@@ -256,7 +257,7 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 		}
 
 		if result.ValidInstrumentID.Valid {
-			recipeStepInstrument.Instrument = &mealplanning.ValidInstrument{
+			recipeStepInstrument.Instrument = &recipeenums.ValidInstrument{
 				CreatedAt:                      result.ValidInstrumentCreatedAt.Time,
 				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
 				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
@@ -322,7 +323,7 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 	}
 
 	if input.InstrumentID != nil {
-		x.Instrument = &mealplanning.ValidInstrument{ID: *input.InstrumentID}
+		x.Instrument = &recipeenums.ValidInstrument{ID: *input.InstrumentID}
 	}
 
 	logger.Info("recipe step instrument created")

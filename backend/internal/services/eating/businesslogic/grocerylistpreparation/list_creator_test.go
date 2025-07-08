@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -25,11 +26,11 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
 		}
 
-		onion := fakes.BuildFakeValidIngredient()
-		carrot := fakes.BuildFakeValidIngredient()
-		celery := fakes.BuildFakeValidIngredient()
-		salt := fakes.BuildFakeValidIngredient()
-		grams := fakes.BuildFakeValidMeasurementUnit()
+		onion := recipeenumfakes.BuildFakeValidIngredient()
+		carrot := recipeenumfakes.BuildFakeValidIngredient()
+		celery := recipeenumfakes.BuildFakeValidIngredient()
+		salt := recipeenumfakes.BuildFakeValidIngredient()
+		grams := recipeenumfakes.BuildFakeValidMeasurementUnit()
 
 		expectedMealPlan := &mealplanning.MealPlan{
 			ID: fakes.BuildFakeID(),
@@ -257,10 +258,10 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 			tracer: tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(t.Name())),
 		}
 
-		onion := fakes.BuildFakeValidIngredient()
-		carrot := fakes.BuildFakeValidIngredient()
-		celery := fakes.BuildFakeValidIngredient()
-		grams := fakes.BuildFakeValidMeasurementUnit()
+		onion := recipeenumfakes.BuildFakeValidIngredient()
+		carrot := recipeenumfakes.BuildFakeValidIngredient()
+		celery := recipeenumfakes.BuildFakeValidIngredient()
+		grams := recipeenumfakes.BuildFakeValidMeasurementUnit()
 
 		expectedMealPlan := &mealplanning.MealPlan{
 			ID: fakes.BuildFakeID(),

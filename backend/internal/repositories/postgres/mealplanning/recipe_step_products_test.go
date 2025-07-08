@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/recipeenums"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -74,7 +75,7 @@ func TestQuerier_Integration_RecipeStepProducts(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 	exampleRecipeStep := createdRecipe.Steps[0]
 
-	validMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+	validMeasurementUnit := recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
 	exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 	exampleRecipeStepProduct.MeasurementUnit = validMeasurementUnit
 	exampleRecipeStepProduct.BelongsToRecipeStep = exampleRecipeStep.ID
@@ -87,7 +88,7 @@ func TestQuerier_Integration_RecipeStepProducts(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		validMeasurementUnit = createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+		validMeasurementUnit = recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
 		input := fakes.BuildFakeRecipeStepProduct()
 		input.MeasurementUnit = validMeasurementUnit
 		input.BelongsToRecipeStep = exampleRecipeStep.ID

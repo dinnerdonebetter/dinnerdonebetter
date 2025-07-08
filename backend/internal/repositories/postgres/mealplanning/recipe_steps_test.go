@@ -8,9 +8,12 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
+	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	recipeenumsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/recipeenums"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,25 +24,25 @@ func buildRecipeStepForTestCreation(t *testing.T, ctx context.Context, recipeID 
 
 	recipeStepID := identifiers.New()
 
-	validIngredientState := createValidIngredientStateForTest(t, ctx, nil, dbc)
+	validIngredientState := recipeenumsrepo.CreateValidIngredientStateForTest(t, ctx, nil, dbc.recipeenumsRepository)
 
-	preparation := createValidPreparationForTest(t, ctx, nil, dbc)
-	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
-	measurementUnit1 := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+	preparation := recipeenumsrepo.CreateValidPreparationForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	ingredient := recipeenumsrepo.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	measurementUnit1 := recipeenumsrepo.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
 	recipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 	recipeStepIngredient.Ingredient = ingredient
 	recipeStepIngredient.MeasurementUnit = *measurementUnit1
 	recipeStepIngredient.BelongsToRecipeStep = recipeStepID
 
-	instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+	instrument := recipeenumsrepo.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
 	recipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 	recipeStepInstrument.Instrument = instrument
 	recipeStepInstrument.BelongsToRecipeStep = recipeStepID
 
-	measurementUnit2 := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
-	exampleVessel := fakes.BuildFakeValidVessel()
+	measurementUnit2 := recipeenumsrepo.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	exampleVessel := recipeenumfakes.BuildFakeValidVessel()
 	exampleVessel.CapacityUnit = measurementUnit2
-	vessel := createValidVesselForTest(t, ctx, exampleVessel, dbc)
+	vessel := recipeenumsrepo.CreateValidVesselForTest(t, ctx, exampleVessel, dbc.recipeenumsRepository)
 	recipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 	recipeStepVessel.Vessel = vessel
 	recipeStepVessel.BelongsToRecipeStep = recipeStepID
@@ -113,7 +116,7 @@ func createRecipeStepForTest(t *testing.T, ctx context.Context, recipeID string,
 
 	exampleRecipeStep.Media = nil
 	exampleRecipeStep.CreatedAt = created.CreatedAt
-	exampleRecipeStep.Preparation = types.ValidPreparation{ID: created.Preparation.ID}
+	exampleRecipeStep.Preparation = recipeenums.ValidPreparation{ID: created.Preparation.ID}
 
 	for j := range created.Ingredients {
 		exampleRecipeStep.Ingredients[j].CreatedAt = created.Ingredients[j].CreatedAt

@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/recipeenums"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -79,8 +80,8 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 	exampleMealPlan.BelongsToAccount = account.ID
 	mealPlan := createMealPlanForTest(t, ctx, exampleMealPlan, dbc)
 
-	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
-	measurmentUnit := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+	ingredient := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	measurmentUnit := recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
 
 	exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 	exampleMealPlanGroceryListItem.BelongsToMealPlan = mealPlan.ID

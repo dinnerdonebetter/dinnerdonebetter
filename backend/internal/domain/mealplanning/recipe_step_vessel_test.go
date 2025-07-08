@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -22,7 +23,7 @@ func TestRecipeStepVessel_Update(T *testing.T) {
 				Max: pointer.To(uint16(1234)),
 				Min: 1234,
 			},
-			Vessel: &ValidVessel{},
+			Vessel: &recipeenums.ValidVessel{},
 		}
 		input := &RecipeStepVesselUpdateRequestInput{}
 

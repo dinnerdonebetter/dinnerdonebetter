@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -97,7 +98,7 @@ func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID stri
 		Vessels:              nil,
 		CompletionConditions: nil,
 		Ingredients:          nil,
-		Preparation: mealplanning.ValidPreparation{
+		Preparation: recipeenums.ValidPreparation{
 			CreatedAt: result.ValidPreparationCreatedAt,
 			InstrumentCount: types.Uint16RangeWithOptionalMax{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
@@ -176,7 +177,7 @@ func (q *Querier) getRecipeStepByID(ctx context.Context, querier database.SQLQue
 		Vessels:              nil,
 		CompletionConditions: nil,
 		Ingredients:          nil,
-		Preparation: mealplanning.ValidPreparation{
+		Preparation: recipeenums.ValidPreparation{
 			CreatedAt: result.ValidPreparationCreatedAt,
 			InstrumentCount: types.Uint16RangeWithOptionalMax{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
@@ -275,7 +276,7 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *f
 			Vessels:              nil,
 			CompletionConditions: nil,
 			Ingredients:          nil,
-			Preparation: mealplanning.ValidPreparation{
+			Preparation: recipeenums.ValidPreparation{
 				CreatedAt: result.ValidPreparationCreatedAt,
 				InstrumentCount: types.Uint16RangeWithOptionalMax{
 					Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
@@ -349,7 +350,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 	x := &mealplanning.RecipeStep{
 		ID:                      input.ID,
 		Index:                   input.Index,
-		Preparation:             mealplanning.ValidPreparation{ID: input.PreparationID},
+		Preparation:             recipeenums.ValidPreparation{ID: input.PreparationID},
 		EstimatedTimeInSeconds:  input.EstimatedTimeInSeconds,
 		TemperatureInCelsius:    input.TemperatureInCelsius,
 		Notes:                   input.Notes,

@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/recipeenums"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -63,7 +64,7 @@ func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
 	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
 
-	instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+	instrument := recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
 
 	exampleAccountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
 	exampleAccountInstrumentOwnership.BelongsToAccount = account.ID
@@ -78,7 +79,7 @@ func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		newInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+		newInstrument := recipeenums.CreateValidInstrumentForTest(t, ctx, nil, dbc.recipeenumsRepository)
 		input := fakes.BuildFakeAccountInstrumentOwnership()
 		input.BelongsToAccount = account.ID
 		input.Instrument = *newInstrument

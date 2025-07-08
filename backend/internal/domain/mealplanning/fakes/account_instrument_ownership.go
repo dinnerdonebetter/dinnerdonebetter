@@ -3,6 +3,7 @@ package fakes
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 )
 
@@ -13,7 +14,7 @@ func BuildFakeAccountInstrumentOwnership() *types.AccountInstrumentOwnership {
 		ID:               buildUniqueString(),
 		Notes:            buildUniqueString(),
 		BelongsToAccount: buildUniqueString(),
-		Instrument:       *BuildFakeValidInstrument(),
+		Instrument:       *recipeenumfakes.BuildFakeValidInstrument(),
 		Quantity:         uint16(buildFakeNumber()),
 	}
 }

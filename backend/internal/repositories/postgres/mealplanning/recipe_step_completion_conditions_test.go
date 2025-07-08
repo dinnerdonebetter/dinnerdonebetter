@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/recipeenums"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -32,7 +33,7 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 	require.NoError(t, getRecipeStepErr)
 	require.NotNil(t, recipeStep)
 
-	ingredientState, getIngredientStateErr := dbc.GetValidIngredientState(ctx, exampleRecipeStepCompletionCondition.IngredientState.ID)
+	ingredientState, getIngredientStateErr := dbc.recipeenumsRepository.GetValidIngredientState(ctx, exampleRecipeStepCompletionCondition.IngredientState.ID)
 	require.NoError(t, getIngredientStateErr)
 	require.NotNil(t, ingredientState)
 
@@ -90,7 +91,7 @@ func TestQuerier_Integration_RecipeStepCompletionConditions(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 	exampleRecipeStep := createdRecipe.Steps[0]
 
-	ingredientState := createValidIngredientStateForTest(t, ctx, nil, dbc)
+	ingredientState := recipeenums.CreateValidIngredientStateForTest(t, ctx, nil, dbc.recipeenumsRepository)
 	exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 	exampleRecipeStepCompletionCondition.IngredientState = *ingredientState
 	exampleRecipeStepCompletionCondition.BelongsToRecipeStep = exampleRecipeStep.ID

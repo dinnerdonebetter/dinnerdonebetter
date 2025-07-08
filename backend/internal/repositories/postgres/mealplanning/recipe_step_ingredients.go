@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -101,7 +102,7 @@ func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeS
 		BelongsToRecipeStep:       result.BelongsToRecipeStep,
 		IngredientNotes:           result.IngredientNotes,
 		Name:                      result.Name,
-		MeasurementUnit: mealplanning.ValidMeasurementUnit{
+		MeasurementUnit: recipeenums.ValidMeasurementUnit{
 			CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
@@ -126,7 +127,7 @@ func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeS
 	}
 
 	if result.ValidIngredientID.Valid && result.ValidIngredientID.String != "" {
-		recipeStepIngredient.Ingredient = &mealplanning.ValidIngredient{
+		recipeStepIngredient.Ingredient = &recipeenums.ValidIngredient{
 			CreatedAt:     result.ValidIngredientCreatedAt.Time,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
@@ -205,7 +206,7 @@ func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeI
 			BelongsToRecipeStep:       result.BelongsToRecipeStep,
 			IngredientNotes:           result.IngredientNotes,
 			Name:                      result.Name,
-			MeasurementUnit: mealplanning.ValidMeasurementUnit{
+			MeasurementUnit: recipeenums.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
@@ -230,7 +231,7 @@ func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeI
 		}
 
 		if result.ValidIngredientID.Valid {
-			recipeStepIngredient.Ingredient = &mealplanning.ValidIngredient{
+			recipeStepIngredient.Ingredient = &recipeenums.ValidIngredient{
 				CreatedAt:     result.ValidIngredientCreatedAt.Time,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
@@ -337,7 +338,7 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 			BelongsToRecipeStep:       result.BelongsToRecipeStep,
 			IngredientNotes:           result.IngredientNotes,
 			Name:                      result.Name,
-			MeasurementUnit: mealplanning.ValidMeasurementUnit{
+			MeasurementUnit: recipeenums.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
@@ -362,7 +363,7 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 		}
 
 		if result.ValidIngredientID.Valid {
-			recipeStepIngredient.Ingredient = &mealplanning.ValidIngredient{
+			recipeStepIngredient.Ingredient = &recipeenums.ValidIngredient{
 				CreatedAt:     result.ValidIngredientCreatedAt.Time,
 				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
 				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
@@ -448,7 +449,7 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		ID:              input.ID,
 		Name:            input.Name,
 		Optional:        input.Optional,
-		MeasurementUnit: mealplanning.ValidMeasurementUnit{ID: input.MeasurementUnitID},
+		MeasurementUnit: recipeenums.ValidMeasurementUnit{ID: input.MeasurementUnitID},
 		Quantity: types.Float32RangeWithOptionalMax{
 			Max: input.Quantity.Max,
 			Min: input.Quantity.Min,
@@ -466,7 +467,7 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 	}
 
 	if input.IngredientID != nil {
-		x.Ingredient = &mealplanning.ValidIngredient{ID: *input.IngredientID}
+		x.Ingredient = &recipeenums.ValidIngredient{ID: *input.IngredientID}
 	}
 
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, x.ID)

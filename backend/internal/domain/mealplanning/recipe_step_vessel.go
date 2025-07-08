@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -37,7 +38,7 @@ type (
 		LastUpdatedAt        *time.Time                       `json:"lastUpdatedAt"`
 		ArchivedAt           *time.Time                       `json:"archivedAt"`
 		RecipeStepProductID  *string                          `json:"recipeStepProductID"`
-		Vessel               *ValidVessel                     `json:"vessel"`
+		Vessel               *recipeenums.ValidVessel         `json:"vessel"`
 		ID                   string                           `json:"id"`
 		Notes                string                           `json:"notes"`
 		BelongsToRecipeStep  string                           `json:"belongsToRecipeStep"`
@@ -147,7 +148,7 @@ func (x *RecipeStepVessel) Update(input *RecipeStepVesselUpdateRequestInput) {
 	}
 
 	if input.VesselID != nil && x.Vessel != nil && *input.VesselID != x.Vessel.ID {
-		x.Vessel = &ValidVessel{ID: *input.VesselID}
+		x.Vessel = &recipeenums.ValidVessel{ID: *input.VesselID}
 	}
 }
 

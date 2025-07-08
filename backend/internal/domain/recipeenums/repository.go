@@ -1,0 +1,18 @@
+package recipeenums
+
+type Repository interface {
+	ValidIngredientPreparationDataManager
+	ValidIngredientDataManager
+	ValidEnumerationDataManager
+	ValidIngredientMeasurementUnitDataManager
+	ValidIngredientGroupDataManager
+	ValidIngredientStateDataManager
+	ValidIngredientStateIngredientDataManager
+	ValidInstrumentDataManager
+	ValidMeasurementUnitDataManager
+	ValidMeasurementUnitConversionDataManager
+	ValidPreparationDataManager
+	ValidPreparationInstrumentDataManager
+	ValidPreparationVesselDataManager
+	ValidVesselDataManager
+}

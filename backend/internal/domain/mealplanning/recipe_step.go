@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -56,7 +57,7 @@ type (
 		Vessels                 []*RecipeStepVessel              `json:"vessels"`
 		CompletionConditions    []*RecipeStepCompletionCondition `json:"completionConditions"`
 		Ingredients             []*RecipeStepIngredient          `json:"ingredients"`
-		Preparation             ValidPreparation                 `json:"preparation"`
+		Preparation             recipeenums.ValidPreparation     `json:"preparation"`
 		Index                   uint32                           `json:"index"`
 		Optional                bool                             `json:"optional"`
 		StartTimerAutomatically bool                             `json:"startTimerAutomatically"`
@@ -111,16 +112,16 @@ type (
 	RecipeStepUpdateRequestInput struct {
 		_ struct{} `json:"-"`
 
-		EstimatedTimeInSeconds  types.OptionalUint32Range  `json:"estimatedTimeInSeconds"`
-		TemperatureInCelsius    types.OptionalFloat32Range `json:"temperatureInCelsius"`
-		Notes                   *string                    `json:"notes,omitempty"`
-		Preparation             *ValidPreparation          `json:"preparation,omitempty"`
-		Index                   *uint32                    `json:"index,omitempty"`
-		Optional                *bool                      `json:"optional,omitempty"`
-		ExplicitInstructions    *string                    `json:"explicitInstructions,omitempty"`
-		ConditionExpression     *string                    `json:"conditionExpression,omitempty"`
-		StartTimerAutomatically *bool                      `json:"startTimerAutomatically"`
-		BelongsToRecipe         string                     `json:"belongsToRecipe"`
+		EstimatedTimeInSeconds  types.OptionalUint32Range     `json:"estimatedTimeInSeconds"`
+		TemperatureInCelsius    types.OptionalFloat32Range    `json:"temperatureInCelsius"`
+		Notes                   *string                       `json:"notes,omitempty"`
+		Preparation             *recipeenums.ValidPreparation `json:"preparation,omitempty"`
+		Index                   *uint32                       `json:"index,omitempty"`
+		Optional                *bool                         `json:"optional,omitempty"`
+		ExplicitInstructions    *string                       `json:"explicitInstructions,omitempty"`
+		ConditionExpression     *string                       `json:"conditionExpression,omitempty"`
+		StartTimerAutomatically *bool                         `json:"startTimerAutomatically"`
+		BelongsToRecipe         string                        `json:"belongsToRecipe"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.

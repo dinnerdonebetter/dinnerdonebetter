@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -34,7 +35,7 @@ type (
 		CreatedAt           time.Time                                  `json:"createdAt"`
 		ArchivedAt          *time.Time                                 `json:"archivedAt"`
 		LastUpdatedAt       *time.Time                                 `json:"lastUpdatedAt"`
-		IngredientState     ValidIngredientState                       `json:"ingredientState"`
+		IngredientState     recipeenums.ValidIngredientState           `json:"ingredientState"`
 		ID                  string                                     `json:"id"`
 		BelongsToRecipeStep string                                     `json:"belongsToRecipeStep"`
 		Notes               string                                     `json:"notes"`
@@ -135,7 +136,7 @@ type (
 // Update merges an RecipeStepCompletionConditionUpdateRequestInput with a recipe step completion condition.
 func (x *RecipeStepCompletionCondition) Update(input *RecipeStepCompletionConditionUpdateRequestInput) {
 	if input.IngredientStateID != nil && *input.IngredientStateID != x.IngredientState.ID {
-		x.IngredientState = ValidIngredientState{ID: *input.IngredientStateID}
+		x.IngredientState = recipeenums.ValidIngredientState{ID: *input.IngredientStateID}
 	}
 
 	if input.BelongsToRecipeStep != nil && *input.BelongsToRecipeStep != x.BelongsToRecipeStep {

@@ -6,9 +6,7 @@ import { AuditLogEntry, QueryFilteredResult } from '@dinnerdonebetter/models';
 
 import { assertClient, assertMethod, ResponseConfig } from './helpers';
 
-export class MockGetAuditLogEntriesForAccountResponseConfig extends ResponseConfig<
-  QueryFilteredResult<AuditLogEntry>
-> {
+export class MockGetAuditLogEntriesForAccountResponseConfig extends ResponseConfig<QueryFilteredResult<AuditLogEntry>> {
   constructor(status: number = 200, body: AuditLogEntry[] = []) {
     super();
 

@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/recipeenums"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -77,8 +78,8 @@ func TestQuerier_Integration_RecipeStepIngredients(t *testing.T) {
 	createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
 	exampleRecipeStep := createdRecipe.Steps[0]
 
-	validMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
-	validIngredient := createValidIngredientForTest(t, ctx, nil, dbc)
+	validMeasurementUnit := recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
+	validIngredient := recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
 	exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
 	exampleRecipeStepIngredient.Ingredient = validIngredient
 	exampleRecipeStepIngredient.MeasurementUnit = *validMeasurementUnit
@@ -92,8 +93,8 @@ func TestQuerier_Integration_RecipeStepIngredients(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		validMeasurementUnit = createValidMeasurementUnitForTest(t, ctx, nil, dbc)
-		validIngredient = createValidIngredientForTest(t, ctx, nil, dbc)
+		validMeasurementUnit = recipeenums.CreateValidMeasurementUnitForTest(t, ctx, nil, dbc.recipeenumsRepository)
+		validIngredient = recipeenums.CreateValidIngredientForTest(t, ctx, nil, dbc.recipeenumsRepository)
 		input := fakes.BuildFakeRecipeStepIngredient()
 		input.Ingredient = validIngredient
 		input.MeasurementUnit = *validMeasurementUnit

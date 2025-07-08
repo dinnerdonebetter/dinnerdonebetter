@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
@@ -39,7 +40,7 @@ type (
 		_ struct{} `json:"-"`
 
 		CreatedAt           time.Time                        `json:"createdAt"`
-		Instrument          *ValidInstrument                 `json:"instrument"`
+		Instrument          *recipeenums.ValidInstrument     `json:"instrument"`
 		LastUpdatedAt       *time.Time                       `json:"lastUpdatedAt"`
 		RecipeStepProductID *string                          `json:"recipeStepProductID"`
 		ArchivedAt          *time.Time                       `json:"archivedAt"`
@@ -125,7 +126,7 @@ type (
 // Update merges an RecipeStepInstrumentUpdateRequestInput with a recipe step instrument.
 func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestInput) {
 	if input.InstrumentID != nil && (x.Instrument == nil || (*input.InstrumentID != "" && *input.InstrumentID != x.Instrument.ID)) {
-		x.Instrument = &ValidInstrument{ID: *input.InstrumentID}
+		x.Instrument = &recipeenums.ValidInstrument{ID: *input.InstrumentID}
 	}
 
 	if input.RecipeStepProductID != nil && x.RecipeStepProductID != nil && *input.RecipeStepProductID != *x.RecipeStepProductID {

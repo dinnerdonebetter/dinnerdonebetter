@@ -1849,9 +1849,7 @@ describe('basic', () => {
     const exampleInput = new ModifyUserPermissionsInput();
 
     const exampleResponse = new APIResponse<UserPermissionsResponse>();
-    mock
-      .onPatch(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}/permissions`)
-      .reply(200, exampleResponse);
+    mock.onPatch(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}/permissions`).reply(200, exampleResponse);
 
     client
       .updateAccountMemberPermissions(accountID, userID, exampleInput)
@@ -1874,13 +1872,9 @@ describe('basic', () => {
 
     const expectedError = buildObligatoryError('updateAccountMemberPermissions user error');
     const exampleResponse = new APIResponse<UserPermissionsResponse>(expectedError);
-    mock
-      .onPatch(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}/permissions`)
-      .reply(200, exampleResponse);
+    mock.onPatch(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}/permissions`).reply(200, exampleResponse);
 
-    expect(client.updateAccountMemberPermissions(accountID, userID, exampleInput)).rejects.toEqual(
-      expectedError.error,
-    );
+    expect(client.updateAccountMemberPermissions(accountID, userID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it("should appropriately raise service errors when they occur during Update an account member's account permissions", () => {
@@ -1891,13 +1885,9 @@ describe('basic', () => {
 
     const expectedError = buildObligatoryError('updateAccountMemberPermissions service error');
     const exampleResponse = new APIResponse<UserPermissionsResponse>(expectedError);
-    mock
-      .onPatch(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}/permissions`)
-      .reply(500, exampleResponse);
+    mock.onPatch(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}/permissions`).reply(500, exampleResponse);
 
-    expect(client.updateAccountMemberPermissions(accountID, userID, exampleInput)).rejects.toEqual(
-      expectedError.error,
-    );
+    expect(client.updateAccountMemberPermissions(accountID, userID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should Uploads a new user avatar', () => {
@@ -3435,9 +3425,7 @@ describe('basic', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
-    mock
-      .onDelete(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
-      .reply(202, exampleResponse);
+    mock.onDelete(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(202, exampleResponse);
 
     client
       .archiveAccountInstrumentOwnership(accountInstrumentOwnershipID)
@@ -3456,13 +3444,9 @@ describe('basic', () => {
 
     const expectedError = buildObligatoryError('archiveAccountInstrumentOwnership user error');
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
-    mock
-      .onDelete(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
-      .reply(202, exampleResponse);
+    mock.onDelete(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(202, exampleResponse);
 
-    expect(client.archiveAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(
-      expectedError.error,
-    );
+    expect(client.archiveAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
   });
 
   it('should raise service errors appropriately when trying to archive an account instrument ownership', () => {
@@ -3470,13 +3454,9 @@ describe('basic', () => {
 
     const expectedError = buildObligatoryError('archiveAccountInstrumentOwnership service error');
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
-    mock
-      .onDelete(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
-      .reply(500, exampleResponse);
+    mock.onDelete(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(500, exampleResponse);
 
-    expect(client.archiveAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(
-      expectedError.error,
-    );
+    expect(client.archiveAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
   });
 
   it('should archive an account', () => {
@@ -9158,9 +9138,7 @@ describe('basic', () => {
     let accountInstrumentOwnershipID = fakeID();
 
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
-    mock
-      .onGet(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
-      .reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(200, exampleResponse);
 
     client
       .getAccountInstrumentOwnership(accountInstrumentOwnershipID)
@@ -9179,9 +9157,7 @@ describe('basic', () => {
 
     const expectedError = buildObligatoryError('getAccountInstrumentOwnership user error');
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
-    mock
-      .onGet(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
-      .reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(200, exampleResponse);
 
     expect(client.getAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
   });
@@ -9191,9 +9167,7 @@ describe('basic', () => {
 
     const expectedError = buildObligatoryError('getAccountInstrumentOwnership service error');
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
-    mock
-      .onGet(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
-      .reply(500, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(500, exampleResponse);
 
     expect(client.getAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
   });
@@ -11428,9 +11402,7 @@ describe('basic', () => {
     const exampleInput = new AccountInstrumentOwnershipUpdateRequestInput();
 
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
-    mock
-      .onPut(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
-      .reply(200, exampleResponse);
+    mock.onPut(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(200, exampleResponse);
 
     client
       .updateAccountInstrumentOwnership(accountInstrumentOwnershipID, exampleInput)
@@ -11452,9 +11424,7 @@ describe('basic', () => {
 
     const expectedError = buildObligatoryError('updateAccountInstrumentOwnership user error');
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
-    mock
-      .onPut(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
-      .reply(200, exampleResponse);
+    mock.onPut(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(200, exampleResponse);
 
     expect(client.updateAccountInstrumentOwnership(accountInstrumentOwnershipID, exampleInput)).rejects.toEqual(
       expectedError.error,
@@ -11468,9 +11438,7 @@ describe('basic', () => {
 
     const expectedError = buildObligatoryError('updateAccountInstrumentOwnership service error');
     const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
-    mock
-      .onPut(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`)
-      .reply(500, exampleResponse);
+    mock.onPut(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(500, exampleResponse);
 
     expect(client.updateAccountInstrumentOwnership(accountInstrumentOwnershipID, exampleInput)).rejects.toEqual(
       expectedError.error,

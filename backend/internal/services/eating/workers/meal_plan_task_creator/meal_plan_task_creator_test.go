@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	"github.com/dinnerdonebetter/backend/internal/domain/recipeenums"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -99,10 +100,10 @@ func TestWorker_Work(T *testing.T) {
 				{
 					BelongsToRecipe: exampleRecipeID,
 					ID:              recipeStepID,
-					Preparation:     mealplanning.ValidPreparation{Name: "dice"},
+					Preparation:     recipeenums.ValidPreparation{Name: "dice"},
 					Ingredients: []*mealplanning.RecipeStepIngredient{
 						{
-							Ingredient: &mealplanning.ValidIngredient{
+							Ingredient: &recipeenums.ValidIngredient{
 								StorageTemperatureInCelsius: types.OptionalFloat32Range{
 									Min: pointer.To(float32(2.5)),
 								},
@@ -114,7 +115,7 @@ func TestWorker_Work(T *testing.T) {
 							Name:                "chicken breast",
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStepID,
-							MeasurementUnit:     mealplanning.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
+							MeasurementUnit:     recipeenums.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							Quantity: types.Float32RangeWithOptionalMax{
 								Max: pointer.To(float32(900)),
 								Min: 900,
@@ -127,7 +128,7 @@ func TestWorker_Work(T *testing.T) {
 							Type:                mealplanning.RecipeStepProductIngredientType,
 							BelongsToRecipeStep: recipeStepID,
 							ID:                  fakes.BuildFakeID(),
-							MeasurementUnit:     &mealplanning.ValidMeasurementUnit{},
+							MeasurementUnit:     &recipeenums.ValidMeasurementUnit{},
 						},
 					},
 				},

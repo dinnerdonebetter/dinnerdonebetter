@@ -3,6 +3,7 @@ package fakes
 import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -21,7 +22,7 @@ func BuildFakeRecipeStepCompletionCondition() *types.RecipeStepCompletionConditi
 
 	return &types.RecipeStepCompletionCondition{
 		Optional:            fake.Bool(),
-		IngredientState:     *BuildFakeValidIngredientState(),
+		IngredientState:     *recipeenumfakes.BuildFakeValidIngredientState(),
 		ID:                  id,
 		BelongsToRecipeStep: BuildFakeID(),
 		Notes:               buildUniqueString(),

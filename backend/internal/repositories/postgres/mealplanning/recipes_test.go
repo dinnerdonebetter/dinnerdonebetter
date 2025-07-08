@@ -7,11 +7,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningfakes "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	types "github.com/dinnerdonebetter/backend/internal/platform/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -26,15 +27,15 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 	}
 
 	recipeStepID := identifiers.New()
-	exampleRecipe := fakes.BuildFakeRecipe()
+	exampleRecipe := mealplanningfakes.BuildFakeRecipe()
 
-	exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
+	exampleRecipeMedia := mealplanningfakes.BuildFakeRecipeMedia()
 	exampleRecipeMedia.BelongsToRecipe = &exampleRecipe.ID
 	exampleRecipe.Media = []*mealplanning.RecipeMedia{
 		exampleRecipeMedia,
 	}
 
-	exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
+	exampleRecipePrepTask := mealplanningfakes.BuildFakeRecipePrepTask()
 	exampleRecipePrepTask.BelongsToRecipe = exampleRecipe.ID
 	exampleRecipePrepTask.TaskSteps = []*mealplanning.RecipePrepTaskStep{
 		{
@@ -274,7 +275,7 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleAccountID := fakes.BuildFakeID()
+		exampleAccountID := mealplanningfakes.BuildFakeID()
 
 		ctx := context.Background()
 		c := buildInertClientForTest(t)
@@ -285,7 +286,7 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleRecipe := fakes.BuildFakeRecipe()
+		exampleRecipe := mealplanningfakes.BuildFakeRecipe()
 
 		ctx := context.Background()
 		c := buildInertClientForTest(t)
@@ -300,10 +301,10 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 	T.Run("sopa de frijol", func(t *testing.T) {
 		t.Parallel()
 
-		soak := fakes.BuildFakeValidPreparation()
-		water := fakes.BuildFakeValidIngredient()
-		pintoBeans := fakes.BuildFakeValidIngredient()
-		garlicPaste := fakes.BuildFakeValidIngredient()
+		soak := recipeenumfakes.BuildFakeValidPreparation()
+		water := recipeenumfakes.BuildFakeValidIngredient()
+		pintoBeans := recipeenumfakes.BuildFakeValidIngredient()
+		garlicPaste := recipeenumfakes.BuildFakeValidIngredient()
 		productName := "soaked pinto beans"
 
 		exampleRecipeInput := &mealplanning.RecipeDatabaseCreationInput{
@@ -313,9 +314,9 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 						{
-							ID:                fakes.BuildFakeID(),
+							ID:                mealplanningfakes.BuildFakeID(),
 							Name:              productName,
-							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              mealplanning.RecipeStepProductIngredientType,
 						},
 					},
@@ -325,13 +326,13 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						{
 							IngredientID:      &pintoBeans.ID,
 							Name:              "pinto beans",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:          types.Float32RangeWithOptionalMax{Min: 500},
 						},
 						{
 							IngredientID:      &water.ID,
 							Name:              "water",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:          types.Float32RangeWithOptionalMax{Min: 500},
 						},
 					},
@@ -341,7 +342,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 						{
 							Name:              "final output",
-							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              mealplanning.RecipeStepProductIngredientType,
 						},
 					},
@@ -350,7 +351,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							Name:                            productName,
-							MeasurementUnitID:               fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID:               recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
 							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
@@ -358,7 +359,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						{
 							IngredientID:      &garlicPaste.ID,
 							Name:              "garlic paste",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:          types.Float32RangeWithOptionalMax{Min: 10},
 						},
 					},
@@ -376,10 +377,10 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 	T.Run("slightly more complicated recipe", func(t *testing.T) {
 		t.Parallel()
 
-		soak := fakes.BuildFakeValidPreparation()
-		water := fakes.BuildFakeValidIngredient()
-		pintoBeans := fakes.BuildFakeValidIngredient()
-		garlicPaste := fakes.BuildFakeValidIngredient()
+		soak := recipeenumfakes.BuildFakeValidPreparation()
+		water := recipeenumfakes.BuildFakeValidIngredient()
+		pintoBeans := recipeenumfakes.BuildFakeValidIngredient()
+		garlicPaste := recipeenumfakes.BuildFakeValidIngredient()
 		productName := "soaked pinto beans"
 
 		exampleRecipeInput := &mealplanning.RecipeDatabaseCreationInput{
@@ -389,9 +390,9 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 						{
-							ID:                fakes.BuildFakeID(),
+							ID:                mealplanningfakes.BuildFakeID(),
 							Name:              productName,
-							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              mealplanning.RecipeStepProductIngredientType,
 						},
 					},
@@ -401,13 +402,13 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						{
 							IngredientID:      &pintoBeans.ID,
 							Name:              "pinto beans",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:          types.Float32RangeWithOptionalMax{Min: 500},
 						},
 						{
 							IngredientID:      &water.ID,
 							Name:              "water",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:          types.Float32RangeWithOptionalMax{Min: 5},
 						},
 					},
@@ -417,7 +418,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 						{
 							Name:              "pressure cooked beans",
-							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              mealplanning.RecipeStepProductIngredientType,
 						},
 					},
@@ -426,7 +427,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							Name:                            productName,
-							MeasurementUnitID:               fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID:               recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
 							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
 							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
@@ -434,7 +435,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						{
 							IngredientID:      &garlicPaste.ID,
 							Name:              "garlic paste",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:          types.Float32RangeWithOptionalMax{Min: 10},
 						},
 					},
@@ -443,9 +444,9 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 						{
-							ID:                fakes.BuildFakeID(),
+							ID:                mealplanningfakes.BuildFakeID(),
 							Name:              productName,
-							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              mealplanning.RecipeStepProductIngredientType,
 						},
 					},
@@ -455,13 +456,13 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 						{
 							IngredientID:      &pintoBeans.ID,
 							Name:              "pinto beans",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:          types.Float32RangeWithOptionalMax{Min: 500},
 						},
 						{
 							IngredientID:      &water.ID,
 							Name:              "water",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:          types.Float32RangeWithOptionalMax{Min: 5},
 						},
 					},
@@ -471,7 +472,7 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 						{
 							Name:              "final output",
-							MeasurementUnitID: &fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: &recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Type:              mealplanning.RecipeStepProductIngredientType,
 						},
 					},
@@ -480,14 +481,14 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 					Ingredients: []*mealplanning.RecipeStepIngredientDatabaseCreationInput{
 						{
 							Name:                            productName,
-							MeasurementUnitID:               fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID:               recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
 							ProductOfRecipeStepIndex:        pointer.To(uint64(2)),
 							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 						},
 						{
 							Name:              "pressure cooked beans",
-							MeasurementUnitID: fakes.BuildFakeValidMeasurementUnit().ID,
+							MeasurementUnitID: recipeenumfakes.BuildFakeValidMeasurementUnit().ID,
 							Quantity:          types.Float32RangeWithOptionalMax{Min: 10},
 						},
 					},
@@ -511,13 +512,13 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 	T.Run("example", func(t *testing.T) {
 		t.Parallel()
 
-		bake := fakes.BuildFakeValidPreparation()
-		line := fakes.BuildFakeValidPreparation()
-		bakingSheet := fakes.BuildFakeValidInstrument()
-		aluminumFoil := fakes.BuildFakeValidIngredient()
-		asparagus := fakes.BuildFakeValidIngredient()
-		grams := fakes.BuildFakeValidMeasurementUnit()
-		sheet := fakes.BuildFakeValidMeasurementUnit()
+		bake := recipeenumfakes.BuildFakeValidPreparation()
+		line := recipeenumfakes.BuildFakeValidPreparation()
+		bakingSheet := recipeenumfakes.BuildFakeValidInstrument()
+		aluminumFoil := recipeenumfakes.BuildFakeValidIngredient()
+		asparagus := recipeenumfakes.BuildFakeValidIngredient()
+		grams := recipeenumfakes.BuildFakeValidMeasurementUnit()
+		sheet := recipeenumfakes.BuildFakeValidMeasurementUnit()
 
 		productName := "lined baking sheet"
 
@@ -528,7 +529,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 						{
-							ID:   fakes.BuildFakeID(),
+							ID:   mealplanningfakes.BuildFakeID(),
 							Name: productName,
 							Type: mealplanning.RecipeStepProductInstrumentType,
 						},
@@ -556,7 +557,7 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 				{
 					Products: []*mealplanning.RecipeStepProductDatabaseCreationInput{
 						{
-							ID:   fakes.BuildFakeID(),
+							ID:   mealplanningfakes.BuildFakeID(),
 							Name: "roasted asparagus",
 							Type: mealplanning.RecipeStepProductInstrumentType,
 						},

@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
+	recipeenumfakes "github.com/dinnerdonebetter/backend/internal/domain/recipeenums/fakes"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -52,12 +53,12 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		w := buildNewMealPlanGroceryListInitializerForTest(t)
 		assert.NotNil(t, w)
 
-		onion := fakes.BuildFakeValidIngredient()
-		carrot := fakes.BuildFakeValidIngredient()
-		celery := fakes.BuildFakeValidIngredient()
-		salt := fakes.BuildFakeValidIngredient()
+		onion := recipeenumfakes.BuildFakeValidIngredient()
+		carrot := recipeenumfakes.BuildFakeValidIngredient()
+		celery := recipeenumfakes.BuildFakeValidIngredient()
+		salt := recipeenumfakes.BuildFakeValidIngredient()
 
-		grams := fakes.BuildFakeValidMeasurementUnit()
+		grams := recipeenumfakes.BuildFakeValidMeasurementUnit()
 
 		expectedMealPlans := []*mealplanning.MealPlan{
 			{
