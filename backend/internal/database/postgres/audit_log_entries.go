@@ -81,7 +81,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
 		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.PageSize),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -144,7 +144,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
 		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.PageSize),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -200,7 +200,7 @@ func (q *Querier) GetAuditLogEntriesForAccount(ctx context.Context, accountID st
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
 		QueryOffset:      database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:       database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:       database.NullInt32FromUint8Pointer(filter.PageSize),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -263,7 +263,7 @@ func (q *Querier) GetAuditLogEntriesForAccountAndResourceType(ctx context.Contex
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
 		QueryOffset:      database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:       database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:       database.NullInt32FromUint8Pointer(filter.PageSize),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")

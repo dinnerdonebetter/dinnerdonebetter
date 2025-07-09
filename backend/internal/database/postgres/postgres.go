@@ -184,7 +184,7 @@ func fetchAllRows[T any](fetchFunc func(*filtering.QueryFilter) (*filtering.Quer
 
 	filter := &filtering.QueryFilter{
 		Page:            pointer.To(uint16(1)),
-		Limit:           pointer.To(uint8(math.MaxUint8)),
+		PageSize:        pointer.To(uint8(math.MaxUint8)),
 		IncludeArchived: pointer.To(true),
 	}
 

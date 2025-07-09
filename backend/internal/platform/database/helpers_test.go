@@ -18,8 +18,8 @@ func TestFetchAllRows(T *testing.T) {
 		exampleData := []string{"one", "two", "three"}
 
 		queryFilter := &filtering.QueryFilter{
-			Page:  pointer.To(uint16(1)),
-			Limit: pointer.To(uint8(1)),
+			Page:     pointer.To(uint16(1)),
+			PageSize: pointer.To(uint8(1)),
 		}
 
 		actual, err := FetchAllRows(func(filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[string], error) {

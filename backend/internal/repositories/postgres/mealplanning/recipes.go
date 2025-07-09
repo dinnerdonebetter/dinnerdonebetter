@@ -261,7 +261,7 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *filtering.QueryFilter)
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -327,7 +327,7 @@ func (q *Querier) GetRecipesCreatedByUser(ctx context.Context, userID string, fi
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -419,7 +419,7 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 		Query:           recipeNameQuery,
 	})

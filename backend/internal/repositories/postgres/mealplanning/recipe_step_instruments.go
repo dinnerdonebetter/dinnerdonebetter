@@ -164,7 +164,7 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

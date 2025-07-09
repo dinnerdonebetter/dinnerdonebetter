@@ -5,6 +5,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // PrepareAndLogError standardizes our error handling by logging, tracing, and formatting an error consistently.
@@ -53,4 +56,26 @@ func AcknowledgeError(err error, logger logging.Logger, span tracing.Span, descr
 			tracing.AttachErrorToSpan(span, desc, err)
 		}
 	}
+}
+
+// PrepareAndLogGRPCStatus standardizes our error handling by logging, tracing, and formatting an error consistently.
+func PrepareAndLogGRPCStatus(err error, logger logging.Logger, span tracing.Span, code codes.Code, descriptionFmt string, descriptionArgs ...any) error {
+	if err == nil {
+		return nil
+	}
+
+	desc := fmt.Sprintf(descriptionFmt, descriptionArgs...)
+	if span != nil {
+		tracing.AttachErrorToSpan(span, desc, err)
+	}
+
+	if logger != nil {
+		logger.Error(desc, err)
+	}
+
+	if desc != "" {
+		return status.Errorf(code, "%s: %v", desc, err)
+	}
+
+	return status.Errorf(code, "%v", err)
 }

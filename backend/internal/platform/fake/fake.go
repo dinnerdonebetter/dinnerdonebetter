@@ -16,7 +16,7 @@ func BuildFakeID() string {
 }
 
 // BuildFakeForTest builds a fake instance of insert-struct-here for a test.
-func BuildFakeForTest[X any](t *testing.T) (x X) {
+func BuildFakeForTest[X any](t *testing.T) (x *X) {
 	t.Helper()
 	require.NoError(t, faker.FakeData(&x, options.WithRecursionMaxDepth(0)))
 	return x
@@ -24,7 +24,7 @@ func BuildFakeForTest[X any](t *testing.T) (x X) {
 
 // MustBuildFake builds a fake instance of insert-struct-here for a test.
 func MustBuildFake[X any]() X {
-	x, err := BuildFake[X]()
+	x, err := BuildFake[X](nil)
 	if err != nil {
 		panic(err)
 	}
@@ -33,7 +33,7 @@ func MustBuildFake[X any]() X {
 }
 
 // BuildFake builds a fake instance of insert-struct-here for a test.
-func BuildFake[X any]() (x *X, err error) {
+func BuildFake[X any](t *testing.T) (x *X, err error) {
 	if err = faker.FakeData(&x); err != nil {
 		return nil, err
 	}

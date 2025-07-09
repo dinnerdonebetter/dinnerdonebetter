@@ -27,7 +27,7 @@ func TestClient_SearchForValidIngredientStates(T *testing.T) {
 
 		list := []*ValidIngredientState{}
 		exampleResponse := &APIResponse[[]*ValidIngredientState]{
-			Pagination: fake.BuildFakeForTest[*Pagination](t),
+			Pagination: fake.BuildFakeForTest[Pagination](t),
 			Data:       list,
 		}
 		expected := &QueryFilteredResult[ValidIngredientState]{
