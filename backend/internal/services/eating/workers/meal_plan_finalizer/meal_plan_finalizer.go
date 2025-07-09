@@ -3,8 +3,8 @@ package mealplanfinalizer
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -25,7 +25,7 @@ type Worker struct {
 	logger logging.Logger
 	tracer tracing.Tracer
 
-	dataManager             database.DataManager
+	dataManager             mealplanning.Repository
 	postUpdatesPublisher    messagequeue.Publisher
 	finalizedRecordsCounter metrics.Int64Counter
 }
@@ -33,7 +33,7 @@ type Worker struct {
 func NewMealPlanFinalizer(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	dataManager database.DataManager,
+	dataManager mealplanning.Repository,
 	publisherProvider messagequeue.PublisherProvider,
 	metricsProvider metrics.Provider,
 	cfg *msgconfig.QueuesConfig,

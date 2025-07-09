@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
+	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 // validateLogin takes login information and returns whether the login is valid.

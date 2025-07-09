@@ -326,6 +326,15 @@ line_count: ensure_scc_installed
 disable:
 	find "$(DIR)" -maxdepth 1 -type f -name '*.go' -exec bash -c 'mv -- "$$1" "$$1.disabled"' _ {} \;
 
+enable:
+	@if [ -z "$(DIR)" ]; then echo "Error: FOLDER must be specified"; exit 1; fi
+	for file in "$(DIR)"/*.disabled; do \
+		if [ -f "$$file" ]; then \
+			newfile="$${file%.disabled}"; \
+			mv -- "$$file" "$$newfile"; \
+		fi; \
+	done
+
 # OPERATIONS
 
 GCP_DEV_PROJECT_NAME := dinner-done-better-dev

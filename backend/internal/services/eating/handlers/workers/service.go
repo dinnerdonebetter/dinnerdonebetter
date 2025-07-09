@@ -3,6 +3,7 @@ package workers
 import (
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -11,14 +12,13 @@ import (
 	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_finalizer"
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_grocery_list_initializer"
 	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_task_creator"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 const (
 	serviceName string = "workers_service"
 )
 
-var _ types.WorkerService = (*service)(nil)
+var _ mealplanning.WorkerService = (*service)(nil)
 
 type (
 	// service handles worker invocation requests.
@@ -41,7 +41,7 @@ func ProvideService(
 	mealPlanFinalizerWorker *mealplanfinalizer.Worker,
 	mealPlanGroceryListInitializerWorker *mealplangrocerylistinitializer.Worker,
 	mealPlanTaskCreatorWorker *mealplantaskcreator.Worker,
-) (types.WorkerService, error) {
+) (mealplanning.WorkerService, error) {
 	svc := &service{
 		logger:                               logging.EnsureLogger(logger).WithName(serviceName),
 		encoderDecoder:                       encoder,

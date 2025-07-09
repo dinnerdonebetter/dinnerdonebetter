@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
@@ -19,7 +20,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/markbates/goth"
@@ -43,8 +43,8 @@ type (
 		authenticator             authentication.Authenticator
 		analyticsReporter         analytics.EventReporter
 		featureFlagManager        featureflags.FeatureFlagManager
-		userDataManager           types.UserDataManager
-		accountMembershipManager  types.AccountUserMembershipDataManager
+		userDataManager           identity.UserDataManager
+		accountMembershipManager  identity.AccountUserMembershipDataManager
 		encoderDecoder            encoding.ServerEncoderDecoder
 		sessionContextDataFetcher func(*http.Request) (*sessions.ContextData, error)
 		authProviderFetcher       func(*http.Request) string
@@ -61,8 +61,8 @@ func ProvideService(
 	logger logging.Logger,
 	cfg *Config,
 	authenticator authentication.Authenticator,
-	dataManager database.DataManager,
-	accountMembershipManager types.AccountUserMembershipDataManager,
+	oauthRepo oauth.Repository,
+	identityRepo identity.Repository,
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
@@ -71,7 +71,7 @@ func ProvideService(
 	routeParamManager routing.RouteParamManager,
 	metricsProvider metrics.Provider,
 	queuesConfig *msgconfig.QueuesConfig,
-) (types.AuthDataService, error) {
+) (identity.AuthDataService, error) {
 	if queuesConfig == nil {
 		return nil, internalerrors.NilConfigError("queuesConfig for AuthDataService")
 	}
@@ -97,8 +97,8 @@ func ProvideService(
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		encoderDecoder:            encoder,
 		config:                    cfg,
-		userDataManager:           dataManager,
-		accountMembershipManager:  accountMembershipManager,
+		userDataManager:           identityRepo,
+		accountMembershipManager:  identityRepo,
 		authenticator:             authenticator,
 		sessionContextDataFetcher: sessions.FetchContextFromRequest,
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
@@ -108,7 +108,7 @@ func ProvideService(
 		tokenIssuer:               signer,
 		rejectedRequestCounter:    rejectedRequestCounter,
 		authProviderFetcher:       routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
-		oauth2Server:              ProvideOAuth2ServerImplementation(logger, tracer, &cfg.OAuth2, dataManager, authenticator, signer),
+		oauth2Server:              ProvideOAuth2ServerImplementation(logger, tracer, &cfg.OAuth2, oauthRepo, identityRepo, authenticator, signer),
 	}
 
 	useProvidersMutex.Lock()

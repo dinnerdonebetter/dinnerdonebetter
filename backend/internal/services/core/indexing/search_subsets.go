@@ -1,7 +1,7 @@
 package indexing
 
 import (
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 )
 
 // UserSearchSubset represents the subset of values suitable to index for search.
@@ -16,7 +16,7 @@ type UserSearchSubset struct {
 }
 
 // ConvertUserToUserSearchSubset converts a User to a UserSearchSubset.
-func ConvertUserToUserSearchSubset(x *types.User) *UserSearchSubset {
+func ConvertUserToUserSearchSubset(x *identity.User) *UserSearchSubset {
 	return &UserSearchSubset{
 		ID:           x.ID,
 		Username:     x.Username,

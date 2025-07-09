@@ -1,7 +1,7 @@
 package indexing
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/search/text/indexing"
 )
 
@@ -24,7 +24,7 @@ const (
 	IndexTypeValidVessels = "vessels"
 )
 
-func BuildEatingDataIndexingFunctions(dataManager database.DataManager) map[string]indexing.Function {
+func BuildEatingDataIndexingFunctions(dataManager mealplanning.Repository) map[string]indexing.Function {
 	return map[string]indexing.Function{
 		IndexTypeValidPreparations:     dataManager.GetValidPreparationIDsThatNeedSearchIndexing,
 		IndexTypeRecipes:               dataManager.GetRecipeIDsThatNeedSearchIndexing,

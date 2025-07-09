@@ -6,10 +6,11 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	oauth2errors "github.com/go-oauth2/oauth2/v4/errors"
 	servertiming "github.com/mitchellh/go-server-timing"
@@ -135,7 +136,7 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 			tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 			logger = sessionCtxData.AttachToLogger(logger)
 
-			if sessionCtxData.Requester.AccountStatus == string(types.BannedUserAccountStatus) || sessionCtxData.Requester.AccountStatus == string(types.TerminatedUserAccountStatus) {
+			if sessionCtxData.Requester.AccountStatus == string(identity.BannedUserAccountStatus) || sessionCtxData.Requester.AccountStatus == string(identity.TerminatedUserAccountStatus) {
 				logger.Info("banned user attempted to make request")
 				s.rejectedRequestCounter.Add(ctx, 1)
 				http.Redirect(res, req, "/", http.StatusForbidden)

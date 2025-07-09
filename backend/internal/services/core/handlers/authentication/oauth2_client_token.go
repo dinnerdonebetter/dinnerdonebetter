@@ -3,7 +3,7 @@ package authentication
 import (
 	"time"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
 
 	"github.com/go-oauth2/oauth2/v4"
 )

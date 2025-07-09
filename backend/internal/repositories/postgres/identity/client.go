@@ -17,6 +17,8 @@ const (
 	o11yName = "identity_db_client"
 )
 
+var _ identity.Repository = (*Querier)(nil)
+
 // Querier is the audit log entry client.
 type Querier struct {
 	database.Client

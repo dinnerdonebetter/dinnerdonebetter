@@ -3,10 +3,10 @@ package dbcleaner
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/admin"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -20,14 +20,14 @@ type Job struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
 	handledRecordsCounter metrics.Int64Counter
-	dataManager           types.MaintenanceDataManager
+	dataManager           admin.MaintenanceDataManager
 }
 
 func NewDBCleaner(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
-	dataManager types.MaintenanceDataManager,
+	dataManager admin.MaintenanceDataManager,
 ) (*Job, error) {
 	handledRecordsCounter, err := metricsProvider.NewInt64Counter("db_cleaner.handled_records")
 	if err != nil {

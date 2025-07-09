@@ -8,11 +8,14 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
@@ -37,7 +40,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			logger = logger.WithValue("admin_only", adminOnly)
 		}
 
-		loginData := new(types.UserLoginInput)
+		loginData := new(identity.UserLoginInput)
 		if err := s.encoderDecoder.DecodeRequest(ctx, req, loginData); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding request body")
 			errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -157,9 +160,9 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
-		responseValue := &types.APIResponse[*types.TokenResponse]{
+		responseValue := &types.APIResponse[*identity.TokenResponse]{
 			Details: responseDetails,
-			Data: &types.TokenResponse{
+			Data: &identity.TokenResponse{
 				AccountID: defaultAccountID,
 				UserID:    user.ID,
 				Token:     token,
@@ -170,12 +173,12 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 	}
 }
 
-func (s *service) postLogin(ctx context.Context, user *types.User, defaultAccountID string) (int, error) {
+func (s *service) postLogin(ctx context.Context, user *identity.User, defaultAccountID string) (int, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	dcm := &types.DataChangeMessage{
-		EventType: types.UserLoggedInServiceEventType,
+	dcm := &audit.DataChangeMessage{
+		EventType: identity.UserLoggedInServiceEventType,
 		AccountID: defaultAccountID,
 		UserID:    user.ID,
 	}
@@ -411,9 +414,9 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 		return
 	}
 
-	responseValue := &types.APIResponse[*types.TokenResponse]{
+	responseValue := &types.APIResponse[*identity.TokenResponse]{
 		Details: responseDetails,
-		Data: &types.TokenResponse{
+		Data: &identity.TokenResponse{
 			AccountID: defaultAccountID,
 			UserID:    user.ID,
 			Token:     token,
@@ -487,14 +490,14 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
-	statusResponse := &types.UserStatusResponse{
+	statusResponse := &identity.UserStatusResponse{
 		ActiveAccount:            sessionCtxData.ActiveAccountID,
 		AccountStatus:            sessionCtxData.Requester.AccountStatus,
 		AccountStatusExplanation: sessionCtxData.Requester.AccountStatusExplanation,
 		UserIsAuthenticated:      true,
 	}
 
-	responseValue := &types.APIResponse[*types.UserStatusResponse]{
+	responseValue := &types.APIResponse[*identity.UserStatusResponse]{
 		Details: responseDetails,
 		Data:    statusResponse,
 	}
@@ -502,7 +505,7 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
-var _ types.OAuth2Service = (*service)(nil)
+var _ oauth.OAuth2Service = (*service)(nil)
 
 // AuthorizeHandler is our oauth2 auth route.
 func (s *service) AuthorizeHandler(res http.ResponseWriter, req *http.Request) {

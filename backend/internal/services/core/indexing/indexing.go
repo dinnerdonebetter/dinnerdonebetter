@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 var (
@@ -24,7 +23,7 @@ func HandleIndexRequest(
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 	searchConfig *textsearchcfg.Config,
-	dataManager database.DataManager,
+	dataManager identity.Repository,
 	indexReq *textsearch.IndexRequest,
 ) error {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("core_search_indexer"))
@@ -51,7 +50,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var user *types.User
+		var user *identity.User
 		user, err = dataManager.GetUser(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting user")

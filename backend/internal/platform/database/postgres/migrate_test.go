@@ -7,7 +7,7 @@ import (
 	"time"
 
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/fake"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/GuiaBolso/darwin"
@@ -27,11 +27,7 @@ func TestQuerier_Migrate(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleCreationTime := fakes.BuildFakeTime()
-
-		exampleUser := fakes.BuildFakeUser()
-		exampleUser.TwoFactorSecretVerifiedAt = nil
-		exampleUser.CreatedAt = exampleCreationTime
+		exampleCreationTime := fake.BuildFakeTime()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

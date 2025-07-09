@@ -131,7 +131,7 @@ func (s *EnvironmentConfigSet) Render(outputDir string, pretty, validate bool) e
 	sdisConfig.Observability.Logging.ServiceName = sdisConfigObservabilityServiceName
 
 	amhConfig := &AsyncMessageHandlerConfig{
-		Storage:       s.RootConfig.Services.DataPrivacy.Uploads.Storage,
+		//Storage:       s.RootConfig.Services.DataPrivacy.Uploads.Storage, // TODO: uncomment me
 		Queues:        s.RootConfig.Queues,
 		Email:         s.RootConfig.Email,
 		Analytics:     s.RootConfig.Analytics,

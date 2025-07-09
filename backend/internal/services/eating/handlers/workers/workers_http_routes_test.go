@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -46,7 +47,7 @@ func TestWorkerService_MealPlanFinalizationHandler(T *testing.T) {
 		helper.service.MealPlanFinalizationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.FinalizeMealPlansRequest]
+		var actual *types.APIResponse[*mealplanning.FinalizeMealPlansRequest]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleInput)
 		assert.NoError(t, actual.Error.AsError())
@@ -79,7 +80,7 @@ func TestWorkerService_MealPlanFinalizationHandler(T *testing.T) {
 		helper.service.MealPlanFinalizationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.FinalizeMealPlansRequest]
+		var actual *types.APIResponse[*mealplanning.FinalizeMealPlansRequest]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleInput)
 		assert.NoError(t, actual.Error.AsError())

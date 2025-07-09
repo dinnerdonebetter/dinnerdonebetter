@@ -166,8 +166,6 @@ func TestWorker_Work(T *testing.T) {
 
 		mockAnalyzer := &recipeanalysis.MockRecipeAnalyzer{}
 		for _, result := range exampleFinalizedMealPlanResults {
-			mdm.On("GetMealPlanEvent", testutils.ContextMatcher, result.MealPlanID, result.MealPlanEventID).Return(exampleMealPlanEvent, nil)
-
 			for _, recipeID := range result.RecipeIDs {
 				mdm.On("GetRecipe", testutils.ContextMatcher, recipeID).Return(recipeMap[recipeID], nil)
 
@@ -180,6 +178,7 @@ func TestWorker_Work(T *testing.T) {
 			}
 		}
 		w.analyzer = mockAnalyzer
+		w.dataManager = mdm
 
 		mmp := &mockpublishers.Publisher{}
 		mmp.On(
@@ -188,8 +187,6 @@ func TestWorker_Work(T *testing.T) {
 			testutils.MatchType[*audit.DataChangeMessage](),
 		).Return(nil)
 		w.postUpdatesPublisher = mmp
-
-		w.dataManager = mdm
 
 		assert.NoError(t, w.Work(ctx))
 

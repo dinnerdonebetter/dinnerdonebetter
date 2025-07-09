@@ -3,9 +3,10 @@ package workers
 import (
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	servertiming "github.com/mitchellh/go-server-timing"
 )
@@ -38,7 +39,7 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentAccountID = sessionCtxData.ActiveAccountID
 
-	var request *types.FinalizeMealPlansRequest
+	var request *mealplanning.FinalizeMealPlansRequest
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, &request); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
@@ -46,7 +47,7 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 		return
 	}
 
-	response := &types.FinalizeMealPlansResponse{}
+	response := &mealplanning.FinalizeMealPlansResponse{}
 	if request.ReturnCount {
 		if response.Count, err = s.mealPlanFinalizerWorker.Work(ctx); err != nil {
 			observability.AcknowledgeError(err, logger, span, "finalizing expired meal plans")
@@ -65,7 +66,7 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 
 	logger.WithValue("finalized_count", response.Count).Info("meal plan finalization worker completed")
 
-	responseValue := &types.APIResponse[*types.FinalizeMealPlansRequest]{
+	responseValue := &types.APIResponse[*mealplanning.FinalizeMealPlansRequest]{
 		Data:    request,
 		Details: responseDetails,
 	}

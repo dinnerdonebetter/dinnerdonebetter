@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
+	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/platform/authentication/mock"
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/platform/authentication/tokens/config"
@@ -18,7 +19,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/platform/routing/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
-	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -59,8 +59,8 @@ func buildTestService(t *testing.T) *service {
 		logger,
 		cfg,
 		&mockauthn.Authenticator{},
-		database.NewMockDatabase(),
-		&mocktypes.AccountUserMembershipDataManagerMock{},
+		&oauthmock.RepositoryMock{},
+		&identitymock.RepositoryMock{},
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
 		pp,
@@ -107,8 +107,8 @@ func TestProvideService(T *testing.T) {
 			logger,
 			cfg,
 			&mockauthn.Authenticator{},
-			database.NewMockDatabase(),
-			&mocktypes.AccountUserMembershipDataManagerMock{},
+			&oauthmock.RepositoryMock{},
+			&identitymock.RepositoryMock{},
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,

@@ -1,7 +1,8 @@
 package indexing
 
 import (
-	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 // ValidMeasurementUnitSearchSubset represents the subset of values suitable to index for search.
@@ -15,7 +16,7 @@ type ValidMeasurementUnitSearchSubset struct {
 }
 
 // ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset converts a ValidMeasurementUnit to a ValidMeasurementUnitSearchSubset.
-func ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(x *types.ValidMeasurementUnit) *ValidMeasurementUnitSearchSubset {
+func ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(x *mealplanning.ValidMeasurementUnit) *ValidMeasurementUnitSearchSubset {
 	return &ValidMeasurementUnitSearchSubset{
 		ID:          x.ID,
 		Name:        x.Name,
@@ -34,7 +35,7 @@ type MealSearchSubset struct {
 	Recipes     []types.NamedID `json:"recipes,omitempty"`
 }
 
-func ConvertMealToMealSearchSubset(r *types.Meal) *MealSearchSubset {
+func ConvertMealToMealSearchSubset(r *mealplanning.Meal) *MealSearchSubset {
 	x := &MealSearchSubset{
 		ID:          r.ID,
 		Name:        r.Name,
@@ -59,7 +60,7 @@ type RecipeSearchSubset struct {
 }
 
 // ConvertRecipeToRecipeSearchSubset converts a Recipe to a RecipeSearchSubset.
-func ConvertRecipeToRecipeSearchSubset(r *types.Recipe) *RecipeSearchSubset {
+func ConvertRecipeToRecipeSearchSubset(r *mealplanning.Recipe) *RecipeSearchSubset {
 	x := &RecipeSearchSubset{
 		ID:          r.ID,
 		Name:        r.Name,
@@ -83,7 +84,7 @@ type RecipeStepSearchSubset struct {
 	Vessels     []types.NamedID `json:"vessels,omitempty"`
 }
 
-func ConvertRecipeStepToRecipeStepSearchSubset(x *types.RecipeStep) *RecipeStepSearchSubset {
+func ConvertRecipeStepToRecipeStepSearchSubset(x *mealplanning.RecipeStep) *RecipeStepSearchSubset {
 	stepSubset := &RecipeStepSearchSubset{
 		Preparation: x.Preparation.Name,
 	}
@@ -115,7 +116,7 @@ type ValidIngredientSearchSubset struct {
 }
 
 // ConvertValidIngredientToValidIngredientSearchSubset converts a ValidIngredient to a ValidIngredientSearchSubset.
-func ConvertValidIngredientToValidIngredientSearchSubset(x *types.ValidIngredient) *ValidIngredientSearchSubset {
+func ConvertValidIngredientToValidIngredientSearchSubset(x *mealplanning.ValidIngredient) *ValidIngredientSearchSubset {
 	return &ValidIngredientSearchSubset{
 		ID:                  x.ID,
 		Name:                x.Name,
@@ -137,7 +138,7 @@ type ValidIngredientStateSearchSubset struct {
 }
 
 // ConvertValidIngredientStateToValidIngredientStateSearchSubset converts a ValidIngredientState to a ValidIngredientStateSearchSubset.
-func ConvertValidIngredientStateToValidIngredientStateSearchSubset(x *types.ValidIngredientState) *ValidIngredientStateSearchSubset {
+func ConvertValidIngredientStateToValidIngredientStateSearchSubset(x *mealplanning.ValidIngredientState) *ValidIngredientStateSearchSubset {
 	return &ValidIngredientStateSearchSubset{
 		ID:            x.ID,
 		Name:          x.Name,
@@ -158,7 +159,7 @@ type ValidInstrumentSearchSubset struct {
 }
 
 // ConvertValidInstrumentToValidInstrumentSearchSubset converts a ValidInstrument to a ValidInstrumentSearchSubset.
-func ConvertValidInstrumentToValidInstrumentSearchSubset(x *types.ValidInstrument) *ValidInstrumentSearchSubset {
+func ConvertValidInstrumentToValidInstrumentSearchSubset(x *mealplanning.ValidInstrument) *ValidInstrumentSearchSubset {
 	return &ValidInstrumentSearchSubset{
 		ID:          x.ID,
 		Name:        x.Name,
@@ -178,7 +179,7 @@ type ValidPreparationSearchSubset struct {
 }
 
 // ConvertValidPreparationToValidPreparationSearchSubset converts a ValidPreparation to a ValidPreparationSearchSubset.
-func ConvertValidPreparationToValidPreparationSearchSubset(x *types.ValidPreparation) *ValidPreparationSearchSubset {
+func ConvertValidPreparationToValidPreparationSearchSubset(x *mealplanning.ValidPreparation) *ValidPreparationSearchSubset {
 	return &ValidPreparationSearchSubset{
 		ID:          x.ID,
 		Name:        x.Name,
@@ -200,7 +201,7 @@ type ValidVesselSearchSubset struct {
 }
 
 // ConvertValidVesselToValidVesselSearchSubset converts a ValidVessel to a ValidVesselSearchSubset.
-func ConvertValidVesselToValidVesselSearchSubset(x *types.ValidVessel) *ValidVesselSearchSubset {
+func ConvertValidVesselToValidVesselSearchSubset(x *mealplanning.ValidVessel) *ValidVesselSearchSubset {
 	return &ValidVesselSearchSubset{
 		ID:          x.ID,
 		Name:        x.Name,

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/matcornic/hermes/v2"
 )
@@ -22,7 +22,7 @@ const (
 )
 
 // BuildInviteMemberEmail builds an email notifying a user that they've been invited to join an account.
-func BuildInviteMemberEmail(recipient *types.User, accountInvitation *types.AccountInvitation, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
+func BuildInviteMemberEmail(recipient *identity.User, accountInvitation *identity.AccountInvitation, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, internalerrors.NilConfigError("email environment config")
 	}
@@ -64,7 +64,7 @@ func BuildInviteMemberEmail(recipient *types.User, accountInvitation *types.Acco
 }
 
 // BuildGeneratedPasswordResetTokenEmail builds an email notifying a user that they've been invited to join an account.
-func BuildGeneratedPasswordResetTokenEmail(recipient *types.User, passwordResetToken *types.PasswordResetToken, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
+func BuildGeneratedPasswordResetTokenEmail(recipient *identity.User, passwordResetToken *identity.PasswordResetToken, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, internalerrors.NilConfigError("email environment config")
 	}
@@ -113,7 +113,7 @@ func BuildGeneratedPasswordResetTokenEmail(recipient *types.User, passwordResetT
 }
 
 // BuildUsernameReminderEmail builds an email notifying a user that they've been invited to join an account.
-func BuildUsernameReminderEmail(recipient *types.User, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
+func BuildUsernameReminderEmail(recipient *identity.User, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, internalerrors.NilConfigError("email environment config")
 	}
@@ -153,7 +153,7 @@ func BuildUsernameReminderEmail(recipient *types.User, envCfg *email.Environment
 }
 
 // BuildPasswordResetTokenRedeemedEmail builds an email notifying a user that they've been invited to join an account.
-func BuildPasswordResetTokenRedeemedEmail(recipient *types.User, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
+func BuildPasswordResetTokenRedeemedEmail(recipient *identity.User, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, internalerrors.NilConfigError("email environment config")
 	}
@@ -193,7 +193,7 @@ func BuildPasswordResetTokenRedeemedEmail(recipient *types.User, envCfg *email.E
 }
 
 // BuildPasswordChangedEmail builds an email notifying a user that they've been invited to join an account.
-func BuildPasswordChangedEmail(recipient *types.User, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
+func BuildPasswordChangedEmail(recipient *identity.User, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, internalerrors.NilConfigError("email environment config")
 	}
@@ -235,7 +235,7 @@ func BuildPasswordChangedEmail(recipient *types.User, envCfg *email.EnvironmentC
 var errEmailVerificationTokenRequired = errors.New("email verification token required")
 
 // BuildVerifyEmailAddressEmail builds an email notifying a user that they've been invited to join an account.
-func BuildVerifyEmailAddressEmail(recipient *types.User, emailVerificationToken string, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
+func BuildVerifyEmailAddressEmail(recipient *identity.User, emailVerificationToken string, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, internalerrors.NilConfigError("email environment config")
 	}

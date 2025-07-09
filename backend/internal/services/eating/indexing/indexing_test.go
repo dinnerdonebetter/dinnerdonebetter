@@ -4,14 +4,14 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -28,9 +28,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.RecipeDataManagerMock.On("GetRecipe", testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
-		dataManager.RecipeDataManagerMock.On("MarkRecipeAsIndexed", testutils.ContextMatcher, exampleRecipe.ID).Return(nil)
+		dataManager := &mealplanningmock.Repository{}
+		dataManager.On("GetRecipe", testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
+		dataManager.On("MarkRecipeAsIndexed", testutils.ContextMatcher, exampleRecipe.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleRecipe.ID,
@@ -50,9 +50,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.MealDataManagerMock.On("GetMeal", testutils.ContextMatcher, exampleMeal.ID).Return(exampleMeal, nil)
-		dataManager.MealDataManagerMock.On("MarkMealAsIndexed", testutils.ContextMatcher, exampleMeal.ID).Return(nil)
+		dataManager := &mealplanningmock.Repository{}
+		dataManager.On("GetMeal", testutils.ContextMatcher, exampleMeal.ID).Return(exampleMeal, nil)
+		dataManager.On("MarkMealAsIndexed", testutils.ContextMatcher, exampleMeal.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleMeal.ID,
@@ -72,9 +72,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.ValidVesselDataManagerMock.On("GetValidVessel", testutils.ContextMatcher, exampleValidVessel.ID).Return(exampleValidVessel, nil)
-		dataManager.ValidVesselDataManagerMock.On("MarkValidVesselAsIndexed", testutils.ContextMatcher, exampleValidVessel.ID).Return(nil)
+		dataManager := &mealplanningmock.Repository{}
+		dataManager.On("GetValidVessel", testutils.ContextMatcher, exampleValidVessel.ID).Return(exampleValidVessel, nil)
+		dataManager.On("MarkValidVesselAsIndexed", testutils.ContextMatcher, exampleValidVessel.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidVessel.ID,
@@ -94,9 +94,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.ValidIngredientDataManagerMock.On("GetValidIngredient", testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
-		dataManager.ValidIngredientDataManagerMock.On("MarkValidIngredientAsIndexed", testutils.ContextMatcher, exampleValidIngredient.ID).Return(nil)
+		dataManager := &mealplanningmock.Repository{}
+		dataManager.On("GetValidIngredient", testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
+		dataManager.On("MarkValidIngredientAsIndexed", testutils.ContextMatcher, exampleValidIngredient.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidIngredient.ID,
@@ -116,9 +116,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.ValidInstrumentDataManagerMock.On("GetValidInstrument", testutils.ContextMatcher, exampleValidInstrument.ID).Return(exampleValidInstrument, nil)
-		dataManager.ValidInstrumentDataManagerMock.On("MarkValidInstrumentAsIndexed", testutils.ContextMatcher, exampleValidInstrument.ID).Return(nil)
+		dataManager := &mealplanningmock.Repository{}
+		dataManager.On("GetValidInstrument", testutils.ContextMatcher, exampleValidInstrument.ID).Return(exampleValidInstrument, nil)
+		dataManager.On("MarkValidInstrumentAsIndexed", testutils.ContextMatcher, exampleValidInstrument.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidInstrument.ID,
@@ -138,9 +138,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.ValidPreparationDataManagerMock.On("GetValidPreparation", testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
-		dataManager.ValidPreparationDataManagerMock.On("MarkValidPreparationAsIndexed", testutils.ContextMatcher, exampleValidPreparation.ID).Return(nil)
+		dataManager := &mealplanningmock.Repository{}
+		dataManager.On("GetValidPreparation", testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
+		dataManager.On("MarkValidPreparationAsIndexed", testutils.ContextMatcher, exampleValidPreparation.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidPreparation.ID,
@@ -160,9 +160,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.ValidMeasurementUnitDataManagerMock.On("GetValidMeasurementUnit", testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(exampleValidMeasurementUnit, nil)
-		dataManager.ValidMeasurementUnitDataManagerMock.On("MarkValidMeasurementUnitAsIndexed", testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(nil)
+		dataManager := &mealplanningmock.Repository{}
+		dataManager.On("GetValidMeasurementUnit", testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(exampleValidMeasurementUnit, nil)
+		dataManager.On("MarkValidMeasurementUnitAsIndexed", testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidMeasurementUnit.ID,
@@ -182,9 +182,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.ValidIngredientStateDataManagerMock.On("GetValidIngredientState", testutils.ContextMatcher, exampleValidIngredientState.ID).Return(exampleValidIngredientState, nil)
-		dataManager.ValidIngredientStateDataManagerMock.On("MarkValidIngredientStateAsIndexed", testutils.ContextMatcher, exampleValidIngredientState.ID).Return(nil)
+		dataManager := &mealplanningmock.Repository{}
+		dataManager.On("GetValidIngredientState", testutils.ContextMatcher, exampleValidIngredientState.ID).Return(exampleValidIngredientState, nil)
+		dataManager.On("MarkValidIngredientStateAsIndexed", testutils.ContextMatcher, exampleValidIngredientState.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidIngredientState.ID,

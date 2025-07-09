@@ -1,7 +1,7 @@
 package indexing
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/search/text/indexing"
 )
 
@@ -10,7 +10,7 @@ const (
 	IndexTypeUsers = "users"
 )
 
-func BuildCoreDataIndexingFunctions(dataManager database.DataManager) map[string]indexing.Function {
+func BuildCoreDataIndexingFunctions(dataManager identity.Repository) map[string]indexing.Function {
 	return map[string]indexing.Function{
 		IndexTypeUsers: dataManager.GetUserIDsThatNeedSearchIndexing,
 	}

@@ -7,6 +7,10 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
+	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/platform/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/tokens/paseto"
@@ -16,8 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -40,7 +43,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -59,7 +62,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManagerMock{}
+		membershipDB := &identitymock.RepositoryMock{}
 		membershipDB.On(
 			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
@@ -71,7 +74,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.MatchType[*types.DataChangeMessage](),
+			testutils.MatchType[*audit.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
@@ -82,7 +85,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.TokenResponse]
+		var actual *types.APIResponse[*identity.TokenResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
@@ -107,7 +110,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetAdminUserByUsername",
 			testutils.ContextMatcher,
@@ -126,7 +129,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManagerMock{}
+		membershipDB := &identitymock.RepositoryMock{}
 		membershipDB.On(
 			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
@@ -138,14 +141,14 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.MatchType[*types.DataChangeMessage](),
+			testutils.MatchType[*audit.DataChangeMessage](),
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.BuildLoginHandler(true)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.TokenResponse]
+		var actual *types.APIResponse[*identity.TokenResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
@@ -176,7 +179,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, &types.UserLoginInput{})
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, &identity.UserLoginInput{})
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
@@ -202,12 +205,12 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
 			helper.exampleUser.Username,
-		).Return((*types.User)(nil), sql.ErrNoRows)
+		).Return((*identity.User)(nil), sql.ErrNoRows)
 		helper.service.userDataManager = userDataManager
 
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
@@ -231,12 +234,12 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
 			helper.exampleUser.Username,
-		).Return((*types.User)(nil), errors.New("blah"))
+		).Return((*identity.User)(nil), errors.New("blah"))
 		helper.service.userDataManager = userDataManager
 
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
@@ -252,7 +255,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.AccountStatus = string(types.BannedUserAccountStatus)
+		helper.exampleUser.AccountStatus = string(identity.BannedUserAccountStatus)
 		helper.exampleUser.AccountStatusExplanation = "bad behavior"
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
@@ -263,7 +266,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -292,7 +295,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -332,7 +335,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -372,7 +375,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -412,7 +415,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -453,7 +456,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -493,7 +496,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -512,7 +515,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManagerMock{}
+		membershipDB := &identitymock.RepositoryMock{}
 		membershipDB.On(
 			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
@@ -541,7 +544,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManagerMock{}
+		userDataManager := &identitymock.RepositoryMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -560,7 +563,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.AccountUserMembershipDataManagerMock{}
+		membershipDB := &identitymock.RepositoryMock{}
 		membershipDB.On(
 			"GetDefaultAccountIDForUser",
 			testutils.ContextMatcher,
@@ -572,14 +575,14 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		dataChangesPublisher.On(
 			"Publish",
 			testutils.ContextMatcher,
-			testutils.MatchType[*types.DataChangeMessage](),
+			testutils.MatchType[*audit.DataChangeMessage](),
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.BuildLoginHandler(false)(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-		var actual *types.APIResponse[*types.TokenResponse]
+		var actual *types.APIResponse[*identity.TokenResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotNil(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
@@ -599,7 +602,7 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 		helper.service.StatusHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.UserStatusResponse]
+		var actual *types.APIResponse[*identity.UserStatusResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
@@ -614,7 +617,7 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 		helper.service.StatusHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.Webhook]
+		var actual *types.APIResponse[*webhooks.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)

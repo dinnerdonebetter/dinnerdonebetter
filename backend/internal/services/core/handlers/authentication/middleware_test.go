@@ -7,11 +7,11 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	mockmetrics "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -36,7 +36,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 			AccountPermissions: helper.examplePermCheckers,
 		}
 
-		mockUserDataManager := &mocktypes.UserDataManagerMock{}
+		mockUserDataManager := &identitymock.RepositoryMock{}
 		mockUserDataManager.On(
 			"GetSessionContextDataForUser",
 			testutils.ContextMatcher,
@@ -65,7 +65,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		helper.exampleUser.AccountStatus = string(types.BannedUserAccountStatus)
+		helper.exampleUser.AccountStatus = string(identity.BannedUserAccountStatus)
 		helper.setContextFetcher(t)
 
 		mp := &mockmetrics.Int64Counter{}
@@ -83,7 +83,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 			AccountPermissions: helper.examplePermCheckers,
 		}
 
-		mockUserDataManager := &mocktypes.UserDataManagerMock{}
+		mockUserDataManager := &identitymock.RepositoryMock{}
 		mockUserDataManager.On(
 			"GetSessionContextDataForUser",
 			testutils.ContextMatcher,

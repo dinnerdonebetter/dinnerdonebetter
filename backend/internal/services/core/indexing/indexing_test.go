@@ -4,14 +4,14 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -28,9 +28,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.UserDataManagerMock.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
-		dataManager.UserDataManagerMock.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
+		dataManager := &identitymock.RepositoryMock{}
+		dataManager.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
+		dataManager.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleUser.ID,
@@ -50,9 +50,9 @@ func TestHandleIndexRequest(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := database.NewMockDatabase()
-		dataManager.UserDataManagerMock.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
-		dataManager.UserDataManagerMock.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
+		dataManager := &identitymock.RepositoryMock{}
+		dataManager.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
+		dataManager.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleUser.ID,

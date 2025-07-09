@@ -7,12 +7,12 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/require"
 )
@@ -23,10 +23,10 @@ type authServiceHTTPRoutesTestHelper struct {
 	res                 *httptest.ResponseRecorder
 	sessionCtxData      *sessions.ContextData
 	service             *service
-	exampleUser         *types.User
-	exampleAccount      *types.Account
+	exampleUser         *identity.User
+	exampleAccount      *identity.Account
 	examplePermCheckers map[string]authorization.AccountRolePermissionsChecker
-	exampleLoginInput   *types.UserLoginInput
+	exampleLoginInput   *identity.UserLoginInput
 }
 
 func (helper *authServiceHTTPRoutesTestHelper) setContextFetcher(t *testing.T) {

@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 var (
@@ -24,7 +23,7 @@ func HandleIndexRequest(
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 	searchConfig *textsearchcfg.Config,
-	dataManager database.DataManager,
+	dataManager mealplanning.Repository,
 	indexReq *textsearch.IndexRequest,
 ) error {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("eating_search_indexer"))
@@ -51,7 +50,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var recipe *types.Recipe
+		var recipe *mealplanning.Recipe
 		recipe, err = dataManager.GetRecipe(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting recipe")
@@ -66,7 +65,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var meal *types.Meal
+		var meal *mealplanning.Meal
 		meal, err = dataManager.GetMeal(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting meal")
@@ -81,7 +80,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var validIngredient *types.ValidIngredient
+		var validIngredient *mealplanning.ValidIngredient
 		validIngredient, err = dataManager.GetValidIngredient(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient")
@@ -96,7 +95,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var validInstrument *types.ValidInstrument
+		var validInstrument *mealplanning.ValidInstrument
 		validInstrument, err = dataManager.GetValidInstrument(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid instrument")
@@ -111,7 +110,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var validMeasurementUnit *types.ValidMeasurementUnit
+		var validMeasurementUnit *mealplanning.ValidMeasurementUnit
 		validMeasurementUnit, err = dataManager.GetValidMeasurementUnit(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid measurement unit")
@@ -126,7 +125,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var validPreparation *types.ValidPreparation
+		var validPreparation *mealplanning.ValidPreparation
 		validPreparation, err = dataManager.GetValidPreparation(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid preparation")
@@ -141,7 +140,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var validIngredientState *types.ValidIngredientState
+		var validIngredientState *mealplanning.ValidIngredientState
 		validIngredientState, err = dataManager.GetValidIngredientState(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state")
@@ -156,7 +155,7 @@ func HandleIndexRequest(
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var validVessel *types.ValidVessel
+		var validVessel *mealplanning.ValidVessel
 		validVessel, err = dataManager.GetValidVessel(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid vessel")

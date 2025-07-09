@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -29,7 +29,7 @@ func buildNewMealPlanFinalizerForTest(t *testing.T) *Worker {
 	x, err := NewMealPlanFinalizer(
 		logging.NewNoopLogger(),
 		tracing.NewNoopTracerProvider(),
-		database.NewMockDatabase(),
+		&mealplanningmock.Repository{},
 		pp,
 		metrics.NewNoopMetricsProvider(),
 		cfg,
@@ -48,8 +48,8 @@ func TestWorker_Work(T *testing.T) {
 		ctx := context.Background()
 		exampleMealPlans := fakes.BuildFakeMealPlansList().Data
 
-		dbm := database.NewMockDatabase()
-		dbm.MealPlanDataManagerMock.On(
+		dbm := &mealplanningmock.Repository{}
+		dbm.On(
 			"GetUnfinalizedMealPlansWithExpiredVotingPeriods",
 			testutils.ContextMatcher,
 		).Return(exampleMealPlans, nil)
@@ -57,14 +57,14 @@ func TestWorker_Work(T *testing.T) {
 		pup := &mockpublishers.Publisher{}
 
 		for _, mealPlan := range exampleMealPlans {
-			dbm.MealPlanDataManagerMock.On(
+			dbm.On(
 				"AttemptToFinalizeMealPlan",
 				testutils.ContextMatcher,
 				mealPlan.ID,
 				mealPlan.BelongsToAccount,
 			).Return(true, nil)
 
-			pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*types.DataChangeMessage")).Return(nil)
+			pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*audit.DataChangeMessage")).Return(nil)
 		}
 
 		worker := buildNewMealPlanFinalizerForTest(t)

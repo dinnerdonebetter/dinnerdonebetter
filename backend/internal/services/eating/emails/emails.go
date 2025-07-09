@@ -4,9 +4,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/matcornic/hermes/v2"
 )
@@ -22,7 +23,7 @@ const (
 )
 
 // BuildMealPlanCreatedEmail builds an email notifying a user that they've been invited to join an account.
-func BuildMealPlanCreatedEmail(recipient *types.User, mealPlan *types.MealPlan, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
+func BuildMealPlanCreatedEmail(recipient *identity.User, mealPlan *mealplanning.MealPlan, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, internalerrors.NilConfigError("email environment config")
 	}

@@ -5,4 +5,5 @@ type Repository interface {
 	AccountInvitationDataManager
 	PasswordResetTokenDataManager
 	UserDataManager
+	AccountUserMembershipDataManager
 }

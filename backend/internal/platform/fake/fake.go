@@ -2,17 +2,17 @@ package fake
 
 import (
 	"testing"
+	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-
+	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/go-faker/faker/v4"
 	"github.com/go-faker/faker/v4/pkg/options"
 	"github.com/stretchr/testify/require"
 )
 
-// BuildFakeID builds a fake ID.
-func BuildFakeID() string {
-	return identifiers.New()
+// BuildFakeTime builds a fake time.
+func BuildFakeTime() time.Time {
+	return fake.Date().Add(0).Truncate(time.Second).UTC()
 }
 
 // BuildFakeForTest builds a fake instance of insert-struct-here for a test.
