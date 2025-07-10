@@ -8,14 +8,16 @@ package searchdataindexscheduler
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/search/text/indexing"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 )
 
 // Injectors from build.go:
@@ -44,11 +46,14 @@ func Build(ctx context.Context, cfg *config.SearchDataIndexSchedulerConfig) (*in
 		return nil, err
 	}
 	databasecfgConfig := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
 	if err != nil {
 		return nil, err
 	}
-	v := ProvideIndexFunctions(dataManager)
+	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
+	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
+	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
+	v := ProvideIndexFunctions(identityRepository, mealplanningRepository)
 	indexScheduler, err := indexing.NewIndexScheduler(logger, tracerProvider, provider, publisherProvider, v)
 	if err != nil {
 		return nil, err

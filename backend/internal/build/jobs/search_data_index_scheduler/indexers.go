@@ -1,16 +1,17 @@
 package searchdataindexscheduler
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/search/text/indexing"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 )
 
-func ProvideIndexFunctions(dataManager database.DataManager) map[string]indexing.Function {
+func ProvideIndexFunctions(identityRepo identity.Repository, mealPlanningRepo mealplanning.Repository) map[string]indexing.Function {
 	outputMap := map[string]indexing.Function{}
-	coreMap := coreindexing.BuildCoreDataIndexingFunctions(dataManager)
-	eatingMap := eatingindexing.BuildEatingDataIndexingFunctions(dataManager)
+	coreMap := coreindexing.BuildCoreDataIndexingFunctions(identityRepo)
+	eatingMap := eatingindexing.BuildEatingDataIndexingFunctions(mealPlanningRepo)
 
 	for k, v := range coreMap {
 		outputMap[k] = v
