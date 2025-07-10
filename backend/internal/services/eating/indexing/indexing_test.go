@@ -7,13 +7,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/platform/search/text/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestHandleIndexRequest(T *testing.T) {
@@ -26,11 +26,36 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &mealplanningmock.Repository{}
-		dataManager.On("GetRecipe", testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
-		dataManager.On("MarkRecipeAsIndexed", testutils.ContextMatcher, exampleRecipe.ID).Return(nil)
+		mealPlanningRepo := &mealplanningmock.Repository{}
+		mealPlanningRepo.On("GetRecipe", testutils.ContextMatcher, exampleRecipe.ID).Return(exampleRecipe, nil)
+		mealPlanningRepo.On("MarkRecipeAsIndexed", testutils.ContextMatcher, exampleRecipe.ID).Return(nil)
+
+		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
+		ss := ConvertRecipeToRecipeSearchSubset(exampleRecipe)
+		rim.On("Index", testutils.ContextMatcher, exampleRecipe.ID, ss).Return(nil)
+
+		mim := &mocksearch.IndexManager[MealSearchSubset]{}
+		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+
+		cdi := NewEatingDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			mealPlanningRepo,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleRecipe.ID,
@@ -38,7 +63,18 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 	})
 
 	T.Run("meal index type", func(t *testing.T) {
@@ -48,11 +84,37 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &mealplanningmock.Repository{}
-		dataManager.On("GetMeal", testutils.ContextMatcher, exampleMeal.ID).Return(exampleMeal, nil)
-		dataManager.On("MarkMealAsIndexed", testutils.ContextMatcher, exampleMeal.ID).Return(nil)
+		mealPlanningRepo := &mealplanningmock.Repository{}
+		mealPlanningRepo.On("GetMeal", testutils.ContextMatcher, exampleMeal.ID).Return(exampleMeal, nil)
+		mealPlanningRepo.On("MarkMealAsIndexed", testutils.ContextMatcher, exampleMeal.ID).Return(nil)
+
+		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
+
+		mim := &mocksearch.IndexManager[MealSearchSubset]{}
+		ss := ConvertMealToMealSearchSubset(exampleMeal)
+		mim.On("Index", testutils.ContextMatcher, exampleMeal.ID, ss).Return(nil)
+
+		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+
+		cdi := NewEatingDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			mealPlanningRepo,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleMeal.ID,
@@ -60,7 +122,18 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 	})
 
 	T.Run("valid vessel index type", func(t *testing.T) {
@@ -70,11 +143,36 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &mealplanningmock.Repository{}
-		dataManager.On("GetValidVessel", testutils.ContextMatcher, exampleValidVessel.ID).Return(exampleValidVessel, nil)
-		dataManager.On("MarkValidVesselAsIndexed", testutils.ContextMatcher, exampleValidVessel.ID).Return(nil)
+		mealPlanningRepo := &mealplanningmock.Repository{}
+		mealPlanningRepo.On("GetValidVessel", testutils.ContextMatcher, exampleValidVessel.ID).Return(exampleValidVessel, nil)
+		mealPlanningRepo.On("MarkValidVesselAsIndexed", testutils.ContextMatcher, exampleValidVessel.ID).Return(nil)
+
+		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexManager[MealSearchSubset]{}
+		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
+
+		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+		ss := ConvertValidVesselToValidVesselSearchSubset(exampleValidVessel)
+		rim.On("Index", testutils.ContextMatcher, exampleValidVessel.ID, ss).Return(nil)
+
+		cdi := NewEatingDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			mealPlanningRepo,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidVessel.ID,
@@ -82,7 +180,18 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 	})
 
 	T.Run("valid ingredient index type", func(t *testing.T) {
@@ -92,11 +201,37 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &mealplanningmock.Repository{}
-		dataManager.On("GetValidIngredient", testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
-		dataManager.On("MarkValidIngredientAsIndexed", testutils.ContextMatcher, exampleValidIngredient.ID).Return(nil)
+		mealPlanningRepo := &mealplanningmock.Repository{}
+		mealPlanningRepo.On("GetValidIngredient", testutils.ContextMatcher, exampleValidIngredient.ID).Return(exampleValidIngredient, nil)
+		mealPlanningRepo.On("MarkValidIngredientAsIndexed", testutils.ContextMatcher, exampleValidIngredient.ID).Return(nil)
+
+		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexManager[MealSearchSubset]{}
+
+		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+		ss := ConvertValidIngredientToValidIngredientSearchSubset(exampleValidIngredient)
+		rim.On("Index", testutils.ContextMatcher, exampleValidIngredient.ID, ss).Return(nil)
+
+		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+
+		cdi := NewEatingDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			mealPlanningRepo,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidIngredient.ID,
@@ -104,7 +239,18 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 	})
 
 	T.Run("valid instrument index type", func(t *testing.T) {
@@ -114,11 +260,37 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &mealplanningmock.Repository{}
-		dataManager.On("GetValidInstrument", testutils.ContextMatcher, exampleValidInstrument.ID).Return(exampleValidInstrument, nil)
-		dataManager.On("MarkValidInstrumentAsIndexed", testutils.ContextMatcher, exampleValidInstrument.ID).Return(nil)
+		mealPlanningRepo := &mealplanningmock.Repository{}
+		mealPlanningRepo.On("GetValidInstrument", testutils.ContextMatcher, exampleValidInstrument.ID).Return(exampleValidInstrument, nil)
+		mealPlanningRepo.On("MarkValidInstrumentAsIndexed", testutils.ContextMatcher, exampleValidInstrument.ID).Return(nil)
+
+		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexManager[MealSearchSubset]{}
+		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+
+		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
+		ss := ConvertValidInstrumentToValidInstrumentSearchSubset(exampleValidInstrument)
+		rim.On("Index", testutils.ContextMatcher, exampleValidInstrument.ID, ss).Return(nil)
+
+		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+
+		cdi := NewEatingDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			mealPlanningRepo,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidInstrument.ID,
@@ -126,7 +298,18 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 	})
 
 	T.Run("valid preparation index type", func(t *testing.T) {
@@ -136,11 +319,37 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &mealplanningmock.Repository{}
-		dataManager.On("GetValidPreparation", testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
-		dataManager.On("MarkValidPreparationAsIndexed", testutils.ContextMatcher, exampleValidPreparation.ID).Return(nil)
+		mealPlanningRepo := &mealplanningmock.Repository{}
+		mealPlanningRepo.On("GetValidPreparation", testutils.ContextMatcher, exampleValidPreparation.ID).Return(exampleValidPreparation, nil)
+		mealPlanningRepo.On("MarkValidPreparationAsIndexed", testutils.ContextMatcher, exampleValidPreparation.ID).Return(nil)
+
+		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexManager[MealSearchSubset]{}
+		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
+
+		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
+		ss := ConvertValidPreparationToValidPreparationSearchSubset(exampleValidPreparation)
+		rim.On("Index", testutils.ContextMatcher, exampleValidPreparation.ID, ss).Return(nil)
+
+		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+
+		cdi := NewEatingDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			mealPlanningRepo,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidPreparation.ID,
@@ -148,7 +357,18 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 	})
 
 	T.Run("valid measurement unit index type", func(t *testing.T) {
@@ -158,11 +378,37 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &mealplanningmock.Repository{}
-		dataManager.On("GetValidMeasurementUnit", testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(exampleValidMeasurementUnit, nil)
-		dataManager.On("MarkValidMeasurementUnitAsIndexed", testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(nil)
+		mealPlanningRepo := &mealplanningmock.Repository{}
+		mealPlanningRepo.On("GetValidMeasurementUnit", testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(exampleValidMeasurementUnit, nil)
+		mealPlanningRepo.On("MarkValidMeasurementUnitAsIndexed", testutils.ContextMatcher, exampleValidMeasurementUnit.ID).Return(nil)
+
+		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexManager[MealSearchSubset]{}
+		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
+
+		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
+		ss := ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(exampleValidMeasurementUnit)
+		rim.On("Index", testutils.ContextMatcher, exampleValidMeasurementUnit.ID, ss).Return(nil)
+
+		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
+		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
+		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+
+		cdi := NewEatingDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			mealPlanningRepo,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidMeasurementUnit.ID,
@@ -170,7 +416,18 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 	})
 
 	T.Run("valid ingredient state index type", func(t *testing.T) {
@@ -180,11 +437,37 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &mealplanningmock.Repository{}
-		dataManager.On("GetValidIngredientState", testutils.ContextMatcher, exampleValidIngredientState.ID).Return(exampleValidIngredientState, nil)
-		dataManager.On("MarkValidIngredientStateAsIndexed", testutils.ContextMatcher, exampleValidIngredientState.ID).Return(nil)
+		mealPlanningRepo := &mealplanningmock.Repository{}
+		mealPlanningRepo.On("GetValidIngredientState", testutils.ContextMatcher, exampleValidIngredientState.ID).Return(exampleValidIngredientState, nil)
+		mealPlanningRepo.On("MarkValidIngredientStateAsIndexed", testutils.ContextMatcher, exampleValidIngredientState.ID).Return(nil)
+
+		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
+		mim := &mocksearch.IndexManager[MealSearchSubset]{}
+		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
+		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
+		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
+
+		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
+		ss := ConvertValidIngredientStateToValidIngredientStateSearchSubset(exampleValidIngredientState)
+		rim.On("Index", testutils.ContextMatcher, exampleValidIngredientState.ID, ss).Return(nil)
+
+		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+
+		cdi := NewEatingDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			mealPlanningRepo,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleValidIngredientState.ID,
@@ -192,6 +475,17 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t,
+			rim,
+			mim,
+			vinm,
+			vism,
+			vmuim,
+			vpim,
+			visim,
+			vvim,
+		)
 	})
 }

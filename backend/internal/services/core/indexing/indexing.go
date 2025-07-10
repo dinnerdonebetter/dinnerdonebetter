@@ -7,37 +7,53 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
+)
+
+const (
+	o11yName = "core_search_indexer"
 )
 
 var (
 	ErrNilIndexRequest = errors.New("nil index request")
 )
 
-func HandleIndexRequest(
-	ctx context.Context,
-	l logging.Logger,
+type CoreDataIndexer struct {
+	logger          logging.Logger
+	tracer          tracing.Tracer
+	identityRepo    identity.Repository
+	userSearchIndex UserTextSearcher
+}
+
+func NewCoreDataIndexer(
+	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	metricsProvider metrics.Provider,
-	searchConfig *textsearchcfg.Config,
-	dataManager identity.Repository,
+	identityRepo identity.Repository,
+	userSearchIndex UserTextSearcher,
+) *CoreDataIndexer {
+	return &CoreDataIndexer{
+		logger:          logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		identityRepo:    identityRepo,
+		userSearchIndex: userSearchIndex,
+	}
+}
+
+func (i *CoreDataIndexer) HandleIndexRequest(
+	ctx context.Context,
 	indexReq *textsearch.IndexRequest,
 ) error {
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("core_search_indexer"))
-	ctx, span := tracer.StartSpan(ctx)
+	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if indexReq == nil {
-		return observability.PrepareAndLogError(ErrNilIndexRequest, l, span, "handling index requests")
+		return observability.PrepareAndLogError(ErrNilIndexRequest, i.logger, span, "handling index requests")
 	}
 
-	logger := l.WithValue("index_type_requested", indexReq.IndexType)
+	logger := i.logger.WithValue("index_type_requested", indexReq.IndexType)
 
 	var (
-		im                textsearch.IndexManager
 		toBeIndexed       any
 		err               error
 		markAsIndexedFunc func() error
@@ -45,32 +61,27 @@ func HandleIndexRequest(
 
 	switch indexReq.IndexType {
 	case IndexTypeUsers:
-		im, err = textsearchcfg.ProvideIndex[UserSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
 		var user *identity.User
-		user, err = dataManager.GetUser(ctx, indexReq.RowID)
+		user, err = i.identityRepo.GetUser(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting user")
 		}
 
 		toBeIndexed = ConvertUserToUserSearchSubset(user)
-		markAsIndexedFunc = func() error { return dataManager.MarkUserAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return i.identityRepo.MarkUserAsIndexed(ctx, indexReq.RowID) }
 	default:
 		logger.Info("invalid index type specified, exiting")
 		return nil
 	}
 
 	if indexReq.Delete {
-		if err = im.Delete(ctx, indexReq.RowID); err != nil {
+		if err = i.userSearchIndex.Delete(ctx, indexReq.RowID); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "deleting data")
 		}
 
 		return nil
 	} else {
-		if err = im.Index(ctx, indexReq.RowID, toBeIndexed); err != nil {
+		if err = i.userSearchIndex.Index(ctx, indexReq.RowID, toBeIndexed); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "indexing data")
 		}
 

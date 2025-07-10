@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	ProvidersObservability = wire.NewSet(
+	Providers = wire.NewSet(
 		wire.FieldsOf(
 			new(*Config),
 			"Logging",

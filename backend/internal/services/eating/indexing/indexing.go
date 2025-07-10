@@ -3,166 +3,191 @@ package indexing
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
+)
+
+const (
+	o11yName = "eating_search_indexer"
 )
 
 var (
 	ErrNilIndexRequest = errors.New("nil index request")
 )
 
-func HandleIndexRequest(
-	ctx context.Context,
-	l logging.Logger,
+type EatingDataIndexer struct {
+	logger                          logging.Logger
+	tracer                          tracing.Tracer
+	mealPlanningRepo                mealplanning.Repository
+	recipeSearchIndex               RecipeTextSearcher
+	mealSearchIndex                 MealTextSearcher
+	validIngredientSearchIndex      ValidIngredientTextSearcher
+	validInstrumentSearchIndex      ValidInstrumentTextSearcher
+	validMeasurementUnitSearchIndex ValidMeasurementUnitTextSearcher
+	validPreparationSearchIndex     ValidPreparationTextSearcher
+	validIngredientStateSearchIndex ValidIngredientStateTextSearcher
+	validVesselSearchIndex          ValidVesselTextSearcher
+}
+
+func NewEatingDataIndexer(
+	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	metricsProvider metrics.Provider,
-	searchConfig *textsearchcfg.Config,
-	dataManager mealplanning.Repository,
+	mealPlanningRepo mealplanning.Repository,
+	recipeSearchIndex RecipeTextSearcher,
+	mealSearchIndex MealTextSearcher,
+	validIngredientSearchIndex ValidIngredientTextSearcher,
+	validInstrumentSearchIndex ValidInstrumentTextSearcher,
+	validMeasurementUnitSearchIndex ValidMeasurementUnitTextSearcher,
+	validPreparationSearchIndex ValidPreparationTextSearcher,
+	validIngredientStateSearchIndex ValidIngredientStateTextSearcher,
+	validVesselSearchIndex ValidVesselTextSearcher,
+) *EatingDataIndexer {
+	return &EatingDataIndexer{
+		logger:                          logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		mealPlanningRepo:                mealPlanningRepo,
+		recipeSearchIndex:               recipeSearchIndex,
+		mealSearchIndex:                 mealSearchIndex,
+		validIngredientSearchIndex:      validIngredientSearchIndex,
+		validInstrumentSearchIndex:      validInstrumentSearchIndex,
+		validMeasurementUnitSearchIndex: validMeasurementUnitSearchIndex,
+		validPreparationSearchIndex:     validPreparationSearchIndex,
+		validIngredientStateSearchIndex: validIngredientStateSearchIndex,
+		validVesselSearchIndex:          validVesselSearchIndex,
+	}
+}
+
+func (i *EatingDataIndexer) Index(indexType string) (textsearch.IndexManager, error) {
+	switch indexType {
+	case IndexTypeRecipes:
+		return i.recipeSearchIndex, nil
+	case IndexTypeMeals:
+		return i.mealSearchIndex, nil
+	case IndexTypeValidIngredients:
+		return i.validIngredientSearchIndex, nil
+	case IndexTypeValidInstruments:
+		return i.validInstrumentSearchIndex, nil
+	case IndexTypeValidMeasurementUnits:
+		return i.validMeasurementUnitSearchIndex, nil
+	case IndexTypeValidPreparations:
+		return i.validPreparationSearchIndex, nil
+	case IndexTypeValidIngredientStates:
+		return i.validIngredientStateSearchIndex, nil
+	case IndexTypeValidVessels:
+		return i.validVesselSearchIndex, nil
+	default:
+		return nil, ErrNilIndexRequest
+	}
+}
+
+func (i *EatingDataIndexer) HandleIndexRequest(
+	ctx context.Context,
 	indexReq *textsearch.IndexRequest,
 ) error {
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("eating_search_indexer"))
-	ctx, span := tracer.StartSpan(ctx)
+	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if indexReq == nil {
-		return observability.PrepareAndLogError(ErrNilIndexRequest, l, span, "handling index requests")
+		return observability.PrepareAndLogError(ErrNilIndexRequest, i.logger, span, "handling index requests")
 	}
 
-	logger := l.WithValue("index_type_requested", indexReq.IndexType)
+	logger := i.logger.WithValue("index_type_requested", indexReq.IndexType)
+
+	im, err := i.Index(indexReq.IndexType)
+	if err != nil {
+		return fmt.Errorf("invalid index type: %s", indexReq.IndexType)
+	}
 
 	var (
-		im                textsearch.IndexManager
 		toBeIndexed       any
-		err               error
 		markAsIndexedFunc func() error
 	)
 
 	switch indexReq.IndexType {
 	case IndexTypeRecipes:
-		im, err = textsearchcfg.ProvideIndex[RecipeSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
 		var recipe *mealplanning.Recipe
-		recipe, err = dataManager.GetRecipe(ctx, indexReq.RowID)
+		recipe, err = i.mealPlanningRepo.GetRecipe(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting recipe")
 		}
 
 		toBeIndexed = ConvertRecipeToRecipeSearchSubset(recipe)
-		markAsIndexedFunc = func() error { return dataManager.MarkRecipeAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return i.mealPlanningRepo.MarkRecipeAsIndexed(ctx, indexReq.RowID) }
 
 	case IndexTypeMeals:
-		im, err = textsearchcfg.ProvideIndex[MealSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
 		var meal *mealplanning.Meal
-		meal, err = dataManager.GetMeal(ctx, indexReq.RowID)
+		meal, err = i.mealPlanningRepo.GetMeal(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting meal")
 		}
 
 		toBeIndexed = ConvertMealToMealSearchSubset(meal)
-		markAsIndexedFunc = func() error { return dataManager.MarkMealAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return i.mealPlanningRepo.MarkMealAsIndexed(ctx, indexReq.RowID) }
 
 	case IndexTypeValidIngredients:
-		im, err = textsearchcfg.ProvideIndex[ValidIngredientSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
 		var validIngredient *mealplanning.ValidIngredient
-		validIngredient, err = dataManager.GetValidIngredient(ctx, indexReq.RowID)
+		validIngredient, err = i.mealPlanningRepo.GetValidIngredient(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient")
 		}
 
 		toBeIndexed = ConvertValidIngredientToValidIngredientSearchSubset(validIngredient)
-		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return i.mealPlanningRepo.MarkValidIngredientAsIndexed(ctx, indexReq.RowID) }
 
 	case IndexTypeValidInstruments:
-		im, err = textsearchcfg.ProvideIndex[ValidInstrumentSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
 		var validInstrument *mealplanning.ValidInstrument
-		validInstrument, err = dataManager.GetValidInstrument(ctx, indexReq.RowID)
+		validInstrument, err = i.mealPlanningRepo.GetValidInstrument(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid instrument")
 		}
 
 		toBeIndexed = ConvertValidInstrumentToValidInstrumentSearchSubset(validInstrument)
-		markAsIndexedFunc = func() error { return dataManager.MarkValidInstrumentAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return i.mealPlanningRepo.MarkValidInstrumentAsIndexed(ctx, indexReq.RowID) }
 
 	case IndexTypeValidMeasurementUnits:
-		im, err = textsearchcfg.ProvideIndex[ValidMeasurementUnitSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
 		var validMeasurementUnit *mealplanning.ValidMeasurementUnit
-		validMeasurementUnit, err = dataManager.GetValidMeasurementUnit(ctx, indexReq.RowID)
+		validMeasurementUnit, err = i.mealPlanningRepo.GetValidMeasurementUnit(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid measurement unit")
 		}
 
 		toBeIndexed = ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(validMeasurementUnit)
-		markAsIndexedFunc = func() error { return dataManager.MarkValidMeasurementUnitAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return i.mealPlanningRepo.MarkValidMeasurementUnitAsIndexed(ctx, indexReq.RowID) }
 
 	case IndexTypeValidPreparations:
-		im, err = textsearchcfg.ProvideIndex[ValidPreparationSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
 		var validPreparation *mealplanning.ValidPreparation
-		validPreparation, err = dataManager.GetValidPreparation(ctx, indexReq.RowID)
+		validPreparation, err = i.mealPlanningRepo.GetValidPreparation(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid preparation")
 		}
 
 		toBeIndexed = ConvertValidPreparationToValidPreparationSearchSubset(validPreparation)
-		markAsIndexedFunc = func() error { return dataManager.MarkValidPreparationAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return i.mealPlanningRepo.MarkValidPreparationAsIndexed(ctx, indexReq.RowID) }
 
 	case IndexTypeValidIngredientStates:
-		im, err = textsearchcfg.ProvideIndex[ValidIngredientStateSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
 		var validIngredientState *mealplanning.ValidIngredientState
-		validIngredientState, err = dataManager.GetValidIngredientState(ctx, indexReq.RowID)
+		validIngredientState, err = i.mealPlanningRepo.GetValidIngredientState(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state")
 		}
 
 		toBeIndexed = ConvertValidIngredientStateToValidIngredientStateSearchSubset(validIngredientState)
-		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientStateAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return i.mealPlanningRepo.MarkValidIngredientStateAsIndexed(ctx, indexReq.RowID) }
 
 	case IndexTypeValidVessels:
-		im, err = textsearchcfg.ProvideIndex[ValidVesselSearchSubset](ctx, logger, tracerProvider, metricsProvider, searchConfig, indexReq.IndexType)
-		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
-		}
-
 		var validVessel *mealplanning.ValidVessel
-		validVessel, err = dataManager.GetValidVessel(ctx, indexReq.RowID)
+		validVessel, err = i.mealPlanningRepo.GetValidVessel(ctx, indexReq.RowID)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "getting valid vessel")
 		}
 
 		toBeIndexed = ConvertValidVesselToValidVesselSearchSubset(validVessel)
-		markAsIndexedFunc = func() error { return dataManager.MarkValidVesselAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return i.mealPlanningRepo.MarkValidVesselAsIndexed(ctx, indexReq.RowID) }
 	default:
 		logger.Info("invalid index type specified, exiting")
 		return nil

@@ -46,7 +46,7 @@ func (u *Uploader) ReadFile(ctx context.Context, path string) ([]byte, error) {
 	return fileBytes, nil
 }
 
-// ServeFiles saves a file to the blob.
+// ServeFiles serves a blob from storage.
 func (u *Uploader) ServeFiles(res http.ResponseWriter, req *http.Request) {
 	ctx, span := u.tracer.StartSpan(req.Context())
 	defer span.End()

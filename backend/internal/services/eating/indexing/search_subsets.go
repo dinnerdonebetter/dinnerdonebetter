@@ -2,8 +2,11 @@ package indexing
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
+
+type ValidMeasurementUnitTextSearcher textsearch.Index[ValidMeasurementUnitSearchSubset]
 
 // ValidMeasurementUnitSearchSubset represents the subset of values suitable to index for search.
 type ValidMeasurementUnitSearchSubset struct {
@@ -24,6 +27,8 @@ func ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(x *mealplanni
 		Description: x.Description,
 	}
 }
+
+type MealTextSearcher textsearch.Index[MealSearchSubset]
 
 // MealSearchSubset represents the subset of values suitable to index for search.
 type MealSearchSubset struct {
@@ -49,6 +54,8 @@ func ConvertMealToMealSearchSubset(r *mealplanning.Meal) *MealSearchSubset {
 	return x
 }
 
+type RecipeTextSearcher textsearch.Index[RecipeSearchSubset]
+
 // RecipeSearchSubset represents the subset of values suitable to index for search.
 type RecipeSearchSubset struct {
 	_ struct{} `json:"-"`
@@ -73,6 +80,8 @@ func ConvertRecipeToRecipeSearchSubset(r *mealplanning.Recipe) *RecipeSearchSubs
 
 	return x
 }
+
+type RecipeStepTextSearcher textsearch.Index[RecipeStepSearchSubset]
 
 // RecipeStepSearchSubset represents the subset of values suitable to index for search.
 type RecipeStepSearchSubset struct {
@@ -104,6 +113,8 @@ func ConvertRecipeStepToRecipeStepSearchSubset(x *mealplanning.RecipeStep) *Reci
 	return stepSubset
 }
 
+type ValidIngredientTextSearcher textsearch.Index[ValidIngredientSearchSubset]
+
 // ValidIngredientSearchSubset represents the subset of values suitable to index for search.
 type ValidIngredientSearchSubset struct {
 	_ struct{} `json:"-"`
@@ -125,6 +136,8 @@ func ConvertValidIngredientToValidIngredientSearchSubset(x *mealplanning.ValidIn
 		ShoppingSuggestions: x.ShoppingSuggestions,
 	}
 }
+
+type ValidIngredientStateTextSearcher textsearch.Index[ValidIngredientStateSearchSubset]
 
 // ValidIngredientStateSearchSubset represents the subset of values suitable to index for search.
 type ValidIngredientStateSearchSubset struct {
@@ -148,6 +161,8 @@ func ConvertValidIngredientStateToValidIngredientStateSearchSubset(x *mealplanni
 	}
 }
 
+type ValidInstrumentTextSearcher textsearch.Index[ValidInstrumentSearchSubset]
+
 // ValidInstrumentSearchSubset represents the subset of values suitable to index for search.
 type ValidInstrumentSearchSubset struct {
 	_ struct{} `json:"-"`
@@ -168,6 +183,8 @@ func ConvertValidInstrumentToValidInstrumentSearchSubset(x *mealplanning.ValidIn
 	}
 }
 
+type ValidPreparationTextSearcher textsearch.Index[ValidPreparationSearchSubset]
+
 // ValidPreparationSearchSubset represents the subset of values suitable to index for search.
 type ValidPreparationSearchSubset struct {
 	_ struct{} `json:"-"`
@@ -187,6 +204,8 @@ func ConvertValidPreparationToValidPreparationSearchSubset(x *mealplanning.Valid
 		Description: x.Description,
 	}
 }
+
+type ValidVesselTextSearcher textsearch.Index[ValidVesselSearchSubset]
 
 // ValidVesselSearchSubset represents the subset of values suitable to index for search.
 type ValidVesselSearchSubset struct {

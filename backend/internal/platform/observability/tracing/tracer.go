@@ -2,7 +2,6 @@ package tracing
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/slog"
 

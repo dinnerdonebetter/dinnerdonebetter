@@ -2,17 +2,11 @@ package postgres
 
 import (
 	"context"
-	"database/sql/driver"
 	"errors"
-	"fmt"
-	"hash/fnv"
-	"io"
-	"log"
 	"testing"
 	"time"
 
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -20,32 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/modules/postgres"
-	"github.com/testcontainers/testcontainers-go/wait"
-	"gopkg.in/matryer/try.v1"
 )
-
-var (
-	runningContainerTests = true // strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) == "true"
-)
-
-var _ sqlmock.Argument = (*idMatcher)(nil)
-
-type idMatcher struct{}
-
-func (s *idMatcher) Match(v driver.Value) bool {
-	x, ok := v.(string)
-	if !ok {
-		return false
-	}
-
-	if err := identifiers.Validate(x); err != nil {
-		return false
-	}
-
-	return true
-}
 
 type sqlmockExpecterWrapper struct {
 	sqlmock.Sqlmock
@@ -72,87 +41,6 @@ func buildTestClient(t *testing.T) (*Client, *sqlmockExpecterWrapper) {
 	}
 
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
-}
-
-func hashStringToNumber(s string) uint64 {
-	// Create a new FNV-1a 64-bit hash object
-	h := fnv.New64a()
-
-	// Write the bytes of the string into the hash object
-	_, err := h.Write([]byte(s))
-	if err != nil {
-		// Handle error if necessary
-		panic(err)
-	}
-
-	// Return the resulting hash value as a number (uint64)
-	return h.Sum64()
-}
-
-func reverseString(input string) string {
-	runes := []rune(input)
-	length := len(runes)
-
-	for i, j := 0, length-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-
-	return string(runes)
-}
-
-func splitReverseConcat(input string) string {
-	length := len(input)
-	halfLength := length / 2
-
-	firstHalf := input[:halfLength]
-	secondHalf := input[halfLength:]
-
-	reversedFirstHalf := reverseString(firstHalf)
-	reversedSecondHalf := reverseString(secondHalf)
-
-	return reversedSecondHalf + reversedFirstHalf
-}
-
-const (
-	defaultPostgresImage = "postgres:17"
-)
-
-func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Client, *postgres.PostgresContainer) {
-	t.Helper()
-
-	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t.Name()))
-	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
-
-	var container *postgres.PostgresContainer
-	err := try.Do(func(attempt int) (bool, error) {
-		var containerErr error
-		container, containerErr = postgres.Run(
-			ctx,
-			defaultPostgresImage,
-			postgres.WithDatabase(splitReverseConcat(dbUsername)),
-			postgres.WithUsername(dbUsername),
-			postgres.WithPassword(reverseString(dbUsername)),
-			testcontainers.WithWaitStrategyAndDeadline(2*time.Minute, wait.ForLog("database system is ready to accept connections").WithOccurrence(2)),
-		)
-
-		return attempt < 5, containerErr
-	})
-	require.NoError(t, err)
-	require.NotNil(t, container)
-
-	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
-	require.NoError(t, err)
-
-	dbConfig := &databasecfg.Config{
-		RunMigrations: true,
-	}
-	require.NoError(t, dbConfig.LoadConnectionDetailsFromURL(connStr))
-
-	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), dbConfig)
-	require.NoError(t, err)
-	require.NotNil(t, dbc)
-
-	return dbc, container
 }
 
 // end helper funcs

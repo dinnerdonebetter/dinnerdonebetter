@@ -194,7 +194,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		p := NewImageUploadProcessor(nil, tracing.NewNoopTracerProvider())
+		p := NewMediaUploadProcessor(nil, tracing.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
 		imgBytes := buildPNGBytes(t)
@@ -213,7 +213,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		p := NewImageUploadProcessor(nil, tracing.NewNoopTracerProvider())
+		p := NewMediaUploadProcessor(nil, tracing.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://tests.verygoodsoftwarenotvirus.ru", http.NoBody)
@@ -228,7 +228,7 @@ func Test_uploadProcessor_Process(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		p := NewImageUploadProcessor(nil, tracing.NewNoopTracerProvider())
+		p := NewMediaUploadProcessor(nil, tracing.NewNoopTracerProvider())
 		expectedFieldName := "avatar"
 
 		req := newAvatarUploadRequest(t, "avatar.png", bytes.NewBufferString(""))

@@ -5,8 +5,8 @@ import (
 )
 
 var (
-	// EncDecProviders provides ResponseEncoders for dependency injection.
-	EncDecProviders = wire.NewSet(
+	// Providers provides ResponseEncoders for dependency injection.
+	Providers = wire.NewSet(
 		ProvideServerEncoderDecoder,
 		ProvideContentType,
 	)

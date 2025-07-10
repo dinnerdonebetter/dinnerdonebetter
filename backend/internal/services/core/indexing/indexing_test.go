@@ -2,15 +2,15 @@ package indexing
 
 import (
 	"context"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/platform/search/text/mock"
+	"github.com/stretchr/testify/mock"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
@@ -26,11 +26,22 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &identitymock.RepositoryMock{}
-		dataManager.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
-		dataManager.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
+		identityRepo := &identitymock.RepositoryMock{}
+		identityRepo.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
+		identityRepo.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
+
+		uss := ConvertUserToUserSearchSubset(exampleUser)
+
+		mim := &mocksearch.IndexManager[UserSearchSubset]{}
+		mim.On("Index", testutils.ContextMatcher, exampleUser.ID, uss).Return(nil)
+
+		cdi := NewCoreDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			identityRepo,
+			mim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleUser.ID,
@@ -38,7 +49,9 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    false,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t, identityRepo, mim)
 	})
 
 	T.Run("deleting user index type", func(t *testing.T) {
@@ -48,11 +61,19 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
-		searchConfig := &textsearchcfg.Config{}
 
-		dataManager := &identitymock.RepositoryMock{}
-		dataManager.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
-		dataManager.On("MarkUserAsIndexed", testutils.ContextMatcher, exampleUser.ID).Return(nil)
+		identityRepo := &identitymock.RepositoryMock{}
+		identityRepo.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
+
+		mim := &mocksearch.IndexManager[UserSearchSubset]{}
+		mim.On("Delete", testutils.ContextMatcher, exampleUser.ID).Return(nil)
+
+		cdi := NewCoreDataIndexer(
+			logger,
+			tracing.NewNoopTracerProvider(),
+			identityRepo,
+			mim,
+		)
 
 		indexReq := &textsearch.IndexRequest{
 			RowID:     exampleUser.ID,
@@ -60,6 +81,8 @@ func TestHandleIndexRequest(T *testing.T) {
 			Delete:    true,
 		}
 
-		assert.NoError(t, HandleIndexRequest(ctx, logger, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), searchConfig, dataManager, indexReq))
+		assert.NoError(t, cdi.HandleIndexRequest(ctx, indexReq))
+
+		mock.AssertExpectationsForObjects(t, identityRepo, mim)
 	})
 }

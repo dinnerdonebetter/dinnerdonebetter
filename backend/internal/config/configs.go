@@ -143,6 +143,7 @@ type (
 		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
 		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
+		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
 	}
 
 	APIServiceOAuth2ConnectionConfig struct {

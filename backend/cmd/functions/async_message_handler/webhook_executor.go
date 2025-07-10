@@ -10,29 +10,30 @@ import (
 	"encoding/xml"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 func handleWebhookExecutionRequest(
 	ctx context.Context,
 	logger logging.Logger,
 	tracer tracing.Tracer,
-	dataManager database.DataManager,
-	webhookExecutionRequest *types.WebhookExecutionRequest,
+	identityRepo identity.Repository,
+	webhookRepo webhooks.Repository,
+	webhookExecutionRequest *webhooks.WebhookExecutionRequest,
 ) error {
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	account, err := dataManager.GetAccount(ctx, webhookExecutionRequest.AccountID)
+	account, err := identityRepo.GetAccount(ctx, webhookExecutionRequest.AccountID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "getting account")
 	}
 
-	webhook, err := dataManager.GetWebhook(ctx, webhookExecutionRequest.WebhookID, webhookExecutionRequest.AccountID)
+	webhook, err := webhookRepo.GetWebhook(ctx, webhookExecutionRequest.WebhookID, webhookExecutionRequest.AccountID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting webhook")
 		return nil

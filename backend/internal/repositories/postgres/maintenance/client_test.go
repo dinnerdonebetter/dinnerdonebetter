@@ -9,14 +9,9 @@ import (
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 
 	"github.com/stretchr/testify/require"
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
-)
-
-const (
-	exampleQuantity = 3
 )
 
 func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresContainer) {
@@ -30,7 +25,6 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresC
 	require.NotNil(t, pgc)
 	require.NoError(t, err)
 
-	auditLogEntryRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 	c := ProvideMaintenanceRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 	require.NoError(t, err)
 

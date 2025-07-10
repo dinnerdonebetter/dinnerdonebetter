@@ -1,17 +1,17 @@
-package main
+package datachangemessagehandler
 
+/*
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 func handleUserDataRequest(
@@ -19,8 +19,8 @@ func handleUserDataRequest(
 	logger logging.Logger,
 	tracer tracing.Tracer,
 	uploadManager uploads.UploadManager,
-	dataManager database.DataManager,
-	userDataCollectionRequest *types.UserDataAggregationRequest,
+	identityRepo identity.Repository,
+	userDataCollectionRequest *identity.UserDataAggregationRequest,
 ) error {
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
@@ -29,7 +29,7 @@ func handleUserDataRequest(
 	tracing.AttachToSpan(span, keys.UserDataAggregationReportIDKey, userDataCollectionRequest.ReportID)
 	logger.Info("loaded payload, aggregating data")
 
-	collection, err := dataManager.AggregateUserData(ctx, userDataCollectionRequest.UserID)
+	collection, err := identityRepo.AggregateUserData(ctx, userDataCollectionRequest.UserID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "collecting user data")
 	}
@@ -52,3 +52,4 @@ func handleUserDataRequest(
 
 	return nil
 }
+*/

@@ -12,7 +12,8 @@ TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
 PROTO_FILES_PATH       := proto/*.proto
 PROTO_OUTPUT_PATH      := internal/grpc
-WIRE_TARGETS           := internal/build/services/api \
+WIRE_TARGETS           := internal/build/functions/data_change_message_handler \
+	internal/build/services/api \
 	internal/build/jobs/db_cleaner \
 	internal/build/jobs/search_data_index_scheduler \
 	internal/build/jobs/meal_plan_finalizer \
