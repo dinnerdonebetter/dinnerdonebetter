@@ -1,4 +1,4 @@
-package mealplanning
+package maintenance
 
 import (
 	"testing"
@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 
 	"github.com/stretchr/testify/require"
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -32,10 +31,7 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresC
 	require.NoError(t, err)
 
 	auditLogEntryRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
-	identitiesRepo := identity.ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
-	require.NoError(t, err)
-
-	c := ProvideMealPlanningRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, identitiesRepo, pgc)
+	c := ProvideMaintenanceRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 	require.NoError(t, err)
 
 	return c.(*Querier), container
@@ -44,7 +40,7 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresC
 func buildInertClientForTest(t *testing.T) *Querier {
 	t.Helper()
 
-	c := ProvideMealPlanningRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, nil, &database.MockClient{})
+	c := ProvideMaintenanceRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &database.MockClient{})
 
 	return c.(*Querier)
 }

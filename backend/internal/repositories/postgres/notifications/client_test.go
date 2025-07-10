@@ -33,7 +33,7 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresC
 	auditLogEntryRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 	require.NoError(t, err)
 
-	c := ProvideSettingsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
+	c := ProvideNotificationsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
 	require.NoError(t, err)
 
 	return c.(*Querier), container
@@ -42,7 +42,7 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresC
 func buildInertClientForTest(t *testing.T) *Querier {
 	t.Helper()
 
-	c := ProvideSettingsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{})
+	c := ProvideNotificationsRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{})
 
 	return c.(*Querier)
 }

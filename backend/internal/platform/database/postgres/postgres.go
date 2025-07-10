@@ -34,7 +34,7 @@ type Client struct {
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
-func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *databasecfg.Config) (*Client, error) {
+func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *databasecfg.Config) (database.Client, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(tracingName))
 
 	ctx, span := tracer.StartSpan(ctx)

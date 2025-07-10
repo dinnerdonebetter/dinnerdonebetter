@@ -27,8 +27,8 @@ type Querier struct {
 	db                *sql.DB
 }
 
-// ProvideSettingsRepository provides a new client.
-func ProvideSettingsRepository(
+// ProvideMealPlanningRepository provides a new client.
+func ProvideMealPlanningRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,

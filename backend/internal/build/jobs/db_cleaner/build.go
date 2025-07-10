@@ -12,6 +12,7 @@ import (
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/maintenance"
 	dbcleaner "github.com/dinnerdonebetter/backend/internal/services/core/workers/db_cleaner"
 
 	"github.com/google/wire"
@@ -29,6 +30,7 @@ func Build(
 		postgres.ProvidersPostgres,
 		loggingcfg.ProvidersLogConfig,
 		metricscfg.ProvidersMetrics,
+		maintenance.Providers,
 		ConfigProviders,
 	)
 
