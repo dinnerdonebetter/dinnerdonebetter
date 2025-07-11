@@ -247,18 +247,6 @@ env_vars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars
 	gofmt -s -w internal/config/envvars/*.go
 
-.PHONY: proto
-proto: ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
-	rm -rf $(PROTO_OUTPUT_PATH)
-	mkdir -p $(PROTO_OUTPUT_PATH)
-	protoc --go_out=. \
-		--go-grpc_out=. \
-		--go_opt=module=$(THIS) \
-		--go-grpc_opt=module=$(THIS) \
-		-I internal/services/ \
-		$(PROTO_FILES_PATH)
-	$(MAKE) format_golang
-
 ## INTEGRATION TESTING
 
 .PHONY: integration-tests

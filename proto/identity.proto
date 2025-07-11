@@ -1,1 +1,5 @@
 syntax = "proto3";
+
+package identity;
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/identity";
