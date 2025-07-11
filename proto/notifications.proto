@@ -2,4 +2,51 @@ syntax = "proto3";
 
 package notifications;
 
+import "filtering.proto";
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/notifications";
+
+// GetUserNotification
+message GetUserNotificationRequest {
+  string userNotificationID = 1;
+}
+
+message GetUserNotificationResponse {}
+
+// GetUserNotifications
+message GetUserNotificationsRequest {
+  filtering.QueryFilter Filter = 1;
+}
+
+message GetUserNotificationsResponse {
+  filtering.QueryFilter Filter = 1;
+  repeated UserNotification Results = 2;
+}
+
+// UpdateUserNotification
+message UpdateUserNotificationRequest {
+  string userNotificationID = 1;
+  UserNotificationUpdateRequestInput input = 2;
+}
+
+message UpdateUserNotificationResponse {}
+
+message UserNotification {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  string ID = 3;
+  string Content = 4;
+  string Status = 5;
+  string BelongsToUser = 6;
+}
+
+message UserNotificationCreationRequestInput {
+  string Content = 1;
+  string Status = 2;
+  string BelongsToUser = 3;
+}
+
+message UserNotificationUpdateRequestInput {
+  string Status = 1;
+}

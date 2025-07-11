@@ -1,0 +1,182 @@
+syntax = "proto3";
+
+package settings;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/auth";
+
+// LoginForToken
+message LoginForTokenRequest {
+  UserLoginInput Input = 1;
+}
+
+message LoginForTokenResponse {
+  TokenResponse Result = 1;
+}
+
+// AdminLoginForToken
+message AdminLoginForTokenRequest {
+  UserLoginInput Input = 1;
+}
+
+message AdminLoginForTokenResponse {
+  TokenResponse Result = 1;
+}
+
+// ExchangeToken
+message ExchangeTokenRequest {
+  string RefreshToken = 1;
+}
+
+message ExchangeTokenResponse {
+  string UserID = 1;
+  string AccountID = 2;
+  string AccessToken = 3;
+  string RefreshToken = 4;
+  google.protobuf.Timestamp ExpiresUTC = 5;
+}
+
+// CheckPermissions
+message CheckPermissionsRequest {}
+
+message CheckPermissionsResponse {}
+
+// GetActiveAccount
+message GetActiveAccountRequest {}
+
+message GetActiveAccountResponse {}
+
+// GetAuthStatus
+message GetAuthStatusRequest {}
+
+message GetAuthStatusResponse {}
+
+// RedeemPasswordResetToken
+message RedeemPasswordResetTokenRequest {}
+
+message RedeemPasswordResetTokenResponse {}
+
+// RefreshTOTPSecret
+message RefreshTOTPSecretRequest {}
+
+message RefreshTOTPSecretResponse {}
+
+// RequestEmailVerificationEmail
+message RequestEmailVerificationEmailRequest {}
+
+message RequestEmailVerificationEmailResponse {}
+
+// RequestPasswordResetToken
+message RequestPasswordResetTokenRequest {}
+
+message RequestPasswordResetTokenResponse {}
+
+// RequestUsernameReminder
+message RequestUsernameReminderRequest {}
+
+message RequestUsernameReminderResponse {}
+
+// UpdatePassword
+message UpdatePasswordRequest {}
+
+message UpdatePasswordResponse {}
+
+// VerifyEmailAddress
+message VerifyEmailAddressRequest {}
+
+message VerifyEmailAddressResponse {}
+
+// VerifyTOTPSecret
+message VerifyTOTPSecretRequest {
+  string TOTPToken = 1;
+  string UserID = 2;
+}
+
+message VerifyTOTPSecretResponse {
+  bool Accepted = 1;
+}
+
+message ChangeActiveAccountInput {
+  string AccountID = 1;
+}
+
+message EmailAddressVerificationRequest {
+  string Token = 1;
+}
+
+message EmailAddressVerificationResponse {}
+
+message PasswordResetResponse {
+  bool Successful = 1;
+}
+
+message PasswordResetToken {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ExpiresAt = 2;
+  google.protobuf.Timestamp RedeemedAt = 3;
+  google.protobuf.Timestamp LastUpdatedAt = 4;
+  string ID = 5;
+  string Token = 6;
+  string BelongsToUser = 7;
+}
+
+message PasswordResetTokenCreationRequestInput {
+  string EmailAddress = 1;
+}
+
+message PasswordResetTokenRedemptionRequestInput {
+  string Token = 1;
+  string NewPassword = 2;
+}
+
+message PasswordUpdateInput {
+  string NewPassword = 1;
+  string CurrentPassword = 2;
+  string TOTPToken = 3;
+}
+
+message TOTPSecretRefreshInput {
+  string CurrentPassword = 1;
+  string TOTPToken = 2;
+}
+
+message TOTPSecretRefreshResponse {
+  string TwoFactorQRCode = 1;
+  string TwoFactorSecret = 2;
+}
+
+message TOTPSecretVerificationInput {
+  string TOTPToken = 1;
+  string UserID = 2;
+}
+
+message TOTPSecretVerificationResponse {
+  bool Accepted = 1;
+}
+
+message TokenResponse {
+  string UserID = 1;
+  string AccountID = 2;
+  string AccessToken = 3;
+  string RefreshToken = 4;
+  google.protobuf.Timestamp ExpiresUTC = 5;
+}
+
+message UserLoginInput {
+  string Username = 1;
+  string Password = 2;
+  string TOTPToken = 3;
+}
+
+message UserPermissionsRequestInput {
+  repeated string Permissions = 1;
+}
+
+message UserPermissionsResponse {
+  map<string, bool> Permissions = 1;
+}
+
+message UsernameReminderRequestInput {
+  string EmailAddress = 1;
+}

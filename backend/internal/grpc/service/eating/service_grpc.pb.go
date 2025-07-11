@@ -93,7 +93,7 @@ const (
 	Eating_GetMealPlanOptions_FullMethodName                                  = "/eating.Eating/GetMealPlanOptions"
 	Eating_GetMealPlanTask_FullMethodName                                     = "/eating.Eating/GetMealPlanTask"
 	Eating_GetMealPlanTasks_FullMethodName                                    = "/eating.Eating/GetMealPlanTasks"
-	Eating_GetMealPlansForHousehold_FullMethodName                            = "/eating.Eating/GetMealPlansForHousehold"
+	Eating_GetMealPlansForAccount_FullMethodName                              = "/eating.Eating/GetMealPlansForAccount"
 	Eating_GetMeals_FullMethodName                                            = "/eating.Eating/GetMeals"
 	Eating_GetMermaidDiagramForRecipe_FullMethodName                          = "/eating.Eating/GetMermaidDiagramForRecipe"
 	Eating_GetRandomValidIngredient_FullMethodName                            = "/eating.Eating/GetRandomValidIngredient"
@@ -198,14 +198,14 @@ const (
 	Eating_UpdateValidPreparationInstrument_FullMethodName                    = "/eating.Eating/UpdateValidPreparationInstrument"
 	Eating_UpdateValidPreparationVessel_FullMethodName                        = "/eating.Eating/UpdateValidPreparationVessel"
 	Eating_UpdateValidVessel_FullMethodName                                   = "/eating.Eating/UpdateValidVessel"
-	Eating_ArchiveHouseholdInstrumentOwnership_FullMethodName                 = "/eating.Eating/ArchiveHouseholdInstrumentOwnership"
+	Eating_ArchiveAccountInstrumentOwnership_FullMethodName                   = "/eating.Eating/ArchiveAccountInstrumentOwnership"
 	Eating_ArchiveUserIngredientPreference_FullMethodName                     = "/eating.Eating/ArchiveUserIngredientPreference"
-	Eating_CreateHouseholdInstrumentOwnership_FullMethodName                  = "/eating.Eating/CreateHouseholdInstrumentOwnership"
+	Eating_CreateAccountInstrumentOwnership_FullMethodName                    = "/eating.Eating/CreateAccountInstrumentOwnership"
 	Eating_CreateUserIngredientPreference_FullMethodName                      = "/eating.Eating/CreateUserIngredientPreference"
-	Eating_GetHouseholdInstrumentOwnership_FullMethodName                     = "/eating.Eating/GetHouseholdInstrumentOwnership"
-	Eating_GetHouseholdInstrumentOwnerships_FullMethodName                    = "/eating.Eating/GetHouseholdInstrumentOwnerships"
+	Eating_GetAccountInstrumentOwnership_FullMethodName                       = "/eating.Eating/GetAccountInstrumentOwnership"
+	Eating_GetAccountInstrumentOwnerships_FullMethodName                      = "/eating.Eating/GetAccountInstrumentOwnerships"
 	Eating_GetUserIngredientPreferences_FullMethodName                        = "/eating.Eating/GetUserIngredientPreferences"
-	Eating_UpdateHouseholdInstrumentOwnership_FullMethodName                  = "/eating.Eating/UpdateHouseholdInstrumentOwnership"
+	Eating_UpdateAccountInstrumentOwnership_FullMethodName                    = "/eating.Eating/UpdateAccountInstrumentOwnership"
 	Eating_UpdateUserIngredientPreference_FullMethodName                      = "/eating.Eating/UpdateUserIngredientPreference"
 )
 
@@ -284,7 +284,7 @@ type EatingClient interface {
 	GetMealPlanOptions(ctx context.Context, in *messages.GetMealPlanOptionsRequest, opts ...grpc.CallOption) (*messages.GetMealPlanOptionsResponse, error)
 	GetMealPlanTask(ctx context.Context, in *messages.GetMealPlanTaskRequest, opts ...grpc.CallOption) (*messages.GetMealPlanTaskResponse, error)
 	GetMealPlanTasks(ctx context.Context, in *messages.GetMealPlanTasksRequest, opts ...grpc.CallOption) (*messages.GetMealPlanTasksResponse, error)
-	GetMealPlansForHousehold(ctx context.Context, in *messages.GetMealPlansForHouseholdRequest, opts ...grpc.CallOption) (*messages.GetMealPlansForHouseholdResponse, error)
+	GetMealPlansForAccount(ctx context.Context, in *messages.GetMealPlansForAccountRequest, opts ...grpc.CallOption) (*messages.GetMealPlansForAccountResponse, error)
 	GetMeals(ctx context.Context, in *messages.GetMealsRequest, opts ...grpc.CallOption) (*messages.GetMealsResponse, error)
 	GetMermaidDiagramForRecipe(ctx context.Context, in *messages.GetMermaidDiagramForRecipeRequest, opts ...grpc.CallOption) (*messages.GetMermaidDiagramForRecipeResponse, error)
 	GetRandomValidIngredient(ctx context.Context, in *messages.GetRandomValidIngredientRequest, opts ...grpc.CallOption) (*messages.GetRandomValidIngredientResponse, error)
@@ -389,14 +389,14 @@ type EatingClient interface {
 	UpdateValidPreparationInstrument(ctx context.Context, in *messages.UpdateValidPreparationInstrumentRequest, opts ...grpc.CallOption) (*messages.UpdateValidPreparationInstrumentResponse, error)
 	UpdateValidPreparationVessel(ctx context.Context, in *messages.UpdateValidPreparationVesselRequest, opts ...grpc.CallOption) (*messages.UpdateValidPreparationVesselResponse, error)
 	UpdateValidVessel(ctx context.Context, in *messages.UpdateValidVesselRequest, opts ...grpc.CallOption) (*messages.UpdateValidVesselResponse, error)
-	ArchiveHouseholdInstrumentOwnership(ctx context.Context, in *messages.ArchiveHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.ArchiveHouseholdInstrumentOwnershipResponse, error)
+	ArchiveAccountInstrumentOwnership(ctx context.Context, in *messages.ArchiveAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.ArchiveAccountInstrumentOwnershipResponse, error)
 	ArchiveUserIngredientPreference(ctx context.Context, in *messages.ArchiveUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.ArchiveUserIngredientPreferenceResponse, error)
-	CreateHouseholdInstrumentOwnership(ctx context.Context, in *messages.CreateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.CreateHouseholdInstrumentOwnershipResponse, error)
+	CreateAccountInstrumentOwnership(ctx context.Context, in *messages.CreateAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.CreateAccountInstrumentOwnershipResponse, error)
 	CreateUserIngredientPreference(ctx context.Context, in *messages.CreateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.CreateUserIngredientPreferenceResponse, error)
-	GetHouseholdInstrumentOwnership(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInstrumentOwnershipResponse, error)
-	GetHouseholdInstrumentOwnerships(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInstrumentOwnershipsResponse, error)
+	GetAccountInstrumentOwnership(ctx context.Context, in *messages.GetAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.GetAccountInstrumentOwnershipResponse, error)
+	GetAccountInstrumentOwnerships(ctx context.Context, in *messages.GetAccountInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*messages.GetAccountInstrumentOwnershipsResponse, error)
 	GetUserIngredientPreferences(ctx context.Context, in *messages.GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*messages.GetUserIngredientPreferencesResponse, error)
-	UpdateHouseholdInstrumentOwnership(ctx context.Context, in *messages.UpdateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.UpdateHouseholdInstrumentOwnershipResponse, error)
+	UpdateAccountInstrumentOwnership(ctx context.Context, in *messages.UpdateAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.UpdateAccountInstrumentOwnershipResponse, error)
 	UpdateUserIngredientPreference(ctx context.Context, in *messages.UpdateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*messages.UpdateUserIngredientPreferenceResponse, error)
 }
 
@@ -1118,10 +1118,10 @@ func (c *eatingClient) GetMealPlanTasks(ctx context.Context, in *messages.GetMea
 	return out, nil
 }
 
-func (c *eatingClient) GetMealPlansForHousehold(ctx context.Context, in *messages.GetMealPlansForHouseholdRequest, opts ...grpc.CallOption) (*messages.GetMealPlansForHouseholdResponse, error) {
+func (c *eatingClient) GetMealPlansForAccount(ctx context.Context, in *messages.GetMealPlansForAccountRequest, opts ...grpc.CallOption) (*messages.GetMealPlansForAccountResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.GetMealPlansForHouseholdResponse)
-	err := c.cc.Invoke(ctx, Eating_GetMealPlansForHousehold_FullMethodName, in, out, cOpts...)
+	out := new(messages.GetMealPlansForAccountResponse)
+	err := c.cc.Invoke(ctx, Eating_GetMealPlansForAccount_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2168,10 +2168,10 @@ func (c *eatingClient) UpdateValidVessel(ctx context.Context, in *messages.Updat
 	return out, nil
 }
 
-func (c *eatingClient) ArchiveHouseholdInstrumentOwnership(ctx context.Context, in *messages.ArchiveHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.ArchiveHouseholdInstrumentOwnershipResponse, error) {
+func (c *eatingClient) ArchiveAccountInstrumentOwnership(ctx context.Context, in *messages.ArchiveAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.ArchiveAccountInstrumentOwnershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.ArchiveHouseholdInstrumentOwnershipResponse)
-	err := c.cc.Invoke(ctx, Eating_ArchiveHouseholdInstrumentOwnership_FullMethodName, in, out, cOpts...)
+	out := new(messages.ArchiveAccountInstrumentOwnershipResponse)
+	err := c.cc.Invoke(ctx, Eating_ArchiveAccountInstrumentOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2188,10 +2188,10 @@ func (c *eatingClient) ArchiveUserIngredientPreference(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *eatingClient) CreateHouseholdInstrumentOwnership(ctx context.Context, in *messages.CreateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.CreateHouseholdInstrumentOwnershipResponse, error) {
+func (c *eatingClient) CreateAccountInstrumentOwnership(ctx context.Context, in *messages.CreateAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.CreateAccountInstrumentOwnershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.CreateHouseholdInstrumentOwnershipResponse)
-	err := c.cc.Invoke(ctx, Eating_CreateHouseholdInstrumentOwnership_FullMethodName, in, out, cOpts...)
+	out := new(messages.CreateAccountInstrumentOwnershipResponse)
+	err := c.cc.Invoke(ctx, Eating_CreateAccountInstrumentOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2208,20 +2208,20 @@ func (c *eatingClient) CreateUserIngredientPreference(ctx context.Context, in *m
 	return out, nil
 }
 
-func (c *eatingClient) GetHouseholdInstrumentOwnership(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInstrumentOwnershipResponse, error) {
+func (c *eatingClient) GetAccountInstrumentOwnership(ctx context.Context, in *messages.GetAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.GetAccountInstrumentOwnershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.GetHouseholdInstrumentOwnershipResponse)
-	err := c.cc.Invoke(ctx, Eating_GetHouseholdInstrumentOwnership_FullMethodName, in, out, cOpts...)
+	out := new(messages.GetAccountInstrumentOwnershipResponse)
+	err := c.cc.Invoke(ctx, Eating_GetAccountInstrumentOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *eatingClient) GetHouseholdInstrumentOwnerships(ctx context.Context, in *messages.GetHouseholdInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*messages.GetHouseholdInstrumentOwnershipsResponse, error) {
+func (c *eatingClient) GetAccountInstrumentOwnerships(ctx context.Context, in *messages.GetAccountInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*messages.GetAccountInstrumentOwnershipsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.GetHouseholdInstrumentOwnershipsResponse)
-	err := c.cc.Invoke(ctx, Eating_GetHouseholdInstrumentOwnerships_FullMethodName, in, out, cOpts...)
+	out := new(messages.GetAccountInstrumentOwnershipsResponse)
+	err := c.cc.Invoke(ctx, Eating_GetAccountInstrumentOwnerships_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2238,10 +2238,10 @@ func (c *eatingClient) GetUserIngredientPreferences(ctx context.Context, in *mes
 	return out, nil
 }
 
-func (c *eatingClient) UpdateHouseholdInstrumentOwnership(ctx context.Context, in *messages.UpdateHouseholdInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.UpdateHouseholdInstrumentOwnershipResponse, error) {
+func (c *eatingClient) UpdateAccountInstrumentOwnership(ctx context.Context, in *messages.UpdateAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*messages.UpdateAccountInstrumentOwnershipResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(messages.UpdateHouseholdInstrumentOwnershipResponse)
-	err := c.cc.Invoke(ctx, Eating_UpdateHouseholdInstrumentOwnership_FullMethodName, in, out, cOpts...)
+	out := new(messages.UpdateAccountInstrumentOwnershipResponse)
+	err := c.cc.Invoke(ctx, Eating_UpdateAccountInstrumentOwnership_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2333,7 +2333,7 @@ type EatingServer interface {
 	GetMealPlanOptions(context.Context, *messages.GetMealPlanOptionsRequest) (*messages.GetMealPlanOptionsResponse, error)
 	GetMealPlanTask(context.Context, *messages.GetMealPlanTaskRequest) (*messages.GetMealPlanTaskResponse, error)
 	GetMealPlanTasks(context.Context, *messages.GetMealPlanTasksRequest) (*messages.GetMealPlanTasksResponse, error)
-	GetMealPlansForHousehold(context.Context, *messages.GetMealPlansForHouseholdRequest) (*messages.GetMealPlansForHouseholdResponse, error)
+	GetMealPlansForAccount(context.Context, *messages.GetMealPlansForAccountRequest) (*messages.GetMealPlansForAccountResponse, error)
 	GetMeals(context.Context, *messages.GetMealsRequest) (*messages.GetMealsResponse, error)
 	GetMermaidDiagramForRecipe(context.Context, *messages.GetMermaidDiagramForRecipeRequest) (*messages.GetMermaidDiagramForRecipeResponse, error)
 	GetRandomValidIngredient(context.Context, *messages.GetRandomValidIngredientRequest) (*messages.GetRandomValidIngredientResponse, error)
@@ -2438,14 +2438,14 @@ type EatingServer interface {
 	UpdateValidPreparationInstrument(context.Context, *messages.UpdateValidPreparationInstrumentRequest) (*messages.UpdateValidPreparationInstrumentResponse, error)
 	UpdateValidPreparationVessel(context.Context, *messages.UpdateValidPreparationVesselRequest) (*messages.UpdateValidPreparationVesselResponse, error)
 	UpdateValidVessel(context.Context, *messages.UpdateValidVesselRequest) (*messages.UpdateValidVesselResponse, error)
-	ArchiveHouseholdInstrumentOwnership(context.Context, *messages.ArchiveHouseholdInstrumentOwnershipRequest) (*messages.ArchiveHouseholdInstrumentOwnershipResponse, error)
+	ArchiveAccountInstrumentOwnership(context.Context, *messages.ArchiveAccountInstrumentOwnershipRequest) (*messages.ArchiveAccountInstrumentOwnershipResponse, error)
 	ArchiveUserIngredientPreference(context.Context, *messages.ArchiveUserIngredientPreferenceRequest) (*messages.ArchiveUserIngredientPreferenceResponse, error)
-	CreateHouseholdInstrumentOwnership(context.Context, *messages.CreateHouseholdInstrumentOwnershipRequest) (*messages.CreateHouseholdInstrumentOwnershipResponse, error)
+	CreateAccountInstrumentOwnership(context.Context, *messages.CreateAccountInstrumentOwnershipRequest) (*messages.CreateAccountInstrumentOwnershipResponse, error)
 	CreateUserIngredientPreference(context.Context, *messages.CreateUserIngredientPreferenceRequest) (*messages.CreateUserIngredientPreferenceResponse, error)
-	GetHouseholdInstrumentOwnership(context.Context, *messages.GetHouseholdInstrumentOwnershipRequest) (*messages.GetHouseholdInstrumentOwnershipResponse, error)
-	GetHouseholdInstrumentOwnerships(context.Context, *messages.GetHouseholdInstrumentOwnershipsRequest) (*messages.GetHouseholdInstrumentOwnershipsResponse, error)
+	GetAccountInstrumentOwnership(context.Context, *messages.GetAccountInstrumentOwnershipRequest) (*messages.GetAccountInstrumentOwnershipResponse, error)
+	GetAccountInstrumentOwnerships(context.Context, *messages.GetAccountInstrumentOwnershipsRequest) (*messages.GetAccountInstrumentOwnershipsResponse, error)
 	GetUserIngredientPreferences(context.Context, *messages.GetUserIngredientPreferencesRequest) (*messages.GetUserIngredientPreferencesResponse, error)
-	UpdateHouseholdInstrumentOwnership(context.Context, *messages.UpdateHouseholdInstrumentOwnershipRequest) (*messages.UpdateHouseholdInstrumentOwnershipResponse, error)
+	UpdateAccountInstrumentOwnership(context.Context, *messages.UpdateAccountInstrumentOwnershipRequest) (*messages.UpdateAccountInstrumentOwnershipResponse, error)
 	UpdateUserIngredientPreference(context.Context, *messages.UpdateUserIngredientPreferenceRequest) (*messages.UpdateUserIngredientPreferenceResponse, error)
 	mustEmbedUnimplementedEatingServer()
 }
@@ -2670,8 +2670,8 @@ func (UnimplementedEatingServer) GetMealPlanTask(context.Context, *messages.GetM
 func (UnimplementedEatingServer) GetMealPlanTasks(context.Context, *messages.GetMealPlanTasksRequest) (*messages.GetMealPlanTasksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlanTasks not implemented")
 }
-func (UnimplementedEatingServer) GetMealPlansForHousehold(context.Context, *messages.GetMealPlansForHouseholdRequest) (*messages.GetMealPlansForHouseholdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlansForHousehold not implemented")
+func (UnimplementedEatingServer) GetMealPlansForAccount(context.Context, *messages.GetMealPlansForAccountRequest) (*messages.GetMealPlansForAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMealPlansForAccount not implemented")
 }
 func (UnimplementedEatingServer) GetMeals(context.Context, *messages.GetMealsRequest) (*messages.GetMealsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMeals not implemented")
@@ -2985,29 +2985,29 @@ func (UnimplementedEatingServer) UpdateValidPreparationVessel(context.Context, *
 func (UnimplementedEatingServer) UpdateValidVessel(context.Context, *messages.UpdateValidVesselRequest) (*messages.UpdateValidVesselResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValidVessel not implemented")
 }
-func (UnimplementedEatingServer) ArchiveHouseholdInstrumentOwnership(context.Context, *messages.ArchiveHouseholdInstrumentOwnershipRequest) (*messages.ArchiveHouseholdInstrumentOwnershipResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ArchiveHouseholdInstrumentOwnership not implemented")
+func (UnimplementedEatingServer) ArchiveAccountInstrumentOwnership(context.Context, *messages.ArchiveAccountInstrumentOwnershipRequest) (*messages.ArchiveAccountInstrumentOwnershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArchiveAccountInstrumentOwnership not implemented")
 }
 func (UnimplementedEatingServer) ArchiveUserIngredientPreference(context.Context, *messages.ArchiveUserIngredientPreferenceRequest) (*messages.ArchiveUserIngredientPreferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveUserIngredientPreference not implemented")
 }
-func (UnimplementedEatingServer) CreateHouseholdInstrumentOwnership(context.Context, *messages.CreateHouseholdInstrumentOwnershipRequest) (*messages.CreateHouseholdInstrumentOwnershipResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateHouseholdInstrumentOwnership not implemented")
+func (UnimplementedEatingServer) CreateAccountInstrumentOwnership(context.Context, *messages.CreateAccountInstrumentOwnershipRequest) (*messages.CreateAccountInstrumentOwnershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAccountInstrumentOwnership not implemented")
 }
 func (UnimplementedEatingServer) CreateUserIngredientPreference(context.Context, *messages.CreateUserIngredientPreferenceRequest) (*messages.CreateUserIngredientPreferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUserIngredientPreference not implemented")
 }
-func (UnimplementedEatingServer) GetHouseholdInstrumentOwnership(context.Context, *messages.GetHouseholdInstrumentOwnershipRequest) (*messages.GetHouseholdInstrumentOwnershipResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetHouseholdInstrumentOwnership not implemented")
+func (UnimplementedEatingServer) GetAccountInstrumentOwnership(context.Context, *messages.GetAccountInstrumentOwnershipRequest) (*messages.GetAccountInstrumentOwnershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountInstrumentOwnership not implemented")
 }
-func (UnimplementedEatingServer) GetHouseholdInstrumentOwnerships(context.Context, *messages.GetHouseholdInstrumentOwnershipsRequest) (*messages.GetHouseholdInstrumentOwnershipsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetHouseholdInstrumentOwnerships not implemented")
+func (UnimplementedEatingServer) GetAccountInstrumentOwnerships(context.Context, *messages.GetAccountInstrumentOwnershipsRequest) (*messages.GetAccountInstrumentOwnershipsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountInstrumentOwnerships not implemented")
 }
 func (UnimplementedEatingServer) GetUserIngredientPreferences(context.Context, *messages.GetUserIngredientPreferencesRequest) (*messages.GetUserIngredientPreferencesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserIngredientPreferences not implemented")
 }
-func (UnimplementedEatingServer) UpdateHouseholdInstrumentOwnership(context.Context, *messages.UpdateHouseholdInstrumentOwnershipRequest) (*messages.UpdateHouseholdInstrumentOwnershipResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateHouseholdInstrumentOwnership not implemented")
+func (UnimplementedEatingServer) UpdateAccountInstrumentOwnership(context.Context, *messages.UpdateAccountInstrumentOwnershipRequest) (*messages.UpdateAccountInstrumentOwnershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccountInstrumentOwnership not implemented")
 }
 func (UnimplementedEatingServer) UpdateUserIngredientPreference(context.Context, *messages.UpdateUserIngredientPreferenceRequest) (*messages.UpdateUserIngredientPreferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserIngredientPreference not implemented")
@@ -4311,20 +4311,20 @@ func _Eating_GetMealPlanTasks_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Eating_GetMealPlansForHousehold_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.GetMealPlansForHouseholdRequest)
+func _Eating_GetMealPlansForAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(messages.GetMealPlansForAccountRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EatingServer).GetMealPlansForHousehold(ctx, in)
+		return srv.(EatingServer).GetMealPlansForAccount(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Eating_GetMealPlansForHousehold_FullMethodName,
+		FullMethod: Eating_GetMealPlansForAccount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServer).GetMealPlansForHousehold(ctx, req.(*messages.GetMealPlansForHouseholdRequest))
+		return srv.(EatingServer).GetMealPlansForAccount(ctx, req.(*messages.GetMealPlansForAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6201,20 +6201,20 @@ func _Eating_UpdateValidVessel_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Eating_ArchiveHouseholdInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.ArchiveHouseholdInstrumentOwnershipRequest)
+func _Eating_ArchiveAccountInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(messages.ArchiveAccountInstrumentOwnershipRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EatingServer).ArchiveHouseholdInstrumentOwnership(ctx, in)
+		return srv.(EatingServer).ArchiveAccountInstrumentOwnership(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Eating_ArchiveHouseholdInstrumentOwnership_FullMethodName,
+		FullMethod: Eating_ArchiveAccountInstrumentOwnership_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServer).ArchiveHouseholdInstrumentOwnership(ctx, req.(*messages.ArchiveHouseholdInstrumentOwnershipRequest))
+		return srv.(EatingServer).ArchiveAccountInstrumentOwnership(ctx, req.(*messages.ArchiveAccountInstrumentOwnershipRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6237,20 +6237,20 @@ func _Eating_ArchiveUserIngredientPreference_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Eating_CreateHouseholdInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.CreateHouseholdInstrumentOwnershipRequest)
+func _Eating_CreateAccountInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(messages.CreateAccountInstrumentOwnershipRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EatingServer).CreateHouseholdInstrumentOwnership(ctx, in)
+		return srv.(EatingServer).CreateAccountInstrumentOwnership(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Eating_CreateHouseholdInstrumentOwnership_FullMethodName,
+		FullMethod: Eating_CreateAccountInstrumentOwnership_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServer).CreateHouseholdInstrumentOwnership(ctx, req.(*messages.CreateHouseholdInstrumentOwnershipRequest))
+		return srv.(EatingServer).CreateAccountInstrumentOwnership(ctx, req.(*messages.CreateAccountInstrumentOwnershipRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6273,38 +6273,38 @@ func _Eating_CreateUserIngredientPreference_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Eating_GetHouseholdInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.GetHouseholdInstrumentOwnershipRequest)
+func _Eating_GetAccountInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(messages.GetAccountInstrumentOwnershipRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EatingServer).GetHouseholdInstrumentOwnership(ctx, in)
+		return srv.(EatingServer).GetAccountInstrumentOwnership(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Eating_GetHouseholdInstrumentOwnership_FullMethodName,
+		FullMethod: Eating_GetAccountInstrumentOwnership_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServer).GetHouseholdInstrumentOwnership(ctx, req.(*messages.GetHouseholdInstrumentOwnershipRequest))
+		return srv.(EatingServer).GetAccountInstrumentOwnership(ctx, req.(*messages.GetAccountInstrumentOwnershipRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Eating_GetHouseholdInstrumentOwnerships_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.GetHouseholdInstrumentOwnershipsRequest)
+func _Eating_GetAccountInstrumentOwnerships_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(messages.GetAccountInstrumentOwnershipsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EatingServer).GetHouseholdInstrumentOwnerships(ctx, in)
+		return srv.(EatingServer).GetAccountInstrumentOwnerships(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Eating_GetHouseholdInstrumentOwnerships_FullMethodName,
+		FullMethod: Eating_GetAccountInstrumentOwnerships_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServer).GetHouseholdInstrumentOwnerships(ctx, req.(*messages.GetHouseholdInstrumentOwnershipsRequest))
+		return srv.(EatingServer).GetAccountInstrumentOwnerships(ctx, req.(*messages.GetAccountInstrumentOwnershipsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6327,20 +6327,20 @@ func _Eating_GetUserIngredientPreferences_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Eating_UpdateHouseholdInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(messages.UpdateHouseholdInstrumentOwnershipRequest)
+func _Eating_UpdateAccountInstrumentOwnership_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(messages.UpdateAccountInstrumentOwnershipRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EatingServer).UpdateHouseholdInstrumentOwnership(ctx, in)
+		return srv.(EatingServer).UpdateAccountInstrumentOwnership(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Eating_UpdateHouseholdInstrumentOwnership_FullMethodName,
+		FullMethod: Eating_UpdateAccountInstrumentOwnership_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EatingServer).UpdateHouseholdInstrumentOwnership(ctx, req.(*messages.UpdateHouseholdInstrumentOwnershipRequest))
+		return srv.(EatingServer).UpdateAccountInstrumentOwnership(ctx, req.(*messages.UpdateAccountInstrumentOwnershipRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6655,8 +6655,8 @@ var Eating_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Eating_GetMealPlanTasks_Handler,
 		},
 		{
-			MethodName: "GetMealPlansForHousehold",
-			Handler:    _Eating_GetMealPlansForHousehold_Handler,
+			MethodName: "GetMealPlansForAccount",
+			Handler:    _Eating_GetMealPlansForAccount_Handler,
 		},
 		{
 			MethodName: "GetMeals",
@@ -7075,36 +7075,36 @@ var Eating_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Eating_UpdateValidVessel_Handler,
 		},
 		{
-			MethodName: "ArchiveHouseholdInstrumentOwnership",
-			Handler:    _Eating_ArchiveHouseholdInstrumentOwnership_Handler,
+			MethodName: "ArchiveAccountInstrumentOwnership",
+			Handler:    _Eating_ArchiveAccountInstrumentOwnership_Handler,
 		},
 		{
 			MethodName: "ArchiveUserIngredientPreference",
 			Handler:    _Eating_ArchiveUserIngredientPreference_Handler,
 		},
 		{
-			MethodName: "CreateHouseholdInstrumentOwnership",
-			Handler:    _Eating_CreateHouseholdInstrumentOwnership_Handler,
+			MethodName: "CreateAccountInstrumentOwnership",
+			Handler:    _Eating_CreateAccountInstrumentOwnership_Handler,
 		},
 		{
 			MethodName: "CreateUserIngredientPreference",
 			Handler:    _Eating_CreateUserIngredientPreference_Handler,
 		},
 		{
-			MethodName: "GetHouseholdInstrumentOwnership",
-			Handler:    _Eating_GetHouseholdInstrumentOwnership_Handler,
+			MethodName: "GetAccountInstrumentOwnership",
+			Handler:    _Eating_GetAccountInstrumentOwnership_Handler,
 		},
 		{
-			MethodName: "GetHouseholdInstrumentOwnerships",
-			Handler:    _Eating_GetHouseholdInstrumentOwnerships_Handler,
+			MethodName: "GetAccountInstrumentOwnerships",
+			Handler:    _Eating_GetAccountInstrumentOwnerships_Handler,
 		},
 		{
 			MethodName: "GetUserIngredientPreferences",
 			Handler:    _Eating_GetUserIngredientPreferences_Handler,
 		},
 		{
-			MethodName: "UpdateHouseholdInstrumentOwnership",
-			Handler:    _Eating_UpdateHouseholdInstrumentOwnership_Handler,
+			MethodName: "UpdateAccountInstrumentOwnership",
+			Handler:    _Eating_UpdateAccountInstrumentOwnership_Handler,
 		},
 		{
 			MethodName: "UpdateUserIngredientPreference",

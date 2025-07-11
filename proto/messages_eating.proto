@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package eating;
 
+import "filtering.proto";
 import "google/protobuf/timestamp.proto";
 import "messages_common.proto";
 import "messages_core.proto";
@@ -11,7 +12,7 @@ option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/messages"
 /*
 message EatingUserDataCollection {
   string ReportID = 1;
-  repeated HouseholdInstrumentOwnership HouseholdInstrumentOwnerships = 2;
+  repeated AccountInstrumentOwnership AccountInstrumentOwnerships = 2;
   repeated MealPlan MealPlans = 3;
   repeated RecipeRating RecipeRatings = 4;
   repeated Recipe Recipes = 5;
@@ -908,11 +909,11 @@ message GetValidIngredientGroupResponse {
 
 // GetValidIngredientGroups
 message GetValidIngredientGroupsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidIngredientGroupsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientGroup Results = 2;
 }
 
@@ -927,33 +928,33 @@ message GetValidIngredientMeasurementUnitResponse {
 
 // GetValidIngredientMeasurementUnits
 message GetValidIngredientMeasurementUnitsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidIngredientMeasurementUnitsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientMeasurementUnit Results = 2;
 }
 
 // GetValidIngredientMeasurementUnitsByIngredient
 message GetValidIngredientMeasurementUnitsByIngredientRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidIngredientID = 2;
 }
 
 message GetValidIngredientMeasurementUnitsByIngredientResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientMeasurementUnit Results = 2;
 }
 
 // GetValidIngredientMeasurementUnitsByMeasurementUnit
 message GetValidIngredientMeasurementUnitsByMeasurementUnitRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidMeasurementUnitID = 2;
 }
 
 message GetValidIngredientMeasurementUnitsByMeasurementUnitResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientMeasurementUnit Results = 2;
 }
 
@@ -968,33 +969,33 @@ message GetValidIngredientPreparationResponse {
 
 // GetValidIngredientPreparations
 message GetValidIngredientPreparationsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidIngredientPreparationsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientPreparation Results = 2;
 }
 
 // GetValidIngredientPreparationsByIngredient
 message GetValidIngredientPreparationsByIngredientRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidIngredientID = 2;
 }
 
 message GetValidIngredientPreparationsByIngredientResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientPreparation Results = 2;
 }
 
 // GetValidIngredientPreparationsByPreparation
 message GetValidIngredientPreparationsByPreparationRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidPreparationID = 2;
 }
 
 message GetValidIngredientPreparationsByPreparationResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientPreparation Results = 2;
 }
 
@@ -1018,53 +1019,53 @@ message GetValidIngredientStateIngredientResponse {
 
 // GetValidIngredientStateIngredients
 message GetValidIngredientStateIngredientsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidIngredientStateIngredientsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientStateIngredient Results = 2;
 }
 
 // GetValidIngredientStateIngredientsByIngredient
 message GetValidIngredientStateIngredientsByIngredientRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidIngredientID = 2;
 }
 
 message GetValidIngredientStateIngredientsByIngredientResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientStateIngredient Results = 2;
 }
 
 // GetValidIngredientStateIngredientsByIngredientState
 message GetValidIngredientStateIngredientsByIngredientStateRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidIngredientStateID = 2;
 }
 
 message GetValidIngredientStateIngredientsByIngredientStateResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientStateIngredient Results = 2;
 }
 
 // GetValidIngredientStates
 message GetValidIngredientStatesRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidIngredientStatesResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientState Results = 2;
 }
 
 // GetValidIngredients
 message GetValidIngredientsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidIngredientsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredient Results = 2;
 }
 
@@ -1079,11 +1080,11 @@ message GetValidInstrumentResponse {
 
 // GetValidInstruments
 message GetValidInstrumentsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidInstrumentsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidInstrument Results = 2;
 }
 
@@ -1107,33 +1108,33 @@ message GetValidMeasurementUnitConversionResponse {
 
 // GetValidMeasurementUnitConversionsFromUnit
 message GetValidMeasurementUnitConversionsFromUnitRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidMeasurementUnitID = 2;
 }
 
 message GetValidMeasurementUnitConversionsFromUnitResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidMeasurementUnitConversion Results = 2;
 }
 
 // GetValidMeasurementUnitConversionsToUnit
 message GetValidMeasurementUnitConversionsToUnitRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidMeasurementUnitID = 2;
 }
 
 message GetValidMeasurementUnitConversionsToUnitResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidMeasurementUnitConversion Results = 2;
 }
 
 // GetValidMeasurementUnits
 message GetValidMeasurementUnitsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidMeasurementUnitsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidMeasurementUnit Results = 2;
 }
 
@@ -1157,33 +1158,33 @@ message GetValidPreparationInstrumentResponse {
 
 // GetValidPreparationInstruments
 message GetValidPreparationInstrumentsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidPreparationInstrumentsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidPreparationInstrument Results = 2;
 }
 
 // GetValidPreparationInstrumentsByInstrument
 message GetValidPreparationInstrumentsByInstrumentRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidInstrumentID = 2;
 }
 
 message GetValidPreparationInstrumentsByInstrumentResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidPreparationInstrument Results = 2;
 }
 
 // GetValidPreparationInstrumentsByPreparation
 message GetValidPreparationInstrumentsByPreparationRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidPreparationID = 2;
 }
 
 message GetValidPreparationInstrumentsByPreparationResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidPreparationInstrument Results = 2;
 }
 
@@ -1198,43 +1199,43 @@ message GetValidPreparationVesselResponse {
 
 // GetValidPreparationVessels
 message GetValidPreparationVesselsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidPreparationVesselsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidPreparationVessel Results = 2;
 }
 
 // GetValidPreparationVesselsByPreparation
 message GetValidPreparationVesselsByPreparationRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidPreparationID = 2;
 }
 
 message GetValidPreparationVesselsByPreparationResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidPreparationVessel Results = 2;
 }
 
 // GetValidPreparationVesselsByVessel
 message GetValidPreparationVesselsByVesselRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string ValidVesselID = 2;
 }
 
 message GetValidPreparationVesselsByVesselResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidPreparationVessel Results = 2;
 }
 
 // GetValidPreparations
 message GetValidPreparationsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidPreparationsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidPreparation Results = 2;
 }
 
@@ -1249,119 +1250,119 @@ message GetValidVesselResponse {
 
 // GetValidVessels
 message GetValidVesselsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetValidVesselsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidVessel Results = 2;
 }
 
 // SearchForValidIngredientGroups
 message SearchForValidIngredientGroupsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
   bool UseDatabase = 3;
 }
 
 message SearchForValidIngredientGroupsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientGroup Results = 2;
 }
 
 // SearchForValidIngredientStates
 message SearchForValidIngredientStatesRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
   bool UseDatabase = 3;
 }
 
 message SearchForValidIngredientStatesResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredientState Results = 2;
 }
 
 // SearchForValidIngredients
 message SearchForValidIngredientsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
   bool UseDatabase = 3;
 }
 
 message SearchForValidIngredientsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredient Results = 2;
 }
 
 // SearchForValidInstruments
 message SearchForValidInstrumentsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
   bool UseDatabase = 3;
 }
 
 message SearchForValidInstrumentsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidInstrument Results = 2;
 }
 
 // SearchForValidMeasurementUnits
 message SearchForValidMeasurementUnitsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
   bool UseDatabase = 3;
 }
 
 message SearchForValidMeasurementUnitsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidMeasurementUnit Results = 2;
 }
 
 // SearchForValidPreparations
 message SearchForValidPreparationsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
   bool UseDatabase = 3;
 }
 
 message SearchForValidPreparationsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidPreparation Results = 2;
 }
 
 // SearchForValidVessels
 message SearchForValidVesselsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
   bool UseDatabase = 3;
 }
 
 message SearchForValidVesselsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidVessel Results = 2;
 }
 
 // SearchValidIngredientsByPreparation
 message SearchValidIngredientsByPreparationRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
   string ValidPreparationID = 3;
 }
 
 message SearchValidIngredientsByPreparationResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidIngredient Results = 2;
 }
 
 // SearchValidMeasurementUnitsByIngredient
 message SearchValidMeasurementUnitsByIngredientRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
   string ValidIngredientID = 3;
 }
 
 message SearchValidMeasurementUnitsByIngredientResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated ValidMeasurementUnit Results = 2;
 }
 
@@ -1509,11 +1510,11 @@ message CreateUserIngredientPreferenceResponse {}
 
 // GetUserIngredientPreferences
 message GetUserIngredientPreferencesRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetUserIngredientPreferencesResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated UserIngredientPreference Results = 2;
 }
 
@@ -2209,12 +2210,12 @@ message GetRecipePrepTaskResponse {}
 
 // GetRecipePrepTasks
 message GetRecipePrepTasksRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string recipeID = 2;
 }
 
 message GetRecipePrepTasksResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated RecipePrepTask Results = 2;
 }
 
@@ -2228,12 +2229,12 @@ message GetRecipeRatingResponse {}
 
 // GetRecipeRatingsForRecipe
 message GetRecipeRatingsForRecipeRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string recipeID = 2;
 }
 
 message GetRecipeRatingsForRecipeResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated RecipeRating Results = 2;
 }
 
@@ -2256,13 +2257,13 @@ message GetRecipeStepCompletionConditionResponse {}
 
 // GetRecipeStepCompletionConditions
 message GetRecipeStepCompletionConditionsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string recipeID = 2;
   string recipeStepID = 3;
 }
 
 message GetRecipeStepCompletionConditionsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated RecipeStepCompletionCondition Results = 2;
 }
 
@@ -2277,13 +2278,13 @@ message GetRecipeStepIngredientResponse {}
 
 // GetRecipeStepIngredients
 message GetRecipeStepIngredientsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string recipeID = 2;
   string recipeStepID = 3;
 }
 
 message GetRecipeStepIngredientsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated RecipeStepIngredient Results = 2;
 }
 
@@ -2298,13 +2299,13 @@ message GetRecipeStepInstrumentResponse {}
 
 // GetRecipeStepInstruments
 message GetRecipeStepInstrumentsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string recipeID = 2;
   string recipeStepID = 3;
 }
 
 message GetRecipeStepInstrumentsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated RecipeStepInstrument Results = 2;
 }
 
@@ -2319,13 +2320,13 @@ message GetRecipeStepProductResponse {}
 
 // GetRecipeStepProducts
 message GetRecipeStepProductsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string recipeID = 2;
   string recipeStepID = 3;
 }
 
 message GetRecipeStepProductsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated RecipeStepProduct Results = 2;
 }
 
@@ -2340,45 +2341,45 @@ message GetRecipeStepVesselResponse {}
 
 // GetRecipeStepVessels
 message GetRecipeStepVesselsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string recipeID = 2;
   string recipeStepID = 3;
 }
 
 message GetRecipeStepVesselsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated RecipeStepVessel Results = 2;
 }
 
 // GetRecipeSteps
 message GetRecipeStepsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string recipeID = 2;
 }
 
 message GetRecipeStepsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated RecipeStep Results = 2;
 }
 
 // GetRecipes
 message GetRecipesRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetRecipesResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated Recipe Results = 2;
 }
 
 // SearchForRecipes
 message SearchForRecipesRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
 }
 
 message SearchForRecipesResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated Recipe Results = 2;
 }
 
@@ -2470,7 +2471,7 @@ message UpdateRecipeStepVesselResponse {}
 // Meal Planning
 
 message InitializeMealPlanGroceryListRequest {
-  string HouseholdID = 1;
+  string AccountID = 1;
 }
 
 message InitializeMealPlanGroceryListResponse {
@@ -2525,7 +2526,7 @@ message MealPlan {
   string Status = 6;
   string Notes = 7;
   string ElectionMethod = 8;
-  string BelongsToHousehold = 9;
+  string BelongsToAccount = 9;
   string CreatedByUser = 10;
   repeated MealPlanEvent Events = 11;
   bool GroceryListInitialized = 12;
@@ -2706,7 +2707,7 @@ message MealPlanTaskStatusChangeRequestInput {
 }
 
 message MealPlanUpdateRequestInput {
-  optional string BelongsToHousehold = 1;
+  optional string BelongsToAccount = 1;
   optional string Notes = 2;
   optional google.protobuf.Timestamp VotingDeadline = 3;
 }
@@ -2852,12 +2853,12 @@ message GetMealPlanEventResponse {}
 
 // GetMealPlanEvents
 message GetMealPlanEventsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string mealPlanID = 2;
 }
 
 message GetMealPlanEventsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated MealPlanEvent Results = 2;
 }
 
@@ -2871,12 +2872,12 @@ message GetMealPlanGroceryListItemResponse {}
 
 // GetMealPlanGroceryListItemsForMealPlan
 message GetMealPlanGroceryListItemsForMealPlanRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string mealPlanID = 2;
 }
 
 message GetMealPlanGroceryListItemsForMealPlanResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated MealPlanGroceryListItem Results = 2;
 }
 
@@ -2901,26 +2902,26 @@ message GetMealPlanOptionVoteResponse {}
 
 // GetMealPlanOptionVotes
 message GetMealPlanOptionVotesRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string mealPlanID = 2;
   string mealPlanEventID = 3;
   string mealPlanOptionID = 4;
 }
 
 message GetMealPlanOptionVotesResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated MealPlanOptionVote Results = 2;
 }
 
 // GetMealPlanOptions
 message GetMealPlanOptionsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string mealPlanID = 2;
   string mealPlanEventID = 3;
 }
 
 message GetMealPlanOptionsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated MealPlanOption Results = 2;
 }
 
@@ -2934,32 +2935,32 @@ message GetMealPlanTaskResponse {}
 
 // GetMealPlanTasks
 message GetMealPlanTasksRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string mealPlanID = 2;
 }
 
 message GetMealPlanTasksResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated MealPlanTask Results = 2;
 }
 
-// GetMealPlansForHousehold
-message GetMealPlansForHouseholdRequest {
-  QueryFilter Filter = 1;
+// GetMealPlansForAccount
+message GetMealPlansForAccountRequest {
+  filtering.QueryFilter Filter = 1;
 }
 
-message GetMealPlansForHouseholdResponse {
-  QueryFilter Filter = 1;
+message GetMealPlansForAccountResponse {
+  filtering.QueryFilter Filter = 1;
   repeated MealPlan Results = 2;
 }
 
 // GetMeals
 message GetMealsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
 }
 
 message GetMealsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated Meal Resuls = 2;
 }
 
@@ -2980,12 +2981,12 @@ message RunMealPlanTaskCreatorWorkerResponse {}
 
 // SearchForMeals
 message SearchForMealsRequest {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   string Query = 2;
 }
 
 message SearchForMealsResponse {
-  QueryFilter Filter = 1;
+  filtering.QueryFilter Filter = 1;
   repeated Meal Results = 2;
 }
 
@@ -3046,7 +3047,7 @@ message UpdateMealPlanTaskStatusRequest {
 message UpdateMealPlanTaskStatusResponse {}
 
 message CreateMealPlanTasksRequest {
-  string HouseholdID = 1;
+  string AccountID = 1;
 }
 
 message CreateMealPlanTasksResponse {
@@ -3061,62 +3062,62 @@ message FinalizeMealPlansResponse {
   int64 Count = 1;
 }
 
-// ArchiveHouseholdInstrumentOwnership
-message ArchiveHouseholdInstrumentOwnershipRequest {
+// ArchiveAccountInstrumentOwnership
+message ArchiveAccountInstrumentOwnershipRequest {
   string accountInstrumentOwnershipID = 1;
 }
 
-message ArchiveHouseholdInstrumentOwnershipResponse {}
+message ArchiveAccountInstrumentOwnershipResponse {}
 
-// CreateHouseholdInstrumentOwnership
-message CreateHouseholdInstrumentOwnershipRequest {}
+// CreateAccountInstrumentOwnership
+message CreateAccountInstrumentOwnershipRequest {}
 
-message CreateHouseholdInstrumentOwnershipResponse {}
+message CreateAccountInstrumentOwnershipResponse {}
 
-// GetHouseholdInstrumentOwnerships
-message GetHouseholdInstrumentOwnershipsRequest {
-  QueryFilter Filter = 1;
+// GetAccountInstrumentOwnerships
+message GetAccountInstrumentOwnershipsRequest {
+  filtering.QueryFilter Filter = 1;
 }
 
-message GetHouseholdInstrumentOwnershipsResponse {
-  QueryFilter Filter = 1;
-  repeated HouseholdInstrumentOwnership Results = 2;
+message GetAccountInstrumentOwnershipsResponse {
+  filtering.QueryFilter Filter = 1;
+  repeated AccountInstrumentOwnership Results = 2;
 }
 
-// GetHouseholdInstrumentOwnership
-message GetHouseholdInstrumentOwnershipRequest {
+// GetAccountInstrumentOwnership
+message GetAccountInstrumentOwnershipRequest {
   string accountInstrumentOwnershipID = 1;
 }
 
-message GetHouseholdInstrumentOwnershipResponse {}
+message GetAccountInstrumentOwnershipResponse {}
 
-// UpdateHouseholdInstrumentOwnership
-message UpdateHouseholdInstrumentOwnershipRequest {
+// UpdateAccountInstrumentOwnership
+message UpdateAccountInstrumentOwnershipRequest {
   string accountInstrumentOwnershipID = 1;
-  HouseholdInstrumentOwnershipUpdateRequestInput input = 2;
+  AccountInstrumentOwnershipUpdateRequestInput input = 2;
 }
 
-message UpdateHouseholdInstrumentOwnershipResponse {}
+message UpdateAccountInstrumentOwnershipResponse {}
 
-message HouseholdInstrumentOwnership {
+message AccountInstrumentOwnership {
   google.protobuf.Timestamp CreatedAt = 1;
   optional google.protobuf.Timestamp ArchivedAt = 2;
   optional google.protobuf.Timestamp LastUpdatedAt = 3;
   string ID = 4;
   string Notes = 5;
-  string BelongsToHousehold = 6;
+  string BelongsToAccount = 6;
   ValidInstrument Instrument = 7;
   uint32 Quantity = 8;
 }
 
-message HouseholdInstrumentOwnershipCreationRequestInput {
+message AccountInstrumentOwnershipCreationRequestInput {
   string Notes = 1;
   string ValidInstrumentID = 2;
-  string BelongsToHousehold = 3;
+  string BelongsToAccount = 3;
   uint32 Quantity = 4;
 }
 
-message HouseholdInstrumentOwnershipUpdateRequestInput {
+message AccountInstrumentOwnershipUpdateRequestInput {
   optional string Notes = 1;
   optional uint32 Quantity = 2;
   optional string ValidInstrumentID = 3;

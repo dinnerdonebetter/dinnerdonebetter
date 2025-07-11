@@ -2,4 +2,79 @@ syntax = "proto3";
 
 package oauth;
 
+import "filtering.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/oauth";
+
+// CreateOAuth2Client
+message CreateOAuth2ClientRequest {}
+
+message CreateOAuth2ClientResponse {}
+
+// ArchiveOAuth2Client
+message ArchiveOAuth2ClientRequest {
+  string oauth2ClientID = 1;
+}
+
+message ArchiveOAuth2ClientResponse {}
+
+// GetOAuth2Client
+message GetOAuth2ClientRequest {
+  string oauth2ClientID = 1;
+}
+
+message GetOAuth2ClientResponse {}
+
+// GetOAuth2Clients
+message GetOAuth2ClientsRequest {
+  filtering.QueryFilter Filter = 1;
+}
+
+message GetOAuth2ClientsResponse {
+  filtering.QueryFilter Filter = 1;
+  repeated OAuth2Client Results = 2;
+}
+
+message OAuth2Client {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ArchivedAt = 2;
+  string Name = 3;
+  string Description = 4;
+  string ClientID = 5;
+  string ID = 6;
+  string ClientSecret = 7;
+}
+
+message OAuth2ClientCreationRequestInput {
+  string Name = 1;
+  string Description = 2;
+}
+
+message OAuth2ClientCreationResponse {
+  string ClientID = 1;
+  string ClientSecret = 2;
+  string Name = 3;
+  string Description = 4;
+  string ID = 5;
+}
+
+message OAuth2ClientToken {
+  google.protobuf.Timestamp RefreshCreatedAt = 1;
+  google.protobuf.Timestamp AccessCreatedAt = 2;
+  google.protobuf.Timestamp CodeCreatedAt = 3;
+  string RedirectURI = 4;
+  string Scope = 5;
+  string Code = 6;
+  string CodeChallenge = 7;
+  string CodeChallengeMethod = 8;
+  string BelongsToUser = 9;
+  string Access = 10;
+  string ClientID = 11;
+  string Refresh = 12;
+  string ID = 13;
+  google.protobuf.Duration CodeExpiresAt = 14;
+  google.protobuf.Duration AccessExpiresAt = 15;
+  google.protobuf.Duration RefreshExpiresAt = 16;
+}

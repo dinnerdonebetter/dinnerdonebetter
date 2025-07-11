@@ -8,10 +8,14 @@ package settings
 
 import (
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
+
+	filtering "github.com/dinnerdonebetter/backend/internal/grpc/filtering"
 
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -21,25 +25,1755 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// CreateServiceSetting
+type CreateServiceSettingRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateServiceSettingRequest) Reset() {
+	*x = CreateServiceSettingRequest{}
+	mi := &file_settings_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateServiceSettingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateServiceSettingRequest) ProtoMessage() {}
+
+func (x *CreateServiceSettingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateServiceSettingRequest.ProtoReflect.Descriptor instead.
+func (*CreateServiceSettingRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{0}
+}
+
+type CreateServiceSettingResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateServiceSettingResponse) Reset() {
+	*x = CreateServiceSettingResponse{}
+	mi := &file_settings_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateServiceSettingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateServiceSettingResponse) ProtoMessage() {}
+
+func (x *CreateServiceSettingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateServiceSettingResponse.ProtoReflect.Descriptor instead.
+func (*CreateServiceSettingResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{1}
+}
+
+// CreateServiceSettingConfiguration
+type CreateServiceSettingConfigurationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateServiceSettingConfigurationRequest) Reset() {
+	*x = CreateServiceSettingConfigurationRequest{}
+	mi := &file_settings_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateServiceSettingConfigurationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateServiceSettingConfigurationRequest) ProtoMessage() {}
+
+func (x *CreateServiceSettingConfigurationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateServiceSettingConfigurationRequest.ProtoReflect.Descriptor instead.
+func (*CreateServiceSettingConfigurationRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{2}
+}
+
+type CreateServiceSettingConfigurationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateServiceSettingConfigurationResponse) Reset() {
+	*x = CreateServiceSettingConfigurationResponse{}
+	mi := &file_settings_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateServiceSettingConfigurationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateServiceSettingConfigurationResponse) ProtoMessage() {}
+
+func (x *CreateServiceSettingConfigurationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateServiceSettingConfigurationResponse.ProtoReflect.Descriptor instead.
+func (*CreateServiceSettingConfigurationResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{3}
+}
+
+// ArchiveServiceSetting
+type ArchiveServiceSettingRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	ServiceSettingID string                 `protobuf:"bytes,1,opt,name=serviceSettingID,proto3" json:"serviceSettingID,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ArchiveServiceSettingRequest) Reset() {
+	*x = ArchiveServiceSettingRequest{}
+	mi := &file_settings_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveServiceSettingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveServiceSettingRequest) ProtoMessage() {}
+
+func (x *ArchiveServiceSettingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveServiceSettingRequest.ProtoReflect.Descriptor instead.
+func (*ArchiveServiceSettingRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ArchiveServiceSettingRequest) GetServiceSettingID() string {
+	if x != nil {
+		return x.ServiceSettingID
+	}
+	return ""
+}
+
+type ArchiveServiceSettingResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveServiceSettingResponse) Reset() {
+	*x = ArchiveServiceSettingResponse{}
+	mi := &file_settings_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveServiceSettingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveServiceSettingResponse) ProtoMessage() {}
+
+func (x *ArchiveServiceSettingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveServiceSettingResponse.ProtoReflect.Descriptor instead.
+func (*ArchiveServiceSettingResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{5}
+}
+
+// ArchiveServiceSettingConfiguration
+type ArchiveServiceSettingConfigurationRequest struct {
+	state                         protoimpl.MessageState `protogen:"open.v1"`
+	ServiceSettingConfigurationID string                 `protobuf:"bytes,1,opt,name=serviceSettingConfigurationID,proto3" json:"serviceSettingConfigurationID,omitempty"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
+}
+
+func (x *ArchiveServiceSettingConfigurationRequest) Reset() {
+	*x = ArchiveServiceSettingConfigurationRequest{}
+	mi := &file_settings_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveServiceSettingConfigurationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveServiceSettingConfigurationRequest) ProtoMessage() {}
+
+func (x *ArchiveServiceSettingConfigurationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveServiceSettingConfigurationRequest.ProtoReflect.Descriptor instead.
+func (*ArchiveServiceSettingConfigurationRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ArchiveServiceSettingConfigurationRequest) GetServiceSettingConfigurationID() string {
+	if x != nil {
+		return x.ServiceSettingConfigurationID
+	}
+	return ""
+}
+
+type ArchiveServiceSettingConfigurationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveServiceSettingConfigurationResponse) Reset() {
+	*x = ArchiveServiceSettingConfigurationResponse{}
+	mi := &file_settings_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveServiceSettingConfigurationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveServiceSettingConfigurationResponse) ProtoMessage() {}
+
+func (x *ArchiveServiceSettingConfigurationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveServiceSettingConfigurationResponse.ProtoReflect.Descriptor instead.
+func (*ArchiveServiceSettingConfigurationResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{7}
+}
+
+// GetServiceSetting
+type GetServiceSettingRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	ServiceSettingID string                 `protobuf:"bytes,1,opt,name=serviceSettingID,proto3" json:"serviceSettingID,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingRequest) Reset() {
+	*x = GetServiceSettingRequest{}
+	mi := &file_settings_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingRequest) ProtoMessage() {}
+
+func (x *GetServiceSettingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingRequest.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetServiceSettingRequest) GetServiceSettingID() string {
+	if x != nil {
+		return x.ServiceSettingID
+	}
+	return ""
+}
+
+type GetServiceSettingResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingResponse) Reset() {
+	*x = GetServiceSettingResponse{}
+	mi := &file_settings_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingResponse) ProtoMessage() {}
+
+func (x *GetServiceSettingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingResponse.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{9}
+}
+
+// GetServiceSettingConfigurationByName
+type GetServiceSettingConfigurationByNameRequest struct {
+	state                           protoimpl.MessageState `protogen:"open.v1"`
+	Filter                          *filtering.QueryFilter `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	ServiceSettingConfigurationName string                 `protobuf:"bytes,2,opt,name=serviceSettingConfigurationName,proto3" json:"serviceSettingConfigurationName,omitempty"`
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingConfigurationByNameRequest) Reset() {
+	*x = GetServiceSettingConfigurationByNameRequest{}
+	mi := &file_settings_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingConfigurationByNameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingConfigurationByNameRequest) ProtoMessage() {}
+
+func (x *GetServiceSettingConfigurationByNameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingConfigurationByNameRequest.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingConfigurationByNameRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetServiceSettingConfigurationByNameRequest) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *GetServiceSettingConfigurationByNameRequest) GetServiceSettingConfigurationName() string {
+	if x != nil {
+		return x.ServiceSettingConfigurationName
+	}
+	return ""
+}
+
+type GetServiceSettingConfigurationByNameResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Filter        *filtering.QueryFilter         `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	Results       []*ServiceSettingConfiguration `protobuf:"bytes,2,rep,name=Results,proto3" json:"Results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingConfigurationByNameResponse) Reset() {
+	*x = GetServiceSettingConfigurationByNameResponse{}
+	mi := &file_settings_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingConfigurationByNameResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingConfigurationByNameResponse) ProtoMessage() {}
+
+func (x *GetServiceSettingConfigurationByNameResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingConfigurationByNameResponse.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingConfigurationByNameResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GetServiceSettingConfigurationByNameResponse) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *GetServiceSettingConfigurationByNameResponse) GetResults() []*ServiceSettingConfiguration {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+// GetServiceSettingConfigurationsForAccount
+type GetServiceSettingConfigurationsForAccountRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingConfigurationsForAccountRequest) Reset() {
+	*x = GetServiceSettingConfigurationsForAccountRequest{}
+	mi := &file_settings_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingConfigurationsForAccountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingConfigurationsForAccountRequest) ProtoMessage() {}
+
+func (x *GetServiceSettingConfigurationsForAccountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingConfigurationsForAccountRequest.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingConfigurationsForAccountRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GetServiceSettingConfigurationsForAccountRequest) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+type GetServiceSettingConfigurationsForAccountResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Filter        *filtering.QueryFilter         `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	Results       []*ServiceSettingConfiguration `protobuf:"bytes,2,rep,name=Results,proto3" json:"Results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingConfigurationsForAccountResponse) Reset() {
+	*x = GetServiceSettingConfigurationsForAccountResponse{}
+	mi := &file_settings_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingConfigurationsForAccountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingConfigurationsForAccountResponse) ProtoMessage() {}
+
+func (x *GetServiceSettingConfigurationsForAccountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingConfigurationsForAccountResponse.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingConfigurationsForAccountResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *GetServiceSettingConfigurationsForAccountResponse) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *GetServiceSettingConfigurationsForAccountResponse) GetResults() []*ServiceSettingConfiguration {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+// GetServiceSettingConfigurationsForUser
+type GetServiceSettingConfigurationsForUserRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingConfigurationsForUserRequest) Reset() {
+	*x = GetServiceSettingConfigurationsForUserRequest{}
+	mi := &file_settings_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingConfigurationsForUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingConfigurationsForUserRequest) ProtoMessage() {}
+
+func (x *GetServiceSettingConfigurationsForUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingConfigurationsForUserRequest.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingConfigurationsForUserRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GetServiceSettingConfigurationsForUserRequest) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+type GetServiceSettingConfigurationsForUserResponse struct {
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Filter        *filtering.QueryFilter         `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	Results       []*ServiceSettingConfiguration `protobuf:"bytes,2,rep,name=Results,proto3" json:"Results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingConfigurationsForUserResponse) Reset() {
+	*x = GetServiceSettingConfigurationsForUserResponse{}
+	mi := &file_settings_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingConfigurationsForUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingConfigurationsForUserResponse) ProtoMessage() {}
+
+func (x *GetServiceSettingConfigurationsForUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingConfigurationsForUserResponse.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingConfigurationsForUserResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *GetServiceSettingConfigurationsForUserResponse) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *GetServiceSettingConfigurationsForUserResponse) GetResults() []*ServiceSettingConfiguration {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+// GetServiceSettings
+type GetServiceSettingsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingsRequest) Reset() {
+	*x = GetServiceSettingsRequest{}
+	mi := &file_settings_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingsRequest) ProtoMessage() {}
+
+func (x *GetServiceSettingsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingsRequest.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingsRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *GetServiceSettingsRequest) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+type GetServiceSettingsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	Results       []*ServiceSetting      `protobuf:"bytes,2,rep,name=Results,proto3" json:"Results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetServiceSettingsResponse) Reset() {
+	*x = GetServiceSettingsResponse{}
+	mi := &file_settings_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetServiceSettingsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetServiceSettingsResponse) ProtoMessage() {}
+
+func (x *GetServiceSettingsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetServiceSettingsResponse.ProtoReflect.Descriptor instead.
+func (*GetServiceSettingsResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GetServiceSettingsResponse) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *GetServiceSettingsResponse) GetResults() []*ServiceSetting {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+// SearchForServiceSettings
+type SearchForServiceSettingsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	Query         string                 `protobuf:"bytes,2,opt,name=Query,proto3" json:"Query,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchForServiceSettingsRequest) Reset() {
+	*x = SearchForServiceSettingsRequest{}
+	mi := &file_settings_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchForServiceSettingsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchForServiceSettingsRequest) ProtoMessage() {}
+
+func (x *SearchForServiceSettingsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchForServiceSettingsRequest.ProtoReflect.Descriptor instead.
+func (*SearchForServiceSettingsRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *SearchForServiceSettingsRequest) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *SearchForServiceSettingsRequest) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
+type SearchForServiceSettingsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Filter        *filtering.QueryFilter `protobuf:"bytes,1,opt,name=Filter,proto3" json:"Filter,omitempty"`
+	Results       []*ServiceSetting      `protobuf:"bytes,2,rep,name=Results,proto3" json:"Results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchForServiceSettingsResponse) Reset() {
+	*x = SearchForServiceSettingsResponse{}
+	mi := &file_settings_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchForServiceSettingsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchForServiceSettingsResponse) ProtoMessage() {}
+
+func (x *SearchForServiceSettingsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchForServiceSettingsResponse.ProtoReflect.Descriptor instead.
+func (*SearchForServiceSettingsResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *SearchForServiceSettingsResponse) GetFilter() *filtering.QueryFilter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *SearchForServiceSettingsResponse) GetResults() []*ServiceSetting {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+// UpdateServiceSettingConfiguration
+type UpdateServiceSettingConfigurationRequest struct {
+	state                         protoimpl.MessageState                         `protogen:"open.v1"`
+	ServiceSettingConfigurationID string                                         `protobuf:"bytes,1,opt,name=serviceSettingConfigurationID,proto3" json:"serviceSettingConfigurationID,omitempty"`
+	Input                         *ServiceSettingConfigurationUpdateRequestInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
+}
+
+func (x *UpdateServiceSettingConfigurationRequest) Reset() {
+	*x = UpdateServiceSettingConfigurationRequest{}
+	mi := &file_settings_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateServiceSettingConfigurationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateServiceSettingConfigurationRequest) ProtoMessage() {}
+
+func (x *UpdateServiceSettingConfigurationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateServiceSettingConfigurationRequest.ProtoReflect.Descriptor instead.
+func (*UpdateServiceSettingConfigurationRequest) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *UpdateServiceSettingConfigurationRequest) GetServiceSettingConfigurationID() string {
+	if x != nil {
+		return x.ServiceSettingConfigurationID
+	}
+	return ""
+}
+
+func (x *UpdateServiceSettingConfigurationRequest) GetInput() *ServiceSettingConfigurationUpdateRequestInput {
+	if x != nil {
+		return x.Input
+	}
+	return nil
+}
+
+type UpdateServiceSettingConfigurationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateServiceSettingConfigurationResponse) Reset() {
+	*x = UpdateServiceSettingConfigurationResponse{}
+	mi := &file_settings_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateServiceSettingConfigurationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateServiceSettingConfigurationResponse) ProtoMessage() {}
+
+func (x *UpdateServiceSettingConfigurationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateServiceSettingConfigurationResponse.ProtoReflect.Descriptor instead.
+func (*UpdateServiceSettingConfigurationResponse) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{21}
+}
+
+type ServiceSetting struct {
+	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=ArchivedAt,proto3" json:"ArchivedAt,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=LastUpdatedAt,proto3" json:"LastUpdatedAt,omitempty"`
+	Name          string                 `protobuf:"bytes,6,opt,name=Name,proto3" json:"Name,omitempty"`
+	ID            string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
+	DefaultValue  string                 `protobuf:"bytes,2,opt,name=DefaultValue,proto3" json:"DefaultValue,omitempty"`
+	Type          string                 `protobuf:"bytes,7,opt,name=Type,proto3" json:"Type,omitempty"`
+	Description   string                 `protobuf:"bytes,8,opt,name=Description,proto3" json:"Description,omitempty"`
+	Enumeration   []string               `protobuf:"bytes,9,rep,name=Enumeration,proto3" json:"Enumeration,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+	AdminsOnly    bool `protobuf:"varint,10,opt,name=AdminsOnly,proto3" json:"AdminsOnly,omitempty"`
+}
+
+func (x *ServiceSetting) Reset() {
+	*x = ServiceSetting{}
+	mi := &file_settings_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceSetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceSetting) ProtoMessage() {}
+
+func (x *ServiceSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceSetting.ProtoReflect.Descriptor instead.
+func (*ServiceSetting) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *ServiceSetting) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *ServiceSetting) GetDefaultValue() string {
+	if x != nil {
+		return x.DefaultValue
+	}
+	return ""
+}
+
+func (x *ServiceSetting) GetLastUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastUpdatedAt
+	}
+	return nil
+}
+
+func (x *ServiceSetting) GetArchivedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ArchivedAt
+	}
+	return nil
+}
+
+func (x *ServiceSetting) GetID() string {
+	if x != nil {
+		return x.ID
+	}
+	return ""
+}
+
+func (x *ServiceSetting) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ServiceSetting) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *ServiceSetting) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *ServiceSetting) GetEnumeration() []string {
+	if x != nil {
+		return x.Enumeration
+	}
+	return nil
+}
+
+func (x *ServiceSetting) GetAdminsOnly() bool {
+	if x != nil {
+		return x.AdminsOnly
+	}
+	return false
+}
+
+type ServiceSettingConfiguration struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
+	LastUpdatedAt    *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=LastUpdatedAt,proto3" json:"LastUpdatedAt,omitempty"`
+	ArchivedAt       *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ArchivedAt,proto3" json:"ArchivedAt,omitempty"`
+	ID               string                 `protobuf:"bytes,4,opt,name=ID,proto3" json:"ID,omitempty"`
+	Value            string                 `protobuf:"bytes,5,opt,name=Value,proto3" json:"Value,omitempty"`
+	Notes            string                 `protobuf:"bytes,6,opt,name=Notes,proto3" json:"Notes,omitempty"`
+	BelongsToUser    string                 `protobuf:"bytes,7,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
+	BelongsToAccount string                 `protobuf:"bytes,8,opt,name=BelongsToAccount,proto3" json:"BelongsToAccount,omitempty"`
+	ServiceSetting   *ServiceSetting        `protobuf:"bytes,9,opt,name=ServiceSetting,proto3" json:"ServiceSetting,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ServiceSettingConfiguration) Reset() {
+	*x = ServiceSettingConfiguration{}
+	mi := &file_settings_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceSettingConfiguration) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceSettingConfiguration) ProtoMessage() {}
+
+func (x *ServiceSettingConfiguration) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceSettingConfiguration.ProtoReflect.Descriptor instead.
+func (*ServiceSettingConfiguration) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *ServiceSettingConfiguration) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *ServiceSettingConfiguration) GetLastUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastUpdatedAt
+	}
+	return nil
+}
+
+func (x *ServiceSettingConfiguration) GetArchivedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ArchivedAt
+	}
+	return nil
+}
+
+func (x *ServiceSettingConfiguration) GetID() string {
+	if x != nil {
+		return x.ID
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfiguration) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfiguration) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfiguration) GetBelongsToUser() string {
+	if x != nil {
+		return x.BelongsToUser
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfiguration) GetBelongsToAccount() string {
+	if x != nil {
+		return x.BelongsToAccount
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfiguration) GetServiceSetting() *ServiceSetting {
+	if x != nil {
+		return x.ServiceSetting
+	}
+	return nil
+}
+
+type ServiceSettingConfigurationCreationRequestInput struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Value            string                 `protobuf:"bytes,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Notes            string                 `protobuf:"bytes,2,opt,name=Notes,proto3" json:"Notes,omitempty"`
+	ServiceSettingID string                 `protobuf:"bytes,3,opt,name=ServiceSettingID,proto3" json:"ServiceSettingID,omitempty"`
+	BelongsToUser    string                 `protobuf:"bytes,4,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
+	BelongsToAccount string                 `protobuf:"bytes,5,opt,name=BelongsToAccount,proto3" json:"BelongsToAccount,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ServiceSettingConfigurationCreationRequestInput) Reset() {
+	*x = ServiceSettingConfigurationCreationRequestInput{}
+	mi := &file_settings_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceSettingConfigurationCreationRequestInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceSettingConfigurationCreationRequestInput) ProtoMessage() {}
+
+func (x *ServiceSettingConfigurationCreationRequestInput) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceSettingConfigurationCreationRequestInput.ProtoReflect.Descriptor instead.
+func (*ServiceSettingConfigurationCreationRequestInput) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *ServiceSettingConfigurationCreationRequestInput) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfigurationCreationRequestInput) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfigurationCreationRequestInput) GetServiceSettingID() string {
+	if x != nil {
+		return x.ServiceSettingID
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfigurationCreationRequestInput) GetBelongsToUser() string {
+	if x != nil {
+		return x.BelongsToUser
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfigurationCreationRequestInput) GetBelongsToAccount() string {
+	if x != nil {
+		return x.BelongsToAccount
+	}
+	return ""
+}
+
+type ServiceSettingConfigurationUpdateRequestInput struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Value            string                 `protobuf:"bytes,1,opt,name=Value,proto3" json:"Value,omitempty"`
+	Notes            string                 `protobuf:"bytes,2,opt,name=Notes,proto3" json:"Notes,omitempty"`
+	ServiceSettingID string                 `protobuf:"bytes,3,opt,name=ServiceSettingID,proto3" json:"ServiceSettingID,omitempty"`
+	BelongsToUser    string                 `protobuf:"bytes,4,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
+	BelongsToAccount string                 `protobuf:"bytes,5,opt,name=BelongsToAccount,proto3" json:"BelongsToAccount,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ServiceSettingConfigurationUpdateRequestInput) Reset() {
+	*x = ServiceSettingConfigurationUpdateRequestInput{}
+	mi := &file_settings_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceSettingConfigurationUpdateRequestInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceSettingConfigurationUpdateRequestInput) ProtoMessage() {}
+
+func (x *ServiceSettingConfigurationUpdateRequestInput) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceSettingConfigurationUpdateRequestInput.ProtoReflect.Descriptor instead.
+func (*ServiceSettingConfigurationUpdateRequestInput) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *ServiceSettingConfigurationUpdateRequestInput) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfigurationUpdateRequestInput) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfigurationUpdateRequestInput) GetServiceSettingID() string {
+	if x != nil {
+		return x.ServiceSettingID
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfigurationUpdateRequestInput) GetBelongsToUser() string {
+	if x != nil {
+		return x.BelongsToUser
+	}
+	return ""
+}
+
+func (x *ServiceSettingConfigurationUpdateRequestInput) GetBelongsToAccount() string {
+	if x != nil {
+		return x.BelongsToAccount
+	}
+	return ""
+}
+
+type ServiceSettingCreationRequestInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DefaultValue  string                 `protobuf:"bytes,1,opt,name=DefaultValue,proto3" json:"DefaultValue,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Type          string                 `protobuf:"bytes,3,opt,name=Type,proto3" json:"Type,omitempty"`
+	Description   string                 `protobuf:"bytes,4,opt,name=Description,proto3" json:"Description,omitempty"`
+	Enumeration   []string               `protobuf:"bytes,5,rep,name=Enumeration,proto3" json:"Enumeration,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+	AdminsOnly    bool `protobuf:"varint,6,opt,name=AdminsOnly,proto3" json:"AdminsOnly,omitempty"`
+}
+
+func (x *ServiceSettingCreationRequestInput) Reset() {
+	*x = ServiceSettingCreationRequestInput{}
+	mi := &file_settings_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceSettingCreationRequestInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceSettingCreationRequestInput) ProtoMessage() {}
+
+func (x *ServiceSettingCreationRequestInput) ProtoReflect() protoreflect.Message {
+	mi := &file_settings_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceSettingCreationRequestInput.ProtoReflect.Descriptor instead.
+func (*ServiceSettingCreationRequestInput) Descriptor() ([]byte, []int) {
+	return file_settings_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *ServiceSettingCreationRequestInput) GetDefaultValue() string {
+	if x != nil {
+		return x.DefaultValue
+	}
+	return ""
+}
+
+func (x *ServiceSettingCreationRequestInput) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ServiceSettingCreationRequestInput) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *ServiceSettingCreationRequestInput) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *ServiceSettingCreationRequestInput) GetEnumeration() []string {
+	if x != nil {
+		return x.Enumeration
+	}
+	return nil
+}
+
+func (x *ServiceSettingCreationRequestInput) GetAdminsOnly() bool {
+	if x != nil {
+		return x.AdminsOnly
+	}
+	return false
+}
+
 var File_settings_proto protoreflect.FileDescriptor
 
 var file_settings_proto_rawDesc = string([]byte{
 	0x0a, 0x0e, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x12, 0x08, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x42, 0x44, 0x5a, 0x42, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64,
-	0x6f, 0x6e, 0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e,
-	0x64, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f,
-	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x12, 0x08, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x1a, 0x0f, 0x66, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x1d, 0x0a, 0x1b,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74,
+	0x74, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x1e, 0x0a, 0x1c, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2a, 0x0a, 0x28, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x2b, 0x0a, 0x29, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x4a, 0x0a, 0x1c, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x2a, 0x0a, 0x10, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53,
+	0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10,
+	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x44,
+	0x22, 0x1f, 0x0a, 0x1d, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x71, 0x0a, 0x29, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x44,
+	0x0a, 0x1d, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67,
+	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x44, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x1d, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65,
+	0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x49, 0x44, 0x22, 0x2c, 0x0a, 0x2a, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e,
+	0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x46, 0x0a, 0x18, 0x47, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2a,
+	0x0a, 0x10, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67,
+	0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x44, 0x22, 0x1b, 0x0a, 0x19, 0x47, 0x65,
+	0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xa7, 0x01, 0x0a, 0x2b, 0x47, 0x65, 0x74, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e,
+	0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x79, 0x4e, 0x61, 0x6d, 0x65,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65,
+	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72,
+	0x69, 0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52,
+	0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x48, 0x0a, 0x1f, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x1f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67,
+	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4e, 0x61, 0x6d,
+	0x65, 0x22, 0x9f, 0x01, 0x0a, 0x2c, 0x47, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x79, 0x4e, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06, 0x46, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x12, 0x3f, 0x0a, 0x07, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x18, 0x02, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x25, 0x2e, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x2e, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e,
+	0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x07, 0x52, 0x65, 0x73, 0x75,
+	0x6c, 0x74, 0x73, 0x22, 0x62, 0x0a, 0x30, 0x47, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x46, 0x6f, 0x72, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65,
+	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72,
+	0x69, 0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52,
+	0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0xa4, 0x01, 0x0a, 0x31, 0x47, 0x65, 0x74, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e,
+	0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x46, 0x6f, 0x72, 0x41, 0x63,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2e, 0x0a,
+	0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e,
+	0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x3f, 0x0a,
+	0x07, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x25,
+	0x2e, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x07, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x22, 0x5f,
+	0x0a, 0x2d, 0x47, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x46, 0x6f, 0x72, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22,
+	0xa1, 0x01, 0x0a, 0x2e, 0x47, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65,
+	0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x73, 0x46, 0x6f, 0x72, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06, 0x46, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x12, 0x3f, 0x0a, 0x07, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x18, 0x02, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x25, 0x2e, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x2e, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e,
+	0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x07, 0x52, 0x65, 0x73, 0x75,
+	0x6c, 0x74, 0x73, 0x22, 0x4b, 0x0a, 0x19, 0x47, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72,
+	0x22, 0x80, 0x01, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53,
+	0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12,
+	0x32, 0x0a, 0x07, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x18, 0x2e, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x2e, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x07, 0x52, 0x65, 0x73, 0x75,
+	0x6c, 0x74, 0x73, 0x22, 0x67, 0x0a, 0x1f, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x46, 0x6f, 0x72,
+	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69,
+	0x6e, 0x67, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06,
+	0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x22, 0x86, 0x01, 0x0a,
+	0x20, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x46, 0x6f, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x2e, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x16, 0x2e, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x69, 0x6e, 0x67, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65,
+	0x72, 0x12, 0x32, 0x0a, 0x07, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x2e, 0x53, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x07, 0x52, 0x65,
+	0x73, 0x75, 0x6c, 0x74, 0x73, 0x22, 0xbf, 0x01, 0x0a, 0x28, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x44, 0x0a, 0x1d, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74,
+	0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x1d, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x44, 0x12, 0x4d, 0x0a, 0x05, 0x69, 0x6e, 0x70, 0x75,
+	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x37, 0x2e, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e,
+	0x67, 0x73, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e,
+	0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74,
+	0x52, 0x05, 0x69, 0x6e, 0x70, 0x75, 0x74, 0x22, 0x2b, 0x0a, 0x29, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x88, 0x03, 0x0a, 0x0e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x12, 0x38, 0x0a, 0x09, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x64, 0x41, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41,
+	0x74, 0x12, 0x22, 0x0a, 0x0c, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x56, 0x61, 0x6c, 0x75,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74,
+	0x56, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x40, 0x0a, 0x0d, 0x4c, 0x61, 0x73, 0x74, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0d, 0x4c, 0x61, 0x73, 0x74, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x3a, 0x0a, 0x0a, 0x41, 0x72, 0x63, 0x68, 0x69,
+	0x76, 0x65, 0x64, 0x41, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65,
+	0x64, 0x41, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x02, 0x49, 0x44, 0x12, 0x12, 0x0a, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x54, 0x79, 0x70, 0x65, 0x18,
+	0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x54, 0x79, 0x70, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x44,
+	0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0b, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x0a,
+	0x0b, 0x45, 0x6e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x09, 0x20, 0x03,
+	0x28, 0x09, 0x52, 0x0b, 0x45, 0x6e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x1e, 0x0a, 0x0a, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x73, 0x4f, 0x6e, 0x6c, 0x79, 0x18, 0x0a, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x0a, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x73, 0x4f, 0x6e, 0x6c, 0x79, 0x22,
+	0xa5, 0x03, 0x0a, 0x1b, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69,
+	0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x38, 0x0a, 0x09, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x40, 0x0a, 0x0d, 0x4c, 0x61, 0x73,
+	0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0d, 0x4c, 0x61,
+	0x73, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x3a, 0x0a, 0x0a, 0x41,
+	0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x64, 0x41, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a, 0x41, 0x72, 0x63,
+	0x68, 0x69, 0x76, 0x65, 0x64, 0x41, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x49, 0x44, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x02, 0x49, 0x44, 0x12, 0x14, 0x0a, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x14, 0x0a,
+	0x05, 0x4e, 0x6f, 0x74, 0x65, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x4e, 0x6f,
+	0x74, 0x65, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x42, 0x65, 0x6c, 0x6f, 0x6e, 0x67, 0x73, 0x54, 0x6f,
+	0x55, 0x73, 0x65, 0x72, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x42, 0x65, 0x6c, 0x6f,
+	0x6e, 0x67, 0x73, 0x54, 0x6f, 0x55, 0x73, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x10, 0x42, 0x65, 0x6c,
+	0x6f, 0x6e, 0x67, 0x73, 0x54, 0x6f, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x08, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x10, 0x42, 0x65, 0x6c, 0x6f, 0x6e, 0x67, 0x73, 0x54, 0x6f, 0x41, 0x63,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x40, 0x0a, 0x0e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x18, 0x2e,
+	0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x0e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x22, 0xdb, 0x01, 0x0a, 0x2f, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x56,
+	0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x56, 0x61, 0x6c, 0x75,
+	0x65, 0x12, 0x14, 0x0a, 0x05, 0x4e, 0x6f, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x05, 0x4e, 0x6f, 0x74, 0x65, 0x73, 0x12, 0x2a, 0x0a, 0x10, 0x53, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x10, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e,
+	0x67, 0x49, 0x44, 0x12, 0x24, 0x0a, 0x0d, 0x42, 0x65, 0x6c, 0x6f, 0x6e, 0x67, 0x73, 0x54, 0x6f,
+	0x55, 0x73, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x42, 0x65, 0x6c, 0x6f,
+	0x6e, 0x67, 0x73, 0x54, 0x6f, 0x55, 0x73, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x10, 0x42, 0x65, 0x6c,
+	0x6f, 0x6e, 0x67, 0x73, 0x54, 0x6f, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x10, 0x42, 0x65, 0x6c, 0x6f, 0x6e, 0x67, 0x73, 0x54, 0x6f, 0x41, 0x63,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0xd9, 0x01, 0x0a, 0x2d, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x75, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x14, 0x0a,
+	0x05, 0x4e, 0x6f, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x4e, 0x6f,
+	0x74, 0x65, 0x73, 0x12, 0x2a, 0x0a, 0x10, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65,
+	0x74, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x49, 0x44, 0x12,
+	0x24, 0x0a, 0x0d, 0x42, 0x65, 0x6c, 0x6f, 0x6e, 0x67, 0x73, 0x54, 0x6f, 0x55, 0x73, 0x65, 0x72,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x42, 0x65, 0x6c, 0x6f, 0x6e, 0x67, 0x73, 0x54,
+	0x6f, 0x55, 0x73, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x10, 0x42, 0x65, 0x6c, 0x6f, 0x6e, 0x67, 0x73,
+	0x54, 0x6f, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x10, 0x42, 0x65, 0x6c, 0x6f, 0x6e, 0x67, 0x73, 0x54, 0x6f, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e,
+	0x74, 0x22, 0xd4, 0x01, 0x0a, 0x22, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x53, 0x65, 0x74,
+	0x74, 0x69, 0x6e, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x44, 0x65, 0x66, 0x61,
+	0x75, 0x6c, 0x74, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
+	0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x12, 0x0a, 0x04,
+	0x4e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65,
+	0x12, 0x12, 0x0a, 0x04, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
+	0x54, 0x79, 0x70, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74,
+	0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x44, 0x65, 0x73, 0x63, 0x72,
+	0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x0a, 0x0b, 0x45, 0x6e, 0x75, 0x6d, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x45, 0x6e, 0x75,
+	0x6d, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1e, 0x0a, 0x0a, 0x41, 0x64, 0x6d, 0x69,
+	0x6e, 0x73, 0x4f, 0x6e, 0x6c, 0x79, 0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x41, 0x64,
+	0x6d, 0x69, 0x6e, 0x73, 0x4f, 0x6e, 0x6c, 0x79, 0x42, 0x44, 0x5a, 0x42, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x64, 0x6f, 0x6e,
+	0x65, 0x62, 0x65, 0x74, 0x74, 0x65, 0x72, 0x2f, 0x62, 0x61, 0x63, 0x6b, 0x65, 0x6e, 0x64, 0x2f,
+	0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x73, 0x65,
+	0x72, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
-var file_settings_proto_goTypes = []any{}
+var (
+	file_settings_proto_rawDescOnce sync.Once
+	file_settings_proto_rawDescData []byte
+)
+
+func file_settings_proto_rawDescGZIP() []byte {
+	file_settings_proto_rawDescOnce.Do(func() {
+		file_settings_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_settings_proto_rawDesc), len(file_settings_proto_rawDesc)))
+	})
+	return file_settings_proto_rawDescData
+}
+
+var file_settings_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_settings_proto_goTypes = []any{
+	(*CreateServiceSettingRequest)(nil),                       // 0: settings.CreateServiceSettingRequest
+	(*CreateServiceSettingResponse)(nil),                      // 1: settings.CreateServiceSettingResponse
+	(*CreateServiceSettingConfigurationRequest)(nil),          // 2: settings.CreateServiceSettingConfigurationRequest
+	(*CreateServiceSettingConfigurationResponse)(nil),         // 3: settings.CreateServiceSettingConfigurationResponse
+	(*ArchiveServiceSettingRequest)(nil),                      // 4: settings.ArchiveServiceSettingRequest
+	(*ArchiveServiceSettingResponse)(nil),                     // 5: settings.ArchiveServiceSettingResponse
+	(*ArchiveServiceSettingConfigurationRequest)(nil),         // 6: settings.ArchiveServiceSettingConfigurationRequest
+	(*ArchiveServiceSettingConfigurationResponse)(nil),        // 7: settings.ArchiveServiceSettingConfigurationResponse
+	(*GetServiceSettingRequest)(nil),                          // 8: settings.GetServiceSettingRequest
+	(*GetServiceSettingResponse)(nil),                         // 9: settings.GetServiceSettingResponse
+	(*GetServiceSettingConfigurationByNameRequest)(nil),       // 10: settings.GetServiceSettingConfigurationByNameRequest
+	(*GetServiceSettingConfigurationByNameResponse)(nil),      // 11: settings.GetServiceSettingConfigurationByNameResponse
+	(*GetServiceSettingConfigurationsForAccountRequest)(nil),  // 12: settings.GetServiceSettingConfigurationsForAccountRequest
+	(*GetServiceSettingConfigurationsForAccountResponse)(nil), // 13: settings.GetServiceSettingConfigurationsForAccountResponse
+	(*GetServiceSettingConfigurationsForUserRequest)(nil),     // 14: settings.GetServiceSettingConfigurationsForUserRequest
+	(*GetServiceSettingConfigurationsForUserResponse)(nil),    // 15: settings.GetServiceSettingConfigurationsForUserResponse
+	(*GetServiceSettingsRequest)(nil),                         // 16: settings.GetServiceSettingsRequest
+	(*GetServiceSettingsResponse)(nil),                        // 17: settings.GetServiceSettingsResponse
+	(*SearchForServiceSettingsRequest)(nil),                   // 18: settings.SearchForServiceSettingsRequest
+	(*SearchForServiceSettingsResponse)(nil),                  // 19: settings.SearchForServiceSettingsResponse
+	(*UpdateServiceSettingConfigurationRequest)(nil),          // 20: settings.UpdateServiceSettingConfigurationRequest
+	(*UpdateServiceSettingConfigurationResponse)(nil),         // 21: settings.UpdateServiceSettingConfigurationResponse
+	(*ServiceSetting)(nil),                                    // 22: settings.ServiceSetting
+	(*ServiceSettingConfiguration)(nil),                       // 23: settings.ServiceSettingConfiguration
+	(*ServiceSettingConfigurationCreationRequestInput)(nil),   // 24: settings.ServiceSettingConfigurationCreationRequestInput
+	(*ServiceSettingConfigurationUpdateRequestInput)(nil),     // 25: settings.ServiceSettingConfigurationUpdateRequestInput
+	(*ServiceSettingCreationRequestInput)(nil),                // 26: settings.ServiceSettingCreationRequestInput
+	(*filtering.QueryFilter)(nil),                             // 27: filtering.QueryFilter
+	(*timestamppb.Timestamp)(nil),                             // 28: google.protobuf.Timestamp
+}
 var file_settings_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	27, // 0: settings.GetServiceSettingConfigurationByNameRequest.Filter:type_name -> filtering.QueryFilter
+	27, // 1: settings.GetServiceSettingConfigurationByNameResponse.Filter:type_name -> filtering.QueryFilter
+	23, // 2: settings.GetServiceSettingConfigurationByNameResponse.Results:type_name -> settings.ServiceSettingConfiguration
+	27, // 3: settings.GetServiceSettingConfigurationsForAccountRequest.Filter:type_name -> filtering.QueryFilter
+	27, // 4: settings.GetServiceSettingConfigurationsForAccountResponse.Filter:type_name -> filtering.QueryFilter
+	23, // 5: settings.GetServiceSettingConfigurationsForAccountResponse.Results:type_name -> settings.ServiceSettingConfiguration
+	27, // 6: settings.GetServiceSettingConfigurationsForUserRequest.Filter:type_name -> filtering.QueryFilter
+	27, // 7: settings.GetServiceSettingConfigurationsForUserResponse.Filter:type_name -> filtering.QueryFilter
+	23, // 8: settings.GetServiceSettingConfigurationsForUserResponse.Results:type_name -> settings.ServiceSettingConfiguration
+	27, // 9: settings.GetServiceSettingsRequest.Filter:type_name -> filtering.QueryFilter
+	27, // 10: settings.GetServiceSettingsResponse.Filter:type_name -> filtering.QueryFilter
+	22, // 11: settings.GetServiceSettingsResponse.Results:type_name -> settings.ServiceSetting
+	27, // 12: settings.SearchForServiceSettingsRequest.Filter:type_name -> filtering.QueryFilter
+	27, // 13: settings.SearchForServiceSettingsResponse.Filter:type_name -> filtering.QueryFilter
+	22, // 14: settings.SearchForServiceSettingsResponse.Results:type_name -> settings.ServiceSetting
+	25, // 15: settings.UpdateServiceSettingConfigurationRequest.input:type_name -> settings.ServiceSettingConfigurationUpdateRequestInput
+	28, // 16: settings.ServiceSetting.CreatedAt:type_name -> google.protobuf.Timestamp
+	28, // 17: settings.ServiceSetting.LastUpdatedAt:type_name -> google.protobuf.Timestamp
+	28, // 18: settings.ServiceSetting.ArchivedAt:type_name -> google.protobuf.Timestamp
+	28, // 19: settings.ServiceSettingConfiguration.CreatedAt:type_name -> google.protobuf.Timestamp
+	28, // 20: settings.ServiceSettingConfiguration.LastUpdatedAt:type_name -> google.protobuf.Timestamp
+	28, // 21: settings.ServiceSettingConfiguration.ArchivedAt:type_name -> google.protobuf.Timestamp
+	22, // 22: settings.ServiceSettingConfiguration.ServiceSetting:type_name -> settings.ServiceSetting
+	23, // [23:23] is the sub-list for method output_type
+	23, // [23:23] is the sub-list for method input_type
+	23, // [23:23] is the sub-list for extension type_name
+	23, // [23:23] is the sub-list for extension extendee
+	0,  // [0:23] is the sub-list for field type_name
 }
 
 func init() { file_settings_proto_init() }
@@ -53,12 +1787,13 @@ func file_settings_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_settings_proto_rawDesc), len(file_settings_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_settings_proto_goTypes,
 		DependencyIndexes: file_settings_proto_depIdxs,
+		MessageInfos:      file_settings_proto_msgTypes,
 	}.Build()
 	File_settings_proto = out.File
 	file_settings_proto_goTypes = nil

@@ -2,4 +2,419 @@ syntax = "proto3";
 
 package identity;
 
+import "filtering.proto";
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/identity";
+
+// ArchiveUser
+message ArchiveUserRequest {
+  string userID = 1;
+}
+
+message ArchiveUserResponse {}
+
+// ArchiveUserMembership
+message ArchiveUserMembershipRequest {
+  string accountID = 1;
+  string userID = 2;
+}
+
+message ArchiveUserMembershipResponse {}
+
+// CreateUser
+message CreateUserRequest {
+  UserRegistrationInput Input = 1;
+}
+
+message CreateUserResponse {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp Birthday = 2;
+  string Username = 3;
+  string EmailAddress = 4;
+  string TwoFactorQRCode = 5;
+  string CreatedUserID = 6;
+  string AccountStatus = 7;
+  string TwoFactorSecret = 8;
+  string FirstName = 9;
+  string LastName = 10;
+}
+
+// CreateAccount
+message CreateAccountRequest {}
+
+message CreateAccountResponse {}
+
+// CreateAccountInvitation
+message CreateAccountInvitationRequest {
+  string accountID = 1;
+  AccountInvitationCreationRequestInput input = 2;
+}
+
+message CreateAccountInvitationResponse {}
+
+// CancelAccountInvitation
+message CancelAccountInvitationRequest {
+  string accountInvitationID = 1;
+  AccountInvitationUpdateRequestInput input = 2;
+}
+
+message CancelAccountInvitationResponse {}
+
+// ArchiveAccount
+message ArchiveAccountRequest {
+  string accountID = 1;
+}
+
+message ArchiveAccountResponse {}
+
+// AcceptAccountInvitation
+message AcceptAccountInvitationRequest {
+  string accountInvitationID = 1;
+  AccountInvitationUpdateRequestInput input = 2;
+}
+
+message AcceptAccountInvitationResponse {}
+
+// GetAccount
+message GetAccountRequest {
+  string accountID = 1;
+}
+
+message GetAccountResponse {}
+
+// GetAccountInvitation
+message GetAccountInvitationRequest {
+  string accountInvitationID = 1;
+}
+
+message GetAccountInvitationResponse {}
+
+// GetAccountInvitationByID
+message GetAccountInvitationByIDRequest {
+  string accountID = 1;
+  string accountInvitationID = 2;
+}
+
+message GetAccountInvitationByIDResponse {
+  AccountInvitation Result = 2;
+}
+
+// GetAccounts
+message GetAccountsRequest {
+  filtering.QueryFilter Filter = 1;
+}
+
+message GetAccountsResponse {
+  filtering.QueryFilter Filter = 1;
+  repeated Account Results = 2;
+}
+
+// GetReceivedAccountInvitations
+message GetReceivedAccountInvitationsRequest {
+  filtering.QueryFilter Filter = 1;
+}
+
+message GetReceivedAccountInvitationsResponse {
+  filtering.QueryFilter Filter = 1;
+  repeated AccountInvitation Results = 2;
+}
+
+// GetSelf
+message GetSelfRequest {}
+
+message GetSelfResponse {}
+
+// GetSentAccountInvitations
+message GetSentAccountInvitationsRequest {
+  filtering.QueryFilter Filter = 1;
+}
+
+message GetSentAccountInvitationsResponse {
+  filtering.QueryFilter Filter = 1;
+  repeated AccountInvitation Results = 2;
+}
+
+// GetUser
+message GetUserRequest {
+  string userID = 1;
+}
+
+message GetUserResponse {}
+
+// GetUsers
+message GetUsersRequest {
+  filtering.QueryFilter Filter = 1;
+}
+
+message GetUsersResponse {
+  filtering.QueryFilter Filter = 1;
+  repeated User Results = 2;
+}
+
+// RejectAccountInvitation
+message RejectAccountInvitationRequest {
+  string accountInvitationID = 1;
+  AccountInvitationUpdateRequestInput input = 2;
+}
+
+message RejectAccountInvitationResponse {}
+
+// SearchForUsers
+message SearchForUsersRequest {
+  filtering.QueryFilter Filter = 1;
+  string Query = 2;
+}
+
+message SearchForUsersResponse {
+  filtering.QueryFilter Filter = 1;
+  repeated User Results = 2;
+}
+
+// SetDefaultAccount
+message SetDefaultAccountRequest {
+  string AccountID = 1;
+}
+
+message SetDefaultAccountResponse {}
+
+// TransferAccountOwnership
+message TransferAccountOwnershipRequest {
+  string accountID = 1;
+  AccountOwnershipTransferInput input = 2;
+}
+
+message TransferAccountOwnershipResponse {}
+
+// UpdateAccount
+message UpdateAccountRequest {
+  string accountID = 1;
+  AccountUpdateRequestInput input = 2;
+}
+
+message UpdateAccountResponse {}
+
+// UpdateAccountMemberPermissions
+message UpdateAccountMemberPermissionsRequest {
+  string accountID = 1;
+  string userID = 2;
+  ModifyUserPermissionsInput input = 3;
+}
+
+message UpdateAccountMemberPermissionsResponse {}
+
+message ModifyUserPermissionsInput {
+  string Reason = 1;
+  string NewRole = 2;
+}
+
+// UpdateUserDetails
+message UpdateUserDetailsRequest {}
+
+message UpdateUserDetailsResponse {}
+
+// UpdateUserEmailAddress
+message UpdateUserEmailAddressRequest {
+  string NewEmailAddress = 1;
+  string CurrentPassword = 2;
+  string TOTPToken = 3;
+}
+message UpdateUserEmailAddressResponse {}
+
+// UpdateUserUsername
+message UpdateUserUsernameRequest {}
+
+message UpdateUserUsernameResponse {}
+
+// UploadUserAvatar
+message UploadUserAvatarRequest {}
+
+message UploadUserAvatarResponse {}
+
+message UpdateUserAvatarRequest {
+  string Base64EncodedData = 1;
+}
+
+message Account {
+  google.protobuf.Timestamp CreatedAt = 1;
+  string SubscriptionPlanID = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  float Longitude = 5;
+  float Latitude = 6;
+  string State = 7;
+  string ContactPhone = 8;
+  string City = 9;
+  string AddressLine1 = 10;
+  string ZipCode = 11;
+  string Country = 12;
+  string BillingStatus = 13;
+  string AddressLine2 = 14;
+  string PaymentProcessorCustomerID = 15;
+  string BelongsToUser = 16;
+  string ID = 17;
+  string Name = 18;
+  string WebhookEncryptionKey = 19;
+  repeated AccountUserMembershipWithUser Members = 20;
+}
+
+message AccountCreationRequestInput {
+  float Latitude = 1;
+  float Longitude = 2;
+  string Name = 3;
+  string ContactPhone = 4;
+  string AddressLine1 = 5;
+  string AddressLine2 = 6;
+  string City = 7;
+  string State = 8;
+  string ZipCode = 9;
+  string Country = 10;
+}
+
+message AccountInvitation {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string ToUser = 4;
+  string Status = 5;
+  string ToEmail = 6;
+  string StatusNote = 7;
+  string Token = 8;
+  string ID = 9;
+  string Note = 10;
+  string ToName = 11;
+  google.protobuf.Timestamp ExpiresAt = 12;
+  Account DestinationAccount = 13;
+  User FromUser = 14;
+}
+
+message AccountInvitationCreationRequestInput {
+  google.protobuf.Timestamp ExpiresAt = 1;
+  string Note = 2;
+  string ToEmail = 3;
+  string ToName = 4;
+}
+
+message AccountInvitationUpdateRequestInput {
+  string Token = 1;
+  string Note = 2;
+}
+
+message AccountOwnershipTransferInput {
+  string Reason = 1;
+  string CurrentOwner = 2;
+  string NewOwner = 3;
+}
+
+message AccountUpdateRequestInput {
+  string Name = 1;
+  string ContactPhone = 2;
+  string AddressLine1 = 3;
+  string AddressLine2 = 4;
+  string City = 5;
+  string State = 6;
+  string ZipCode = 7;
+  string Country = 8;
+  float Latitude = 9;
+  float Longitude = 10;
+  string BelongsToUser = 11;
+}
+
+message AccountUserMembership {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  google.protobuf.Timestamp ArchivedAt = 3;
+  string ID = 4;
+  string BelongsToUser = 5;
+  string BelongsToAccount = 6;
+  string AccountRole = 7;
+  bool DefaultAccount = 8;
+}
+
+message AccountUserMembershipWithUser {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  User BelongsToUser = 3;
+  google.protobuf.Timestamp ArchivedAt = 4;
+  string ID = 5;
+  string BelongsToAccount = 6;
+  string AccountRole = 7;
+  bool DefaultAccount = 8;
+}
+
+message User {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp PasswordLastChangedAt = 2;
+  google.protobuf.Timestamp LastUpdatedAt = 3;
+  google.protobuf.Timestamp LastAcceptedTermsOfService = 4;
+  google.protobuf.Timestamp LastAcceptedPrivacyPolicy = 5;
+  google.protobuf.Timestamp TwoFactorSecretVerifiedAt = 6;
+  string AvatarSrc = 7;
+  google.protobuf.Timestamp Birthday = 8;
+  google.protobuf.Timestamp ArchivedAt = 9;
+  string AccountStatusExplanation = 10;
+  string TwoFactorSecret = 11;
+  string HashedPassword = 12;
+  string ID = 13;
+  string AccountStatus = 14;
+  string Username = 15;
+  string FirstName = 16;
+  string LastName = 17;
+  string EmailAddress = 18;
+  google.protobuf.Timestamp EmailAddressVerifiedAt = 19;
+  string ServiceRole = 20;
+  bool RequiresPasswordChange = 21;
+}
+
+message UserAccountStatusUpdateInput {
+  string NewStatus = 1;
+  string Reason = 2;
+  string TargetUserID = 3;
+}
+
+message UserCreationResponse {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp Birthday = 2;
+  string Username = 4;
+  string EmailAddress = 5;
+  string TwoFactorQRCode = 6;
+  string CreatedUserID = 7;
+  string AccountStatus = 8;
+  string TwoFactorSecret = 9;
+  string FirstName = 10;
+  string LastName = 11;
+}
+
+message UserDataAggregationRequest {
+  string RequestID = 1;
+  string ReportID = 2;
+  string UserID = 3;
+}
+
+message UserDetailsUpdateRequest {
+  string FirstName = 1;
+  string LastName = 2;
+  google.protobuf.Timestamp Birthday = 3;
+  string CurrentPassword = 4;
+  string TOTPToken = 5;
+}
+
+message UserRegistrationInput {
+  google.protobuf.Timestamp Birthday = 1;
+  string Password = 2;
+  string EmailAddress = 3;
+  string InvitationToken = 4;
+  string InvitationID = 5;
+  string Username = 6;
+  string FirstName = 7;
+  string LastName = 8;
+  string AccountName = 9;
+  bool AcceptedTOS = 10;
+  bool AcceptedPrivacyPolicy = 11;
+}
+
+message UsernameUpdateRequest {
+  string NewUsername = 1;
+  string CurrentPassword = 2;
+  string TOTPToken = 3;
+}

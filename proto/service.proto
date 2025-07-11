@@ -78,7 +78,7 @@ service Eating {
   rpc GetMealPlanOptions(GetMealPlanOptionsRequest) returns (GetMealPlanOptionsResponse);
   rpc GetMealPlanTask(GetMealPlanTaskRequest) returns (GetMealPlanTaskResponse);
   rpc GetMealPlanTasks(GetMealPlanTasksRequest) returns (GetMealPlanTasksResponse);
-  rpc GetMealPlansForHousehold(GetMealPlansForHouseholdRequest) returns (GetMealPlansForHouseholdResponse);
+  rpc GetMealPlansForAccount(GetMealPlansForAccountRequest) returns (GetMealPlansForAccountResponse);
   rpc GetMeals(GetMealsRequest) returns (GetMealsResponse);
   rpc GetMermaidDiagramForRecipe(GetMermaidDiagramForRecipeRequest) returns (GetMermaidDiagramForRecipeResponse);
   rpc GetRandomValidIngredient(GetRandomValidIngredientRequest) returns (GetRandomValidIngredientResponse);
@@ -183,13 +183,13 @@ service Eating {
   rpc UpdateValidPreparationInstrument(UpdateValidPreparationInstrumentRequest) returns (UpdateValidPreparationInstrumentResponse);
   rpc UpdateValidPreparationVessel(UpdateValidPreparationVesselRequest) returns (UpdateValidPreparationVesselResponse);
   rpc UpdateValidVessel(UpdateValidVesselRequest) returns (UpdateValidVesselResponse);
-  rpc ArchiveHouseholdInstrumentOwnership(ArchiveHouseholdInstrumentOwnershipRequest) returns (ArchiveHouseholdInstrumentOwnershipResponse);
+  rpc ArchiveAccountInstrumentOwnership(ArchiveAccountInstrumentOwnershipRequest) returns (ArchiveAccountInstrumentOwnershipResponse);
   rpc ArchiveUserIngredientPreference(ArchiveUserIngredientPreferenceRequest) returns (ArchiveUserIngredientPreferenceResponse);
-  rpc CreateHouseholdInstrumentOwnership(CreateHouseholdInstrumentOwnershipRequest) returns (CreateHouseholdInstrumentOwnershipResponse);
+  rpc CreateAccountInstrumentOwnership(CreateAccountInstrumentOwnershipRequest) returns (CreateAccountInstrumentOwnershipResponse);
   rpc CreateUserIngredientPreference(CreateUserIngredientPreferenceRequest) returns (CreateUserIngredientPreferenceResponse);
-  rpc GetHouseholdInstrumentOwnership(GetHouseholdInstrumentOwnershipRequest) returns (GetHouseholdInstrumentOwnershipResponse);
-  rpc GetHouseholdInstrumentOwnerships(GetHouseholdInstrumentOwnershipsRequest) returns (GetHouseholdInstrumentOwnershipsResponse);
+  rpc GetAccountInstrumentOwnership(GetAccountInstrumentOwnershipRequest) returns (GetAccountInstrumentOwnershipResponse);
+  rpc GetAccountInstrumentOwnerships(GetAccountInstrumentOwnershipsRequest) returns (GetAccountInstrumentOwnershipsResponse);
   rpc GetUserIngredientPreferences(GetUserIngredientPreferencesRequest) returns (GetUserIngredientPreferencesResponse);
-  rpc UpdateHouseholdInstrumentOwnership(UpdateHouseholdInstrumentOwnershipRequest) returns (UpdateHouseholdInstrumentOwnershipResponse);
+  rpc UpdateAccountInstrumentOwnership(UpdateAccountInstrumentOwnershipRequest) returns (UpdateAccountInstrumentOwnershipResponse);
   rpc UpdateUserIngredientPreference(UpdateUserIngredientPreferenceRequest) returns (UpdateUserIngredientPreferenceResponse);
 }

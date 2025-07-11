@@ -29,7 +29,7 @@ message ChangeLog {
 message AuditLogEntry {
   google.protobuf.Timestamp CreatedAt = 1;
   map<string, ChangeLog> Changes = 2;
-  string BelongsToHousehold = 3;
+  string BelongsToAccount = 3;
   string ID = 4;
   string ResourceType = 5;
   string RelevantID = 6;
