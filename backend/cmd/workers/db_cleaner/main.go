@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"log/slog"
-	"os"
 
 	dbcleaner "github.com/dinnerdonebetter/backend/internal/build/jobs/db_cleaner"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -14,10 +12,7 @@ import (
 )
 
 func doTheThing(ctx context.Context) error {
-	if config.ShouldCeaseOperation() {
-		slog.Info("CEASE_OPERATION is set to true, exiting")
-		os.Exit(0)
-	}
+	config.ConditionallyCease()
 
 	cfg, err := config.LoadConfigFromEnvironment[config.DBCleanerConfig]()
 	if err != nil {

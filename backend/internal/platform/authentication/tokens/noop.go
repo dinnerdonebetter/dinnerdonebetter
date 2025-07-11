@@ -3,14 +3,12 @@ package tokens
 import (
 	"context"
 	"time"
-
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 )
 
 type noopTokenIssuer struct{}
 
 // IssueToken implements the interface.
-func (n *noopTokenIssuer) IssueToken(context.Context, authentication.User, time.Duration) (string, error) {
+func (n *noopTokenIssuer) IssueToken(context.Context, User, time.Duration) (string, error) {
 	return "", nil
 }
 

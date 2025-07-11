@@ -62,9 +62,9 @@ func BuildFakeUserStatusResponse() *identity.UserStatusResponse {
 // BuildFakeTokenResponse builds a faked TokenResponse.
 func BuildFakeTokenResponse() *identity.TokenResponse {
 	return &identity.TokenResponse{
-		UserID:    BuildFakeID(),
-		AccountID: BuildFakeID(),
-		Token:     fake.UUID(),
+		UserID:      BuildFakeID(),
+		AccountID:   BuildFakeID(),
+		AccessToken: fake.UUID(),
 	}
 }
 

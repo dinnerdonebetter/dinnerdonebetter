@@ -280,6 +280,15 @@ type (
 		VerifyUserEmailAddressHandler(http.ResponseWriter, *http.Request)
 		RequestEmailVerificationEmailHandler(http.ResponseWriter, *http.Request)
 	}
+
+	IUser interface {
+		GetID() string
+		GetEmail() string
+		GetUsername() string
+		GetFirstName() string
+		GetLastName() string
+		FullName() string
+	}
 )
 
 // Update accepts a User as input and merges those values if they're set.

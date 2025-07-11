@@ -163,9 +163,9 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		responseValue := &types.APIResponse[*identity.TokenResponse]{
 			Details: responseDetails,
 			Data: &identity.TokenResponse{
-				AccountID: defaultAccountID,
-				UserID:    user.ID,
-				Token:     token,
+				AccountID:   defaultAccountID,
+				UserID:      user.ID,
+				AccessToken: token,
 			},
 		}
 
@@ -417,9 +417,9 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	responseValue := &types.APIResponse[*identity.TokenResponse]{
 		Details: responseDetails,
 		Data: &identity.TokenResponse{
-			AccountID: defaultAccountID,
-			UserID:    user.ID,
-			Token:     token,
+			AccountID:   defaultAccountID,
+			UserID:      user.ID,
+			AccessToken: token,
 		},
 	}
 

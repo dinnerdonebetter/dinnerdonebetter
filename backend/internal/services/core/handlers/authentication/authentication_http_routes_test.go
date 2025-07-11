@@ -90,7 +90,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		assert.NotEmpty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
-		sub, err := helper.service.tokenIssuer.ParseUserIDFromToken(helper.ctx, actual.Data.Token)
+		sub, err := helper.service.tokenIssuer.ParseUserIDFromToken(helper.ctx, actual.Data.AccessToken)
 		assert.NoError(t, err)
 		assert.Equal(t, helper.exampleUser.ID, sub)
 

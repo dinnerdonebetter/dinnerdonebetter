@@ -3,6 +3,7 @@ package identity
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
@@ -65,11 +66,12 @@ type (
 
 	// TokenResponse is used to return a JWT to a user.
 	TokenResponse struct {
-		_ struct{} `json:"-"`
-
-		UserID    string `json:"userID"`
-		AccountID string `json:"accountID"`
-		Token     string `json:"token"`
+		_            struct{}  `json:"-"`
+		ExpiresUTC   time.Time `json:"expires"`
+		UserID       string    `json:"userID"`
+		AccountID    string    `json:"accountID"`
+		AccessToken  string    `json:"accessToken"`
+		RefreshToken string    `json:"refreshToken"`
 	}
 
 	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.

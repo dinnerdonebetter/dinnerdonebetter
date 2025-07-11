@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
 	coresvc "github.com/dinnerdonebetter/backend/internal/grpc/service/core"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -20,6 +21,7 @@ type (
 		coresvc.UnimplementedCoreServer
 		tracer tracing.Tracer
 		logger logging.Logger
+		authentication.Authenticator
 	}
 )
 
