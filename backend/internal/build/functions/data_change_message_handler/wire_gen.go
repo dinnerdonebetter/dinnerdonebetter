@@ -8,23 +8,26 @@ package datachangemessagehandler
 
 import (
 	"context"
+
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/functions/datachangemessagehandler"
-	"github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/platform/email/config"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
+	"github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	indexing2 "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 )
 
 // Injectors from build.go:
@@ -86,7 +89,46 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
 	serverEncoderDecoder := encoding.ProvideServerEncoderDecoder(logger, tracerProvider, contentType)
-	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(logger, tracerProvider, cfg, identityRepository, webhooksRepository, mealplanningRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder)
+	textsearchcfgConfig := &cfg.Search
+	userTextSearcher, err := ProvideUserTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	coreDataIndexer := indexing.NewCoreDataIndexer(logger, tracerProvider, identityRepository, userTextSearcher)
+	recipeTextSearcher, err := ProvideRecipeTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	mealTextSearcher, err := ProvideMealTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	validIngredientTextSearcher, err := ProvideValidIngredientTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	validInstrumentTextSearcher, err := ProvideValidInstrumentTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	validMeasurementUnitTextSearcher, err := ProvideValidMeasurementUnitTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	validPreparationTextSearcher, err := ProvideValidPreparationTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	validIngredientStateTextSearcher, err := ProvideValidIngredientStateTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	validVesselTextSearcher, err := ProvideValidVesselTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	eatingDataIndexer := indexing2.NewEatingDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
+	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(logger, tracerProvider, cfg, identityRepository, webhooksRepository, mealplanningRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, coreDataIndexer, eatingDataIndexer)
 	if err != nil {
 		return nil, err
 	}

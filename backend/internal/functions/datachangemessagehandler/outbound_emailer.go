@@ -11,26 +11,24 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (a *AsyncDataChangeMessageHandler) buildOutboundEmailsEventHandler() func(context.Context, []byte) error {
-	return func(ctx context.Context, rawMsg []byte) error {
-		ctx, span := a.tracer.StartSpan(ctx)
-		defer span.End()
+func (a *AsyncDataChangeMessageHandler) OutboundEmailsEventHandler(ctx context.Context, rawMsg []byte) error {
+	ctx, span := a.tracer.StartSpan(ctx)
+	defer span.End()
 
-		start := time.Now()
+	start := time.Now()
 
-		var emailMessage email.OutboundEmailMessage
-		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&emailMessage); err != nil {
-			return fmt.Errorf("decoding JSON body: %w", err)
-		}
-
-		if err := a.handleEmailRequest(ctx, &emailMessage); err != nil {
-			return fmt.Errorf("handling outbound email request: %w", err)
-		}
-
-		a.outboundEmailsExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
-
-		return nil
+	var emailMessage email.OutboundEmailMessage
+	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&emailMessage); err != nil {
+		return fmt.Errorf("decoding JSON body: %w", err)
 	}
+
+	if err := a.handleEmailRequest(ctx, &emailMessage); err != nil {
+		return fmt.Errorf("handling outbound email request: %w", err)
+	}
+
+	a.outboundEmailsExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
+
+	return nil
 }
 
 func (a *AsyncDataChangeMessageHandler) handleEmailRequest(

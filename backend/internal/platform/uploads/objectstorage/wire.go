@@ -2,6 +2,7 @@ package objectstorage
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
+
 	"github.com/google/wire"
 )
 

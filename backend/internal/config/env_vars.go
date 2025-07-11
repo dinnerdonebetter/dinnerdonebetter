@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log/slog"
 	"os"
 	"strings"
 
@@ -13,6 +14,13 @@ const (
 	// RunningInKubernetesEnvVarKey is the env var key we use to indicate we're running in Kubernetes.
 	RunningInKubernetesEnvVarKey = "RUNNING_IN_KUBERNETES"
 )
+
+func ConditionallyCease() {
+	if ShouldCeaseOperation() {
+		slog.Info("CEASE_OPERATION is set to true, exiting")
+		os.Exit(0)
+	}
+}
 
 // ShouldCeaseOperation returns whether a job should just quit without trying.
 func ShouldCeaseOperation() bool {

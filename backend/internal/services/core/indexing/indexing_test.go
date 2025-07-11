@@ -2,8 +2,6 @@ package indexing
 
 import (
 	"context"
-	mocksearch "github.com/dinnerdonebetter/backend/internal/platform/search/text/mock"
-	"github.com/stretchr/testify/mock"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
@@ -11,9 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/platform/search/text/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestHandleIndexRequest(T *testing.T) {

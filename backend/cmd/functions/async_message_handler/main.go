@@ -3,12 +3,11 @@ package main
 import (
 	"context"
 	"log"
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
-	dcmh "github.com/dinnerdonebetter/backend/internal/build/functions/data_change_message_handler"
+	datachangemessagehandler "github.com/dinnerdonebetter/backend/internal/build/functions/data_change_message_handler"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
@@ -44,10 +43,7 @@ var (
 )
 
 func main() {
-	if config.ShouldCeaseOperation() {
-		slog.Info("CEASE_OPERATION is set to true, exiting")
-		os.Exit(0)
-	}
+	config.ConditionallyCease()
 
 	cfg, err := config.LoadConfigFromEnvironment[config.AsyncMessageHandlerConfig]()
 	if err != nil {
@@ -57,7 +53,7 @@ func main() {
 
 	ctx := context.Background()
 
-	dataChangeMessageHandler, err := dcmh.Build(ctx, cfg)
+	dataChangeMessageHandler, err := datachangemessagehandler.Build(ctx, cfg)
 	if err != nil {
 		log.Fatalf("error building data_change_message_handler: %v", err)
 	}
@@ -76,32 +72,7 @@ func main() {
 
 	dataChangeMessageHandler.SetNonWebhookEventTypes(nonWebhookEventTypes)
 
-	if err = doTheThing(
-		ctx,
-		logger,
-		tracerProvider,
-		metricsProvider,
-		cfg,
-		consumerProvider,
-		analyticsEventReporter,
-		identityRepo,
-		webhookRepo,
-		mealplanningRepo,
-		outboundEmailsPublisher,
-		searchDataIndexPublisher,
-		webhookExecutionRequestPublisher,
-		emailer,
-		uploadManager,
-		dataChangesExecutionTimeHistogram,
-		outboundEmailsExecutionTimeHistogram,
-		searchIndexRequestsExecutionTimeHistogram,
-		userDataAggregationExecutionTimeHistogram,
-		webhookExecutionTimestampHistogram,
-		decoder,
-		stopChan,
-		errorsChan,
-	); err != nil {
-		closeFunc()
+	if err = dataChangeMessageHandler.ConsumeMessages(ctx, stopChan, errorsChan); err != nil {
 		log.Fatal(err)
 	}
 
@@ -112,6 +83,5 @@ func main() {
 		// os.Kill
 		<-signalChan
 		stopChan <- true
-		closeFunc()
 	}()
 }

@@ -26,26 +26,24 @@ import (
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 )
 
-func (a *AsyncDataChangeMessageHandler) buildDataChangesEventHandler() func(context.Context, []byte) error {
-	return func(ctx context.Context, rawMsg []byte) error {
-		ctx, span := a.tracer.StartSpan(ctx)
-		defer span.End()
+func (a *AsyncDataChangeMessageHandler) DataChangesEventHandler(ctx context.Context, rawMsg []byte) error {
+	ctx, span := a.tracer.StartSpan(ctx)
+	defer span.End()
 
-		start := time.Now()
+	start := time.Now()
 
-		var dataChangeMessage audit.DataChangeMessage
-		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&dataChangeMessage); err != nil {
-			return fmt.Errorf("decoding JSON body: %w", err)
-		}
-
-		if err := a.handleDataChangeMessage(ctx, &dataChangeMessage); err != nil {
-			return observability.PrepareAndLogError(err, a.logger, span, "handling data change message")
-		}
-
-		a.dataChangesExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
-
-		return nil
+	var dataChangeMessage audit.DataChangeMessage
+	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&dataChangeMessage); err != nil {
+		return fmt.Errorf("decoding JSON body: %w", err)
 	}
+
+	if err := a.handleDataChangeMessage(ctx, &dataChangeMessage); err != nil {
+		return observability.PrepareAndLogError(err, a.logger, span, "handling data change message")
+	}
+
+	a.dataChangesExecutionTimeHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
+
+	return nil
 }
 
 func (a *AsyncDataChangeMessageHandler) handleDataChangeMessage(

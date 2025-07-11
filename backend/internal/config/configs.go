@@ -133,17 +133,16 @@ type (
 
 	// AsyncMessageHandlerConfig configures an instance of the search data index scheduler job.
 	AsyncMessageHandlerConfig struct {
-		_ struct{} `json:"-"`
-
+		_             struct{}               `json:"-"`
 		Storage       objectstorage.Config   `envPrefix:"STORAGE_"       json:"storage"`
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
 		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
 		Search        textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
-		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
 	}
 
 	APIServiceOAuth2ConnectionConfig struct {

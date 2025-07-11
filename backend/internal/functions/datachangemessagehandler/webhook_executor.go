@@ -9,35 +9,33 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
-func (a *AsyncDataChangeMessageHandler) buildWebhookExecutionRequestsEventHandler() func(context.Context, []byte) error {
-	return func(ctx context.Context, rawMsg []byte) error {
-		ctx, span := a.tracer.StartSpan(ctx)
-		defer span.End()
+func (a *AsyncDataChangeMessageHandler) WebhookExecutionRequestsEventHandler(ctx context.Context, rawMsg []byte) error {
+	ctx, span := a.tracer.StartSpan(ctx)
+	defer span.End()
 
-		start := time.Now()
+	start := time.Now()
 
-		var webhookExecutionRequest webhooks.WebhookExecutionRequest
-		if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&webhookExecutionRequest); err != nil {
-			return fmt.Errorf("decoding JSON body: %w", err)
-		}
-
-		if err := a.handleWebhookExecutionRequest(ctx, &webhookExecutionRequest); err != nil {
-			return fmt.Errorf("handling webhook execution request: %w", err)
-		}
-
-		a.webhookExecutionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
-
-		return nil
+	var webhookExecutionRequest webhooks.WebhookExecutionRequest
+	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&webhookExecutionRequest); err != nil {
+		return fmt.Errorf("decoding JSON body: %w", err)
 	}
+
+	if err := a.handleWebhookExecutionRequest(ctx, &webhookExecutionRequest); err != nil {
+		return fmt.Errorf("handling webhook execution request: %w", err)
+	}
+
+	a.webhookExecutionTimestampHistogram.Record(ctx, float64(time.Since(start).Milliseconds()))
+
+	return nil
 }
 
 func (a *AsyncDataChangeMessageHandler) handleWebhookExecutionRequest(

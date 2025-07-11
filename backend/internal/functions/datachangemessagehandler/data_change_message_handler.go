@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -16,10 +14,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
+	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 )
 
 const (
@@ -31,27 +33,30 @@ var (
 )
 
 type AsyncDataChangeMessageHandler struct {
-	tracer                  tracing.Tracer
-	logger                  logging.Logger
-	queuesConfig            msgconfig.QueuesConfig
-	nonWebhookEventTypesHat sync.RWMutex
-	nonWebhookEventTypes    []string
-	identityRepo            identity.Repository
-	webhookRepo             webhooks.Repository
-	mealPlanningRepo        mealplanning.Repository
-	consumerProvider        messagequeue.ConsumerProvider
-	analyticsEventReporter  analytics.EventReporter
-	outboundEmailsPublisher,
-	searchDataIndexPublisher,
-	webhookExecutionRequestPublisher messagequeue.Publisher
-	emailer       email.Emailer
-	uploadManager uploads.UploadManager // TODO: change to a `FileSaver` type to cut out routeParamManager dependency
-	dataChangesExecutionTimeHistogram,
-	outboundEmailsExecutionTimeHistogram,
-	searchIndexRequestsExecutionTimeHistogram,
-	userDataAggregationExecutionTimeHistogram,
-	webhookExecutionTimestampHistogram metrics.Float64Histogram
-	decoder encoding.ServerEncoderDecoder
+	searchDataIndexPublisher                  messagequeue.Publisher
+	identityRepo                              identity.Repository
+	logger                                    logging.Logger
+	decoder                                   encoding.ServerEncoderDecoder
+	webhookExecutionTimestampHistogram        metrics.Float64Histogram
+	userDataAggregationExecutionTimeHistogram metrics.Float64Histogram
+	outboundEmailsPublisher                   messagequeue.Publisher
+	webhookRepo                               webhooks.Repository
+	mealPlanningRepo                          mealplanning.Repository
+	consumerProvider                          messagequeue.ConsumerProvider
+	tracerProvider                            tracing.TracerProvider
+	analyticsEventReporter                    analytics.EventReporter
+	dataChangesExecutionTimeHistogram         metrics.Float64Histogram
+	webhookExecutionRequestPublisher          messagequeue.Publisher
+	emailer                                   email.Emailer
+	uploadManager                             uploads.UploadManager
+	tracer                                    tracing.Tracer
+	outboundEmailsExecutionTimeHistogram      metrics.Float64Histogram
+	searchIndexRequestsExecutionTimeHistogram metrics.Float64Histogram
+	coreDataIndexer                           *coreindexing.CoreDataIndexer
+	eatingDataIndexer                         *eatingindexing.EatingDataIndexer
+	queuesConfig                              msgconfig.QueuesConfig
+	nonWebhookEventTypes                      []string
+	nonWebhookEventTypesHat                   sync.RWMutex
 }
 
 func (a *AsyncDataChangeMessageHandler) SetNonWebhookEventTypes(nonWebhookEventTypes []string) {
@@ -74,6 +79,8 @@ func NewAsyncDataChangeMessageHandler(
 	uploadManager uploads.UploadManager,
 	metricsProvider metrics.Provider,
 	decoder encoding.ServerEncoderDecoder,
+	coreDataIndexer *coreindexing.CoreDataIndexer,
+	eatingDataIndexer *eatingindexing.EatingDataIndexer,
 ) (*AsyncDataChangeMessageHandler, error) {
 	dataChangesExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("data_changes_execution_time")
 	if err != nil {
@@ -136,6 +143,8 @@ func NewAsyncDataChangeMessageHandler(
 		userDataAggregationExecutionTimeHistogram: userDataAggregationExecutionTimeHistogram,
 		webhookExecutionTimestampHistogram:        webhookExecutionTimestampHistogram,
 		decoder:                                   decoder,
+		coreDataIndexer:                           coreDataIndexer,
+		eatingDataIndexer:                         eatingDataIndexer,
 	}, nil
 }
 
@@ -152,16 +161,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	dataChangesConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.DataChangesTopicName,
-		a.buildDataChangesEventHandler(
-			logger,
-			tracer,
-			dataManager,
-			analyticsEventReporter,
-			webhookExecutionRequestPublisher,
-			outboundEmailsPublisher,
-			searchDataIndexPublisher,
-			dataChangesExecutionTimeHistogram,
-		),
+		a.DataChangesEventHandler,
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring data changes consumer")
@@ -170,13 +170,7 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	outboundEmailsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.OutboundEmailsTopicName,
-		a.buildOutboundEmailsEventHandler(
-			logger,
-			tracer,
-			emailer,
-			analyticsEventReporter,
-			outboundEmailsExecutionTimeHistogram,
-		),
+		a.OutboundEmailsEventHandler,
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring outbound emails consumer")
@@ -185,18 +179,19 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	searchIndexRequestsConsumer, err := a.consumerProvider.ProvideConsumer(
 		ctx,
 		a.queuesConfig.SearchIndexRequestsTopicName,
-		a.buildSearchIndexRequestsEventHandler(
-			logger,
-			tracer,
-			tracerProvider,
-			dataManager,
-			metricsProvider,
-			&cfg.Search,
-			searchIndexRequestsExecutionTimeHistogram,
-		),
+		a.SearchIndexRequestsEventHandler,
 	)
 	if err != nil {
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring search index requests consumer")
+	}
+
+	webhookExecutionRequestsConsumer, err := a.consumerProvider.ProvideConsumer(
+		ctx,
+		a.queuesConfig.WebhookExecutionRequestsTopicName,
+		a.WebhookExecutionRequestsEventHandler,
+	)
+	if err != nil {
+		return observability.PrepareAndLogError(err, a.logger, span, "configuring webhook execution requests consumer")
 	}
 
 	//userDataAggregationConsumer, err := a.consumerProvider.ProvideConsumer(
@@ -214,20 +209,12 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 	//	return observability.PrepareAndLogError(err, a.logger, span, "configuring user data aggregation consumer")
 	//}
 
-	webhookExecutionRequestsConsumer, err := a.consumerProvider.ProvideConsumer(
-		ctx,
-		a.queuesConfig.WebhookExecutionRequestsTopicName,
-		a.buildWebhookExecutionRequestsEventHandler(),
-	)
-	if err != nil {
-		return observability.PrepareAndLogError(err, a.logger, span, "configuring webhook execution requests consumer")
-	}
-
 	go dataChangesConsumer.Consume(stopChan, errorsChan)
 	go outboundEmailsConsumer.Consume(stopChan, errorsChan)
 	go searchIndexRequestsConsumer.Consume(stopChan, errorsChan)
-	go userDataAggregationConsumer.Consume(stopChan, errorsChan)
 	go webhookExecutionRequestsConsumer.Consume(stopChan, errorsChan)
+	//go userDataAggregationConsumer.Consume(stopChan, errorsChan)
+
 	go func() {
 		for e := range errorsChan {
 			a.logger.Error("consuming message", e)

@@ -5,8 +5,6 @@ package datachangemessagehandler
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/functions/datachangemessagehandler"
@@ -18,11 +16,15 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
+	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
 
 	"github.com/google/wire"
 )
@@ -49,7 +51,10 @@ func Build(
 		observability.Providers,
 		tracing.ProvidersTracing,
 		objectstorage.Providers,
+		coreindexing.Providers,
+		eatingindexing.Providers,
 		ConfigProviders,
+		SearcherProviders,
 		ProvidersMiscellaneous, // TODO: eliminate me
 	)
 
