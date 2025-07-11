@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createUserIngredientPreferenceForTest(t *testing.T, ctx context.Context, exampleUserIngredientPreference *types.UserIngredientPreference, dbc *Querier) *types.UserIngredientPreference {
+func createUserIngredientPreferenceForTest(t *testing.T, ctx context.Context, exampleUserIngredientPreference *types.UserIngredientPreference, dbc *repository) *types.UserIngredientPreference {
 	t.Helper()
 
 	// create

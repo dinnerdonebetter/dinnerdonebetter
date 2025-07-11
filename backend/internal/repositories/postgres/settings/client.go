@@ -15,8 +15,8 @@ const (
 	o11yName = "settings_db_client"
 )
 
-// Querier is the audit log entry client.
-type Querier struct {
+// repository is the audit log entry client.
+type repository struct {
 	tracer            tracing.Tracer
 	logger            logging.Logger
 	generatedQuerier  generated2.Querier
@@ -25,14 +25,14 @@ type Querier struct {
 	database.Client
 }
 
-// ProvideSettingsRepository provides a new client.
+// ProvideSettingsRepository provides a new repository.
 func ProvideSettingsRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,
 	client database.Client,
 ) settings.Repository {
-	c := &Querier{
+	c := &repository{
 		Client:            client,
 		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),

@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	_ types.RecipeMediaDataManager = (*Querier)(nil)
+	_ types.RecipeMediaDataManager = (*repository)(nil)
 )
 
 // RecipeMediaExists fetches whether a recipe media exists from the database.
-func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (exists bool, err error) {
+func (q *repository) RecipeMediaExists(ctx context.Context, recipeMediaID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -37,7 +37,7 @@ func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (
 }
 
 // GetRecipeMedia fetches a recipe media from the database.
-func (q *Querier) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*types.RecipeMedia, error) {
+func (q *repository) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*types.RecipeMedia, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -71,7 +71,7 @@ func (q *Querier) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*ty
 }
 
 // getRecipeMediaForRecipe fetches a list of recipe media from the database that meet a particular filter.
-func (q *Querier) getRecipeMediaForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeMedia, error) {
+func (q *repository) getRecipeMediaForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeMedia, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -108,7 +108,7 @@ func (q *Querier) getRecipeMediaForRecipe(ctx context.Context, recipeID string) 
 }
 
 // getRecipeMediaForRecipeStep fetches a list of recipe media from the database that meet a particular filter.
-func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, recipeStepID string) ([]*types.RecipeMedia, error) {
+func (q *repository) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, recipeStepID string) ([]*types.RecipeMedia, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -154,7 +154,7 @@ func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, rec
 }
 
 // CreateRecipeMedia creates a recipe media in the database.
-func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMediaDatabaseCreationInput) (*types.RecipeMedia, error) {
+func (q *repository) CreateRecipeMedia(ctx context.Context, input *types.RecipeMediaDatabaseCreationInput) (*types.RecipeMedia, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -195,7 +195,7 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 }
 
 // UpdateRecipeMedia updates a particular recipe media.
-func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMedia) error {
+func (q *repository) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMedia) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -222,7 +222,7 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 }
 
 // ArchiveRecipeMedia archives a recipe media from the database by its ID.
-func (q *Querier) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) error {
+func (q *repository) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

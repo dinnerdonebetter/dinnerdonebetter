@@ -18,11 +18,11 @@ import (
 )
 
 var (
-	_ mealplanning.RecipeDataManager = (*Querier)(nil)
+	_ mealplanning.RecipeDataManager = (*repository)(nil)
 )
 
 // RecipeExists fetches whether a recipe exists from the database.
-func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists bool, err error) {
+func (q *repository) RecipeExists(ctx context.Context, recipeID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -40,7 +40,7 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 }
 
 // getRecipe fetches a recipe from the database.
-func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error) {
+func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -234,12 +234,12 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*mealplanning
 }
 
 // GetRecipe fetches a recipe from the database.
-func (q *Querier) GetRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error) {
+func (q *repository) GetRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error) {
 	return q.getRecipe(ctx, recipeID)
 }
 
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.
-func (q *Querier) GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
+func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -298,7 +298,7 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *filtering.QueryFilter)
 }
 
 // GetRecipesCreatedByUser fetches a list of recipes from the database that meet a particular filter.
-func (q *Querier) GetRecipesCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
+func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -364,7 +364,7 @@ func (q *Querier) GetRecipesCreatedByUser(ctx context.Context, userID string, fi
 }
 
 // GetRecipesWithIDs fetches a list of recipes from the database that meet a particular filter.
-func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*mealplanning.Recipe, error) {
+func (q *repository) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*mealplanning.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -384,7 +384,7 @@ func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*mealp
 }
 
 // GetRecipeIDsThatNeedSearchIndexing fetches a list of recipe IDs from the database that meet a particular filter.
-func (q *Querier) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+func (q *repository) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -397,7 +397,7 @@ func (q *Querier) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]str
 }
 
 // SearchForRecipes fetches a list of recipes from the database that match a query.
-func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
+func (q *repository) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -457,7 +457,7 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 }
 
 // CreateRecipe creates a recipe in the database.
-func (q *Querier) CreateRecipe(ctx context.Context, input *mealplanning.RecipeDatabaseCreationInput) (*mealplanning.Recipe, error) {
+func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.RecipeDatabaseCreationInput) (*mealplanning.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -629,7 +629,7 @@ func findCreatedRecipeStepProductsForVessels(recipe *mealplanning.RecipeDatabase
 }
 
 // UpdateRecipe updates a particular recipe.
-func (q *Querier) UpdateRecipe(ctx context.Context, updated *mealplanning.Recipe) error {
+func (q *repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Recipe) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -666,7 +666,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *mealplanning.Recipe
 }
 
 // MarkRecipeAsIndexed updates a particular recipe's last_indexed_at value.
-func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) error {
+func (q *repository) MarkRecipeAsIndexed(ctx context.Context, recipeID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -688,7 +688,7 @@ func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) erro
 }
 
 // ArchiveRecipe archives a recipe from the database by its ID.
-func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {
+func (q *repository) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

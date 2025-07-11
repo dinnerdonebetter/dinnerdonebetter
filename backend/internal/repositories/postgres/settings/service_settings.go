@@ -21,11 +21,11 @@ const (
 )
 
 var (
-	_ types.ServiceSettingDataManager = (*Querier)(nil)
+	_ types.ServiceSettingDataManager = (*repository)(nil)
 )
 
 // ServiceSettingExists fetches whether a service setting exists from the database.
-func (q *Querier) ServiceSettingExists(ctx context.Context, serviceSettingID string) (exists bool, err error) {
+func (q *repository) ServiceSettingExists(ctx context.Context, serviceSettingID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -46,7 +46,7 @@ func (q *Querier) ServiceSettingExists(ctx context.Context, serviceSettingID str
 }
 
 // GetServiceSetting fetches a service setting from the database.
-func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string) (*types.ServiceSetting, error) {
+func (q *repository) GetServiceSetting(ctx context.Context, serviceSettingID string) (*types.ServiceSetting, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -87,7 +87,7 @@ func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string
 }
 
 // SearchForServiceSettings fetches a service setting from the database.
-func (q *Querier) SearchForServiceSettings(ctx context.Context, query string) ([]*types.ServiceSetting, error) {
+func (q *repository) SearchForServiceSettings(ctx context.Context, query string) ([]*types.ServiceSetting, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -134,7 +134,7 @@ func (q *Querier) SearchForServiceSettings(ctx context.Context, query string) ([
 }
 
 // GetServiceSettings fetches a list of service settings from the database that meet a particular filter.
-func (q *Querier) GetServiceSettings(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ServiceSetting], err error) {
+func (q *repository) GetServiceSettings(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ServiceSetting], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -192,7 +192,7 @@ func (q *Querier) GetServiceSettings(ctx context.Context, filter *filtering.Quer
 }
 
 // CreateServiceSetting creates a service setting in the database.
-func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.ServiceSettingDatabaseCreationInput) (*types.ServiceSetting, error) {
+func (q *repository) CreateServiceSetting(ctx context.Context, input *types.ServiceSettingDatabaseCreationInput) (*types.ServiceSetting, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -252,7 +252,7 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 }
 
 // ArchiveServiceSetting archives a service setting from the database by its ID.
-func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
+func (q *repository) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

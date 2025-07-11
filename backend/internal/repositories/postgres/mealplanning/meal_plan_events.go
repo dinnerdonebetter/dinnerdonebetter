@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	_ types.MealPlanEventDataManager = (*Querier)(nil)
+	_ types.MealPlanEventDataManager = (*repository)(nil)
 )
 
 // MealPlanEventExists fetches whether a meal plan event exists from the database.
-func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (exists bool, err error) {
+func (q *repository) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -47,7 +47,7 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 }
 
 // GetMealPlanEvent fetches a meal plan event from the database.
-func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error) {
+func (q *repository) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -95,7 +95,7 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEven
 }
 
 // getMealPlanEventsForMealPlan fetches a list of mealPlanEvents from the database that meet a particular filter.
-func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanEvent, err error) {
+func (q *repository) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanEvent, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -141,7 +141,7 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 }
 
 // GetMealPlanEvents fetches a list of meal plan events from the database that meet a particular filter.
-func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.MealPlanEvent], err error) {
+func (q *repository) GetMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.MealPlanEvent], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -197,7 +197,7 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 }
 
 // MealPlanEventIsEligibleForVoting returns if a meal plan can be voted on.
-func (q *Querier) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error) {
+func (q *repository) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -227,7 +227,7 @@ func (q *Querier) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlan
 }
 
 // createMealPlanEvent creates a meal plan event in the database.
-func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
+func (q *repository) createMealPlanEvent(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -277,7 +277,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 }
 
 // CreateMealPlanEvent creates a meal plan event in the database.
-func (q *Querier) CreateMealPlanEvent(ctx context.Context, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
+func (q *repository) CreateMealPlanEvent(ctx context.Context, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -303,7 +303,7 @@ func (q *Querier) CreateMealPlanEvent(ctx context.Context, input *types.MealPlan
 }
 
 // UpdateMealPlanEvent updates a particular meal plan event.
-func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPlanEvent) error {
+func (q *repository) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPlanEvent) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -330,7 +330,7 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 }
 
 // ArchiveMealPlanEvent archives a meal plan event from the database by its ID.
-func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
+func (q *repository) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

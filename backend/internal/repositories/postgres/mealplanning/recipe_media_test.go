@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRecipeMediaForTest(t *testing.T, ctx context.Context, exampleRecipeMedia *types.RecipeMedia, dbc *Querier) *types.RecipeMedia {
+func createRecipeMediaForTest(t *testing.T, ctx context.Context, exampleRecipeMedia *types.RecipeMedia, dbc *repository) *types.RecipeMedia {
 	t.Helper()
 
 	// create

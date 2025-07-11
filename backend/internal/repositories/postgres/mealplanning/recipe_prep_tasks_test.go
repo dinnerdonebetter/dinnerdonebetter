@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRecipePrepTaskForTest(t *testing.T, ctx context.Context, exampleRecipePrepTask *types.RecipePrepTask, dbc *Querier) *types.RecipePrepTask {
+func createRecipePrepTaskForTest(t *testing.T, ctx context.Context, exampleRecipePrepTask *types.RecipePrepTask, dbc *repository) *types.RecipePrepTask {
 	t.Helper()
 
 	// create

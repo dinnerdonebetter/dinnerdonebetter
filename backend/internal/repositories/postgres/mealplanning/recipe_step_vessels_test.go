@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRecipeStepVesselForTest(t *testing.T, ctx context.Context, recipeID string, exampleRecipeStepVessel *types.RecipeStepVessel, dbc *Querier) *types.RecipeStepVessel {
+func createRecipeStepVesselForTest(t *testing.T, ctx context.Context, recipeID string, exampleRecipeStepVessel *types.RecipeStepVessel, dbc *repository) *types.RecipeStepVessel {
 	t.Helper()
 
 	// create

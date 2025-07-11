@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func buildRecipeStepForTestCreation(t *testing.T, ctx context.Context, recipeID string, dbc *Querier) *types.RecipeStep {
+func buildRecipeStepForTestCreation(t *testing.T, ctx context.Context, recipeID string, dbc *repository) *types.RecipeStep {
 	t.Helper()
 
 	recipeStepID := identifiers.New()
@@ -98,7 +98,7 @@ func buildRecipeStepForTestCreation(t *testing.T, ctx context.Context, recipeID 
 	return exampleRecipeStep
 }
 
-func createRecipeStepForTest(t *testing.T, ctx context.Context, recipeID string, exampleRecipeStep *types.RecipeStep, dbc *Querier) *types.RecipeStep {
+func createRecipeStepForTest(t *testing.T, ctx context.Context, recipeID string, exampleRecipeStep *types.RecipeStep, dbc *repository) *types.RecipeStep {
 	t.Helper()
 
 	// create

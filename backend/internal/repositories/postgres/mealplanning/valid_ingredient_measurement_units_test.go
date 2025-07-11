@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createValidIngredientMeasurementUnitForTest(t *testing.T, ctx context.Context, exampleValidIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit, dbc *Querier) *types.ValidIngredientMeasurementUnit {
+func createValidIngredientMeasurementUnitForTest(t *testing.T, ctx context.Context, exampleValidIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit, dbc *repository) *types.ValidIngredientMeasurementUnit {
 	t.Helper()
 
 	// create

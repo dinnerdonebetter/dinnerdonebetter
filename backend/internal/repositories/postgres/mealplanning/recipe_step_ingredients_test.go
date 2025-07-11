@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRecipeStepIngredientForTest(t *testing.T, ctx context.Context, recipeID string, exampleRecipeStepIngredient *types.RecipeStepIngredient, dbc *Querier) *types.RecipeStepIngredient {
+func createRecipeStepIngredientForTest(t *testing.T, ctx context.Context, recipeID string, exampleRecipeStepIngredient *types.RecipeStepIngredient, dbc *repository) *types.RecipeStepIngredient {
 	t.Helper()
 
 	// create

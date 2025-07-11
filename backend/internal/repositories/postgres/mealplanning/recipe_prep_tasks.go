@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	_ mealplanning.RecipePrepTaskDataManager = (*Querier)(nil)
+	_ mealplanning.RecipePrepTaskDataManager = (*repository)(nil)
 )
 
 // RecipePrepTaskExists checks if a recipe prep task exists.
-func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error) {
+func (q *repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -50,7 +50,7 @@ func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrep
 }
 
 // GetRecipePrepTask fetches a recipe prep task.
-func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (x *mealplanning.RecipePrepTask, err error) {
+func (q *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (x *mealplanning.RecipePrepTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -120,7 +120,7 @@ func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTas
 }
 
 // createRecipePrepTask creates a recipe prep task.
-func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.RecipePrepTaskDatabaseCreationInput) (*mealplanning.RecipePrepTask, error) {
+func (q *repository) createRecipePrepTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.RecipePrepTaskDatabaseCreationInput) (*mealplanning.RecipePrepTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -187,7 +187,7 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 }
 
 // CreateRecipePrepTask creates a recipe prep task.
-func (q *Querier) CreateRecipePrepTask(ctx context.Context, input *mealplanning.RecipePrepTaskDatabaseCreationInput) (*mealplanning.RecipePrepTask, error) {
+func (q *repository) CreateRecipePrepTask(ctx context.Context, input *mealplanning.RecipePrepTaskDatabaseCreationInput) (*mealplanning.RecipePrepTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -218,7 +218,7 @@ func (q *Querier) CreateRecipePrepTask(ctx context.Context, input *mealplanning.
 }
 
 // createRecipePrepTaskStep creates a recipe prep task step.
-func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.RecipePrepTaskStepDatabaseCreationInput) (*mealplanning.RecipePrepTaskStep, error) {
+func (q *repository) createRecipePrepTaskStep(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.RecipePrepTaskStepDatabaseCreationInput) (*mealplanning.RecipePrepTaskStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -254,7 +254,7 @@ func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database
 }
 
 // getRecipePrepTasksForRecipe gets a recipe prep task.
-func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipePrepTask, error) {
+func (q *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipePrepTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -322,12 +322,12 @@ func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID stri
 }
 
 // GetRecipePrepTasksForRecipe gets a recipe prep task.
-func (q *Querier) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) (x []*mealplanning.RecipePrepTask, err error) {
+func (q *repository) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) (x []*mealplanning.RecipePrepTask, err error) {
 	return q.getRecipePrepTasksForRecipe(ctx, recipeID)
 }
 
 // UpdateRecipePrepTask updates a recipe prep task.
-func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *mealplanning.RecipePrepTask) error {
+func (q *repository) UpdateRecipePrepTask(ctx context.Context, updated *mealplanning.RecipePrepTask) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -360,7 +360,7 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *mealplannin
 }
 
 // ArchiveRecipePrepTask marks a recipe prep task as archived.
-func (q *Querier) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error {
+func (q *repository) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

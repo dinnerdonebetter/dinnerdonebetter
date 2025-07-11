@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createValidPreparationInstrumentForTest(t *testing.T, ctx context.Context, exampleValidPreparationInstrument *types.ValidPreparationInstrument, dbc *Querier) *types.ValidPreparationInstrument {
+func createValidPreparationInstrumentForTest(t *testing.T, ctx context.Context, exampleValidPreparationInstrument *types.ValidPreparationInstrument, dbc *repository) *types.ValidPreparationInstrument {
 	t.Helper()
 
 	// create

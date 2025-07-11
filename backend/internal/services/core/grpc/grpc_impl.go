@@ -19,9 +19,9 @@ var _ coresvc.CoreServer = (*ServiceImpl)(nil)
 type (
 	ServiceImpl struct {
 		coresvc.UnimplementedCoreServer
-		tracer tracing.Tracer
-		logger logging.Logger
-		authentication.Authenticator
+		tracer      tracing.Tracer
+		logger      logging.Logger
+		authManager authentication.Manager
 	}
 )
 
@@ -32,7 +32,27 @@ func NewCoreService(tracerProvider tracing.TracerProvider, logger logging.Logger
 	}
 }
 
-func (s *ServiceImpl) Ping(ctx context.Context, request *messages.PingRequest) (*messages.PingResponse, error) {
+func (s *ServiceImpl) Ping(_ context.Context, _ *messages.PingRequest) (*messages.PingResponse, error) {
+	return &messages.PingResponse{}, nil
+}
+
+func (s *ServiceImpl) LoginForToken(ctx context.Context, request *messages.LoginForTokenRequest) (*messages.LoginForTokenResponse, error) {
+	return nil, nil
+}
+
+func (s *ServiceImpl) AdminLoginForToken(ctx context.Context, request *messages.AdminLoginForTokenRequest) (*messages.AdminLoginForTokenResponse, error) {
+	return nil, nil
+}
+
+func (s *ServiceImpl) CheckPermissions(ctx context.Context, request *messages.CheckPermissionsRequest) (*messages.CheckPermissionsResponse, error) {
+	return nil, nil
+}
+
+func (s *ServiceImpl) CreateUser(ctx context.Context, request *messages.CreateUserRequest) (*messages.CreateUserResponse, error) {
+	return nil, nil
+}
+
+func (s *ServiceImpl) GetSelf(ctx context.Context, request *messages.GetSelfRequest) (*messages.GetSelfResponse, error) {
 	return nil, nil
 }
 
@@ -41,10 +61,6 @@ func (s *ServiceImpl) ExchangeToken(ctx context.Context, request *messages.Excha
 }
 
 func (s *ServiceImpl) AcceptHouseholdInvitation(ctx context.Context, request *messages.AcceptHouseholdInvitationRequest) (*messages.AcceptHouseholdInvitationResponse, error) {
-	return nil, nil
-}
-
-func (s *ServiceImpl) AdminLoginForToken(ctx context.Context, request *messages.AdminLoginForTokenRequest) (*messages.AdminLoginForTokenResponse, error) {
 	return nil, nil
 }
 
@@ -92,10 +108,6 @@ func (s *ServiceImpl) CancelHouseholdInvitation(ctx context.Context, request *me
 	return nil, nil
 }
 
-func (s *ServiceImpl) CheckPermissions(ctx context.Context, request *messages.CheckPermissionsRequest) (*messages.CheckPermissionsResponse, error) {
-	return nil, nil
-}
-
 func (s *ServiceImpl) CreateHousehold(ctx context.Context, request *messages.CreateHouseholdRequest) (*messages.CreateHouseholdResponse, error) {
 	return nil, nil
 }
@@ -113,10 +125,6 @@ func (s *ServiceImpl) CreateServiceSetting(ctx context.Context, request *message
 }
 
 func (s *ServiceImpl) CreateServiceSettingConfiguration(ctx context.Context, request *messages.CreateServiceSettingConfigurationRequest) (*messages.CreateServiceSettingConfigurationResponse, error) {
-	return nil, nil
-}
-
-func (s *ServiceImpl) CreateUser(ctx context.Context, request *messages.CreateUserRequest) (*messages.CreateUserResponse, error) {
 	return nil, nil
 }
 
@@ -188,10 +196,6 @@ func (s *ServiceImpl) GetReceivedHouseholdInvitations(ctx context.Context, reque
 	return nil, nil
 }
 
-func (s *ServiceImpl) GetSelf(ctx context.Context, request *messages.GetSelfRequest) (*messages.GetSelfResponse, error) {
-	return nil, nil
-}
-
 func (s *ServiceImpl) GetSentHouseholdInvitations(ctx context.Context, request *messages.GetSentHouseholdInvitationsRequest) (*messages.GetSentHouseholdInvitationsResponse, error) {
 	return nil, nil
 }
@@ -237,10 +241,6 @@ func (s *ServiceImpl) GetWebhook(ctx context.Context, request *messages.GetWebho
 }
 
 func (s *ServiceImpl) GetWebhooks(ctx context.Context, request *messages.GetWebhooksRequest) (*messages.GetWebhooksResponse, error) {
-	return nil, nil
-}
-
-func (s *ServiceImpl) LoginForToken(ctx context.Context, request *messages.LoginForTokenRequest) (*messages.LoginForTokenResponse, error) {
 	return nil, nil
 }
 

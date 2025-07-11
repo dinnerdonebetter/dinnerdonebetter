@@ -21,11 +21,11 @@ const (
 )
 
 var (
-	_ types.WebhookDataManager = (*Querier)(nil)
+	_ types.WebhookDataManager = (*repository)(nil)
 )
 
 // WebhookExists fetches whether a webhook exists from the database.
-func (q *Querier) WebhookExists(ctx context.Context, webhookID, accountID string) (exists bool, err error) {
+func (q *repository) WebhookExists(ctx context.Context, webhookID, accountID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -55,7 +55,7 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, accountID string
 }
 
 // GetWebhook fetches a webhook from the database.
-func (q *Querier) GetWebhook(ctx context.Context, webhookID, accountID string) (*types.Webhook, error) {
+func (q *repository) GetWebhook(ctx context.Context, webhookID, accountID string) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -112,7 +112,7 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, accountID string) (
 }
 
 // GetWebhooks fetches a list of webhooks from the database that meet a particular filter.
-func (q *Querier) GetWebhooks(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
+func (q *repository) GetWebhooks(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Webhook], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -168,7 +168,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, accountID string, filter *fil
 }
 
 // GetWebhooksForAccountAndEvent fetches a list of webhooks from the database that meet a particular filter.
-func (q *Querier) GetWebhooksForAccountAndEvent(ctx context.Context, accountID, eventType string) ([]*types.Webhook, error) {
+func (q *repository) GetWebhooksForAccountAndEvent(ctx context.Context, accountID, eventType string) ([]*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -207,7 +207,7 @@ func (q *Querier) GetWebhooksForAccountAndEvent(ctx context.Context, accountID, 
 }
 
 // CreateWebhook creates a webhook in a database.
-func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabaseCreationInput) (*types.Webhook, error) {
+func (q *repository) CreateWebhook(ctx context.Context, input *types.WebhookDatabaseCreationInput) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -282,7 +282,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 }
 
 // createWebhookTriggerEvent creates a webhook trigger event in a database.
-func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier database.SQLQueryExecutor, accountID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
+func (q *repository) createWebhookTriggerEvent(ctx context.Context, querier database.SQLQueryExecutor, accountID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -329,7 +329,7 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 }
 
 // ArchiveWebhook archives a webhook from the database.
-func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, accountID string) error {
+func (q *repository) ArchiveWebhook(ctx context.Context, webhookID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -382,7 +382,7 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, accountID strin
 }
 
 // AddWebhookTriggerEvent adds a webhook trigger event from the database.
-func (q *Querier) AddWebhookTriggerEvent(ctx context.Context, accountID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
+func (q *repository) AddWebhookTriggerEvent(ctx context.Context, accountID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -423,7 +423,7 @@ func (q *Querier) AddWebhookTriggerEvent(ctx context.Context, accountID string, 
 }
 
 // ArchiveWebhookTriggerEvent archives a webhook trigger event from the database.
-func (q *Querier) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
+func (q *repository) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

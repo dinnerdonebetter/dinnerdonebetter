@@ -31,13 +31,13 @@ func (e *sqlmockExpecterWrapper) AssertExpectations(t mock.TestingT) bool {
 	return assert.NoError(t, e.Sqlmock.ExpectationsWereMet(), "not all database expectations were met")
 }
 
-func buildMockSQLTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
+func buildMockSQLTestClient(t *testing.T) (*repository, *sqlmockExpecterWrapper) {
 	t.Helper()
 
 	fakeDB, sqlMock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	require.NoError(t, err)
 
-	c := &Querier{
+	c := &repository{
 		db:               fakeDB,
 		logger:           logging.NewNoopLogger(),
 		generatedQuerier: generated.New(),
@@ -47,7 +47,7 @@ func buildMockSQLTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
 }
 
-func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresContainer) {
+func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.PostgresContainer) {
 	t.Helper()
 
 	ctx := t.Context()
@@ -63,13 +63,13 @@ func buildDatabaseClientForTest(t *testing.T) (*Querier, *pgcontainers.PostgresC
 	c := ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogRepo, pgc)
 	require.NoError(t, err)
 
-	return c.(*Querier), container
+	return c.(*repository), container
 }
 
-func buildInertClientForTest(t *testing.T) *Querier {
+func buildInertClientForTest(t *testing.T) *repository {
 	t.Helper()
 
 	c := ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{})
 
-	return c.(*Querier)
+	return c.(*repository)
 }

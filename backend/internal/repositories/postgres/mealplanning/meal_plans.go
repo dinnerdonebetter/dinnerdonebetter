@@ -15,13 +15,13 @@ import (
 )
 
 var (
-	_ types.MealPlanDataManager = (*Querier)(nil)
+	_ types.MealPlanDataManager = (*repository)(nil)
 
 	ErrAlreadyFinalized = errors.New("meal plan already finalized")
 )
 
 // MealPlanExists fetches whether a meal plan exists from the database.
-func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, accountID string) (exists bool, err error) {
+func (q *repository) MealPlanExists(ctx context.Context, mealPlanID, accountID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -51,7 +51,7 @@ func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, accountID stri
 }
 
 // GetMealPlan fetches a meal plan from the database.
-func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, accountID string) (*types.MealPlan, error) {
+func (q *repository) getMealPlan(ctx context.Context, mealPlanID, accountID string) (*types.MealPlan, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -105,12 +105,12 @@ func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, accountID string)
 }
 
 // GetMealPlan fetches a meal plan from the database.
-func (q *Querier) GetMealPlan(ctx context.Context, mealPlanID, accountID string) (*types.MealPlan, error) {
+func (q *repository) GetMealPlan(ctx context.Context, mealPlanID, accountID string) (*types.MealPlan, error) {
 	return q.getMealPlan(ctx, mealPlanID, accountID)
 }
 
 // GetMealPlansForAccount fetches a list of meal plans from the database that meet a particular filter.
-func (q *Querier) GetMealPlansForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.MealPlan], err error) {
+func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.MealPlan], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -173,7 +173,7 @@ func (q *Querier) GetMealPlansForAccount(ctx context.Context, accountID string, 
 }
 
 // CreateMealPlan creates a meal plan in the database.
-func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
+func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -241,7 +241,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 }
 
 // UpdateMealPlan updates a particular meal plan.
-func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) error {
+func (q *repository) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -268,7 +268,7 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 }
 
 // ArchiveMealPlan archives a meal plan from the database by its ID.
-func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID string) error {
+func (q *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -299,7 +299,7 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID str
 }
 
 // AttemptToFinalizeMealPlan finalizes a meal plan if all of its options have a selection.
-func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, accountID string) (finalized bool, err error) {
+func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, accountID string) (finalized bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -431,7 +431,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, acc
 }
 
 // GetUnfinalizedMealPlansWithExpiredVotingPeriods gets unfinalized meal plans with expired voting deadlines.
-func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
+func (q *repository) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -463,7 +463,7 @@ func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Co
 }
 
 // GetFinalizedMealPlanIDsForTheNextWeek gets finalized meal plans for a given duration.
-func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*types.FinalizedMealPlanDatabaseResult, error) {
+func (q *repository) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*types.FinalizedMealPlanDatabaseResult, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -505,7 +505,7 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 	return output, nil
 }
 
-func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*types.MealPlan, error) {
+func (q *repository) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*types.MealPlan, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -533,7 +533,7 @@ func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context
 }
 
 // FetchMissingVotesForMealPlan determines the missing votes for a given meal plan.
-func (q *Querier) FetchMissingVotesForMealPlan(ctx context.Context, mealPlanID, accountID string) ([]*types.MissingVote, error) {
+func (q *repository) FetchMissingVotesForMealPlan(ctx context.Context, mealPlanID, accountID string) ([]*types.MissingVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

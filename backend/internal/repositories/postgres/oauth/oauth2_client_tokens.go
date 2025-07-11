@@ -11,10 +11,10 @@ import (
 	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
 )
 
-var _ types.OAuth2ClientTokenDataManager = (*Querier)(nil)
+var _ types.OAuth2ClientTokenDataManager = (*repository)(nil)
 
 // GetOAuth2ClientTokenByCode fetches an OAuth2 client token from the database.
-func (q *Querier) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*types.OAuth2ClientToken, error) {
+func (q *repository) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*types.OAuth2ClientToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -81,7 +81,7 @@ func (q *Querier) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (
 }
 
 // GetOAuth2ClientTokenByAccess fetches an OAuth2 client token from the database.
-func (q *Querier) GetOAuth2ClientTokenByAccess(ctx context.Context, access string) (*types.OAuth2ClientToken, error) {
+func (q *repository) GetOAuth2ClientTokenByAccess(ctx context.Context, access string) (*types.OAuth2ClientToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -148,7 +148,7 @@ func (q *Querier) GetOAuth2ClientTokenByAccess(ctx context.Context, access strin
 }
 
 // GetOAuth2ClientTokenByRefresh fetches an OAuth2 client token from the database.
-func (q *Querier) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) (*types.OAuth2ClientToken, error) {
+func (q *repository) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) (*types.OAuth2ClientToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -215,7 +215,7 @@ func (q *Querier) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh str
 }
 
 // CreateOAuth2ClientToken creates an OAuth2 client token in the database.
-func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) (*types.OAuth2ClientToken, error) {
+func (q *repository) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) (*types.OAuth2ClientToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -288,7 +288,7 @@ func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAut
 }
 
 // DeleteOAuth2ClientTokenByAccess archives an OAuth2 client token from the database by its ID.
-func (q *Querier) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
+func (q *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -315,7 +315,7 @@ func (q *Querier) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access st
 }
 
 // DeleteOAuth2ClientTokenByCode archives an OAuth2 client token from the database by its access code.
-func (q *Querier) DeleteOAuth2ClientTokenByCode(ctx context.Context, code string) error {
+func (q *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -342,7 +342,7 @@ func (q *Querier) DeleteOAuth2ClientTokenByCode(ctx context.Context, code string
 }
 
 // DeleteOAuth2ClientTokenByRefresh archives an OAuth2 client token from the database by its refresh token.
-func (q *Querier) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
+func (q *repository) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

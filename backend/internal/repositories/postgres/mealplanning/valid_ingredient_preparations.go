@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	_ mealplanning.ValidIngredientPreparationDataManager = (*Querier)(nil)
+	_ mealplanning.ValidIngredientPreparationDataManager = (*repository)(nil)
 )
 
 // ValidIngredientPreparationExists fetches whether a valid ingredient preparation exists from the database.
-func (q *Querier) ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (exists bool, err error) {
+func (q *repository) ValidIngredientPreparationExists(ctx context.Context, validIngredientPreparationID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -39,7 +39,7 @@ func (q *Querier) ValidIngredientPreparationExists(ctx context.Context, validIng
 }
 
 // GetValidIngredientPreparation fetches a valid ingredient preparation from the database.
-func (q *Querier) GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*mealplanning.ValidIngredientPreparation, error) {
+func (q *repository) GetValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) (*mealplanning.ValidIngredientPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -139,7 +139,7 @@ func (q *Querier) GetValidIngredientPreparation(ctx context.Context, validIngred
 }
 
 // GetValidIngredientPreparations fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], err error) {
+func (q *repository) GetValidIngredientPreparations(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -255,7 +255,7 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *fi
 }
 
 // GetValidIngredientPreparationsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], err error) {
+func (q *repository) GetValidIngredientPreparationsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -378,7 +378,7 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 }
 
 // GetValidIngredientPreparationsForIngredient fetches a list of valid ingredient preparations from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], err error) {
+func (q *repository) GetValidIngredientPreparationsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -501,7 +501,7 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 }
 
 // CreateValidIngredientPreparation creates a valid ingredient preparation in the database.
-func (q *Querier) CreateValidIngredientPreparation(ctx context.Context, input *mealplanning.ValidIngredientPreparationDatabaseCreationInput) (*mealplanning.ValidIngredientPreparation, error) {
+func (q *repository) CreateValidIngredientPreparation(ctx context.Context, input *mealplanning.ValidIngredientPreparationDatabaseCreationInput) (*mealplanning.ValidIngredientPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -551,7 +551,7 @@ func (q *Querier) CreateValidIngredientPreparation(ctx context.Context, input *m
 }
 
 // UpdateValidIngredientPreparation updates a particular valid ingredient preparation.
-func (q *Querier) UpdateValidIngredientPreparation(ctx context.Context, updated *mealplanning.ValidIngredientPreparation) error {
+func (q *repository) UpdateValidIngredientPreparation(ctx context.Context, updated *mealplanning.ValidIngredientPreparation) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -576,7 +576,7 @@ func (q *Querier) UpdateValidIngredientPreparation(ctx context.Context, updated 
 }
 
 // ArchiveValidIngredientPreparation archives a valid ingredient preparation from the database by its ID.
-func (q *Querier) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {
+func (q *repository) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

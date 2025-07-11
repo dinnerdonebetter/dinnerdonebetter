@@ -26,7 +26,7 @@ func buildMealPlanOptionForIntegrationTest(meal *types.Meal) *types.MealPlanOpti
 	return exampleMealPlanOption
 }
 
-func createMealPlanOptionForTest(t *testing.T, ctx context.Context, mealPlanID string, exampleMealPlanOption *types.MealPlanOption, dbc *Querier) *types.MealPlanOption {
+func createMealPlanOptionForTest(t *testing.T, ctx context.Context, mealPlanID string, exampleMealPlanOption *types.MealPlanOption, dbc *repository) *types.MealPlanOption {
 	t.Helper()
 
 	// create

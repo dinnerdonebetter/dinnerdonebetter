@@ -16,11 +16,11 @@ import (
 )
 
 var (
-	_ mealplanning.MealDataManager = (*Querier)(nil)
+	_ mealplanning.MealDataManager = (*repository)(nil)
 )
 
 // MealExists fetches whether a meal exists from the database.
-func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
+func (q *repository) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -41,7 +41,7 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 }
 
 // GetMeal fetches a meal from the database.
-func (q *Querier) GetMeal(ctx context.Context, mealID string) (*mealplanning.Meal, error) {
+func (q *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -105,7 +105,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*mealplanning.Mea
 }
 
 // GetMeals fetches a list of meals from the database that meet a particular filter.
-func (q *Querier) GetMeals(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
+func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -159,7 +159,7 @@ func (q *Querier) GetMeals(ctx context.Context, filter *filtering.QueryFilter) (
 }
 
 // GetMealsCreatedByUser fetches a list of meals from the database that meet a particular filter.
-func (q *Querier) GetMealsCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
+func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -220,7 +220,7 @@ func (q *Querier) GetMealsCreatedByUser(ctx context.Context, userID string, filt
 }
 
 // GetMealsWithIDs fetches a list of meals from the database that have IDs within a given set.
-func (q *Querier) GetMealsWithIDs(ctx context.Context, ids []string) ([]*mealplanning.Meal, error) {
+func (q *repository) GetMealsWithIDs(ctx context.Context, ids []string) ([]*mealplanning.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -240,7 +240,7 @@ func (q *Querier) GetMealsWithIDs(ctx context.Context, ids []string) ([]*mealpla
 }
 
 // GetMealIDsThatNeedSearchIndexing fetches a list of meal IDs from the database that meet a particular filter.
-func (q *Querier) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+func (q *repository) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -253,7 +253,7 @@ func (q *Querier) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]strin
 }
 
 // SearchForMeals fetches a list of recipes from the database that match a query.
-func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
+func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -328,7 +328,7 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 }
 
 // CreateMeal creates a meal in the database.
-func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
+func (q *repository) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -378,7 +378,7 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 }
 
 // CreateMeal creates a meal in the database.
-func (q *Querier) CreateMeal(ctx context.Context, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
+func (q *repository) CreateMeal(ctx context.Context, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -404,7 +404,7 @@ func (q *Querier) CreateMeal(ctx context.Context, input *mealplanning.MealDataba
 }
 
 // CreateMealComponent creates a meal component in the database.
-func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQueryExecutor, mealID string, input *mealplanning.MealComponentDatabaseCreationInput) error {
+func (q *repository) CreateMealComponent(ctx context.Context, querier database.SQLQueryExecutor, mealID string, input *mealplanning.MealComponentDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -435,7 +435,7 @@ func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQ
 }
 
 // MarkMealAsIndexed updates a particular meal's last_indexed_at value.
-func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
+func (q *repository) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -457,7 +457,7 @@ func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 }
 
 // ArchiveMeal archives a meal from the database by its ID.
-func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error {
+func (q *repository) ArchiveMeal(ctx context.Context, mealID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	_ types.AccountInstrumentOwnershipDataManager = (*Querier)(nil)
+	_ types.AccountInstrumentOwnershipDataManager = (*repository)(nil)
 )
 
 // AccountInstrumentOwnershipExists fetches whether an account instrument ownership exists from the database.
-func (q *Querier) AccountInstrumentOwnershipExists(ctx context.Context, accountInstrumentOwnershipID, accountID string) (exists bool, err error) {
+func (q *repository) AccountInstrumentOwnershipExists(ctx context.Context, accountInstrumentOwnershipID, accountID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -47,7 +47,7 @@ func (q *Querier) AccountInstrumentOwnershipExists(ctx context.Context, accountI
 }
 
 // GetAccountInstrumentOwnership fetches an account instrument ownership from the database.
-func (q *Querier) GetAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) (*types.AccountInstrumentOwnership, error) {
+func (q *repository) GetAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) (*types.AccountInstrumentOwnership, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -101,7 +101,7 @@ func (q *Querier) GetAccountInstrumentOwnership(ctx context.Context, accountInst
 }
 
 // GetAccountInstrumentOwnerships fetches a list of account instrument ownerships from the database that meet a particular filter.
-func (q *Querier) GetAccountInstrumentOwnerships(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.AccountInstrumentOwnership], err error) {
+func (q *repository) GetAccountInstrumentOwnerships(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.AccountInstrumentOwnership], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -171,7 +171,7 @@ func (q *Querier) GetAccountInstrumentOwnerships(ctx context.Context, accountID 
 }
 
 // CreateAccountInstrumentOwnership creates an account instrument ownership in the database.
-func (q *Querier) CreateAccountInstrumentOwnership(ctx context.Context, input *types.AccountInstrumentOwnershipDatabaseCreationInput) (*types.AccountInstrumentOwnership, error) {
+func (q *repository) CreateAccountInstrumentOwnership(ctx context.Context, input *types.AccountInstrumentOwnershipDatabaseCreationInput) (*types.AccountInstrumentOwnership, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -207,7 +207,7 @@ func (q *Querier) CreateAccountInstrumentOwnership(ctx context.Context, input *t
 }
 
 // UpdateAccountInstrumentOwnership updates a particular account instrument ownership.
-func (q *Querier) UpdateAccountInstrumentOwnership(ctx context.Context, updated *types.AccountInstrumentOwnership) error {
+func (q *repository) UpdateAccountInstrumentOwnership(ctx context.Context, updated *types.AccountInstrumentOwnership) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -233,7 +233,7 @@ func (q *Querier) UpdateAccountInstrumentOwnership(ctx context.Context, updated 
 }
 
 // ArchiveAccountInstrumentOwnership archives an account instrument ownership from the database by its ID.
-func (q *Querier) ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error {
+func (q *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

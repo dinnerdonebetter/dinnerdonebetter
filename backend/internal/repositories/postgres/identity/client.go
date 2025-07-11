@@ -17,10 +17,10 @@ const (
 	o11yName = "identity_db_client"
 )
 
-var _ identity.Repository = (*Querier)(nil)
+var _ identity.Repository = (*repository)(nil)
 
-// Querier is the audit log entry client.
-type Querier struct {
+// repository is the identity repository implementation.
+type repository struct {
 	database.Client
 	tracer            tracing.Tracer
 	logger            logging.Logger
@@ -31,14 +31,14 @@ type Querier struct {
 	db                *sql.DB
 }
 
-// ProvideIdentityRepository provides a new client.
+// ProvideIdentityRepository provides a new repository.
 func ProvideIdentityRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,
 	client database.Client,
 ) identity.Repository {
-	c := &Querier{
+	c := &repository{
 		Client:            client,
 		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),

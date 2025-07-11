@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	_ mealplanning.ValidPreparationInstrumentDataManager = (*Querier)(nil)
+	_ mealplanning.ValidPreparationInstrumentDataManager = (*repository)(nil)
 )
 
 // ValidPreparationInstrumentExists fetches whether a valid preparation instrument exists from the database.
-func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (exists bool, err error) {
+func (q *repository) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -36,7 +36,7 @@ func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPre
 }
 
 // GetValidPreparationInstrument fetches a valid preparation instrument from the database.
-func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*mealplanning.ValidPreparationInstrument, error) {
+func (q *repository) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*mealplanning.ValidPreparationInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -106,7 +106,7 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 }
 
 // GetValidPreparationInstruments fetches a list of valid preparation instruments from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
+func (q *repository) GetValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -197,7 +197,7 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *fi
 }
 
 // GetValidPreparationInstrumentsForPreparation fetches a list of valid preparation instruments from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
+func (q *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -294,7 +294,7 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 }
 
 // GetValidPreparationInstrumentsForInstrument fetches a list of valid preparation instruments from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
+func (q *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -392,7 +392,7 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 }
 
 // CreateValidPreparationInstrument creates a valid preparation instrument in the database.
-func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *mealplanning.ValidPreparationInstrumentDatabaseCreationInput) (*mealplanning.ValidPreparationInstrument, error) {
+func (q *repository) CreateValidPreparationInstrument(ctx context.Context, input *mealplanning.ValidPreparationInstrumentDatabaseCreationInput) (*mealplanning.ValidPreparationInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -444,7 +444,7 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *m
 }
 
 // UpdateValidPreparationInstrument updates a particular valid preparation instrument.
-func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated *mealplanning.ValidPreparationInstrument) error {
+func (q *repository) UpdateValidPreparationInstrument(ctx context.Context, updated *mealplanning.ValidPreparationInstrument) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -470,7 +470,7 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 }
 
 // ArchiveValidPreparationInstrument archives a valid preparation instrument from the database by its ID.
-func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
+func (q *repository) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

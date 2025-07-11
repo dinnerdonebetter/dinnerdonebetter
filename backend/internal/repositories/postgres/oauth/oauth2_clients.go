@@ -15,11 +15,11 @@ import (
 )
 
 var (
-	_ types.OAuth2ClientDataManager = (*Querier)(nil)
+	_ types.OAuth2ClientDataManager = (*repository)(nil)
 )
 
 // GetOAuth2ClientByClientID gets an OAuth2 client from the database.
-func (q *Querier) GetOAuth2ClientByClientID(ctx context.Context, clientID string) (*types.OAuth2Client, error) {
+func (q *repository) GetOAuth2ClientByClientID(ctx context.Context, clientID string) (*types.OAuth2Client, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -50,7 +50,7 @@ func (q *Querier) GetOAuth2ClientByClientID(ctx context.Context, clientID string
 }
 
 // GetOAuth2ClientByDatabaseID gets an OAuth2 client from the database.
-func (q *Querier) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID string) (*types.OAuth2Client, error) {
+func (q *repository) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID string) (*types.OAuth2Client, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -81,7 +81,7 @@ func (q *Querier) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID stri
 }
 
 // GetOAuth2Clients gets a list of OAuth2 clients.
-func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.OAuth2Client], err error) {
+func (q *repository) GetOAuth2Clients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.OAuth2Client], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -126,7 +126,7 @@ func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *filtering.QueryF
 }
 
 // CreateOAuth2Client creates an OAuth2 client.
-func (q *Querier) CreateOAuth2Client(ctx context.Context, input *types.OAuth2ClientDatabaseCreationInput) (*types.OAuth2Client, error) {
+func (q *repository) CreateOAuth2Client(ctx context.Context, input *types.OAuth2ClientDatabaseCreationInput) (*types.OAuth2Client, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -163,7 +163,7 @@ func (q *Querier) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Cli
 }
 
 // ArchiveOAuth2Client archives an OAuth2 client.
-func (q *Querier) ArchiveOAuth2Client(ctx context.Context, clientID string) error {
+func (q *repository) ArchiveOAuth2Client(ctx context.Context, clientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

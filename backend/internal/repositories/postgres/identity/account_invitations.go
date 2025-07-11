@@ -18,15 +18,15 @@ import (
 )
 
 var (
-	_ identity.AccountInvitationDataManager = (*Querier)(nil)
+	_ identity.AccountInvitationDataManager = (*repository)(nil)
 )
 
 // AccountInvitationExists fetches whether an account invitation exists from the database.
-func (q *Querier) AccountInvitationExists(ctx context.Context, accountInvitationID string) (bool, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) AccountInvitationExists(ctx context.Context, accountInvitationID string) (bool, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if accountInvitationID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -34,7 +34,7 @@ func (q *Querier) AccountInvitationExists(ctx context.Context, accountInvitation
 	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
 
-	result, err := q.generatedQuerier.CheckAccountInvitationExistence(ctx, q.db, accountInvitationID)
+	result, err := r.generatedQuerier.CheckAccountInvitationExistence(ctx, r.db, accountInvitationID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing account invitation existence check")
 	}
@@ -43,11 +43,11 @@ func (q *Querier) AccountInvitationExists(ctx context.Context, accountInvitation
 }
 
 // GetAccountInvitationByAccountAndID fetches an invitation from the database.
-func (q *Querier) GetAccountInvitationByAccountAndID(ctx context.Context, accountID, accountInvitationID string) (*identity.AccountInvitation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetAccountInvitationByAccountAndID(ctx context.Context, accountID, accountInvitationID string) (*identity.AccountInvitation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if accountID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -61,7 +61,7 @@ func (q *Querier) GetAccountInvitationByAccountAndID(ctx context.Context, accoun
 	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
 
-	result, err := q.generatedQuerier.GetAccountInvitationByAccountAndID(ctx, q.db, &generated2.GetAccountInvitationByAccountAndIDParams{
+	result, err := r.generatedQuerier.GetAccountInvitationByAccountAndID(ctx, r.db, &generated2.GetAccountInvitationByAccountAndIDParams{
 		DestinationAccount: accountID,
 		ID:                 accountInvitationID,
 	})
@@ -132,11 +132,11 @@ func (q *Querier) GetAccountInvitationByAccountAndID(ctx context.Context, accoun
 }
 
 // GetAccountInvitationByTokenAndID fetches an invitation from the database.
-func (q *Querier) GetAccountInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*identity.AccountInvitation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetAccountInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*identity.AccountInvitation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if token == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -150,7 +150,7 @@ func (q *Querier) GetAccountInvitationByTokenAndID(ctx context.Context, token, i
 
 	logger.Debug("fetching account invitation")
 
-	result, err := q.generatedQuerier.GetAccountInvitationByTokenAndID(ctx, q.db, &generated2.GetAccountInvitationByTokenAndIDParams{
+	result, err := r.generatedQuerier.GetAccountInvitationByTokenAndID(ctx, r.db, &generated2.GetAccountInvitationByTokenAndIDParams{
 		Token: token,
 		ID:    invitationID,
 	})
@@ -221,11 +221,11 @@ func (q *Querier) GetAccountInvitationByTokenAndID(ctx context.Context, token, i
 }
 
 // GetAccountInvitationByEmailAndToken fetches an invitation from the database.
-func (q *Querier) GetAccountInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*identity.AccountInvitation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetAccountInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*identity.AccountInvitation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if emailAddress == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -239,7 +239,7 @@ func (q *Querier) GetAccountInvitationByEmailAndToken(ctx context.Context, email
 	logger = logger.WithValue(keys.AccountInvitationTokenKey, token)
 	tracing.AttachToSpan(span, keys.AccountInvitationTokenKey, token)
 
-	result, err := q.generatedQuerier.GetAccountInvitationByEmailAndToken(ctx, q.db, &generated2.GetAccountInvitationByEmailAndTokenParams{
+	result, err := r.generatedQuerier.GetAccountInvitationByEmailAndToken(ctx, r.db, &generated2.GetAccountInvitationByEmailAndTokenParams{
 		ToEmail: emailAddress,
 		Token:   token,
 	})
@@ -310,18 +310,18 @@ func (q *Querier) GetAccountInvitationByEmailAndToken(ctx context.Context, email
 }
 
 // CreateAccountInvitation creates an invitation in a database.
-func (q *Querier) CreateAccountInvitation(ctx context.Context, input *identity.AccountInvitationDatabaseCreationInput) (*identity.AccountInvitation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) CreateAccountInvitation(ctx context.Context, input *identity.AccountInvitationDatabaseCreationInput) (*identity.AccountInvitation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.AccountInvitationIDKey, input.ID)
+	logger := r.logger.WithValue(keys.AccountInvitationIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, input.DestinationAccountID)
 
-	if err := q.generatedQuerier.CreateAccountInvitation(ctx, q.db, &generated2.CreateAccountInvitationParams{
+	if err := r.generatedQuerier.CreateAccountInvitation(ctx, r.db, &generated2.CreateAccountInvitationParams{
 		ExpiresAt:          input.ExpiresAt,
 		ID:                 input.ID,
 		FromUser:           input.FromUser,
@@ -347,7 +347,7 @@ func (q *Querier) CreateAccountInvitation(ctx context.Context, input *identity.A
 		Status:             string(identity.PendingAccountInvitationStatus),
 		DestinationAccount: identity.Account{ID: input.DestinationAccountID},
 		ExpiresAt:          input.ExpiresAt,
-		CreatedAt:          q.CurrentTime(),
+		CreatedAt:          r.CurrentTime(),
 	}
 
 	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, x.ID)
@@ -359,21 +359,21 @@ func (q *Querier) CreateAccountInvitation(ctx context.Context, input *identity.A
 }
 
 // GetPendingAccountInvitationsFromUser fetches pending account invitations sent from a given user.
-func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetPendingAccountInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
 	x := &filtering.QueryFilteredResult[identity.AccountInvitation]{
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetPendingInvitesFromUser(ctx, q.db, &generated2.GetPendingInvitesFromUserParams{
+	results, err := r.generatedQuerier.GetPendingInvitesFromUser(ctx, r.db, &generated2.GetPendingInvitesFromUserParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -456,21 +456,21 @@ func (q *Querier) GetPendingAccountInvitationsFromUser(ctx context.Context, user
 }
 
 // GetPendingAccountInvitationsForUser fetches pending account invitations sent to a given user.
-func (q *Querier) GetPendingAccountInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetPendingAccountInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.AccountInvitation], error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
 	x := &filtering.QueryFilteredResult[identity.AccountInvitation]{
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetPendingInvitesForUser(ctx, q.db, &generated2.GetPendingInvitesForUserParams{
+	results, err := r.generatedQuerier.GetPendingInvitesForUser(ctx, r.db, &generated2.GetPendingInvitesForUserParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -552,11 +552,11 @@ func (q *Querier) GetPendingAccountInvitationsForUser(ctx context.Context, userI
 	return x, nil
 }
 
-func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, accountInvitationID, note, status string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, accountInvitationID, note, status string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue("new_status", status)
+	logger := r.logger.WithValue("new_status", status)
 
 	if accountInvitationID == "" {
 		return database.ErrInvalidIDProvided
@@ -564,7 +564,7 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
 
-	if err := q.generatedQuerier.SetAccountInvitationStatus(ctx, querier, &generated2.SetAccountInvitationStatusParams{
+	if err := r.generatedQuerier.SetAccountInvitationStatus(ctx, querier, &generated2.SetAccountInvitationStatusParams{
 		Status:     generated2.InvitationState(status),
 		StatusNote: note,
 		ID:         accountInvitationID,
@@ -578,16 +578,16 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 }
 
 // CancelAccountInvitation cancels an account invitation by its ID with a note.
-func (q *Querier) CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
-	return q.setInvitationStatus(ctx, q.db, accountInvitationID, note, string(identity.CancelledAccountInvitationStatus))
+func (r *repository) CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
+	return r.setInvitationStatus(ctx, r.db, accountInvitationID, note, string(identity.CancelledAccountInvitationStatus))
 }
 
 // AcceptAccountInvitation accepts an account invitation by its ID with a note.
-func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitationID, token, note string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) AcceptAccountInvitation(ctx context.Context, accountInvitationID, token, note string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if accountInvitationID == "" {
 		return database.ErrInvalidIDProvided
@@ -599,25 +599,25 @@ func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitation
 		return database.ErrNilInputProvided
 	}
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = q.setInvitationStatus(ctx, tx, accountInvitationID, note, string(identity.AcceptedAccountInvitationStatus)); err != nil {
-		q.RollbackTransaction(ctx, tx)
+	if err = r.setInvitationStatus(ctx, tx, accountInvitationID, note, string(identity.AcceptedAccountInvitationStatus)); err != nil {
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
 	}
 
-	invitation, err := q.GetAccountInvitationByTokenAndID(ctx, token, accountInvitationID)
+	invitation, err := r.GetAccountInvitationByTokenAndID(ctx, token, accountInvitationID)
 	if err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "fetching account invitation")
 	}
 
 	addUserInput := &identity.AccountUserMembershipDatabaseCreationInput{
 		ID:          identifiers.New(),
-		Reason:      fmt.Sprintf("accepted account invitation %q", accountInvitationID),
+		Reason:      fmt.Sprintf("accepted account invitation %r", accountInvitationID),
 		AccountID:   invitation.DestinationAccount.ID,
 		AccountRole: "account_member",
 	}
@@ -625,8 +625,8 @@ func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitation
 		addUserInput.UserID = *invitation.ToUser
 	}
 
-	if err = q.addUserToAccount(ctx, tx, addUserInput); err != nil {
-		q.RollbackTransaction(ctx, tx)
+	if err = r.addUserToAccount(ctx, tx, addUserInput); err != nil {
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "adding user to account")
 	}
 
@@ -638,15 +638,15 @@ func (q *Querier) AcceptAccountInvitation(ctx context.Context, accountInvitation
 }
 
 // RejectAccountInvitation rejects an account invitation by its ID with a note.
-func (q *Querier) RejectAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
-	return q.setInvitationStatus(ctx, q.db, accountInvitationID, note, string(identity.RejectedAccountInvitationStatus))
+func (r *repository) RejectAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
+	return r.setInvitationStatus(ctx, r.db, accountInvitationID, note, string(identity.RejectedAccountInvitationStatus))
 }
 
-func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger
+	logger := r.logger
 
 	if userEmail == "" {
 		return database.ErrInvalidIDProvided
@@ -660,7 +660,7 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, userID)
 
-	rowCount, err := q.generatedQuerier.AttachAccountInvitationsToUserID(ctx, querier, &generated2.AttachAccountInvitationsToUserIDParams{
+	rowCount, err := r.generatedQuerier.AttachAccountInvitationsToUserID(ctx, querier, &generated2.AttachAccountInvitationsToUserIDParams{
 		ToEmail: userEmail,
 		ToUser:  database.NullStringFromString(userID),
 	})
@@ -673,35 +673,35 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	return nil
 }
 
-func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *identity.UserDatabaseCreationInput) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *identity.UserDatabaseCreationInput) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.WithValue(keys.UsernameKey, input.Username).WithValue(keys.UserEmailAddressKey, input.EmailAddress)
+	logger := r.logger.WithValue(keys.UsernameKey, input.Username).WithValue(keys.UserEmailAddressKey, input.EmailAddress)
 
-	invitation, tokenCheckErr := q.GetAccountInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken)
+	invitation, tokenCheckErr := r.GetAccountInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken)
 	if tokenCheckErr != nil {
-		q.RollbackTransaction(ctx, querier)
+		r.RollbackTransaction(ctx, querier)
 		return observability.PrepareError(tokenCheckErr, span, "fetching account invitation")
 	}
 
 	logger.Debug("fetched invitation to accept for user")
 
-	if err := q.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated2.CreateAccountUserMembershipForNewUserParams{
+	if err := r.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated2.CreateAccountUserMembershipForNewUserParams{
 		ID:               identifiers.New(),
 		BelongsToUser:    input.ID,
 		BelongsToAccount: input.DestinationAccountID,
 		AccountRole:      authorization.AccountMemberRole.String(),
 		DefaultAccount:   true,
 	}); err != nil {
-		q.RollbackTransaction(ctx, querier)
+		r.RollbackTransaction(ctx, querier)
 		return observability.PrepareAndLogError(err, logger, span, "writing destination account membership")
 	}
 
 	logger.Debug("created membership via invitation")
 
-	if err := q.setInvitationStatus(ctx, querier, invitation.ID, "", string(identity.AcceptedAccountInvitationStatus)); err != nil {
-		q.RollbackTransaction(ctx, querier)
+	if err := r.setInvitationStatus(ctx, querier, invitation.ID, "", string(identity.AcceptedAccountInvitationStatus)); err != nil {
+		r.RollbackTransaction(ctx, querier)
 		return observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
 	}
 

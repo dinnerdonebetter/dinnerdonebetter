@@ -16,8 +16,8 @@ const (
 	o11yName = "meal_planning_db_client"
 )
 
-// Querier is the audit log entry client.
-type Querier struct {
+// repository is the meal planning repository implementation.
+type repository struct {
 	database.Client
 	tracer            tracing.Tracer
 	logger            logging.Logger
@@ -27,7 +27,7 @@ type Querier struct {
 	db                *sql.DB
 }
 
-// ProvideMealPlanningRepository provides a new client.
+// ProvideMealPlanningRepository provides a new repository.
 func ProvideMealPlanningRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
@@ -35,7 +35,7 @@ func ProvideMealPlanningRepository(
 	identityRepo identity.Repository,
 	client database.Client,
 ) settings.Repository {
-	c := &Querier{
+	c := &repository{
 		Client:            client,
 		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),

@@ -16,8 +16,8 @@ const (
 	o11yName = "notifications_db_client"
 )
 
-// Querier is the audit log entry client.
-type Querier struct {
+// repository is the notifications repository implementation.
+type repository struct {
 	database.Client
 	tracer            tracing.Tracer
 	logger            logging.Logger
@@ -27,14 +27,14 @@ type Querier struct {
 	db                *sql.DB
 }
 
-// ProvideNotificationsRepository provides a new client.
+// ProvideNotificationsRepository provides a new repository.
 func ProvideNotificationsRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,
 	client database.Client,
 ) notifications.Repository {
-	c := &Querier{
+	c := &repository{
 		Client:            client,
 		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),

@@ -15,11 +15,11 @@ import (
 )
 
 var (
-	_ mealplanning.UserIngredientPreferenceDataManager = (*Querier)(nil)
+	_ mealplanning.UserIngredientPreferenceDataManager = (*repository)(nil)
 )
 
 // UserIngredientPreferenceExists fetches whether a user ingredient preference exists from the database.
-func (q *Querier) UserIngredientPreferenceExists(ctx context.Context, userIngredientPreferenceID, userID string) (exists bool, err error) {
+func (q *repository) UserIngredientPreferenceExists(ctx context.Context, userIngredientPreferenceID, userID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -49,7 +49,7 @@ func (q *Querier) UserIngredientPreferenceExists(ctx context.Context, userIngred
 }
 
 // GetUserIngredientPreference fetches a user ingredient preference from the database.
-func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) (*mealplanning.UserIngredientPreference, error) {
+func (q *repository) GetUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) (*mealplanning.UserIngredientPreference, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -131,7 +131,7 @@ func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredien
 }
 
 // GetUserIngredientPreferences fetches a list of user ingredient preferences from the database that meet a particular filter.
-func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.UserIngredientPreference], err error) {
+func (q *repository) GetUserIngredientPreferences(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.UserIngredientPreference], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -228,7 +228,7 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 }
 
 // CreateUserIngredientPreference creates a user ingredient preference in the database.
-func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *mealplanning.UserIngredientPreferenceDatabaseCreationInput) ([]*mealplanning.UserIngredientPreference, error) {
+func (q *repository) CreateUserIngredientPreference(ctx context.Context, input *mealplanning.UserIngredientPreferenceDatabaseCreationInput) ([]*mealplanning.UserIngredientPreference, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -306,7 +306,7 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *mea
 }
 
 // UpdateUserIngredientPreference updates a particular user ingredient preference.
-func (q *Querier) UpdateUserIngredientPreference(ctx context.Context, updated *mealplanning.UserIngredientPreference) error {
+func (q *repository) UpdateUserIngredientPreference(ctx context.Context, updated *mealplanning.UserIngredientPreference) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -333,7 +333,7 @@ func (q *Querier) UpdateUserIngredientPreference(ctx context.Context, updated *m
 }
 
 // ArchiveUserIngredientPreference archives a user ingredient preference from the database by its ID.
-func (q *Querier) ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error {
+func (q *repository) ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createMealPlanGroceryListItemForTest(t *testing.T, ctx context.Context, exampleMealPlanGroceryListItem *types.MealPlanGroceryListItem, dbc *Querier) *types.MealPlanGroceryListItem {
+func createMealPlanGroceryListItemForTest(t *testing.T, ctx context.Context, exampleMealPlanGroceryListItem *types.MealPlanGroceryListItem, dbc *repository) *types.MealPlanGroceryListItem {
 	t.Helper()
 
 	// create

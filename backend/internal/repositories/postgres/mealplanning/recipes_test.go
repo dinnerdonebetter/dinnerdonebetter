@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string, dbc *Querier) *mealplanning.Recipe {
+func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string, dbc *repository) *mealplanning.Recipe {
 	t.Helper()
 
 	if userID == "" {
@@ -63,7 +63,7 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 	return exampleRecipe
 }
 
-func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *mealplanning.Recipe, dbc *Querier, alsoCreateMeal bool) *mealplanning.Recipe {
+func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *mealplanning.Recipe, dbc *repository, alsoCreateMeal bool) *mealplanning.Recipe {
 	t.Helper()
 
 	// create

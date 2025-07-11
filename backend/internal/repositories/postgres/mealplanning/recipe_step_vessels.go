@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	_ mealplanning.RecipeStepVesselDataManager = (*Querier)(nil)
+	_ mealplanning.RecipeStepVesselDataManager = (*repository)(nil)
 )
 
 // RecipeStepVesselExists fetches whether a recipe step vessel exists from the database.
-func (q *Querier) RecipeStepVesselExists(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (exists bool, err error) {
+func (q *repository) RecipeStepVesselExists(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -55,7 +55,7 @@ func (q *Querier) RecipeStepVesselExists(ctx context.Context, recipeID, recipeSt
 }
 
 // GetRecipeStepVessel fetches a recipe step vessel from the database.
-func (q *Querier) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (*mealplanning.RecipeStepVessel, error) {
+func (q *repository) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (*mealplanning.RecipeStepVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -151,7 +151,7 @@ func (q *Querier) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepI
 }
 
 // GetRecipeStepVessels fetches a list of recipe step vessels from the database that meet a particular filter.
-func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStepVessel], err error) {
+func (q *repository) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStepVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -263,7 +263,7 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 }
 
 // getRecipeStepVesselsForRecipe fetches a list of recipe step vessels from the database that meet a particular filter.
-func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipeStepVessel, error) {
+func (q *repository) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipeStepVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -348,7 +348,7 @@ func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID st
 }
 
 // CreateRecipeStepVessel creates a recipe step vessel in the database.
-func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.SQLQueryExecutor, input *mealplanning.RecipeStepVesselDatabaseCreationInput) (*mealplanning.RecipeStepVessel, error) {
+func (q *repository) createRecipeStepVessel(ctx context.Context, querier database.SQLQueryExecutor, input *mealplanning.RecipeStepVesselDatabaseCreationInput) (*mealplanning.RecipeStepVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -400,12 +400,12 @@ func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.S
 }
 
 // CreateRecipeStepVessel creates a recipe step vessel in the database.
-func (q *Querier) CreateRecipeStepVessel(ctx context.Context, input *mealplanning.RecipeStepVesselDatabaseCreationInput) (*mealplanning.RecipeStepVessel, error) {
+func (q *repository) CreateRecipeStepVessel(ctx context.Context, input *mealplanning.RecipeStepVesselDatabaseCreationInput) (*mealplanning.RecipeStepVessel, error) {
 	return q.createRecipeStepVessel(ctx, q.db, input)
 }
 
 // UpdateRecipeStepVessel updates a particular recipe step vessel.
-func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *mealplanning.RecipeStepVessel) error {
+func (q *repository) UpdateRecipeStepVessel(ctx context.Context, updated *mealplanning.RecipeStepVessel) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -441,7 +441,7 @@ func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *mealplann
 }
 
 // ArchiveRecipeStepVessel archives a recipe step vessel from the database by its ID.
-func (q *Querier) ArchiveRecipeStepVessel(ctx context.Context, recipeStepID, recipeStepVesselID string) error {
+func (q *repository) ArchiveRecipeStepVessel(ctx context.Context, recipeStepID, recipeStepVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

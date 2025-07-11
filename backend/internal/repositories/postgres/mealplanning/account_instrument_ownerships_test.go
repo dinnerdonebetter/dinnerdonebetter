@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createAccountInstrumentOwnershipForTest(t *testing.T, ctx context.Context, exampleAccountInstrumentOwnership *types.AccountInstrumentOwnership, dbc *Querier) *types.AccountInstrumentOwnership {
+func createAccountInstrumentOwnershipForTest(t *testing.T, ctx context.Context, exampleAccountInstrumentOwnership *types.AccountInstrumentOwnership, dbc *repository) *types.AccountInstrumentOwnership {
 	t.Helper()
 
 	// create

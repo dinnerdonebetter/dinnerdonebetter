@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	_ types.ValidIngredientStateDataManager = (*Querier)(nil)
+	_ types.ValidIngredientStateDataManager = (*repository)(nil)
 )
 
 // ValidIngredientStateExists fetches whether a valid ingredient state exists from the database.
-func (q *Querier) ValidIngredientStateExists(ctx context.Context, validIngredientStateID string) (exists bool, err error) {
+func (q *repository) ValidIngredientStateExists(ctx context.Context, validIngredientStateID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -38,7 +38,7 @@ func (q *Querier) ValidIngredientStateExists(ctx context.Context, validIngredien
 }
 
 // GetValidIngredientState fetches a valid ingredient state from the database.
-func (q *Querier) GetValidIngredientState(ctx context.Context, validIngredientStateID string) (*types.ValidIngredientState, error) {
+func (q *repository) GetValidIngredientState(ctx context.Context, validIngredientStateID string) (*types.ValidIngredientState, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -72,7 +72,7 @@ func (q *Querier) GetValidIngredientState(ctx context.Context, validIngredientSt
 }
 
 // SearchForValidIngredientStates fetches a valid ingredient state from the database.
-func (q *Querier) SearchForValidIngredientStates(ctx context.Context, query string) ([]*types.ValidIngredientState, error) {
+func (q *repository) SearchForValidIngredientStates(ctx context.Context, query string) ([]*types.ValidIngredientState, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -109,7 +109,7 @@ func (q *Querier) SearchForValidIngredientStates(ctx context.Context, query stri
 }
 
 // GetValidIngredientStates fetches a list of valid ingredient states from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientState], err error) {
+func (q *repository) GetValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidIngredientState], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -159,7 +159,7 @@ func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *filterin
 }
 
 // GetValidIngredientStatesWithIDs fetches a list of valid ingredientStates from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStatesWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredientState, error) {
+func (q *repository) GetValidIngredientStatesWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredientState, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -190,7 +190,7 @@ func (q *Querier) GetValidIngredientStatesWithIDs(ctx context.Context, ids []str
 }
 
 // GetValidIngredientStateIDsThatNeedSearchIndexing fetches a list of valid ingredientStates from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStateIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+func (q *repository) GetValidIngredientStateIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -203,7 +203,7 @@ func (q *Querier) GetValidIngredientStateIDsThatNeedSearchIndexing(ctx context.C
 }
 
 // CreateValidIngredientState creates a valid ingredient state in the database.
-func (q *Querier) CreateValidIngredientState(ctx context.Context, input *types.ValidIngredientStateDatabaseCreationInput) (*types.ValidIngredientState, error) {
+func (q *repository) CreateValidIngredientState(ctx context.Context, input *types.ValidIngredientStateDatabaseCreationInput) (*types.ValidIngredientState, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -244,7 +244,7 @@ func (q *Querier) CreateValidIngredientState(ctx context.Context, input *types.V
 }
 
 // UpdateValidIngredientState updates a particular valid ingredient state.
-func (q *Querier) UpdateValidIngredientState(ctx context.Context, updated *types.ValidIngredientState) error {
+func (q *repository) UpdateValidIngredientState(ctx context.Context, updated *types.ValidIngredientState) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -272,7 +272,7 @@ func (q *Querier) UpdateValidIngredientState(ctx context.Context, updated *types
 }
 
 // MarkValidIngredientStateAsIndexed updates a particular valid ingredient state's last_indexed_at value.
-func (q *Querier) MarkValidIngredientStateAsIndexed(ctx context.Context, validIngredientStateID string) error {
+func (q *repository) MarkValidIngredientStateAsIndexed(ctx context.Context, validIngredientStateID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -294,7 +294,7 @@ func (q *Querier) MarkValidIngredientStateAsIndexed(ctx context.Context, validIn
 }
 
 // ArchiveValidIngredientState archives a valid ingredient state from the database by its ID.
-func (q *Querier) ArchiveValidIngredientState(ctx context.Context, validIngredientStateID string) error {
+func (q *repository) ArchiveValidIngredientState(ctx context.Context, validIngredientStateID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

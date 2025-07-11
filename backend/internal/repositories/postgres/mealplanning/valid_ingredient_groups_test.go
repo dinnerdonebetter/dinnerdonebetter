@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createValidIngredientGroupForTest(t *testing.T, ctx context.Context, exampleValidIngredientGroup *types.ValidIngredientGroup, dbc *Querier) *types.ValidIngredientGroup {
+func createValidIngredientGroupForTest(t *testing.T, ctx context.Context, exampleValidIngredientGroup *types.ValidIngredientGroup, dbc *repository) *types.ValidIngredientGroup {
 	t.Helper()
 
 	// create

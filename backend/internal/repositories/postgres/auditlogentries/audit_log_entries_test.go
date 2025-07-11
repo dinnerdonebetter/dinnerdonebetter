@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *identity.User, account *identity.Account, dbc *Querier) *types.AuditLogEntry {
+func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *identity.User, account *identity.Account, dbc *repository) *types.AuditLogEntry {
 	t.Helper()
 
 	if user == nil {

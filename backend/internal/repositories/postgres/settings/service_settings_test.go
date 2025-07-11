@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createServiceSettingForTest(t *testing.T, ctx context.Context, exampleServiceSetting *types.ServiceSetting, dbc *Querier) *types.ServiceSetting {
+func createServiceSettingForTest(t *testing.T, ctx context.Context, exampleServiceSetting *types.ServiceSetting, dbc *repository) *types.ServiceSetting {
 	t.Helper()
 
 	// create

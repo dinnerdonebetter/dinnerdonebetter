@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createOAuth2ClientTokenForTest(t *testing.T, ctx context.Context, exampleOAuth2ClientToken *types.OAuth2ClientToken, dbc *Querier) *types.OAuth2ClientToken {
+func createOAuth2ClientTokenForTest(t *testing.T, ctx context.Context, exampleOAuth2ClientToken *types.OAuth2ClientToken, dbc *repository) *types.OAuth2ClientToken {
 	t.Helper()
 
 	// create

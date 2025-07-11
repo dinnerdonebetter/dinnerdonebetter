@@ -15,11 +15,11 @@ import (
 )
 
 var (
-	_ types.ValidVesselDataManager = (*Querier)(nil)
+	_ types.ValidVesselDataManager = (*repository)(nil)
 )
 
 // ValidVesselExists fetches whether a valid vessel exists from the database.
-func (q *Querier) ValidVesselExists(ctx context.Context, validVesselID string) (exists bool, err error) {
+func (q *repository) ValidVesselExists(ctx context.Context, validVesselID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -40,7 +40,7 @@ func (q *Querier) ValidVesselExists(ctx context.Context, validVesselID string) (
 }
 
 // GetValidVessel fetches a valid vessel from the database.
-func (q *Querier) GetValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error) {
+func (q *repository) GetValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -96,7 +96,7 @@ func (q *Querier) GetValidVessel(ctx context.Context, validVesselID string) (*ty
 }
 
 // GetRandomValidVessel fetches a valid vessel from the database.
-func (q *Querier) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel, error) {
+func (q *repository) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -144,7 +144,7 @@ func (q *Querier) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel,
 }
 
 // SearchForValidVessels fetches a valid vessel from the database.
-func (q *Querier) SearchForValidVessels(ctx context.Context, query string) ([]*types.ValidVessel, error) {
+func (q *repository) SearchForValidVessels(ctx context.Context, query string) ([]*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -201,7 +201,7 @@ func (q *Querier) SearchForValidVessels(ctx context.Context, query string) ([]*t
 }
 
 // GetValidVessels fetches a list of valid vessels from the database that meet a particular filter.
-func (q *Querier) GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidVessel], err error) {
+func (q *repository) GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -267,7 +267,7 @@ func (q *Querier) GetValidVessels(ctx context.Context, filter *filtering.QueryFi
 }
 
 // GetValidVesselsWithIDs fetches a list of valid vessels from the database that meet a particular filter.
-func (q *Querier) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*types.ValidVessel, error) {
+func (q *repository) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -324,7 +324,7 @@ func (q *Querier) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*
 }
 
 // GetValidVesselIDsThatNeedSearchIndexing fetches a list of valid vessels from the database that meet a particular filter.
-func (q *Querier) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+func (q *repository) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -337,7 +337,7 @@ func (q *Querier) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) (
 }
 
 // CreateValidVessel creates a valid vessel in the database.
-func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesselDatabaseCreationInput) (*types.ValidVessel, error) {
+func (q *repository) CreateValidVessel(ctx context.Context, input *types.ValidVesselDatabaseCreationInput) (*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -396,7 +396,7 @@ func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesse
 }
 
 // UpdateValidVessel updates a particular valid vessel.
-func (q *Querier) UpdateValidVessel(ctx context.Context, updated *types.ValidVessel) error {
+func (q *repository) UpdateValidVessel(ctx context.Context, updated *types.ValidVessel) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -436,7 +436,7 @@ func (q *Querier) UpdateValidVessel(ctx context.Context, updated *types.ValidVes
 }
 
 // MarkValidVesselAsIndexed updates a particular valid vessel's last_indexed_at value.
-func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID string) error {
+func (q *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -458,7 +458,7 @@ func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID st
 }
 
 // ArchiveValidVessel archives a valid vessel from the database by its ID.
-func (q *Querier) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
+func (q *repository) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

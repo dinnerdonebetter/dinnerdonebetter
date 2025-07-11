@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	_ types.RecipeRatingDataManager = (*Querier)(nil)
+	_ types.RecipeRatingDataManager = (*repository)(nil)
 )
 
 // RecipeRatingExists fetches whether a recipe rating exists from the database.
-func (q *Querier) RecipeRatingExists(ctx context.Context, recipeID, recipeRatingID string) (exists bool, err error) {
+func (q *repository) RecipeRatingExists(ctx context.Context, recipeID, recipeRatingID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -44,7 +44,7 @@ func (q *Querier) RecipeRatingExists(ctx context.Context, recipeID, recipeRating
 }
 
 // GetRecipeRating fetches a recipe rating from the database.
-func (q *Querier) GetRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*types.RecipeRating, error) {
+func (q *repository) GetRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*types.RecipeRating, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -86,7 +86,7 @@ func (q *Querier) GetRecipeRating(ctx context.Context, recipeID, recipeRatingID 
 }
 
 // GetRecipeRatingsForRecipe fetches a list of recipe ratings from the database that meet a particular filter.
-func (q *Querier) GetRecipeRatingsForRecipe(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.RecipeRating], err error) {
+func (q *repository) GetRecipeRatingsForRecipe(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.RecipeRating], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -145,7 +145,7 @@ func (q *Querier) GetRecipeRatingsForRecipe(ctx context.Context, recipeID string
 }
 
 // GetRecipeRatingsForUser fetches a list of recipe ratings from the database that meet a particular filter.
-func (q *Querier) GetRecipeRatingsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.RecipeRating], err error) {
+func (q *repository) GetRecipeRatingsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.RecipeRating], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -204,7 +204,7 @@ func (q *Querier) GetRecipeRatingsForUser(ctx context.Context, userID string, fi
 }
 
 // CreateRecipeRating creates a recipe rating in the database.
-func (q *Querier) CreateRecipeRating(ctx context.Context, input *types.RecipeRatingDatabaseCreationInput) (*types.RecipeRating, error) {
+func (q *repository) CreateRecipeRating(ctx context.Context, input *types.RecipeRatingDatabaseCreationInput) (*types.RecipeRating, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -249,7 +249,7 @@ func (q *Querier) CreateRecipeRating(ctx context.Context, input *types.RecipeRat
 }
 
 // UpdateRecipeRating updates a particular recipe rating.
-func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeRating) error {
+func (q *repository) UpdateRecipeRating(ctx context.Context, updated *types.RecipeRating) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -278,7 +278,7 @@ func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeR
 }
 
 // ArchiveRecipeRating archives a recipe rating from the database by its ID.
-func (q *Querier) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error {
+func (q *repository) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

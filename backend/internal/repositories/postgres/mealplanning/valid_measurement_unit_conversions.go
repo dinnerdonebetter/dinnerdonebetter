@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	_ mealplanning.ValidMeasurementUnitConversionDataManager = (*Querier)(nil)
+	_ mealplanning.ValidMeasurementUnitConversionDataManager = (*repository)(nil)
 )
 
 // ValidMeasurementUnitConversionExists fetches whether a valid measurement conversion exists from the database.
-func (q *Querier) ValidMeasurementUnitConversionExists(ctx context.Context, validMeasurementUnitConversionID string) (exists bool, err error) {
+func (q *repository) ValidMeasurementUnitConversionExists(ctx context.Context, validMeasurementUnitConversionID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -38,7 +38,7 @@ func (q *Querier) ValidMeasurementUnitConversionExists(ctx context.Context, vali
 }
 
 // GetValidMeasurementUnitConversion fetches a valid measurement conversion from the database.
-func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) (*mealplanning.ValidMeasurementUnitConversion, error) {
+func (q *repository) GetValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) (*mealplanning.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -142,7 +142,7 @@ func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMe
 }
 
 // GetValidMeasurementUnitConversionsFromUnit fetches a valid measurement conversions from a given measurement unit.
-func (q *Querier) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
+func (q *repository) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -247,7 +247,7 @@ func (q *Querier) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context
 }
 
 // GetValidMeasurementUnitConversionsToUnit fetches a valid measurement conversions to a given measurement unit.
-func (q *Querier) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
+func (q *repository) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -352,7 +352,7 @@ func (q *Querier) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, 
 }
 
 // CreateValidMeasurementUnitConversion creates a valid measurement conversion in the database.
-func (q *Querier) CreateValidMeasurementUnitConversion(ctx context.Context, input *mealplanning.ValidMeasurementUnitConversionDatabaseCreationInput) (*mealplanning.ValidMeasurementUnitConversion, error) {
+func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, input *mealplanning.ValidMeasurementUnitConversionDatabaseCreationInput) (*mealplanning.ValidMeasurementUnitConversion, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -419,7 +419,7 @@ func (q *Querier) CreateValidMeasurementUnitConversion(ctx context.Context, inpu
 }
 
 // UpdateValidMeasurementUnitConversion updates a particular valid measurement conversion.
-func (q *Querier) UpdateValidMeasurementUnitConversion(ctx context.Context, updated *mealplanning.ValidMeasurementUnitConversion) error {
+func (q *repository) UpdateValidMeasurementUnitConversion(ctx context.Context, updated *mealplanning.ValidMeasurementUnitConversion) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -452,7 +452,7 @@ func (q *Querier) UpdateValidMeasurementUnitConversion(ctx context.Context, upda
 }
 
 // ArchiveValidMeasurementUnitConversion archives a valid measurement conversion from the database by its ID.
-func (q *Querier) ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error {
+func (q *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

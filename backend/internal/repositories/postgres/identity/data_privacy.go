@@ -12,21 +12,21 @@ import (
 )
 
 var (
-	_ identity.DataPrivacyDataManager = (*Querier)(nil)
+	_ identity.DataPrivacyDataManager = (*repository)(nil)
 )
 
 // DeleteUser archives a user.
-func (q *Querier) DeleteUser(ctx context.Context, userID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) DeleteUser(ctx context.Context, userID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 
-	changed, err := q.generatedQuerier.DeleteUser(ctx, q.db, userID)
+	changed, err := r.generatedQuerier.DeleteUser(ctx, r.db, userID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving user")
 	}

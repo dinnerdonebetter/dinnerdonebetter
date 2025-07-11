@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	_ types.ValidMeasurementUnitDataManager = (*Querier)(nil)
+	_ types.ValidMeasurementUnitDataManager = (*repository)(nil)
 )
 
 // ValidMeasurementUnitExists fetches whether a valid measurement unit exists from the database.
-func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (exists bool, err error) {
+func (q *repository) ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -38,7 +38,7 @@ func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasureme
 }
 
 // GetValidMeasurementUnit fetches a valid measurement unit from the database.
-func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
+func (q *repository) GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -75,7 +75,7 @@ func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementU
 }
 
 // GetRandomValidMeasurementUnit fetches a valid measurement unit from the database.
-func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.ValidMeasurementUnit, error) {
+func (q *repository) GetRandomValidMeasurementUnit(ctx context.Context) (*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -104,7 +104,7 @@ func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.Val
 }
 
 // SearchForValidMeasurementUnits fetches a valid measurement unit from the database.
-func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
+func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -144,7 +144,7 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 }
 
 // ValidMeasurementUnitsForIngredientID fetches a valid measurement unit from the database.
-func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
+func (q *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -206,7 +206,7 @@ func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, vali
 }
 
 // GetValidMeasurementUnits fetches a list of valid measurement units from the database that meet a particular filter.
-func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidMeasurementUnit], err error) {
+func (q *repository) GetValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidMeasurementUnit], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -261,7 +261,7 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *filterin
 }
 
 // GetValidMeasurementUnitsWithIDs fetches a list of valid measurement unit from the database that meet a particular filter.
-func (q *Querier) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*types.ValidMeasurementUnit, error) {
+func (q *repository) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -295,7 +295,7 @@ func (q *Querier) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []str
 }
 
 // GetValidMeasurementUnitIDsThatNeedSearchIndexing fetches a list of valid measurement units from the database that meet a particular filter.
-func (q *Querier) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+func (q *repository) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -308,7 +308,7 @@ func (q *Querier) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.C
 }
 
 // CreateValidMeasurementUnit creates a valid measurement unit in the database.
-func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
+func (q *repository) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -354,7 +354,7 @@ func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.V
 }
 
 // UpdateValidMeasurementUnit updates a particular valid measurement unit.
-func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types.ValidMeasurementUnit) error {
+func (q *repository) UpdateValidMeasurementUnit(ctx context.Context, updated *types.ValidMeasurementUnit) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -385,7 +385,7 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 }
 
 // MarkValidMeasurementUnitAsIndexed updates a particular valid measurement unit's last_indexed_at value.
-func (q *Querier) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error {
+func (q *repository) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -407,7 +407,7 @@ func (q *Querier) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMe
 }
 
 // ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its ID.
-func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
+func (q *repository) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

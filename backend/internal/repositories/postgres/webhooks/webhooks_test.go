@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createWebhookForTest(t *testing.T, ctx context.Context, exampleWebhook *types.Webhook, dbc *Querier) *types.Webhook {
+func createWebhookForTest(t *testing.T, ctx context.Context, exampleWebhook *types.Webhook, dbc *repository) *types.Webhook {
 	t.Helper()
 
 	// create

@@ -16,11 +16,11 @@ import (
 )
 
 var (
-	_ audit.AuditLogEntryDataManager = (*Querier)(nil)
+	_ audit.AuditLogEntryDataManager = (*repository)(nil)
 )
 
 // GetAuditLogEntry fetches an audit log entry from the database.
-func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (*audit.AuditLogEntry, error) {
+func (q *repository) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (*audit.AuditLogEntry, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -55,7 +55,7 @@ func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) 
 }
 
 // GetAuditLogEntriesForUser fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
+func (q *repository) GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -111,7 +111,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 }
 
 // GetAuditLogEntriesForUserAndResourceTypes fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Context, userID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
+func (q *repository) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Context, userID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -174,7 +174,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Context,
 }
 
 // GetAuditLogEntriesForAccount fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
+func (q *repository) GetAuditLogEntriesForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -230,7 +230,7 @@ func (q *Querier) GetAuditLogEntriesForAccount(ctx context.Context, accountID st
 }
 
 // GetAuditLogEntriesForAccountAndResourceTypes fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Context, accountID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
+func (q *repository) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Context, accountID string, resourceTypes []string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[audit.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -293,7 +293,7 @@ func (q *Querier) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Conte
 }
 
 // CreateAuditLogEntry creates an audit log entry in a database.
-func (q *Querier) CreateAuditLogEntry(ctx context.Context, querier database.SQLQueryExecutor, input *audit.AuditLogEntryDatabaseCreationInput) (*audit.AuditLogEntry, error) {
+func (q *repository) CreateAuditLogEntry(ctx context.Context, querier database.SQLQueryExecutor, input *audit.AuditLogEntryDatabaseCreationInput) (*audit.AuditLogEntry, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

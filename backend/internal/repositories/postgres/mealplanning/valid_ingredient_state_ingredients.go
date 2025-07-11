@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	_ mealplanning.ValidIngredientStateIngredientDataManager = (*Querier)(nil)
+	_ mealplanning.ValidIngredientStateIngredientDataManager = (*repository)(nil)
 )
 
 // ValidIngredientStateIngredientExists fetches whether a valid ingredient state ingredient exists from the database.
-func (q *Querier) ValidIngredientStateIngredientExists(ctx context.Context, validIngredientStateIngredientID string) (exists bool, err error) {
+func (q *repository) ValidIngredientStateIngredientExists(ctx context.Context, validIngredientStateIngredientID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -39,7 +39,7 @@ func (q *Querier) ValidIngredientStateIngredientExists(ctx context.Context, vali
 }
 
 // GetValidIngredientStateIngredient fetches a valid ingredient state ingredient from the database.
-func (q *Querier) GetValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) (*mealplanning.ValidIngredientStateIngredient, error) {
+func (q *repository) GetValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) (*mealplanning.ValidIngredientStateIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -121,7 +121,7 @@ func (q *Querier) GetValidIngredientStateIngredient(ctx context.Context, validIn
 }
 
 // GetValidIngredientStateIngredients fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
+func (q *repository) GetValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -221,7 +221,7 @@ func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter
 }
 
 // GetValidIngredientStateIngredientsForIngredientState fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
+func (q *repository) GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -328,7 +328,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 }
 
 // GetValidIngredientStateIngredientsForIngredient fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
+func (q *repository) GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -435,7 +435,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 }
 
 // CreateValidIngredientStateIngredient creates a valid ingredient state ingredient in the database.
-func (q *Querier) CreateValidIngredientStateIngredient(ctx context.Context, input *mealplanning.ValidIngredientStateIngredientDatabaseCreationInput) (*mealplanning.ValidIngredientStateIngredient, error) {
+func (q *repository) CreateValidIngredientStateIngredient(ctx context.Context, input *mealplanning.ValidIngredientStateIngredientDatabaseCreationInput) (*mealplanning.ValidIngredientStateIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -488,7 +488,7 @@ func (q *Querier) CreateValidIngredientStateIngredient(ctx context.Context, inpu
 }
 
 // UpdateValidIngredientStateIngredient updates a particular valid ingredient state ingredient.
-func (q *Querier) UpdateValidIngredientStateIngredient(ctx context.Context, updated *mealplanning.ValidIngredientStateIngredient) error {
+func (q *repository) UpdateValidIngredientStateIngredient(ctx context.Context, updated *mealplanning.ValidIngredientStateIngredient) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -513,7 +513,7 @@ func (q *Querier) UpdateValidIngredientStateIngredient(ctx context.Context, upda
 }
 
 // ArchiveValidIngredientStateIngredient archives a valid ingredient state ingredient from the database by its ID.
-func (q *Querier) ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) error {
+func (q *repository) ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

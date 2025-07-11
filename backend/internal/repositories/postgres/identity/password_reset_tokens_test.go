@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createPasswordResetTokenForTest(t *testing.T, ctx context.Context, examplePasswordResetToken *identity.PasswordResetToken, dbc *Querier) *identity.PasswordResetToken {
+func createPasswordResetTokenForTest(t *testing.T, ctx context.Context, examplePasswordResetToken *identity.PasswordResetToken, dbc *repository) *identity.PasswordResetToken {
 	t.Helper()
 
 	// create

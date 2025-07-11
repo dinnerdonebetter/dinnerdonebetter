@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, exampleValidPreparationVessel *types.ValidPreparationVessel, dbc *Querier) *types.ValidPreparationVessel {
+func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, exampleValidPreparationVessel *types.ValidPreparationVessel, dbc *repository) *types.ValidPreparationVessel {
 	t.Helper()
 
 	// create

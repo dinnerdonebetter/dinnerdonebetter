@@ -15,11 +15,11 @@ import (
 )
 
 var (
-	_ mealplanning.ValidPreparationDataManager = (*Querier)(nil)
+	_ mealplanning.ValidPreparationDataManager = (*repository)(nil)
 )
 
 // ValidPreparationExists fetches whether a valid preparation exists from the database.
-func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error) {
+func (q *repository) ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -40,7 +40,7 @@ func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID
 }
 
 // GetValidPreparation fetches a valid preparation from the database.
-func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID string) (*mealplanning.ValidPreparation, error) {
+func (q *repository) GetValidPreparation(ctx context.Context, validPreparationID string) (*mealplanning.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -92,7 +92,7 @@ func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID st
 }
 
 // GetRandomValidPreparation fetches a valid preparation from the database.
-func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*mealplanning.ValidPreparation, error) {
+func (q *repository) GetRandomValidPreparation(ctx context.Context) (*mealplanning.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -136,7 +136,7 @@ func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*mealplanning.
 }
 
 // SearchForValidPreparations fetches a valid preparation from the database.
-func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) ([]*mealplanning.ValidPreparation, error) {
+func (q *repository) SearchForValidPreparations(ctx context.Context, query string) ([]*mealplanning.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -191,7 +191,7 @@ func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) 
 }
 
 // GetValidPreparations fetches a list of valid preparations from the database that meet a particular filter.
-func (q *Querier) GetValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparation], err error) {
+func (q *repository) GetValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -259,7 +259,7 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *filtering.Qu
 }
 
 // GetValidPreparationsWithIDs fetches a list of valid preparations from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*mealplanning.ValidPreparation, error) {
+func (q *repository) GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*mealplanning.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -311,7 +311,7 @@ func (q *Querier) GetValidPreparationsWithIDs(ctx context.Context, ids []string)
 }
 
 // GetValidPreparationIDsThatNeedSearchIndexing fetches a list of valid preparations from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+func (q *repository) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -324,7 +324,7 @@ func (q *Querier) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Conte
 }
 
 // CreateValidPreparation creates a valid preparation in the database.
-func (q *Querier) CreateValidPreparation(ctx context.Context, input *mealplanning.ValidPreparationDatabaseCreationInput) (*mealplanning.ValidPreparation, error) {
+func (q *repository) CreateValidPreparation(ctx context.Context, input *mealplanning.ValidPreparationDatabaseCreationInput) (*mealplanning.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -394,7 +394,7 @@ func (q *Querier) CreateValidPreparation(ctx context.Context, input *mealplannin
 }
 
 // UpdateValidPreparation updates a particular valid preparation.
-func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *mealplanning.ValidPreparation) error {
+func (q *repository) UpdateValidPreparation(ctx context.Context, updated *mealplanning.ValidPreparation) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -434,7 +434,7 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *mealplann
 }
 
 // MarkValidPreparationAsIndexed updates a particular valid preparation's last_indexed_at value.
-func (q *Querier) MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error {
+func (q *repository) MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -456,7 +456,7 @@ func (q *Querier) MarkValidPreparationAsIndexed(ctx context.Context, validPrepar
 }
 
 // ArchiveValidPreparation archives a valid preparation from the database by its ID.
-func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
+func (q *repository) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

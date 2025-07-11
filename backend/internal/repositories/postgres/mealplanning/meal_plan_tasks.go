@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	_ types.MealPlanTaskDataManager = (*Querier)(nil)
+	_ types.MealPlanTaskDataManager = (*repository)(nil)
 )
 
 // MealPlanTaskExists checks if a meal plan task exists.
-func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error) {
+func (q *repository) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -50,7 +50,7 @@ func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTa
 }
 
 // GetMealPlanTask fetches a meal plan task.
-func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTask, error) {
+func (q *repository) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -100,7 +100,7 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*
 }
 
 // createMealPlanTask creates a meal plan task.
-func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
+func (q *repository) createMealPlanTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -147,7 +147,7 @@ func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQu
 }
 
 // CreateMealPlanTask creates a meal plan task.
-func (q *Querier) CreateMealPlanTask(ctx context.Context, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
+func (q *repository) CreateMealPlanTask(ctx context.Context, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -179,7 +179,7 @@ func (q *Querier) CreateMealPlanTask(ctx context.Context, input *types.MealPlanT
 }
 
 // GetMealPlanTasksForMealPlan fetches a list of meal plan tasks.
-func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanTask, err error) {
+func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -236,7 +236,7 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 }
 
 // CreateMealPlanTasksForMealPlanOption creates meal plan tasks.
-func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
+func (q *repository) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -268,7 +268,7 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inpu
 }
 
 // MarkMealPlanAsHavingTasksCreated marks a meal plan as having all its tasks created.
-func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error {
+func (q *repository) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -290,7 +290,7 @@ func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlan
 }
 
 // MarkMealPlanAsHavingGroceryListInitialized marks a meal plan as having all its tasks created.
-func (q *Querier) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context, mealPlanID string) error {
+func (q *repository) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context, mealPlanID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -312,7 +312,7 @@ func (q *Querier) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context
 }
 
 // ChangeMealPlanTaskStatus changes a meal plan task's status.
-func (q *Querier) ChangeMealPlanTaskStatus(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error {
+func (q *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

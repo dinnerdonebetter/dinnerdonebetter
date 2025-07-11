@@ -12,14 +12,14 @@ import (
 )
 
 var (
-	_ identity.PasswordResetTokenDataManager = (*Querier)(nil)
+	_ identity.PasswordResetTokenDataManager = (*repository)(nil)
 )
 
 // TODO: create AuditLogEntries here
 
 // GetPasswordResetTokenByToken fetches a password reset token from the database by its token.
-func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string) (*identity.PasswordResetToken, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetPasswordResetTokenByToken(ctx context.Context, token string) (*identity.PasswordResetToken, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if token == "" {
@@ -27,9 +27,9 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 	}
 	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, token)
 
-	result, err := q.generatedQuerier.GetPasswordResetToken(ctx, q.db, token)
+	result, err := r.generatedQuerier.GetPasswordResetToken(ctx, r.db, token)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, q.logger, span, "getting password reset token")
+		return nil, observability.PrepareAndLogError(err, r.logger, span, "getting password reset token")
 	}
 
 	passwordResetToken := &identity.PasswordResetToken{
@@ -46,18 +46,18 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 }
 
 // CreatePasswordResetToken creates a password reset token in the database.
-func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *identity.PasswordResetTokenDatabaseCreationInput) (*identity.PasswordResetToken, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) CreatePasswordResetToken(ctx context.Context, input *identity.PasswordResetTokenDatabaseCreationInput) (*identity.PasswordResetToken, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.PasswordResetTokenIDKey, input.ID)
+	logger := r.logger.WithValue(keys.PasswordResetTokenIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, input.ID)
 
 	// create the password reset token.
-	if err := q.generatedQuerier.CreatePasswordResetToken(ctx, q.db, &generated.CreatePasswordResetTokenParams{
+	if err := r.generatedQuerier.CreatePasswordResetToken(ctx, r.db, &generated.CreatePasswordResetTokenParams{
 		ID:            input.ID,
 		Token:         input.Token,
 		BelongsToUser: input.BelongsToUser,
@@ -69,7 +69,7 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *identity.
 		ID:            input.ID,
 		Token:         input.Token,
 		ExpiresAt:     input.ExpiresAt,
-		CreatedAt:     q.CurrentTime(),
+		CreatedAt:     r.CurrentTime(),
 		BelongsToUser: input.BelongsToUser,
 	}
 
@@ -79,11 +79,11 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *identity.
 }
 
 // RedeemPasswordResetToken redeems a password reset token from the database by its ID.
-func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if passwordResetTokenID == "" {
 		return database.ErrInvalidIDProvided
@@ -91,7 +91,7 @@ func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTok
 	logger = logger.WithValue(keys.PasswordResetTokenIDKey, passwordResetTokenID)
 	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, passwordResetTokenID)
 
-	if err := q.generatedQuerier.RedeemPasswordResetToken(ctx, q.db, passwordResetTokenID); err != nil {
+	if err := r.generatedQuerier.RedeemPasswordResetToken(ctx, r.db, passwordResetTokenID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving password reset token")
 	}
 

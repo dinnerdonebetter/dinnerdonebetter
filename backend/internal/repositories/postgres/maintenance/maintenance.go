@@ -7,7 +7,7 @@ import (
 )
 
 // DeleteExpiredOAuth2ClientTokens deletes expired oauth2 client tokens.
-func (q *Querier) DeleteExpiredOAuth2ClientTokens(ctx context.Context) (int64, error) {
+func (q *repository) DeleteExpiredOAuth2ClientTokens(ctx context.Context) (int64, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

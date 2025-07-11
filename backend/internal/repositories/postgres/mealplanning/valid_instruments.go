@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	_ types.ValidInstrumentDataManager = (*Querier)(nil)
+	_ types.ValidInstrumentDataManager = (*repository)(nil)
 )
 
 // ValidInstrumentExists fetches whether a valid instrument exists from the database.
-func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID string) (exists bool, err error) {
+func (q *repository) ValidInstrumentExists(ctx context.Context, validInstrumentID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -38,7 +38,7 @@ func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID s
 }
 
 // GetValidInstrument fetches a valid instrument from the database.
-func (q *Querier) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
+func (q *repository) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -74,7 +74,7 @@ func (q *Querier) GetValidInstrument(ctx context.Context, validInstrumentID stri
 }
 
 // GetRandomValidInstrument fetches a valid instrument from the database.
-func (q *Querier) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
+func (q *repository) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -102,7 +102,7 @@ func (q *Querier) GetRandomValidInstrument(ctx context.Context) (*types.ValidIns
 }
 
 // SearchForValidInstruments fetches a valid instrument from the database.
-func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
+func (q *repository) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -142,7 +142,7 @@ func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) (
 }
 
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
-func (q *Querier) GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidInstrument], err error) {
+func (q *repository) GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -194,7 +194,7 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *filtering.Que
 }
 
 // GetValidInstrumentsWithIDs fetches a list of valid instruments from the database that meet a particular filter.
-func (q *Querier) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
+func (q *repository) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -227,7 +227,7 @@ func (q *Querier) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) 
 }
 
 // GetValidInstrumentIDsThatNeedSearchIndexing fetches a list of valid instruments from the database that meet a particular filter.
-func (q *Querier) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+func (q *repository) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -240,7 +240,7 @@ func (q *Querier) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Contex
 }
 
 // CreateValidInstrument creates a valid instrument in the database.
-func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
+func (q *repository) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -284,7 +284,7 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 }
 
 // UpdateValidInstrument updates a particular valid instrument.
-func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
+func (q *repository) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -314,7 +314,7 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 }
 
 // MarkValidInstrumentAsIndexed updates a particular valid instrument's last_indexed_at value.
-func (q *Querier) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error {
+func (q *repository) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -336,7 +336,7 @@ func (q *Querier) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrum
 }
 
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
-func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
+func (q *repository) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

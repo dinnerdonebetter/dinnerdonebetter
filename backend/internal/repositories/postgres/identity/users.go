@@ -30,18 +30,18 @@ const (
 )
 
 var (
-	_ identity.UserDataManager = (*Querier)(nil)
+	_ identity.UserDataManager = (*repository)(nil)
 
 	// ErrUserAlreadyExists indicates that a user with that username has already been created.
 	ErrUserAlreadyExists = errors.New("user already exists")
 )
 
 // GetUser fetches a user.
-func (q *Querier) GetUser(ctx context.Context, userID string) (*identity.User, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetUser(ctx context.Context, userID string) (*identity.User, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if userID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -49,7 +49,7 @@ func (q *Querier) GetUser(ctx context.Context, userID string) (*identity.User, e
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	result, err := q.generatedQuerier.GetUserByID(ctx, q.db, userID)
+	result, err := r.generatedQuerier.GetUserByID(ctx, r.db, userID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting user")
 	}
@@ -82,8 +82,8 @@ func (q *Querier) GetUser(ctx context.Context, userID string) (*identity.User, e
 }
 
 // GetUserWithUnverifiedTwoFactorSecret fetches a user with an unverified 2FA secret.
-func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*identity.User, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*identity.User, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -91,7 +91,7 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	result, err := q.generatedQuerier.GetUserWithUnverifiedTwoFactor(ctx, q.db, userID)
+	result, err := r.generatedQuerier.GetUserWithUnverifiedTwoFactor(ctx, r.db, userID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "getting user with unverified two factor")
 	}
@@ -124,8 +124,8 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 }
 
 // GetUserByUsername fetches a user by their username.
-func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*identity.User, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetUserByUsername(ctx context.Context, username string) (*identity.User, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if username == "" {
@@ -133,7 +133,7 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*iden
 	}
 	tracing.AttachToSpan(span, keys.UsernameKey, username)
 
-	result, err := q.generatedQuerier.GetUserByUsername(ctx, q.db, username)
+	result, err := r.generatedQuerier.GetUserByUsername(ctx, r.db, username)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "getting user by username")
 	}
@@ -166,8 +166,8 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*iden
 }
 
 // GetAdminUserByUsername fetches a user by their username.
-func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (*identity.User, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetAdminUserByUsername(ctx context.Context, username string) (*identity.User, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if username == "" {
@@ -175,7 +175,7 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 	}
 	tracing.AttachToSpan(span, keys.UsernameKey, username)
 
-	result, err := q.generatedQuerier.GetAdminUserByUsername(ctx, q.db, username)
+	result, err := r.generatedQuerier.GetAdminUserByUsername(ctx, r.db, username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, err
@@ -211,8 +211,8 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 }
 
 // GetUserByEmail fetches a user by their email.
-func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*identity.User, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetUserByEmail(ctx context.Context, email string) (*identity.User, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if email == "" {
@@ -220,7 +220,7 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*identity.U
 	}
 	tracing.AttachToSpan(span, keys.UserEmailAddressKey, email)
 
-	result, err := q.generatedQuerier.GetUserByEmail(ctx, q.db, email)
+	result, err := r.generatedQuerier.GetUserByEmail(ctx, r.db, email)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "getting user by email")
 	}
@@ -253,8 +253,8 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*identity.U
 }
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
-func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*identity.User, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*identity.User, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if usernameQuery == "" {
@@ -262,7 +262,7 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 	}
 	tracing.AttachToSpan(span, keys.SearchQueryKey, usernameQuery)
 
-	results, err := q.generatedQuerier.SearchUsersByUsername(ctx, q.db, usernameQuery)
+	results, err := r.generatedQuerier.SearchUsersByUsername(ctx, r.db, usernameQuery)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "querying database for users")
 	}
@@ -302,11 +302,11 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 }
 
 // GetUsers fetches a list of users from the database that meet a particular filter.
-func (q *Querier) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[identity.User], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[identity.User], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -318,7 +318,7 @@ func (q *Querier) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetUsers(ctx, q.db, &generated2.GetUsersParams{
+	results, err := r.generatedQuerier.GetUsers(ctx, r.db, &generated2.GetUsersParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -365,11 +365,11 @@ func (q *Querier) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (
 }
 
 // GetUserIDsThatNeedSearchIndexing fetches a list of valid vessels from the database that meet a particular filter.
-func (q *Querier) GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetUserIDsNeedingIndexing(ctx, q.db)
+	results, err := r.generatedQuerier.GetUserIDsNeedingIndexing(ctx, r.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing users list retrieval query")
 	}
@@ -378,11 +378,11 @@ func (q *Querier) GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]strin
 }
 
 // MarkUserAsIndexed updates a particular user's last_indexed_at value.
-func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) MarkUserAsIndexed(ctx context.Context, userID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
@@ -390,7 +390,7 @@ func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	if _, err := q.generatedQuerier.UpdateUserLastIndexedAt(ctx, q.db, userID); err != nil {
+	if _, err := r.generatedQuerier.UpdateUserLastIndexedAt(ctx, r.db, userID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking user as indexed")
 	}
 
@@ -400,8 +400,8 @@ func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 }
 
 // CreateUser creates a user. TODO: this should return an account as well.
-func (q *Querier) CreateUser(ctx context.Context, input *identity.UserDatabaseCreationInput) (*identity.User, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabaseCreationInput) (*identity.User, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -409,7 +409,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *identity.UserDatabaseCr
 	}
 
 	tracing.AttachToSpan(span, keys.UsernameKey, input.Username)
-	logger := q.logger.WithValues(map[string]any{
+	logger := r.logger.WithValues(map[string]any{
 		keys.UsernameKey:               input.Username,
 		keys.UserEmailAddressKey:       input.EmailAddress,
 		keys.AccountInvitationTokenKey: input.InvitationToken,
@@ -417,18 +417,18 @@ func (q *Querier) CreateUser(ctx context.Context, input *identity.UserDatabaseCr
 	})
 
 	// begin user creation transaction
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "beginning transaction")
 	}
 
-	token, err := q.secretGenerator.GenerateBase64EncodedString(ctx, 32)
+	token, err := r.secretGenerator.GenerateBase64EncodedString(ctx, 32)
 	if err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "generating email verification token")
 	}
 
-	if err = q.generatedQuerier.CreateUser(ctx, tx, &generated2.CreateUserParams{
+	if err = r.generatedQuerier.CreateUser(ctx, tx, &generated2.CreateUserParams{
 		ID:                            input.ID,
 		FirstName:                     input.FirstName,
 		LastName:                      input.LastName,
@@ -442,7 +442,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *identity.UserDatabaseCr
 		ServiceRole:                   authorization.ServiceUserRole.String(),
 		EmailAddressVerificationToken: database.NullStringFromString(token),
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -467,19 +467,19 @@ func (q *Querier) CreateUser(ctx context.Context, input *identity.UserDatabaseCr
 		AccountStatus:   string(identity.UnverifiedAccountStatus),
 		Birthday:        input.Birthday,
 		ServiceRole:     authorization.ServiceUserRole.String(),
-		CreatedAt:       q.CurrentTime(),
+		CreatedAt:       r.CurrentTime(),
 	}
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    input.ID,
 		EventType:     audit.AuditLogEventTypeCreated,
 		BelongsToUser: input.ID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
@@ -487,24 +487,24 @@ func (q *Querier) CreateUser(ctx context.Context, input *identity.UserDatabaseCr
 		input.AccountName = fmt.Sprintf("%s's cool account", input.Username)
 	}
 
-	account, err := q.createAccountForUser(ctx, tx, hasValidInvite, input.AccountName, user.ID)
+	account, err := r.createAccountForUser(ctx, tx, hasValidInvite, input.AccountName, user.ID)
 	if err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating account for new user")
 	}
 	logger = logger.WithValue(keys.AccountIDKey, account.ID)
 	logger.Debug("account created")
 
 	if hasValidInvite {
-		if err = q.acceptInvitationForUser(ctx, tx, input); err != nil {
-			q.RollbackTransaction(ctx, tx)
+		if err = r.acceptInvitationForUser(ctx, tx, input); err != nil {
+			r.RollbackTransaction(ctx, tx)
 			return nil, observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
 		}
 		logger.Debug("accepted invitation and joined account for user")
 	}
 
-	if err = q.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
-		q.RollbackTransaction(ctx, tx)
+	if err = r.attachInvitationsToUser(ctx, tx, user.EmailAddress, user.ID); err != nil {
+		r.RollbackTransaction(ctx, tx)
 		logger = logger.WithValue("email_address", user.EmailAddress).WithValue("user_id", user.ID)
 		return nil, observability.PrepareAndLogError(err, logger, span, "attaching existing invitations to new user")
 	}
@@ -518,8 +518,8 @@ func (q *Querier) CreateUser(ctx context.Context, input *identity.UserDatabaseCr
 	return user, nil
 }
 
-func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, accountName, userID string) (*identity.Account, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) createAccountForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, accountName, userID string) (*identity.Account, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	// standard registration: we need to create the account
@@ -538,7 +538,7 @@ func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQL
 	}
 
 	// create the account.
-	if err := q.generatedQuerier.CreateAccount(ctx, querier, &generated2.CreateAccountParams{
+	if err := r.generatedQuerier.CreateAccount(ctx, querier, &generated2.CreateAccountParams{
 		City:          accountCreationInput.City,
 		Name:          accountCreationInput.Name,
 		BillingStatus: identity.UnpaidAccountBillingStatus,
@@ -553,11 +553,11 @@ func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQL
 		Latitude:      database.NullStringFromFloat64Pointer(accountCreationInput.Latitude),
 		Longitude:     database.NullStringFromFloat64Pointer(accountCreationInput.Longitude),
 	}); err != nil {
-		q.RollbackTransaction(ctx, querier)
+		r.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "creating account")
 	}
 
-	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err := r.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountCreationInput.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccounts,
@@ -565,23 +565,23 @@ func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQL
 		EventType:        audit.AuditLogEventTypeCreated,
 		BelongsToUser:    accountCreationInput.BelongsToUser,
 	}); err != nil {
-		q.RollbackTransaction(ctx, querier)
+		r.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	accountMembershipID := identifiers.New()
-	if err := q.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated2.CreateAccountUserMembershipForNewUserParams{
+	if err := r.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated2.CreateAccountUserMembershipForNewUserParams{
 		ID:               accountMembershipID,
 		BelongsToUser:    userID,
 		BelongsToAccount: accountID,
 		AccountRole:      authorization.AccountAdminRole.String(),
 		DefaultAccount:   !hasValidInvite,
 	}); err != nil {
-		q.RollbackTransaction(ctx, querier)
+		r.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "writing account user membership")
 	}
 
-	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err := r.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
 		BelongsToAccount: &accountCreationInput.ID,
 		ID:               identifiers.New(),
 		ResourceType:     resourceTypeAccountUserMemberships,
@@ -589,12 +589,12 @@ func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQL
 		EventType:        audit.AuditLogEventTypeCreated,
 		BelongsToUser:    accountCreationInput.BelongsToUser,
 	}); err != nil {
-		q.RollbackTransaction(ctx, querier)
+		r.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	account := &identity.Account{
-		CreatedAt:            q.CurrentTime(),
+		CreatedAt:            r.CurrentTime(),
 		Longitude:            accountCreationInput.Longitude,
 		Latitude:             accountCreationInput.Latitude,
 		State:                accountCreationInput.State,
@@ -616,11 +616,11 @@ func (q *Querier) createAccountForUser(ctx context.Context, querier database.SQL
 }
 
 // UpdateUserUsername updates a user's username.
-func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
@@ -634,25 +634,25 @@ func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername st
 	logger = logger.WithValue(keys.UsernameKey, newUsername)
 	tracing.AttachToSpan(span, keys.UsernameKey, newUsername)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	user, err := q.GetUser(ctx, userID)
+	user, err := r.GetUser(ctx, userID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
-	if _, err = q.generatedQuerier.UpdateUserUsername(ctx, tx, &generated2.UpdateUserUsernameParams{
+	if _, err = r.generatedQuerier.UpdateUserUsername(ctx, tx, &generated2.UpdateUserUsernameParams{
 		Username: newUsername,
 		ID:       userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating username")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -665,7 +665,7 @@ func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername st
 			},
 		},
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
@@ -679,14 +679,14 @@ func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername st
 }
 
 // UpdateUserEmailAddress updates a user's username.
-func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := q.logger.WithValue(keys.UserEmailAddressKey, newEmailAddress).WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserEmailAddressKey, newEmailAddress).WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if newEmailAddress == "" {
@@ -694,25 +694,25 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 	}
 	tracing.AttachToSpan(span, keys.UserEmailAddressKey, newEmailAddress)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	user, err := q.GetUser(ctx, userID)
+	user, err := r.GetUser(ctx, userID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
-	if _, err = q.generatedQuerier.UpdateUserEmailAddress(ctx, tx, &generated2.UpdateUserEmailAddressParams{
+	if _, err = r.generatedQuerier.UpdateUserEmailAddress(ctx, tx, &generated2.UpdateUserEmailAddressParams{
 		EmailAddress: newEmailAddress,
 		ID:           userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user email address")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -725,7 +725,7 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 			},
 		},
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
@@ -739,8 +739,8 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 }
 
 // UpdateUserDetails updates a user's username.
-func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *identity.UserDetailsDatabaseUpdateInput) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateUserDetails(ctx context.Context, userID string, input *identity.UserDetailsDatabaseUpdateInput) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -751,25 +751,25 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *i
 		return database.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	user, err := q.GetUser(ctx, userID)
+	user, err := r.GetUser(ctx, userID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
-	if _, err = q.generatedQuerier.UpdateUserDetails(ctx, tx, &generated2.UpdateUserDetailsParams{
+	if _, err = r.generatedQuerier.UpdateUserDetails(ctx, tx, &generated2.UpdateUserDetailsParams{
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 		Birthday:  database.NullTimeFromTime(input.Birthday),
 		ID:        userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user details")
 	}
 
@@ -786,7 +786,7 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *i
 		changes["birthday"] = audit.ChangeLog{NewValue: input.Birthday.Format(time.Kitchen), OldValue: user.Birthday.Format(time.Kitchen)}
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -794,7 +794,7 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *i
 		BelongsToUser: userID,
 		Changes:       changes,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
@@ -808,8 +808,8 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *i
 }
 
 // UpdateUserAvatar updates a user's avatar source.
-func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if newAvatarSrc == "" {
@@ -820,22 +820,22 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 		return database.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = q.generatedQuerier.UpdateUserAvatarSrc(ctx, tx, &generated2.UpdateUserAvatarSrcParams{
+	if _, err = r.generatedQuerier.UpdateUserAvatarSrc(ctx, tx, &generated2.UpdateUserAvatarSrcParams{
 		AvatarSrc: database.NullStringFromString(newAvatarSrc),
 		ID:        userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user avatar")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -845,7 +845,7 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 			"avatar": {},
 		},
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
@@ -859,8 +859,8 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 }
 
 // UpdateUserPassword updates a user's passwords hash in the database.
-func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateUserPassword(ctx context.Context, userID, newHash string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if newHash == "" {
@@ -871,22 +871,22 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 		return database.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = q.generatedQuerier.UpdateUserPassword(ctx, tx, &generated2.UpdateUserPasswordParams{
+	if _, err = r.generatedQuerier.UpdateUserPassword(ctx, tx, &generated2.UpdateUserPasswordParams{
 		HashedPassword: newHash,
 		ID:             userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user password")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -896,7 +896,7 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 			"password": {},
 		},
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
@@ -910,8 +910,8 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 }
 
 // UpdateUserTwoFactorSecret marks a user's two factor secret as validated.
-func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecret string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecret string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if newSecret == "" {
@@ -922,22 +922,22 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 		return database.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = q.generatedQuerier.UpdateUserTwoFactorSecret(ctx, tx, &generated2.UpdateUserTwoFactorSecretParams{
+	if _, err = r.generatedQuerier.UpdateUserTwoFactorSecret(ctx, tx, &generated2.UpdateUserTwoFactorSecretParams{
 		TwoFactorSecret: newSecret,
 		ID:              userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user 2FA secret")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -947,7 +947,7 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 			"two_factor_secret": {},
 		},
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
@@ -961,26 +961,26 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 }
 
 // MarkUserTwoFactorSecretAsVerified marks a user's two factor secret as validated.
-func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = q.generatedQuerier.MarkTwoFactorSecretAsVerified(ctx, tx, userID); err != nil {
+	if err = r.generatedQuerier.MarkTwoFactorSecretAsVerified(ctx, tx, userID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -993,7 +993,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 			},
 		},
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
@@ -1007,8 +1007,8 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 }
 
 // MarkUserTwoFactorSecretAsUnverified marks a user's two factor secret as unverified.
-func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if newSecret == "" {
@@ -1019,32 +1019,32 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 		return database.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = q.generatedQuerier.MarkTwoFactorSecretAsUnverified(ctx, q.db, &generated2.MarkTwoFactorSecretAsUnverifiedParams{
+	if err = r.generatedQuerier.MarkTwoFactorSecretAsUnverified(ctx, r.db, &generated2.MarkTwoFactorSecretAsUnverifiedParams{
 		TwoFactorSecret: newSecret,
 		ID:              userID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeArchived,
 		BelongsToUser: userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -1057,7 +1057,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 			},
 		},
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
@@ -1071,25 +1071,25 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 }
 
 // ArchiveUser archives a user.
-func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ArchiveUser(ctx context.Context, userID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger := q.logger.WithValue(keys.UserIDKey, userID)
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
 
 	// begin archive user transaction
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	changed, err := q.generatedQuerier.ArchiveUser(ctx, tx, userID)
+	changed, err := r.generatedQuerier.ArchiveUser(ctx, tx, userID)
 	if err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving user")
 	}
 
@@ -1097,19 +1097,19 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 		return sql.ErrNoRows
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeArchived,
 		BelongsToUser: userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	if _, err = q.generatedQuerier.ArchiveUserMemberships(ctx, tx, userID); err != nil {
-		q.RollbackTransaction(ctx, tx)
+	if _, err = r.generatedQuerier.ArchiveUserMemberships(ctx, tx, userID); err != nil {
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving user account memberships")
 	}
 
@@ -1122,8 +1122,8 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	return nil
 }
 
-func (q *Querier) GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -1131,7 +1131,7 @@ func (q *Querier) GetEmailAddressVerificationTokenForUser(ctx context.Context, u
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	result, err := q.generatedQuerier.GetEmailVerificationTokenByUserID(ctx, q.db, userID)
+	result, err := r.generatedQuerier.GetEmailVerificationTokenByUserID(ctx, r.db, userID)
 	if err != nil {
 		return "", observability.PrepareError(err, span, "getting user by email address verification token")
 	}
@@ -1139,15 +1139,15 @@ func (q *Querier) GetEmailAddressVerificationTokenForUser(ctx context.Context, u
 	return result.String, nil
 }
 
-func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*identity.User, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*identity.User, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if token == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
 
-	result, err := q.generatedQuerier.GetUserByEmailAddressVerificationToken(ctx, q.db, database.NullStringFromString(token))
+	result, err := r.generatedQuerier.GetUserByEmailAddressVerificationToken(ctx, r.db, database.NullStringFromString(token))
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "getting user by email address verification token")
 	}
@@ -1179,11 +1179,11 @@ func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, to
 	return u, nil
 }
 
-func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
@@ -1194,16 +1194,16 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 		return database.ErrEmptyInputProvided
 	}
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = q.generatedQuerier.MarkEmailAddressAsVerified(ctx, tx, &generated2.MarkEmailAddressAsVerifiedParams{
+	if err = r.generatedQuerier.MarkEmailAddressAsVerified(ctx, tx, &generated2.MarkEmailAddressAsVerifiedParams{
 		ID:                            userID,
 		EmailAddressVerificationToken: database.NullStringFromString(token),
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		if errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
@@ -1211,7 +1211,7 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 		return observability.PrepareAndLogError(err, logger, span, "writing verified email address status to database")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -1224,16 +1224,16 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 			},
 		},
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	if _, err = q.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated2.SetUserAccountStatusParams{
+	if _, err = r.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated2.SetUserAccountStatusParams{
 		UserAccountStatus:            string(identity.GoodStandingUserAccountStatus),
 		UserAccountStatusExplanation: "verified email address",
 		ID:                           userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user account status")
 	}
 
@@ -1244,33 +1244,33 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 	return nil
 }
 
-func (q *Querier) MarkUserEmailAddressAsUnverified(ctx context.Context, userID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) MarkUserEmailAddressAsUnverified(ctx context.Context, userID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if userID == "" {
 		return database.ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 
-	if err = q.generatedQuerier.MarkEmailAddressAsUnverified(ctx, tx, userID); err != nil {
+	if err = r.generatedQuerier.MarkEmailAddressAsUnverified(ctx, tx, userID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			q.RollbackTransaction(ctx, tx)
+			r.RollbackTransaction(ctx, tx)
 			return err
 		}
 
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "writing email address verification status to database")
 	}
 
-	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
 		ID:            identifiers.New(),
 		ResourceType:  resourceTypeUsers,
 		RelevantID:    userID,
@@ -1283,16 +1283,16 @@ func (q *Querier) MarkUserEmailAddressAsUnverified(ctx context.Context, userID s
 			},
 		},
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	if _, err = q.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated2.SetUserAccountStatusParams{
+	if _, err = r.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated2.SetUserAccountStatusParams{
 		UserAccountStatus:            string(identity.UnverifiedAccountStatus),
 		UserAccountStatusExplanation: "unverified email address",
 		ID:                           userID,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user account status")
 	}
 

@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	_ mealplanning.ValidIngredientGroupDataManager = (*Querier)(nil)
+	_ mealplanning.ValidIngredientGroupDataManager = (*repository)(nil)
 )
 
 // ValidIngredientGroupExists fetches whether a valid ingredient group exists from the database.
-func (q *Querier) ValidIngredientGroupExists(ctx context.Context, validIngredientGroupID string) (exists bool, err error) {
+func (q *repository) ValidIngredientGroupExists(ctx context.Context, validIngredientGroupID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -39,7 +39,7 @@ func (q *Querier) ValidIngredientGroupExists(ctx context.Context, validIngredien
 }
 
 // GetValidIngredientGroup fetches a valid ingredient group from the database.
-func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGroupID string) (*mealplanning.ValidIngredientGroup, error) {
+func (q *repository) GetValidIngredientGroup(ctx context.Context, validIngredientGroupID string) (*mealplanning.ValidIngredientGroup, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -126,7 +126,7 @@ func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGr
 }
 
 // SearchForValidIngredientGroups fetches a valid ingredient group from the database.
-func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientGroup, error) {
+func (q *repository) SearchForValidIngredientGroups(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientGroup, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -234,7 +234,7 @@ func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query stri
 }
 
 // GetValidIngredientGroups fetches a list of valid ingredients group from the database that meet a particular filter.
-func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], err error) {
+func (q *repository) GetValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -340,7 +340,7 @@ func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *filterin
 }
 
 // CreateValidIngredientGroup creates a valid ingredient group in the database.
-func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *mealplanning.ValidIngredientGroupDatabaseCreationInput) (*mealplanning.ValidIngredientGroup, error) {
+func (q *repository) CreateValidIngredientGroup(ctx context.Context, input *mealplanning.ValidIngredientGroupDatabaseCreationInput) (*mealplanning.ValidIngredientGroup, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -396,7 +396,7 @@ func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *mealpla
 }
 
 // CreateValidIngredientGroupMember creates a valid ingredient group member in the database.
-func (q *Querier) CreateValidIngredientGroupMember(ctx context.Context, db database.SQLQueryExecutorAndTransactionManager, groupID string, input *mealplanning.ValidIngredientGroupMemberDatabaseCreationInput) (*mealplanning.ValidIngredientGroupMember, error) {
+func (q *repository) CreateValidIngredientGroupMember(ctx context.Context, db database.SQLQueryExecutorAndTransactionManager, groupID string, input *mealplanning.ValidIngredientGroupMemberDatabaseCreationInput) (*mealplanning.ValidIngredientGroupMember, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -431,7 +431,7 @@ func (q *Querier) CreateValidIngredientGroupMember(ctx context.Context, db datab
 }
 
 // UpdateValidIngredientGroup updates a particular valid ingredient group.
-func (q *Querier) UpdateValidIngredientGroup(ctx context.Context, updated *mealplanning.ValidIngredientGroup) error {
+func (q *repository) UpdateValidIngredientGroup(ctx context.Context, updated *mealplanning.ValidIngredientGroup) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -456,7 +456,7 @@ func (q *Querier) UpdateValidIngredientGroup(ctx context.Context, updated *mealp
 }
 
 // ArchiveValidIngredientGroup archives a valid ingredient group from the database by its ID.
-func (q *Querier) ArchiveValidIngredientGroup(ctx context.Context, validIngredientGroupID string) error {
+func (q *repository) ArchiveValidIngredientGroup(ctx context.Context, validIngredientGroupID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

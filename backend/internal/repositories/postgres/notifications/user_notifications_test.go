@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createUserNotificationForTest(t *testing.T, ctx context.Context, userID string, exampleUserNotification *types.UserNotification, dbc *Querier) *types.UserNotification {
+func createUserNotificationForTest(t *testing.T, ctx context.Context, userID string, exampleUserNotification *types.UserNotification, dbc *repository) *types.UserNotification {
 	t.Helper()
 
 	if userID == "" {

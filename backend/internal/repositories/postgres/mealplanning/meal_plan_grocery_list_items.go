@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	_ mealplanning.MealPlanGroceryListItemDataManager = (*Querier)(nil)
+	_ mealplanning.MealPlanGroceryListItemDataManager = (*repository)(nil)
 )
 
 // MealPlanGroceryListItemExists fetches whether a meal plan grocery list exists from the database.
-func (q *Querier) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (exists bool, err error) {
+func (q *repository) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -46,7 +46,7 @@ func (q *Querier) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID,
 	return result, nil
 }
 
-func (q *Querier) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItem *mealplanning.MealPlanGroceryListItem) (*mealplanning.MealPlanGroceryListItem, error) {
+func (q *repository) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItem *mealplanning.MealPlanGroceryListItem) (*mealplanning.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -82,7 +82,7 @@ func (q *Querier) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanG
 }
 
 // GetMealPlanGroceryListItem fetches a meal plan grocery list from the database.
-func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*mealplanning.MealPlanGroceryListItem, error) {
+func (q *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*mealplanning.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -200,7 +200,7 @@ func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, me
 }
 
 // GetMealPlanGroceryListItemsForMealPlan fetches a list of meal plan grocery lists from the database that meet a particular filter.
-func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) ([]*mealplanning.MealPlanGroceryListItem, error) {
+func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) ([]*mealplanning.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -320,7 +320,7 @@ func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, me
 }
 
 // createMealPlanGroceryListItem creates a meal plan grocery list in the database.
-func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier database.SQLQueryExecutor, input *mealplanning.MealPlanGroceryListItemDatabaseCreationInput) (*mealplanning.MealPlanGroceryListItem, error) {
+func (q *repository) createMealPlanGroceryListItem(ctx context.Context, querier database.SQLQueryExecutor, input *mealplanning.MealPlanGroceryListItemDatabaseCreationInput) (*mealplanning.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -376,12 +376,12 @@ func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier dat
 }
 
 // CreateMealPlanGroceryListItem creates a meal plan grocery list in the database.
-func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *mealplanning.MealPlanGroceryListItemDatabaseCreationInput) (*mealplanning.MealPlanGroceryListItem, error) {
+func (q *repository) CreateMealPlanGroceryListItem(ctx context.Context, input *mealplanning.MealPlanGroceryListItemDatabaseCreationInput) (*mealplanning.MealPlanGroceryListItem, error) {
 	return q.createMealPlanGroceryListItem(ctx, q.db, input)
 }
 
 // UpdateMealPlanGroceryListItem updates a particular meal plan grocery list.
-func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *mealplanning.MealPlanGroceryListItem) error {
+func (q *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated *mealplanning.MealPlanGroceryListItem) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -419,7 +419,7 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *me
 }
 
 // ArchiveMealPlanGroceryListItem archives a meal plan grocery list from the database by its ID.
-func (q *Querier) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error {
+func (q *repository) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

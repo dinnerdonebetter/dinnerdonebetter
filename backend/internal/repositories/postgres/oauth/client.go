@@ -19,8 +19,8 @@ const (
 	o11yName = "oauth_db_client"
 )
 
-// Querier is the oauth2 client and token repo implemenation.
-type Querier struct {
+// repository is the oauth2 client and token repo implemenation.
+type repository struct {
 	database.Client
 	tracer                  tracing.Tracer
 	logger                  logging.Logger
@@ -31,7 +31,7 @@ type Querier struct {
 	db                      *sql.DB
 }
 
-// ProvideOAuthRepository provides a new client.
+// ProvideOAuthRepository provides a new repository.
 func ProvideOAuthRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
@@ -44,7 +44,7 @@ func ProvideOAuthRepository(
 		return nil
 	}
 
-	c := &Querier{
+	c := &repository{
 		Client:                  client,
 		db:                      client.DB(),
 		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),

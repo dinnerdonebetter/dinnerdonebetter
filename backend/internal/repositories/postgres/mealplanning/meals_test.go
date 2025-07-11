@@ -29,7 +29,7 @@ func buildMealForIntegrationTest(userID string, recipe *types.Recipe) *types.Mea
 	return exampleMeal
 }
 
-func createMealForTest(t *testing.T, ctx context.Context, exampleMeal *types.Meal, dbc *Querier) *types.Meal {
+func createMealForTest(t *testing.T, ctx context.Context, exampleMeal *types.Meal, dbc *repository) *types.Meal {
 	t.Helper()
 
 	// create

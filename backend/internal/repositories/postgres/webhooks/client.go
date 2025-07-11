@@ -15,8 +15,8 @@ const (
 	o11yName = "webhook_db_client"
 )
 
-// Querier is the webhook repository client.
-type Querier struct {
+// repository is the webhook repository client.
+type repository struct {
 	database.Client
 	tracer            tracing.Tracer
 	logger            logging.Logger
@@ -25,14 +25,14 @@ type Querier struct {
 	db                *sql.DB
 }
 
-// ProvideWebhooksRepository provides a new client.
+// ProvideWebhooksRepository provides a new repository.
 func ProvideWebhooksRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,
 	client database.Client,
 ) webhooks.Repository {
-	c := &Querier{
+	c := &repository{
 		Client:            client,
 		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),

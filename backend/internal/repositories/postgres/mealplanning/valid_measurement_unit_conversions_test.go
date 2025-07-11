@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createValidMeasurementUnitConversionForTest(t *testing.T, ctx context.Context, exampleValidMeasurementUnitConversion *types.ValidMeasurementUnitConversion, dbc *Querier) *types.ValidMeasurementUnitConversion {
+func createValidMeasurementUnitConversionForTest(t *testing.T, ctx context.Context, exampleValidMeasurementUnitConversion *types.ValidMeasurementUnitConversion, dbc *repository) *types.ValidMeasurementUnitConversion {
 	t.Helper()
 
 	// create

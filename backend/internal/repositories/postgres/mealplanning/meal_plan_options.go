@@ -19,11 +19,11 @@ import (
 )
 
 var (
-	_ mealplanning.MealPlanOptionDataManager = (*Querier)(nil)
+	_ mealplanning.MealPlanOptionDataManager = (*repository)(nil)
 )
 
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
-func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (exists bool, err error) {
+func (q *repository) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -61,7 +61,7 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 }
 
 // GetMealPlanOption fetches a meal plan option from the database.
-func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*mealplanning.MealPlanOption, error) {
+func (q *repository) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*mealplanning.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -126,7 +126,7 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 }
 
 // getMealPlanOptionByID fetches a meal plan option from the database by its ID.
-func (q *Querier) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID string) (*mealplanning.MealPlanOption, error) {
+func (q *repository) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID string) (*mealplanning.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -177,7 +177,7 @@ func (q *Querier) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID st
 }
 
 // getMealPlanOptionsForMealPlanEvent fetches a list of meal plan options from the database that meet a particular filter.
-func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) ([]*mealplanning.MealPlanOption, error) {
+func (q *repository) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) ([]*mealplanning.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -244,7 +244,7 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 }
 
 // GetMealPlanOptions fetches a list of meal plan options from the database that meet a particular filter.
-func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.MealPlanOption], err error) {
+func (q *repository) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.MealPlanOption], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -314,7 +314,7 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 }
 
 // createMealPlanOption creates a meal plan option in the database.
-func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *mealplanning.MealPlanOptionDatabaseCreationInput, markAsChosen bool) (*mealplanning.MealPlanOption, error) {
+func (q *repository) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *mealplanning.MealPlanOptionDatabaseCreationInput, markAsChosen bool) (*mealplanning.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -355,12 +355,12 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 }
 
 // CreateMealPlanOption creates a meal plan option in the database.
-func (q *Querier) CreateMealPlanOption(ctx context.Context, input *mealplanning.MealPlanOptionDatabaseCreationInput) (*mealplanning.MealPlanOption, error) {
+func (q *repository) CreateMealPlanOption(ctx context.Context, input *mealplanning.MealPlanOptionDatabaseCreationInput) (*mealplanning.MealPlanOption, error) {
 	return q.createMealPlanOption(ctx, q.db, input, false)
 }
 
 // UpdateMealPlanOption updates a particular meal plan option.
-func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *mealplanning.MealPlanOption) error {
+func (q *repository) UpdateMealPlanOption(ctx context.Context, updated *mealplanning.MealPlanOption) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -388,7 +388,7 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *mealplannin
 }
 
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
-func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error {
+func (q *repository) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -424,7 +424,7 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	return nil
 }
 
-func (q *Querier) determineWinner(winners []schulze.Result[string]) string {
+func (q *repository) determineWinner(winners []schulze.Result[string]) string {
 	var (
 		highestScore int
 		scoreWinners []string
@@ -443,7 +443,7 @@ func (q *Querier) determineWinner(winners []schulze.Result[string]) string {
 	return scoreWinners[rand.N(len(scoreWinners))]
 }
 
-func (q *Querier) decideOptionWinner(ctx context.Context, options []*mealplanning.MealPlanOption) (_ string, _, _ bool) {
+func (q *repository) decideOptionWinner(ctx context.Context, options []*mealplanning.MealPlanOption) (_ string, _, _ bool) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -492,7 +492,7 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*mealplannin
 }
 
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
-func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, accountID string) (changed bool, err error) {
+func (q *repository) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, accountID string) (changed bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

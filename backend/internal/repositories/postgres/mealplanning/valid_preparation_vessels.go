@@ -15,11 +15,11 @@ import (
 )
 
 var (
-	_ mealplanning.ValidPreparationVesselDataManager = (*Querier)(nil)
+	_ mealplanning.ValidPreparationVesselDataManager = (*repository)(nil)
 )
 
 // ValidPreparationVesselExists fetches whether a valid preparation vessel exists from the database.
-func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPreparationVesselID string) (exists bool, err error) {
+func (q *repository) ValidPreparationVesselExists(ctx context.Context, validPreparationVesselID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -37,7 +37,7 @@ func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPrepara
 }
 
 // GetValidPreparationVessel fetches a valid preparation vessel from the database.
-func (q *Querier) GetValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*mealplanning.ValidPreparationVessel, error) {
+func (q *repository) GetValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*mealplanning.ValidPreparationVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -127,7 +127,7 @@ func (q *Querier) GetValidPreparationVessel(ctx context.Context, validPreparatio
 }
 
 // GetValidPreparationVessels fetches a list of valid preparation vessels from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
+func (q *repository) GetValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -246,7 +246,7 @@ func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *filter
 }
 
 // GetValidPreparationVesselsForPreparation fetches a list of valid preparation vessels from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
+func (q *repository) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -372,7 +372,7 @@ func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 }
 
 // GetValidPreparationVesselsForVessel fetches a list of valid preparation vessels from the database that meet a particular filter.
-func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
+func (q *repository) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -497,7 +497,7 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 }
 
 // CreateValidPreparationVessel creates a valid preparation vessel in the database.
-func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *mealplanning.ValidPreparationVesselDatabaseCreationInput) (*mealplanning.ValidPreparationVessel, error) {
+func (q *repository) CreateValidPreparationVessel(ctx context.Context, input *mealplanning.ValidPreparationVesselDatabaseCreationInput) (*mealplanning.ValidPreparationVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -549,7 +549,7 @@ func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *mealp
 }
 
 // UpdateValidPreparationVessel updates a particular valid preparation vessel.
-func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *mealplanning.ValidPreparationVessel) error {
+func (q *repository) UpdateValidPreparationVessel(ctx context.Context, updated *mealplanning.ValidPreparationVessel) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -574,7 +574,7 @@ func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *mea
 }
 
 // ArchiveValidPreparationVessel archives a valid preparation vessel from the database by its ID.
-func (q *Querier) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
+func (q *repository) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

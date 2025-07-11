@@ -25,7 +25,7 @@ func buildMealPlanEventForIntegrationTest(meal *types.Meal) *types.MealPlanEvent
 	return exampleMealPlanEvent
 }
 
-func createMealPlanEventForTest(t *testing.T, ctx context.Context, exampleMealPlanEvent *types.MealPlanEvent, dbc *Querier) *types.MealPlanEvent {
+func createMealPlanEventForTest(t *testing.T, ctx context.Context, exampleMealPlanEvent *types.MealPlanEvent, dbc *repository) *types.MealPlanEvent {
 	t.Helper()
 
 	// create
