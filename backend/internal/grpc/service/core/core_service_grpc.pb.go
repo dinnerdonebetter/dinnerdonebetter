@@ -68,7 +68,7 @@ func RegisterCoreServer(s grpc.ServiceRegistrar, srv CoreServer) {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Core_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "eating.Core",
+	ServiceName: "mealplanning.Core",
 	HandlerType: (*CoreServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams:     []grpc.StreamDesc{},

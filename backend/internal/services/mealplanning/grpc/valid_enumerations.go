@@ -7,7 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/eating/grpc/converters"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )

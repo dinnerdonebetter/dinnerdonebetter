@@ -22,8 +22,8 @@ import (
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	coreemails "github.com/dinnerdonebetter/backend/internal/services/core/emails"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
-	eatingemails "github.com/dinnerdonebetter/backend/internal/services/eating/emails"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	eatingemails "github.com/dinnerdonebetter/backend/internal/services/mealplanning/emails"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 )
 
 func (a *AsyncDataChangeMessageHandler) DataChangesEventHandler(ctx context.Context, rawMsg []byte) error {

@@ -128,11 +128,11 @@ func (s *ServiceImpl) AuthInterceptor() grpc.UnaryServerInterceptor {
 
 		switch info.FullMethod {
 		// these methods don't require authentication
-		case "/eating.EatingService/AdminLoginForToken",
-			"/eating.EatingService/CreateUser",
-			"/eating.EatingService/Ping",
-			"/eating.EatingService/VerifyTOTPSecret",
-			"/eating.EatingService/LoginForToken":
+		case "/mealplanning.EatingService/AdminLoginForToken",
+			"/mealplanning.EatingService/CreateUser",
+			"/mealplanning.EatingService/Ping",
+			"/mealplanning.EatingService/VerifyTOTPSecret",
+			"/mealplanning.EatingService/LoginForToken":
 			logger.Info("skipping authentication for method")
 			return handler(ctx, req)
 		}

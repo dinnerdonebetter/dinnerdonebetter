@@ -50,3 +50,10 @@ message UserNotificationCreationRequestInput {
 message UserNotificationUpdateRequestInput {
   string Status = 1;
 }
+
+service UserNotificationsService {
+  //  rpc CreateUserNotification(CreateUserNotificationRequest) returns (CreateUserNotificationResponse);
+  //  rpc GetUserNotification(GetUserNotificationRequest) returns (GetUserNotificationResponse);
+  //  rpc GetUserNotifications(GetUserNotificationsRequest) returns (GetUserNotificationsResponse);
+  //  rpc UpdateUserNotification(UpdateUserNotificationRequest) returns (UpdateUserNotificationResponse);
+}

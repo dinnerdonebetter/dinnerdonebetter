@@ -27,7 +27,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/services/core/indexing"
-	indexing2 "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	indexing2 "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 )
 
 // Injectors from build.go:

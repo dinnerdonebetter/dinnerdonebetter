@@ -12,7 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 )
 
 const (

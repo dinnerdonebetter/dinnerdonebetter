@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.4
 // 	protoc        v5.29.3
-// source: messages_common.proto
+// source: common.proto
 
 package messages
 
@@ -524,20 +524,20 @@ func file_messages_common_proto_rawDescGZIP() []byte {
 
 var file_messages_common_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_messages_common_proto_goTypes = []any{
-	(*QueryFilter)(nil),                       // 0: eating.QueryFilter
-	(*ArbitraryQueueMessageRequestInput)(nil), // 1: eating.ArbitraryQueueMessageRequestInput
-	(*ArbitraryQueueMessageResponse)(nil),     // 2: eating.ArbitraryQueueMessageResponse
-	(*ChangeLog)(nil),                         // 3: eating.ChangeLog
-	(*AuditLogEntry)(nil),                     // 4: eating.AuditLogEntry
-	(*OptionalFloat32Range)(nil),              // 5: eating.OptionalFloat32Range
-	(*OptionalUint32Range)(nil),               // 6: eating.OptionalUint32Range
-	nil,                                       // 7: eating.AuditLogEntry.ChangesEntry
+	(*QueryFilter)(nil),                       // 0: mealplanning.QueryFilter
+	(*ArbitraryQueueMessageRequestInput)(nil), // 1: mealplanning.ArbitraryQueueMessageRequestInput
+	(*ArbitraryQueueMessageResponse)(nil),     // 2: mealplanning.ArbitraryQueueMessageResponse
+	(*ChangeLog)(nil),                         // 3: mealplanning.ChangeLog
+	(*AuditLogEntry)(nil),                     // 4: mealplanning.AuditLogEntry
+	(*OptionalFloat32Range)(nil),              // 5: mealplanning.OptionalFloat32Range
+	(*OptionalUint32Range)(nil),               // 6: mealplanning.OptionalUint32Range
+	nil,                                       // 7: mealplanning.AuditLogEntry.ChangesEntry
 	(*timestamppb.Timestamp)(nil),             // 8: google.protobuf.Timestamp
 }
 var file_messages_common_proto_depIdxs = []int32{
-	8, // 0: eating.AuditLogEntry.CreatedAt:type_name -> google.protobuf.Timestamp
-	7, // 1: eating.AuditLogEntry.Changes:type_name -> eating.AuditLogEntry.ChangesEntry
-	3, // 2: eating.AuditLogEntry.ChangesEntry.value:type_name -> eating.ChangeLog
+	8, // 0: mealplanning.AuditLogEntry.CreatedAt:type_name -> google.protobuf.Timestamp
+	7, // 1: mealplanning.AuditLogEntry.Changes:type_name -> mealplanning.AuditLogEntry.ChangesEntry
+	3, // 2: mealplanning.AuditLogEntry.ChangesEntry.value:type_name -> mealplanning.ChangeLog
 	3, // [3:3] is the sub-list for method output_type
 	3, // [3:3] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name

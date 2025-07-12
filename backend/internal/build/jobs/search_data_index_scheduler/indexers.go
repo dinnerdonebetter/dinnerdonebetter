@@ -5,7 +5,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/search/text/indexing"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 )
 
 func ProvideIndexFunctions(identityRepo identity.Repository, mealPlanningRepo mealplanning.Repository) map[string]indexing.Function {

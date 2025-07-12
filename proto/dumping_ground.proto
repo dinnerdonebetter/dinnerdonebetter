@@ -4,6 +4,16 @@ package eating;
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/messages";
 
+// this is functionality that needs to be implemented, but I'm punting on for now
+
+//service Whatever {
+//    rpc AdminUpdateUserStatus(AdminUpdateUserStatusRequest) returns (AdminUpdateUserStatusResponse);
+//    rpc AggregateUserDataReport(AggregateUserDataReportRequest) returns (AggregateUserDataReportResponse);
+//    rpc DestroyAllUserData(DestroyAllUserDataRequest) returns (DestroyAllUserDataResponse);
+//    rpc FetchUserDataReport(FetchUserDataReportRequest) returns (FetchUserDataReportResponse);
+//    rpc PublishArbitraryQueueMessage(PublishArbitraryQueueMessageRequest) returns (PublishArbitraryQueueMessageResponse);
+//}
+
 // BEGIN requests and responses
 
 // AdminUpdateUserStatus
@@ -52,16 +62,6 @@ message DataDeletionResponse {
   bool Successful = 1;
 }
 
-message Float32RangeWithOptionalMax {
-  optional float Max = 1;
-  float Min = 2;
-}
-
-message Float32RangeWithOptionalMaxUpdateRequestInput {
-  float Min = 1;
-  optional float Max = 2;
-}
-
 message MissingVote {
   string EventID = 1;
   string OptionID = 2;
@@ -76,26 +76,6 @@ message NamedID {
 message ResponseDetails {
   string CurrentAccountID = 1;
   string TraceID = 2;
-}
-
-message Uint16RangeWithOptionalMax {
-  optional uint32 Max = 1;
-  uint32 Min = 2;
-}
-
-message Uint16RangeWithOptionalMaxUpdateRequestInput {
-  uint32 Min = 1;
-  optional uint32 Max = 2;
-}
-
-message Uint32RangeWithOptionalMax {
-  optional uint32 Max = 1;
-  uint32 Min = 2;
-}
-
-message Uint32RangeWithOptionalMaxUpdateRequestInput {
-  uint32 Min = 1;
-  optional uint32 Max = 2;
 }
 
 // message UserDataCollection {

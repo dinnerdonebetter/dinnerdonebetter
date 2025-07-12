@@ -180,3 +180,26 @@ message UserPermissionsResponse {
 message UsernameReminderRequestInput {
   string EmailAddress = 1;
 }
+
+// GetSelf
+message GetSelfRequest {}
+
+message GetSelfResponse {}
+
+service AuthService {
+  rpc GetAuthStatus(GetAuthStatusRequest) returns (GetAuthStatusResponse);
+  rpc ExchangeToken(ExchangeTokenRequest) returns (ExchangeTokenResponse);
+  rpc AdminLoginForToken(AdminLoginForTokenRequest) returns (AdminLoginForTokenResponse);
+  rpc CheckPermissions(CheckPermissionsRequest) returns (CheckPermissionsResponse);
+  rpc GetActiveAccount(GetActiveAccountRequest) returns (GetActiveAccountResponse);
+  rpc GetSelf(GetSelfRequest) returns (GetSelfResponse);
+  rpc LoginForToken(LoginForTokenRequest) returns (LoginForTokenResponse);
+  rpc RedeemPasswordResetToken(RedeemPasswordResetTokenRequest) returns (RedeemPasswordResetTokenResponse);
+  rpc RefreshTOTPSecret(RefreshTOTPSecretRequest) returns (RefreshTOTPSecretResponse);
+  rpc RequestEmailVerificationEmail(RequestEmailVerificationEmailRequest) returns (RequestEmailVerificationEmailResponse);
+  rpc RequestPasswordResetToken(RequestPasswordResetTokenRequest) returns (RequestPasswordResetTokenResponse);
+  rpc RequestUsernameReminder(RequestUsernameReminderRequest) returns (RequestUsernameReminderResponse);
+  rpc VerifyEmailAddress(VerifyEmailAddressRequest) returns (VerifyEmailAddressResponse);
+  rpc VerifyTOTPSecret(VerifyTOTPSecretRequest) returns (VerifyTOTPSecretResponse);
+  rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse);
+}

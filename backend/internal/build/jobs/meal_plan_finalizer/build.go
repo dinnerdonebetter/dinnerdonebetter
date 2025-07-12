@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
-	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_finalizer"
+	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
 
 	"github.com/google/wire"
 )

@@ -147,3 +147,17 @@ message ServiceSettingCreationRequestInput {
   repeated string Enumeration = 5;
   bool AdminsOnly = 6;
 }
+
+service ServiceSettingService {
+  rpc GetServiceSettingConfigurationsForAccount(GetServiceSettingConfigurationsForAccountRequest) returns (GetServiceSettingConfigurationsForAccountResponse);
+  rpc GetServiceSettingConfigurationsForUser(GetServiceSettingConfigurationsForUserRequest) returns (GetServiceSettingConfigurationsForUserResponse);
+  rpc SearchForServiceSettings(SearchForServiceSettingsRequest) returns (SearchForServiceSettingsResponse);
+  rpc ArchiveServiceSetting(ArchiveServiceSettingRequest) returns (ArchiveServiceSettingResponse);
+  rpc ArchiveServiceSettingConfiguration(ArchiveServiceSettingConfigurationRequest) returns (ArchiveServiceSettingConfigurationResponse);
+  rpc CreateServiceSetting(CreateServiceSettingRequest) returns (CreateServiceSettingResponse);
+  rpc CreateServiceSettingConfiguration(CreateServiceSettingConfigurationRequest) returns (CreateServiceSettingConfigurationResponse);
+  rpc GetServiceSetting(GetServiceSettingRequest) returns (GetServiceSettingResponse);
+  rpc GetServiceSettingConfigurationByName(GetServiceSettingConfigurationByNameRequest) returns (GetServiceSettingConfigurationByNameResponse);
+  rpc GetServiceSettings(GetServiceSettingsRequest) returns (GetServiceSettingsResponse);
+  rpc UpdateServiceSettingConfiguration(UpdateServiceSettingConfigurationRequest) returns (UpdateServiceSettingConfigurationResponse);
+}

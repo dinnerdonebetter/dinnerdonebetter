@@ -17,7 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/businesslogic/recipeanalysis"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

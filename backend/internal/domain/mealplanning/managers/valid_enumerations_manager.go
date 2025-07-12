@@ -17,7 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 )
 
 const (

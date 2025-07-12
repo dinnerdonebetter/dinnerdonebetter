@@ -19,8 +19,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/businesslogic/recipeanalysis"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 )
 
 const (

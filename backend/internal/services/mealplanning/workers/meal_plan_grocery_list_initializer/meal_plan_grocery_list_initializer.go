@@ -12,8 +12,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/businesslogic/grocerylistpreparation"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
 	"github.com/hashicorp/go-multierror"
 )

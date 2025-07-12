@@ -18,8 +18,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
-	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_task_creator"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/businesslogic/recipeanalysis"
+	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 )
 
 // Injectors from build.go:

@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.4
 // 	protoc        v5.29.3
-// source: messages_core.proto
+// source: dumping_ground.proto
 
 package messages
 
@@ -1155,28 +1155,28 @@ func file_messages_core_proto_rawDescGZIP() []byte {
 
 var file_messages_core_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_messages_core_proto_goTypes = []any{
-	(*AdminUpdateUserStatusRequest)(nil),                  // 0: eating.AdminUpdateUserStatusRequest
-	(*AdminUpdateUserStatusResponse)(nil),                 // 1: eating.AdminUpdateUserStatusResponse
-	(*AggregateUserDataReportRequest)(nil),                // 2: eating.AggregateUserDataReportRequest
-	(*AggregateUserDataReportResponse)(nil),               // 3: eating.AggregateUserDataReportResponse
-	(*DestroyAllUserDataRequest)(nil),                     // 4: eating.DestroyAllUserDataRequest
-	(*DestroyAllUserDataResponse)(nil),                    // 5: eating.DestroyAllUserDataResponse
-	(*FetchUserDataReportRequest)(nil),                    // 6: eating.FetchUserDataReportRequest
-	(*FetchUserDataReportResponse)(nil),                   // 7: eating.FetchUserDataReportResponse
-	(*PublishArbitraryQueueMessageRequest)(nil),           // 8: eating.PublishArbitraryQueueMessageRequest
-	(*PublishArbitraryQueueMessageResponse)(nil),          // 9: eating.PublishArbitraryQueueMessageResponse
-	(*DataDeletionResponse)(nil),                          // 10: eating.DataDeletionResponse
-	(*Float32RangeWithOptionalMax)(nil),                   // 11: eating.Float32RangeWithOptionalMax
-	(*Float32RangeWithOptionalMaxUpdateRequestInput)(nil), // 12: eating.Float32RangeWithOptionalMaxUpdateRequestInput
-	(*MissingVote)(nil),                                   // 13: eating.MissingVote
-	(*NamedID)(nil),                                       // 14: eating.NamedID
-	(*ResponseDetails)(nil),                               // 15: eating.ResponseDetails
-	(*Uint16RangeWithOptionalMax)(nil),                    // 16: eating.Uint16RangeWithOptionalMax
-	(*Uint16RangeWithOptionalMaxUpdateRequestInput)(nil),  // 17: eating.Uint16RangeWithOptionalMaxUpdateRequestInput
-	(*Uint32RangeWithOptionalMax)(nil),                    // 18: eating.Uint32RangeWithOptionalMax
-	(*Uint32RangeWithOptionalMaxUpdateRequestInput)(nil),  // 19: eating.Uint32RangeWithOptionalMaxUpdateRequestInput
-	(*UserDataCollectionResponse)(nil),                    // 20: eating.UserDataCollectionResponse
-	(*UserStatusResponse)(nil),                            // 21: eating.UserStatusResponse
+	(*AdminUpdateUserStatusRequest)(nil),                  // 0: mealplanning.AdminUpdateUserStatusRequest
+	(*AdminUpdateUserStatusResponse)(nil),                 // 1: mealplanning.AdminUpdateUserStatusResponse
+	(*AggregateUserDataReportRequest)(nil),                // 2: mealplanning.AggregateUserDataReportRequest
+	(*AggregateUserDataReportResponse)(nil),               // 3: mealplanning.AggregateUserDataReportResponse
+	(*DestroyAllUserDataRequest)(nil),                     // 4: mealplanning.DestroyAllUserDataRequest
+	(*DestroyAllUserDataResponse)(nil),                    // 5: mealplanning.DestroyAllUserDataResponse
+	(*FetchUserDataReportRequest)(nil),                    // 6: mealplanning.FetchUserDataReportRequest
+	(*FetchUserDataReportResponse)(nil),                   // 7: mealplanning.FetchUserDataReportResponse
+	(*PublishArbitraryQueueMessageRequest)(nil),           // 8: mealplanning.PublishArbitraryQueueMessageRequest
+	(*PublishArbitraryQueueMessageResponse)(nil),          // 9: mealplanning.PublishArbitraryQueueMessageResponse
+	(*DataDeletionResponse)(nil),                          // 10: mealplanning.DataDeletionResponse
+	(*Float32RangeWithOptionalMax)(nil),                   // 11: mealplanning.Float32RangeWithOptionalMax
+	(*Float32RangeWithOptionalMaxUpdateRequestInput)(nil), // 12: mealplanning.Float32RangeWithOptionalMaxUpdateRequestInput
+	(*MissingVote)(nil),                                   // 13: mealplanning.MissingVote
+	(*NamedID)(nil),                                       // 14: mealplanning.NamedID
+	(*ResponseDetails)(nil),                               // 15: mealplanning.ResponseDetails
+	(*Uint16RangeWithOptionalMax)(nil),                    // 16: mealplanning.Uint16RangeWithOptionalMax
+	(*Uint16RangeWithOptionalMaxUpdateRequestInput)(nil),  // 17: mealplanning.Uint16RangeWithOptionalMaxUpdateRequestInput
+	(*Uint32RangeWithOptionalMax)(nil),                    // 18: mealplanning.Uint32RangeWithOptionalMax
+	(*Uint32RangeWithOptionalMaxUpdateRequestInput)(nil),  // 19: mealplanning.Uint32RangeWithOptionalMaxUpdateRequestInput
+	(*UserDataCollectionResponse)(nil),                    // 20: mealplanning.UserDataCollectionResponse
+	(*UserStatusResponse)(nil),                            // 21: mealplanning.UserStatusResponse
 }
 var file_messages_core_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

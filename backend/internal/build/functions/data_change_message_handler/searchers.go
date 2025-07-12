@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/google/wire"
 )

@@ -9,7 +9,7 @@ import (
 
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 )
 
 func (a *AsyncDataChangeMessageHandler) SearchIndexRequestsEventHandler(ctx context.Context, rawMsg []byte) error {

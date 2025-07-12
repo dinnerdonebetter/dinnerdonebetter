@@ -24,7 +24,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/eating/indexing"
+	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/google/wire"
 )

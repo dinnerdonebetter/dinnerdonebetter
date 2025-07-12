@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package eating;
 
-import "messages_eating.proto";
+import "mealplanning.proto";
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/eating";
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/mealplanning";
 
 service Eating {
   rpc ArchiveMeal(ArchiveMealRequest) returns (ArchiveMealResponse);

@@ -8,10 +8,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
-	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_finalizer"
-	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_grocery_list_initializer"
-	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_task_creator"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
+	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
+	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
+	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 )
 
 const (

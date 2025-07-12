@@ -94,3 +94,12 @@ message GetWebhooksResponse {
   filtering.QueryFilter Filter = 1;
   repeated Webhook Results = 2;
 }
+
+service WebhooksService {
+  rpc ArchiveWebhook(ArchiveWebhookRequest) returns (ArchiveWebhookResponse);
+  rpc ArchiveWebhookTriggerEvent(ArchiveWebhookTriggerEventRequest) returns (ArchiveWebhookTriggerEventResponse);
+  rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse);
+  rpc CreateWebhookTriggerEvent(CreateWebhookTriggerEventRequest) returns (CreateWebhookTriggerEventResponse);
+  rpc GetWebhook(GetWebhookRequest) returns (GetWebhookResponse);
+  rpc GetWebhooks(GetWebhooksRequest) returns (GetWebhooksResponse);
+}

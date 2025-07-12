@@ -12,7 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package eating;
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/messages";
+
+message ArbitraryQueueMessageRequestInput {
+  string QueueName = 1;
+  string Body = 2;
+}
+
+message ArbitraryQueueMessageResponse {
+  bool Success = 1;
+}
+
+message OptionalFloat32Range {
+  optional float Max = 1;
+  optional float Min = 2;
+}
+
+message OptionalUint32Range {
+  optional uint32 Max = 1;
+  optional uint32 Min = 2;
+}
+
+message Float32RangeWithOptionalMax {
+  optional float Max = 1;
+  float Min = 2;
+}
+
+message Float32RangeWithOptionalMaxUpdateRequestInput {
+  float Min = 1;
+  optional float Max = 2;
+}
+
+message Uint16RangeWithOptionalMax {
+  optional uint32 Max = 1;
+  uint32 Min = 2;
+}
+
+message Uint16RangeWithOptionalMaxUpdateRequestInput {
+  uint32 Min = 1;
+  optional uint32 Max = 2;
+}
+
+message Uint32RangeWithOptionalMax {
+  optional uint32 Max = 1;
+  uint32 Min = 2;
+}
+
+message Uint32RangeWithOptionalMaxUpdateRequestInput {
+  uint32 Min = 1;
+  optional uint32 Max = 2;
+}

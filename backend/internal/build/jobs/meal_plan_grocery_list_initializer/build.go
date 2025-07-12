@@ -12,8 +12,8 @@ import (
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/grocerylistpreparation"
-	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_grocery_list_initializer"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/businesslogic/grocerylistpreparation"
+	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 
 	"github.com/google/wire"
 )
