@@ -1,10 +1,11 @@
 syntax = "proto3";
 
-package settings;
+package auth;
 
+import "common.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/auth";
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth";
 
 // LoginForToken
 message LoginForTokenRequest {
@@ -12,7 +13,8 @@ message LoginForTokenRequest {
 }
 
 message LoginForTokenResponse {
-  TokenResponse Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  TokenResponse Result = 2;
 }
 
 // AdminLoginForToken
@@ -21,7 +23,8 @@ message AdminLoginForTokenRequest {
 }
 
 message AdminLoginForTokenResponse {
-  TokenResponse Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  TokenResponse Result = 2;
 }
 
 // ExchangeToken
@@ -30,62 +33,83 @@ message ExchangeTokenRequest {
 }
 
 message ExchangeTokenResponse {
-  string UserID = 1;
-  string AccountID = 2;
-  string AccessToken = 3;
-  string RefreshToken = 4;
-  google.protobuf.Timestamp ExpiresUTC = 5;
+  common.ResponseDetails ResponseDetails = 1;
+  string UserID = 2;
+  string AccountID = 3;
+  string AccessToken = 4;
+  string RefreshToken = 5;
+  google.protobuf.Timestamp ExpiresUTC = 6;
 }
 
 // CheckPermissions
 message CheckPermissionsRequest {}
 
-message CheckPermissionsResponse {}
+message CheckPermissionsResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetActiveAccount
 message GetActiveAccountRequest {}
 
-message GetActiveAccountResponse {}
+message GetActiveAccountResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetAuthStatus
 message GetAuthStatusRequest {}
 
-message GetAuthStatusResponse {}
+message GetAuthStatusResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // RedeemPasswordResetToken
 message RedeemPasswordResetTokenRequest {}
 
-message RedeemPasswordResetTokenResponse {}
+message RedeemPasswordResetTokenResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // RefreshTOTPSecret
 message RefreshTOTPSecretRequest {}
 
-message RefreshTOTPSecretResponse {}
+message RefreshTOTPSecretResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // RequestEmailVerificationEmail
 message RequestEmailVerificationEmailRequest {}
 
-message RequestEmailVerificationEmailResponse {}
+message RequestEmailVerificationEmailResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // RequestPasswordResetToken
 message RequestPasswordResetTokenRequest {}
 
-message RequestPasswordResetTokenResponse {}
+message RequestPasswordResetTokenResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // RequestUsernameReminder
 message RequestUsernameReminderRequest {}
 
-message RequestUsernameReminderResponse {}
+message RequestUsernameReminderResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // UpdatePassword
 message UpdatePasswordRequest {}
 
-message UpdatePasswordResponse {}
+message UpdatePasswordResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // VerifyEmailAddress
 message VerifyEmailAddressRequest {}
 
-message VerifyEmailAddressResponse {}
+message VerifyEmailAddressResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // VerifyTOTPSecret
 message VerifyTOTPSecretRequest {
@@ -94,7 +118,8 @@ message VerifyTOTPSecretRequest {
 }
 
 message VerifyTOTPSecretResponse {
-  bool Accepted = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  bool Accepted = 2;
 }
 
 message ChangeActiveAccountInput {
@@ -105,10 +130,13 @@ message EmailAddressVerificationRequest {
   string Token = 1;
 }
 
-message EmailAddressVerificationResponse {}
+message EmailAddressVerificationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 message PasswordResetResponse {
-  bool Successful = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  bool Successful = 2;
 }
 
 message PasswordResetToken {
@@ -142,8 +170,9 @@ message TOTPSecretRefreshInput {
 }
 
 message TOTPSecretRefreshResponse {
-  string TwoFactorQRCode = 1;
-  string TwoFactorSecret = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  string TwoFactorQRCode = 2;
+  string TwoFactorSecret = 3;
 }
 
 message TOTPSecretVerificationInput {
@@ -152,15 +181,17 @@ message TOTPSecretVerificationInput {
 }
 
 message TOTPSecretVerificationResponse {
-  bool Accepted = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  bool Accepted = 2;
 }
 
 message TokenResponse {
-  string UserID = 1;
-  string AccountID = 2;
-  string AccessToken = 3;
-  string RefreshToken = 4;
-  google.protobuf.Timestamp ExpiresUTC = 5;
+  common.ResponseDetails ResponseDetails = 1;
+  string UserID = 2;
+  string AccountID = 3;
+  string AccessToken = 4;
+  string RefreshToken = 5;
+  google.protobuf.Timestamp ExpiresUTC = 6;
 }
 
 message UserLoginInput {
@@ -174,17 +205,29 @@ message UserPermissionsRequestInput {
 }
 
 message UserPermissionsResponse {
-  map<string, bool> Permissions = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  map<string, bool> Permissions = 2;
 }
 
 message UsernameReminderRequestInput {
   string EmailAddress = 1;
 }
 
+message UserStatusResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  string UserID = 2;
+  string AccountStatus = 3;
+  string AccountStatusExplanation = 4;
+  string ActiveAccount = 5;
+  bool UserIsAuthenticated = 6;
+}
+
 // GetSelf
 message GetSelfRequest {}
 
-message GetSelfResponse {}
+message GetSelfResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 service AuthService {
   rpc GetAuthStatus(GetAuthStatusRequest) returns (GetAuthStatusResponse);

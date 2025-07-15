@@ -5,5 +5,5 @@ import (
 )
 
 var Providers = wire.NewSet(
-	NewEatingDataIndexer,
+	NewMealPlanningDataIndexer,
 )

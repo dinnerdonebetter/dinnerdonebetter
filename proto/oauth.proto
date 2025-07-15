@@ -2,30 +2,39 @@ syntax = "proto3";
 
 package oauth;
 
+import "common.proto";
 import "filtering.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/oauth";
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth";
 
 // CreateOAuth2Client
 message CreateOAuth2ClientRequest {}
 
-message CreateOAuth2ClientResponse {}
+message CreateOAuth2ClientResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  OAuth2Client Created = 2;
+}
 
 // ArchiveOAuth2Client
 message ArchiveOAuth2ClientRequest {
-  string oauth2ClientID = 1;
+  string OAuth2ClientID = 1;
 }
 
-message ArchiveOAuth2ClientResponse {}
+message ArchiveOAuth2ClientResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetOAuth2Client
 message GetOAuth2ClientRequest {
-  string oauth2ClientID = 1;
+  string OAuth2ClientID = 1;
 }
 
-message GetOAuth2ClientResponse {}
+message GetOAuth2ClientResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  OAuth2Client Result = 2;
+}
 
 // GetOAuth2Clients
 message GetOAuth2ClientsRequest {

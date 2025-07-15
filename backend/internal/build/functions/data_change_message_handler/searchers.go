@@ -7,7 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
-	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/google/wire"
@@ -31,13 +31,13 @@ func ProvideUserTextSearcher(
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
 	cfg *textsearchcfg.Config,
-) (coreindexing.UserTextSearcher, error) {
-	return textsearchcfg.ProvideIndex[coreindexing.UserSearchSubset](
+) (identityindexing.UserTextSearcher, error) {
+	return textsearchcfg.ProvideIndex[identityindexing.UserSearchSubset](
 		ctx,
 		logger,
 		tracerProvider, metricsProvider,
 		cfg,
-		coreindexing.IndexTypeUsers,
+		identityindexing.IndexTypeUsers,
 	)
 }
 

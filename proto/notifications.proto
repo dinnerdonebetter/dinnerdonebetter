@@ -2,17 +2,20 @@ syntax = "proto3";
 
 package notifications;
 
+import "common.proto";
 import "filtering.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/notifications";
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications";
 
 // GetUserNotification
 message GetUserNotificationRequest {
   string userNotificationID = 1;
 }
 
-message GetUserNotificationResponse {}
+message GetUserNotificationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetUserNotifications
 message GetUserNotificationsRequest {
@@ -20,8 +23,9 @@ message GetUserNotificationsRequest {
 }
 
 message GetUserNotificationsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated UserNotification Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated UserNotification Results = 3;
 }
 
 // UpdateUserNotification
@@ -30,7 +34,10 @@ message UpdateUserNotificationRequest {
   UserNotificationUpdateRequestInput input = 2;
 }
 
-message UpdateUserNotificationResponse {}
+message UpdateUserNotificationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  UserNotification Updated = 2;
+}
 
 message UserNotification {
   google.protobuf.Timestamp CreatedAt = 1;
@@ -52,8 +59,7 @@ message UserNotificationUpdateRequestInput {
 }
 
 service UserNotificationsService {
-  //  rpc CreateUserNotification(CreateUserNotificationRequest) returns (CreateUserNotificationResponse);
-  //  rpc GetUserNotification(GetUserNotificationRequest) returns (GetUserNotificationResponse);
-  //  rpc GetUserNotifications(GetUserNotificationsRequest) returns (GetUserNotificationsResponse);
-  //  rpc UpdateUserNotification(UpdateUserNotificationRequest) returns (UpdateUserNotificationResponse);
+  rpc GetUserNotification(GetUserNotificationRequest) returns (GetUserNotificationResponse);
+  rpc GetUserNotifications(GetUserNotificationsRequest) returns (GetUserNotificationsResponse);
+  rpc UpdateUserNotification(UpdateUserNotificationRequest) returns (UpdateUserNotificationResponse);
 }

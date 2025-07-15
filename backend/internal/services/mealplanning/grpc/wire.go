@@ -1,4 +1,4 @@
-package eatinggrpc
+package grpc
 
 import (
 	"github.com/google/wire"

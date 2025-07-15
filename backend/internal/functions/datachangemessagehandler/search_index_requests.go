@@ -8,7 +8,7 @@ import (
 	"time"
 
 	textsearch "github.com/dinnerdonebetter/backend/internal/platform/search/text"
-	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	coreindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 )
 
@@ -33,13 +33,13 @@ func (a *AsyncDataChangeMessageHandler) SearchIndexRequestsEventHandler(ctx cont
 		eatingindexing.IndexTypeValidIngredientStates,
 		eatingindexing.IndexTypeValidVessels:
 		// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
-		if err := a.eatingDataIndexer.HandleIndexRequest(ctx, &searchIndexRequest); err != nil {
+		if err := a.mealPlanningDataIndexer.HandleIndexRequest(ctx, &searchIndexRequest); err != nil {
 			return fmt.Errorf("handling search indexing request: %w", err)
 		}
 
 	case coreindexing.IndexTypeUsers:
 		// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
-		if err := a.coreDataIndexer.HandleIndexRequest(ctx, &searchIndexRequest); err != nil {
+		if err := a.userDataIndexer.HandleIndexRequest(ctx, &searchIndexRequest); err != nil {
 			return fmt.Errorf("handling search indexing request: %w", err)
 		}
 	}

@@ -20,8 +20,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
-	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
-	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
+	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
+	mealplanningindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 )
 
 const (
@@ -52,8 +52,8 @@ type AsyncDataChangeMessageHandler struct {
 	tracer                                    tracing.Tracer
 	outboundEmailsExecutionTimeHistogram      metrics.Float64Histogram
 	searchIndexRequestsExecutionTimeHistogram metrics.Float64Histogram
-	coreDataIndexer                           *coreindexing.CoreDataIndexer
-	eatingDataIndexer                         *eatingindexing.EatingDataIndexer
+	userDataIndexer                           *identityindexing.UserDataIndexer
+	mealPlanningDataIndexer                   *mealplanningindexing.MealPlanningDataIndexer
 	queuesConfig                              msgconfig.QueuesConfig
 	nonWebhookEventTypes                      []string
 	nonWebhookEventTypesHat                   sync.RWMutex
@@ -79,8 +79,8 @@ func NewAsyncDataChangeMessageHandler(
 	uploadManager uploads.UploadManager,
 	metricsProvider metrics.Provider,
 	decoder encoding.ServerEncoderDecoder,
-	coreDataIndexer *coreindexing.CoreDataIndexer,
-	eatingDataIndexer *eatingindexing.EatingDataIndexer,
+	coreDataIndexer *identityindexing.UserDataIndexer,
+	eatingDataIndexer *mealplanningindexing.MealPlanningDataIndexer,
 ) (*AsyncDataChangeMessageHandler, error) {
 	dataChangesExecutionTimeHistogram, err := metricsProvider.NewFloat64Histogram("data_changes_execution_time")
 	if err != nil {
@@ -143,8 +143,8 @@ func NewAsyncDataChangeMessageHandler(
 		userDataAggregationExecutionTimeHistogram: userDataAggregationExecutionTimeHistogram,
 		webhookExecutionTimestampHistogram:        webhookExecutionTimestampHistogram,
 		decoder:                                   decoder,
-		coreDataIndexer:                           coreDataIndexer,
-		eatingDataIndexer:                         eatingDataIndexer,
+		userDataIndexer:                           coreDataIndexer,
+		mealPlanningDataIndexer:                   eatingDataIndexer,
 	}, nil
 }
 

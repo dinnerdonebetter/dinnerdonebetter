@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package serviceadmin;
+
+import "common.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/admin";
+
+service ServiceAdministrationService {
+  rpc AdminUpdateUserStatus(AdminUpdateUserStatusRequest) returns (AdminUpdateUserStatusResponse);
+}
+
+// AdminUpdateUserStatus
+message AdminUpdateUserStatusRequest {
+  string TargetUserID = 1;
+  string NewStatus = 2;
+  string Reason = 3;
+}
+
+message AdminUpdateUserStatusResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}

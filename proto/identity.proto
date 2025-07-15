@@ -2,17 +2,27 @@ syntax = "proto3";
 
 package identity;
 
+import "common.proto";
 import "filtering.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/service/identity";
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity";
+
+message DataCollection {
+  User User = 2;
+  repeated AccountInvitation ReceivedInvites = 6;
+  repeated AccountInvitation SentInvites = 7;
+  repeated Account Accounts = 10;
+}
 
 // ArchiveUser
 message ArchiveUserRequest {
   string userID = 1;
 }
 
-message ArchiveUserResponse {}
+message ArchiveUserResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveUserMembership
 message ArchiveUserMembershipRequest {
@@ -20,7 +30,9 @@ message ArchiveUserMembershipRequest {
   string userID = 2;
 }
 
-message ArchiveUserMembershipResponse {}
+message ArchiveUserMembershipResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // CreateUser
 message CreateUserRequest {
@@ -28,22 +40,25 @@ message CreateUserRequest {
 }
 
 message CreateUserResponse {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp Birthday = 2;
-  string Username = 3;
-  string EmailAddress = 4;
-  string TwoFactorQRCode = 5;
-  string CreatedUserID = 6;
-  string AccountStatus = 7;
-  string TwoFactorSecret = 8;
-  string FirstName = 9;
-  string LastName = 10;
+  common.ResponseDetails ResponseDetails = 1;
+  google.protobuf.Timestamp CreatedAt = 2;
+  google.protobuf.Timestamp Birthday = 3;
+  string Username = 4;
+  string EmailAddress = 5;
+  string TwoFactorQRCode = 6;
+  string CreatedUserID = 7;
+  string AccountStatus = 8;
+  string TwoFactorSecret = 9;
+  string FirstName = 10;
+  string LastName = 11;
 }
 
 // CreateAccount
 message CreateAccountRequest {}
 
-message CreateAccountResponse {}
+message CreateAccountResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // CreateAccountInvitation
 message CreateAccountInvitationRequest {
@@ -51,7 +66,9 @@ message CreateAccountInvitationRequest {
   AccountInvitationCreationRequestInput input = 2;
 }
 
-message CreateAccountInvitationResponse {}
+message CreateAccountInvitationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // CancelAccountInvitation
 message CancelAccountInvitationRequest {
@@ -59,14 +76,18 @@ message CancelAccountInvitationRequest {
   AccountInvitationUpdateRequestInput input = 2;
 }
 
-message CancelAccountInvitationResponse {}
+message CancelAccountInvitationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveAccount
 message ArchiveAccountRequest {
   string accountID = 1;
 }
 
-message ArchiveAccountResponse {}
+message ArchiveAccountResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // AcceptAccountInvitation
 message AcceptAccountInvitationRequest {
@@ -74,21 +95,27 @@ message AcceptAccountInvitationRequest {
   AccountInvitationUpdateRequestInput input = 2;
 }
 
-message AcceptAccountInvitationResponse {}
+message AcceptAccountInvitationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetAccount
 message GetAccountRequest {
   string accountID = 1;
 }
 
-message GetAccountResponse {}
+message GetAccountResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetAccountInvitation
 message GetAccountInvitationRequest {
   string accountInvitationID = 1;
 }
 
-message GetAccountInvitationResponse {}
+message GetAccountInvitationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetAccountInvitationByID
 message GetAccountInvitationByIDRequest {
@@ -97,6 +124,7 @@ message GetAccountInvitationByIDRequest {
 }
 
 message GetAccountInvitationByIDResponse {
+  common.ResponseDetails ResponseDetails = 1;
   AccountInvitation Result = 2;
 }
 
@@ -106,8 +134,9 @@ message GetAccountsRequest {
 }
 
 message GetAccountsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated Account Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated Account Result = 3;
 }
 
 // GetReceivedAccountInvitations
@@ -116,8 +145,9 @@ message GetReceivedAccountInvitationsRequest {
 }
 
 message GetReceivedAccountInvitationsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated AccountInvitation Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated AccountInvitation Result = 3;
 }
 
 // GetSentAccountInvitations
@@ -126,8 +156,9 @@ message GetSentAccountInvitationsRequest {
 }
 
 message GetSentAccountInvitationsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated AccountInvitation Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated AccountInvitation Result = 3;
 }
 
 // GetUser
@@ -135,7 +166,9 @@ message GetUserRequest {
   string userID = 1;
 }
 
-message GetUserResponse {}
+message GetUserResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetUsers
 message GetUsersRequest {
@@ -143,8 +176,9 @@ message GetUsersRequest {
 }
 
 message GetUsersResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated User Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated User Result = 3;
 }
 
 // RejectAccountInvitation
@@ -153,7 +187,9 @@ message RejectAccountInvitationRequest {
   AccountInvitationUpdateRequestInput input = 2;
 }
 
-message RejectAccountInvitationResponse {}
+message RejectAccountInvitationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // SearchForUsers
 message SearchForUsersRequest {
@@ -162,8 +198,9 @@ message SearchForUsersRequest {
 }
 
 message SearchForUsersResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated User Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated User Result = 3;
 }
 
 // SetDefaultAccount
@@ -171,7 +208,9 @@ message SetDefaultAccountRequest {
   string AccountID = 1;
 }
 
-message SetDefaultAccountResponse {}
+message SetDefaultAccountResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // TransferAccountOwnership
 message TransferAccountOwnershipRequest {
@@ -179,7 +218,9 @@ message TransferAccountOwnershipRequest {
   AccountOwnershipTransferInput input = 2;
 }
 
-message TransferAccountOwnershipResponse {}
+message TransferAccountOwnershipResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // UpdateAccount
 message UpdateAccountRequest {
@@ -187,7 +228,9 @@ message UpdateAccountRequest {
   AccountUpdateRequestInput input = 2;
 }
 
-message UpdateAccountResponse {}
+message UpdateAccountResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // UpdateAccountMemberPermissions
 message UpdateAccountMemberPermissionsRequest {
@@ -196,7 +239,9 @@ message UpdateAccountMemberPermissionsRequest {
   ModifyUserPermissionsInput input = 3;
 }
 
-message UpdateAccountMemberPermissionsResponse {}
+message UpdateAccountMemberPermissionsResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 message ModifyUserPermissionsInput {
   string Reason = 1;
@@ -206,7 +251,9 @@ message ModifyUserPermissionsInput {
 // UpdateUserDetails
 message UpdateUserDetailsRequest {}
 
-message UpdateUserDetailsResponse {}
+message UpdateUserDetailsResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // UpdateUserEmailAddress
 message UpdateUserEmailAddressRequest {
@@ -214,17 +261,23 @@ message UpdateUserEmailAddressRequest {
   string CurrentPassword = 2;
   string TOTPToken = 3;
 }
-message UpdateUserEmailAddressResponse {}
+message UpdateUserEmailAddressResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // UpdateUserUsername
 message UpdateUserUsernameRequest {}
 
-message UpdateUserUsernameResponse {}
+message UpdateUserUsernameResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // UploadUserAvatar
 message UploadUserAvatarRequest {}
 
-message UploadUserAvatarResponse {}
+message UploadUserAvatarResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 message UpdateUserAvatarRequest {
   string Base64EncodedData = 1;
@@ -368,8 +421,9 @@ message UserAccountStatusUpdateInput {
 }
 
 message UserCreationResponse {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp Birthday = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  google.protobuf.Timestamp CreatedAt = 2;
+  google.protobuf.Timestamp Birthday = 3;
   string Username = 4;
   string EmailAddress = 5;
   string TwoFactorQRCode = 6;

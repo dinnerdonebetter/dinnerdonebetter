@@ -3,7 +3,7 @@ package maintenance
 import (
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/admin"
+	"github.com/dinnerdonebetter/backend/internal/domain/maintenance"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	o11yName = "webhook_db_client"
+	o11yName = "maintenance_db_client"
 )
 
 // repository is the maintenance repository implementation.
@@ -24,7 +24,7 @@ type repository struct {
 }
 
 // ProvideMaintenanceRepository provides a new repository.
-func ProvideMaintenanceRepository(logger logging.Logger, tracerProvider tracing.TracerProvider, client database.Client) admin.MaintenanceDataManager {
+func ProvideMaintenanceRepository(logger logging.Logger, tracerProvider tracing.TracerProvider, client database.Client) maintenance.MaintenanceDataManager {
 	c := &repository{
 		Client:           client,
 		db:               client.DB(),

@@ -23,7 +23,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
-	coreindexing "github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	eatingindexing "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 
 	"github.com/google/wire"
@@ -51,7 +51,7 @@ func Build(
 		observability.Providers,
 		tracing.ProvidersTracing,
 		objectstorage.Providers,
-		coreindexing.Providers,
+		identityindexing.Providers,
 		eatingindexing.Providers,
 		ConfigProviders,
 		SearcherProviders,

@@ -1,16 +1,14 @@
 syntax = "proto3";
 
-package eating;
+package mealplanning;
 
 import "common.proto";
 import "filtering.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/messages";
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning";
 
-/*
-message EatingUserDataCollection {
-  string ReportID = 1;
+message DataCollection {
   repeated AccountInstrumentOwnership AccountInstrumentOwnerships = 2;
   repeated MealPlan MealPlans = 3;
   repeated RecipeRating RecipeRatings = 4;
@@ -18,7 +16,6 @@ message EatingUserDataCollection {
   repeated Meal Meals = 6;
   repeated UserIngredientPreference UserIngredientPreferences = 7;
 }
- */
 
 // Valid Enumerations
 
@@ -26,7 +23,7 @@ message ValidIngredient {
   google.protobuf.Timestamp CreatedAt = 1;
   optional google.protobuf.Timestamp LastUpdatedAt = 2;
   optional google.protobuf.Timestamp ArchivedAt = 3;
-  OptionalFloat32Range StorageTemperatureInCelsius = 4;
+  common.OptionalFloat32Range StorageTemperatureInCelsius = 4;
   string IconPath = 5;
   string Warning = 6;
   string PluralName = 7;
@@ -62,7 +59,7 @@ message ValidIngredient {
 }
 
 message ValidIngredientCreationRequestInput {
-  OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
   string Warning = 2;
   string IconPath = 3;
   string PluralName = 4;
@@ -138,7 +135,7 @@ message ValidIngredientMeasurementUnit {
   optional google.protobuf.Timestamp ArchivedAt = 3;
   string Notes = 4;
   string ID = 5;
-  Float32RangeWithOptionalMax AllowableQuantity = 6;
+  common.Float32RangeWithOptionalMax AllowableQuantity = 6;
   ValidMeasurementUnit MeasurementUnit = 7;
   ValidIngredient Ingredient = 8;
 }
@@ -147,14 +144,14 @@ message ValidIngredientMeasurementUnitCreationRequestInput {
   string Notes = 1;
   string ValidMeasurementUnitID = 2;
   string ValidIngredientID = 3;
-  Float32RangeWithOptionalMax AllowableQuantity = 4;
+  common.Float32RangeWithOptionalMax AllowableQuantity = 4;
 }
 
 message ValidIngredientMeasurementUnitUpdateRequestInput {
   optional string Notes = 1;
   optional string ValidMeasurementUnitID = 2;
   optional string ValidIngredientID = 3;
-  optional Float32RangeWithOptionalMaxUpdateRequestInput AllowableQuantity = 4;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput AllowableQuantity = 4;
 }
 
 message ValidIngredientPreparation {
@@ -252,7 +249,7 @@ message ValidIngredientUpdateRequestInput {
   optional string PluralName = 17;
   optional bool AnimalDerived = 18;
   optional bool RestrictToPreparations = 19;
-  optional OptionalFloat32Range StorageTemperatureInCelsius = 20;
+  optional common.OptionalFloat32Range StorageTemperatureInCelsius = 20;
   optional string StorageInstructions = 21;
   optional string Slug = 22;
   optional bool ContainsAlcohol = 23;
@@ -374,9 +371,9 @@ message ValidMeasurementUnitUpdateRequestInput {
 
 message ValidPreparation {
   google.protobuf.Timestamp CreatedAt = 1;
-  Uint16RangeWithOptionalMax InstrumentCount = 2;
-  Uint16RangeWithOptionalMax IngredientCount = 3;
-  Uint16RangeWithOptionalMax VesselCount = 4;
+  common.Uint16RangeWithOptionalMax InstrumentCount = 2;
+  common.Uint16RangeWithOptionalMax IngredientCount = 3;
+  common.Uint16RangeWithOptionalMax VesselCount = 4;
   optional google.protobuf.Timestamp ArchivedAt = 5;
   optional google.protobuf.Timestamp LastUpdatedAt = 6;
   string IconPath = 7;
@@ -395,9 +392,9 @@ message ValidPreparation {
 }
 
 message ValidPreparationCreationRequestInput {
-  Uint16RangeWithOptionalMax InstrumentCount = 1;
-  Uint16RangeWithOptionalMax IngredientCount = 2;
-  Uint16RangeWithOptionalMax VesselCount = 3;
+  common.Uint16RangeWithOptionalMax InstrumentCount = 1;
+  common.Uint16RangeWithOptionalMax IngredientCount = 2;
+  common.Uint16RangeWithOptionalMax VesselCount = 3;
   string IconPath = 4;
   string PastTense = 5;
   string Slug = 6;
@@ -435,9 +432,9 @@ message ValidPreparationInstrumentUpdateRequestInput {
 }
 
 message ValidPreparationUpdateRequestInput {
-  optional Uint16RangeWithOptionalMaxUpdateRequestInput InstrumentCount = 1;
-  optional Uint16RangeWithOptionalMaxUpdateRequestInput IngredientCount = 2;
-  optional Uint16RangeWithOptionalMaxUpdateRequestInput VesselCount = 3;
+  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput InstrumentCount = 1;
+  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput IngredientCount = 2;
+  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput VesselCount = 3;
   optional string Name = 4;
   optional string Description = 5;
   optional string IconPath = 6;
@@ -561,95 +558,121 @@ message ArchiveValidIngredientRequest {
   string ValidIngredientID = 1;
 }
 
-message ArchiveValidIngredientResponse {}
+message ArchiveValidIngredientResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidIngredientGroup
 message ArchiveValidIngredientGroupRequest {
   string ValidIngredientGroupID = 1;
 }
 
-message ArchiveValidIngredientGroupResponse {}
+message ArchiveValidIngredientGroupResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidIngredientMeasurementUnit
 message ArchiveValidIngredientMeasurementUnitRequest {
   string ValidIngredientMeasurementUnitID = 1;
 }
 
-message ArchiveValidIngredientMeasurementUnitResponse {}
+message ArchiveValidIngredientMeasurementUnitResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidIngredientPreparation
 message ArchiveValidIngredientPreparationRequest {
   string ValidIngredientPreparationID = 1;
 }
 
-message ArchiveValidIngredientPreparationResponse {}
+message ArchiveValidIngredientPreparationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidIngredientState
 message ArchiveValidIngredientStateRequest {
   string ValidIngredientStateID = 1;
 }
 
-message ArchiveValidIngredientStateResponse {}
+message ArchiveValidIngredientStateResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidIngredientStateIngredient
 message ArchiveValidIngredientStateIngredientRequest {
   string ValidIngredientStateIngredientID = 1;
 }
 
-message ArchiveValidIngredientStateIngredientResponse {}
+message ArchiveValidIngredientStateIngredientResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidInstrument
 message ArchiveValidInstrumentRequest {
   string ValidInstrumentID = 1;
 }
 
-message ArchiveValidInstrumentResponse {}
+message ArchiveValidInstrumentResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidMeasurementUnit
 message ArchiveValidMeasurementUnitRequest {
   string ValidMeasurementUnitID = 1;
 }
 
-message ArchiveValidMeasurementUnitResponse {}
+message ArchiveValidMeasurementUnitResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidMeasurementUnitConversion
 message ArchiveValidMeasurementUnitConversionRequest {
   string ValidMeasurementUnitConversionID = 1;
 }
 
-message ArchiveValidMeasurementUnitConversionResponse {}
+message ArchiveValidMeasurementUnitConversionResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidPreparation
 message ArchiveValidPreparationRequest {
   string ValidPreparationID = 1;
 }
 
-message ArchiveValidPreparationResponse {}
+message ArchiveValidPreparationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidPreparationInstrument
 message ArchiveValidPreparationInstrumentRequest {
   string ValidPreparationInstrumentID = 1;
 }
 
-message ArchiveValidPreparationInstrumentResponse {}
+message ArchiveValidPreparationInstrumentResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidPreparationVessel
 message ArchiveValidPreparationVesselRequest {
   string ValidPreparationVesselID = 1;
 }
 
-message ArchiveValidPreparationVesselResponse {}
+message ArchiveValidPreparationVesselResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveValidVessel
 message ArchiveValidVesselRequest {
   string ValidVesselID = 1;
 }
 
-message ArchiveValidVesselResponse {}
+message ArchiveValidVesselResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // CreateValidIngredient
 message CreateValidIngredientRequest {
-  OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
   string Warning = 2;
   string IconPath = 3;
   string PluralName = 4;
@@ -684,7 +707,8 @@ message CreateValidIngredientRequest {
 }
 
 message CreateValidIngredientResponse {
-  ValidIngredient Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredient Result = 2;
 }
 
 // CreateValidIngredientGroup
@@ -696,7 +720,8 @@ message CreateValidIngredientGroupRequest {
 }
 
 message CreateValidIngredientGroupResponse {
-  ValidIngredientGroup Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientGroup Result = 2;
 }
 
 // CreateValidIngredientMeasurementUnit
@@ -704,11 +729,12 @@ message CreateValidIngredientMeasurementUnitRequest {
   string Notes = 1;
   string ValidMeasurementUnitID = 2;
   string ValidIngredientID = 3;
-  Float32RangeWithOptionalMax AllowableQuantity = 4;
+  common.Float32RangeWithOptionalMax AllowableQuantity = 4;
 }
 
 message CreateValidIngredientMeasurementUnitResponse {
-  ValidIngredientMeasurementUnit Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientMeasurementUnit Result = 2;
 }
 
 // CreateValidIngredientPreparation
@@ -719,7 +745,8 @@ message CreateValidIngredientPreparationRequest {
 }
 
 message CreateValidIngredientPreparationResponse {
-  ValidIngredientPreparation Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientPreparation Result = 2;
 }
 
 // CreateValidIngredientState
@@ -733,7 +760,8 @@ message CreateValidIngredientStateRequest {
 }
 
 message CreateValidIngredientStateResponse {
-  ValidIngredientState Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientState Result = 2;
 }
 
 // CreateValidIngredientStateIngredient
@@ -744,7 +772,8 @@ message CreateValidIngredientStateIngredientRequest {
 }
 
 message CreateValidIngredientStateIngredientResponse {
-  ValidIngredientStateIngredient Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientStateIngredient Result = 2;
 }
 
 // CreateValidInstrument
@@ -760,7 +789,8 @@ message CreateValidInstrumentRequest {
 }
 
 message CreateValidInstrumentResponse {
-  ValidInstrument Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidInstrument Result = 2;
 }
 
 // CreateValidMeasurementUnit
@@ -777,7 +807,8 @@ message CreateValidMeasurementUnitRequest {
 }
 
 message CreateValidMeasurementUnitResponse {
-  ValidMeasurementUnit Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidMeasurementUnit Result = 2;
 }
 
 // CreateValidMeasurementUnitConversion
@@ -790,14 +821,15 @@ message CreateValidMeasurementUnitConversionRequest {
 }
 
 message CreateValidMeasurementUnitConversionResponse {
-  ValidMeasurementUnitConversion Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidMeasurementUnitConversion Result = 2;
 }
 
 // CreateValidPreparation
 message CreateValidPreparationRequest {
-  Uint16RangeWithOptionalMax InstrumentCount = 1;
-  Uint16RangeWithOptionalMax IngredientCount = 2;
-  Uint16RangeWithOptionalMax VesselCount = 3;
+  common.Uint16RangeWithOptionalMax InstrumentCount = 1;
+  common.Uint16RangeWithOptionalMax IngredientCount = 2;
+  common.Uint16RangeWithOptionalMax VesselCount = 3;
   string IconPath = 4;
   string PastTense = 5;
   string Slug = 6;
@@ -813,7 +845,8 @@ message CreateValidPreparationRequest {
 }
 
 message CreateValidPreparationResponse {
-  ValidPreparation Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparation Result = 2;
 }
 
 // CreateValidPreparationInstrument
@@ -824,7 +857,8 @@ message CreateValidPreparationInstrumentRequest {
 }
 
 message CreateValidPreparationInstrumentResponse {
-  ValidPreparationInstrument Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparationInstrument Result = 2;
 }
 
 // CreateValidPreparationVessel
@@ -835,7 +869,8 @@ message CreateValidPreparationVesselRequest {
 }
 
 message CreateValidPreparationVesselResponse {
-  ValidPreparationVessel Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparationVessel Result = 2;
 }
 
 // CreateValidVessel
@@ -857,13 +892,15 @@ message CreateValidVesselRequest {
 }
 
 message CreateValidVesselResponse {
-  ValidVessel Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidVessel Result = 2;
 }
 
 // GetRandomValidIngredient
 message GetRandomValidIngredientRequest {}
 
 message GetRandomValidIngredientResponse {
+  common.ResponseDetails ResponseDetails = 1;
   ValidIngredient Result = 2;
 }
 
@@ -871,21 +908,24 @@ message GetRandomValidIngredientResponse {
 message GetRandomValidInstrumentRequest {}
 
 message GetRandomValidInstrumentResponse {
-  ValidInstrument Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidInstrument Result = 2;
 }
 
 // GetRandomValidPreparation
 message GetRandomValidPreparationRequest {}
 
 message GetRandomValidPreparationResponse {
-  ValidPreparation Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparation Result = 2;
 }
 
 // GetRandomValidVessel
 message GetRandomValidVesselRequest {}
 
 message GetRandomValidVesselResponse {
-  ValidVessel Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidVessel Result = 2;
 }
 
 // GetValidIngredient
@@ -894,6 +934,7 @@ message GetValidIngredientRequest {
 }
 
 message GetValidIngredientResponse {
+  common.ResponseDetails ResponseDetails = 1;
   ValidIngredient Result = 2;
 }
 
@@ -903,7 +944,8 @@ message GetValidIngredientGroupRequest {
 }
 
 message GetValidIngredientGroupResponse {
-  ValidIngredientGroup Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientGroup Result = 2;
 }
 
 // GetValidIngredientGroups
@@ -912,8 +954,9 @@ message GetValidIngredientGroupsRequest {
 }
 
 message GetValidIngredientGroupsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientGroup Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientGroup Results = 3;
 }
 
 // GetValidIngredientMeasurementUnit
@@ -922,7 +965,8 @@ message GetValidIngredientMeasurementUnitRequest {
 }
 
 message GetValidIngredientMeasurementUnitResponse {
-  ValidIngredientMeasurementUnit Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientMeasurementUnit Result = 2;
 }
 
 // GetValidIngredientMeasurementUnits
@@ -931,8 +975,9 @@ message GetValidIngredientMeasurementUnitsRequest {
 }
 
 message GetValidIngredientMeasurementUnitsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientMeasurementUnit Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientMeasurementUnit Results = 3;
 }
 
 // GetValidIngredientMeasurementUnitsByIngredient
@@ -942,8 +987,9 @@ message GetValidIngredientMeasurementUnitsByIngredientRequest {
 }
 
 message GetValidIngredientMeasurementUnitsByIngredientResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientMeasurementUnit Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientMeasurementUnit Results = 3;
 }
 
 // GetValidIngredientMeasurementUnitsByMeasurementUnit
@@ -953,8 +999,9 @@ message GetValidIngredientMeasurementUnitsByMeasurementUnitRequest {
 }
 
 message GetValidIngredientMeasurementUnitsByMeasurementUnitResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientMeasurementUnit Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientMeasurementUnit Results = 3;
 }
 
 // GetValidIngredientPreparation
@@ -963,7 +1010,8 @@ message GetValidIngredientPreparationRequest {
 }
 
 message GetValidIngredientPreparationResponse {
-  ValidIngredientPreparation Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientPreparation Result = 2;
 }
 
 // GetValidIngredientPreparations
@@ -972,8 +1020,9 @@ message GetValidIngredientPreparationsRequest {
 }
 
 message GetValidIngredientPreparationsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientPreparation Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientPreparation Results = 3;
 }
 
 // GetValidIngredientPreparationsByIngredient
@@ -983,8 +1032,9 @@ message GetValidIngredientPreparationsByIngredientRequest {
 }
 
 message GetValidIngredientPreparationsByIngredientResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientPreparation Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientPreparation Results = 3;
 }
 
 // GetValidIngredientPreparationsByPreparation
@@ -994,8 +1044,9 @@ message GetValidIngredientPreparationsByPreparationRequest {
 }
 
 message GetValidIngredientPreparationsByPreparationResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientPreparation Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientPreparation Results = 3;
 }
 
 // GetValidIngredientState
@@ -1004,7 +1055,8 @@ message GetValidIngredientStateRequest {
 }
 
 message GetValidIngredientStateResponse {
-  ValidIngredientState Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientState Result = 2;
 }
 
 // GetValidIngredientStateIngredient
@@ -1013,7 +1065,8 @@ message GetValidIngredientStateIngredientRequest {
 }
 
 message GetValidIngredientStateIngredientResponse {
-  ValidIngredientStateIngredient Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientStateIngredient Result = 2;
 }
 
 // GetValidIngredientStateIngredients
@@ -1022,8 +1075,9 @@ message GetValidIngredientStateIngredientsRequest {
 }
 
 message GetValidIngredientStateIngredientsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientStateIngredient Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientStateIngredient Results = 3;
 }
 
 // GetValidIngredientStateIngredientsByIngredient
@@ -1033,8 +1087,9 @@ message GetValidIngredientStateIngredientsByIngredientRequest {
 }
 
 message GetValidIngredientStateIngredientsByIngredientResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientStateIngredient Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientStateIngredient Results = 3;
 }
 
 // GetValidIngredientStateIngredientsByIngredientState
@@ -1044,8 +1099,9 @@ message GetValidIngredientStateIngredientsByIngredientStateRequest {
 }
 
 message GetValidIngredientStateIngredientsByIngredientStateResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientStateIngredient Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientStateIngredient Results = 3;
 }
 
 // GetValidIngredientStates
@@ -1054,8 +1110,9 @@ message GetValidIngredientStatesRequest {
 }
 
 message GetValidIngredientStatesResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientState Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientState Results = 3;
 }
 
 // GetValidIngredients
@@ -1064,8 +1121,9 @@ message GetValidIngredientsRequest {
 }
 
 message GetValidIngredientsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredient Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredient Results = 3;
 }
 
 // GetValidInstrument
@@ -1074,7 +1132,8 @@ message GetValidInstrumentRequest {
 }
 
 message GetValidInstrumentResponse {
-  ValidInstrument Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidInstrument Result = 2;
 }
 
 // GetValidInstruments
@@ -1083,8 +1142,9 @@ message GetValidInstrumentsRequest {
 }
 
 message GetValidInstrumentsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidInstrument Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidInstrument Results = 3;
 }
 
 // GetValidMeasurementUnit
@@ -1093,7 +1153,8 @@ message GetValidMeasurementUnitRequest {
 }
 
 message GetValidMeasurementUnitResponse {
-  ValidMeasurementUnit Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidMeasurementUnit Result = 2;
 }
 
 // GetValidMeasurementUnitConversion
@@ -1102,7 +1163,8 @@ message GetValidMeasurementUnitConversionRequest {
 }
 
 message GetValidMeasurementUnitConversionResponse {
-  ValidMeasurementUnitConversion Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidMeasurementUnitConversion Result = 2;
 }
 
 // GetValidMeasurementUnitConversionsFromUnit
@@ -1112,8 +1174,9 @@ message GetValidMeasurementUnitConversionsFromUnitRequest {
 }
 
 message GetValidMeasurementUnitConversionsFromUnitResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidMeasurementUnitConversion Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidMeasurementUnitConversion Results = 3;
 }
 
 // GetValidMeasurementUnitConversionsToUnit
@@ -1123,8 +1186,9 @@ message GetValidMeasurementUnitConversionsToUnitRequest {
 }
 
 message GetValidMeasurementUnitConversionsToUnitResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidMeasurementUnitConversion Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidMeasurementUnitConversion Results = 3;
 }
 
 // GetValidMeasurementUnits
@@ -1133,8 +1197,9 @@ message GetValidMeasurementUnitsRequest {
 }
 
 message GetValidMeasurementUnitsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidMeasurementUnit Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidMeasurementUnit Results = 3;
 }
 
 // GetValidPreparation
@@ -1143,7 +1208,8 @@ message GetValidPreparationRequest {
 }
 
 message GetValidPreparationResponse {
-  ValidPreparation Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparation Result = 2;
 }
 
 // GetValidPreparationInstrument
@@ -1152,7 +1218,8 @@ message GetValidPreparationInstrumentRequest {
 }
 
 message GetValidPreparationInstrumentResponse {
-  ValidPreparationInstrument Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparationInstrument Result = 2;
 }
 
 // GetValidPreparationInstruments
@@ -1161,8 +1228,9 @@ message GetValidPreparationInstrumentsRequest {
 }
 
 message GetValidPreparationInstrumentsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidPreparationInstrument Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidPreparationInstrument Results = 3;
 }
 
 // GetValidPreparationInstrumentsByInstrument
@@ -1172,8 +1240,9 @@ message GetValidPreparationInstrumentsByInstrumentRequest {
 }
 
 message GetValidPreparationInstrumentsByInstrumentResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidPreparationInstrument Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidPreparationInstrument Results = 3;
 }
 
 // GetValidPreparationInstrumentsByPreparation
@@ -1183,8 +1252,9 @@ message GetValidPreparationInstrumentsByPreparationRequest {
 }
 
 message GetValidPreparationInstrumentsByPreparationResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidPreparationInstrument Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidPreparationInstrument Results = 3;
 }
 
 // GetValidPreparationVessel
@@ -1193,7 +1263,8 @@ message GetValidPreparationVesselRequest {
 }
 
 message GetValidPreparationVesselResponse {
-  ValidPreparationVessel Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparationVessel Result = 2;
 }
 
 // GetValidPreparationVessels
@@ -1202,8 +1273,9 @@ message GetValidPreparationVesselsRequest {
 }
 
 message GetValidPreparationVesselsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidPreparationVessel Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidPreparationVessel Results = 3;
 }
 
 // GetValidPreparationVesselsByPreparation
@@ -1213,8 +1285,9 @@ message GetValidPreparationVesselsByPreparationRequest {
 }
 
 message GetValidPreparationVesselsByPreparationResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidPreparationVessel Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidPreparationVessel Results = 3;
 }
 
 // GetValidPreparationVesselsByVessel
@@ -1224,18 +1297,22 @@ message GetValidPreparationVesselsByVesselRequest {
 }
 
 message GetValidPreparationVesselsByVesselResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidPreparationVessel Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidPreparationVessel Results = 3;
 }
 
 // GetValidPreparations
 message GetValidPreparationsRequest {
-  filtering.QueryFilter Filter = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidPreparation Results = 3;
 }
 
 message GetValidPreparationsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidPreparation Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidPreparation Results = 3;
 }
 
 // GetValidVessel
@@ -1244,7 +1321,8 @@ message GetValidVesselRequest {
 }
 
 message GetValidVesselResponse {
-  ValidVessel Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidVessel Result = 2;
 }
 
 // GetValidVessels
@@ -1253,8 +1331,9 @@ message GetValidVesselsRequest {
 }
 
 message GetValidVesselsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidVessel Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidVessel Results = 3;
 }
 
 // SearchForValidIngredientGroups
@@ -1265,8 +1344,9 @@ message SearchForValidIngredientGroupsRequest {
 }
 
 message SearchForValidIngredientGroupsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientGroup Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientGroup Results = 3;
 }
 
 // SearchForValidIngredientStates
@@ -1277,8 +1357,9 @@ message SearchForValidIngredientStatesRequest {
 }
 
 message SearchForValidIngredientStatesResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredientState Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredientState Results = 3;
 }
 
 // SearchForValidIngredients
@@ -1289,8 +1370,9 @@ message SearchForValidIngredientsRequest {
 }
 
 message SearchForValidIngredientsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredient Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredient Results = 3;
 }
 
 // SearchForValidInstruments
@@ -1301,8 +1383,9 @@ message SearchForValidInstrumentsRequest {
 }
 
 message SearchForValidInstrumentsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidInstrument Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidInstrument Results = 3;
 }
 
 // SearchForValidMeasurementUnits
@@ -1313,8 +1396,9 @@ message SearchForValidMeasurementUnitsRequest {
 }
 
 message SearchForValidMeasurementUnitsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidMeasurementUnit Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidMeasurementUnit Results = 3;
 }
 
 // SearchForValidPreparations
@@ -1325,8 +1409,9 @@ message SearchForValidPreparationsRequest {
 }
 
 message SearchForValidPreparationsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidPreparation Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidPreparation Results = 3;
 }
 
 // SearchForValidVessels
@@ -1337,8 +1422,9 @@ message SearchForValidVesselsRequest {
 }
 
 message SearchForValidVesselsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidVessel Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidVessel Results = 3;
 }
 
 // SearchValidIngredientsByPreparation
@@ -1349,8 +1435,9 @@ message SearchValidIngredientsByPreparationRequest {
 }
 
 message SearchValidIngredientsByPreparationResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidIngredient Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidIngredient Results = 3;
 }
 
 // SearchValidMeasurementUnitsByIngredient
@@ -1361,8 +1448,9 @@ message SearchValidMeasurementUnitsByIngredientRequest {
 }
 
 message SearchValidMeasurementUnitsByIngredientResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated ValidMeasurementUnit Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated ValidMeasurementUnit Results = 3;
 }
 
 // UpdateValidIngredient
@@ -1372,7 +1460,8 @@ message UpdateValidIngredientRequest {
 }
 
 message UpdateValidIngredientResponse {
-  ValidIngredient Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredient Result = 2;
 }
 
 // UpdateValidIngredientGroup
@@ -1382,7 +1471,8 @@ message UpdateValidIngredientGroupRequest {
 }
 
 message UpdateValidIngredientGroupResponse {
-  ValidIngredientGroup Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientGroup Result = 2;
 }
 
 // UpdateValidIngredientMeasurementUnit
@@ -1392,7 +1482,8 @@ message UpdateValidIngredientMeasurementUnitRequest {
 }
 
 message UpdateValidIngredientMeasurementUnitResponse {
-  ValidIngredientMeasurementUnit Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientMeasurementUnit Result = 2;
 }
 
 // UpdateValidIngredientPreparation
@@ -1402,7 +1493,8 @@ message UpdateValidIngredientPreparationRequest {
 }
 
 message UpdateValidIngredientPreparationResponse {
-  ValidIngredientPreparation Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientPreparation Result = 2;
 }
 
 // UpdateValidIngredientState
@@ -1412,7 +1504,8 @@ message UpdateValidIngredientStateRequest {
 }
 
 message UpdateValidIngredientStateResponse {
-  ValidIngredientState Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientState Result = 2;
 }
 
 // UpdateValidIngredientStateIngredient
@@ -1422,7 +1515,8 @@ message UpdateValidIngredientStateIngredientRequest {
 }
 
 message UpdateValidIngredientStateIngredientResponse {
-  ValidIngredientStateIngredient Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidIngredientStateIngredient Result = 2;
 }
 
 // UpdateValidInstrument
@@ -1432,7 +1526,8 @@ message UpdateValidInstrumentRequest {
 }
 
 message UpdateValidInstrumentResponse {
-  ValidInstrument Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidInstrument Result = 2;
 }
 
 // UpdateValidMeasurementUnit
@@ -1442,7 +1537,8 @@ message UpdateValidMeasurementUnitRequest {
 }
 
 message UpdateValidMeasurementUnitResponse {
-  ValidMeasurementUnit Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidMeasurementUnit Result = 2;
 }
 
 // UpdateValidMeasurementUnitConversion
@@ -1452,7 +1548,8 @@ message UpdateValidMeasurementUnitConversionRequest {
 }
 
 message UpdateValidMeasurementUnitConversionResponse {
-  ValidMeasurementUnitConversion Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidMeasurementUnitConversion Result = 2;
 }
 
 // UpdateValidPreparation
@@ -1462,7 +1559,8 @@ message UpdateValidPreparationRequest {
 }
 
 message UpdateValidPreparationResponse {
-  ValidPreparation Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparation Result = 2;
 }
 
 // UpdateValidPreparationInstrument
@@ -1472,7 +1570,8 @@ message UpdateValidPreparationInstrumentRequest {
 }
 
 message UpdateValidPreparationInstrumentResponse {
-  ValidPreparationInstrument Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparationInstrument Result = 2;
 }
 
 // UpdateValidPreparationVessel
@@ -1482,7 +1581,8 @@ message UpdateValidPreparationVesselRequest {
 }
 
 message UpdateValidPreparationVesselResponse {
-  ValidPreparationVessel Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidPreparationVessel Result = 2;
 }
 
 // UpdateValidVessel
@@ -1492,7 +1592,8 @@ message UpdateValidVesselRequest {
 }
 
 message UpdateValidVesselResponse {
-  ValidVessel Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  ValidVessel Result = 2;
 }
 
 // ArchiveUserIngredientPreference
@@ -1500,12 +1601,17 @@ message ArchiveUserIngredientPreferenceRequest {
   string userIngredientPreferenceID = 1;
 }
 
-message ArchiveUserIngredientPreferenceResponse {}
+message ArchiveUserIngredientPreferenceResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // CreateUserIngredientPreference
 message CreateUserIngredientPreferenceRequest {}
 
-message CreateUserIngredientPreferenceResponse {}
+message CreateUserIngredientPreferenceResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  UserIngredientPreference Created = 2;
+}
 
 // GetUserIngredientPreferences
 message GetUserIngredientPreferencesRequest {
@@ -1513,8 +1619,9 @@ message GetUserIngredientPreferencesRequest {
 }
 
 message GetUserIngredientPreferencesResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated UserIngredientPreference Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated UserIngredientPreference Results = 3;
 }
 
 // UpdateUserIngredientPreference
@@ -1523,7 +1630,10 @@ message UpdateUserIngredientPreferenceRequest {
   UserIngredientPreferenceUpdateRequestInput input = 2;
 }
 
-message UpdateUserIngredientPreferenceResponse {}
+message UpdateUserIngredientPreferenceResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  UserIngredientPreference Updated = 2;
+}
 
 // Recipes
 
@@ -1532,7 +1642,7 @@ message Recipe {
   string InspiredByRecipeID = 2;
   optional google.protobuf.Timestamp LastUpdatedAt = 3;
   optional google.protobuf.Timestamp ArchivedAt = 4;
-  Float32RangeWithOptionalMax EstimatedPortions = 5;
+  common.Float32RangeWithOptionalMax EstimatedPortions = 5;
   string PluralPortionName = 6;
   string Description = 7;
   string Name = 8;
@@ -1559,7 +1669,7 @@ message RecipeCreationRequestInput {
   string PortionName = 6;
   string Slug = 7;
   string YieldsComponentType = 8;
-  Float32RangeWithOptionalMax EstimatedPortions = 9;
+  common.Float32RangeWithOptionalMax EstimatedPortions = 9;
   repeated RecipePrepTaskWithinRecipeCreationRequestInput PrepTasks = 10;
   repeated RecipeStepCreationRequestInput Steps = 11;
   bool AlsoCreateMeal = 12;
@@ -1600,8 +1710,8 @@ message RecipeMediaUpdateRequestInput {
 
 message RecipePrepTask {
   google.protobuf.Timestamp CreatedAt = 1;
-  OptionalFloat32Range StorageTemperatureInCelsius = 2;
-  Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 3;
+  common.OptionalFloat32Range StorageTemperatureInCelsius = 2;
+  common.Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 3;
   optional google.protobuf.Timestamp ArchivedAt = 4;
   optional google.protobuf.Timestamp LastUpdatedAt = 5;
   string ID = 6;
@@ -1616,8 +1726,8 @@ message RecipePrepTask {
 }
 
 message RecipePrepTaskCreationRequestInput {
-  OptionalFloat32Range StorageTemperatureInCelsius = 1;
-  Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 2;
+  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  common.Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 2;
   string StorageType = 3;
   string ExplicitStorageInstructions = 4;
   string Notes = 5;
@@ -1658,15 +1768,15 @@ message RecipePrepTaskUpdateRequestInput {
   optional string Name = 4;
   optional bool Optional = 5;
   optional string Description = 6;
-  optional OptionalFloat32Range StorageTemperatureInCelsius = 7;
-  optional Uint32RangeWithOptionalMaxUpdateRequestInput TimeBufferBeforeRecipeInSeconds = 8;
+  optional common.OptionalFloat32Range StorageTemperatureInCelsius = 7;
+  optional common.Uint32RangeWithOptionalMaxUpdateRequestInput TimeBufferBeforeRecipeInSeconds = 8;
   optional string BelongsToRecipe = 9;
   repeated RecipePrepTaskStepUpdateRequestInput TaskSteps = 10;
 }
 
 message RecipePrepTaskWithinRecipeCreationRequestInput {
-  OptionalFloat32Range StorageTemperatureInCelsius = 1;
-  Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 2;
+  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  common.Uint32RangeWithOptionalMax TimeBufferBeforeRecipeInSeconds = 2;
   string StorageType = 3;
   string Name = 4;
   string Description = 5;
@@ -1716,8 +1826,8 @@ message RecipeRatingUpdateRequestInput {
 
 message RecipeStep {
   google.protobuf.Timestamp CreatedAt = 1;
-  OptionalUint32Range EstimatedTimeInSeconds = 2;
-  OptionalFloat32Range TemperatureInCelsius = 3;
+  common.OptionalUint32Range EstimatedTimeInSeconds = 2;
+  common.OptionalFloat32Range TemperatureInCelsius = 3;
   optional google.protobuf.Timestamp ArchivedAt = 4;
   optional google.protobuf.Timestamp LastUpdatedAt = 5;
   string BelongsToRecipe = 6;
@@ -1786,8 +1896,8 @@ message RecipeStepCompletionConditionUpdateRequestInput {
 }
 
 message RecipeStepCreationRequestInput {
-  OptionalUint32Range EstimatedTimeInSeconds = 1;
-  OptionalFloat32Range TemperatureInCelsius = 2;
+  common.OptionalUint32Range EstimatedTimeInSeconds = 1;
+  common.OptionalFloat32Range TemperatureInCelsius = 2;
   string PreparationID = 3;
   string Notes = 4;
   string ConditionExpression = 5;
@@ -1816,7 +1926,7 @@ message RecipeStepIngredient {
   string QuantityNotes = 11;
   string IngredientNotes = 12;
   string Name = 13;
-  Float32RangeWithOptionalMax Quantity = 14;
+  common.Float32RangeWithOptionalMax Quantity = 14;
   ValidMeasurementUnit MeasurementUnit = 15;
   uint32 OptionIndex = 16;
   bool Optional = 17;
@@ -1834,7 +1944,7 @@ message RecipeStepIngredientCreationRequestInput {
   string MeasurementUnitID = 8;
   string Name = 9;
   string QuantityNotes = 10;
-  Float32RangeWithOptionalMax Quantity = 11;
+  common.Float32RangeWithOptionalMax Quantity = 11;
   uint32 OptionIndex = 12;
   bool Optional = 13;
   bool ToTaste = 14;
@@ -1849,7 +1959,7 @@ message RecipeStepIngredientUpdateRequestInput {
   optional string QuantityNotes = 6;
   optional string IngredientNotes = 7;
   optional string BelongsToRecipeStep = 8;
-  optional Float32RangeWithOptionalMaxUpdateRequestInput Quantity = 9;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput Quantity = 9;
   optional uint32 OptionIndex = 10;
   optional uint32 VesselIndex = 11;
   optional bool ToTaste = 12;
@@ -1867,7 +1977,7 @@ message RecipeStepInstrument {
   string Name = 7;
   string BelongsToRecipeStep = 8;
   string ID = 9;
-  Uint32RangeWithOptionalMax Quantity = 10;
+  common.Uint32RangeWithOptionalMax Quantity = 10;
   uint32 OptionIndex = 11;
   uint32 PreferenceRank = 12;
   bool Optional = 13;
@@ -1878,7 +1988,7 @@ message RecipeStepInstrumentCreationRequestInput {
   string RecipeStepProductID = 2;
   uint64 ProductOfRecipeStepIndex = 3;
   uint64 ProductOfRecipeStepProductIndex = 4;
-  Uint32RangeWithOptionalMax Quantity = 5;
+  common.Uint32RangeWithOptionalMax Quantity = 5;
   string Notes = 6;
   string Name = 7;
   uint32 OptionIndex = 8;
@@ -1895,14 +2005,14 @@ message RecipeStepInstrumentUpdateRequestInput {
   optional string Name = 6;
   optional bool Optional = 7;
   optional uint32 OptionIndex = 8;
-  optional Uint32RangeWithOptionalMaxUpdateRequestInput Quantity = 9;
+  optional common.Uint32RangeWithOptionalMaxUpdateRequestInput Quantity = 9;
 }
 
 message RecipeStepProduct {
   google.protobuf.Timestamp CreatedAt = 1;
-  OptionalFloat32Range StorageTemperatureInCelsius = 2;
-  OptionalUint32Range StorageDurationInSeconds = 3;
-  OptionalFloat32Range Quantity = 4;
+  common.OptionalFloat32Range StorageTemperatureInCelsius = 2;
+  common.OptionalUint32Range StorageDurationInSeconds = 3;
+  common.OptionalFloat32Range Quantity = 4;
   optional google.protobuf.Timestamp ArchivedAt = 5;
   optional google.protobuf.Timestamp LastUpdatedAt = 6;
   ValidMeasurementUnit MeasurementUnit = 7;
@@ -1920,9 +2030,9 @@ message RecipeStepProduct {
 }
 
 message RecipeStepProductCreationRequestInput {
-  OptionalFloat32Range StorageTemperatureInCelsius = 1;
-  OptionalUint32Range StorageDurationInSeconds = 2;
-  OptionalFloat32Range Quantity = 3;
+  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
+  common.OptionalUint32Range StorageDurationInSeconds = 2;
+  common.OptionalFloat32Range Quantity = 3;
   string MeasurementUnitID = 4;
   uint32 ContainedInVesselIndex = 5;
   string QuantityNotes = 6;
@@ -1941,9 +2051,9 @@ message RecipeStepProductUpdateRequestInput {
   optional string MeasurementUnitID = 3;
   optional string QuantityNotes = 4;
   optional string BelongsToRecipeStep = 5;
-  optional OptionalFloat32Range StorageTemperatureInCelsius = 6;
-  optional OptionalUint32Range StorageDurationInSeconds = 7;
-  optional OptionalFloat32Range Quantity = 8;
+  optional common.OptionalFloat32Range StorageTemperatureInCelsius = 6;
+  optional common.OptionalUint32Range StorageDurationInSeconds = 7;
+  optional common.OptionalFloat32Range Quantity = 8;
   optional bool Compostable = 9;
   optional string StorageInstructions = 10;
   optional bool IsLiquid = 11;
@@ -1953,8 +2063,8 @@ message RecipeStepProductUpdateRequestInput {
 }
 
 message RecipeStepUpdateRequestInput {
-  optional OptionalUint32Range EstimatedTimeInSeconds = 1;
-  optional OptionalFloat32Range TemperatureInCelsius = 2;
+  optional common.OptionalUint32Range EstimatedTimeInSeconds = 1;
+  optional common.OptionalFloat32Range TemperatureInCelsius = 2;
   optional string Notes = 3;
   optional ValidPreparation Preparation = 4;
   optional uint32 Index = 5;
@@ -1967,7 +2077,7 @@ message RecipeStepUpdateRequestInput {
 
 message RecipeStepVessel {
   google.protobuf.Timestamp CreatedAt = 1;
-  Uint16RangeWithOptionalMax Quantity = 2;
+  common.Uint16RangeWithOptionalMax Quantity = 2;
   optional google.protobuf.Timestamp LastUpdatedAt = 3;
   optional google.protobuf.Timestamp ArchivedAt = 4;
   string RecipeStepProductID = 5;
@@ -1985,7 +2095,7 @@ message RecipeStepVesselCreationRequestInput {
   uint64 ProductOfRecipeStepIndex = 2;
   uint64 ProductOfRecipeStepProductIndex = 3;
   string VesselID = 4;
-  Uint16RangeWithOptionalMax Quantity = 5;
+  common.Uint16RangeWithOptionalMax Quantity = 5;
   string Name = 6;
   string Notes = 7;
   string VesselPreposition = 8;
@@ -1998,7 +2108,7 @@ message RecipeStepVesselUpdateRequestInput {
   optional string Notes = 3;
   optional string BelongsToRecipeStep = 4;
   optional string VesselID = 5;
-  optional Uint16RangeWithOptionalMaxUpdateRequestInput Quantity = 6;
+  optional common.Uint16RangeWithOptionalMaxUpdateRequestInput Quantity = 6;
   optional string VesselPreposition = 7;
   optional bool UnavailableAfterStep = 8;
 }
@@ -2010,7 +2120,7 @@ message RecipeUpdateRequestInput {
   optional string Description = 4;
   optional string InspiredByRecipeID = 5;
   optional bool SealOfApproval = 6;
-  optional Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 7;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 7;
   optional string PortionName = 8;
   optional string PluralPortionName = 9;
   optional bool EligibleForMeals = 10;
@@ -2022,7 +2132,9 @@ message ArchiveRecipeRequest {
   string recipeID = 1;
 }
 
-message ArchiveRecipeResponse {}
+message ArchiveRecipeResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveRecipePrepTask
 message ArchiveRecipePrepTaskRequest {
@@ -2030,7 +2142,9 @@ message ArchiveRecipePrepTaskRequest {
   string recipePrepTaskID = 2;
 }
 
-message ArchiveRecipePrepTaskResponse {}
+message ArchiveRecipePrepTaskResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveRecipeRating
 message ArchiveRecipeRatingRequest {
@@ -2038,7 +2152,9 @@ message ArchiveRecipeRatingRequest {
   string recipeRatingID = 2;
 }
 
-message ArchiveRecipeRatingResponse {}
+message ArchiveRecipeRatingResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveRecipeStep
 message ArchiveRecipeStepRequest {
@@ -2046,7 +2162,9 @@ message ArchiveRecipeStepRequest {
   string recipeStepID = 2;
 }
 
-message ArchiveRecipeStepResponse {}
+message ArchiveRecipeStepResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveRecipeStepCompletionCondition
 message ArchiveRecipeStepCompletionConditionRequest {
@@ -2055,7 +2173,9 @@ message ArchiveRecipeStepCompletionConditionRequest {
   string recipeStepCompletionConditionID = 3;
 }
 
-message ArchiveRecipeStepCompletionConditionResponse {}
+message ArchiveRecipeStepCompletionConditionResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveRecipeStepIngredient
 message ArchiveRecipeStepIngredientRequest {
@@ -2064,7 +2184,9 @@ message ArchiveRecipeStepIngredientRequest {
   string recipeStepIngredientID = 3;
 }
 
-message ArchiveRecipeStepIngredientResponse {}
+message ArchiveRecipeStepIngredientResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveRecipeStepInstrument
 message ArchiveRecipeStepInstrumentRequest {
@@ -2073,7 +2195,9 @@ message ArchiveRecipeStepInstrumentRequest {
   string recipeStepInstrumentID = 3;
 }
 
-message ArchiveRecipeStepInstrumentResponse {}
+message ArchiveRecipeStepInstrumentResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveRecipeStepProduct
 message ArchiveRecipeStepProductRequest {
@@ -2082,7 +2206,9 @@ message ArchiveRecipeStepProductRequest {
   string recipeStepProductID = 3;
 }
 
-message ArchiveRecipeStepProductResponse {}
+message ArchiveRecipeStepProductResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveRecipeStepVessel
 message ArchiveRecipeStepVesselRequest {
@@ -2091,7 +2217,9 @@ message ArchiveRecipeStepVesselRequest {
   string recipeStepVesselID = 3;
 }
 
-message ArchiveRecipeStepVesselResponse {}
+message ArchiveRecipeStepVesselResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // CloneRecipe
 message CloneRecipeRequest {
@@ -2099,13 +2227,17 @@ message CloneRecipeRequest {
 }
 
 message CloneRecipeResponse {
-  Recipe Result = 1;
+  common.ResponseDetails ResponseDetails = 1;
+  Recipe Result = 2;
 }
 
 // CreateRecipe
 message CreateRecipeRequest {}
 
-message CreateRecipeResponse {}
+message CreateRecipeResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  Recipe Created = 2;
+}
 
 // CreateRecipePrepTask
 message CreateRecipePrepTaskRequest {
@@ -2113,7 +2245,10 @@ message CreateRecipePrepTaskRequest {
   RecipePrepTaskCreationRequestInput input = 2;
 }
 
-message CreateRecipePrepTaskResponse {}
+message CreateRecipePrepTaskResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipePrepTask Created = 2;
+}
 
 // CreateRecipeRating
 message CreateRecipeRatingRequest {
@@ -2121,7 +2256,10 @@ message CreateRecipeRatingRequest {
   RecipeRatingCreationRequestInput input = 2;
 }
 
-message CreateRecipeRatingResponse {}
+message CreateRecipeRatingResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeRating Created = 2;
+}
 
 // CreateRecipeStep
 message CreateRecipeStepRequest {
@@ -2129,7 +2267,10 @@ message CreateRecipeStepRequest {
   RecipeStepCreationRequestInput input = 2;
 }
 
-message CreateRecipeStepResponse {}
+message CreateRecipeStepResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStep Created = 2;
+}
 
 // CreateRecipeStepCompletionCondition
 message CreateRecipeStepCompletionConditionRequest {
@@ -2138,7 +2279,10 @@ message CreateRecipeStepCompletionConditionRequest {
   RecipeStepCompletionConditionForExistingRecipeCreationRequestInput input = 3;
 }
 
-message CreateRecipeStepCompletionConditionResponse {}
+message CreateRecipeStepCompletionConditionResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepCompletionCondition Created = 2;
+}
 
 // CreateRecipeStepIngredient
 message CreateRecipeStepIngredientRequest {
@@ -2147,7 +2291,10 @@ message CreateRecipeStepIngredientRequest {
   RecipeStepIngredientCreationRequestInput input = 3;
 }
 
-message CreateRecipeStepIngredientResponse {}
+message CreateRecipeStepIngredientResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepIngredient Created = 2;
+}
 
 // CreateRecipeStepInstrument
 message CreateRecipeStepInstrumentRequest {
@@ -2156,7 +2303,10 @@ message CreateRecipeStepInstrumentRequest {
   RecipeStepInstrumentCreationRequestInput input = 3;
 }
 
-message CreateRecipeStepInstrumentResponse {}
+message CreateRecipeStepInstrumentResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepInstrument Created = 2;
+}
 
 // CreateRecipeStepProduct
 message CreateRecipeStepProductRequest {
@@ -2165,7 +2315,10 @@ message CreateRecipeStepProductRequest {
   RecipeStepProductCreationRequestInput input = 3;
 }
 
-message CreateRecipeStepProductResponse {}
+message CreateRecipeStepProductResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepProduct Created = 2;
+}
 
 // CreateRecipeStepVessel
 message CreateRecipeStepVesselRequest {
@@ -2174,7 +2327,10 @@ message CreateRecipeStepVesselRequest {
   RecipeStepVesselCreationRequestInput input = 3;
 }
 
-message CreateRecipeStepVesselResponse {}
+message CreateRecipeStepVesselResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepVessel Created = 2;
+}
 
 // GetMermaidDiagramForRecipe
 message GetMermaidDiagramForRecipeRequest {
@@ -2190,14 +2346,18 @@ message GetRecipeRequest {
   string recipeID = 1;
 }
 
-message GetRecipeResponse {}
+message GetRecipeResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipeMealPlanTasks
 message GetRecipeMealPlanTasksRequest {
   string recipeID = 1;
 }
 
-message GetRecipeMealPlanTasksResponse {}
+message GetRecipeMealPlanTasksResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipePrepTask
 message GetRecipePrepTaskRequest {
@@ -2205,7 +2365,9 @@ message GetRecipePrepTaskRequest {
   string recipePrepTaskID = 2;
 }
 
-message GetRecipePrepTaskResponse {}
+message GetRecipePrepTaskResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipePrepTasks
 message GetRecipePrepTasksRequest {
@@ -2214,8 +2376,9 @@ message GetRecipePrepTasksRequest {
 }
 
 message GetRecipePrepTasksResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated RecipePrepTask Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated RecipePrepTask Results = 3;
 }
 
 // GetRecipeRating
@@ -2224,7 +2387,9 @@ message GetRecipeRatingRequest {
   string RecipeRatingID = 2;
 }
 
-message GetRecipeRatingResponse {}
+message GetRecipeRatingResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipeRatingsForRecipe
 message GetRecipeRatingsForRecipeRequest {
@@ -2233,8 +2398,9 @@ message GetRecipeRatingsForRecipeRequest {
 }
 
 message GetRecipeRatingsForRecipeResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated RecipeRating Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated RecipeRating Results = 3;
 }
 
 // GetRecipeStep
@@ -2243,7 +2409,9 @@ message GetRecipeStepRequest {
   string recipeStepID = 2;
 }
 
-message GetRecipeStepResponse {}
+message GetRecipeStepResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipeStepCompletionCondition
 message GetRecipeStepCompletionConditionRequest {
@@ -2252,7 +2420,9 @@ message GetRecipeStepCompletionConditionRequest {
   string recipeStepCompletionConditionID = 3;
 }
 
-message GetRecipeStepCompletionConditionResponse {}
+message GetRecipeStepCompletionConditionResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipeStepCompletionConditions
 message GetRecipeStepCompletionConditionsRequest {
@@ -2262,8 +2432,9 @@ message GetRecipeStepCompletionConditionsRequest {
 }
 
 message GetRecipeStepCompletionConditionsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated RecipeStepCompletionCondition Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated RecipeStepCompletionCondition Results = 3;
 }
 
 // GetRecipeStepIngredient
@@ -2273,7 +2444,9 @@ message GetRecipeStepIngredientRequest {
   string recipeStepIngredientID = 3;
 }
 
-message GetRecipeStepIngredientResponse {}
+message GetRecipeStepIngredientResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipeStepIngredients
 message GetRecipeStepIngredientsRequest {
@@ -2283,8 +2456,9 @@ message GetRecipeStepIngredientsRequest {
 }
 
 message GetRecipeStepIngredientsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated RecipeStepIngredient Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated RecipeStepIngredient Results = 3;
 }
 
 // GetRecipeStepInstrument
@@ -2294,7 +2468,9 @@ message GetRecipeStepInstrumentRequest {
   string RecipeStepInstrumentID = 3;
 }
 
-message GetRecipeStepInstrumentResponse {}
+message GetRecipeStepInstrumentResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipeStepInstruments
 message GetRecipeStepInstrumentsRequest {
@@ -2304,8 +2480,9 @@ message GetRecipeStepInstrumentsRequest {
 }
 
 message GetRecipeStepInstrumentsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated RecipeStepInstrument Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated RecipeStepInstrument Results = 3;
 }
 
 // GetRecipeStepProduct
@@ -2315,7 +2492,9 @@ message GetRecipeStepProductRequest {
   string recipeStepProductID = 3;
 }
 
-message GetRecipeStepProductResponse {}
+message GetRecipeStepProductResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipeStepProducts
 message GetRecipeStepProductsRequest {
@@ -2325,8 +2504,9 @@ message GetRecipeStepProductsRequest {
 }
 
 message GetRecipeStepProductsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated RecipeStepProduct Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated RecipeStepProduct Results = 3;
 }
 
 // GetRecipeStepVessel
@@ -2336,7 +2516,9 @@ message GetRecipeStepVesselRequest {
   string recipeStepVesselID = 3;
 }
 
-message GetRecipeStepVesselResponse {}
+message GetRecipeStepVesselResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetRecipeStepVessels
 message GetRecipeStepVesselsRequest {
@@ -2346,8 +2528,9 @@ message GetRecipeStepVesselsRequest {
 }
 
 message GetRecipeStepVesselsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated RecipeStepVessel Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated RecipeStepVessel Results = 3;
 }
 
 // GetRecipeSteps
@@ -2357,8 +2540,9 @@ message GetRecipeStepsRequest {
 }
 
 message GetRecipeStepsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated RecipeStep Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated RecipeStep Results = 3;
 }
 
 // GetRecipes
@@ -2367,8 +2551,9 @@ message GetRecipesRequest {
 }
 
 message GetRecipesResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated Recipe Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated Recipe Results = 3;
 }
 
 // SearchForRecipes
@@ -2378,8 +2563,9 @@ message SearchForRecipesRequest {
 }
 
 message SearchForRecipesResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated Recipe Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated Recipe Results = 3;
 }
 
 // UpdateRecipe
@@ -2388,7 +2574,10 @@ message UpdateRecipeRequest {
   RecipeUpdateRequestInput input = 2;
 }
 
-message UpdateRecipeResponse {}
+message UpdateRecipeResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  Recipe Updated = 2;
+}
 
 // UpdateRecipePrepTask
 message UpdateRecipePrepTaskRequest {
@@ -2397,7 +2586,10 @@ message UpdateRecipePrepTaskRequest {
   RecipePrepTaskUpdateRequestInput input = 3;
 }
 
-message UpdateRecipePrepTaskResponse {}
+message UpdateRecipePrepTaskResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipePrepTask Updated = 2;
+}
 
 // UpdateRecipeRating
 message UpdateRecipeRatingRequest {
@@ -2406,7 +2598,10 @@ message UpdateRecipeRatingRequest {
   RecipeRatingUpdateRequestInput input = 3;
 }
 
-message UpdateRecipeRatingResponse {}
+message UpdateRecipeRatingResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeRating Updated = 2;
+}
 
 // UpdateRecipeStep
 message UpdateRecipeStepRequest {
@@ -2415,7 +2610,10 @@ message UpdateRecipeStepRequest {
   RecipeStepUpdateRequestInput input = 3;
 }
 
-message UpdateRecipeStepResponse {}
+message UpdateRecipeStepResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStep Updated = 2;
+}
 
 // UpdateRecipeStepCompletionCondition
 message UpdateRecipeStepCompletionConditionRequest {
@@ -2425,7 +2623,10 @@ message UpdateRecipeStepCompletionConditionRequest {
   RecipeStepCompletionConditionUpdateRequestInput input = 4;
 }
 
-message UpdateRecipeStepCompletionConditionResponse {}
+message UpdateRecipeStepCompletionConditionResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepCompletionCondition Updated = 2;
+}
 
 // UpdateRecipeStepIngredient
 message UpdateRecipeStepIngredientRequest {
@@ -2435,7 +2636,10 @@ message UpdateRecipeStepIngredientRequest {
   RecipeStepIngredientUpdateRequestInput input = 4;
 }
 
-message UpdateRecipeStepIngredientResponse {}
+message UpdateRecipeStepIngredientResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepIngredient Updated = 2;
+}
 
 // UpdateRecipeStepInstrument
 message UpdateRecipeStepInstrumentRequest {
@@ -2445,7 +2649,10 @@ message UpdateRecipeStepInstrumentRequest {
   RecipeStepInstrumentUpdateRequestInput input = 4;
 }
 
-message UpdateRecipeStepInstrumentResponse {}
+message UpdateRecipeStepInstrumentResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepInstrument Updated = 2;
+}
 
 // UpdateRecipeStepProduct
 message UpdateRecipeStepProductRequest {
@@ -2455,7 +2662,10 @@ message UpdateRecipeStepProductRequest {
   RecipeStepProductUpdateRequestInput input = 4;
 }
 
-message UpdateRecipeStepProductResponse {}
+message UpdateRecipeStepProductResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepProduct Updated = 2;
+}
 
 // UpdateRecipeStepVessel
 message UpdateRecipeStepVesselRequest {
@@ -2465,7 +2675,10 @@ message UpdateRecipeStepVesselRequest {
   RecipeStepVesselUpdateRequestInput input = 4;
 }
 
-message UpdateRecipeStepVesselResponse {}
+message UpdateRecipeStepVesselResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  RecipeStepVessel Updated = 2;
+}
 
 // Meal Planning
 
@@ -2481,7 +2694,7 @@ message Meal {
   google.protobuf.Timestamp CreatedAt = 1;
   optional google.protobuf.Timestamp ArchivedAt = 2;
   optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  Float32RangeWithOptionalMax EstimatedPortions = 4;
+  common.Float32RangeWithOptionalMax EstimatedPortions = 4;
   string ID = 5;
   string Description = 6;
   string CreatedByUser = 7;
@@ -2509,7 +2722,7 @@ message MealComponentUpdateRequestInput {
 }
 
 message MealCreationRequestInput {
-  Float32RangeWithOptionalMax EstimatedPortions = 1;
+  common.Float32RangeWithOptionalMax EstimatedPortions = 1;
   string Name = 2;
   string Description = 3;
   repeated MealComponentCreationRequestInput Components = 4;
@@ -2580,7 +2793,7 @@ message MealPlanGroceryListItem {
   string Status = 9;
   string StatusExplanation = 10;
   string ID = 11;
-  Float32RangeWithOptionalMax QuantityNeeded = 12;
+  common.Float32RangeWithOptionalMax QuantityNeeded = 12;
   ValidMeasurementUnit MeasurementUnit = 13;
   ValidIngredient Ingredient = 14;
 }
@@ -2595,7 +2808,7 @@ message MealPlanGroceryListItemCreationRequestInput {
   string ValidIngredientID = 7;
   string ValidMeasurementUnitID = 8;
   string StatusExplanation = 9;
-  Float32RangeWithOptionalMax QuantityNeeded = 10;
+  common.Float32RangeWithOptionalMax QuantityNeeded = 10;
 }
 
 message MealPlanGroceryListItemUpdateRequestInput {
@@ -2608,7 +2821,7 @@ message MealPlanGroceryListItemUpdateRequestInput {
   optional string PurchasedUPC = 7;
   optional float PurchasePrice = 8;
   optional string Status = 9;
-  optional Float32RangeWithOptionalMaxUpdateRequestInput QuantityNeeded = 10;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput QuantityNeeded = 10;
 }
 
 message MealPlanOption {
@@ -2676,6 +2889,12 @@ message MealPlanOptionVoteUpdateRequestInput {
   optional string BelongsToMealPlanOption = 4;
 }
 
+message MissingVote {
+  string EventID = 1;
+  string OptionID = 2;
+  string UserID = 3;
+}
+
 message MealPlanTask {
   RecipePrepTask RecipePrepTask = 1;
   google.protobuf.Timestamp CreatedAt = 2;
@@ -2715,7 +2934,7 @@ message MealUpdateRequestInput {
   optional string Name = 1;
   optional string Description = 2;
   optional string CreatedByUser = 3;
-  optional Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 4;
+  optional common.Float32RangeWithOptionalMaxUpdateRequestInput EstimatedPortions = 4;
   optional bool EligibleForMealPlans = 5;
   repeated MealComponentUpdateRequestInput Components = 6;
 }
@@ -2725,14 +2944,18 @@ message ArchiveMealRequest {
   string mealID = 1;
 }
 
-message ArchiveMealResponse {}
+message ArchiveMealResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveMealPlan
 message ArchiveMealPlanRequest {
   string mealPlanID = 1;
 }
 
-message ArchiveMealPlanResponse {}
+message ArchiveMealPlanResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveMealPlanEvent
 message ArchiveMealPlanEventRequest {
@@ -2740,7 +2963,9 @@ message ArchiveMealPlanEventRequest {
   string mealPlanEventID = 2;
 }
 
-message ArchiveMealPlanEventResponse {}
+message ArchiveMealPlanEventResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveMealPlanGroceryListItem
 message ArchiveMealPlanGroceryListItemRequest {
@@ -2748,7 +2973,9 @@ message ArchiveMealPlanGroceryListItemRequest {
   string mealPlanGroceryListItemID = 2;
 }
 
-message ArchiveMealPlanGroceryListItemResponse {}
+message ArchiveMealPlanGroceryListItemResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveMealPlanOption
 message ArchiveMealPlanOptionRequest {
@@ -2757,7 +2984,9 @@ message ArchiveMealPlanOptionRequest {
   string MealPlanOptionID = 3;
 }
 
-message ArchiveMealPlanOptionResponse {}
+message ArchiveMealPlanOptionResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // ArchiveMealPlanOptionVote
 message ArchiveMealPlanOptionVoteRequest {
@@ -2767,17 +2996,25 @@ message ArchiveMealPlanOptionVoteRequest {
   string mealPlanOptionVoteID = 4;
 }
 
-message ArchiveMealPlanOptionVoteResponse {}
+message ArchiveMealPlanOptionVoteResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // CreateMeal
 message CreateMealRequest {}
 
-message CreateMealResponse {}
+message CreateMealResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  Meal Created = 2;
+}
 
 // CreateMealPlan
 message CreateMealPlanRequest {}
 
-message CreateMealPlanResponse {}
+message CreateMealPlanResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlan Created = 2;
+}
 
 // CreateMealPlanEvent
 message CreateMealPlanEventRequest {
@@ -2785,7 +3022,10 @@ message CreateMealPlanEventRequest {
   MealPlanEventCreationRequestInput input = 2;
 }
 
-message CreateMealPlanEventResponse {}
+message CreateMealPlanEventResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanEvent Created = 2;
+}
 
 // CreateMealPlanGroceryListItem
 message CreateMealPlanGroceryListItemRequest {
@@ -2793,7 +3033,10 @@ message CreateMealPlanGroceryListItemRequest {
   MealPlanGroceryListItemCreationRequestInput input = 2;
 }
 
-message CreateMealPlanGroceryListItemResponse {}
+message CreateMealPlanGroceryListItemResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanGroceryListItem Created = 2;
+}
 
 // CreateMealPlanOption
 message CreateMealPlanOptionRequest {
@@ -2802,7 +3045,10 @@ message CreateMealPlanOptionRequest {
   MealPlanOptionCreationRequestInput input = 3;
 }
 
-message CreateMealPlanOptionResponse {}
+message CreateMealPlanOptionResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanOption Created = 2;
+}
 
 // CreateMealPlanOptionVote
 message CreateMealPlanOptionVoteRequest {
@@ -2811,7 +3057,10 @@ message CreateMealPlanOptionVoteRequest {
   MealPlanOptionVoteCreationRequestInput input = 3;
 }
 
-message CreateMealPlanOptionVoteResponse {}
+message CreateMealPlanOptionVoteResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanOptionVote Created = 2;
+}
 
 // CreateMealPlanTask
 message CreateMealPlanTaskRequest {
@@ -2819,28 +3068,37 @@ message CreateMealPlanTaskRequest {
   MealPlanTaskCreationRequestInput input = 2;
 }
 
-message CreateMealPlanTaskResponse {}
+message CreateMealPlanTaskResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanTask Created = 2;
+}
 
 // FinalizeMealPlan
 message FinalizeMealPlanRequest {
   string mealPlanID = 1;
 }
 
-message FinalizeMealPlanResponse {}
+message FinalizeMealPlanResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetMeal
 message GetMealRequest {
   string mealID = 1;
 }
 
-message GetMealResponse {}
+message GetMealResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetMealPlan
 message GetMealPlanRequest {
   string mealPlanID = 1;
 }
 
-message GetMealPlanResponse {}
+message GetMealPlanResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetMealPlanEvent
 message GetMealPlanEventRequest {
@@ -2848,7 +3106,9 @@ message GetMealPlanEventRequest {
   string mealPlanEventID = 2;
 }
 
-message GetMealPlanEventResponse {}
+message GetMealPlanEventResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetMealPlanEvents
 message GetMealPlanEventsRequest {
@@ -2857,8 +3117,9 @@ message GetMealPlanEventsRequest {
 }
 
 message GetMealPlanEventsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated MealPlanEvent Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated MealPlanEvent Results = 3;
 }
 
 // GetMealPlanGroceryListItem
@@ -2867,7 +3128,9 @@ message GetMealPlanGroceryListItemRequest {
   string mealPlanGroceryListItemID = 2;
 }
 
-message GetMealPlanGroceryListItemResponse {}
+message GetMealPlanGroceryListItemResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetMealPlanGroceryListItemsForMealPlan
 message GetMealPlanGroceryListItemsForMealPlanRequest {
@@ -2876,8 +3139,9 @@ message GetMealPlanGroceryListItemsForMealPlanRequest {
 }
 
 message GetMealPlanGroceryListItemsForMealPlanResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated MealPlanGroceryListItem Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated MealPlanGroceryListItem Results = 3;
 }
 
 // GetMealPlanOption
@@ -2887,7 +3151,9 @@ message GetMealPlanOptionRequest {
   string MealPlanOptionID = 3;
 }
 
-message GetMealPlanOptionResponse {}
+message GetMealPlanOptionResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetMealPlanOptionVote
 message GetMealPlanOptionVoteRequest {
@@ -2897,7 +3163,9 @@ message GetMealPlanOptionVoteRequest {
   string mealPlanOptionVoteID = 4;
 }
 
-message GetMealPlanOptionVoteResponse {}
+message GetMealPlanOptionVoteResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetMealPlanOptionVotes
 message GetMealPlanOptionVotesRequest {
@@ -2908,8 +3176,9 @@ message GetMealPlanOptionVotesRequest {
 }
 
 message GetMealPlanOptionVotesResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated MealPlanOptionVote Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated MealPlanOptionVote Results = 3;
 }
 
 // GetMealPlanOptions
@@ -2920,8 +3189,9 @@ message GetMealPlanOptionsRequest {
 }
 
 message GetMealPlanOptionsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated MealPlanOption Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated MealPlanOption Results = 3;
 }
 
 // GetMealPlanTask
@@ -2930,7 +3200,9 @@ message GetMealPlanTaskRequest {
   string mealPlanTaskID = 2;
 }
 
-message GetMealPlanTaskResponse {}
+message GetMealPlanTaskResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // GetMealPlanTasks
 message GetMealPlanTasksRequest {
@@ -2939,8 +3211,9 @@ message GetMealPlanTasksRequest {
 }
 
 message GetMealPlanTasksResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated MealPlanTask Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated MealPlanTask Results = 3;
 }
 
 // GetMealPlansForAccount
@@ -2949,8 +3222,9 @@ message GetMealPlansForAccountRequest {
 }
 
 message GetMealPlansForAccountResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated MealPlan Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated MealPlan Results = 3;
 }
 
 // GetMeals
@@ -2959,24 +3233,31 @@ message GetMealsRequest {
 }
 
 message GetMealsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated Meal Resuls = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated Meal Resuls = 3;
 }
 
 // RunFinalizeMealPlanWorker
 message RunFinalizeMealPlanWorkerRequest {}
 
-message RunFinalizeMealPlanWorkerResponse {}
+message RunFinalizeMealPlanWorkerResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // RunMealPlanGroceryListInitializerWorker
 message RunMealPlanGroceryListInitializerWorkerRequest {}
 
-message RunMealPlanGroceryListInitializerWorkerResponse {}
+message RunMealPlanGroceryListInitializerWorkerResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // RunMealPlanTaskCreatorWorker
 message RunMealPlanTaskCreatorWorkerRequest {}
 
-message RunMealPlanTaskCreatorWorkerResponse {}
+message RunMealPlanTaskCreatorWorkerResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // SearchForMeals
 message SearchForMealsRequest {
@@ -2985,8 +3266,9 @@ message SearchForMealsRequest {
 }
 
 message SearchForMealsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated Meal Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated Meal Results = 3;
 }
 
 // UpdateMealPlan
@@ -2995,7 +3277,10 @@ message UpdateMealPlanRequest {
   MealPlanUpdateRequestInput input = 2;
 }
 
-message UpdateMealPlanResponse {}
+message UpdateMealPlanResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlan Updated = 2;
+}
 
 // UpdateMealPlanEvent
 message UpdateMealPlanEventRequest {
@@ -3004,7 +3289,10 @@ message UpdateMealPlanEventRequest {
   MealPlanEventUpdateRequestInput input = 3;
 }
 
-message UpdateMealPlanEventResponse {}
+message UpdateMealPlanEventResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanEvent Updated = 2;
+}
 
 // UpdateMealPlanGroceryListItem
 message UpdateMealPlanGroceryListItemRequest {
@@ -3013,7 +3301,10 @@ message UpdateMealPlanGroceryListItemRequest {
   MealPlanGroceryListItemUpdateRequestInput input = 3;
 }
 
-message UpdateMealPlanGroceryListItemResponse {}
+message UpdateMealPlanGroceryListItemResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanGroceryListItem Updated = 2;
+}
 
 // UpdateMealPlanOption
 message UpdateMealPlanOptionRequest {
@@ -3023,7 +3314,10 @@ message UpdateMealPlanOptionRequest {
   MealPlanOptionUpdateRequestInput input = 4;
 }
 
-message UpdateMealPlanOptionResponse {}
+message UpdateMealPlanOptionResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanOption Updated = 2;
+}
 
 // UpdateMealPlanOptionVote
 message UpdateMealPlanOptionVoteRequest {
@@ -3034,7 +3328,10 @@ message UpdateMealPlanOptionVoteRequest {
   MealPlanOptionVoteUpdateRequestInput input = 5;
 }
 
-message UpdateMealPlanOptionVoteResponse {}
+message UpdateMealPlanOptionVoteResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanOptionVote Updated = 2;
+}
 
 // UpdateMealPlanTaskStatus
 message UpdateMealPlanTaskStatusRequest {
@@ -3043,7 +3340,10 @@ message UpdateMealPlanTaskStatusRequest {
   MealPlanTaskStatusChangeRequestInput input = 3;
 }
 
-message UpdateMealPlanTaskStatusResponse {}
+message UpdateMealPlanTaskStatusResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  MealPlanTask Updated = 2;
+}
 
 message CreateMealPlanTasksRequest {
   string AccountID = 1;
@@ -3066,12 +3366,17 @@ message ArchiveAccountInstrumentOwnershipRequest {
   string accountInstrumentOwnershipID = 1;
 }
 
-message ArchiveAccountInstrumentOwnershipResponse {}
+message ArchiveAccountInstrumentOwnershipResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // CreateAccountInstrumentOwnership
 message CreateAccountInstrumentOwnershipRequest {}
 
-message CreateAccountInstrumentOwnershipResponse {}
+message CreateAccountInstrumentOwnershipResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  AccountInstrumentOwnership Created = 2;
+}
 
 // GetAccountInstrumentOwnerships
 message GetAccountInstrumentOwnershipsRequest {
@@ -3079,8 +3384,9 @@ message GetAccountInstrumentOwnershipsRequest {
 }
 
 message GetAccountInstrumentOwnershipsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated AccountInstrumentOwnership Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated AccountInstrumentOwnership Results = 3;
 }
 
 // GetAccountInstrumentOwnership
@@ -3088,7 +3394,9 @@ message GetAccountInstrumentOwnershipRequest {
   string accountInstrumentOwnershipID = 1;
 }
 
-message GetAccountInstrumentOwnershipResponse {}
+message GetAccountInstrumentOwnershipResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
 
 // UpdateAccountInstrumentOwnership
 message UpdateAccountInstrumentOwnershipRequest {
@@ -3096,7 +3404,10 @@ message UpdateAccountInstrumentOwnershipRequest {
   AccountInstrumentOwnershipUpdateRequestInput input = 2;
 }
 
-message UpdateAccountInstrumentOwnershipResponse {}
+message UpdateAccountInstrumentOwnershipResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  AccountInstrumentOwnership Updated = 2;
+}
 
 message AccountInstrumentOwnership {
   google.protobuf.Timestamp CreatedAt = 1;
@@ -3120,4 +3431,192 @@ message AccountInstrumentOwnershipUpdateRequestInput {
   optional string Notes = 1;
   optional uint32 Quantity = 2;
   optional string ValidInstrumentID = 3;
+}
+
+service MealPlanningService {
+  rpc ArchiveMeal(ArchiveMealRequest) returns (ArchiveMealResponse);
+  rpc ArchiveMealPlan(ArchiveMealPlanRequest) returns (ArchiveMealPlanResponse);
+  rpc ArchiveMealPlanEvent(ArchiveMealPlanEventRequest) returns (ArchiveMealPlanEventResponse);
+  rpc ArchiveMealPlanGroceryListItem(ArchiveMealPlanGroceryListItemRequest) returns (ArchiveMealPlanGroceryListItemResponse);
+  rpc ArchiveMealPlanOption(ArchiveMealPlanOptionRequest) returns (ArchiveMealPlanOptionResponse);
+  rpc ArchiveMealPlanOptionVote(ArchiveMealPlanOptionVoteRequest) returns (ArchiveMealPlanOptionVoteResponse);
+  rpc ArchiveRecipe(ArchiveRecipeRequest) returns (ArchiveRecipeResponse);
+  rpc ArchiveRecipePrepTask(ArchiveRecipePrepTaskRequest) returns (ArchiveRecipePrepTaskResponse);
+  rpc ArchiveRecipeRating(ArchiveRecipeRatingRequest) returns (ArchiveRecipeRatingResponse);
+  rpc ArchiveRecipeStep(ArchiveRecipeStepRequest) returns (ArchiveRecipeStepResponse);
+  rpc ArchiveRecipeStepCompletionCondition(ArchiveRecipeStepCompletionConditionRequest) returns (ArchiveRecipeStepCompletionConditionResponse);
+  rpc ArchiveRecipeStepIngredient(ArchiveRecipeStepIngredientRequest) returns (ArchiveRecipeStepIngredientResponse);
+  rpc ArchiveRecipeStepInstrument(ArchiveRecipeStepInstrumentRequest) returns (ArchiveRecipeStepInstrumentResponse);
+  rpc ArchiveRecipeStepProduct(ArchiveRecipeStepProductRequest) returns (ArchiveRecipeStepProductResponse);
+  rpc ArchiveRecipeStepVessel(ArchiveRecipeStepVesselRequest) returns (ArchiveRecipeStepVesselResponse);
+  rpc ArchiveValidIngredient(ArchiveValidIngredientRequest) returns (ArchiveValidIngredientResponse);
+  rpc ArchiveValidIngredientGroup(ArchiveValidIngredientGroupRequest) returns (ArchiveValidIngredientGroupResponse);
+  rpc ArchiveValidIngredientMeasurementUnit(ArchiveValidIngredientMeasurementUnitRequest) returns (ArchiveValidIngredientMeasurementUnitResponse);
+  rpc ArchiveValidIngredientPreparation(ArchiveValidIngredientPreparationRequest) returns (ArchiveValidIngredientPreparationResponse);
+  rpc ArchiveValidIngredientState(ArchiveValidIngredientStateRequest) returns (ArchiveValidIngredientStateResponse);
+  rpc ArchiveValidIngredientStateIngredient(ArchiveValidIngredientStateIngredientRequest) returns (ArchiveValidIngredientStateIngredientResponse);
+  rpc ArchiveValidInstrument(ArchiveValidInstrumentRequest) returns (ArchiveValidInstrumentResponse);
+  rpc ArchiveValidMeasurementUnit(ArchiveValidMeasurementUnitRequest) returns (ArchiveValidMeasurementUnitResponse);
+  rpc ArchiveValidMeasurementUnitConversion(ArchiveValidMeasurementUnitConversionRequest) returns (ArchiveValidMeasurementUnitConversionResponse);
+  rpc ArchiveValidPreparation(ArchiveValidPreparationRequest) returns (ArchiveValidPreparationResponse);
+  rpc ArchiveValidPreparationInstrument(ArchiveValidPreparationInstrumentRequest) returns (ArchiveValidPreparationInstrumentResponse);
+  rpc ArchiveValidPreparationVessel(ArchiveValidPreparationVesselRequest) returns (ArchiveValidPreparationVesselResponse);
+  rpc ArchiveValidVessel(ArchiveValidVesselRequest) returns (ArchiveValidVesselResponse);
+  rpc CloneRecipe(CloneRecipeRequest) returns (CloneRecipeResponse);
+  rpc CreateMeal(CreateMealRequest) returns (CreateMealResponse);
+  rpc CreateMealPlan(CreateMealPlanRequest) returns (CreateMealPlanResponse);
+  rpc CreateMealPlanEvent(CreateMealPlanEventRequest) returns (CreateMealPlanEventResponse);
+  rpc CreateMealPlanGroceryListItem(CreateMealPlanGroceryListItemRequest) returns (CreateMealPlanGroceryListItemResponse);
+  rpc CreateMealPlanOption(CreateMealPlanOptionRequest) returns (CreateMealPlanOptionResponse);
+  rpc CreateMealPlanOptionVote(CreateMealPlanOptionVoteRequest) returns (CreateMealPlanOptionVoteResponse);
+  rpc CreateMealPlanTask(CreateMealPlanTaskRequest) returns (CreateMealPlanTaskResponse);
+  rpc CreateRecipe(CreateRecipeRequest) returns (CreateRecipeResponse);
+  rpc CreateRecipePrepTask(CreateRecipePrepTaskRequest) returns (CreateRecipePrepTaskResponse);
+  rpc CreateRecipeRating(CreateRecipeRatingRequest) returns (CreateRecipeRatingResponse);
+  rpc CreateRecipeStep(CreateRecipeStepRequest) returns (CreateRecipeStepResponse);
+  rpc CreateRecipeStepCompletionCondition(CreateRecipeStepCompletionConditionRequest) returns (CreateRecipeStepCompletionConditionResponse);
+  rpc CreateRecipeStepIngredient(CreateRecipeStepIngredientRequest) returns (CreateRecipeStepIngredientResponse);
+  rpc CreateRecipeStepInstrument(CreateRecipeStepInstrumentRequest) returns (CreateRecipeStepInstrumentResponse);
+  rpc CreateRecipeStepProduct(CreateRecipeStepProductRequest) returns (CreateRecipeStepProductResponse);
+  rpc CreateRecipeStepVessel(CreateRecipeStepVesselRequest) returns (CreateRecipeStepVesselResponse);
+  rpc CreateValidIngredient(CreateValidIngredientRequest) returns (CreateValidIngredientResponse);
+  rpc CreateValidIngredientGroup(CreateValidIngredientGroupRequest) returns (CreateValidIngredientGroupResponse);
+  rpc CreateValidIngredientMeasurementUnit(CreateValidIngredientMeasurementUnitRequest) returns (CreateValidIngredientMeasurementUnitResponse);
+  rpc CreateValidIngredientPreparation(CreateValidIngredientPreparationRequest) returns (CreateValidIngredientPreparationResponse);
+  rpc CreateValidIngredientState(CreateValidIngredientStateRequest) returns (CreateValidIngredientStateResponse);
+  rpc CreateValidIngredientStateIngredient(CreateValidIngredientStateIngredientRequest) returns (CreateValidIngredientStateIngredientResponse);
+  rpc CreateValidInstrument(CreateValidInstrumentRequest) returns (CreateValidInstrumentResponse);
+  rpc CreateValidMeasurementUnit(CreateValidMeasurementUnitRequest) returns (CreateValidMeasurementUnitResponse);
+  rpc CreateValidMeasurementUnitConversion(CreateValidMeasurementUnitConversionRequest) returns (CreateValidMeasurementUnitConversionResponse);
+  rpc CreateValidPreparation(CreateValidPreparationRequest) returns (CreateValidPreparationResponse);
+  rpc CreateValidPreparationInstrument(CreateValidPreparationInstrumentRequest) returns (CreateValidPreparationInstrumentResponse);
+  rpc CreateValidPreparationVessel(CreateValidPreparationVesselRequest) returns (CreateValidPreparationVesselResponse);
+  rpc CreateValidVessel(CreateValidVesselRequest) returns (CreateValidVesselResponse);
+  rpc FinalizeMealPlan(FinalizeMealPlanRequest) returns (FinalizeMealPlanResponse);
+  rpc GetMeal(GetMealRequest) returns (GetMealResponse);
+  rpc GetMealPlan(GetMealPlanRequest) returns (GetMealPlanResponse);
+  rpc GetMealPlanEvent(GetMealPlanEventRequest) returns (GetMealPlanEventResponse);
+  rpc GetMealPlanEvents(GetMealPlanEventsRequest) returns (GetMealPlanEventsResponse);
+  rpc GetMealPlanGroceryListItem(GetMealPlanGroceryListItemRequest) returns (GetMealPlanGroceryListItemResponse);
+  rpc GetMealPlanGroceryListItemsForMealPlan(GetMealPlanGroceryListItemsForMealPlanRequest) returns (GetMealPlanGroceryListItemsForMealPlanResponse);
+  rpc GetMealPlanOption(GetMealPlanOptionRequest) returns (GetMealPlanOptionResponse);
+  rpc GetMealPlanOptionVote(GetMealPlanOptionVoteRequest) returns (GetMealPlanOptionVoteResponse);
+  rpc GetMealPlanOptionVotes(GetMealPlanOptionVotesRequest) returns (GetMealPlanOptionVotesResponse);
+  rpc GetMealPlanOptions(GetMealPlanOptionsRequest) returns (GetMealPlanOptionsResponse);
+  rpc GetMealPlanTask(GetMealPlanTaskRequest) returns (GetMealPlanTaskResponse);
+  rpc GetMealPlanTasks(GetMealPlanTasksRequest) returns (GetMealPlanTasksResponse);
+  rpc GetMealPlansForAccount(GetMealPlansForAccountRequest) returns (GetMealPlansForAccountResponse);
+  rpc GetMeals(GetMealsRequest) returns (GetMealsResponse);
+  rpc GetMermaidDiagramForRecipe(GetMermaidDiagramForRecipeRequest) returns (GetMermaidDiagramForRecipeResponse);
+  rpc GetRandomValidIngredient(GetRandomValidIngredientRequest) returns (GetRandomValidIngredientResponse);
+  rpc GetRandomValidInstrument(GetRandomValidInstrumentRequest) returns (GetRandomValidInstrumentResponse);
+  rpc GetRandomValidPreparation(GetRandomValidPreparationRequest) returns (GetRandomValidPreparationResponse);
+  rpc GetRandomValidVessel(GetRandomValidVesselRequest) returns (GetRandomValidVesselResponse);
+  rpc GetRecipe(GetRecipeRequest) returns (GetRecipeResponse);
+  rpc GetRecipeMealPlanTasks(GetRecipeMealPlanTasksRequest) returns (GetRecipeMealPlanTasksResponse);
+  rpc GetRecipePrepTask(GetRecipePrepTaskRequest) returns (GetRecipePrepTaskResponse);
+  rpc GetRecipePrepTasks(GetRecipePrepTasksRequest) returns (GetRecipePrepTasksResponse);
+  rpc GetRecipeRating(GetRecipeRatingRequest) returns (GetRecipeRatingResponse);
+  rpc GetRecipeRatingsForRecipe(GetRecipeRatingsForRecipeRequest) returns (GetRecipeRatingsForRecipeResponse);
+  rpc GetRecipeStep(GetRecipeStepRequest) returns (GetRecipeStepResponse);
+  rpc GetRecipeStepCompletionCondition(GetRecipeStepCompletionConditionRequest) returns (GetRecipeStepCompletionConditionResponse);
+  rpc GetRecipeStepCompletionConditions(GetRecipeStepCompletionConditionsRequest) returns (GetRecipeStepCompletionConditionsResponse);
+  rpc GetRecipeStepIngredient(GetRecipeStepIngredientRequest) returns (GetRecipeStepIngredientResponse);
+  rpc GetRecipeStepIngredients(GetRecipeStepIngredientsRequest) returns (GetRecipeStepIngredientsResponse);
+  rpc GetRecipeStepInstrument(GetRecipeStepInstrumentRequest) returns (GetRecipeStepInstrumentResponse);
+  rpc GetRecipeStepInstruments(GetRecipeStepInstrumentsRequest) returns (GetRecipeStepInstrumentsResponse);
+  rpc GetRecipeStepProduct(GetRecipeStepProductRequest) returns (GetRecipeStepProductResponse);
+  rpc GetRecipeStepProducts(GetRecipeStepProductsRequest) returns (GetRecipeStepProductsResponse);
+  rpc GetRecipeStepVessel(GetRecipeStepVesselRequest) returns (GetRecipeStepVesselResponse);
+  rpc GetRecipeStepVessels(GetRecipeStepVesselsRequest) returns (GetRecipeStepVesselsResponse);
+  rpc GetRecipeSteps(GetRecipeStepsRequest) returns (GetRecipeStepsResponse);
+  rpc GetRecipes(GetRecipesRequest) returns (GetRecipesResponse);
+  rpc GetValidIngredient(GetValidIngredientRequest) returns (GetValidIngredientResponse);
+  rpc GetValidIngredientGroup(GetValidIngredientGroupRequest) returns (GetValidIngredientGroupResponse);
+  rpc GetValidIngredientGroups(GetValidIngredientGroupsRequest) returns (GetValidIngredientGroupsResponse);
+  rpc GetValidIngredientMeasurementUnit(GetValidIngredientMeasurementUnitRequest) returns (GetValidIngredientMeasurementUnitResponse);
+  rpc GetValidIngredientMeasurementUnits(GetValidIngredientMeasurementUnitsRequest) returns (GetValidIngredientMeasurementUnitsResponse);
+  rpc GetValidIngredientMeasurementUnitsByIngredient(GetValidIngredientMeasurementUnitsByIngredientRequest) returns (GetValidIngredientMeasurementUnitsByIngredientResponse);
+  rpc GetValidIngredientMeasurementUnitsByMeasurementUnit(GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) returns (GetValidIngredientMeasurementUnitsByMeasurementUnitResponse);
+  rpc GetValidIngredientPreparation(GetValidIngredientPreparationRequest) returns (GetValidIngredientPreparationResponse);
+  rpc GetValidIngredientPreparations(GetValidIngredientPreparationsRequest) returns (GetValidIngredientPreparationsResponse);
+  rpc GetValidIngredientPreparationsByIngredient(GetValidIngredientPreparationsByIngredientRequest) returns (GetValidIngredientPreparationsByIngredientResponse);
+  rpc GetValidIngredientPreparationsByPreparation(GetValidIngredientPreparationsByPreparationRequest) returns (GetValidIngredientPreparationsByPreparationResponse);
+  rpc GetValidIngredientState(GetValidIngredientStateRequest) returns (GetValidIngredientStateResponse);
+  rpc GetValidIngredientStateIngredient(GetValidIngredientStateIngredientRequest) returns (GetValidIngredientStateIngredientResponse);
+  rpc GetValidIngredientStateIngredients(GetValidIngredientStateIngredientsRequest) returns (GetValidIngredientStateIngredientsResponse);
+  rpc GetValidIngredientStateIngredientsByIngredient(GetValidIngredientStateIngredientsByIngredientRequest) returns (GetValidIngredientStateIngredientsByIngredientResponse);
+  rpc GetValidIngredientStateIngredientsByIngredientState(GetValidIngredientStateIngredientsByIngredientStateRequest) returns (GetValidIngredientStateIngredientsByIngredientStateResponse);
+  rpc GetValidIngredientStates(GetValidIngredientStatesRequest) returns (GetValidIngredientStatesResponse);
+  rpc GetValidIngredients(GetValidIngredientsRequest) returns (GetValidIngredientsResponse);
+  rpc GetValidInstrument(GetValidInstrumentRequest) returns (GetValidInstrumentResponse);
+  rpc GetValidInstruments(GetValidInstrumentsRequest) returns (GetValidInstrumentsResponse);
+  rpc GetValidMeasurementUnit(GetValidMeasurementUnitRequest) returns (GetValidMeasurementUnitResponse);
+  rpc GetValidMeasurementUnitConversion(GetValidMeasurementUnitConversionRequest) returns (GetValidMeasurementUnitConversionResponse);
+  rpc GetValidMeasurementUnitConversionsFromUnit(GetValidMeasurementUnitConversionsFromUnitRequest) returns (GetValidMeasurementUnitConversionsFromUnitResponse);
+  rpc GetValidMeasurementUnitConversionsToUnit(GetValidMeasurementUnitConversionsToUnitRequest) returns (GetValidMeasurementUnitConversionsToUnitResponse);
+  rpc GetValidMeasurementUnits(GetValidMeasurementUnitsRequest) returns (GetValidMeasurementUnitsResponse);
+  rpc GetValidPreparation(GetValidPreparationRequest) returns (GetValidPreparationResponse);
+  rpc GetValidPreparationInstrument(GetValidPreparationInstrumentRequest) returns (GetValidPreparationInstrumentResponse);
+  rpc GetValidPreparationInstruments(GetValidPreparationInstrumentsRequest) returns (GetValidPreparationInstrumentsResponse);
+  rpc GetValidPreparationInstrumentsByInstrument(GetValidPreparationInstrumentsByInstrumentRequest) returns (GetValidPreparationInstrumentsByInstrumentResponse);
+  rpc GetValidPreparationInstrumentsByPreparation(GetValidPreparationInstrumentsByPreparationRequest) returns (GetValidPreparationInstrumentsByPreparationResponse);
+  rpc GetValidPreparationVessel(GetValidPreparationVesselRequest) returns (GetValidPreparationVesselResponse);
+  rpc GetValidPreparationVessels(GetValidPreparationVesselsRequest) returns (GetValidPreparationVesselsResponse);
+  rpc GetValidPreparationVesselsByPreparation(GetValidPreparationVesselsByPreparationRequest) returns (GetValidPreparationVesselsByPreparationResponse);
+  rpc GetValidPreparationVesselsByVessel(GetValidPreparationVesselsByVesselRequest) returns (GetValidPreparationVesselsByVesselResponse);
+  rpc GetValidPreparations(GetValidPreparationsRequest) returns (GetValidPreparationsResponse);
+  rpc GetValidVessel(GetValidVesselRequest) returns (GetValidVesselResponse);
+  rpc GetValidVessels(GetValidVesselsRequest) returns (GetValidVesselsResponse);
+  rpc RunFinalizeMealPlanWorker(RunFinalizeMealPlanWorkerRequest) returns (RunFinalizeMealPlanWorkerResponse);
+  rpc RunMealPlanGroceryListInitializerWorker(RunMealPlanGroceryListInitializerWorkerRequest) returns (RunMealPlanGroceryListInitializerWorkerResponse);
+  rpc RunMealPlanTaskCreatorWorker(RunMealPlanTaskCreatorWorkerRequest) returns (RunMealPlanTaskCreatorWorkerResponse);
+  rpc SearchForMeals(SearchForMealsRequest) returns (SearchForMealsResponse);
+  rpc SearchForRecipes(SearchForRecipesRequest) returns (SearchForRecipesResponse);
+  rpc SearchForValidIngredientGroups(SearchForValidIngredientGroupsRequest) returns (SearchForValidIngredientGroupsResponse);
+  rpc SearchForValidIngredientStates(SearchForValidIngredientStatesRequest) returns (SearchForValidIngredientStatesResponse);
+  rpc SearchForValidIngredients(SearchForValidIngredientsRequest) returns (SearchForValidIngredientsResponse);
+  rpc SearchForValidInstruments(SearchForValidInstrumentsRequest) returns (SearchForValidInstrumentsResponse);
+  rpc SearchForValidMeasurementUnits(SearchForValidMeasurementUnitsRequest) returns (SearchForValidMeasurementUnitsResponse);
+  rpc SearchForValidPreparations(SearchForValidPreparationsRequest) returns (SearchForValidPreparationsResponse);
+  rpc SearchForValidVessels(SearchForValidVesselsRequest) returns (SearchForValidVesselsResponse);
+  rpc SearchValidIngredientsByPreparation(SearchValidIngredientsByPreparationRequest) returns (SearchValidIngredientsByPreparationResponse);
+  rpc SearchValidMeasurementUnitsByIngredient(SearchValidMeasurementUnitsByIngredientRequest) returns (SearchValidMeasurementUnitsByIngredientResponse);
+  rpc UpdateMealPlan(UpdateMealPlanRequest) returns (UpdateMealPlanResponse);
+  rpc UpdateMealPlanEvent(UpdateMealPlanEventRequest) returns (UpdateMealPlanEventResponse);
+  rpc UpdateMealPlanGroceryListItem(UpdateMealPlanGroceryListItemRequest) returns (UpdateMealPlanGroceryListItemResponse);
+  rpc UpdateMealPlanOption(UpdateMealPlanOptionRequest) returns (UpdateMealPlanOptionResponse);
+  rpc UpdateMealPlanOptionVote(UpdateMealPlanOptionVoteRequest) returns (UpdateMealPlanOptionVoteResponse);
+  rpc UpdateMealPlanTaskStatus(UpdateMealPlanTaskStatusRequest) returns (UpdateMealPlanTaskStatusResponse);
+  rpc UpdateRecipe(UpdateRecipeRequest) returns (UpdateRecipeResponse);
+  rpc UpdateRecipePrepTask(UpdateRecipePrepTaskRequest) returns (UpdateRecipePrepTaskResponse);
+  rpc UpdateRecipeRating(UpdateRecipeRatingRequest) returns (UpdateRecipeRatingResponse);
+  rpc UpdateRecipeStep(UpdateRecipeStepRequest) returns (UpdateRecipeStepResponse);
+  rpc UpdateRecipeStepCompletionCondition(UpdateRecipeStepCompletionConditionRequest) returns (UpdateRecipeStepCompletionConditionResponse);
+  rpc UpdateRecipeStepIngredient(UpdateRecipeStepIngredientRequest) returns (UpdateRecipeStepIngredientResponse);
+  rpc UpdateRecipeStepInstrument(UpdateRecipeStepInstrumentRequest) returns (UpdateRecipeStepInstrumentResponse);
+  rpc UpdateRecipeStepProduct(UpdateRecipeStepProductRequest) returns (UpdateRecipeStepProductResponse);
+  rpc UpdateRecipeStepVessel(UpdateRecipeStepVesselRequest) returns (UpdateRecipeStepVesselResponse);
+  rpc UpdateValidIngredient(UpdateValidIngredientRequest) returns (UpdateValidIngredientResponse);
+  rpc UpdateValidIngredientGroup(UpdateValidIngredientGroupRequest) returns (UpdateValidIngredientGroupResponse);
+  rpc UpdateValidIngredientMeasurementUnit(UpdateValidIngredientMeasurementUnitRequest) returns (UpdateValidIngredientMeasurementUnitResponse);
+  rpc UpdateValidIngredientPreparation(UpdateValidIngredientPreparationRequest) returns (UpdateValidIngredientPreparationResponse);
+  rpc UpdateValidIngredientState(UpdateValidIngredientStateRequest) returns (UpdateValidIngredientStateResponse);
+  rpc UpdateValidIngredientStateIngredient(UpdateValidIngredientStateIngredientRequest) returns (UpdateValidIngredientStateIngredientResponse);
+  rpc UpdateValidInstrument(UpdateValidInstrumentRequest) returns (UpdateValidInstrumentResponse);
+  rpc UpdateValidMeasurementUnit(UpdateValidMeasurementUnitRequest) returns (UpdateValidMeasurementUnitResponse);
+  rpc UpdateValidMeasurementUnitConversion(UpdateValidMeasurementUnitConversionRequest) returns (UpdateValidMeasurementUnitConversionResponse);
+  rpc UpdateValidPreparation(UpdateValidPreparationRequest) returns (UpdateValidPreparationResponse);
+  rpc UpdateValidPreparationInstrument(UpdateValidPreparationInstrumentRequest) returns (UpdateValidPreparationInstrumentResponse);
+  rpc UpdateValidPreparationVessel(UpdateValidPreparationVesselRequest) returns (UpdateValidPreparationVesselResponse);
+  rpc UpdateValidVessel(UpdateValidVesselRequest) returns (UpdateValidVesselResponse);
+  rpc ArchiveAccountInstrumentOwnership(ArchiveAccountInstrumentOwnershipRequest) returns (ArchiveAccountInstrumentOwnershipResponse);
+  rpc ArchiveUserIngredientPreference(ArchiveUserIngredientPreferenceRequest) returns (ArchiveUserIngredientPreferenceResponse);
+  rpc CreateAccountInstrumentOwnership(CreateAccountInstrumentOwnershipRequest) returns (CreateAccountInstrumentOwnershipResponse);
+  rpc CreateUserIngredientPreference(CreateUserIngredientPreferenceRequest) returns (CreateUserIngredientPreferenceResponse);
+  rpc GetAccountInstrumentOwnership(GetAccountInstrumentOwnershipRequest) returns (GetAccountInstrumentOwnershipResponse);
+  rpc GetAccountInstrumentOwnerships(GetAccountInstrumentOwnershipsRequest) returns (GetAccountInstrumentOwnershipsResponse);
+  rpc GetUserIngredientPreferences(GetUserIngredientPreferencesRequest) returns (GetUserIngredientPreferencesResponse);
+  rpc UpdateAccountInstrumentOwnership(UpdateAccountInstrumentOwnershipRequest) returns (UpdateAccountInstrumentOwnershipResponse);
+  rpc UpdateUserIngredientPreference(UpdateUserIngredientPreferenceRequest) returns (UpdateUserIngredientPreferenceResponse);
 }

@@ -26,7 +26,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/services/core/indexing"
+	"github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 	indexing2 "github.com/dinnerdonebetter/backend/internal/services/mealplanning/indexing"
 )
 
@@ -127,7 +127,7 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	if err != nil {
 		return nil, err
 	}
-	eatingDataIndexer := indexing2.NewEatingDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
+	eatingDataIndexer := indexing2.NewMealPlanningDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
 	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(logger, tracerProvider, cfg, identityRepository, webhooksRepository, mealplanningRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, coreDataIndexer, eatingDataIndexer)
 	if err != nil {
 		return nil, err

@@ -1,12 +1,11 @@
-package eatinggrpc
+package grpc
 
 import (
 	"context"
 	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
-	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
-	eatingsvc "github.com/dinnerdonebetter/backend/internal/grpc/service/mealplanning"
+	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -14,7 +13,7 @@ import (
 
 type (
 	ServiceImpl struct {
-		eatingsvc.UnimplementedEatingServer
+		mealplanningsvc.UnimplementedMealPlanningServiceServer
 		tracer                   tracing.Tracer
 		logger                   logging.Logger
 		recipeManager            managers.RecipeManager
@@ -39,7 +38,7 @@ var (
 	errUnimplemented = errors.New("unimplemented")
 )
 
-func (s *ServiceImpl) PublishArbitraryQueueMessage(ctx context.Context, request *messages.PublishArbitraryQueueMessageRequest) (*messages.PublishArbitraryQueueMessageResponse, error) {
+func (s *ServiceImpl) ArchiveUserIngredientPreference(ctx context.Context, request *mealplanningsvc.ArchiveUserIngredientPreferenceRequest) (*mealplanningsvc.ArchiveUserIngredientPreferenceResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -48,7 +47,7 @@ func (s *ServiceImpl) PublishArbitraryQueueMessage(ctx context.Context, request 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) DestroyAllUserData(ctx context.Context, request *messages.DestroyAllUserDataRequest) (*messages.DestroyAllUserDataResponse, error) {
+func (s *ServiceImpl) CreateUserIngredientPreference(ctx context.Context, request *mealplanningsvc.CreateUserIngredientPreferenceRequest) (*mealplanningsvc.CreateUserIngredientPreferenceResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -57,7 +56,7 @@ func (s *ServiceImpl) DestroyAllUserData(ctx context.Context, request *messages.
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) FetchUserDataReport(ctx context.Context, request *messages.FetchUserDataReportRequest) (*messages.FetchUserDataReportResponse, error) {
+func (s *ServiceImpl) GetUserIngredientPreferences(ctx context.Context, request *mealplanningsvc.GetUserIngredientPreferencesRequest) (*mealplanningsvc.GetUserIngredientPreferencesResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -66,52 +65,7 @@ func (s *ServiceImpl) FetchUserDataReport(ctx context.Context, request *messages
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) AdminUpdateUserStatus(ctx context.Context, request *messages.AdminUpdateUserStatusRequest) (*messages.AdminUpdateUserStatusResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithSpan(span)
-
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
-}
-
-func (s *ServiceImpl) AggregateUserDataReport(ctx context.Context, request *messages.AggregateUserDataReportRequest) (*messages.AggregateUserDataReportResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithSpan(span)
-
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
-}
-
-func (s *ServiceImpl) ArchiveUserIngredientPreference(ctx context.Context, request *messages.ArchiveUserIngredientPreferenceRequest) (*messages.ArchiveUserIngredientPreferenceResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithSpan(span)
-
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
-}
-
-func (s *ServiceImpl) CreateUserIngredientPreference(ctx context.Context, request *messages.CreateUserIngredientPreferenceRequest) (*messages.CreateUserIngredientPreferenceResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithSpan(span)
-
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
-}
-
-func (s *ServiceImpl) GetUserIngredientPreferences(ctx context.Context, request *messages.GetUserIngredientPreferencesRequest) (*messages.GetUserIngredientPreferencesResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithSpan(span)
-
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
-}
-
-func (s *ServiceImpl) UpdateUserIngredientPreference(ctx context.Context, request *messages.UpdateUserIngredientPreferenceRequest) (*messages.UpdateUserIngredientPreferenceResponse, error) {
+func (s *ServiceImpl) UpdateUserIngredientPreference(ctx context.Context, request *mealplanningsvc.UpdateUserIngredientPreferenceRequest) (*mealplanningsvc.UpdateUserIngredientPreferenceResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

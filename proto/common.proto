@@ -1,16 +1,17 @@
 syntax = "proto3";
 
-package eating;
+package common;
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/messages";
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/types";
 
-message ArbitraryQueueMessageRequestInput {
-  string QueueName = 1;
-  string Body = 2;
+message NamedID {
+  string ID = 1;
+  string Name = 2;
 }
 
-message ArbitraryQueueMessageResponse {
-  bool Success = 1;
+message ResponseDetails {
+  string CurrentAccountID = 1;
+  string TraceID = 2;
 }
 
 message OptionalFloat32Range {

@@ -1,13 +1,13 @@
-package eatinggrpc
+package grpc
 
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
+	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 )
 
-func (s *ServiceImpl) ArchiveMeal(ctx context.Context, request *messages.ArchiveMealRequest) (*messages.ArchiveMealResponse, error) {
+func (s *ServiceImpl) ArchiveMeal(ctx context.Context, request *mealplanning.ArchiveMealRequest) (*mealplanning.ArchiveMealResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -16,7 +16,7 @@ func (s *ServiceImpl) ArchiveMeal(ctx context.Context, request *messages.Archive
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) ArchiveMealPlan(ctx context.Context, request *messages.ArchiveMealPlanRequest) (*messages.ArchiveMealPlanResponse, error) {
+func (s *ServiceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning.ArchiveMealPlanRequest) (*mealplanning.ArchiveMealPlanResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -25,7 +25,7 @@ func (s *ServiceImpl) ArchiveMealPlan(ctx context.Context, request *messages.Arc
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) ArchiveMealPlanEvent(ctx context.Context, request *messages.ArchiveMealPlanEventRequest) (*messages.ArchiveMealPlanEventResponse, error) {
+func (s *ServiceImpl) ArchiveMealPlanEvent(ctx context.Context, request *mealplanning.ArchiveMealPlanEventRequest) (*mealplanning.ArchiveMealPlanEventResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -35,10 +35,10 @@ func (s *ServiceImpl) ArchiveMealPlanEvent(ctx context.Context, request *message
 		return nil, observability.PrepareAndLogError(err, logger, span, "failed to archive meal plan event")
 	}
 
-	return &messages.ArchiveMealPlanEventResponse{}, nil
+	return &mealplanning.ArchiveMealPlanEventResponse{}, nil
 }
 
-func (s *ServiceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, request *messages.ArchiveMealPlanGroceryListItemRequest) (*messages.ArchiveMealPlanGroceryListItemResponse, error) {
+func (s *ServiceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, request *mealplanning.ArchiveMealPlanGroceryListItemRequest) (*mealplanning.ArchiveMealPlanGroceryListItemResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -47,7 +47,7 @@ func (s *ServiceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, reques
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) ArchiveMealPlanOption(ctx context.Context, request *messages.ArchiveMealPlanOptionRequest) (*messages.ArchiveMealPlanOptionResponse, error) {
+func (s *ServiceImpl) ArchiveMealPlanOption(ctx context.Context, request *mealplanning.ArchiveMealPlanOptionRequest) (*mealplanning.ArchiveMealPlanOptionResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -56,7 +56,7 @@ func (s *ServiceImpl) ArchiveMealPlanOption(ctx context.Context, request *messag
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *messages.ArchiveMealPlanOptionVoteRequest) (*messages.ArchiveMealPlanOptionVoteResponse, error) {
+func (s *ServiceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *mealplanning.ArchiveMealPlanOptionVoteRequest) (*mealplanning.ArchiveMealPlanOptionVoteResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -65,7 +65,7 @@ func (s *ServiceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *me
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) CreateMeal(ctx context.Context, request *messages.CreateMealRequest) (*messages.CreateMealResponse, error) {
+func (s *ServiceImpl) CreateMeal(ctx context.Context, request *mealplanning.CreateMealRequest) (*mealplanning.CreateMealResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -74,7 +74,7 @@ func (s *ServiceImpl) CreateMeal(ctx context.Context, request *messages.CreateMe
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) CreateMealPlan(ctx context.Context, request *messages.CreateMealPlanRequest) (*messages.CreateMealPlanResponse, error) {
+func (s *ServiceImpl) CreateMealPlan(ctx context.Context, request *mealplanning.CreateMealPlanRequest) (*mealplanning.CreateMealPlanResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -83,7 +83,7 @@ func (s *ServiceImpl) CreateMealPlan(ctx context.Context, request *messages.Crea
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) CreateMealPlanEvent(ctx context.Context, request *messages.CreateMealPlanEventRequest) (*messages.CreateMealPlanEventResponse, error) {
+func (s *ServiceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplanning.CreateMealPlanEventRequest) (*mealplanning.CreateMealPlanEventResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -92,7 +92,7 @@ func (s *ServiceImpl) CreateMealPlanEvent(ctx context.Context, request *messages
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request *messages.CreateMealPlanGroceryListItemRequest) (*messages.CreateMealPlanGroceryListItemResponse, error) {
+func (s *ServiceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request *mealplanning.CreateMealPlanGroceryListItemRequest) (*mealplanning.CreateMealPlanGroceryListItemResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -101,7 +101,7 @@ func (s *ServiceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) CreateMealPlanOption(ctx context.Context, request *messages.CreateMealPlanOptionRequest) (*messages.CreateMealPlanOptionResponse, error) {
+func (s *ServiceImpl) CreateMealPlanOption(ctx context.Context, request *mealplanning.CreateMealPlanOptionRequest) (*mealplanning.CreateMealPlanOptionResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -110,7 +110,7 @@ func (s *ServiceImpl) CreateMealPlanOption(ctx context.Context, request *message
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) CreateMealPlanOptionVote(ctx context.Context, request *messages.CreateMealPlanOptionVoteRequest) (*messages.CreateMealPlanOptionVoteResponse, error) {
+func (s *ServiceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mealplanning.CreateMealPlanOptionVoteRequest) (*mealplanning.CreateMealPlanOptionVoteResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -119,7 +119,7 @@ func (s *ServiceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mes
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) CreateMealPlanTask(ctx context.Context, request *messages.CreateMealPlanTaskRequest) (*messages.CreateMealPlanTaskResponse, error) {
+func (s *ServiceImpl) CreateMealPlanTask(ctx context.Context, request *mealplanning.CreateMealPlanTaskRequest) (*mealplanning.CreateMealPlanTaskResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -128,7 +128,7 @@ func (s *ServiceImpl) CreateMealPlanTask(ctx context.Context, request *messages.
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) FinalizeMealPlan(ctx context.Context, request *messages.FinalizeMealPlanRequest) (*messages.FinalizeMealPlanResponse, error) {
+func (s *ServiceImpl) FinalizeMealPlan(ctx context.Context, request *mealplanning.FinalizeMealPlanRequest) (*mealplanning.FinalizeMealPlanResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -137,7 +137,7 @@ func (s *ServiceImpl) FinalizeMealPlan(ctx context.Context, request *messages.Fi
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMeal(ctx context.Context, request *messages.GetMealRequest) (*messages.GetMealResponse, error) {
+func (s *ServiceImpl) GetMeal(ctx context.Context, request *mealplanning.GetMealRequest) (*mealplanning.GetMealResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -146,7 +146,7 @@ func (s *ServiceImpl) GetMeal(ctx context.Context, request *messages.GetMealRequ
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlan(ctx context.Context, request *messages.GetMealPlanRequest) (*messages.GetMealPlanResponse, error) {
+func (s *ServiceImpl) GetMealPlan(ctx context.Context, request *mealplanning.GetMealPlanRequest) (*mealplanning.GetMealPlanResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -155,7 +155,7 @@ func (s *ServiceImpl) GetMealPlan(ctx context.Context, request *messages.GetMeal
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanEvent(ctx context.Context, request *messages.GetMealPlanEventRequest) (*messages.GetMealPlanEventResponse, error) {
+func (s *ServiceImpl) GetMealPlanEvent(ctx context.Context, request *mealplanning.GetMealPlanEventRequest) (*mealplanning.GetMealPlanEventResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -164,7 +164,7 @@ func (s *ServiceImpl) GetMealPlanEvent(ctx context.Context, request *messages.Ge
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanEvents(ctx context.Context, request *messages.GetMealPlanEventsRequest) (*messages.GetMealPlanEventsResponse, error) {
+func (s *ServiceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanning.GetMealPlanEventsRequest) (*mealplanning.GetMealPlanEventsResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -173,7 +173,7 @@ func (s *ServiceImpl) GetMealPlanEvents(ctx context.Context, request *messages.G
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *messages.GetMealPlanGroceryListItemRequest) (*messages.GetMealPlanGroceryListItemResponse, error) {
+func (s *ServiceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *mealplanning.GetMealPlanGroceryListItemRequest) (*mealplanning.GetMealPlanGroceryListItemResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -182,7 +182,7 @@ func (s *ServiceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *m
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, request *messages.GetMealPlanGroceryListItemsForMealPlanRequest) (*messages.GetMealPlanGroceryListItemsForMealPlanResponse, error) {
+func (s *ServiceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, request *mealplanning.GetMealPlanGroceryListItemsForMealPlanRequest) (*mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -191,7 +191,7 @@ func (s *ServiceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanOption(ctx context.Context, request *messages.GetMealPlanOptionRequest) (*messages.GetMealPlanOptionResponse, error) {
+func (s *ServiceImpl) GetMealPlanOption(ctx context.Context, request *mealplanning.GetMealPlanOptionRequest) (*mealplanning.GetMealPlanOptionResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -200,7 +200,7 @@ func (s *ServiceImpl) GetMealPlanOption(ctx context.Context, request *messages.G
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanOptionVote(ctx context.Context, request *messages.GetMealPlanOptionVoteRequest) (*messages.GetMealPlanOptionVoteResponse, error) {
+func (s *ServiceImpl) GetMealPlanOptionVote(ctx context.Context, request *mealplanning.GetMealPlanOptionVoteRequest) (*mealplanning.GetMealPlanOptionVoteResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -209,7 +209,7 @@ func (s *ServiceImpl) GetMealPlanOptionVote(ctx context.Context, request *messag
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanOptionVotes(ctx context.Context, request *messages.GetMealPlanOptionVotesRequest) (*messages.GetMealPlanOptionVotesResponse, error) {
+func (s *ServiceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealplanning.GetMealPlanOptionVotesRequest) (*mealplanning.GetMealPlanOptionVotesResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -218,7 +218,7 @@ func (s *ServiceImpl) GetMealPlanOptionVotes(ctx context.Context, request *messa
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanOptions(ctx context.Context, request *messages.GetMealPlanOptionsRequest) (*messages.GetMealPlanOptionsResponse, error) {
+func (s *ServiceImpl) GetMealPlanOptions(ctx context.Context, request *mealplanning.GetMealPlanOptionsRequest) (*mealplanning.GetMealPlanOptionsResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -227,7 +227,7 @@ func (s *ServiceImpl) GetMealPlanOptions(ctx context.Context, request *messages.
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanTask(ctx context.Context, request *messages.GetMealPlanTaskRequest) (*messages.GetMealPlanTaskResponse, error) {
+func (s *ServiceImpl) GetMealPlanTask(ctx context.Context, request *mealplanning.GetMealPlanTaskRequest) (*mealplanning.GetMealPlanTaskResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -236,7 +236,7 @@ func (s *ServiceImpl) GetMealPlanTask(ctx context.Context, request *messages.Get
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlanTasks(ctx context.Context, request *messages.GetMealPlanTasksRequest) (*messages.GetMealPlanTasksResponse, error) {
+func (s *ServiceImpl) GetMealPlanTasks(ctx context.Context, request *mealplanning.GetMealPlanTasksRequest) (*mealplanning.GetMealPlanTasksResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -245,7 +245,16 @@ func (s *ServiceImpl) GetMealPlanTasks(ctx context.Context, request *messages.Ge
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMealPlansForHousehold(ctx context.Context, request *messages.GetMealPlansForHouseholdRequest) (*messages.GetMealPlansForHouseholdResponse, error) {
+//func (s *ServiceImpl) GetMealPlansForHousehold(ctx context.Context, request *mealplanning.GetMealPlansForHouseholdRequest) (*mealplanning.GetMealPlansForHouseholdResponse, error) {
+//	_, span := s.tracer.StartSpan(ctx)
+//	defer span.End()
+//
+//	logger := s.logger.WithSpan(span)
+//
+//	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+//}
+
+func (s *ServiceImpl) GetMeals(ctx context.Context, request *mealplanning.GetMealsRequest) (*mealplanning.GetMealsResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -254,7 +263,7 @@ func (s *ServiceImpl) GetMealPlansForHousehold(ctx context.Context, request *mes
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) GetMeals(ctx context.Context, request *messages.GetMealsRequest) (*messages.GetMealsResponse, error) {
+func (s *ServiceImpl) RunFinalizeMealPlanWorker(ctx context.Context, request *mealplanning.RunFinalizeMealPlanWorkerRequest) (*mealplanning.RunFinalizeMealPlanWorkerResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -263,7 +272,7 @@ func (s *ServiceImpl) GetMeals(ctx context.Context, request *messages.GetMealsRe
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) RunFinalizeMealPlanWorker(ctx context.Context, request *messages.RunFinalizeMealPlanWorkerRequest) (*messages.RunFinalizeMealPlanWorkerResponse, error) {
+func (s *ServiceImpl) RunMealPlanGroceryListInitializerWorker(ctx context.Context, request *mealplanning.RunMealPlanGroceryListInitializerWorkerRequest) (*mealplanning.RunMealPlanGroceryListInitializerWorkerResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -272,7 +281,7 @@ func (s *ServiceImpl) RunFinalizeMealPlanWorker(ctx context.Context, request *me
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) RunMealPlanGroceryListInitializerWorker(ctx context.Context, request *messages.RunMealPlanGroceryListInitializerWorkerRequest) (*messages.RunMealPlanGroceryListInitializerWorkerResponse, error) {
+func (s *ServiceImpl) RunMealPlanTaskCreatorWorker(ctx context.Context, request *mealplanning.RunMealPlanTaskCreatorWorkerRequest) (*mealplanning.RunMealPlanTaskCreatorWorkerResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -281,7 +290,7 @@ func (s *ServiceImpl) RunMealPlanGroceryListInitializerWorker(ctx context.Contex
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) RunMealPlanTaskCreatorWorker(ctx context.Context, request *messages.RunMealPlanTaskCreatorWorkerRequest) (*messages.RunMealPlanTaskCreatorWorkerResponse, error) {
+func (s *ServiceImpl) SearchForMeals(ctx context.Context, request *mealplanning.SearchForMealsRequest) (*mealplanning.SearchForMealsResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -290,7 +299,7 @@ func (s *ServiceImpl) RunMealPlanTaskCreatorWorker(ctx context.Context, request 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) SearchForMeals(ctx context.Context, request *messages.SearchForMealsRequest) (*messages.SearchForMealsResponse, error) {
+func (s *ServiceImpl) UpdateMealPlan(ctx context.Context, request *mealplanning.UpdateMealPlanRequest) (*mealplanning.UpdateMealPlanResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -299,7 +308,7 @@ func (s *ServiceImpl) SearchForMeals(ctx context.Context, request *messages.Sear
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) UpdateMealPlan(ctx context.Context, request *messages.UpdateMealPlanRequest) (*messages.UpdateMealPlanResponse, error) {
+func (s *ServiceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplanning.UpdateMealPlanEventRequest) (*mealplanning.UpdateMealPlanEventResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -308,7 +317,7 @@ func (s *ServiceImpl) UpdateMealPlan(ctx context.Context, request *messages.Upda
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) UpdateMealPlanEvent(ctx context.Context, request *messages.UpdateMealPlanEventRequest) (*messages.UpdateMealPlanEventResponse, error) {
+func (s *ServiceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request *mealplanning.UpdateMealPlanGroceryListItemRequest) (*mealplanning.UpdateMealPlanGroceryListItemResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -317,7 +326,7 @@ func (s *ServiceImpl) UpdateMealPlanEvent(ctx context.Context, request *messages
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request *messages.UpdateMealPlanGroceryListItemRequest) (*messages.UpdateMealPlanGroceryListItemResponse, error) {
+func (s *ServiceImpl) UpdateMealPlanOption(ctx context.Context, request *mealplanning.UpdateMealPlanOptionRequest) (*mealplanning.UpdateMealPlanOptionResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -326,7 +335,7 @@ func (s *ServiceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) UpdateMealPlanOption(ctx context.Context, request *messages.UpdateMealPlanOptionRequest) (*messages.UpdateMealPlanOptionResponse, error) {
+func (s *ServiceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mealplanning.UpdateMealPlanOptionVoteRequest) (*mealplanning.UpdateMealPlanOptionVoteResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -335,16 +344,7 @@ func (s *ServiceImpl) UpdateMealPlanOption(ctx context.Context, request *message
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-func (s *ServiceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *messages.UpdateMealPlanOptionVoteRequest) (*messages.UpdateMealPlanOptionVoteResponse, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithSpan(span)
-
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
-}
-
-func (s *ServiceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *messages.UpdateMealPlanTaskStatusRequest) (*messages.UpdateMealPlanTaskStatusResponse, error) {
+func (s *ServiceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mealplanning.UpdateMealPlanTaskStatusRequest) (*mealplanning.UpdateMealPlanTaskStatusResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

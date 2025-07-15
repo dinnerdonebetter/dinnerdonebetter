@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package dataprivacy;
+
+import "audit.proto";
+import "common.proto";
+import "configuration.proto";
+import "identity.proto";
+import "mealplanning.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy";
+
+// this is functionality that needs to be implemented, but I'm punting on for now
+
+service DataPrivacyService {
+  rpc AggregateUserDataReport(AggregateUserDataReportRequest) returns (AggregateUserDataReportResponse);
+  rpc DestroyAllUserData(DestroyAllUserDataRequest) returns (DestroyAllUserDataResponse);
+  rpc FetchUserDataReport(FetchUserDataReportRequest) returns (FetchUserDataReportResponse);
+}
+
+// BEGIN requests and responses
+
+// AggregateUserDataReport
+message AggregateUserDataReportRequest {}
+
+message AggregateUserDataReportResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  string ReportID = 2;
+}
+
+// DestroyAllUserData
+message DestroyAllUserDataRequest {}
+
+message DestroyAllUserDataResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  bool Successful = 2;
+}
+
+// FetchUserDataReport
+message FetchUserDataReportRequest {
+  string UserDataAggregationReportID = 1;
+}
+
+message FetchUserDataReportResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  UserDataCollection UserDataCollection = 2;
+}
+
+// END requests and responses
+
+message UserDataCollection {
+  string ReportID = 1;
+  identity.DataCollection IdentityDataCollection = 2;
+  audit.DataCollection AuditDataCollection = 3;
+  configuration.DataCollection ConfigurationDataCollection = 4;
+  mealplanning.DataCollection MealPlanningDataCollection = 5;
+}

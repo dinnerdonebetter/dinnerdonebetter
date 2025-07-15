@@ -20,7 +20,7 @@ var (
 	ErrNilIndexRequest = errors.New("nil index request")
 )
 
-type EatingDataIndexer struct {
+type MealPlanningDataIndexer struct {
 	logger                          logging.Logger
 	tracer                          tracing.Tracer
 	mealPlanningRepo                mealplanning.Repository
@@ -34,7 +34,7 @@ type EatingDataIndexer struct {
 	validVesselSearchIndex          ValidVesselTextSearcher
 }
 
-func NewEatingDataIndexer(
+func NewMealPlanningDataIndexer(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	mealPlanningRepo mealplanning.Repository,
@@ -46,8 +46,8 @@ func NewEatingDataIndexer(
 	validPreparationSearchIndex ValidPreparationTextSearcher,
 	validIngredientStateSearchIndex ValidIngredientStateTextSearcher,
 	validVesselSearchIndex ValidVesselTextSearcher,
-) *EatingDataIndexer {
-	return &EatingDataIndexer{
+) *MealPlanningDataIndexer {
+	return &MealPlanningDataIndexer{
 		logger:                          logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		mealPlanningRepo:                mealPlanningRepo,
@@ -62,7 +62,7 @@ func NewEatingDataIndexer(
 	}
 }
 
-func (i *EatingDataIndexer) Index(indexType string) (textsearch.IndexManager, error) {
+func (i *MealPlanningDataIndexer) Index(indexType string) (textsearch.IndexManager, error) {
 	switch indexType {
 	case IndexTypeRecipes:
 		return i.recipeSearchIndex, nil
@@ -85,7 +85,7 @@ func (i *EatingDataIndexer) Index(indexType string) (textsearch.IndexManager, er
 	}
 }
 
-func (i *EatingDataIndexer) HandleIndexRequest(
+func (i *MealPlanningDataIndexer) HandleIndexRequest(
 	ctx context.Context,
 	indexReq *textsearch.IndexRequest,
 ) error {

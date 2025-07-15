@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
+	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 
 	"github.com/hashicorp/go-multierror"
 )
@@ -16,7 +16,7 @@ type (
 
 		//AuditLogEntries              auditlogentries.Config              `envPrefix:"AUDIT_LOG_ENTRIES_"              json:"auditLogEntries,omitempty"`
 		//ServiceSettingConfigurations servicesettingconfigurations.Config `envPrefix:"SERVICE_SETTING_CONFIGURATIONS_" json:"serviceSettingConfigurations,omitempty"`
-		//UserNotifications            usernotifications.Config            `envPrefix:"USER_NOTIFICATIONS_"             json:"userNotifications,omitempty"`
+		//UserNotifications            notifications.Config            `envPrefix:"USER_NOTIFICATIONS_"             json:"userNotifications,omitempty"`
 		//Accounts                     accounts.Config                     `envPrefix:"HOUSEHOLDS_"                     json:"accounts,omitempty"`
 		//ServiceSettings              servicesettings.Config              `envPrefix:"SERVICE_SETTINGS_"               json:"serviceSettings,omitempty"`
 		//Users                        users.Config                        `envPrefix:"USERS_"                          json:"users,omitempty"`

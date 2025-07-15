@@ -1,18 +1,19 @@
-package eatinggrpc
+package grpc
 
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/grpc/messages"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
+	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
+	mpgrpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
 
-func (s *ServiceImpl) ArchiveValidIngredient(ctx context.Context, request *messages.ArchiveValidIngredientRequest) (*messages.ArchiveValidIngredientResponse, error) {
+func (s *ServiceImpl) ArchiveValidIngredient(ctx context.Context, request *mealplanning.ArchiveValidIngredientRequest) (*mealplanning.ArchiveValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -23,12 +24,12 @@ func (s *ServiceImpl) ArchiveValidIngredient(ctx context.Context, request *messa
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient")
 	}
 
-	res := &messages.ArchiveValidIngredientResponse{}
+	res := &mealplanning.ArchiveValidIngredientResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *messages.ArchiveValidIngredientGroupRequest) (*messages.ArchiveValidIngredientGroupResponse, error) {
+func (s *ServiceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *mealplanning.ArchiveValidIngredientGroupRequest) (*mealplanning.ArchiveValidIngredientGroupResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -39,12 +40,12 @@ func (s *ServiceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient group")
 	}
 
-	res := &messages.ArchiveValidIngredientGroupResponse{}
+	res := &mealplanning.ArchiveValidIngredientGroupResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context, request *messages.ArchiveValidIngredientMeasurementUnitRequest) (*messages.ArchiveValidIngredientMeasurementUnitResponse, error) {
+func (s *ServiceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.ArchiveValidIngredientMeasurementUnitRequest) (*mealplanning.ArchiveValidIngredientMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -55,12 +56,12 @@ func (s *ServiceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context,
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient measurement unit")
 	}
 
-	res := &messages.ArchiveValidIngredientMeasurementUnitResponse{}
+	res := &mealplanning.ArchiveValidIngredientMeasurementUnitResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientPreparation(ctx context.Context, request *messages.ArchiveValidIngredientPreparationRequest) (*messages.ArchiveValidIngredientPreparationResponse, error) {
+func (s *ServiceImpl) ArchiveValidIngredientPreparation(ctx context.Context, request *mealplanning.ArchiveValidIngredientPreparationRequest) (*mealplanning.ArchiveValidIngredientPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -71,12 +72,12 @@ func (s *ServiceImpl) ArchiveValidIngredientPreparation(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient preparation")
 	}
 
-	res := &messages.ArchiveValidIngredientPreparationResponse{}
+	res := &mealplanning.ArchiveValidIngredientPreparationResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientState(ctx context.Context, request *messages.ArchiveValidIngredientStateRequest) (*messages.ArchiveValidIngredientStateResponse, error) {
+func (s *ServiceImpl) ArchiveValidIngredientState(ctx context.Context, request *mealplanning.ArchiveValidIngredientStateRequest) (*mealplanning.ArchiveValidIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -87,12 +88,12 @@ func (s *ServiceImpl) ArchiveValidIngredientState(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient state")
 	}
 
-	res := &messages.ArchiveValidIngredientStateResponse{}
+	res := &mealplanning.ArchiveValidIngredientStateResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context, request *messages.ArchiveValidIngredientStateIngredientRequest) (*messages.ArchiveValidIngredientStateIngredientResponse, error) {
+func (s *ServiceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context, request *mealplanning.ArchiveValidIngredientStateIngredientRequest) (*mealplanning.ArchiveValidIngredientStateIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -103,12 +104,12 @@ func (s *ServiceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context,
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid ingredient state ingredient")
 	}
 
-	res := &messages.ArchiveValidIngredientStateIngredientResponse{}
+	res := &mealplanning.ArchiveValidIngredientStateIngredientResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidInstrument(ctx context.Context, request *messages.ArchiveValidInstrumentRequest) (*messages.ArchiveValidInstrumentResponse, error) {
+func (s *ServiceImpl) ArchiveValidInstrument(ctx context.Context, request *mealplanning.ArchiveValidInstrumentRequest) (*mealplanning.ArchiveValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -119,12 +120,12 @@ func (s *ServiceImpl) ArchiveValidInstrument(ctx context.Context, request *messa
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid instrument")
 	}
 
-	res := &messages.ArchiveValidInstrumentResponse{}
+	res := &mealplanning.ArchiveValidInstrumentResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *messages.ArchiveValidMeasurementUnitRequest) (*messages.ArchiveValidMeasurementUnitResponse, error) {
+func (s *ServiceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *mealplanning.ArchiveValidMeasurementUnitRequest) (*mealplanning.ArchiveValidMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -135,12 +136,12 @@ func (s *ServiceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid measurement unit")
 	}
 
-	res := &messages.ArchiveValidMeasurementUnitResponse{}
+	res := &mealplanning.ArchiveValidMeasurementUnitResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context, request *messages.ArchiveValidMeasurementUnitConversionRequest) (*messages.ArchiveValidMeasurementUnitConversionResponse, error) {
+func (s *ServiceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.ArchiveValidMeasurementUnitConversionRequest) (*mealplanning.ArchiveValidMeasurementUnitConversionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -151,12 +152,12 @@ func (s *ServiceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context,
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid measurement unit conversion")
 	}
 
-	res := &messages.ArchiveValidMeasurementUnitConversionResponse{}
+	res := &mealplanning.ArchiveValidMeasurementUnitConversionResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidPreparation(ctx context.Context, request *messages.ArchiveValidPreparationRequest) (*messages.ArchiveValidPreparationResponse, error) {
+func (s *ServiceImpl) ArchiveValidPreparation(ctx context.Context, request *mealplanning.ArchiveValidPreparationRequest) (*mealplanning.ArchiveValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -167,12 +168,12 @@ func (s *ServiceImpl) ArchiveValidPreparation(ctx context.Context, request *mess
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation")
 	}
 
-	res := &messages.ArchiveValidPreparationResponse{}
+	res := &mealplanning.ArchiveValidPreparationResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidPreparationInstrument(ctx context.Context, request *messages.ArchiveValidPreparationInstrumentRequest) (*messages.ArchiveValidPreparationInstrumentResponse, error) {
+func (s *ServiceImpl) ArchiveValidPreparationInstrument(ctx context.Context, request *mealplanning.ArchiveValidPreparationInstrumentRequest) (*mealplanning.ArchiveValidPreparationInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -183,12 +184,12 @@ func (s *ServiceImpl) ArchiveValidPreparationInstrument(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation instrument")
 	}
 
-	res := &messages.ArchiveValidPreparationInstrumentResponse{}
+	res := &mealplanning.ArchiveValidPreparationInstrumentResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidPreparationVessel(ctx context.Context, request *messages.ArchiveValidPreparationVesselRequest) (*messages.ArchiveValidPreparationVesselResponse, error) {
+func (s *ServiceImpl) ArchiveValidPreparationVessel(ctx context.Context, request *mealplanning.ArchiveValidPreparationVesselRequest) (*mealplanning.ArchiveValidPreparationVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -199,12 +200,12 @@ func (s *ServiceImpl) ArchiveValidPreparationVessel(ctx context.Context, request
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid preparation vessel")
 	}
 
-	res := &messages.ArchiveValidPreparationVesselResponse{}
+	res := &mealplanning.ArchiveValidPreparationVesselResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidVessel(ctx context.Context, request *messages.ArchiveValidVesselRequest) (*messages.ArchiveValidVesselResponse, error) {
+func (s *ServiceImpl) ArchiveValidVessel(ctx context.Context, request *mealplanning.ArchiveValidVesselRequest) (*mealplanning.ArchiveValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -215,259 +216,259 @@ func (s *ServiceImpl) ArchiveValidVessel(ctx context.Context, request *messages.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving valid vessel")
 	}
 
-	res := &messages.ArchiveValidVesselResponse{}
+	res := &mealplanning.ArchiveValidVesselResponse{}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredient(ctx context.Context, request *messages.CreateValidIngredientRequest) (*messages.CreateValidIngredientResponse, error) {
+func (s *ServiceImpl) CreateValidIngredient(ctx context.Context, request *mealplanning.CreateValidIngredientRequest) (*mealplanning.CreateValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidIngredient(ctx, grpcconverters.ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidIngredient(ctx, mpgrpcconverters.ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient")
 	}
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, created.ID)
 
-	result := &messages.CreateValidIngredientResponse{
-		Result: grpcconverters.ConvertValidIngredientToGRPCValidIngredient(created),
+	result := &mealplanning.CreateValidIngredientResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientToGRPCValidIngredient(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientGroup(ctx context.Context, request *messages.CreateValidIngredientGroupRequest) (*messages.CreateValidIngredientGroupResponse, error) {
+func (s *ServiceImpl) CreateValidIngredientGroup(ctx context.Context, request *mealplanning.CreateValidIngredientGroupRequest) (*mealplanning.CreateValidIngredientGroupResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidIngredientGroup(ctx, grpcconverters.ConvertGRPCCreateValidIngredientGroupRequestToValidIngredientGroupCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidIngredientGroup(ctx, mpgrpcconverters.ConvertGRPCCreateValidIngredientGroupRequestToValidIngredientGroupCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient")
 	}
 	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, created.ID)
 
-	result := &messages.CreateValidIngredientGroupResponse{
-		Result: grpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(created),
+	result := &mealplanning.CreateValidIngredientGroupResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientMeasurementUnit(ctx context.Context, request *messages.CreateValidIngredientMeasurementUnitRequest) (*messages.CreateValidIngredientMeasurementUnitResponse, error) {
+func (s *ServiceImpl) CreateValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.CreateValidIngredientMeasurementUnitRequest) (*mealplanning.CreateValidIngredientMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidIngredientMeasurementUnit(ctx, grpcconverters.ConvertGRPCCreateValidIngredientMeasurementUnitRequestToValidIngredientMeasurementUnitCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidIngredientMeasurementUnit(ctx, mpgrpcconverters.ConvertGRPCCreateValidIngredientMeasurementUnitRequestToValidIngredientMeasurementUnitCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient measurement unit")
 	}
 	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, created.ID)
 
-	result := &messages.CreateValidIngredientMeasurementUnitResponse{
-		Result: grpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(created),
+	result := &mealplanning.CreateValidIngredientMeasurementUnitResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientPreparation(ctx context.Context, request *messages.CreateValidIngredientPreparationRequest) (*messages.CreateValidIngredientPreparationResponse, error) {
+func (s *ServiceImpl) CreateValidIngredientPreparation(ctx context.Context, request *mealplanning.CreateValidIngredientPreparationRequest) (*mealplanning.CreateValidIngredientPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidIngredientPreparation(ctx, grpcconverters.ConvertGRPCCreateValidIngredientPreparationRequestToValidIngredientPreparationCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidIngredientPreparation(ctx, mpgrpcconverters.ConvertGRPCCreateValidIngredientPreparationRequestToValidIngredientPreparationCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient preparation")
 	}
 	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, created.ID)
 
-	result := &messages.CreateValidIngredientPreparationResponse{
-		Result: grpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(created),
+	result := &mealplanning.CreateValidIngredientPreparationResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientState(ctx context.Context, request *messages.CreateValidIngredientStateRequest) (*messages.CreateValidIngredientStateResponse, error) {
+func (s *ServiceImpl) CreateValidIngredientState(ctx context.Context, request *mealplanning.CreateValidIngredientStateRequest) (*mealplanning.CreateValidIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidIngredientState(ctx, grpcconverters.ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidIngredientState(ctx, mpgrpcconverters.ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient state")
 	}
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, created.ID)
 
-	result := &messages.CreateValidIngredientStateResponse{
-		Result: grpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(created),
+	result := &mealplanning.CreateValidIngredientStateResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientStateIngredient(ctx context.Context, request *messages.CreateValidIngredientStateIngredientRequest) (*messages.CreateValidIngredientStateIngredientResponse, error) {
+func (s *ServiceImpl) CreateValidIngredientStateIngredient(ctx context.Context, request *mealplanning.CreateValidIngredientStateIngredientRequest) (*mealplanning.CreateValidIngredientStateIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidIngredientStateIngredient(ctx, grpcconverters.ConvertGRPCCreateValidIngredientStateIngredientRequestToValidIngredientStateIngredientCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidIngredientStateIngredient(ctx, mpgrpcconverters.ConvertGRPCCreateValidIngredientStateIngredientRequestToValidIngredientStateIngredientCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient state ingredient")
 	}
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, created.ID)
 
-	result := &messages.CreateValidIngredientStateIngredientResponse{
-		Result: grpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(created),
+	result := &mealplanning.CreateValidIngredientStateIngredientResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidInstrument(ctx context.Context, request *messages.CreateValidInstrumentRequest) (*messages.CreateValidInstrumentResponse, error) {
+func (s *ServiceImpl) CreateValidInstrument(ctx context.Context, request *mealplanning.CreateValidInstrumentRequest) (*mealplanning.CreateValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidInstrument(ctx, grpcconverters.ConvertGRPCCreateValidInstrumentRequestToValidInstrumentCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidInstrument(ctx, mpgrpcconverters.ConvertGRPCCreateValidInstrumentRequestToValidInstrumentCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid instrument")
 	}
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, created.ID)
 
-	result := &messages.CreateValidInstrumentResponse{
-		Result: grpcconverters.ConvertValidInstrumentToGRPCValidInstrument(created),
+	result := &mealplanning.CreateValidInstrumentResponse{
+		Result: mpgrpcconverters.ConvertValidInstrumentToGRPCValidInstrument(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidMeasurementUnit(ctx context.Context, request *messages.CreateValidMeasurementUnitRequest) (*messages.CreateValidMeasurementUnitResponse, error) {
+func (s *ServiceImpl) CreateValidMeasurementUnit(ctx context.Context, request *mealplanning.CreateValidMeasurementUnitRequest) (*mealplanning.CreateValidMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidMeasurementUnit(ctx, grpcconverters.ConvertGRPCCreateValidMeasurementUnitRequestToValidMeasurementUnitCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidMeasurementUnit(ctx, mpgrpcconverters.ConvertGRPCCreateValidMeasurementUnitRequestToValidMeasurementUnitCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid measurement unit")
 	}
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, created.ID)
 
-	result := &messages.CreateValidMeasurementUnitResponse{
-		Result: grpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(created),
+	result := &mealplanning.CreateValidMeasurementUnitResponse{
+		Result: mpgrpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidMeasurementUnitConversion(ctx context.Context, request *messages.CreateValidMeasurementUnitConversionRequest) (*messages.CreateValidMeasurementUnitConversionResponse, error) {
+func (s *ServiceImpl) CreateValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.CreateValidMeasurementUnitConversionRequest) (*mealplanning.CreateValidMeasurementUnitConversionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidMeasurementUnitConversion(ctx, grpcconverters.ConvertGRPCCreateValidMeasurementUnitConversionRequestToValidMeasurementUnitConversionCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidMeasurementUnitConversion(ctx, mpgrpcconverters.ConvertGRPCCreateValidMeasurementUnitConversionRequestToValidMeasurementUnitConversionCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid measurement unit conversion")
 	}
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, created.ID)
 
-	result := &messages.CreateValidMeasurementUnitConversionResponse{
-		Result: grpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(created),
+	result := &mealplanning.CreateValidMeasurementUnitConversionResponse{
+		Result: mpgrpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidPreparation(ctx context.Context, request *messages.CreateValidPreparationRequest) (*messages.CreateValidPreparationResponse, error) {
+func (s *ServiceImpl) CreateValidPreparation(ctx context.Context, request *mealplanning.CreateValidPreparationRequest) (*mealplanning.CreateValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidPreparation(ctx, grpcconverters.ConvertGRPCCreateValidPreparationRequestToValidPreparationCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidPreparation(ctx, mpgrpcconverters.ConvertGRPCCreateValidPreparationRequestToValidPreparationCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid preparation")
 	}
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, created.ID)
 
-	result := &messages.CreateValidPreparationResponse{
-		Result: grpcconverters.ConvertValidPreparationToGRPCValidPreparation(created),
+	result := &mealplanning.CreateValidPreparationResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationToGRPCValidPreparation(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidPreparationInstrument(ctx context.Context, request *messages.CreateValidPreparationInstrumentRequest) (*messages.CreateValidPreparationInstrumentResponse, error) {
+func (s *ServiceImpl) CreateValidPreparationInstrument(ctx context.Context, request *mealplanning.CreateValidPreparationInstrumentRequest) (*mealplanning.CreateValidPreparationInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidPreparationInstrument(ctx, grpcconverters.ConvertGRPCCreateValidPreparationInstrumentRequestToValidPreparationInstrumentCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidPreparationInstrument(ctx, mpgrpcconverters.ConvertGRPCCreateValidPreparationInstrumentRequestToValidPreparationInstrumentCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid preparation instrument")
 	}
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, created.ID)
 
-	result := &messages.CreateValidPreparationInstrumentResponse{
-		Result: grpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(created),
+	result := &mealplanning.CreateValidPreparationInstrumentResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidPreparationVessel(ctx context.Context, request *messages.CreateValidPreparationVesselRequest) (*messages.CreateValidPreparationVesselResponse, error) {
+func (s *ServiceImpl) CreateValidPreparationVessel(ctx context.Context, request *mealplanning.CreateValidPreparationVesselRequest) (*mealplanning.CreateValidPreparationVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidPreparationVessel(ctx, grpcconverters.ConvertGRPCCreateValidPreparationVesselRequestToValidPreparationVesselCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidPreparationVessel(ctx, mpgrpcconverters.ConvertGRPCCreateValidPreparationVesselRequestToValidPreparationVesselCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid preparation vessel")
 	}
 	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, created.ID)
 
-	result := &messages.CreateValidPreparationVesselResponse{
-		Result: grpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(created),
+	result := &mealplanning.CreateValidPreparationVesselResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidVessel(ctx context.Context, request *messages.CreateValidVesselRequest) (*messages.CreateValidVesselResponse, error) {
+func (s *ServiceImpl) CreateValidVessel(ctx context.Context, request *mealplanning.CreateValidVesselRequest) (*mealplanning.CreateValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidVessel(ctx, grpcconverters.ConvertGRPCCreateValidVesselRequestToValidVesselCreationRequestInput(request))
+	created, err := s.validEnumerationsManager.CreateValidVessel(ctx, mpgrpcconverters.ConvertGRPCCreateValidVesselRequestToValidVesselCreationRequestInput(request))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid vessel")
 	}
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, created.ID)
 
-	result := &messages.CreateValidVesselResponse{
-		Result: grpcconverters.ConvertValidVesselToGRPCValidVessel(created),
+	result := &mealplanning.CreateValidVesselResponse{
+		Result: mpgrpcconverters.ConvertValidVesselToGRPCValidVessel(created),
 	}
 
 	return result, nil
 }
 
-func (s *ServiceImpl) GetRandomValidIngredient(ctx context.Context, _ *messages.GetRandomValidIngredientRequest) (*messages.GetRandomValidIngredientResponse, error) {
+func (s *ServiceImpl) GetRandomValidIngredient(ctx context.Context, _ *mealplanning.GetRandomValidIngredientRequest) (*mealplanning.GetRandomValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -479,14 +480,14 @@ func (s *ServiceImpl) GetRandomValidIngredient(ctx context.Context, _ *messages.
 	}
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, selected.ID)
 
-	res := &messages.GetRandomValidIngredientResponse{
-		Result: grpcconverters.ConvertValidIngredientToGRPCValidIngredient(selected),
+	res := &mealplanning.GetRandomValidIngredientResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientToGRPCValidIngredient(selected),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetRandomValidInstrument(ctx context.Context, _ *messages.GetRandomValidInstrumentRequest) (*messages.GetRandomValidInstrumentResponse, error) {
+func (s *ServiceImpl) GetRandomValidInstrument(ctx context.Context, _ *mealplanning.GetRandomValidInstrumentRequest) (*mealplanning.GetRandomValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -498,14 +499,14 @@ func (s *ServiceImpl) GetRandomValidInstrument(ctx context.Context, _ *messages.
 	}
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, selected.ID)
 
-	res := &messages.GetRandomValidInstrumentResponse{
-		Result: grpcconverters.ConvertValidInstrumentToGRPCValidInstrument(selected),
+	res := &mealplanning.GetRandomValidInstrumentResponse{
+		Result: mpgrpcconverters.ConvertValidInstrumentToGRPCValidInstrument(selected),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetRandomValidPreparation(ctx context.Context, _ *messages.GetRandomValidPreparationRequest) (*messages.GetRandomValidPreparationResponse, error) {
+func (s *ServiceImpl) GetRandomValidPreparation(ctx context.Context, _ *mealplanning.GetRandomValidPreparationRequest) (*mealplanning.GetRandomValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -517,14 +518,14 @@ func (s *ServiceImpl) GetRandomValidPreparation(ctx context.Context, _ *messages
 	}
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, selected.ID)
 
-	res := &messages.GetRandomValidPreparationResponse{
-		Result: grpcconverters.ConvertValidPreparationToGRPCValidPreparation(selected),
+	res := &mealplanning.GetRandomValidPreparationResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationToGRPCValidPreparation(selected),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetRandomValidVessel(ctx context.Context, _ *messages.GetRandomValidVesselRequest) (*messages.GetRandomValidVesselResponse, error) {
+func (s *ServiceImpl) GetRandomValidVessel(ctx context.Context, _ *mealplanning.GetRandomValidVesselRequest) (*mealplanning.GetRandomValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -536,14 +537,14 @@ func (s *ServiceImpl) GetRandomValidVessel(ctx context.Context, _ *messages.GetR
 	}
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, selected.ID)
 
-	res := &messages.GetRandomValidVesselResponse{
-		Result: grpcconverters.ConvertValidVesselToGRPCValidVessel(selected),
+	res := &mealplanning.GetRandomValidVesselResponse{
+		Result: mpgrpcconverters.ConvertValidVesselToGRPCValidVessel(selected),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredient(ctx context.Context, request *messages.GetValidIngredientRequest) (*messages.GetValidIngredientResponse, error) {
+func (s *ServiceImpl) GetValidIngredient(ctx context.Context, request *mealplanning.GetValidIngredientRequest) (*mealplanning.GetValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -555,14 +556,14 @@ func (s *ServiceImpl) GetValidIngredient(ctx context.Context, request *messages.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient")
 	}
 
-	res := &messages.GetValidIngredientResponse{
-		Result: grpcconverters.ConvertValidIngredientToGRPCValidIngredient(x),
+	res := &mealplanning.GetValidIngredientResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientToGRPCValidIngredient(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientGroup(ctx context.Context, request *messages.GetValidIngredientGroupRequest) (*messages.GetValidIngredientGroupResponse, error) {
+func (s *ServiceImpl) GetValidIngredientGroup(ctx context.Context, request *mealplanning.GetValidIngredientGroupRequest) (*mealplanning.GetValidIngredientGroupResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -574,14 +575,14 @@ func (s *ServiceImpl) GetValidIngredientGroup(ctx context.Context, request *mess
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient group")
 	}
 
-	res := &messages.GetValidIngredientGroupResponse{
-		Result: grpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(x),
+	res := &mealplanning.GetValidIngredientGroupResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientGroups(ctx context.Context, request *messages.GetValidIngredientGroupsRequest) (*messages.GetValidIngredientGroupsResponse, error) {
+func (s *ServiceImpl) GetValidIngredientGroups(ctx context.Context, request *mealplanning.GetValidIngredientGroupsRequest) (*mealplanning.GetValidIngredientGroupsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -594,17 +595,17 @@ func (s *ServiceImpl) GetValidIngredientGroups(ctx context.Context, request *mes
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient groups")
 	}
 
-	res := &messages.GetValidIngredientGroupsResponse{
+	res := &mealplanning.GetValidIngredientGroupsResponse{
 		Filter: request.Filter,
 	}
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientMeasurementUnit(ctx context.Context, request *messages.GetValidIngredientMeasurementUnitRequest) (*messages.GetValidIngredientMeasurementUnitResponse, error) {
+func (s *ServiceImpl) GetValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitRequest) (*mealplanning.GetValidIngredientMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -616,14 +617,14 @@ func (s *ServiceImpl) GetValidIngredientMeasurementUnit(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient measurement unit")
 	}
 
-	res := &messages.GetValidIngredientMeasurementUnitResponse{
-		Result: grpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(x),
+	res := &mealplanning.GetValidIngredientMeasurementUnitResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, request *messages.GetValidIngredientMeasurementUnitsRequest) (*messages.GetValidIngredientMeasurementUnitsResponse, error) {
+func (s *ServiceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitsRequest) (*mealplanning.GetValidIngredientMeasurementUnitsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -636,17 +637,17 @@ func (s *ServiceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, re
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient measurement units")
 	}
 
-	res := &messages.GetValidIngredientMeasurementUnitsResponse{
+	res := &mealplanning.GetValidIngredientMeasurementUnitsResponse{
 		Filter: request.Filter,
 	}
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByIngredient(ctx context.Context, request *messages.GetValidIngredientMeasurementUnitsByIngredientRequest) (*messages.GetValidIngredientMeasurementUnitsByIngredientResponse, error) {
+func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByIngredient(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitsByIngredientRequest) (*mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -660,18 +661,18 @@ func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByIngredient(ctx context
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient measurement units by ingredient")
 	}
 
-	res := &messages.GetValidIngredientMeasurementUnitsByIngredientResponse{
+	res := &mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, request *messages.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) (*messages.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse, error) {
+func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) (*mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -684,18 +685,18 @@ func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx co
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient measurement units by measurement unit")
 	}
 
-	res := &messages.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse{
+	res := &mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientPreparation(ctx context.Context, request *messages.GetValidIngredientPreparationRequest) (*messages.GetValidIngredientPreparationResponse, error) {
+func (s *ServiceImpl) GetValidIngredientPreparation(ctx context.Context, request *mealplanning.GetValidIngredientPreparationRequest) (*mealplanning.GetValidIngredientPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -707,14 +708,14 @@ func (s *ServiceImpl) GetValidIngredientPreparation(ctx context.Context, request
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient preparation")
 	}
 
-	res := &messages.GetValidIngredientPreparationResponse{
-		Result: grpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(x),
+	res := &mealplanning.GetValidIngredientPreparationResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientPreparations(ctx context.Context, request *messages.GetValidIngredientPreparationsRequest) (*messages.GetValidIngredientPreparationsResponse, error) {
+func (s *ServiceImpl) GetValidIngredientPreparations(ctx context.Context, request *mealplanning.GetValidIngredientPreparationsRequest) (*mealplanning.GetValidIngredientPreparationsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -727,18 +728,18 @@ func (s *ServiceImpl) GetValidIngredientPreparations(ctx context.Context, reques
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient preparations")
 	}
 
-	res := &messages.GetValidIngredientPreparationsResponse{
+	res := &mealplanning.GetValidIngredientPreparationsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientPreparationsByIngredient(ctx context.Context, request *messages.GetValidIngredientPreparationsByIngredientRequest) (*messages.GetValidIngredientPreparationsByIngredientResponse, error) {
+func (s *ServiceImpl) GetValidIngredientPreparationsByIngredient(ctx context.Context, request *mealplanning.GetValidIngredientPreparationsByIngredientRequest) (*mealplanning.GetValidIngredientPreparationsByIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -752,18 +753,18 @@ func (s *ServiceImpl) GetValidIngredientPreparationsByIngredient(ctx context.Con
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient preparations by ingredient")
 	}
 
-	res := &messages.GetValidIngredientPreparationsByIngredientResponse{
+	res := &mealplanning.GetValidIngredientPreparationsByIngredientResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Context, request *messages.GetValidIngredientPreparationsByPreparationRequest) (*messages.GetValidIngredientPreparationsByPreparationResponse, error) {
+func (s *ServiceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Context, request *mealplanning.GetValidIngredientPreparationsByPreparationRequest) (*mealplanning.GetValidIngredientPreparationsByPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -777,18 +778,18 @@ func (s *ServiceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Co
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient preparations by preparation")
 	}
 
-	res := &messages.GetValidIngredientPreparationsByPreparationResponse{
+	res := &mealplanning.GetValidIngredientPreparationsByPreparationResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientState(ctx context.Context, request *messages.GetValidIngredientStateRequest) (*messages.GetValidIngredientStateResponse, error) {
+func (s *ServiceImpl) GetValidIngredientState(ctx context.Context, request *mealplanning.GetValidIngredientStateRequest) (*mealplanning.GetValidIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -800,14 +801,14 @@ func (s *ServiceImpl) GetValidIngredientState(ctx context.Context, request *mess
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient state")
 	}
 
-	res := &messages.GetValidIngredientStateResponse{
-		Result: grpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(x),
+	res := &mealplanning.GetValidIngredientStateResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStateIngredient(ctx context.Context, request *messages.GetValidIngredientStateIngredientRequest) (*messages.GetValidIngredientStateIngredientResponse, error) {
+func (s *ServiceImpl) GetValidIngredientStateIngredient(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientRequest) (*mealplanning.GetValidIngredientStateIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -819,14 +820,14 @@ func (s *ServiceImpl) GetValidIngredientStateIngredient(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient state ingredient")
 	}
 
-	res := &messages.GetValidIngredientStateIngredientResponse{
-		Result: grpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(x),
+	res := &mealplanning.GetValidIngredientStateIngredientResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStateIngredients(ctx context.Context, request *messages.GetValidIngredientStateIngredientsRequest) (*messages.GetValidIngredientStateIngredientsResponse, error) {
+func (s *ServiceImpl) GetValidIngredientStateIngredients(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientsRequest) (*mealplanning.GetValidIngredientStateIngredientsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -839,18 +840,18 @@ func (s *ServiceImpl) GetValidIngredientStateIngredients(ctx context.Context, re
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient state ingredients")
 	}
 
-	res := &messages.GetValidIngredientStateIngredientsResponse{
+	res := &mealplanning.GetValidIngredientStateIngredientsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredient(ctx context.Context, request *messages.GetValidIngredientStateIngredientsByIngredientRequest) (*messages.GetValidIngredientStateIngredientsByIngredientResponse, error) {
+func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredient(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientsByIngredientRequest) (*mealplanning.GetValidIngredientStateIngredientsByIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -864,18 +865,18 @@ func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredient(ctx context
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient state ingredients by ingredient")
 	}
 
-	res := &messages.GetValidIngredientStateIngredientsByIngredientResponse{
+	res := &mealplanning.GetValidIngredientStateIngredientsByIngredientResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredientState(ctx context.Context, request *messages.GetValidIngredientStateIngredientsByIngredientStateRequest) (*messages.GetValidIngredientStateIngredientsByIngredientStateResponse, error) {
+func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredientState(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientsByIngredientStateRequest) (*mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -889,18 +890,18 @@ func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredientState(ctx co
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient state ingredients by ingredient state")
 	}
 
-	res := &messages.GetValidIngredientStateIngredientsByIngredientStateResponse{
+	res := &mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStates(ctx context.Context, request *messages.GetValidIngredientStatesRequest) (*messages.GetValidIngredientStatesResponse, error) {
+func (s *ServiceImpl) GetValidIngredientStates(ctx context.Context, request *mealplanning.GetValidIngredientStatesRequest) (*mealplanning.GetValidIngredientStatesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -913,18 +914,18 @@ func (s *ServiceImpl) GetValidIngredientStates(ctx context.Context, request *mes
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredient states")
 	}
 
-	res := &messages.GetValidIngredientStatesResponse{
+	res := &mealplanning.GetValidIngredientStatesResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredients(ctx context.Context, request *messages.GetValidIngredientsRequest) (*messages.GetValidIngredientsResponse, error) {
+func (s *ServiceImpl) GetValidIngredients(ctx context.Context, request *mealplanning.GetValidIngredientsRequest) (*mealplanning.GetValidIngredientsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -937,18 +938,18 @@ func (s *ServiceImpl) GetValidIngredients(ctx context.Context, request *messages
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid ingredients")
 	}
 
-	res := &messages.GetValidIngredientsResponse{
+	res := &mealplanning.GetValidIngredientsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientToGRPCValidIngredient(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientToGRPCValidIngredient(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidInstrument(ctx context.Context, request *messages.GetValidInstrumentRequest) (*messages.GetValidInstrumentResponse, error) {
+func (s *ServiceImpl) GetValidInstrument(ctx context.Context, request *mealplanning.GetValidInstrumentRequest) (*mealplanning.GetValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -960,14 +961,14 @@ func (s *ServiceImpl) GetValidInstrument(ctx context.Context, request *messages.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid instrument")
 	}
 
-	res := &messages.GetValidInstrumentResponse{
-		Result: grpcconverters.ConvertValidInstrumentToGRPCValidInstrument(x),
+	res := &mealplanning.GetValidInstrumentResponse{
+		Result: mpgrpcconverters.ConvertValidInstrumentToGRPCValidInstrument(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidInstruments(ctx context.Context, request *messages.GetValidInstrumentsRequest) (*messages.GetValidInstrumentsResponse, error) {
+func (s *ServiceImpl) GetValidInstruments(ctx context.Context, request *mealplanning.GetValidInstrumentsRequest) (*mealplanning.GetValidInstrumentsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -980,18 +981,18 @@ func (s *ServiceImpl) GetValidInstruments(ctx context.Context, request *messages
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid instruments")
 	}
 
-	res := &messages.GetValidInstrumentsResponse{
+	res := &mealplanning.GetValidInstrumentsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidInstrumentToGRPCValidInstrument(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidInstrumentToGRPCValidInstrument(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnit(ctx context.Context, request *messages.GetValidMeasurementUnitRequest) (*messages.GetValidMeasurementUnitResponse, error) {
+func (s *ServiceImpl) GetValidMeasurementUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitRequest) (*mealplanning.GetValidMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1003,14 +1004,14 @@ func (s *ServiceImpl) GetValidMeasurementUnit(ctx context.Context, request *mess
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement unit")
 	}
 
-	res := &messages.GetValidMeasurementUnitResponse{
-		Result: grpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(x),
+	res := &mealplanning.GetValidMeasurementUnitResponse{
+		Result: mpgrpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnitConversion(ctx context.Context, request *messages.GetValidMeasurementUnitConversionRequest) (*messages.GetValidMeasurementUnitConversionResponse, error) {
+func (s *ServiceImpl) GetValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionRequest) (*mealplanning.GetValidMeasurementUnitConversionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1022,14 +1023,14 @@ func (s *ServiceImpl) GetValidMeasurementUnitConversion(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement unit conversion")
 	}
 
-	res := &messages.GetValidMeasurementUnitConversionResponse{
-		Result: grpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(x),
+	res := &mealplanning.GetValidMeasurementUnitConversionResponse{
+		Result: mpgrpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, request *messages.GetValidMeasurementUnitConversionsFromUnitRequest) (*messages.GetValidMeasurementUnitConversionsFromUnitResponse, error) {
+func (s *ServiceImpl) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsFromUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsFromUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1041,16 +1042,16 @@ func (s *ServiceImpl) GetValidMeasurementUnitConversionsFromUnit(ctx context.Con
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement unit conversions from unit")
 	}
 
-	res := &messages.GetValidMeasurementUnitConversionsFromUnitResponse{}
+	res := &mealplanning.GetValidMeasurementUnitConversionsFromUnitResponse{}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, request *messages.GetValidMeasurementUnitConversionsToUnitRequest) (*messages.GetValidMeasurementUnitConversionsToUnitResponse, error) {
+func (s *ServiceImpl) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsToUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsToUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1062,15 +1063,15 @@ func (s *ServiceImpl) GetValidMeasurementUnitConversionsToUnit(ctx context.Conte
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement unit conversions to unit")
 	}
 
-	res := &messages.GetValidMeasurementUnitConversionsToUnitResponse{}
+	res := &mealplanning.GetValidMeasurementUnitConversionsToUnitResponse{}
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnits(ctx context.Context, request *messages.GetValidMeasurementUnitsRequest) (*messages.GetValidMeasurementUnitsResponse, error) {
+func (s *ServiceImpl) GetValidMeasurementUnits(ctx context.Context, request *mealplanning.GetValidMeasurementUnitsRequest) (*mealplanning.GetValidMeasurementUnitsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1083,18 +1084,18 @@ func (s *ServiceImpl) GetValidMeasurementUnits(ctx context.Context, request *mes
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid measurement units")
 	}
 
-	res := &messages.GetValidMeasurementUnitsResponse{
+	res := &mealplanning.GetValidMeasurementUnitsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparation(ctx context.Context, request *messages.GetValidPreparationRequest) (*messages.GetValidPreparationResponse, error) {
+func (s *ServiceImpl) GetValidPreparation(ctx context.Context, request *mealplanning.GetValidPreparationRequest) (*mealplanning.GetValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1106,14 +1107,14 @@ func (s *ServiceImpl) GetValidPreparation(ctx context.Context, request *messages
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation")
 	}
 
-	res := &messages.GetValidPreparationResponse{
-		Result: grpcconverters.ConvertValidPreparationToGRPCValidPreparation(x),
+	res := &mealplanning.GetValidPreparationResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationToGRPCValidPreparation(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationInstrument(ctx context.Context, request *messages.GetValidPreparationInstrumentRequest) (*messages.GetValidPreparationInstrumentResponse, error) {
+func (s *ServiceImpl) GetValidPreparationInstrument(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentRequest) (*mealplanning.GetValidPreparationInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1125,14 +1126,14 @@ func (s *ServiceImpl) GetValidPreparationInstrument(ctx context.Context, request
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation instrument")
 	}
 
-	res := &messages.GetValidPreparationInstrumentResponse{
-		Result: grpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(x),
+	res := &mealplanning.GetValidPreparationInstrumentResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationInstruments(ctx context.Context, request *messages.GetValidPreparationInstrumentsRequest) (*messages.GetValidPreparationInstrumentsResponse, error) {
+func (s *ServiceImpl) GetValidPreparationInstruments(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentsRequest) (*mealplanning.GetValidPreparationInstrumentsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1145,18 +1146,18 @@ func (s *ServiceImpl) GetValidPreparationInstruments(ctx context.Context, reques
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation instruments")
 	}
 
-	res := &messages.GetValidPreparationInstrumentsResponse{
+	res := &mealplanning.GetValidPreparationInstrumentsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationInstrumentsByInstrument(ctx context.Context, request *messages.GetValidPreparationInstrumentsByInstrumentRequest) (*messages.GetValidPreparationInstrumentsByInstrumentResponse, error) {
+func (s *ServiceImpl) GetValidPreparationInstrumentsByInstrument(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentsByInstrumentRequest) (*mealplanning.GetValidPreparationInstrumentsByInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1170,18 +1171,18 @@ func (s *ServiceImpl) GetValidPreparationInstrumentsByInstrument(ctx context.Con
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation instruments by instrument")
 	}
 
-	res := &messages.GetValidPreparationInstrumentsByInstrumentResponse{
+	res := &mealplanning.GetValidPreparationInstrumentsByInstrumentResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Context, request *messages.GetValidPreparationInstrumentsByPreparationRequest) (*messages.GetValidPreparationInstrumentsByPreparationResponse, error) {
+func (s *ServiceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentsByPreparationRequest) (*mealplanning.GetValidPreparationInstrumentsByPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1195,18 +1196,18 @@ func (s *ServiceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Co
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation instruments by preparation")
 	}
 
-	res := &messages.GetValidPreparationInstrumentsByPreparationResponse{
+	res := &mealplanning.GetValidPreparationInstrumentsByPreparationResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationVessel(ctx context.Context, request *messages.GetValidPreparationVesselRequest) (*messages.GetValidPreparationVesselResponse, error) {
+func (s *ServiceImpl) GetValidPreparationVessel(ctx context.Context, request *mealplanning.GetValidPreparationVesselRequest) (*mealplanning.GetValidPreparationVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1218,14 +1219,14 @@ func (s *ServiceImpl) GetValidPreparationVessel(ctx context.Context, request *me
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation vessel")
 	}
 
-	res := &messages.GetValidPreparationVesselResponse{
-		Result: grpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(x),
+	res := &mealplanning.GetValidPreparationVesselResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationVessels(ctx context.Context, request *messages.GetValidPreparationVesselsRequest) (*messages.GetValidPreparationVesselsResponse, error) {
+func (s *ServiceImpl) GetValidPreparationVessels(ctx context.Context, request *mealplanning.GetValidPreparationVesselsRequest) (*mealplanning.GetValidPreparationVesselsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1238,18 +1239,18 @@ func (s *ServiceImpl) GetValidPreparationVessels(ctx context.Context, request *m
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation vessels")
 	}
 
-	res := &messages.GetValidPreparationVesselsResponse{
+	res := &mealplanning.GetValidPreparationVesselsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationVesselsByPreparation(ctx context.Context, request *messages.GetValidPreparationVesselsByPreparationRequest) (*messages.GetValidPreparationVesselsByPreparationResponse, error) {
+func (s *ServiceImpl) GetValidPreparationVesselsByPreparation(ctx context.Context, request *mealplanning.GetValidPreparationVesselsByPreparationRequest) (*mealplanning.GetValidPreparationVesselsByPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1263,18 +1264,18 @@ func (s *ServiceImpl) GetValidPreparationVesselsByPreparation(ctx context.Contex
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation vessels by preparation")
 	}
 
-	res := &messages.GetValidPreparationVesselsByPreparationResponse{
+	res := &mealplanning.GetValidPreparationVesselsByPreparationResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationVesselsByVessel(ctx context.Context, request *messages.GetValidPreparationVesselsByVesselRequest) (*messages.GetValidPreparationVesselsByVesselResponse, error) {
+func (s *ServiceImpl) GetValidPreparationVesselsByVessel(ctx context.Context, request *mealplanning.GetValidPreparationVesselsByVesselRequest) (*mealplanning.GetValidPreparationVesselsByVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1288,18 +1289,18 @@ func (s *ServiceImpl) GetValidPreparationVesselsByVessel(ctx context.Context, re
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparation vessels by vessel")
 	}
 
-	res := &messages.GetValidPreparationVesselsByVesselResponse{
+	res := &mealplanning.GetValidPreparationVesselsByVesselResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparations(ctx context.Context, request *messages.GetValidPreparationsRequest) (*messages.GetValidPreparationsResponse, error) {
+func (s *ServiceImpl) GetValidPreparations(ctx context.Context, request *mealplanning.GetValidPreparationsRequest) (*mealplanning.GetValidPreparationsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1312,18 +1313,18 @@ func (s *ServiceImpl) GetValidPreparations(ctx context.Context, request *message
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid preparations")
 	}
 
-	res := &messages.GetValidPreparationsResponse{
+	res := &mealplanning.GetValidPreparationsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationToGRPCValidPreparation(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidPreparationToGRPCValidPreparation(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidVessel(ctx context.Context, request *messages.GetValidVesselRequest) (*messages.GetValidVesselResponse, error) {
+func (s *ServiceImpl) GetValidVessel(ctx context.Context, request *mealplanning.GetValidVesselRequest) (*mealplanning.GetValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1335,14 +1336,14 @@ func (s *ServiceImpl) GetValidVessel(ctx context.Context, request *messages.GetV
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid vessel")
 	}
 
-	res := &messages.GetValidVesselResponse{
-		Result: grpcconverters.ConvertValidVesselToGRPCValidVessel(x),
+	res := &mealplanning.GetValidVesselResponse{
+		Result: mpgrpcconverters.ConvertValidVesselToGRPCValidVessel(x),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidVessels(ctx context.Context, request *messages.GetValidVesselsRequest) (*messages.GetValidVesselsResponse, error) {
+func (s *ServiceImpl) GetValidVessels(ctx context.Context, request *mealplanning.GetValidVesselsRequest) (*mealplanning.GetValidVesselsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1355,18 +1356,18 @@ func (s *ServiceImpl) GetValidVessels(ctx context.Context, request *messages.Get
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching valid vessels")
 	}
 
-	res := &messages.GetValidVesselsResponse{
+	res := &mealplanning.GetValidVesselsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidVesselToGRPCValidVessel(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidVesselToGRPCValidVessel(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidIngredientGroups(ctx context.Context, request *messages.SearchForValidIngredientGroupsRequest) (*messages.SearchForValidIngredientGroupsResponse, error) {
+func (s *ServiceImpl) SearchForValidIngredientGroups(ctx context.Context, request *mealplanning.SearchForValidIngredientGroupsRequest) (*mealplanning.SearchForValidIngredientGroupsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1379,18 +1380,18 @@ func (s *ServiceImpl) SearchForValidIngredientGroups(ctx context.Context, reques
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid ingredient groups")
 	}
 
-	res := &messages.SearchForValidIngredientGroupsResponse{
+	res := &mealplanning.SearchForValidIngredientGroupsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidIngredientStates(ctx context.Context, request *messages.SearchForValidIngredientStatesRequest) (*messages.SearchForValidIngredientStatesResponse, error) {
+func (s *ServiceImpl) SearchForValidIngredientStates(ctx context.Context, request *mealplanning.SearchForValidIngredientStatesRequest) (*mealplanning.SearchForValidIngredientStatesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1403,18 +1404,18 @@ func (s *ServiceImpl) SearchForValidIngredientStates(ctx context.Context, reques
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid ingredient states")
 	}
 
-	res := &messages.SearchForValidIngredientStatesResponse{
+	res := &mealplanning.SearchForValidIngredientStatesResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidIngredients(ctx context.Context, request *messages.SearchForValidIngredientsRequest) (*messages.SearchForValidIngredientsResponse, error) {
+func (s *ServiceImpl) SearchForValidIngredients(ctx context.Context, request *mealplanning.SearchForValidIngredientsRequest) (*mealplanning.SearchForValidIngredientsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1427,18 +1428,18 @@ func (s *ServiceImpl) SearchForValidIngredients(ctx context.Context, request *me
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid ingredients")
 	}
 
-	res := &messages.SearchForValidIngredientsResponse{
+	res := &mealplanning.SearchForValidIngredientsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientToGRPCValidIngredient(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientToGRPCValidIngredient(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidInstruments(ctx context.Context, request *messages.SearchForValidInstrumentsRequest) (*messages.SearchForValidInstrumentsResponse, error) {
+func (s *ServiceImpl) SearchForValidInstruments(ctx context.Context, request *mealplanning.SearchForValidInstrumentsRequest) (*mealplanning.SearchForValidInstrumentsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1451,18 +1452,18 @@ func (s *ServiceImpl) SearchForValidInstruments(ctx context.Context, request *me
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid instruments")
 	}
 
-	res := &messages.SearchForValidInstrumentsResponse{
+	res := &mealplanning.SearchForValidInstrumentsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidInstrumentToGRPCValidInstrument(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidInstrumentToGRPCValidInstrument(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidMeasurementUnits(ctx context.Context, request *messages.SearchForValidMeasurementUnitsRequest) (*messages.SearchForValidMeasurementUnitsResponse, error) {
+func (s *ServiceImpl) SearchForValidMeasurementUnits(ctx context.Context, request *mealplanning.SearchForValidMeasurementUnitsRequest) (*mealplanning.SearchForValidMeasurementUnitsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1475,18 +1476,18 @@ func (s *ServiceImpl) SearchForValidMeasurementUnits(ctx context.Context, reques
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid measurement units")
 	}
 
-	res := &messages.SearchForValidMeasurementUnitsResponse{
+	res := &mealplanning.SearchForValidMeasurementUnitsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidPreparations(ctx context.Context, request *messages.SearchForValidPreparationsRequest) (*messages.SearchForValidPreparationsResponse, error) {
+func (s *ServiceImpl) SearchForValidPreparations(ctx context.Context, request *mealplanning.SearchForValidPreparationsRequest) (*mealplanning.SearchForValidPreparationsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1499,18 +1500,18 @@ func (s *ServiceImpl) SearchForValidPreparations(ctx context.Context, request *m
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid preparations")
 	}
 
-	res := &messages.SearchForValidPreparationsResponse{
+	res := &mealplanning.SearchForValidPreparationsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidPreparationToGRPCValidPreparation(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidPreparationToGRPCValidPreparation(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidVessels(ctx context.Context, request *messages.SearchForValidVesselsRequest) (*messages.SearchForValidVesselsResponse, error) {
+func (s *ServiceImpl) SearchForValidVessels(ctx context.Context, request *mealplanning.SearchForValidVesselsRequest) (*mealplanning.SearchForValidVesselsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1523,18 +1524,18 @@ func (s *ServiceImpl) SearchForValidVessels(ctx context.Context, request *messag
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid vessels")
 	}
 
-	res := &messages.SearchForValidVesselsResponse{
+	res := &mealplanning.SearchForValidVesselsResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidVesselToGRPCValidVessel(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidVesselToGRPCValidVessel(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchValidIngredientsByPreparation(ctx context.Context, request *messages.SearchValidIngredientsByPreparationRequest) (*messages.SearchValidIngredientsByPreparationResponse, error) {
+func (s *ServiceImpl) SearchValidIngredientsByPreparation(ctx context.Context, request *mealplanning.SearchValidIngredientsByPreparationRequest) (*mealplanning.SearchValidIngredientsByPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1548,18 +1549,18 @@ func (s *ServiceImpl) SearchValidIngredientsByPreparation(ctx context.Context, r
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid ingredients by preparation")
 	}
 
-	res := &messages.SearchValidIngredientsByPreparationResponse{
+	res := &mealplanning.SearchValidIngredientsByPreparationResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidIngredientToGRPCValidIngredient(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidIngredientToGRPCValidIngredient(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Context, request *messages.SearchValidMeasurementUnitsByIngredientRequest) (*messages.SearchValidMeasurementUnitsByIngredientResponse, error) {
+func (s *ServiceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Context, request *mealplanning.SearchValidMeasurementUnitsByIngredientRequest) (*mealplanning.SearchValidMeasurementUnitsByIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1573,284 +1574,284 @@ func (s *ServiceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Contex
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for valid measurement units by ingredient")
 	}
 
-	res := &messages.SearchValidMeasurementUnitsByIngredientResponse{
+	res := &mealplanning.SearchValidMeasurementUnitsByIngredientResponse{
 		Filter: request.Filter,
 	}
 
 	for _, y := range x {
-		res.Results = append(res.Results, grpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
+		res.Results = append(res.Results, mpgrpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(y))
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredient(ctx context.Context, request *messages.UpdateValidIngredientRequest) (*messages.UpdateValidIngredientResponse, error) {
+func (s *ServiceImpl) UpdateValidIngredient(ctx context.Context, request *mealplanning.UpdateValidIngredientRequest) (*mealplanning.UpdateValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientIDKey, request.ValidIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, request.ValidIngredientID)
 
-	input := grpcconverters.ConvertGRPCValidIngredientUpdateRequestInputToValidIngredientUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidIngredientUpdateRequestInputToValidIngredientUpdateRequestInput(request.Input)
 	updated, err := s.validEnumerationsManager.UpdateValidIngredient(ctx, request.ValidIngredientID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient")
 	}
 
-	res := &messages.UpdateValidIngredientResponse{
-		Result: grpcconverters.ConvertValidIngredientToGRPCValidIngredient(updated),
+	res := &mealplanning.UpdateValidIngredientResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientToGRPCValidIngredient(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientGroup(ctx context.Context, request *messages.UpdateValidIngredientGroupRequest) (*messages.UpdateValidIngredientGroupResponse, error) {
+func (s *ServiceImpl) UpdateValidIngredientGroup(ctx context.Context, request *mealplanning.UpdateValidIngredientGroupRequest) (*mealplanning.UpdateValidIngredientGroupResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientGroupIDKey, request.ValidIngredientGroupID)
 	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, request.ValidIngredientGroupID)
 
-	input := grpcconverters.ConvertGRPCValidIngredientGroupUpdateRequestInputToValidIngredientGroupUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidIngredientGroupUpdateRequestInputToValidIngredientGroupUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidIngredientGroup(ctx, request.ValidIngredientGroupID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient group")
 	}
 
-	res := &messages.UpdateValidIngredientGroupResponse{
-		Result: grpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(updated),
+	res := &mealplanning.UpdateValidIngredientGroupResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientGroupToGRPCValidIngredientGroup(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientMeasurementUnit(ctx context.Context, request *messages.UpdateValidIngredientMeasurementUnitRequest) (*messages.UpdateValidIngredientMeasurementUnitResponse, error) {
+func (s *ServiceImpl) UpdateValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.UpdateValidIngredientMeasurementUnitRequest) (*mealplanning.UpdateValidIngredientMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, request.ValidIngredientMeasurementUnitID)
 
-	input := grpcconverters.ConvertGRPCValidIngredientMeasurementUnitUpdateRequestInputToValidIngredientMeasurementUnitUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidIngredientMeasurementUnitUpdateRequestInputToValidIngredientMeasurementUnitUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidIngredientMeasurementUnit(ctx, request.ValidIngredientMeasurementUnitID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient measurement unit")
 	}
 
-	res := &messages.UpdateValidIngredientMeasurementUnitResponse{
-		Result: grpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(updated),
+	res := &mealplanning.UpdateValidIngredientMeasurementUnitResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientPreparation(ctx context.Context, request *messages.UpdateValidIngredientPreparationRequest) (*messages.UpdateValidIngredientPreparationResponse, error) {
+func (s *ServiceImpl) UpdateValidIngredientPreparation(ctx context.Context, request *mealplanning.UpdateValidIngredientPreparationRequest) (*mealplanning.UpdateValidIngredientPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationID)
 	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, request.ValidIngredientPreparationID)
 
-	input := grpcconverters.ConvertGRPCValidIngredientPreparationUpdateRequestInputToValidIngredientPreparationUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidIngredientPreparationUpdateRequestInputToValidIngredientPreparationUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidIngredientPreparation(ctx, request.ValidIngredientPreparationID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient preparation")
 	}
 
-	res := &messages.UpdateValidIngredientPreparationResponse{
-		Result: grpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(updated),
+	res := &mealplanning.UpdateValidIngredientPreparationResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientState(ctx context.Context, request *messages.UpdateValidIngredientStateRequest) (*messages.UpdateValidIngredientStateResponse, error) {
+func (s *ServiceImpl) UpdateValidIngredientState(ctx context.Context, request *mealplanning.UpdateValidIngredientStateRequest) (*mealplanning.UpdateValidIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIDKey, request.ValidIngredientStateID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, request.ValidIngredientStateID)
 
-	input := grpcconverters.ConvertGRPCValidIngredientStateUpdateRequestInputToValidIngredientStateUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidIngredientStateUpdateRequestInputToValidIngredientStateUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidIngredientState(ctx, request.ValidIngredientStateID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient state")
 	}
 
-	res := &messages.UpdateValidIngredientStateResponse{
-		Result: grpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(updated),
+	res := &mealplanning.UpdateValidIngredientStateResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientStateToGRPCValidIngredientState(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientStateIngredient(ctx context.Context, request *messages.UpdateValidIngredientStateIngredientRequest) (*messages.UpdateValidIngredientStateIngredientResponse, error) {
+func (s *ServiceImpl) UpdateValidIngredientStateIngredient(ctx context.Context, request *mealplanning.UpdateValidIngredientStateIngredientRequest) (*mealplanning.UpdateValidIngredientStateIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, request.ValidIngredientStateIngredientID)
 
-	input := grpcconverters.ConvertGRPCValidIngredientStateIngredientUpdateRequestInputToValidIngredientStateIngredientUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidIngredientStateIngredientUpdateRequestInputToValidIngredientStateIngredientUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidIngredientStateIngredient(ctx, request.ValidIngredientStateIngredientID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid ingredient state ingredient")
 	}
 
-	res := &messages.UpdateValidIngredientStateIngredientResponse{
-		Result: grpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(updated),
+	res := &mealplanning.UpdateValidIngredientStateIngredientResponse{
+		Result: mpgrpcconverters.ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidInstrument(ctx context.Context, request *messages.UpdateValidInstrumentRequest) (*messages.UpdateValidInstrumentResponse, error) {
+func (s *ServiceImpl) UpdateValidInstrument(ctx context.Context, request *mealplanning.UpdateValidInstrumentRequest) (*mealplanning.UpdateValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidInstrumentIDKey, request.ValidInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, request.ValidInstrumentID)
 
-	input := grpcconverters.ConvertGRPCValidInstrumentUpdateRequestInputToValidInstrumentUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidInstrumentUpdateRequestInputToValidInstrumentUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidInstrument(ctx, request.ValidInstrumentID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid instrument")
 	}
 
-	res := &messages.UpdateValidInstrumentResponse{
-		Result: grpcconverters.ConvertValidInstrumentToGRPCValidInstrument(updated),
+	res := &mealplanning.UpdateValidInstrumentResponse{
+		Result: mpgrpcconverters.ConvertValidInstrumentToGRPCValidInstrument(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidMeasurementUnit(ctx context.Context, request *messages.UpdateValidMeasurementUnitRequest) (*messages.UpdateValidMeasurementUnitResponse, error) {
+func (s *ServiceImpl) UpdateValidMeasurementUnit(ctx context.Context, request *mealplanning.UpdateValidMeasurementUnitRequest) (*mealplanning.UpdateValidMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, request.ValidMeasurementUnitID)
 
-	input := grpcconverters.ConvertGRPCValidMeasurementUnitUpdateRequestInputToValidMeasurementUnitUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidMeasurementUnitUpdateRequestInputToValidMeasurementUnitUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidMeasurementUnit(ctx, request.ValidMeasurementUnitID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid measurement unit")
 	}
 
-	res := &messages.UpdateValidMeasurementUnitResponse{
-		Result: grpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(updated),
+	res := &mealplanning.UpdateValidMeasurementUnitResponse{
+		Result: mpgrpcconverters.ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidMeasurementUnitConversion(ctx context.Context, request *messages.UpdateValidMeasurementUnitConversionRequest) (*messages.UpdateValidMeasurementUnitConversionResponse, error) {
+func (s *ServiceImpl) UpdateValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.UpdateValidMeasurementUnitConversionRequest) (*mealplanning.UpdateValidMeasurementUnitConversionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, request.ValidMeasurementUnitConversionID)
 
-	input := grpcconverters.ConvertGRPCValidMeasurementUnitConversionUpdateRequestInputToValidMeasurementUnitConversionUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidMeasurementUnitConversionUpdateRequestInputToValidMeasurementUnitConversionUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidMeasurementUnitConversion(ctx, request.ValidMeasurementUnitConversionID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid measurement unit conversion")
 	}
 
-	res := &messages.UpdateValidMeasurementUnitConversionResponse{
-		Result: grpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(updated),
+	res := &mealplanning.UpdateValidMeasurementUnitConversionResponse{
+		Result: mpgrpcconverters.ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidPreparation(ctx context.Context, request *messages.UpdateValidPreparationRequest) (*messages.UpdateValidPreparationResponse, error) {
+func (s *ServiceImpl) UpdateValidPreparation(ctx context.Context, request *mealplanning.UpdateValidPreparationRequest) (*mealplanning.UpdateValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationIDKey, request.ValidPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, request.ValidPreparationID)
 
-	input := grpcconverters.ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidPreparation(ctx, request.ValidPreparationID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid preparation")
 	}
 
-	res := &messages.UpdateValidPreparationResponse{
-		Result: grpcconverters.ConvertValidPreparationToGRPCValidPreparation(updated),
+	res := &mealplanning.UpdateValidPreparationResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationToGRPCValidPreparation(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidPreparationInstrument(ctx context.Context, request *messages.UpdateValidPreparationInstrumentRequest) (*messages.UpdateValidPreparationInstrumentResponse, error) {
+func (s *ServiceImpl) UpdateValidPreparationInstrument(ctx context.Context, request *mealplanning.UpdateValidPreparationInstrumentRequest) (*mealplanning.UpdateValidPreparationInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, request.ValidPreparationInstrumentID)
 
-	input := grpcconverters.ConvertGRPCValidPreparationInstrumentUpdateRequestInputToValidPreparationInstrumentUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidPreparationInstrumentUpdateRequestInputToValidPreparationInstrumentUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidPreparationInstrument(ctx, request.ValidPreparationInstrumentID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid preparation instrument")
 	}
 
-	res := &messages.UpdateValidPreparationInstrumentResponse{
-		Result: grpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(updated),
+	res := &mealplanning.UpdateValidPreparationInstrumentResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidPreparationVessel(ctx context.Context, request *messages.UpdateValidPreparationVesselRequest) (*messages.UpdateValidPreparationVesselResponse, error) {
+func (s *ServiceImpl) UpdateValidPreparationVessel(ctx context.Context, request *mealplanning.UpdateValidPreparationVesselRequest) (*mealplanning.UpdateValidPreparationVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidPreparationVesselIDKey, request.ValidPreparationVesselID)
 	tracing.AttachToSpan(span, keys.ValidPreparationVesselIDKey, request.ValidPreparationVesselID)
 
-	input := grpcconverters.ConvertGRPCValidPreparationVesselUpdateRequestInputToValidPreparationVesselUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidPreparationVesselUpdateRequestInputToValidPreparationVesselUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidPreparationVessel(ctx, request.ValidPreparationVesselID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid preparation vessel")
 	}
 
-	res := &messages.UpdateValidPreparationVesselResponse{
-		Result: grpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(updated),
+	res := &mealplanning.UpdateValidPreparationVesselResponse{
+		Result: mpgrpcconverters.ConvertValidPreparationVesselToGRPCValidPreparationVessel(updated),
 	}
 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidVessel(ctx context.Context, request *messages.UpdateValidVesselRequest) (*messages.UpdateValidVesselResponse, error) {
+func (s *ServiceImpl) UpdateValidVessel(ctx context.Context, request *mealplanning.UpdateValidVesselRequest) (*mealplanning.UpdateValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ValidVesselIDKey, request.ValidVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, request.ValidVesselID)
 
-	input := grpcconverters.ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(request.Input)
+	input := mpgrpcconverters.ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(request.Input)
 
 	updated, err := s.validEnumerationsManager.UpdateValidVessel(ctx, request.ValidVesselID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating valid vessel")
 	}
 
-	res := &messages.UpdateValidVesselResponse{
-		Result: grpcconverters.ConvertValidVesselToGRPCValidVessel(updated),
+	res := &mealplanning.UpdateValidVesselResponse{
+		Result: mpgrpcconverters.ConvertValidVesselToGRPCValidVessel(updated),
 	}
 
 	return res, nil

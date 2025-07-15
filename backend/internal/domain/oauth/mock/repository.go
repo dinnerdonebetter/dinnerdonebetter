@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var _ oauth.Repository = (*RepositoryMock)(nil)
+
 type RepositoryMock struct {
 	mock.Mock
 }

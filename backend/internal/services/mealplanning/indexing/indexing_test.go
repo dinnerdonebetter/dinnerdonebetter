@@ -43,7 +43,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
 
-		cdi := NewEatingDataIndexer(
+		cdi := NewMealPlanningDataIndexer(
 			logger,
 			tracing.NewNoopTracerProvider(),
 			mealPlanningRepo,
@@ -102,7 +102,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
 
-		cdi := NewEatingDataIndexer(
+		cdi := NewMealPlanningDataIndexer(
 			logger,
 			tracing.NewNoopTracerProvider(),
 			mealPlanningRepo,
@@ -160,7 +160,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		ss := ConvertValidVesselToValidVesselSearchSubset(exampleValidVessel)
 		rim.On("Index", testutils.ContextMatcher, exampleValidVessel.ID, ss).Return(nil)
 
-		cdi := NewEatingDataIndexer(
+		cdi := NewMealPlanningDataIndexer(
 			logger,
 			tracing.NewNoopTracerProvider(),
 			mealPlanningRepo,
@@ -219,7 +219,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
 
-		cdi := NewEatingDataIndexer(
+		cdi := NewMealPlanningDataIndexer(
 			logger,
 			tracing.NewNoopTracerProvider(),
 			mealPlanningRepo,
@@ -278,7 +278,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
 
-		cdi := NewEatingDataIndexer(
+		cdi := NewMealPlanningDataIndexer(
 			logger,
 			tracing.NewNoopTracerProvider(),
 			mealPlanningRepo,
@@ -337,7 +337,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
 
-		cdi := NewEatingDataIndexer(
+		cdi := NewMealPlanningDataIndexer(
 			logger,
 			tracing.NewNoopTracerProvider(),
 			mealPlanningRepo,
@@ -396,7 +396,7 @@ func TestHandleIndexRequest(T *testing.T) {
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
 
-		cdi := NewEatingDataIndexer(
+		cdi := NewMealPlanningDataIndexer(
 			logger,
 			tracing.NewNoopTracerProvider(),
 			mealPlanningRepo,
@@ -455,7 +455,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
 
-		cdi := NewEatingDataIndexer(
+		cdi := NewMealPlanningDataIndexer(
 			logger,
 			tracing.NewNoopTracerProvider(),
 			mealPlanningRepo,

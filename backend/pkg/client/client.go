@@ -6,8 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	coregrpc "github.com/dinnerdonebetter/backend/internal/grpc/service/core"
-	eatinggrpc "github.com/dinnerdonebetter/backend/internal/grpc/service/eating"
+	auditgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
+	authgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	identitygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 
@@ -17,13 +18,15 @@ import (
 )
 
 type Client interface {
-	eatinggrpc.EatingClient
-	coregrpc.CoreClient
+	authgrpc.AuthServiceClient
+	identitygrpc.IdentityServiceClient
+	auditgrpc.AuditServiceClient
 }
 
 type client struct {
-	eatinggrpc.EatingClient
-	coregrpc.CoreClient
+	authgrpc.AuthServiceClient
+	identitygrpc.IdentityServiceClient
+	auditgrpc.AuditServiceClient
 }
 
 // BuildClient builds a new Client
@@ -34,8 +37,9 @@ func BuildClient(grpcServerAddress string, opts []grpc.DialOption) (Client, erro
 	}
 
 	c := &client{
-		EatingClient: eatinggrpc.NewEatingClient(conn),
-		CoreClient:   coregrpc.NewCoreClient(conn),
+		AuthServiceClient:     authgrpc.NewAuthServiceClient(conn),
+		IdentityServiceClient: identitygrpc.NewIdentityServiceClient(conn),
+		AuditServiceClient:    auditgrpc.NewAuditServiceClient(conn),
 	}
 
 	return c, nil
@@ -78,7 +82,7 @@ func WithOAuth2Credentials(
 		http.NoBody,
 	)
 	if err != nil {
-		panic(fmt.Errorf("failed to get oauth2 code: %w", err))
+		panic(fmt.Errorf("failed to build oauth2 code retrieval request: %w", err))
 	}
 
 	req.Header.Set("Authorization", "Bearer "+authToken)
