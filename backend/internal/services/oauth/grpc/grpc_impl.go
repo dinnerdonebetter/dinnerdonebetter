@@ -2,11 +2,14 @@ package grpc
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -26,10 +29,11 @@ var _ oauthsvc.OAuthServiceServer = (*ServiceImpl)(nil)
 type (
 	ServiceImpl struct {
 		oauthsvc.UnimplementedOAuthServiceServer
-		tracer          tracing.Tracer
-		secretGenerator random.Generator
-		logger          logging.Logger
-		oauthRepository oauth.Repository
+		tracer               tracing.Tracer
+		secretGenerator      random.Generator
+		logger               logging.Logger
+		dataChangesPublisher messagequeue.Publisher
+		oauthRepository      oauth.Repository
 	}
 )
 
@@ -49,6 +53,17 @@ func (s *ServiceImpl) ArchiveOAuth2Client(ctx context.Context, request *oauthsvc
 
 	if err := s.oauthRepository.ArchiveOAuth2Client(ctx, request.OAuth2ClientID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving oauth2 client")
+	}
+
+	if err := s.dataChangesPublisher.Publish(ctx, &audit.DataChangeMessage{
+		EventType: oauth.OAuth2ClientArchivedServiceEventType,
+		Context: map[string]any{
+			keys.OAuth2ClientIDKey: request.OAuth2ClientID,
+		},
+		UserID:    "",
+		AccountID: "",
+	}); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing oauth2 client data change event")
 	}
 
 	x := &oauthsvc.ArchiveOAuth2ClientResponse{
@@ -88,6 +103,17 @@ func (s *ServiceImpl) CreateOAuth2Client(ctx context.Context, request *oauthsvc.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating oauth2 client")
 	}
 
+	if err = s.dataChangesPublisher.Publish(ctx, &audit.DataChangeMessage{
+		EventType: oauth.OAuth2ClientCreatedServiceEventType,
+		Context: map[string]any{
+			keys.OAuth2ClientIDKey: created.ID,
+		},
+		UserID:    "",
+		AccountID: "",
+	}); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing oauth2 client data change event")
+	}
+
 	x := &oauthsvc.CreateOAuth2ClientResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
@@ -123,10 +149,22 @@ func (s *ServiceImpl) GetOAuth2Clients(ctx context.Context, request *oauthsvc.Ge
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := s.logger.Clone()
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	oauth2Clients, err := s.oauthRepository.GetOAuth2Clients(ctx, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
+	}
+
 	x := &oauthsvc.GetOAuth2ClientsResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+	}
+
+	for _, client := range oauth2Clients.Data {
+		x.Results = append(x.Results, ConvertOAuth2ClientToGRPCOAuth2Client(client))
 	}
 
 	return x, nil

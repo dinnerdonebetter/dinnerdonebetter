@@ -15,6 +15,7 @@ message GetUserNotificationRequest {
 
 message GetUserNotificationResponse {
   common.ResponseDetails ResponseDetails = 1;
+  UserNotification Result = 2;
 }
 
 // GetUserNotifications
