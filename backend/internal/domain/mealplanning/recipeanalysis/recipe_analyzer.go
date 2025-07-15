@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -44,7 +44,7 @@ func (g recipeStepGraphNode) ID() int64 {
 
 var errRecipeStepIDNotFound = errors.New("recipe step ID not found")
 
-func findStepIndexForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID string) (int64, error) {
+func findStepIndexForRecipeStepProductID(recipe *mealplanning.Recipe, recipeStepProductID string) (int64, error) {
 	if step := recipe.FindStepForRecipeStepProductID(recipeStepProductID); step != nil {
 		return graphIDForStep(step), nil
 	}
@@ -52,7 +52,7 @@ func findStepIndexForRecipeStepProductID(recipe *types.Recipe, recipeStepProduct
 	return -1, errRecipeStepIDNotFound
 }
 
-func findStepIDForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID string) (string, error) {
+func findStepIDForRecipeStepProductID(recipe *mealplanning.Recipe, recipeStepProductID string) (string, error) {
 	if step := recipe.FindStepForRecipeStepProductID(recipeStepProductID); step != nil {
 		return fmt.Sprintf("%d", graphIDForStep(step)), nil
 	}
@@ -60,7 +60,7 @@ func findStepIDForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID 
 	return "", errRecipeStepIDNotFound
 }
 
-func findStepIndexForRecipeStepID(recipe *types.Recipe, recipeStepID string) (int64, error) {
+func findStepIndexForRecipeStepID(recipe *mealplanning.Recipe, recipeStepID string) (int64, error) {
 	for _, step := range recipe.Steps {
 		if step.ID == recipeStepID {
 			return graphIDForStep(step), nil
@@ -70,16 +70,16 @@ func findStepIndexForRecipeStepID(recipe *types.Recipe, recipeStepID string) (in
 	return -1, errRecipeStepIDNotFound
 }
 
-func graphIDForStep(step *types.RecipeStep) int64 {
+func graphIDForStep(step *mealplanning.RecipeStep) int64 {
 	return int64(step.Index + 1)
 }
 
 // RecipeAnalyzer analyzes recipes for insights (ugh).
 type RecipeAnalyzer interface {
-	MakeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error)
-	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
-	RenderMermaidDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string
-	RenderGraphvizDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string
+	MakeGraphForRecipe(ctx context.Context, recipe *mealplanning.Recipe) (*simple.DirectedGraph, error)
+	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *mealplanning.Recipe) ([]*mealplanning.MealPlanTaskDatabaseCreationInput, error)
+	RenderMermaidDiagramForRecipe(ctx context.Context, recipe *mealplanning.Recipe) string
+	RenderGraphvizDiagramForRecipe(ctx context.Context, recipe *mealplanning.Recipe) string
 }
 
 var _ RecipeAnalyzer = (*recipeAnalyzer)(nil)
@@ -98,7 +98,7 @@ func NewRecipeAnalyzer(logger logging.Logger, tracerProvider tracing.TracerProvi
 	}
 }
 
-func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error) {
+func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *mealplanning.Recipe) (*simple.DirectedGraph, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -168,7 +168,7 @@ func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *types.R
 }
 
 type RecipeStepIdentifier struct {
-	recipeStep *types.RecipeStep
+	recipeStep *mealplanning.RecipeStep
 }
 
 func (i *RecipeStepIdentifier) ID() string {
@@ -176,7 +176,7 @@ func (i *RecipeStepIdentifier) ID() string {
 }
 
 // makeDAGForRecipe makes a proper DAG for the provided Recipe.
-func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Recipe) (*dag.DAG, error) {
+func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *mealplanning.Recipe) (*dag.DAG, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -232,7 +232,7 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 
 // frozenIngredientDefrostStepsFilter iterates through a recipe and returns
 // the list of ingredients within that are indicated as kept frozen.
-func frozenIngredientDefrostStepsFilter(recipe *types.Recipe) map[string][]int {
+func frozenIngredientDefrostStepsFilter(recipe *mealplanning.Recipe) map[string][]int {
 	out := map[string][]int{}
 
 	for _, recipeStep := range recipe.Steps {
@@ -276,7 +276,7 @@ func buildThawStepCreationExplanation(recipeStepIndex int64, ingredientIndices .
 	return fmt.Sprintf("frozen %s (%s) for step #%d might need to be thawed ahead of time", d, strings.Join(stringIndices, ", "), recipeStepIndex)
 }
 
-func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.Context, mealPlanOptionID string, recipe *types.Recipe) []*types.MealPlanTaskDatabaseCreationInput {
+func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.Context, mealPlanOptionID string, recipe *mealplanning.Recipe) []*mealplanning.MealPlanTaskDatabaseCreationInput {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -285,7 +285,7 @@ func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.C
 	frozenIngredientSteps := frozenIngredientDefrostStepsFilter(recipe)
 	logger.WithValue("frozen_steps_qty", len(frozenIngredientSteps)).Info("creating frozen stepSet inputs")
 
-	outputs := []*types.MealPlanTaskDatabaseCreationInput{}
+	outputs := []*mealplanning.MealPlanTaskDatabaseCreationInput{}
 	for stepID, ingredientIndices := range frozenIngredientSteps {
 		stepIndex, err := findStepIndexForRecipeStepID(recipe, stepID)
 		if err != nil {
@@ -298,7 +298,7 @@ func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.C
 			continue
 		}
 
-		outputs = append(outputs, &types.MealPlanTaskDatabaseCreationInput{
+		outputs = append(outputs, &mealplanning.MealPlanTaskDatabaseCreationInput{
 			ID:                  identifiers.New(),
 			CreationExplanation: explanation,
 			MealPlanOptionID:    mealPlanOptionID,
@@ -310,14 +310,14 @@ func (g *recipeAnalyzer) generateMealPlanTasksForFrozenIngredients(ctx context.C
 
 const recipeTaskStepCreationExplanation = "recipe prep task exists for steps"
 
-func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error) {
+func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *mealplanning.Recipe) ([]*mealplanning.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
 	inputs := g.generateMealPlanTasksForFrozenIngredients(ctx, mealPlanOptionID, recipe)
 
 	for _, prepTask := range recipe.PrepTasks {
-		inputs = append(inputs, &types.MealPlanTaskDatabaseCreationInput{
+		inputs = append(inputs, &mealplanning.MealPlanTaskDatabaseCreationInput{
 			AssignedToUser:      nil,
 			CreationExplanation: recipeTaskStepCreationExplanation,
 			StatusExplanation:   "",
@@ -334,7 +334,7 @@ type provisionCount struct {
 	ingredients, instruments, vessels uint
 }
 
-func stepProvidesWhatToOtherStep(recipe *types.Recipe, fromStepIndex, toStepIndex uint) string {
+func stepProvidesWhatToOtherStep(recipe *mealplanning.Recipe, fromStepIndex, toStepIndex uint) string {
 	from, to := recipe.Steps[fromStepIndex], recipe.Steps[toStepIndex]
 	provides := []string{}
 
@@ -393,7 +393,7 @@ func stepProvidesWhatToOtherStep(recipe *types.Recipe, fromStepIndex, toStepInde
 	return english.OxfordWordSeries(provides, "and")
 }
 
-func (g *recipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string {
+func (g *recipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, recipe *mealplanning.Recipe) string {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -450,7 +450,7 @@ const graphvizPreamble = `strict digraph {
 	start=1;
 `
 
-func (g *recipeAnalyzer) RenderGraphvizDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string {
+func (g *recipeAnalyzer) RenderGraphvizDiagramForRecipe(ctx context.Context, recipe *mealplanning.Recipe) string {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 

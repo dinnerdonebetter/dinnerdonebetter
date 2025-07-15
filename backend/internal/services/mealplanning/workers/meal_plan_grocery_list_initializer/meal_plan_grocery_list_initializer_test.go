@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	grocerylistpreparation2 "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
 	mealplanningmock "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/mocks"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
@@ -15,7 +16,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
-	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/businesslogic/grocerylistpreparation"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -35,7 +35,7 @@ func buildNewMealPlanGroceryListInitializerForTest(t *testing.T) *Worker {
 		tracing.NewNoopTracerProvider(),
 		metrics.NewNoopMetricsProvider(),
 		pp,
-		grocerylistpreparation.NewGroceryListCreator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
+		grocerylistpreparation2.NewGroceryListCreator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		cfg,
 	)
 	require.NoError(t, err)
@@ -264,7 +264,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 			expectedMealPlans[0].ID: firstMealPlanExpectedGroceryListItemInputs,
 		}
 
-		mglm := &grocerylistpreparation.MockGroceryListCreator{}
+		mglm := &grocerylistpreparation2.MockGroceryListCreator{}
 		mglm.On(
 			"GenerateGroceryListInputs",
 			testutils.ContextMatcher,
