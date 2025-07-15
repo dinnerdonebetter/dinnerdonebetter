@@ -1,4 +1,4 @@
-package converters
+package grpc
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"

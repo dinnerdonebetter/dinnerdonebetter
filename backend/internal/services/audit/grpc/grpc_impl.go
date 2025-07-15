@@ -11,7 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
@@ -57,7 +56,7 @@ func (s *ServiceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request 
 	}
 
 	for _, y := range auditLogEntries.Data {
-		x.Results = append(x.Results, converters.ConvertAuditLogEntryToGRPCAuditLogEntry(y))
+		x.Results = append(x.Results, ConvertAuditLogEntryToGRPCAuditLogEntry(y))
 	}
 
 	return x, nil
@@ -85,7 +84,7 @@ func (s *ServiceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *au
 	}
 
 	for _, y := range auditLogEntries.Data {
-		x.Results = append(x.Results, converters.ConvertAuditLogEntryToGRPCAuditLogEntry(y))
+		x.Results = append(x.Results, ConvertAuditLogEntryToGRPCAuditLogEntry(y))
 	}
 
 	return x, nil
@@ -101,7 +100,7 @@ func (s *ServiceImpl) GetAuditLogEntryByID(ctx context.Context, request *auditsv
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
 
-	returnValue := converters.ConvertAuditLogEntryToGRPCAuditLogEntry(auditLogEntry)
+	returnValue := ConvertAuditLogEntryToGRPCAuditLogEntry(auditLogEntry)
 
 	x := &auditsvc.GetAuditLogEntryByIDResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{

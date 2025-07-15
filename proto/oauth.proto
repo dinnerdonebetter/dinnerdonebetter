@@ -10,7 +10,10 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth";
 
 // CreateOAuth2Client
-message CreateOAuth2ClientRequest {}
+message CreateOAuth2ClientRequest {
+  string Name = 1;
+  string Description = 2;
+}
 
 message CreateOAuth2ClientResponse {
   common.ResponseDetails ResponseDetails = 1;
@@ -42,8 +45,9 @@ message GetOAuth2ClientsRequest {
 }
 
 message GetOAuth2ClientsResponse {
-  filtering.QueryFilter Filter = 1;
-  repeated OAuth2Client Results = 2;
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated OAuth2Client Results = 3;
 }
 
 message OAuth2Client {
