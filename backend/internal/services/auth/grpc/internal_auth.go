@@ -25,6 +25,10 @@ const (
 	SessionContextKey contextKey = "session_context"
 )
 
+func Unauthenticated(msg string) error {
+	return status.Error(codes.Unauthenticated, msg)
+}
+
 func (s *ServiceImpl) fetchSessionContext(ctx context.Context) *sessions.ContextData {
 	sessionContext, ok := ctx.Value(SessionContextKey).(*sessions.ContextData)
 	if !ok {

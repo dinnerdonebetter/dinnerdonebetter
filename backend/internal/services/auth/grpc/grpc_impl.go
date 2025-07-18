@@ -9,6 +9,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
+const (
+	o11yName = "auth_service"
+)
+
 var _ authsvc.AuthServiceServer = (*ServiceImpl)(nil)
 
 type (
@@ -21,9 +25,13 @@ type (
 )
 
 func NewService(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
 	identityRepository identity.Repository,
 ) authsvc.AuthServiceServer {
 	return &ServiceImpl{
+		logger:             logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		identityRepository: identityRepository,
 	}
 }

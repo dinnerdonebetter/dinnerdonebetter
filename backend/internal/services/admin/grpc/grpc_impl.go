@@ -8,6 +8,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
+const (
+	o11yName = "admin_service"
+)
+
 var _ adminsvc.ServiceAdministrationServiceServer = (*ServiceImpl)(nil)
 
 type (
@@ -18,8 +22,14 @@ type (
 	}
 )
 
-func NewService() adminsvc.ServiceAdministrationServiceServer {
-	return &ServiceImpl{}
+func NewService(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
+) adminsvc.ServiceAdministrationServiceServer {
+	return &ServiceImpl{
+		logger: logging.EnsureLogger(logger).WithName(o11yName),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+	}
 }
 
 func (s *ServiceImpl) AdminUpdateUserStatus(ctx context.Context, request *adminsvc.AdminUpdateUserStatusRequest) (*adminsvc.AdminUpdateUserStatusResponse, error) {

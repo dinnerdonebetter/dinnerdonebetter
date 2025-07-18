@@ -20,6 +20,8 @@ import (
 )
 
 const (
+	o11yName = "oauth_service"
+
 	clientIDSize     = 16
 	clientSecretSize = 16
 )
@@ -38,9 +40,13 @@ type (
 )
 
 func NewService(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
 	oauthRepository oauth.Repository,
 ) oauthsvc.OAuthServiceServer {
 	return &ServiceImpl{
+		logger:          logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		oauthRepository: oauthRepository,
 	}
 }

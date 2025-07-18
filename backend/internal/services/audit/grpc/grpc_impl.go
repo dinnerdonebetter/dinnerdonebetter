@@ -15,6 +15,10 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
+const (
+	o11yName = "audit_service"
+)
+
 var _ auditsvc.AuditServiceServer = (*ServiceImpl)(nil)
 
 type (
@@ -27,9 +31,13 @@ type (
 )
 
 func NewService(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
 	auditRepository audit.Repository,
 ) auditsvc.AuditServiceServer {
 	return &ServiceImpl{
+		logger:          logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		auditRepository: auditRepository,
 	}
 }

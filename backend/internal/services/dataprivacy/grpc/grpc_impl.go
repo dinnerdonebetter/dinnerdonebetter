@@ -9,6 +9,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
+const (
+	o11yName = "data_privacy_service"
+)
+
 var _ dataprivacysvc.DataPrivacyServiceServer = (*ServiceImpl)(nil)
 
 type (
@@ -21,9 +25,13 @@ type (
 )
 
 func NewService(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
 	dataPrivacyRepository dataprivacy.Repository,
 ) dataprivacysvc.DataPrivacyServiceServer {
 	return &ServiceImpl{
+		logger:                logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		dataPrivacyRepository: dataPrivacyRepository,
 	}
 }

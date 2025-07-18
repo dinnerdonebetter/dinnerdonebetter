@@ -245,15 +245,6 @@ func (s *ServiceImpl) GetMealPlanTasks(ctx context.Context, request *mealplannin
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
 
-//func (s *ServiceImpl) GetMealPlansForHousehold(ctx context.Context, request *mealplanning.GetMealPlansForHouseholdRequest) (*mealplanning.GetMealPlansForHouseholdResponse, error) {
-//	_, span := s.tracer.StartSpan(ctx)
-//	defer span.End()
-//
-//	logger := s.logger.WithSpan(span)
-//
-//	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
-//}
-
 func (s *ServiceImpl) GetMeals(ctx context.Context, request *mealplanning.GetMealsRequest) (*mealplanning.GetMealsResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
@@ -345,6 +336,42 @@ func (s *ServiceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mea
 }
 
 func (s *ServiceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mealplanning.UpdateMealPlanTaskStatusRequest) (*mealplanning.UpdateMealPlanTaskStatusResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+}
+
+func (s *ServiceImpl) ArchiveUserIngredientPreference(ctx context.Context, request *mealplanning.ArchiveUserIngredientPreferenceRequest) (*mealplanning.ArchiveUserIngredientPreferenceResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+}
+
+func (s *ServiceImpl) CreateUserIngredientPreference(ctx context.Context, request *mealplanning.CreateUserIngredientPreferenceRequest) (*mealplanning.CreateUserIngredientPreferenceResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+}
+
+func (s *ServiceImpl) GetUserIngredientPreferences(ctx context.Context, request *mealplanning.GetUserIngredientPreferencesRequest) (*mealplanning.GetUserIngredientPreferencesResponse, error) {
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+}
+
+func (s *ServiceImpl) UpdateUserIngredientPreference(ctx context.Context, request *mealplanning.UpdateUserIngredientPreferenceRequest) (*mealplanning.UpdateUserIngredientPreferenceResponse, error) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

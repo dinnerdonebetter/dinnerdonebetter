@@ -10,6 +10,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
 
+const (
+	o11yName = "configuration_service"
+)
+
 var _ configurationsvc.UserConfigurationServiceServer = (*ServiceImpl)(nil)
 
 type (
@@ -23,10 +27,14 @@ type (
 )
 
 func NewService(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
 	webhookRepository webhooks.Repository,
 	settingsRepository settings.Repository,
 ) configurationsvc.UserConfigurationServiceServer {
 	return &ServiceImpl{
+		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		webhookRepository:         webhookRepository,
 		serviceSettingsRepository: settingsRepository,
 	}
