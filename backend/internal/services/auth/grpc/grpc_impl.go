@@ -7,6 +7,8 @@ import (
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	oauth2server "github.com/go-oauth2/oauth2/v4"
 )
 
 const (
@@ -18,9 +20,10 @@ var _ authsvc.AuthServiceServer = (*ServiceImpl)(nil)
 type (
 	ServiceImpl struct {
 		authsvc.UnimplementedAuthServiceServer
-		tracer             tracing.Tracer
-		logger             logging.Logger
-		identityRepository identity.Repository
+		tracer              tracing.Tracer
+		logger              logging.Logger
+		identityRepository  identity.Repository
+		oauth2ClientManager oauth2server.Manager
 	}
 )
 

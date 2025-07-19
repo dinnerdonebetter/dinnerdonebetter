@@ -216,20 +216,24 @@ message WebhookTriggerEventCreationRequestInput {
 }
 
 // CreateWebhook
-message CreateWebhookRequest {}
+message CreateWebhookRequest {
+  WebhookCreationRequestInput Input = 1;
+}
 
 message CreateWebhookResponse {
   common.ResponseDetails ResponseDetails = 1;
+  Webhook Created = 2;
 }
 
-// CreateWebhookTriggerEvent
-message CreateWebhookTriggerEventRequest {
+// AddWebhookTriggerEvent
+message AddWebhookTriggerEventRequest {
   string webhookID = 1;
   WebhookTriggerEventCreationRequestInput input = 2;
 }
 
-message CreateWebhookTriggerEventResponse {
+message AddWebhookTriggerEventResponse {
   common.ResponseDetails ResponseDetails = 1;
+  WebhookTriggerEvent Created = 2;
 }
 
 // ArchiveWebhook
@@ -258,6 +262,7 @@ message GetWebhookRequest {
 
 message GetWebhookResponse {
   common.ResponseDetails ResponseDetails = 1;
+  Webhook Result = 2;
 }
 
 // GetWebhooks
@@ -286,7 +291,7 @@ service UserConfigurationService {
   rpc ArchiveWebhook(ArchiveWebhookRequest) returns (ArchiveWebhookResponse);
   rpc ArchiveWebhookTriggerEvent(ArchiveWebhookTriggerEventRequest) returns (ArchiveWebhookTriggerEventResponse);
   rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse);
-  rpc CreateWebhookTriggerEvent(CreateWebhookTriggerEventRequest) returns (CreateWebhookTriggerEventResponse);
+  rpc AddWebhookTriggerEvent(AddWebhookTriggerEventRequest) returns (AddWebhookTriggerEventResponse);
   rpc GetWebhook(GetWebhookRequest) returns (GetWebhookResponse);
   rpc GetWebhooks(GetWebhooksRequest) returns (GetWebhooksResponse);
 }

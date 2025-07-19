@@ -2,8 +2,13 @@ package grpc
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -19,10 +24,15 @@ const (
 	authHeaderName = "Authorization"
 	tokenPrefix    = "Bearer "
 
-	zuckModeUserHeader      = "X-Zuck-Mode-User"
-	zuckModeHouseholdHeader = "X-Zuck-Mode-Household"
+	zuckModeUserHeader    = "X-Zuck-Mode-User"
+	zuckModeAccountHeader = "X-Zuck-Mode-Account"
 
 	SessionContextKey contextKey = "session_context"
+)
+
+var (
+	// ErrUserNotAuthorizedToImpersonateOthers is returned when a user is not authorized to impersonate others.
+	ErrUserNotAuthorizedToImpersonateOthers = errors.New("user not authorized to impersonate others")
 )
 
 func Unauthenticated(msg string) error {
@@ -42,38 +52,36 @@ func (s *ServiceImpl) determineZuckMode(ctx context.Context, metadata metadata.M
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	/*
-		logger := s.logger.WithSpan(span)
+	logger := s.logger.WithSpan(span)
 
-		if zuckUserHeaders := metadata.Get(zuckModeUserHeader); len(zuckUserHeaders) > 0 {
-			var (
-				zuckUserID      = zuckUserHeaders[0]
-				zuckHouseholdID string
-			)
+	if zuckUserHeaders := metadata.Get(zuckModeUserHeader); len(zuckUserHeaders) > 0 {
+		var (
+			zuckUserID    = zuckUserHeaders[0]
+			zuckAccountID string
+		)
 
-			if !sessionContextData.ServiceRolePermissionChecker().CanImpersonateUsers() {
-				return "", "", ErrUserNotAuthorizedToImpersonateOthers
-			}
+		if !sessionContextData.ServiceRolePermissionChecker().CanImpersonateUsers() {
+			return "", "", ErrUserNotAuthorizedToImpersonateOthers
+		}
 
-			if _, err = s.dataManager.GetUser(ctx, zuckUserID); err != nil {
-				observability.AcknowledgeError(err, logger, span, "fetching user info for zuck mode")
+		if _, err = s.identityRepository.GetUser(ctx, zuckUserID); err != nil {
+			observability.AcknowledgeError(err, logger, span, "fetching user info for zuck mode")
+			return "", "", err
+		}
+
+		if zuckAccountIDs := metadata.Get(zuckModeAccountHeader); len(zuckAccountIDs) > 0 {
+			zuckAccountID = zuckAccountIDs[0]
+			accountID, err = s.identityRepository.GetDefaultAccountIDForUser(ctx, zuckUserID)
+			if err != nil {
+				observability.AcknowledgeError(err, logger, span, "fetching account info for zuck mode")
 				return "", "", err
 			}
-
-			if zuckHouseholdIDs := metadata.Get(zuckModeHouseholdHeader); len(zuckHouseholdIDs) > 0 {
-				zuckHouseholdID = zuckHouseholdIDs[0]
-				accountID, err = s.dataManager.GetDefaultHouseholdIDForUser(ctx, zuckUserID)
-				if err != nil {
-					observability.AcknowledgeError(err, logger, span, "fetching account info for zuck mode")
-					return "", "", err
-				}
-			} else {
-				return zuckUserID, zuckHouseholdID, nil
-			}
-
-			return zuckUserID, accountID, nil
+		} else {
+			return zuckUserID, zuckAccountID, nil
 		}
-	*/
+
+		return zuckUserID, accountID, nil
+	}
 
 	return "", "", nil
 }
@@ -82,46 +90,44 @@ func (s *ServiceImpl) extractSessionContextDataFromOAuth2(ctx context.Context, m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	/*
-		logger := s.logger.WithSpan(span)
+	logger := s.logger.WithSpan(span)
 
-		authHeader := metadata.Get("authorization")
-		if len(authHeader) == 0 {
-			return nil, status.Error(codes.Unauthenticated, "missing authorization header")
-		}
+	authHeader := metadata.Get("authorization")
+	if len(authHeader) == 0 {
+		return nil, status.Error(codes.Unauthenticated, "missing authorization header")
+	}
 
-		accessToken := strings.TrimPrefix(authHeader[0], tokenPrefix)
+	accessToken := strings.TrimPrefix(authHeader[0], tokenPrefix)
 
-		token, err := s.oauth2Server.Manager.LoadAccessToken(ctx, accessToken)
+	token, err := s.oauth2ClientManager.LoadAccessToken(ctx, accessToken)
+	if err != nil {
+		return nil, fmt.Errorf("loading access token: %w", err)
+	}
+
+	if userID := token.GetUserID(); userID != "" {
+		sessionCtxData, err := s.identityRepository.BuildSessionContextDataForUser(ctx, userID)
 		if err != nil {
-			return nil, fmt.Errorf("loading access token: %w", err)
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching user info for cookie")
 		}
 
-		if userID := token.GetUserID(); userID != "" {
-			sessionCtxData, err := s.dataManager.BuildSessionContextDataForUser(ctx, userID)
-			if err != nil {
-				return nil, observability.PrepareAndLogError(err, logger, span, "fetching user info for cookie")
-			}
-
-			zuckUserID, zuckHouseholdID, zuckErr := s.determineZuckMode(ctx, metadata, sessionCtxData)
-			if zuckErr != nil {
-				return nil, observability.PrepareAndLogError(zuckErr, logger, span, "fetching user info for zuck mode")
-			}
-
-			if zuckUserID != "" {
-				sessionCtxData.Requester.UserID = zuckUserID
-			}
-
-			if zuckHouseholdID != "" {
-				sessionCtxData.ActiveHouseholdID = zuckHouseholdID
-				sessionCtxData.HouseholdPermissions[zuckHouseholdID] = authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String())
-			}
-
-			if sessionCtxData != nil {
-				return sessionCtxData, nil
-			}
+		zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metadata, sessionCtxData)
+		if zuckErr != nil {
+			return nil, observability.PrepareAndLogError(zuckErr, logger, span, "fetching user info for zuck mode")
 		}
-	*/
+
+		if zuckUserID != "" {
+			sessionCtxData.Requester.UserID = zuckUserID
+		}
+
+		if zuckAccountID != "" {
+			sessionCtxData.ActiveAccountID = zuckAccountID
+			sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String())
+		}
+
+		if sessionCtxData != nil {
+			return sessionCtxData, nil
+		}
+	}
 
 	return nil, Unauthenticated("invalid OAuth2 token")
 }

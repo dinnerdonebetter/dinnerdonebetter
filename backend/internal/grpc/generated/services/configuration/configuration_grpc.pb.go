@@ -34,7 +34,7 @@ const (
 	UserConfigurationService_ArchiveWebhook_FullMethodName                            = "/configuration.UserConfigurationService/ArchiveWebhook"
 	UserConfigurationService_ArchiveWebhookTriggerEvent_FullMethodName                = "/configuration.UserConfigurationService/ArchiveWebhookTriggerEvent"
 	UserConfigurationService_CreateWebhook_FullMethodName                             = "/configuration.UserConfigurationService/CreateWebhook"
-	UserConfigurationService_CreateWebhookTriggerEvent_FullMethodName                 = "/configuration.UserConfigurationService/CreateWebhookTriggerEvent"
+	UserConfigurationService_AddWebhookTriggerEvent_FullMethodName                    = "/configuration.UserConfigurationService/AddWebhookTriggerEvent"
 	UserConfigurationService_GetWebhook_FullMethodName                                = "/configuration.UserConfigurationService/GetWebhook"
 	UserConfigurationService_GetWebhooks_FullMethodName                               = "/configuration.UserConfigurationService/GetWebhooks"
 )
@@ -57,7 +57,7 @@ type UserConfigurationServiceClient interface {
 	ArchiveWebhook(ctx context.Context, in *ArchiveWebhookRequest, opts ...grpc.CallOption) (*ArchiveWebhookResponse, error)
 	ArchiveWebhookTriggerEvent(ctx context.Context, in *ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*ArchiveWebhookTriggerEventResponse, error)
 	CreateWebhook(ctx context.Context, in *CreateWebhookRequest, opts ...grpc.CallOption) (*CreateWebhookResponse, error)
-	CreateWebhookTriggerEvent(ctx context.Context, in *CreateWebhookTriggerEventRequest, opts ...grpc.CallOption) (*CreateWebhookTriggerEventResponse, error)
+	AddWebhookTriggerEvent(ctx context.Context, in *AddWebhookTriggerEventRequest, opts ...grpc.CallOption) (*AddWebhookTriggerEventResponse, error)
 	GetWebhook(ctx context.Context, in *GetWebhookRequest, opts ...grpc.CallOption) (*GetWebhookResponse, error)
 	GetWebhooks(ctx context.Context, in *GetWebhooksRequest, opts ...grpc.CallOption) (*GetWebhooksResponse, error)
 }
@@ -210,10 +210,10 @@ func (c *userConfigurationServiceClient) CreateWebhook(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) CreateWebhookTriggerEvent(ctx context.Context, in *CreateWebhookTriggerEventRequest, opts ...grpc.CallOption) (*CreateWebhookTriggerEventResponse, error) {
+func (c *userConfigurationServiceClient) AddWebhookTriggerEvent(ctx context.Context, in *AddWebhookTriggerEventRequest, opts ...grpc.CallOption) (*AddWebhookTriggerEventResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateWebhookTriggerEventResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_CreateWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
+	out := new(AddWebhookTriggerEventResponse)
+	err := c.cc.Invoke(ctx, UserConfigurationService_AddWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -258,7 +258,7 @@ type UserConfigurationServiceServer interface {
 	ArchiveWebhook(context.Context, *ArchiveWebhookRequest) (*ArchiveWebhookResponse, error)
 	ArchiveWebhookTriggerEvent(context.Context, *ArchiveWebhookTriggerEventRequest) (*ArchiveWebhookTriggerEventResponse, error)
 	CreateWebhook(context.Context, *CreateWebhookRequest) (*CreateWebhookResponse, error)
-	CreateWebhookTriggerEvent(context.Context, *CreateWebhookTriggerEventRequest) (*CreateWebhookTriggerEventResponse, error)
+	AddWebhookTriggerEvent(context.Context, *AddWebhookTriggerEventRequest) (*AddWebhookTriggerEventResponse, error)
 	GetWebhook(context.Context, *GetWebhookRequest) (*GetWebhookResponse, error)
 	GetWebhooks(context.Context, *GetWebhooksRequest) (*GetWebhooksResponse, error)
 	mustEmbedUnimplementedUserConfigurationServiceServer()
@@ -313,8 +313,8 @@ func (UnimplementedUserConfigurationServiceServer) ArchiveWebhookTriggerEvent(co
 func (UnimplementedUserConfigurationServiceServer) CreateWebhook(context.Context, *CreateWebhookRequest) (*CreateWebhookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWebhook not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) CreateWebhookTriggerEvent(context.Context, *CreateWebhookTriggerEventRequest) (*CreateWebhookTriggerEventResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateWebhookTriggerEvent not implemented")
+func (UnimplementedUserConfigurationServiceServer) AddWebhookTriggerEvent(context.Context, *AddWebhookTriggerEventRequest) (*AddWebhookTriggerEventResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddWebhookTriggerEvent not implemented")
 }
 func (UnimplementedUserConfigurationServiceServer) GetWebhook(context.Context, *GetWebhookRequest) (*GetWebhookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWebhook not implemented")
@@ -596,20 +596,20 @@ func _UserConfigurationService_CreateWebhook_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_CreateWebhookTriggerEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateWebhookTriggerEventRequest)
+func _UserConfigurationService_AddWebhookTriggerEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddWebhookTriggerEventRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).CreateWebhookTriggerEvent(ctx, in)
+		return srv.(UserConfigurationServiceServer).AddWebhookTriggerEvent(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_CreateWebhookTriggerEvent_FullMethodName,
+		FullMethod: UserConfigurationService_AddWebhookTriggerEvent_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).CreateWebhookTriggerEvent(ctx, req.(*CreateWebhookTriggerEventRequest))
+		return srv.(UserConfigurationServiceServer).AddWebhookTriggerEvent(ctx, req.(*AddWebhookTriggerEventRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -714,8 +714,8 @@ var UserConfigurationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserConfigurationService_CreateWebhook_Handler,
 		},
 		{
-			MethodName: "CreateWebhookTriggerEvent",
-			Handler:    _UserConfigurationService_CreateWebhookTriggerEvent_Handler,
+			MethodName: "AddWebhookTriggerEvent",
+			Handler:    _UserConfigurationService_AddWebhookTriggerEvent_Handler,
 		},
 		{
 			MethodName: "GetWebhook",
