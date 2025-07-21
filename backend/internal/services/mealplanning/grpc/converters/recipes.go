@@ -75,26 +75,23 @@ func ConvertRecipeStepToGRPCRecipeStep(input *mealplanning.RecipeStep) *mealplan
 		Optional:                input.Optional,
 		StartTimerAutomatically: input.StartTimerAutomatically,
 		Preparation:             ConvertValidPreparationToGRPCValidPreparation(&input.Preparation),
-		//Instruments:             input.Instruments,
-		//Vessels:                 input.Vessels,
-		//CompletionConditions:    input.CompletionConditions,
 	}
 
 	for _, media := range input.Media {
 		step.Media = append(step.Media, ConvertRecipeMediaToGRPCRecipeMedia(media))
 	}
 
-	//for _, instrument := range input.Instruments {
-	//	step.Instruments = append(step.Instruments, ConvertRecipeMediaToGRPCRecipeMedia(instrument))
-	//}
+	for _, instrument := range input.Instruments {
+		step.Instruments = append(step.Instruments, ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(instrument))
+	}
 
-	//for _, vessel := range input.Vessels {
-	//	step.Vessels = append(step.Vessels, ConvertRecipeMediaToGRPCRecipeMedia(vessel))
-	//}
+	for _, vessel := range input.Vessels {
+		step.Vessels = append(step.Vessels, ConvertRecipeStepVesselToGRPCRecipeStepVessel(vessel))
+	}
 
-	//for _, completionCondition := range input.CompletionConditions {
-	//	step.CompletionConditions = append(step.CompletionConditions, ConvertRecipeMediaToGRPCRecipeMedia(completionCondition))
-	//}
+	for _, completionCondition := range input.CompletionConditions {
+		step.CompletionConditions = append(step.CompletionConditions, ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(completionCondition))
+	}
 
 	for _, ingredient := range input.Ingredients {
 		step.Ingredients = append(step.Ingredients, ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(ingredient))
@@ -105,6 +102,77 @@ func ConvertRecipeStepToGRPCRecipeStep(input *mealplanning.RecipeStep) *mealplan
 	}
 
 	return step
+}
+
+func ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(input *mealplanning.RecipeStepInstrument) *mealplanningsvc.RecipeStepInstrument {
+	return &mealplanningsvc.RecipeStepInstrument{
+		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		Instrument:    ConvertValidInstrumentToGRPCValidInstrument(input.Instrument),
+		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		Quantity: &types.Uint32RangeWithOptionalMax{
+			Max: input.Quantity.Max,
+			Min: input.Quantity.Min,
+		},
+		ArchivedAt:          grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		Name:                input.Name,
+		Notes:               input.Notes,
+		ID:                  input.ID,
+		RecipeStepProductID: input.RecipeStepProductID,
+		OptionIndex:         uint32(input.OptionIndex),
+		PreferenceRank:      uint32(input.PreferenceRank),
+		Optional:            input.Optional,
+	}
+}
+
+func ConvertRecipeStepVesselToGRPCRecipeStepVessel(input *mealplanning.RecipeStepVessel) *mealplanningsvc.RecipeStepVessel {
+	return &mealplanningsvc.RecipeStepVessel{
+		Vessel: ConvertValidVesselToGRPCValidVessel(input.Vessel),
+		Quantity: &types.Uint16RangeWithOptionalMax{
+			Max: pointer.To(uint32(pointer.Dereference(input.Quantity.Max))),
+			Min: uint32(input.Quantity.Min),
+		},
+		CreatedAt:            grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		LastUpdatedAt:        grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:           grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		VesselPreposition:    input.VesselPreposition,
+		Notes:                input.Notes,
+		RecipeStepProductID:  input.RecipeStepProductID,
+		BelongsToRecipeStep:  input.BelongsToRecipeStep,
+		ID:                   input.ID,
+		Name:                 input.Name,
+		UnavailableAfterStep: input.UnavailableAfterStep,
+	}
+}
+
+func ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(input *mealplanning.RecipeStepCompletionCondition) *mealplanningsvc.RecipeStepCompletionCondition {
+	recipeStepCompletionCondition := &mealplanningsvc.RecipeStepCompletionCondition{
+		CreatedAt:           grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		ArchivedAt:          grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		LastUpdatedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ID:                  input.ID,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		Notes:               input.Notes,
+		Optional:            input.Optional,
+		IngredientState:     ConvertValidIngredientStateToGRPCValidIngredientState(&input.IngredientState),
+	}
+
+	for _, ingredient := range input.Ingredients {
+		recipeStepCompletionCondition.Ingredients = append(recipeStepCompletionCondition.Ingredients, ConvertRecipeStepCompletionConditionIngredientToGRPCRecipeStepCompletionConditionIngredient(ingredient))
+	}
+
+	return recipeStepCompletionCondition
+}
+
+func ConvertRecipeStepCompletionConditionIngredientToGRPCRecipeStepCompletionConditionIngredient(input *mealplanning.RecipeStepCompletionConditionIngredient) *mealplanningsvc.RecipeStepCompletionConditionIngredient {
+	return &mealplanningsvc.RecipeStepCompletionConditionIngredient{
+		CreatedAt:                              grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		ArchivedAt:                             grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		LastUpdatedAt:                          grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ID:                                     input.ID,
+		BelongsToRecipeStepCompletionCondition: input.BelongsToRecipeStepCompletionCondition,
+		RecipeStepIngredient:                   input.RecipeStepIngredient,
+	}
 }
 
 func ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(input *mealplanning.RecipeStepIngredient) *mealplanningsvc.RecipeStepIngredient {

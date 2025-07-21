@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/services/configuration/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
@@ -68,7 +69,7 @@ func (s *ServiceImpl) CreateWebhook(ctx context.Context, request *configurations
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	created, err := s.webhookRepository.CreateWebhook(ctx, ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(request.Input, sessionContextData.ActiveAccountID))
+	created, err := s.webhookRepository.CreateWebhook(ctx, converters.ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(request.Input, sessionContextData.ActiveAccountID))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create webhook")
 	}
@@ -77,7 +78,7 @@ func (s *ServiceImpl) CreateWebhook(ctx context.Context, request *configurations
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Created: ConvertWebhookToGRPCWebhook(created),
+		Created: converters.ConvertWebhookToGRPCWebhook(created),
 	}
 
 	return x, nil
@@ -95,7 +96,7 @@ func (s *ServiceImpl) AddWebhookTriggerEvent(ctx context.Context, request *confi
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	created, err := s.webhookRepository.AddWebhookTriggerEvent(ctx, sessionContextData.ActiveAccountID, ConvertGRPCWebhookTriggerEventDatabaseCreationInputToWebhookTriggerEventDatabaseCreationInput(request.Input))
+	created, err := s.webhookRepository.AddWebhookTriggerEvent(ctx, sessionContextData.ActiveAccountID, converters.ConvertGRPCWebhookTriggerEventDatabaseCreationInputToWebhookTriggerEventDatabaseCreationInput(request.Input))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add webhook trigger event")
 	}
@@ -104,7 +105,7 @@ func (s *ServiceImpl) AddWebhookTriggerEvent(ctx context.Context, request *confi
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Created: ConvertWebhookTriggerEventToGRPCWebhookTriggerEvent(created),
+		Created: converters.ConvertWebhookTriggerEventToGRPCWebhookTriggerEvent(created),
 	}
 
 	return x, nil
@@ -131,7 +132,7 @@ func (s *ServiceImpl) GetWebhook(ctx context.Context, request *configurationsvc.
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Result: ConvertWebhookToGRPCWebhook(webhook),
+		Result: converters.ConvertWebhookToGRPCWebhook(webhook),
 	}
 
 	return x, nil
@@ -161,7 +162,7 @@ func (s *ServiceImpl) GetWebhooks(ctx context.Context, request *configurationsvc
 	}
 
 	for _, webhook := range retrieved.Data {
-		x.Results = append(x.Results, ConvertWebhookToGRPCWebhook(webhook))
+		x.Results = append(x.Results, converters.ConvertWebhookToGRPCWebhook(webhook))
 	}
 
 	return x, nil

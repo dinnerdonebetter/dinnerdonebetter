@@ -3,10 +3,12 @@ package grpc
 import (
 	"context"
 
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
@@ -15,9 +17,9 @@ func (s *ServiceImpl) ArchiveRecipe(ctx context.Context, request *mealplanning.A
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
@@ -41,10 +43,10 @@ func (s *ServiceImpl) ArchiveRecipePrepTask(ctx context.Context, request *mealpl
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:         request.RecipeID,
 		keys.RecipePrepTaskIDKey: request.RecipePrepTaskID,
-	})
+	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipePrepTask(ctx, request.GetRecipeID(), request.GetRecipePrepTaskID()); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "archiving recipe prep task")
@@ -63,10 +65,10 @@ func (s *ServiceImpl) ArchiveRecipeRating(ctx context.Context, request *mealplan
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:       request.RecipeID,
 		keys.RecipeRatingIDKey: request.RecipeRatingID,
-	})
+	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeRating(ctx, request.RecipeID, request.RecipeRatingID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe rating")
@@ -85,10 +87,10 @@ func (s *ServiceImpl) ArchiveRecipeStep(ctx context.Context, request *mealplanni
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStep(ctx, request.RecipeID, request.RecipeStepID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step")
@@ -107,11 +109,11 @@ func (s *ServiceImpl) ArchiveRecipeStepCompletionCondition(ctx context.Context, 
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:                        request.RecipeID,
 		keys.RecipeStepIDKey:                    request.RecipeStepID,
 		keys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionID,
-	})
+	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepCompletionCondition(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepCompletionConditionID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step completion condition")
@@ -130,11 +132,11 @@ func (s *ServiceImpl) ArchiveRecipeStepIngredient(ctx context.Context, request *
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:               request.RecipeID,
 		keys.RecipeStepIDKey:           request.RecipeStepID,
 		keys.RecipeStepIngredientIDKey: request.RecipeStepIngredientID,
-	})
+	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepIngredient(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepIngredientID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step ingredient")
@@ -153,11 +155,11 @@ func (s *ServiceImpl) ArchiveRecipeStepInstrument(ctx context.Context, request *
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:               request.RecipeID,
 		keys.RecipeStepIDKey:           request.RecipeStepID,
 		keys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentID,
-	})
+	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepInstrument(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepInstrumentID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step instrument")
@@ -176,11 +178,11 @@ func (s *ServiceImpl) ArchiveRecipeStepProduct(ctx context.Context, request *mea
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:            request.RecipeID,
 		keys.RecipeStepIDKey:        request.RecipeStepID,
 		keys.RecipeStepProductIDKey: request.RecipeStepProductID,
-	})
+	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepProduct(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepProductID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step product")
@@ -199,11 +201,11 @@ func (s *ServiceImpl) ArchiveRecipeStepVessel(ctx context.Context, request *meal
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:           request.RecipeID,
 		keys.RecipeStepIDKey:       request.RecipeStepID,
 		keys.RecipeStepVesselIDKey: request.RecipeStepVesselID,
-	})
+	}, span, s.logger)
 
 	if err := s.recipeManager.ArchiveRecipeStepVessel(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepVesselID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "archiving recipe step vessel")
@@ -222,16 +224,16 @@ func (s *ServiceImpl) CloneRecipe(ctx context.Context, request *mealplanning.Clo
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
 	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
 	}
 
-	_, err = s.recipeManager.CloneRecipe(ctx, request.RecipeID, sessionContextData.GetUserID())
+	cloned, err := s.recipeManager.CloneRecipe(ctx, request.RecipeID, sessionContextData.GetUserID())
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "cloning recipe")
 	}
@@ -240,7 +242,7 @@ func (s *ServiceImpl) CloneRecipe(ctx context.Context, request *mealplanning.Clo
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Cloned: nil, // TODO: cloned
+		Cloned: converters.ConvertRecipeToGRPCRecipe(cloned),
 	}
 
 	return x, nil
@@ -259,9 +261,9 @@ func (s *ServiceImpl) CreateRecipePrepTask(ctx context.Context, request *mealpla
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -270,9 +272,9 @@ func (s *ServiceImpl) CreateRecipeRating(ctx context.Context, request *mealplann
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -281,9 +283,9 @@ func (s *ServiceImpl) CreateRecipeStep(ctx context.Context, request *mealplannin
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -292,10 +294,10 @@ func (s *ServiceImpl) CreateRecipeStepCompletionCondition(ctx context.Context, r
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -304,10 +306,10 @@ func (s *ServiceImpl) CreateRecipeStepIngredient(ctx context.Context, request *m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -316,10 +318,10 @@ func (s *ServiceImpl) CreateRecipeStepInstrument(ctx context.Context, request *m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -328,10 +330,10 @@ func (s *ServiceImpl) CreateRecipeStepProduct(ctx context.Context, request *meal
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -340,10 +342,10 @@ func (s *ServiceImpl) CreateRecipeStepVessel(ctx context.Context, request *mealp
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -352,31 +354,57 @@ func (s *ServiceImpl) GetMermaidDiagramForRecipe(ctx context.Context, request *m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	mermaidDiagram, err := s.recipeManager.RecipeMermaid(ctx, request.RecipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to generate mermaid diagram")
+	}
+
+	x := &mealplanning.GetMermaidDiagramForRecipeResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Response: mermaidDiagram,
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipe(ctx context.Context, request *mealplanning.GetRecipeRequest) (*mealplanning.GetRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipe, err := s.recipeManager.ReadRecipe(ctx, request.RecipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe")
+	}
+
+	x := &mealplanning.GetRecipeResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertRecipeToGRPCRecipe(recipe),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeMealPlanTasks(ctx context.Context, request *mealplanning.GetRecipeMealPlanTasksRequest) (*mealplanning.GetRecipeMealPlanTasksResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
+
+	// TODO: WTF?
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -385,10 +413,10 @@ func (s *ServiceImpl) GetRecipePrepTask(ctx context.Context, request *mealplanni
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:         request.RecipeID,
 		keys.RecipePrepTaskIDKey: request.RecipePrepTaskID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -397,9 +425,9 @@ func (s *ServiceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -408,10 +436,10 @@ func (s *ServiceImpl) GetRecipeRating(ctx context.Context, request *mealplanning
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:       request.RecipeID,
 		keys.RecipeRatingIDKey: request.RecipeRatingID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -420,9 +448,9 @@ func (s *ServiceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *me
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -431,10 +459,10 @@ func (s *ServiceImpl) GetRecipeStep(ctx context.Context, request *mealplanning.G
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -443,11 +471,11 @@ func (s *ServiceImpl) GetRecipeStepCompletionCondition(ctx context.Context, requ
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:                        request.RecipeID,
 		keys.RecipeStepIDKey:                    request.RecipeStepID,
 		keys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -456,10 +484,10 @@ func (s *ServiceImpl) GetRecipeStepCompletionConditions(ctx context.Context, req
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -468,11 +496,11 @@ func (s *ServiceImpl) GetRecipeStepIngredient(ctx context.Context, request *meal
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:               request.RecipeID,
 		keys.RecipeStepIDKey:           request.RecipeStepID,
 		keys.RecipeStepIngredientIDKey: request.RecipeStepIngredientID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -481,10 +509,10 @@ func (s *ServiceImpl) GetRecipeStepIngredients(ctx context.Context, request *mea
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -493,11 +521,11 @@ func (s *ServiceImpl) GetRecipeStepInstrument(ctx context.Context, request *meal
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:               request.RecipeID,
 		keys.RecipeStepIDKey:           request.RecipeStepID,
 		keys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -506,10 +534,10 @@ func (s *ServiceImpl) GetRecipeStepInstruments(ctx context.Context, request *mea
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -518,11 +546,11 @@ func (s *ServiceImpl) GetRecipeStepProduct(ctx context.Context, request *mealpla
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:            request.RecipeID,
 		keys.RecipeStepIDKey:        request.RecipeStepID,
 		keys.RecipeStepProductIDKey: request.RecipeStepProductID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -531,10 +559,10 @@ func (s *ServiceImpl) GetRecipeStepProducts(ctx context.Context, request *mealpl
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -543,11 +571,11 @@ func (s *ServiceImpl) GetRecipeStepVessel(ctx context.Context, request *mealplan
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:           request.RecipeID,
 		keys.RecipeStepIDKey:       request.RecipeStepID,
 		keys.RecipeStepVesselIDKey: request.RecipeStepVesselID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -556,10 +584,10 @@ func (s *ServiceImpl) GetRecipeStepVessels(ctx context.Context, request *mealpla
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -568,9 +596,9 @@ func (s *ServiceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -581,16 +609,31 @@ func (s *ServiceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetR
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipes, _, err := s.recipeManager.ListRecipes(ctx, grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter))
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching list of recipes")
+	}
+
+	x := &mealplanning.GetRecipesResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipe := range recipes {
+		x.Results = append(x.Results, converters.ConvertRecipeToGRPCRecipe(recipe))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) SearchForRecipes(ctx context.Context, request *mealplanning.SearchForRecipesRequest) (*mealplanning.SearchForRecipesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.SearchQueryKey: request.Query,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -599,9 +642,9 @@ func (s *ServiceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.Up
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey: request.RecipeID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -610,10 +653,10 @@ func (s *ServiceImpl) UpdateRecipePrepTask(ctx context.Context, request *mealpla
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:         request.RecipeID,
 		keys.RecipePrepTaskIDKey: request.RecipePrepTaskID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -622,10 +665,10 @@ func (s *ServiceImpl) UpdateRecipeRating(ctx context.Context, request *mealplann
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:       request.RecipeID,
 		keys.RecipeRatingIDKey: request.RecipeRatingID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -634,10 +677,10 @@ func (s *ServiceImpl) UpdateRecipeStep(ctx context.Context, request *mealplannin
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:     request.RecipeID,
 		keys.RecipeStepIDKey: request.RecipeStepID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -646,11 +689,11 @@ func (s *ServiceImpl) UpdateRecipeStepCompletionCondition(ctx context.Context, r
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:                        request.RecipeID,
 		keys.RecipeStepIDKey:                    request.RecipeStepID,
 		keys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -659,11 +702,11 @@ func (s *ServiceImpl) UpdateRecipeStepIngredient(ctx context.Context, request *m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:               request.RecipeID,
 		keys.RecipeStepIDKey:           request.RecipeStepID,
 		keys.RecipeStepIngredientIDKey: request.RecipeStepIngredientID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -672,11 +715,11 @@ func (s *ServiceImpl) UpdateRecipeStepInstrument(ctx context.Context, request *m
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:               request.RecipeID,
 		keys.RecipeStepIDKey:           request.RecipeStepID,
 		keys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -685,11 +728,11 @@ func (s *ServiceImpl) UpdateRecipeStepProduct(ctx context.Context, request *meal
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:            request.RecipeID,
 		keys.RecipeStepIDKey:        request.RecipeStepID,
 		keys.RecipeStepProductIDKey: request.RecipeStepProductID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }
@@ -698,11 +741,11 @@ func (s *ServiceImpl) UpdateRecipeStepVessel(ctx context.Context, request *mealp
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithSpan(span).WithValues(map[string]any{
+	logger := observability.ObserveValues(map[string]any{
 		keys.RecipeIDKey:           request.RecipeID,
 		keys.RecipeStepIDKey:       request.RecipeStepID,
 		keys.RecipeStepVesselIDKey: request.RecipeStepVesselID,
-	})
+	}, span, s.logger)
 
 	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
 }

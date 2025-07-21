@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/services/configuration/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
@@ -18,7 +19,7 @@ func (s *ServiceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.Input.ServiceSettingID)
 
-	created, err := s.serviceSettingsRepository.CreateServiceSettingConfiguration(ctx, ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(request.Input))
+	created, err := s.serviceSettingsRepository.CreateServiceSettingConfiguration(ctx, converters.ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(request.Input))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create service setting")
 	}
@@ -27,7 +28,7 @@ func (s *ServiceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Created: ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(created),
+		Created: converters.ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(created),
 	}
 
 	return x, nil
@@ -54,7 +55,7 @@ func (s *ServiceImpl) GetServiceSettingConfigurationByName(ctx context.Context, 
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Result: ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(serviceSettingConfig),
+		Result: converters.ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(serviceSettingConfig),
 	}
 
 	return x, nil
@@ -84,7 +85,7 @@ func (s *ServiceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Cont
 	}
 
 	for _, cfg := range serviceSettingConfigs.Data {
-		x.Results = append(x.Results, ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(cfg))
+		x.Results = append(x.Results, converters.ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(cfg))
 	}
 
 	return x, nil
@@ -114,7 +115,7 @@ func (s *ServiceImpl) GetServiceSettingConfigurationsForUser(ctx context.Context
 	}
 
 	for _, cfg := range serviceSettingConfigs.Data {
-		x.Results = append(x.Results, ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(cfg))
+		x.Results = append(x.Results, converters.ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(cfg))
 	}
 
 	return x, nil
@@ -131,7 +132,7 @@ func (s *ServiceImpl) UpdateServiceSettingConfiguration(ctx context.Context, req
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to retrieve service setting configuration")
 	}
 
-	existing.Update(ConvertGRPCServiceSettingConfigurationUpdateRequestInputToServiceSettingConfigurationUpdateRequestInputTo(request.Input))
+	existing.Update(converters.ConvertGRPCServiceSettingConfigurationUpdateRequestInputToServiceSettingConfigurationUpdateRequestInputTo(request.Input))
 
 	if err = s.serviceSettingsRepository.UpdateServiceSettingConfiguration(ctx, existing); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update service setting configuration")
@@ -141,7 +142,7 @@ func (s *ServiceImpl) UpdateServiceSettingConfiguration(ctx context.Context, req
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Updated: ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(existing),
+		Updated: converters.ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(existing),
 	}
 
 	return x, nil

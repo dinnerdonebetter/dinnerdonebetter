@@ -1971,7 +1971,7 @@ message RecipeStepInstrument {
   google.protobuf.Timestamp CreatedAt = 1;
   ValidInstrument Instrument = 2;
   optional google.protobuf.Timestamp LastUpdatedAt = 3;
-  string RecipeStepProductID = 4;
+  optional string RecipeStepProductID = 4;
   optional google.protobuf.Timestamp ArchivedAt = 5;
   string Notes = 6;
   string Name = 7;
@@ -2080,7 +2080,7 @@ message RecipeStepVessel {
   common.Uint16RangeWithOptionalMax Quantity = 2;
   optional google.protobuf.Timestamp LastUpdatedAt = 3;
   optional google.protobuf.Timestamp ArchivedAt = 4;
-  string RecipeStepProductID = 5;
+  optional string RecipeStepProductID = 5;
   ValidVessel Vessel = 6;
   string ID = 7;
   string Notes = 8;
@@ -2338,6 +2338,7 @@ message GetMermaidDiagramForRecipeRequest {
 }
 
 message GetMermaidDiagramForRecipeResponse {
+  common.ResponseDetails ResponseDetails = 1;
   string Response = 2;
 }
 
@@ -2348,6 +2349,7 @@ message GetRecipeRequest {
 
 message GetRecipeResponse {
   common.ResponseDetails ResponseDetails = 1;
+  Recipe Result = 2;
 }
 
 // GetRecipeMealPlanTasks

@@ -1,4 +1,4 @@
-package grpc
+package converters
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"

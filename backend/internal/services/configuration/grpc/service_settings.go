@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/services/configuration/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
@@ -18,7 +19,7 @@ func (s *ServiceImpl) CreateServiceSetting(ctx context.Context, request *configu
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.serviceSettingsRepository.CreateServiceSetting(ctx, ConvertGPRCServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput(request.Input))
+	created, err := s.serviceSettingsRepository.CreateServiceSetting(ctx, converters.ConvertGPRCServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput(request.Input))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create service setting")
 	}
@@ -27,7 +28,7 @@ func (s *ServiceImpl) CreateServiceSetting(ctx context.Context, request *configu
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Created: ConvertServiceSettingToGRPCServiceSetting(created),
+		Created: converters.ConvertServiceSettingToGRPCServiceSetting(created),
 	}
 
 	return x, nil
@@ -48,7 +49,7 @@ func (s *ServiceImpl) GetServiceSetting(ctx context.Context, request *configurat
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Result: ConvertServiceSettingToGRPCServiceSetting(serviceSetting),
+		Result: converters.ConvertServiceSettingToGRPCServiceSetting(serviceSetting),
 	}
 
 	return x, nil
@@ -72,7 +73,7 @@ func (s *ServiceImpl) GetServiceSettings(ctx context.Context, request *configura
 	}
 
 	for _, serviceSetting := range serviceSettings.Data {
-		x.Results = append(x.Results, ConvertServiceSettingToGRPCServiceSetting(serviceSetting))
+		x.Results = append(x.Results, converters.ConvertServiceSettingToGRPCServiceSetting(serviceSetting))
 	}
 
 	return x, nil
@@ -96,7 +97,7 @@ func (s *ServiceImpl) SearchForServiceSettings(ctx context.Context, request *con
 	}
 
 	for _, serviceSetting := range serviceSettings {
-		x.Results = append(x.Results, ConvertServiceSettingToGRPCServiceSetting(serviceSetting))
+		x.Results = append(x.Results, converters.ConvertServiceSettingToGRPCServiceSetting(serviceSetting))
 	}
 
 	return x, nil
