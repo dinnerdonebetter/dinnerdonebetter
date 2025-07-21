@@ -16,17 +16,23 @@ message DataCollection {
 }
 
 // CreateServiceSetting
-message CreateServiceSettingRequest {}
+message CreateServiceSettingRequest {
+  ServiceSettingCreationRequestInput Input = 1;
+}
 
 message CreateServiceSettingResponse {
   common.ResponseDetails ResponseDetails = 1;
+  ServiceSetting Created = 2;
 }
 
 // CreateServiceSettingConfiguration
-message CreateServiceSettingConfigurationRequest {}
+message CreateServiceSettingConfigurationRequest {
+  ServiceSettingConfigurationCreationRequestInput Input = 1;
+}
 
 message CreateServiceSettingConfigurationResponse {
   common.ResponseDetails ResponseDetails = 1;
+  ServiceSettingConfiguration Created = 2;
 }
 
 // ArchiveServiceSetting
@@ -54,6 +60,7 @@ message GetServiceSettingRequest {
 
 message GetServiceSettingResponse {
   common.ResponseDetails ResponseDetails = 1;
+  ServiceSetting Result = 2;
 }
 
 // GetServiceSettingConfigurationByName
@@ -65,7 +72,7 @@ message GetServiceSettingConfigurationByNameRequest {
 message GetServiceSettingConfigurationByNameResponse {
   common.ResponseDetails ResponseDetails = 1;
   filtering.QueryFilter Filter = 2;
-  repeated ServiceSettingConfiguration Results = 3;
+  ServiceSettingConfiguration Result = 3;
 }
 
 // GetServiceSettingConfigurationsForAccount
@@ -121,6 +128,7 @@ message UpdateServiceSettingConfigurationRequest {
 
 message UpdateServiceSettingConfigurationResponse {
   common.ResponseDetails ResponseDetails = 1;
+  ServiceSettingConfiguration Updated = 2;
 }
 
 message ServiceSetting {
@@ -157,11 +165,11 @@ message ServiceSettingConfigurationCreationRequestInput {
 }
 
 message ServiceSettingConfigurationUpdateRequestInput {
-  string Value = 1;
-  string Notes = 2;
-  string ServiceSettingID = 3;
-  string BelongsToUser = 4;
-  string BelongsToAccount = 5;
+  optional string Value = 1;
+  optional string Notes = 2;
+  optional string ServiceSettingID = 3;
+  optional string BelongsToUser = 4;
+  optional string BelongsToAccount = 5;
 }
 
 message ServiceSettingCreationRequestInput {

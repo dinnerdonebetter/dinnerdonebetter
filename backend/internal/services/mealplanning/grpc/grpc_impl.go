@@ -1,10 +1,12 @@
 package grpc
 
 import (
+	"context"
 	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -16,11 +18,12 @@ const (
 type (
 	ServiceImpl struct {
 		mealplanningsvc.UnimplementedMealPlanningServiceServer
-		tracer                   tracing.Tracer
-		logger                   logging.Logger
-		recipeManager            managers.RecipeManager
-		validEnumerationsManager managers.ValidEnumerationsManager
-		mealPlanningManager      managers.MealPlanningManager
+		tracer                    tracing.Tracer
+		logger                    logging.Logger
+		sessionContextDataFetcher func(context.Context) (sessions.ContextData, error)
+		recipeManager             managers.RecipeManager
+		validEnumerationsManager  managers.ValidEnumerationsManager
+		mealPlanningManager       managers.MealPlanningManager
 	}
 )
 

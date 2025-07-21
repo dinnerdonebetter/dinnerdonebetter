@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	configurationsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/configuration"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
@@ -16,14 +16,15 @@ func (s *ServiceImpl) ArchiveWebhook(ctx context.Context, request *configuration
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	accountID, err := s.accountIDFetcher(request)
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to determine account ID")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
+	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	logger := s.logger.WithValue(keys.AccountIDKey, accountID)
-
-	if err = s.webhookRepository.ArchiveWebhook(ctx, request.WebhookID, accountID); err != nil {
+	if err = s.webhookRepository.ArchiveWebhook(ctx, request.WebhookID, sessionContextData.ActiveAccountID); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive webhook")
 	}
 
@@ -59,14 +60,15 @@ func (s *ServiceImpl) CreateWebhook(ctx context.Context, request *configurations
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	accountID, err := s.accountIDFetcher(request)
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to determine account ID")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
+	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	logger := s.logger.WithValue(keys.AccountIDKey, accountID)
-
-	created, err := s.webhookRepository.CreateWebhook(ctx, ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(request.Input, accountID))
+	created, err := s.webhookRepository.CreateWebhook(ctx, ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(request.Input, sessionContextData.ActiveAccountID))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create webhook")
 	}
@@ -85,18 +87,15 @@ func (s *ServiceImpl) AddWebhookTriggerEvent(ctx context.Context, request *confi
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithValue(keys.WebhookIDKey, request.WebhookID)
+	logger := s.logger.WithSpan(span)
 
-	accountID, err := s.accountIDFetcher(request)
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to determine account ID")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
+	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	created, err := s.webhookRepository.AddWebhookTriggerEvent(ctx, accountID, &webhooks.WebhookTriggerEventDatabaseCreationInput{
-		ID:               "",
-		BelongsToWebhook: "",
-		TriggerEvent:     "",
-	})
+	created, err := s.webhookRepository.AddWebhookTriggerEvent(ctx, sessionContextData.ActiveAccountID, ConvertGRPCWebhookTriggerEventDatabaseCreationInputToWebhookTriggerEventDatabaseCreationInput(request.Input))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add webhook trigger event")
 	}
@@ -115,14 +114,15 @@ func (s *ServiceImpl) GetWebhook(ctx context.Context, request *configurationsvc.
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	accountID, err := s.accountIDFetcher(request)
+	logger := s.logger.WithSpan(span).WithValue(keys.WebhookIDKey, request.WebhookID)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "determining account ID")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
+	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	logger := s.logger.WithValue(keys.AccountIDKey, accountID).WithValue(keys.WebhookIDKey, request.WebhookID)
-
-	webhook, err := s.webhookRepository.GetWebhook(ctx, request.WebhookID, accountID)
+	webhook, err := s.webhookRepository.GetWebhook(ctx, request.WebhookID, sessionContextData.ActiveAccountID)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch webhook")
 	}
@@ -141,14 +141,15 @@ func (s *ServiceImpl) GetWebhooks(ctx context.Context, request *configurationsvc
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	accountID, err := s.accountIDFetcher(request)
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "determining account ID")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
 	}
+	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	logger := s.logger.WithValue(keys.AccountIDKey, accountID)
-
-	retrieved, err := s.webhookRepository.GetWebhooks(ctx, accountID, grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter))
+	retrieved, err := s.webhookRepository.GetWebhooks(ctx, sessionContextData.ActiveAccountID, grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch webhooks")
 	}

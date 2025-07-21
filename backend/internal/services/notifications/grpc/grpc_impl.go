@@ -7,6 +7,7 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -24,9 +25,10 @@ var _ notificationssvc.UserNotificationsServiceServer = (*ServiceImpl)(nil)
 type (
 	ServiceImpl struct {
 		notificationssvc.UnimplementedUserNotificationsServiceServer
-		tracer                  tracing.Tracer
-		logger                  logging.Logger
-		notificationsRepository notifications.Repository
+		tracer                    tracing.Tracer
+		logger                    logging.Logger
+		sessionContextDataFetcher func(context.Context) (sessions.ContextData, error)
+		notificationsRepository   notifications.Repository
 	}
 )
 
@@ -57,10 +59,14 @@ func (s *ServiceImpl) GetUserNotification(ctx context.Context, request *notifica
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	userID := "TODO"
-	logger := s.logger.WithValue(keys.UserNotificationIDKey, request.UserNotificationID)
+	logger := s.logger.WithSpan(span).WithValue(keys.UserNotificationIDKey, request.UserNotificationID)
 
-	notification, err := s.notificationsRepository.GetUserNotification(ctx, userID, request.UserNotificationID)
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+	}
+
+	notification, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationID)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "")
 	}
@@ -79,12 +85,18 @@ func (s *ServiceImpl) GetUserNotifications(ctx context.Context, request *notific
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	userID := "TODO"
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+	}
+
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	logger := s.logger.WithValue(keys.UserIDKey, userID)
+	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
 
-	notifs, err := s.notificationsRepository.GetUserNotifications(ctx, userID, filter)
+	notifs, err := s.notificationsRepository.GetUserNotifications(ctx, sessionContextData.GetUserID(), filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching user notifs")
 	}
@@ -105,10 +117,16 @@ func (s *ServiceImpl) UpdateUserNotification(ctx context.Context, request *notif
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	userID := "TODO"
-	logger := s.logger.WithValue(keys.UserNotificationIDKey, request.UserNotificationID)
+	logger := s.logger.WithSpan(span)
 
-	existing, err := s.notificationsRepository.GetUserNotification(ctx, userID, request.UserNotificationID)
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "unable to determine authentication")
+	}
+
+	logger = logger.WithValue(keys.UserNotificationIDKey, request.UserNotificationID)
+
+	existing, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationID)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
 	}

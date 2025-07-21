@@ -1,9 +1,12 @@
 package grpc
 
 import (
+	"context"
+
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	configurationsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/configuration"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -19,7 +22,7 @@ type (
 		configurationsvc.UnimplementedUserConfigurationServiceServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
-		accountIDFetcher          func(x any) (string, error)
+		sessionContextDataFetcher func(context.Context) (sessions.ContextData, error)
 		webhookRepository         webhooks.Repository
 		serviceSettingsRepository settings.Repository
 	}

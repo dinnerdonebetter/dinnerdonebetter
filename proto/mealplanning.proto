@@ -1914,13 +1914,13 @@ message RecipeStepCreationRequestInput {
 
 message RecipeStepIngredient {
   google.protobuf.Timestamp CreatedAt = 1;
-  string RecipeStepProductRecipeID = 2;
+  optional string RecipeStepProductRecipeID = 2;
   optional google.protobuf.Timestamp ArchivedAt = 3;
   ValidIngredient Ingredient = 4;
   optional google.protobuf.Timestamp LastUpdatedAt = 5;
-  uint32 VesselIndex = 6;
-  float ProductPercentageToUse = 7;
-  string RecipeStepProductID = 8;
+  optional uint32 VesselIndex = 6;
+  optional float ProductPercentageToUse = 7;
+  optional string RecipeStepProductID = 8;
   string BelongsToRecipeStep = 9;
   string ID = 10;
   string QuantityNotes = 11;
@@ -2228,7 +2228,7 @@ message CloneRecipeRequest {
 
 message CloneRecipeResponse {
   common.ResponseDetails ResponseDetails = 1;
-  Recipe Result = 2;
+  Recipe Cloned = 2;
 }
 
 // CreateRecipe
