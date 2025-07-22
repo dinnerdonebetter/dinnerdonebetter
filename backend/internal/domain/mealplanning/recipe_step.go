@@ -120,7 +120,7 @@ type (
 		ExplicitInstructions    *string                    `json:"explicitInstructions,omitempty"`
 		ConditionExpression     *string                    `json:"conditionExpression,omitempty"`
 		StartTimerAutomatically *bool                      `json:"startTimerAutomatically"`
-		BelongsToRecipe         string                     `json:"belongsToRecipe"`
+		BelongsToRecipe         *string                    `json:"belongsToRecipe"`
 	}
 
 	// RecipeStepDataManager describes a structure capable of storing recipe steps permanently.

@@ -254,7 +254,21 @@ func (s *ServiceImpl) CreateRecipe(ctx context.Context, request *mealplanning.Cr
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipe(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe")
+	}
+
+	x := &mealplanning.CreateRecipeResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeToGRPCRecipe(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateRecipePrepTask(ctx context.Context, request *mealplanning.CreateRecipePrepTaskRequest) (*mealplanning.CreateRecipePrepTaskResponse, error) {
@@ -265,7 +279,21 @@ func (s *ServiceImpl) CreateRecipePrepTask(ctx context.Context, request *mealpla
 		keys.RecipeIDKey: request.RecipeID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipePrepTaskCreationRequestInputToRecipePrepTaskCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipePrepTask(ctx, request.RecipeID, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe prep task")
+	}
+
+	x := &mealplanning.CreateRecipePrepTaskResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipePrepTaskToGRPCRecipePrepTask(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateRecipeRating(ctx context.Context, request *mealplanning.CreateRecipeRatingRequest) (*mealplanning.CreateRecipeRatingResponse, error) {
@@ -276,7 +304,21 @@ func (s *ServiceImpl) CreateRecipeRating(ctx context.Context, request *mealplann
 		keys.RecipeIDKey: request.RecipeID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeRatingCreationRequestInputToRecipeRatingCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipeRating(ctx, request.RecipeID, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe prep task")
+	}
+
+	x := &mealplanning.CreateRecipeRatingResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeRatingToGRPCRecipeRating(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateRecipeStep(ctx context.Context, request *mealplanning.CreateRecipeStepRequest) (*mealplanning.CreateRecipeStepResponse, error) {
@@ -287,7 +329,21 @@ func (s *ServiceImpl) CreateRecipeStep(ctx context.Context, request *mealplannin
 		keys.RecipeIDKey: request.RecipeID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipeStepInput := converters.ConvertGRPCRecipeStepCreationRequestInputToRecipeStepCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipeStep(ctx, request.RecipeID, recipeStepInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step")
+	}
+
+	x := &mealplanning.CreateRecipeStepResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeStepToGRPCRecipeStep(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.CreateRecipeStepCompletionConditionRequest) (*mealplanning.CreateRecipeStepCompletionConditionResponse, error) {
@@ -299,7 +355,21 @@ func (s *ServiceImpl) CreateRecipeStepCompletionCondition(ctx context.Context, r
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	creationInput := converters.ConvertGRPCRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionForExistingRecipeCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipeStepCompletionCondition(ctx, request.RecipeID, request.RecipeStepID, creationInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step completion condition")
+	}
+
+	x := &mealplanning.CreateRecipeStepCompletionConditionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateRecipeStepIngredient(ctx context.Context, request *mealplanning.CreateRecipeStepIngredientRequest) (*mealplanning.CreateRecipeStepIngredientResponse, error) {
@@ -311,7 +381,21 @@ func (s *ServiceImpl) CreateRecipeStepIngredient(ctx context.Context, request *m
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	creationInput := converters.ConvertGRPCRecipeStepIngredientCreationRequestInputToRecipeStepIngredientCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipeStepIngredient(ctx, request.RecipeID, request.RecipeStepID, creationInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step ingredient")
+	}
+
+	x := &mealplanning.CreateRecipeStepIngredientResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateRecipeStepInstrument(ctx context.Context, request *mealplanning.CreateRecipeStepInstrumentRequest) (*mealplanning.CreateRecipeStepInstrumentResponse, error) {
@@ -323,7 +407,21 @@ func (s *ServiceImpl) CreateRecipeStepInstrument(ctx context.Context, request *m
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	creationInput := converters.ConvertGRPCRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipeStepInstrument(ctx, request.RecipeID, request.RecipeStepID, creationInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step instrument")
+	}
+
+	x := &mealplanning.CreateRecipeStepInstrumentResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateRecipeStepProduct(ctx context.Context, request *mealplanning.CreateRecipeStepProductRequest) (*mealplanning.CreateRecipeStepProductResponse, error) {
@@ -335,7 +433,21 @@ func (s *ServiceImpl) CreateRecipeStepProduct(ctx context.Context, request *meal
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	creationInput := converters.ConvertGRPCRecipeStepProductCreationRequestInputToRecipeStepProductCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipeStepProduct(ctx, request.RecipeID, request.RecipeStepID, creationInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step product")
+	}
+
+	x := &mealplanning.CreateRecipeStepProductResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeStepProductToGRPCRecipeStepProduct(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateRecipeStepVessel(ctx context.Context, request *mealplanning.CreateRecipeStepVesselRequest) (*mealplanning.CreateRecipeStepVesselResponse, error) {
@@ -347,7 +459,21 @@ func (s *ServiceImpl) CreateRecipeStepVessel(ctx context.Context, request *mealp
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	creationInput := converters.ConvertGRPCRecipeStepVesselCreationRequestInputToRecipeStepVesselCreationRequestInput(request.Input)
+
+	created, err := s.recipeManager.CreateRecipeStepVessel(ctx, request.RecipeID, request.RecipeStepID, creationInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe step vessel")
+	}
+
+	x := &mealplanning.CreateRecipeStepVesselResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertRecipeStepVesselToGRPCRecipeStepVessel(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetMermaidDiagramForRecipe(ctx context.Context, request *mealplanning.GetMermaidDiagramForRecipeRequest) (*mealplanning.GetMermaidDiagramForRecipeResponse, error) {
@@ -396,7 +522,8 @@ func (s *ServiceImpl) GetRecipe(ctx context.Context, request *mealplanning.GetRe
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeMealPlanTasks(ctx context.Context, request *mealplanning.GetRecipeMealPlanTasksRequest) (*mealplanning.GetRecipeMealPlanTasksResponse, error) {
+// TODO: very aware that this basically just emits a list of strings, and that that isn't very useful
+func (s *ServiceImpl) EstimateRecipePrepTasks(ctx context.Context, request *mealplanning.EstimateRecipePrepTasksRequest) (*mealplanning.EstimateRecipePrepTasksResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -404,9 +531,22 @@ func (s *ServiceImpl) GetRecipeMealPlanTasks(ctx context.Context, request *mealp
 		keys.RecipeIDKey: request.RecipeID,
 	}, span, s.logger)
 
-	// TODO: WTF?
+	estimatedPrepSteps, err := s.recipeManager.RecipeEstimatedPrepSteps(ctx, request.RecipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to estimate prep steps")
+	}
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	x := &mealplanning.EstimateRecipePrepTasksResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, step := range estimatedPrepSteps {
+		x.Results = append(x.Results, converters.ConvertMealPlanTaskToGRPCMealPlanTask(step))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipePrepTask(ctx context.Context, request *mealplanning.GetRecipePrepTaskRequest) (*mealplanning.GetRecipePrepTaskResponse, error) {
@@ -418,7 +558,19 @@ func (s *ServiceImpl) GetRecipePrepTask(ctx context.Context, request *mealplanni
 		keys.RecipePrepTaskIDKey: request.RecipePrepTaskID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipePrepTask, err := s.recipeManager.ReadRecipePrepTask(ctx, request.RecipeID, request.RecipePrepTaskID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe prep task")
+	}
+
+	x := &mealplanning.GetRecipePrepTaskResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertRecipePrepTaskToGRPCRecipePrepTask(recipePrepTask),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplanning.GetRecipePrepTasksRequest) (*mealplanning.GetRecipePrepTasksResponse, error) {
@@ -429,7 +581,24 @@ func (s *ServiceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 		keys.RecipeIDKey: request.RecipeID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	recipePrepTasks, _, err := s.recipeManager.ListRecipePrepTask(ctx, request.RecipeID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe prep tasks")
+	}
+
+	x := &mealplanning.GetRecipePrepTasksResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipePrepTask := range recipePrepTasks {
+		x.Results = append(x.Results, converters.ConvertRecipePrepTaskToGRPCRecipePrepTask(recipePrepTask))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeRating(ctx context.Context, request *mealplanning.GetRecipeRatingRequest) (*mealplanning.GetRecipeRatingResponse, error) {
@@ -441,7 +610,19 @@ func (s *ServiceImpl) GetRecipeRating(ctx context.Context, request *mealplanning
 		keys.RecipeRatingIDKey: request.RecipeRatingID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipeRating, err := s.recipeManager.ReadRecipeRating(ctx, request.RecipeID, request.RecipeRatingID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe rating")
+	}
+
+	x := &mealplanning.GetRecipeRatingResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertRecipeRatingToGRPCRecipeRating(recipeRating),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *mealplanning.GetRecipeRatingsForRecipeRequest) (*mealplanning.GetRecipeRatingsForRecipeResponse, error) {
@@ -452,7 +633,24 @@ func (s *ServiceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *me
 		keys.RecipeIDKey: request.RecipeID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	recipeRatings, _, err := s.recipeManager.ListRecipeRatings(ctx, request.RecipeID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe ratings")
+	}
+
+	x := &mealplanning.GetRecipeRatingsForRecipeResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipePrepTask := range recipeRatings {
+		x.Results = append(x.Results, converters.ConvertRecipeRatingToGRPCRecipeRating(recipePrepTask))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStep(ctx context.Context, request *mealplanning.GetRecipeStepRequest) (*mealplanning.GetRecipeStepResponse, error) {
@@ -464,7 +662,19 @@ func (s *ServiceImpl) GetRecipeStep(ctx context.Context, request *mealplanning.G
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipeStep, err := s.recipeManager.ReadRecipeStep(ctx, request.RecipeID, request.RecipeStepID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step")
+	}
+
+	x := &mealplanning.GetRecipeStepResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertRecipeStepToGRPCRecipeStep(recipeStep),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.GetRecipeStepCompletionConditionRequest) (*mealplanning.GetRecipeStepCompletionConditionResponse, error) {
@@ -477,7 +687,19 @@ func (s *ServiceImpl) GetRecipeStepCompletionCondition(ctx context.Context, requ
 		keys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipeStepCompletionCondition, err := s.recipeManager.ReadRecipeStepCompletionCondition(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepCompletionConditionID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step completion condition")
+	}
+
+	x := &mealplanning.GetRecipeStepCompletionConditionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(recipeStepCompletionCondition),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepCompletionConditions(ctx context.Context, request *mealplanning.GetRecipeStepCompletionConditionsRequest) (*mealplanning.GetRecipeStepCompletionConditionsResponse, error) {
@@ -489,7 +711,24 @@ func (s *ServiceImpl) GetRecipeStepCompletionConditions(ctx context.Context, req
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	recipeStepCompletionConditions, _, err := s.recipeManager.ListRecipeStepCompletionConditions(ctx, request.RecipeID, request.RecipeStepID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step completion conditions")
+	}
+
+	x := &mealplanning.GetRecipeStepCompletionConditionsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipePrepTask := range recipeStepCompletionConditions {
+		x.Results = append(x.Results, converters.ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(recipePrepTask))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepIngredient(ctx context.Context, request *mealplanning.GetRecipeStepIngredientRequest) (*mealplanning.GetRecipeStepIngredientResponse, error) {
@@ -502,7 +741,19 @@ func (s *ServiceImpl) GetRecipeStepIngredient(ctx context.Context, request *meal
 		keys.RecipeStepIngredientIDKey: request.RecipeStepIngredientID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipeStepIngredient, err := s.recipeManager.ReadRecipeStepIngredient(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepIngredientID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step ingredient")
+	}
+
+	x := &mealplanning.GetRecipeStepIngredientResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(recipeStepIngredient),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepIngredients(ctx context.Context, request *mealplanning.GetRecipeStepIngredientsRequest) (*mealplanning.GetRecipeStepIngredientsResponse, error) {
@@ -514,7 +765,24 @@ func (s *ServiceImpl) GetRecipeStepIngredients(ctx context.Context, request *mea
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	recipeStepIngredients, _, err := s.recipeManager.ListRecipeStepIngredients(ctx, request.RecipeID, request.RecipeStepID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step ingredients")
+	}
+
+	x := &mealplanning.GetRecipeStepIngredientsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipeStepIngredient := range recipeStepIngredients {
+		x.Results = append(x.Results, converters.ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(recipeStepIngredient))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepInstrument(ctx context.Context, request *mealplanning.GetRecipeStepInstrumentRequest) (*mealplanning.GetRecipeStepInstrumentResponse, error) {
@@ -527,7 +795,19 @@ func (s *ServiceImpl) GetRecipeStepInstrument(ctx context.Context, request *meal
 		keys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipeStepInstrument, err := s.recipeManager.ReadRecipeStepInstrument(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepInstrumentID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step instrument")
+	}
+
+	x := &mealplanning.GetRecipeStepInstrumentResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(recipeStepInstrument),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepInstruments(ctx context.Context, request *mealplanning.GetRecipeStepInstrumentsRequest) (*mealplanning.GetRecipeStepInstrumentsResponse, error) {
@@ -539,7 +819,24 @@ func (s *ServiceImpl) GetRecipeStepInstruments(ctx context.Context, request *mea
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	recipeStepInstruments, _, err := s.recipeManager.ListRecipeStepInstruments(ctx, request.RecipeID, request.RecipeStepID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step instruments")
+	}
+
+	x := &mealplanning.GetRecipeStepInstrumentsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipeStepInstrument := range recipeStepInstruments {
+		x.Results = append(x.Results, converters.ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(recipeStepInstrument))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepProduct(ctx context.Context, request *mealplanning.GetRecipeStepProductRequest) (*mealplanning.GetRecipeStepProductResponse, error) {
@@ -552,7 +849,19 @@ func (s *ServiceImpl) GetRecipeStepProduct(ctx context.Context, request *mealpla
 		keys.RecipeStepProductIDKey: request.RecipeStepProductID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipeStepProduct, err := s.recipeManager.ReadRecipeStepProduct(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepProductID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step")
+	}
+
+	x := &mealplanning.GetRecipeStepProductResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertRecipeStepProductToGRPCRecipeStepProduct(recipeStepProduct),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepProducts(ctx context.Context, request *mealplanning.GetRecipeStepProductsRequest) (*mealplanning.GetRecipeStepProductsResponse, error) {
@@ -564,7 +873,24 @@ func (s *ServiceImpl) GetRecipeStepProducts(ctx context.Context, request *mealpl
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	recipeStepProducts, _, err := s.recipeManager.ListRecipeStepProducts(ctx, request.RecipeID, request.RecipeStepID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step product")
+	}
+
+	x := &mealplanning.GetRecipeStepProductsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipeStepProduct := range recipeStepProducts {
+		x.Results = append(x.Results, converters.ConvertRecipeStepProductToGRPCRecipeStepProduct(recipeStepProduct))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepVessel(ctx context.Context, request *mealplanning.GetRecipeStepVesselRequest) (*mealplanning.GetRecipeStepVesselResponse, error) {
@@ -577,7 +903,19 @@ func (s *ServiceImpl) GetRecipeStepVessel(ctx context.Context, request *mealplan
 		keys.RecipeStepVesselIDKey: request.RecipeStepVesselID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	recipeStepVessel, err := s.recipeManager.ReadRecipeStepVessel(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepVesselID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step")
+	}
+
+	x := &mealplanning.GetRecipeStepVesselResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertRecipeStepVesselToGRPCRecipeStepVessel(recipeStepVessel),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeStepVessels(ctx context.Context, request *mealplanning.GetRecipeStepVesselsRequest) (*mealplanning.GetRecipeStepVesselsResponse, error) {
@@ -589,7 +927,24 @@ func (s *ServiceImpl) GetRecipeStepVessels(ctx context.Context, request *mealpla
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	recipeStepVessels, _, err := s.recipeManager.ListRecipeStepVessels(ctx, request.RecipeID, request.RecipeStepID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step vessels")
+	}
+
+	x := &mealplanning.GetRecipeStepVesselsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipeStepVessel := range recipeStepVessels {
+		x.Results = append(x.Results, converters.ConvertRecipeStepVesselToGRPCRecipeStepVessel(recipeStepVessel))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.GetRecipeStepsRequest) (*mealplanning.GetRecipeStepsResponse, error) {
@@ -600,7 +955,24 @@ func (s *ServiceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 		keys.RecipeIDKey: request.RecipeID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	recipeSteps, _, err := s.recipeManager.ListRecipeSteps(ctx, request.RecipeID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get recipe step vessels")
+	}
+
+	x := &mealplanning.GetRecipeStepsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipeStep := range recipeSteps {
+		x.Results = append(x.Results, converters.ConvertRecipeStepToGRPCRecipeStep(recipeStep))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetRecipesRequest) (*mealplanning.GetRecipesResponse, error) {
@@ -635,7 +1007,24 @@ func (s *ServiceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 		keys.SearchQueryKey: request.Query,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	recipes, _, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseDatabase, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for recipes")
+	}
+
+	x := &mealplanning.SearchForRecipesResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, recipe := range recipes {
+		x.Results = append(x.Results, converters.ConvertRecipeToGRPCRecipe(recipe))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.UpdateRecipeRequest) (*mealplanning.UpdateRecipeResponse, error) {
@@ -646,7 +1035,25 @@ func (s *ServiceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.Up
 		keys.RecipeIDKey: request.RecipeID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeUpdateRequestInputToRecipeUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipe(ctx, request.RecipeID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe")
+	}
+
+	updated, err := s.recipeManager.ReadRecipe(ctx, request.RecipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe")
+	}
+
+	x := &mealplanning.UpdateRecipeResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipeToGRPCRecipe(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateRecipePrepTask(ctx context.Context, request *mealplanning.UpdateRecipePrepTaskRequest) (*mealplanning.UpdateRecipePrepTaskResponse, error) {
@@ -658,7 +1065,25 @@ func (s *ServiceImpl) UpdateRecipePrepTask(ctx context.Context, request *mealpla
 		keys.RecipePrepTaskIDKey: request.RecipePrepTaskID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipePrepTaskUpdateRequestInputToRecipePrepTaskUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipePrepTask(ctx, request.RecipeID, request.RecipePrepTaskID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe prep task")
+	}
+
+	updated, err := s.recipeManager.ReadRecipePrepTask(ctx, request.RecipeID, request.RecipePrepTaskID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe prep task")
+	}
+
+	x := &mealplanning.UpdateRecipePrepTaskResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipePrepTaskToGRPCRecipePrepTask(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateRecipeRating(ctx context.Context, request *mealplanning.UpdateRecipeRatingRequest) (*mealplanning.UpdateRecipeRatingResponse, error) {
@@ -670,7 +1095,25 @@ func (s *ServiceImpl) UpdateRecipeRating(ctx context.Context, request *mealplann
 		keys.RecipeRatingIDKey: request.RecipeRatingID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeRatingUpdateRequestInputToRecipeRatingUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipeRating(ctx, request.RecipeID, request.RecipeRatingID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe rating")
+	}
+
+	updated, err := s.recipeManager.ReadRecipeRating(ctx, request.RecipeID, request.RecipeRatingID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe rating")
+	}
+
+	x := &mealplanning.UpdateRecipeRatingResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipeRatingToGRPCRecipeRating(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateRecipeStep(ctx context.Context, request *mealplanning.UpdateRecipeStepRequest) (*mealplanning.UpdateRecipeStepResponse, error) {
@@ -682,7 +1125,25 @@ func (s *ServiceImpl) UpdateRecipeStep(ctx context.Context, request *mealplannin
 		keys.RecipeStepIDKey: request.RecipeStepID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeStepUpdateRequestInputToRecipeStepUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipeStep(ctx, request.RecipeID, request.RecipeStepID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step")
+	}
+
+	updated, err := s.recipeManager.ReadRecipeStep(ctx, request.RecipeID, request.RecipeStepID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step")
+	}
+
+	x := &mealplanning.UpdateRecipeStepResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipeStepToGRPCRecipeStep(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.UpdateRecipeStepCompletionConditionRequest) (*mealplanning.UpdateRecipeStepCompletionConditionResponse, error) {
@@ -695,7 +1156,25 @@ func (s *ServiceImpl) UpdateRecipeStepCompletionCondition(ctx context.Context, r
 		keys.RecipeStepCompletionConditionIDKey: request.RecipeStepCompletionConditionID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeStepCompletionConditionUpdateRequestInputToRecipeStepCompletionConditionUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipeStepCompletionCondition(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepCompletionConditionID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step completion condition")
+	}
+
+	updated, err := s.recipeManager.ReadRecipeStepCompletionCondition(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepCompletionConditionID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step completion condition")
+	}
+
+	x := &mealplanning.UpdateRecipeStepCompletionConditionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipeStepCompletionConditionToGRPCRecipeStepCompletionCondition(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateRecipeStepIngredient(ctx context.Context, request *mealplanning.UpdateRecipeStepIngredientRequest) (*mealplanning.UpdateRecipeStepIngredientResponse, error) {
@@ -708,7 +1187,25 @@ func (s *ServiceImpl) UpdateRecipeStepIngredient(ctx context.Context, request *m
 		keys.RecipeStepIngredientIDKey: request.RecipeStepIngredientID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeStepIngredientUpdateRequestInputToRecipeStepIngredientUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipeStepIngredient(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepIngredientID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step ingredient")
+	}
+
+	updated, err := s.recipeManager.ReadRecipeStepIngredient(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepIngredientID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step ingredient")
+	}
+
+	x := &mealplanning.UpdateRecipeStepIngredientResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipeStepIngredientToGRPCRecipeStepIngredient(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateRecipeStepInstrument(ctx context.Context, request *mealplanning.UpdateRecipeStepInstrumentRequest) (*mealplanning.UpdateRecipeStepInstrumentResponse, error) {
@@ -721,7 +1218,25 @@ func (s *ServiceImpl) UpdateRecipeStepInstrument(ctx context.Context, request *m
 		keys.RecipeStepInstrumentIDKey: request.RecipeStepInstrumentID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeStepInstrumentUpdateRequestInputToRecipeStepInstrumentUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipeStepInstrument(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepInstrumentID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step instrument")
+	}
+
+	updated, err := s.recipeManager.ReadRecipeStepInstrument(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepInstrumentID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step instrument")
+	}
+
+	x := &mealplanning.UpdateRecipeStepInstrumentResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateRecipeStepProduct(ctx context.Context, request *mealplanning.UpdateRecipeStepProductRequest) (*mealplanning.UpdateRecipeStepProductResponse, error) {
@@ -734,7 +1249,25 @@ func (s *ServiceImpl) UpdateRecipeStepProduct(ctx context.Context, request *meal
 		keys.RecipeStepProductIDKey: request.RecipeStepProductID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeStepProductUpdateRequestInputToRecipeStepProductUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipeStepProduct(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepProductID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step product")
+	}
+
+	updated, err := s.recipeManager.ReadRecipeStepProduct(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepProductID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step product")
+	}
+
+	x := &mealplanning.UpdateRecipeStepProductResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipeStepProductToGRPCRecipeStepProduct(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateRecipeStepVessel(ctx context.Context, request *mealplanning.UpdateRecipeStepVesselRequest) (*mealplanning.UpdateRecipeStepVesselResponse, error) {
@@ -747,5 +1280,23 @@ func (s *ServiceImpl) UpdateRecipeStepVessel(ctx context.Context, request *mealp
 		keys.RecipeStepVesselIDKey: request.RecipeStepVesselID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCRecipeStepVesselUpdateRequestInputToRecipeStepVesselUpdateRequestInput(request.Input)
+
+	if err := s.recipeManager.UpdateRecipeStepVessel(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepVesselID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed updating recipe step vessel")
+	}
+
+	updated, err := s.recipeManager.ReadRecipeStepVessel(ctx, request.RecipeID, request.RecipeStepID, request.RecipeStepVesselID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed reading recipe step vessel")
+	}
+
+	x := &mealplanning.UpdateRecipeStepVesselResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertRecipeStepVesselToGRPCRecipeStepVessel(updated),
+	}
+
+	return x, nil
 }

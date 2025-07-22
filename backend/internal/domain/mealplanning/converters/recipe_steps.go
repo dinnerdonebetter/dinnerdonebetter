@@ -9,7 +9,7 @@ import (
 func ConvertRecipeStepToRecipeStepUpdateRequestInput(input *mealplanning.RecipeStep) *mealplanning.RecipeStepUpdateRequestInput {
 	x := &mealplanning.RecipeStepUpdateRequestInput{
 		Notes:                   &input.Notes,
-		BelongsToRecipe:         input.BelongsToRecipe,
+		BelongsToRecipe:         &input.BelongsToRecipe,
 		Preparation:             &input.Preparation,
 		Index:                   &input.Index,
 		EstimatedTimeInSeconds:  input.EstimatedTimeInSeconds,

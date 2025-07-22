@@ -1606,7 +1606,9 @@ message ArchiveUserIngredientPreferenceResponse {
 }
 
 // CreateUserIngredientPreference
-message CreateUserIngredientPreferenceRequest {}
+message CreateUserIngredientPreferenceRequest {
+  UserIngredientPreferenceCreationRequestInput Input = 1;
+}
 
 message CreateUserIngredientPreferenceResponse {
   common.ResponseDetails ResponseDetails = 1;
@@ -1661,7 +1663,7 @@ message Recipe {
 }
 
 message RecipeCreationRequestInput {
-  string InspiredByRecipeID = 1;
+  optional string InspiredByRecipeID = 1;
   string Name = 2;
   string Source = 3;
   string Description = 4;
@@ -1934,12 +1936,12 @@ message RecipeStepIngredient {
 }
 
 message RecipeStepIngredientCreationRequestInput {
-  string IngredientID = 1;
-  uint64 ProductOfRecipeStepIndex = 2;
-  uint64 ProductOfRecipeStepProductIndex = 3;
-  uint32 VesselIndex = 4;
-  float ProductPercentageToUse = 5;
-  string RecipeStepProductRecipeID = 6;
+  optional string IngredientID = 1;
+  optional uint64 ProductOfRecipeStepIndex = 2;
+  optional uint64 ProductOfRecipeStepProductIndex = 3;
+  optional uint32 VesselIndex = 4;
+  optional float ProductPercentageToUse = 5;
+  optional string RecipeStepProductRecipeID = 6;
   string IngredientNotes = 7;
   string MeasurementUnitID = 8;
   string Name = 9;
@@ -1984,10 +1986,10 @@ message RecipeStepInstrument {
 }
 
 message RecipeStepInstrumentCreationRequestInput {
-  string InstrumentID = 1;
-  string RecipeStepProductID = 2;
-  uint64 ProductOfRecipeStepIndex = 3;
-  uint64 ProductOfRecipeStepProductIndex = 4;
+  optional string InstrumentID = 1;
+  optional string RecipeStepProductID = 2;
+  optional uint64 ProductOfRecipeStepIndex = 3;
+  optional uint64 ProductOfRecipeStepProductIndex = 4;
   common.Uint32RangeWithOptionalMax Quantity = 5;
   string Notes = 6;
   string Name = 7;
@@ -2033,8 +2035,8 @@ message RecipeStepProductCreationRequestInput {
   common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
   common.OptionalUint32Range StorageDurationInSeconds = 2;
   common.OptionalFloat32Range Quantity = 3;
-  string MeasurementUnitID = 4;
-  uint32 ContainedInVesselIndex = 5;
+  optional string MeasurementUnitID = 4;
+  optional uint32 ContainedInVesselIndex = 5;
   string QuantityNotes = 6;
   string Name = 7;
   string StorageInstructions = 8;
@@ -2091,10 +2093,10 @@ message RecipeStepVessel {
 }
 
 message RecipeStepVesselCreationRequestInput {
-  string RecipeStepProductID = 1;
-  uint64 ProductOfRecipeStepIndex = 2;
-  uint64 ProductOfRecipeStepProductIndex = 3;
-  string VesselID = 4;
+  optional string RecipeStepProductID = 1;
+  optional uint64 ProductOfRecipeStepIndex = 2;
+  optional uint64 ProductOfRecipeStepProductIndex = 3;
+  optional string VesselID = 4;
   common.Uint16RangeWithOptionalMax Quantity = 5;
   string Name = 6;
   string Notes = 7;
@@ -2232,7 +2234,9 @@ message CloneRecipeResponse {
 }
 
 // CreateRecipe
-message CreateRecipeRequest {}
+message CreateRecipeRequest {
+  RecipeCreationRequestInput Input = 1;
+}
 
 message CreateRecipeResponse {
   common.ResponseDetails ResponseDetails = 1;
@@ -2352,13 +2356,14 @@ message GetRecipeResponse {
   Recipe Result = 2;
 }
 
-// GetRecipeMealPlanTasks
-message GetRecipeMealPlanTasksRequest {
+// EstimateRecipePrepTasks
+message EstimateRecipePrepTasksRequest {
   string recipeID = 1;
 }
 
-message GetRecipeMealPlanTasksResponse {
+message EstimateRecipePrepTasksResponse {
   common.ResponseDetails ResponseDetails = 1;
+  repeated MealPlanTask Results = 2;
 }
 
 // GetRecipePrepTask
@@ -2369,6 +2374,7 @@ message GetRecipePrepTaskRequest {
 
 message GetRecipePrepTaskResponse {
   common.ResponseDetails ResponseDetails = 1;
+  RecipePrepTask Result = 2;
 }
 
 // GetRecipePrepTasks
@@ -2391,6 +2397,7 @@ message GetRecipeRatingRequest {
 
 message GetRecipeRatingResponse {
   common.ResponseDetails ResponseDetails = 1;
+  RecipeRating Result = 2;
 }
 
 // GetRecipeRatingsForRecipe
@@ -2413,6 +2420,7 @@ message GetRecipeStepRequest {
 
 message GetRecipeStepResponse {
   common.ResponseDetails ResponseDetails = 1;
+  RecipeStep Result = 2;
 }
 
 // GetRecipeStepCompletionCondition
@@ -2424,6 +2432,7 @@ message GetRecipeStepCompletionConditionRequest {
 
 message GetRecipeStepCompletionConditionResponse {
   common.ResponseDetails ResponseDetails = 1;
+  RecipeStepCompletionCondition Result = 2;
 }
 
 // GetRecipeStepCompletionConditions
@@ -2448,6 +2457,7 @@ message GetRecipeStepIngredientRequest {
 
 message GetRecipeStepIngredientResponse {
   common.ResponseDetails ResponseDetails = 1;
+  RecipeStepIngredient Result = 2;
 }
 
 // GetRecipeStepIngredients
@@ -2472,6 +2482,7 @@ message GetRecipeStepInstrumentRequest {
 
 message GetRecipeStepInstrumentResponse {
   common.ResponseDetails ResponseDetails = 1;
+  RecipeStepInstrument Result = 2;
 }
 
 // GetRecipeStepInstruments
@@ -2496,6 +2507,7 @@ message GetRecipeStepProductRequest {
 
 message GetRecipeStepProductResponse {
   common.ResponseDetails ResponseDetails = 1;
+  RecipeStepProduct Result = 2;
 }
 
 // GetRecipeStepProducts
@@ -2520,6 +2532,7 @@ message GetRecipeStepVesselRequest {
 
 message GetRecipeStepVesselResponse {
   common.ResponseDetails ResponseDetails = 1;
+  RecipeStepVessel Result = 2;
 }
 
 // GetRecipeStepVessels
@@ -2562,6 +2575,7 @@ message GetRecipesResponse {
 message SearchForRecipesRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForRecipesResponse {
@@ -2829,9 +2843,9 @@ message MealPlanGroceryListItemUpdateRequestInput {
 message MealPlanOption {
   google.protobuf.Timestamp CreatedAt = 1;
   optional google.protobuf.Timestamp LastUpdatedAt = 2;
-  string AssignedCook = 3;
+  optional string AssignedCook = 3;
   optional google.protobuf.Timestamp ArchivedAt = 4;
-  string AssignedDishwasher = 5;
+  optional string AssignedDishwasher = 5;
   string Notes = 6;
   string BelongsToMealPlanEvent = 7;
   string ID = 8;
@@ -2902,7 +2916,7 @@ message MealPlanTask {
   google.protobuf.Timestamp CreatedAt = 2;
   optional google.protobuf.Timestamp LastUpdatedAt = 3;
   google.protobuf.Timestamp CompletedAt = 4;
-  string AssignedToUser = 5;
+  optional string AssignedToUser = 5;
   string ID = 6;
   string Status = 7;
   string CreationExplanation = 8;
@@ -3003,7 +3017,9 @@ message ArchiveMealPlanOptionVoteResponse {
 }
 
 // CreateMeal
-message CreateMealRequest {}
+message CreateMealRequest {
+  MealCreationRequestInput Input = 1;
+}
 
 message CreateMealResponse {
   common.ResponseDetails ResponseDetails = 1;
@@ -3011,7 +3027,9 @@ message CreateMealResponse {
 }
 
 // CreateMealPlan
-message CreateMealPlanRequest {}
+message CreateMealPlanRequest {
+  MealPlanCreationRequestInput Input = 1;
+}
 
 message CreateMealPlanResponse {
   common.ResponseDetails ResponseDetails = 1;
@@ -3091,6 +3109,7 @@ message GetMealRequest {
 
 message GetMealResponse {
   common.ResponseDetails ResponseDetails = 1;
+  Meal Result = 2;
 }
 
 // GetMealPlan
@@ -3100,6 +3119,7 @@ message GetMealPlanRequest {
 
 message GetMealPlanResponse {
   common.ResponseDetails ResponseDetails = 1;
+  MealPlan Result = 2;
 }
 
 // GetMealPlanEvent
@@ -3110,6 +3130,7 @@ message GetMealPlanEventRequest {
 
 message GetMealPlanEventResponse {
   common.ResponseDetails ResponseDetails = 1;
+  MealPlanEvent Result = 2;
 }
 
 // GetMealPlanEvents
@@ -3132,6 +3153,7 @@ message GetMealPlanGroceryListItemRequest {
 
 message GetMealPlanGroceryListItemResponse {
   common.ResponseDetails ResponseDetails = 1;
+  MealPlanGroceryListItem Result = 2;
 }
 
 // GetMealPlanGroceryListItemsForMealPlan
@@ -3155,6 +3177,7 @@ message GetMealPlanOptionRequest {
 
 message GetMealPlanOptionResponse {
   common.ResponseDetails ResponseDetails = 1;
+  MealPlanOption Result = 2;
 }
 
 // GetMealPlanOptionVote
@@ -3167,6 +3190,7 @@ message GetMealPlanOptionVoteRequest {
 
 message GetMealPlanOptionVoteResponse {
   common.ResponseDetails ResponseDetails = 1;
+  MealPlanOptionVote Result = 2;
 }
 
 // GetMealPlanOptionVotes
@@ -3204,6 +3228,7 @@ message GetMealPlanTaskRequest {
 
 message GetMealPlanTaskResponse {
   common.ResponseDetails ResponseDetails = 1;
+  MealPlanTask Result = 2;
 }
 
 // GetMealPlanTasks
@@ -3373,7 +3398,9 @@ message ArchiveAccountInstrumentOwnershipResponse {
 }
 
 // CreateAccountInstrumentOwnership
-message CreateAccountInstrumentOwnershipRequest {}
+message CreateAccountInstrumentOwnershipRequest {
+  AccountInstrumentOwnershipCreationRequestInput Input = 1;
+}
 
 message CreateAccountInstrumentOwnershipResponse {
   common.ResponseDetails ResponseDetails = 1;
@@ -3398,6 +3425,7 @@ message GetAccountInstrumentOwnershipRequest {
 
 message GetAccountInstrumentOwnershipResponse {
   common.ResponseDetails ResponseDetails = 1;
+  AccountInstrumentOwnership Result = 2;
 }
 
 // UpdateAccountInstrumentOwnership
@@ -3515,7 +3543,7 @@ service MealPlanningService {
   rpc GetRandomValidPreparation(GetRandomValidPreparationRequest) returns (GetRandomValidPreparationResponse);
   rpc GetRandomValidVessel(GetRandomValidVesselRequest) returns (GetRandomValidVesselResponse);
   rpc GetRecipe(GetRecipeRequest) returns (GetRecipeResponse);
-  rpc GetRecipeMealPlanTasks(GetRecipeMealPlanTasksRequest) returns (GetRecipeMealPlanTasksResponse);
+  rpc EstimateRecipePrepTasks(EstimateRecipePrepTasksRequest) returns (EstimateRecipePrepTasksResponse);
   rpc GetRecipePrepTask(GetRecipePrepTaskRequest) returns (GetRecipePrepTaskResponse);
   rpc GetRecipePrepTasks(GetRecipePrepTasksRequest) returns (GetRecipePrepTasksResponse);
   rpc GetRecipeRating(GetRecipeRatingRequest) returns (GetRecipeRatingResponse);

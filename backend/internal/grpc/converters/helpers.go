@@ -37,6 +37,13 @@ func ConvertUint16PointerToUint32Pointer(i *uint16) *uint32 {
 	return pointer.To(uint32(*i))
 }
 
+func ConvertUint16PointerToUint32(i *uint16) uint32 {
+	if i == nil {
+		return 0
+	}
+	return uint32(*i)
+}
+
 func ConvertUint32PointerToUint16Pointer(i *uint32) *uint16 {
 	if i == nil {
 		return nil

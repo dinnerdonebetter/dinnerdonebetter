@@ -99,7 +99,7 @@ const (
 	MealPlanningService_GetRandomValidPreparation_FullMethodName                           = "/mealplanning.MealPlanningService/GetRandomValidPreparation"
 	MealPlanningService_GetRandomValidVessel_FullMethodName                                = "/mealplanning.MealPlanningService/GetRandomValidVessel"
 	MealPlanningService_GetRecipe_FullMethodName                                           = "/mealplanning.MealPlanningService/GetRecipe"
-	MealPlanningService_GetRecipeMealPlanTasks_FullMethodName                              = "/mealplanning.MealPlanningService/GetRecipeMealPlanTasks"
+	MealPlanningService_EstimateRecipePrepTasks_FullMethodName                             = "/mealplanning.MealPlanningService/EstimateRecipePrepTasks"
 	MealPlanningService_GetRecipePrepTask_FullMethodName                                   = "/mealplanning.MealPlanningService/GetRecipePrepTask"
 	MealPlanningService_GetRecipePrepTasks_FullMethodName                                  = "/mealplanning.MealPlanningService/GetRecipePrepTasks"
 	MealPlanningService_GetRecipeRating_FullMethodName                                     = "/mealplanning.MealPlanningService/GetRecipeRating"
@@ -290,7 +290,7 @@ type MealPlanningServiceClient interface {
 	GetRandomValidPreparation(ctx context.Context, in *GetRandomValidPreparationRequest, opts ...grpc.CallOption) (*GetRandomValidPreparationResponse, error)
 	GetRandomValidVessel(ctx context.Context, in *GetRandomValidVesselRequest, opts ...grpc.CallOption) (*GetRandomValidVesselResponse, error)
 	GetRecipe(ctx context.Context, in *GetRecipeRequest, opts ...grpc.CallOption) (*GetRecipeResponse, error)
-	GetRecipeMealPlanTasks(ctx context.Context, in *GetRecipeMealPlanTasksRequest, opts ...grpc.CallOption) (*GetRecipeMealPlanTasksResponse, error)
+	EstimateRecipePrepTasks(ctx context.Context, in *EstimateRecipePrepTasksRequest, opts ...grpc.CallOption) (*EstimateRecipePrepTasksResponse, error)
 	GetRecipePrepTask(ctx context.Context, in *GetRecipePrepTaskRequest, opts ...grpc.CallOption) (*GetRecipePrepTaskResponse, error)
 	GetRecipePrepTasks(ctx context.Context, in *GetRecipePrepTasksRequest, opts ...grpc.CallOption) (*GetRecipePrepTasksResponse, error)
 	GetRecipeRating(ctx context.Context, in *GetRecipeRatingRequest, opts ...grpc.CallOption) (*GetRecipeRatingResponse, error)
@@ -1196,10 +1196,10 @@ func (c *mealPlanningServiceClient) GetRecipe(ctx context.Context, in *GetRecipe
 	return out, nil
 }
 
-func (c *mealPlanningServiceClient) GetRecipeMealPlanTasks(ctx context.Context, in *GetRecipeMealPlanTasksRequest, opts ...grpc.CallOption) (*GetRecipeMealPlanTasksResponse, error) {
+func (c *mealPlanningServiceClient) EstimateRecipePrepTasks(ctx context.Context, in *EstimateRecipePrepTasksRequest, opts ...grpc.CallOption) (*EstimateRecipePrepTasksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetRecipeMealPlanTasksResponse)
-	err := c.cc.Invoke(ctx, MealPlanningService_GetRecipeMealPlanTasks_FullMethodName, in, out, cOpts...)
+	out := new(EstimateRecipePrepTasksResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_EstimateRecipePrepTasks_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2339,7 +2339,7 @@ type MealPlanningServiceServer interface {
 	GetRandomValidPreparation(context.Context, *GetRandomValidPreparationRequest) (*GetRandomValidPreparationResponse, error)
 	GetRandomValidVessel(context.Context, *GetRandomValidVesselRequest) (*GetRandomValidVesselResponse, error)
 	GetRecipe(context.Context, *GetRecipeRequest) (*GetRecipeResponse, error)
-	GetRecipeMealPlanTasks(context.Context, *GetRecipeMealPlanTasksRequest) (*GetRecipeMealPlanTasksResponse, error)
+	EstimateRecipePrepTasks(context.Context, *EstimateRecipePrepTasksRequest) (*EstimateRecipePrepTasksResponse, error)
 	GetRecipePrepTask(context.Context, *GetRecipePrepTaskRequest) (*GetRecipePrepTaskResponse, error)
 	GetRecipePrepTasks(context.Context, *GetRecipePrepTasksRequest) (*GetRecipePrepTasksResponse, error)
 	GetRecipeRating(context.Context, *GetRecipeRatingRequest) (*GetRecipeRatingResponse, error)
@@ -2692,8 +2692,8 @@ func (UnimplementedMealPlanningServiceServer) GetRandomValidVessel(context.Conte
 func (UnimplementedMealPlanningServiceServer) GetRecipe(context.Context, *GetRecipeRequest) (*GetRecipeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipe not implemented")
 }
-func (UnimplementedMealPlanningServiceServer) GetRecipeMealPlanTasks(context.Context, *GetRecipeMealPlanTasksRequest) (*GetRecipeMealPlanTasksResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRecipeMealPlanTasks not implemented")
+func (UnimplementedMealPlanningServiceServer) EstimateRecipePrepTasks(context.Context, *EstimateRecipePrepTasksRequest) (*EstimateRecipePrepTasksResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EstimateRecipePrepTasks not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) GetRecipePrepTask(context.Context, *GetRecipePrepTaskRequest) (*GetRecipePrepTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecipePrepTask not implemented")
@@ -4453,20 +4453,20 @@ func _MealPlanningService_GetRecipe_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MealPlanningService_GetRecipeMealPlanTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRecipeMealPlanTasksRequest)
+func _MealPlanningService_EstimateRecipePrepTasks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EstimateRecipePrepTasksRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MealPlanningServiceServer).GetRecipeMealPlanTasks(ctx, in)
+		return srv.(MealPlanningServiceServer).EstimateRecipePrepTasks(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MealPlanningService_GetRecipeMealPlanTasks_FullMethodName,
+		FullMethod: MealPlanningService_EstimateRecipePrepTasks_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MealPlanningServiceServer).GetRecipeMealPlanTasks(ctx, req.(*GetRecipeMealPlanTasksRequest))
+		return srv.(MealPlanningServiceServer).EstimateRecipePrepTasks(ctx, req.(*EstimateRecipePrepTasksRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6685,8 +6685,8 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MealPlanningService_GetRecipe_Handler,
 		},
 		{
-			MethodName: "GetRecipeMealPlanTasks",
-			Handler:    _MealPlanningService_GetRecipeMealPlanTasks_Handler,
+			MethodName: "EstimateRecipePrepTasks",
+			Handler:    _MealPlanningService_EstimateRecipePrepTasks_Handler,
 		},
 		{
 			MethodName: "GetRecipePrepTask",

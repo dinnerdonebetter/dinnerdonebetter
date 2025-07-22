@@ -13,6 +13,9 @@ func ObserveValues(values map[string]any, span tracing.Span, logger logging.Logg
 
 		if logger != nil {
 			logger = logger.WithValue(k, v)
+			if span != nil {
+				logger = logger.WithSpan(span)
+			}
 		}
 	}
 

@@ -535,6 +535,39 @@ func ConvertValidPreparationToGRPCValidPreparation(x *mealplanning.ValidPreparat
 	}
 }
 
+func ConvertGRPCValidPreparationToValidPreparation(x *mealplanninggrpc.ValidPreparation) *mealplanning.ValidPreparation {
+	return &mealplanning.ValidPreparation{
+		InstrumentCount: types.Uint16RangeWithOptionalMax{
+			Min: uint16(x.InstrumentCount.Min),
+			Max: converters.ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
+		},
+		IngredientCount: types.Uint16RangeWithOptionalMax{
+			Min: uint16(x.IngredientCount.Min),
+			Max: converters.ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
+		},
+		VesselCount: types.Uint16RangeWithOptionalMax{
+			Min: uint16(x.VesselCount.Min),
+			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
+		},
+		CreatedAt:                   converters.ConvertPBTimestampToTime(x.CreatedAt),
+		ArchivedAt:                  converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		LastUpdatedAt:               converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		IconPath:                    x.IconPath,
+		PastTense:                   x.PastTense,
+		ID:                          x.ID,
+		Name:                        x.Name,
+		Description:                 x.Description,
+		Slug:                        x.Slug,
+		RestrictToIngredients:       x.RestrictToIngredients,
+		TemperatureRequired:         x.TemperatureRequired,
+		TimeEstimateRequired:        x.TimeEstimateRequired,
+		ConditionExpressionRequired: x.ConditionExpressionRequired,
+		ConsumesVessel:              x.ConsumesVessel,
+		OnlyForVessels:              x.OnlyForVessels,
+		YieldsNothing:               x.YieldsNothing,
+	}
+}
+
 func ConvertGRPCCreateValidPreparationInstrumentRequestToValidPreparationInstrumentCreationRequestInput(x *mealplanninggrpc.CreateValidPreparationInstrumentRequest) *mealplanning.ValidPreparationInstrumentCreationRequestInput {
 	return &mealplanning.ValidPreparationInstrumentCreationRequestInput{
 		Notes:              x.Notes,
