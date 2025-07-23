@@ -188,7 +188,21 @@ func (s *ServiceImpl) CreateMeal(ctx context.Context, request *mealplanning.Crea
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealCreationRequestInputToMealCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.CreateMeal(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal")
+	}
+
+	x := &mealplanning.CreateMealResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertMealToGRPCMeal(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateMealPlan(ctx context.Context, request *mealplanning.CreateMealPlanRequest) (*mealplanning.CreateMealPlanResponse, error) {
@@ -197,7 +211,21 @@ func (s *ServiceImpl) CreateMealPlan(ctx context.Context, request *mealplanning.
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanCreationRequestInputToMealPlanCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.CreateMealPlan(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan")
+	}
+
+	x := &mealplanning.CreateMealPlanResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertMealPlanToGRPCMealPlan(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplanning.CreateMealPlanEventRequest) (*mealplanning.CreateMealPlanEventResponse, error) {
@@ -208,7 +236,21 @@ func (s *ServiceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplan
 		keys.MealPlanIDKey: request.MealPlanID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.CreateMealPlanEvent(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan event")
+	}
+
+	x := &mealplanning.CreateMealPlanEventResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertMealPlanEventToGRPCMealPlanEvent(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request *mealplanning.CreateMealPlanGroceryListItemRequest) (*mealplanning.CreateMealPlanGroceryListItemResponse, error) {
@@ -219,7 +261,21 @@ func (s *ServiceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request
 		keys.MealPlanIDKey: request.MealPlanID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.CreateMealPlanGroceryListItem(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan grocery list item")
+	}
+
+	x := &mealplanning.CreateMealPlanGroceryListItemResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateMealPlanOption(ctx context.Context, request *mealplanning.CreateMealPlanOptionRequest) (*mealplanning.CreateMealPlanOptionResponse, error) {
@@ -230,7 +286,21 @@ func (s *ServiceImpl) CreateMealPlanOption(ctx context.Context, request *mealpla
 		keys.MealPlanIDKey: request.MealPlanID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanOptionCreationRequestInputToMealPlanOptionCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.CreateMealPlanOption(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan option")
+	}
+
+	x := &mealplanning.CreateMealPlanOptionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertMealPlanOptionToGRPCMealPlanOption(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mealplanning.CreateMealPlanOptionVoteRequest) (*mealplanning.CreateMealPlanOptionVoteResponse, error) {
@@ -241,7 +311,24 @@ func (s *ServiceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mea
 		keys.MealPlanIDKey: request.MealPlanID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.CreateMealPlanOptionVotes(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan option vote")
+	}
+
+	x := &mealplanning.CreateMealPlanOptionVoteResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, creation := range created {
+		x.Created = append(x.Created, converters.ConvertMealPlanOptionVoteToGRPCMealPlanOptionVote(creation))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateMealPlanTask(ctx context.Context, request *mealplanning.CreateMealPlanTaskRequest) (*mealplanning.CreateMealPlanTaskResponse, error) {
@@ -252,7 +339,21 @@ func (s *ServiceImpl) CreateMealPlanTask(ctx context.Context, request *mealplann
 		keys.MealPlanIDKey: request.MealPlanID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanTaskCreationRequestInputToMealPlanTaskCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.CreateMealPlanTask(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan task")
+	}
+
+	x := &mealplanning.CreateMealPlanTaskResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertMealPlanTaskToGRPCMealPlanTask(created),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) CreateUserIngredientPreference(ctx context.Context, request *mealplanning.CreateUserIngredientPreferenceRequest) (*mealplanning.CreateUserIngredientPreferenceResponse, error) {
@@ -261,7 +362,24 @@ func (s *ServiceImpl) CreateUserIngredientPreference(ctx context.Context, reques
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCUserIngredientPreferenceCreationRequestInputToUserIngredientPreferenceCreationRequestInput(request.Input)
+
+	created, err := s.mealPlanningManager.CreateUserIngredientPreference(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create user ingredient preference")
+	}
+
+	x := &mealplanning.CreateUserIngredientPreferenceResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, creation := range created {
+		x.Created = append(x.Created, converters.ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(creation))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) FinalizeMealPlan(ctx context.Context, request *mealplanning.FinalizeMealPlanRequest) (*mealplanning.FinalizeMealPlanResponse, error) {
@@ -697,7 +815,24 @@ func (s *ServiceImpl) SearchForMeals(ctx context.Context, request *mealplanning.
 
 	logger := s.logger.WithSpan(span)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	meals, err := s.mealPlanningManager.SearchMeals(ctx, request.Query, request.UseDatabase, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for meals")
+	}
+
+	x := &mealplanning.SearchForMealsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, meal := range meals {
+		x.Results = append(x.Results, converters.ConvertMealToGRPCMeal(meal))
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateMealPlan(ctx context.Context, request *mealplanning.UpdateMealPlanRequest) (*mealplanning.UpdateMealPlanResponse, error) {
@@ -708,7 +843,30 @@ func (s *ServiceImpl) UpdateMealPlan(ctx context.Context, request *mealplanning.
 		keys.MealPlanIDKey: request.MealPlanID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	input := converters.ConvertGRPCMealPlanUpdateRequestInputToMealPlanUpdateRequestInput(request.Input)
+
+	if err = s.mealPlanningManager.UpdateMealPlan(ctx, request.MealPlanID, sessionContextData.GetActiveAccountID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan")
+	}
+
+	updated, err := s.mealPlanningManager.ReadMealPlan(ctx, request.MealPlanID, sessionContextData.GetActiveAccountID())
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan")
+	}
+
+	x := &mealplanning.UpdateMealPlanResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertMealPlanToGRPCMealPlan(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplanning.UpdateMealPlanEventRequest) (*mealplanning.UpdateMealPlanEventResponse, error) {
@@ -720,7 +878,25 @@ func (s *ServiceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplan
 		keys.MealPlanEventIDKey: request.MealPlanEventID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput(request.Input)
+
+	if err := s.mealPlanningManager.UpdateMealPlanEvent(ctx, request.MealPlanID, request.MealPlanEventID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan event")
+	}
+
+	updated, err := s.mealPlanningManager.ReadMealPlanEvent(ctx, request.MealPlanID, request.MealPlanEventID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan event")
+	}
+
+	x := &mealplanning.UpdateMealPlanEventResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertMealPlanEventToGRPCMealPlanEvent(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request *mealplanning.UpdateMealPlanGroceryListItemRequest) (*mealplanning.UpdateMealPlanGroceryListItemResponse, error) {
@@ -732,7 +908,25 @@ func (s *ServiceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request
 		keys.MealPlanGroceryListItemIDKey: request.MealPlanGroceryListItemID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListItemUpdateRequestInput(request.Input)
+
+	if err := s.mealPlanningManager.UpdateMealPlanGroceryListItem(ctx, request.MealPlanID, request.MealPlanGroceryListItemID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan grocery list item")
+	}
+
+	updated, err := s.mealPlanningManager.ReadMealPlanGroceryListItem(ctx, request.MealPlanID, request.MealPlanGroceryListItemID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan grocery list item")
+	}
+
+	x := &mealplanning.UpdateMealPlanGroceryListItemResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateMealPlanOption(ctx context.Context, request *mealplanning.UpdateMealPlanOptionRequest) (*mealplanning.UpdateMealPlanOptionResponse, error) {
@@ -742,9 +936,28 @@ func (s *ServiceImpl) UpdateMealPlanOption(ctx context.Context, request *mealpla
 	logger := observability.ObserveValues(map[string]any{
 		keys.MealPlanIDKey:       request.MealPlanID,
 		keys.MealPlanOptionIDKey: request.MealPlanOptionID,
+		keys.MealPlanEventIDKey:  request.MealPlanEventID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanOptionUpdateRequestInputToMealPlanOptionUpdateRequestInput(request.Input)
+
+	if err := s.mealPlanningManager.UpdateMealPlanOption(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan option")
+	}
+
+	updated, err := s.mealPlanningManager.ReadMealPlanOption(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan option")
+	}
+
+	x := &mealplanning.UpdateMealPlanOptionResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertMealPlanOptionToGRPCMealPlanOption(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mealplanning.UpdateMealPlanOptionVoteRequest) (*mealplanning.UpdateMealPlanOptionVoteResponse, error) {
@@ -757,7 +970,25 @@ func (s *ServiceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mea
 		keys.MealPlanOptionVoteIDKey: request.MealPlanOptionVoteID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanOptionVoteUpdateRequestInputToMealPlanOptionVoteUpdateRequestInput(request.Input)
+
+	if err := s.mealPlanningManager.UpdateMealPlanOptionVote(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, request.MealPlanOptionVoteID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan option vote")
+	}
+
+	updated, err := s.mealPlanningManager.ReadMealPlanOptionVote(ctx, request.MealPlanID, request.MealPlanEventID, request.MealPlanOptionID, request.MealPlanOptionVoteID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan option vote")
+	}
+
+	x := &mealplanning.UpdateMealPlanOptionVoteResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertMealPlanOptionVoteToGRPCMealPlanOptionVote(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mealplanning.UpdateMealPlanTaskStatusRequest) (*mealplanning.UpdateMealPlanTaskStatusResponse, error) {
@@ -769,7 +1000,25 @@ func (s *ServiceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mea
 		keys.MealPlanTaskIDKey: request.MealPlanTaskID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	input := converters.ConvertGRPCMealPlanTaskStatusChangeRequestInputToMealPlanTaskStatusChangeRequestInput(request.Input)
+
+	if err := s.mealPlanningManager.MealPlanTaskStatusChange(ctx, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan task status")
+	}
+
+	updated, err := s.mealPlanningManager.ReadMealPlanTask(ctx, request.MealPlanID, request.MealPlanTaskID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan task status")
+	}
+
+	x := &mealplanning.UpdateMealPlanTaskStatusResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertMealPlanTaskToGRPCMealPlanTask(updated),
+	}
+
+	return x, nil
 }
 
 func (s *ServiceImpl) UpdateUserIngredientPreference(ctx context.Context, request *mealplanning.UpdateUserIngredientPreferenceRequest) (*mealplanning.UpdateUserIngredientPreferenceResponse, error) {
@@ -780,5 +1029,28 @@ func (s *ServiceImpl) UpdateUserIngredientPreference(ctx context.Context, reques
 		keys.UserIngredientPreferenceIDKey: request.UserIngredientPreferenceID,
 	}, span, s.logger)
 
-	return nil, observability.PrepareAndLogError(errUnimplemented, logger, span, "unimplemented")
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+
+	input := converters.ConvertGRPCUserIngredientPreferenceUpdateRequestInputToUserIngredientPreferenceUpdateRequestInput(request.Input)
+
+	if err = s.mealPlanningManager.UpdateUserIngredientPreference(ctx, request.UserIngredientPreferenceID, sessionContextData.GetUserID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update meal plan task status")
+	}
+
+	updated, err := s.mealPlanningManager.ReadUserIngredientPreference(ctx, sessionContextData.GetUserID(), request.UserIngredientPreferenceID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan task status")
+	}
+
+	x := &mealplanning.UpdateUserIngredientPreferenceResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Updated: converters.ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(updated),
+	}
+
+	return x, nil
 }

@@ -5,6 +5,8 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	types2 "github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
 func ConvertMealPlanTaskToGRPCMealPlanTask(input *mealplanning.MealPlanTask) *mealplanningsvc.MealPlanTask {
@@ -172,5 +174,202 @@ func ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(input *mealpl
 		BelongsToUser: input.BelongsToUser,
 		Rating:        int32(input.Rating),
 		Allergy:       input.Allergy,
+	}
+}
+
+func ConvertGRPCMealCreationRequestInputToMealCreationRequestInput(input *mealplanningsvc.MealCreationRequestInput) *mealplanning.MealCreationRequestInput {
+	var components []*mealplanning.MealComponentCreationRequestInput
+	for _, component := range input.Components {
+		components = append(components, ConvertGRPCMealComponentCreationRequestInputToMealComponentCreationRequestInput(component))
+	}
+
+	return &mealplanning.MealCreationRequestInput{
+		EstimatedPortions: types2.Float32RangeWithOptionalMax{
+			Min: input.EstimatedPortions.Min,
+			Max: input.EstimatedPortions.Max,
+		},
+		Name:                 input.Name,
+		Description:          input.Description,
+		Components:           components,
+		EligibleForMealPlans: input.EligibleForMealPlans,
+	}
+}
+
+func ConvertGRPCMealComponentCreationRequestInputToMealComponentCreationRequestInput(input *mealplanningsvc.MealComponentCreationRequestInput) *mealplanning.MealComponentCreationRequestInput {
+	return &mealplanning.MealComponentCreationRequestInput{
+		RecipeID:      input.RecipeID,
+		ComponentType: input.ComponentType,
+		RecipeScale:   input.RecipeScale,
+	}
+}
+
+func ConvertGRPCMealPlanCreationRequestInputToMealPlanCreationRequestInput(input *mealplanningsvc.MealPlanCreationRequestInput) *mealplanning.MealPlanCreationRequestInput {
+	var events []*mealplanning.MealPlanEventCreationRequestInput
+	for _, event := range input.Events {
+		events = append(events, ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestInput(event))
+	}
+
+	return &mealplanning.MealPlanCreationRequestInput{
+		VotingDeadline: grpcconverters.ConvertPBTimestampToTime(input.VotingDeadline),
+		Notes:          input.Notes,
+		ElectionMethod: input.ElectionMethod,
+		Events:         events,
+	}
+}
+
+func ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestInput(input *mealplanningsvc.MealPlanEventCreationRequestInput) *mealplanning.MealPlanEventCreationRequestInput {
+	var options []*mealplanning.MealPlanOptionCreationRequestInput
+	for _, option := range input.Options {
+		options = append(options, ConvertGRPCMealPlanOptionCreationRequestInputToMealPlanOptionCreationRequestInput(option))
+	}
+
+	return &mealplanning.MealPlanEventCreationRequestInput{
+		EndsAt:   grpcconverters.ConvertPBTimestampToTime(input.EndsAt),
+		StartsAt: grpcconverters.ConvertPBTimestampToTime(input.StartsAt),
+		Notes:    input.Notes,
+		MealName: input.MealName,
+		Options:  options,
+	}
+}
+
+func ConvertGRPCMealPlanOptionCreationRequestInputToMealPlanOptionCreationRequestInput(input *mealplanningsvc.MealPlanOptionCreationRequestInput) *mealplanning.MealPlanOptionCreationRequestInput {
+	return &mealplanning.MealPlanOptionCreationRequestInput{
+		AssignedCook:       input.AssignedCook,
+		AssignedDishwasher: input.AssignedDishwasher,
+		MealID:             input.MealID,
+		Notes:              input.Notes,
+		MealScale:          input.MealScale,
+	}
+}
+
+func ConvertGRPCMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteCreationRequestInput(input *mealplanningsvc.MealPlanOptionVoteCreationRequestInput) *mealplanning.MealPlanOptionVoteCreationRequestInput {
+	var votes []*mealplanning.MealPlanOptionVoteCreationInput
+	for _, vote := range input.Votes {
+		votes = append(votes, ConvertGRPCMealPlanOptionVoteCreationInputToMealPlanOptionVoteCreationInput(vote))
+	}
+
+	return &mealplanning.MealPlanOptionVoteCreationRequestInput{
+		Votes: votes,
+	}
+}
+
+func ConvertGRPCMealPlanOptionVoteCreationInputToMealPlanOptionVoteCreationInput(input *mealplanningsvc.MealPlanOptionVoteCreationInput) *mealplanning.MealPlanOptionVoteCreationInput {
+	return &mealplanning.MealPlanOptionVoteCreationInput{
+		ID:                      input.ID,
+		Notes:                   input.Notes,
+		ByUser:                  input.ByUser,
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+		Rank:                    uint8(input.Rank),
+		Abstain:                 input.Abstain,
+	}
+}
+
+func ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemCreationRequestInput(input *mealplanningsvc.MealPlanGroceryListItemCreationRequestInput) *mealplanning.MealPlanGroceryListItemCreationRequestInput {
+	return &mealplanning.MealPlanGroceryListItemCreationRequestInput{
+		PurchasedMeasurementUnitID: input.PurchasedMeasurementUnitID,
+		PurchasedUPC:               input.PurchasedUPC,
+		PurchasePrice:              input.PurchasePrice,
+		QuantityPurchased:          input.QuantityPurchased,
+		Status:                     input.Status,
+		BelongsToMealPlan:          input.BelongsToMealPlan,
+		ValidIngredientID:          input.ValidIngredientID,
+		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
+		StatusExplanation:          input.StatusExplanation,
+		QuantityNeeded:             types2.Float32RangeWithOptionalMax{},
+	}
+}
+
+func ConvertGRPCMealPlanTaskCreationRequestInputToMealPlanTaskCreationRequestInput(input *mealplanningsvc.MealPlanTaskCreationRequestInput) *mealplanning.MealPlanTaskCreationRequestInput {
+	return &mealplanning.MealPlanTaskCreationRequestInput{
+		AssignedToUser:      input.AssignedToUser,
+		Status:              input.Status,
+		CreationExplanation: input.CreationExplanation,
+		StatusExplanation:   input.StatusExplanation,
+		MealPlanOptionID:    input.MealPlanOptionID,
+		RecipePrepTaskID:    input.RecipePrepTaskID,
+	}
+}
+
+func ConvertGRPCUserIngredientPreferenceCreationRequestInputToUserIngredientPreferenceCreationRequestInput(input *mealplanningsvc.UserIngredientPreferenceCreationRequestInput) *mealplanning.UserIngredientPreferenceCreationRequestInput {
+	return &mealplanning.UserIngredientPreferenceCreationRequestInput{
+		ValidIngredientGroupID: input.ValidIngredientGroupID,
+		ValidIngredientID:      input.ValidIngredientID,
+		Notes:                  input.Notes,
+		Rating:                 int8(input.Rating),
+		Allergy:                input.Allergy,
+	}
+}
+
+func ConvertGRPCMealPlanUpdateRequestInputToMealPlanUpdateRequestInput(input *mealplanningsvc.MealPlanUpdateRequestInput) *mealplanning.MealPlanUpdateRequestInput {
+	return &mealplanning.MealPlanUpdateRequestInput{
+		BelongsToAccount: input.BelongsToAccount,
+		Notes:            input.Notes,
+		VotingDeadline:   grpcconverters.ConvertPBTimestampToTimePointer(input.VotingDeadline),
+	}
+}
+
+func ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput(input *mealplanningsvc.MealPlanEventUpdateRequestInput) *mealplanning.MealPlanEventUpdateRequestInput {
+	return &mealplanning.MealPlanEventUpdateRequestInput{
+		Notes:             input.Notes,
+		StartsAt:          grpcconverters.ConvertPBTimestampToTimePointer(input.StartsAt),
+		MealName:          input.MealName,
+		EndsAt:            grpcconverters.ConvertPBTimestampToTimePointer(input.EndsAt),
+		BelongsToMealPlan: input.BelongsToMealPlan,
+	}
+}
+
+func ConvertGRPCMealPlanGroceryListItemUpdateRequestInputToMealPlanGroceryListItemUpdateRequestInput(input *mealplanningsvc.MealPlanGroceryListItemUpdateRequestInput) *mealplanning.MealPlanGroceryListItemUpdateRequestInput {
+	return &mealplanning.MealPlanGroceryListItemUpdateRequestInput{
+		BelongsToMealPlan:          input.BelongsToMealPlan,
+		ValidIngredientID:          input.ValidIngredientID,
+		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
+		StatusExplanation:          input.StatusExplanation,
+		QuantityPurchased:          input.QuantityPurchased,
+		PurchasedMeasurementUnitID: input.PurchasedMeasurementUnitID,
+		PurchasedUPC:               input.PurchasedUPC,
+		PurchasePrice:              input.PurchasePrice,
+		Status:                     input.Status,
+		QuantityNeeded: types2.Float32RangeWithOptionalMaxUpdateRequestInput{
+			Min: input.QuantityNeeded.Min,
+			Max: input.QuantityNeeded.Max,
+		},
+	}
+}
+
+func ConvertGRPCMealPlanOptionUpdateRequestInputToMealPlanOptionUpdateRequestInput(input *mealplanningsvc.MealPlanOptionUpdateRequestInput) *mealplanning.MealPlanOptionUpdateRequestInput {
+	return &mealplanning.MealPlanOptionUpdateRequestInput{
+		MealID:                 input.MealID,
+		Notes:                  input.Notes,
+		AssignedCook:           input.AssignedCook,
+		AssignedDishwasher:     input.AssignedDishwasher,
+		MealScale:              input.MealScale,
+		BelongsToMealPlanEvent: input.BelongsToMealPlanEvent,
+	}
+}
+
+func ConvertGRPCMealPlanOptionVoteUpdateRequestInputToMealPlanOptionVoteUpdateRequestInput(input *mealplanningsvc.MealPlanOptionVoteUpdateRequestInput) *mealplanning.MealPlanOptionVoteUpdateRequestInput {
+	return &mealplanning.MealPlanOptionVoteUpdateRequestInput{
+		Notes:                   input.Notes,
+		Rank:                    pointer.To(uint8(pointer.Dereference(input.Rank))),
+		Abstain:                 input.Abstain,
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+	}
+}
+
+func ConvertGRPCMealPlanTaskStatusChangeRequestInputToMealPlanTaskStatusChangeRequestInput(input *mealplanningsvc.MealPlanTaskStatusChangeRequestInput) *mealplanning.MealPlanTaskStatusChangeRequestInput {
+	return &mealplanning.MealPlanTaskStatusChangeRequestInput{
+		Status:            input.Status,
+		StatusExplanation: input.StatusExplanation,
+		AssignedToUser:    input.AssignedToUser,
+		ID:                input.ID,
+	}
+}
+
+func ConvertGRPCUserIngredientPreferenceUpdateRequestInputToUserIngredientPreferenceUpdateRequestInput(input *mealplanningsvc.UserIngredientPreferenceUpdateRequestInput) *mealplanning.UserIngredientPreferenceUpdateRequestInput {
+	return &mealplanning.UserIngredientPreferenceUpdateRequestInput{
+		Notes:        input.Notes,
+		IngredientID: input.IngredientID,
+		Rating:       pointer.To(int8(pointer.Dereference(input.Rating))),
+		Allergy:      input.Allergy,
 	}
 }

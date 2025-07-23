@@ -30,7 +30,7 @@ message Float32RangeWithOptionalMax {
 }
 
 message Float32RangeWithOptionalMaxUpdateRequestInput {
-  float Min = 1;
+  optional float Min = 1;
   optional float Max = 2;
 }
 
@@ -40,7 +40,7 @@ message Uint16RangeWithOptionalMax {
 }
 
 message Uint16RangeWithOptionalMaxUpdateRequestInput {
-  uint32 Min = 1;
+  optional uint32 Min = 1;
   optional uint32 Max = 2;
 }
 
@@ -50,6 +50,6 @@ message Uint32RangeWithOptionalMax {
 }
 
 message Uint32RangeWithOptionalMaxUpdateRequestInput {
-  uint32 Min = 1;
+  optional uint32 Min = 1;
   optional uint32 Max = 2;
 }

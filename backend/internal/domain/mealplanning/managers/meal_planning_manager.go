@@ -68,6 +68,7 @@ type (
 		UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string, input *types.MealPlanGroceryListItemUpdateRequestInput) error
 		ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) error
 
+		ReadUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) (*types.UserIngredientPreference, error)
 		ListUserIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.UserIngredientPreference, string, error)
 		CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceCreationRequestInput) ([]*types.UserIngredientPreference, error)
 		UpdateUserIngredientPreference(ctx context.Context, ingredientPreferenceID, ownerID string, input *types.UserIngredientPreferenceUpdateRequestInput) error
@@ -984,6 +985,21 @@ func (m *mealPlanningManager) ListUserIngredientPreferences(ctx context.Context,
 	}
 
 	return results.Data, "", nil
+}
+
+func (m *mealPlanningManager) ReadUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) (*types.UserIngredientPreference, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := m.logger.WithSpan(span).WithValue(keys.UserIDKey, ownerID)
+	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+
+	result, err := m.db.GetUserIngredientPreference(ctx, ingredientPreferenceID, ownerID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching ingredient preferences")
+	}
+
+	return result, nil
 }
 
 func (m *mealPlanningManager) CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceCreationRequestInput) ([]*types.UserIngredientPreference, error) {

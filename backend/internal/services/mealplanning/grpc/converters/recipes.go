@@ -610,7 +610,7 @@ func ConvertGRPCRecipeUpdateRequestInputToRecipeUpdateRequestInput(input *mealpl
 		EligibleForMeals:    input.EligibleForMeals,
 		YieldsComponentType: input.YieldsComponentType,
 		EstimatedPortions: types2.Float32RangeWithOptionalMaxUpdateRequestInput{
-			Min: &input.EstimatedPortions.Min,
+			Min: input.EstimatedPortions.Min,
 			Max: input.EstimatedPortions.Max,
 		},
 	}
@@ -717,7 +717,7 @@ func ConvertGRPCRecipeStepInstrumentUpdateRequestInputToRecipeStepInstrumentUpda
 		Optional:            input.Optional,
 		OptionIndex:         grpcconverters.ConvertUint32PointerToUint16Pointer(input.OptionIndex),
 		Quantity: types2.Uint32RangeWithOptionalMaxUpdateRequestInput{
-			Min: &input.Quantity.Min,
+			Min: input.Quantity.Min,
 			Max: input.Quantity.Max,
 		},
 	}
@@ -761,7 +761,7 @@ func ConvertGRPCRecipeStepVesselUpdateRequestInputToRecipeStepVesselUpdateReques
 		VesselPreposition:    input.VesselPreposition,
 		UnavailableAfterStep: input.UnavailableAfterStep,
 		Quantity: types2.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint16(input.Quantity.Min)),
+			Min: pointer.To(uint16(pointer.Dereference(input.Quantity.Min))),
 			Max: grpcconverters.ConvertUint32PointerToUint16Pointer(input.Quantity.Max),
 		},
 	}

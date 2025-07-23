@@ -199,7 +199,7 @@ func ConvertGRPCValidIngredientMeasurementUnitUpdateRequestInputToValidIngredien
 		ValidMeasurementUnitID: x.ValidMeasurementUnitID,
 		ValidIngredientID:      x.ValidIngredientID,
 		AllowableQuantity: types.Float32RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(x.AllowableQuantity.Min),
+			Min: x.AllowableQuantity.Min,
 			Max: x.AllowableQuantity.Max,
 		},
 	}
@@ -476,15 +476,15 @@ func ConvertGRPCCreateValidPreparationRequestToValidPreparationCreationRequestIn
 func ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateRequestInput(x *mealplanninggrpc.ValidPreparationUpdateRequestInput) *mealplanning.ValidPreparationUpdateRequestInput {
 	return &mealplanning.ValidPreparationUpdateRequestInput{
 		InstrumentCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint16(x.InstrumentCount.Min)),
+			Min: pointer.To(uint16(pointer.Dereference(x.InstrumentCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.InstrumentCount.Max),
 		},
 		IngredientCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint16(x.IngredientCount.Min)),
+			Min: pointer.To(uint16(pointer.Dereference(x.IngredientCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.IngredientCount.Max),
 		},
 		VesselCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
-			Min: pointer.To(uint16(x.VesselCount.Min)),
+			Min: pointer.To(uint16(pointer.Dereference(x.VesselCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
 		},
 		Name:                        x.Name,

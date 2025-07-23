@@ -1612,7 +1612,7 @@ message CreateUserIngredientPreferenceRequest {
 
 message CreateUserIngredientPreferenceResponse {
   common.ResponseDetails ResponseDetails = 1;
-  UserIngredientPreference Created = 2;
+  repeated UserIngredientPreference Created = 2;
 }
 
 // GetUserIngredientPreferences
@@ -2794,7 +2794,7 @@ message MealPlanEventUpdateRequestInput {
   optional google.protobuf.Timestamp StartsAt = 2;
   optional string MealName = 3;
   optional google.protobuf.Timestamp EndsAt = 4;
-  optional string BelongsToMealPlan = 5;
+  string BelongsToMealPlan = 5;
 }
 
 message MealPlanGroceryListItem {
@@ -2815,10 +2815,10 @@ message MealPlanGroceryListItem {
 }
 
 message MealPlanGroceryListItemCreationRequestInput {
-  string PurchasedMeasurementUnitID = 1;
-  string PurchasedUPC = 2;
-  float PurchasePrice = 3;
-  float QuantityPurchased = 4;
+  optional string PurchasedMeasurementUnitID = 1;
+  optional string PurchasedUPC = 2;
+  optional float PurchasePrice = 3;
+  optional float QuantityPurchased = 4;
   string Status = 5;
   string BelongsToMealPlan = 6;
   string ValidIngredientID = 7;
@@ -2857,8 +2857,8 @@ message MealPlanOption {
 }
 
 message MealPlanOptionCreationRequestInput {
-  string AssignedCook = 1;
-  string AssignedDishwasher = 2;
+  optional string AssignedCook = 1;
+  optional string AssignedDishwasher = 2;
   string MealID = 3;
   string Notes = 4;
   float MealScale = 5;
@@ -2902,7 +2902,7 @@ message MealPlanOptionVoteUpdateRequestInput {
   optional string Notes = 1;
   optional uint32 Rank = 2;
   optional bool Abstain = 3;
-  optional string BelongsToMealPlanOption = 4;
+  string BelongsToMealPlanOption = 4;
 }
 
 message MissingVote {
@@ -2925,7 +2925,7 @@ message MealPlanTask {
 }
 
 message MealPlanTaskCreationRequestInput {
-  string AssignedToUser = 1;
+  optional string AssignedToUser = 1;
   string Status = 2;
   string CreationExplanation = 3;
   string StatusExplanation = 4;
@@ -2934,9 +2934,9 @@ message MealPlanTaskCreationRequestInput {
 }
 
 message MealPlanTaskStatusChangeRequestInput {
-  string Status = 1;
+  optional string Status = 1;
   string StatusExplanation = 2;
-  string AssignedToUser = 3;
+  optional string AssignedToUser = 3;
   string ID = 4;
 }
 
@@ -3079,7 +3079,7 @@ message CreateMealPlanOptionVoteRequest {
 
 message CreateMealPlanOptionVoteResponse {
   common.ResponseDetails ResponseDetails = 1;
-  MealPlanOptionVote Created = 2;
+  repeated MealPlanOptionVote Created = 2;
 }
 
 // CreateMealPlanTask
@@ -3291,6 +3291,7 @@ message RunMealPlanTaskCreatorWorkerResponse {
 message SearchForMealsRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForMealsResponse {
