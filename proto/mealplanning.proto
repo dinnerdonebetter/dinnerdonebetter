@@ -2799,9 +2799,9 @@ message MealPlanEventUpdateRequestInput {
 
 message MealPlanGroceryListItem {
   google.protobuf.Timestamp CreatedAt = 1;
-  float QuantityPurchased = 2;
-  float PurchasePrice = 3;
-  string PurchasedUPC = 4;
+  optional float QuantityPurchased = 2;
+  optional float PurchasePrice = 3;
+  optional string PurchasedUPC = 4;
   optional google.protobuf.Timestamp ArchivedAt = 5;
   optional google.protobuf.Timestamp LastUpdatedAt = 6;
   ValidMeasurementUnit PurchasedMeasurementUnit = 7;
@@ -3100,6 +3100,7 @@ message FinalizeMealPlanRequest {
 
 message FinalizeMealPlanResponse {
   common.ResponseDetails ResponseDetails = 1;
+  bool Finalized = 2;
 }
 
 // GetMeal
@@ -3262,7 +3263,7 @@ message GetMealsRequest {
 message GetMealsResponse {
   common.ResponseDetails ResponseDetails = 1;
   filtering.QueryFilter Filter = 2;
-  repeated Meal Resuls = 3;
+  repeated Meal Results = 3;
 }
 
 // RunFinalizeMealPlanWorker

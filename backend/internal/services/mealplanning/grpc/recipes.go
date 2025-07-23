@@ -543,7 +543,7 @@ func (s *ServiceImpl) EstimateRecipePrepTasks(ctx context.Context, request *meal
 	}
 
 	for _, step := range estimatedPrepSteps {
-		x.Results = append(x.Results, converters.ConvertMealPlanTaskToGRPCMealPlanTask(step))
+		x.Results = append(x.Results, converters.ConvertMealPlanTaskDatabaseCreationEstimateToGRPCMealPlanTask(step))
 	}
 
 	return x, nil
