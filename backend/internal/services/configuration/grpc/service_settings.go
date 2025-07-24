@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (s *ServiceImpl) CreateServiceSetting(ctx context.Context, request *configurationsvc.CreateServiceSettingRequest) (*configurationsvc.CreateServiceSettingResponse, error) {
+func (s *serviceImpl) CreateServiceSetting(ctx context.Context, request *configurationsvc.CreateServiceSettingRequest) (*configurationsvc.CreateServiceSettingResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -34,7 +34,7 @@ func (s *ServiceImpl) CreateServiceSetting(ctx context.Context, request *configu
 	return x, nil
 }
 
-func (s *ServiceImpl) GetServiceSetting(ctx context.Context, request *configurationsvc.GetServiceSettingRequest) (*configurationsvc.GetServiceSettingResponse, error) {
+func (s *serviceImpl) GetServiceSetting(ctx context.Context, request *configurationsvc.GetServiceSettingRequest) (*configurationsvc.GetServiceSettingResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -55,7 +55,7 @@ func (s *ServiceImpl) GetServiceSetting(ctx context.Context, request *configurat
 	return x, nil
 }
 
-func (s *ServiceImpl) GetServiceSettings(ctx context.Context, request *configurationsvc.GetServiceSettingsRequest) (*configurationsvc.GetServiceSettingsResponse, error) {
+func (s *serviceImpl) GetServiceSettings(ctx context.Context, request *configurationsvc.GetServiceSettingsRequest) (*configurationsvc.GetServiceSettingsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -79,7 +79,7 @@ func (s *ServiceImpl) GetServiceSettings(ctx context.Context, request *configura
 	return x, nil
 }
 
-func (s *ServiceImpl) SearchForServiceSettings(ctx context.Context, request *configurationsvc.SearchForServiceSettingsRequest) (*configurationsvc.SearchForServiceSettingsResponse, error) {
+func (s *serviceImpl) SearchForServiceSettings(ctx context.Context, request *configurationsvc.SearchForServiceSettingsRequest) (*configurationsvc.SearchForServiceSettingsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -103,7 +103,7 @@ func (s *ServiceImpl) SearchForServiceSettings(ctx context.Context, request *con
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveServiceSetting(ctx context.Context, request *configurationsvc.ArchiveServiceSettingRequest) (*configurationsvc.ArchiveServiceSettingResponse, error) {
+func (s *serviceImpl) ArchiveServiceSetting(ctx context.Context, request *configurationsvc.ArchiveServiceSettingRequest) (*configurationsvc.ArchiveServiceSettingResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -20,10 +20,10 @@ const (
 	o11yName = "audit_service"
 )
 
-var _ auditsvc.AuditServiceServer = (*ServiceImpl)(nil)
+var _ auditsvc.AuditServiceServer = (*serviceImpl)(nil)
 
 type (
-	ServiceImpl struct {
+	serviceImpl struct {
 		auditsvc.UnimplementedAuditServiceServer
 		tracer          tracing.Tracer
 		logger          logging.Logger
@@ -36,14 +36,14 @@ func NewService(
 	tracerProvider tracing.TracerProvider,
 	auditRepository audit.Repository,
 ) auditsvc.AuditServiceServer {
-	return &ServiceImpl{
+	return &serviceImpl{
 		logger:          logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		auditRepository: auditRepository,
 	}
 }
 
-func (s *ServiceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request *auditsvc.GetAuditLogEntriesForAccountRequest) (*auditsvc.GetAuditLogEntriesForAccountResponse, error) {
+func (s *serviceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request *auditsvc.GetAuditLogEntriesForAccountRequest) (*auditsvc.GetAuditLogEntriesForAccountResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -71,7 +71,7 @@ func (s *ServiceImpl) GetAuditLogEntriesForAccount(ctx context.Context, request 
 	return x, nil
 }
 
-func (s *ServiceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *auditsvc.GetAuditLogEntriesForUserRequest) (*auditsvc.GetAuditLogEntriesForUserResponse, error) {
+func (s *serviceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *auditsvc.GetAuditLogEntriesForUserRequest) (*auditsvc.GetAuditLogEntriesForUserResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -99,7 +99,7 @@ func (s *ServiceImpl) GetAuditLogEntriesForUser(ctx context.Context, request *au
 	return x, nil
 }
 
-func (s *ServiceImpl) GetAuditLogEntryByID(ctx context.Context, request *auditsvc.GetAuditLogEntryByIDRequest) (*auditsvc.GetAuditLogEntryByIDResponse, error) {
+func (s *serviceImpl) GetAuditLogEntryByID(ctx context.Context, request *auditsvc.GetAuditLogEntryByIDRequest) (*auditsvc.GetAuditLogEntryByIDResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

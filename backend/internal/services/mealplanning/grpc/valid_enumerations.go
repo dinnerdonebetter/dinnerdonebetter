@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (s *ServiceImpl) ArchiveValidIngredient(ctx context.Context, request *mealplanning.ArchiveValidIngredientRequest) (*mealplanning.ArchiveValidIngredientResponse, error) {
+func (s *serviceImpl) ArchiveValidIngredient(ctx context.Context, request *mealplanning.ArchiveValidIngredientRequest) (*mealplanning.ArchiveValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -29,7 +29,7 @@ func (s *ServiceImpl) ArchiveValidIngredient(ctx context.Context, request *mealp
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *mealplanning.ArchiveValidIngredientGroupRequest) (*mealplanning.ArchiveValidIngredientGroupResponse, error) {
+func (s *serviceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *mealplanning.ArchiveValidIngredientGroupRequest) (*mealplanning.ArchiveValidIngredientGroupResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -45,7 +45,7 @@ func (s *ServiceImpl) ArchiveValidIngredientGroup(ctx context.Context, request *
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.ArchiveValidIngredientMeasurementUnitRequest) (*mealplanning.ArchiveValidIngredientMeasurementUnitResponse, error) {
+func (s *serviceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.ArchiveValidIngredientMeasurementUnitRequest) (*mealplanning.ArchiveValidIngredientMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -61,7 +61,7 @@ func (s *ServiceImpl) ArchiveValidIngredientMeasurementUnit(ctx context.Context,
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientPreparation(ctx context.Context, request *mealplanning.ArchiveValidIngredientPreparationRequest) (*mealplanning.ArchiveValidIngredientPreparationResponse, error) {
+func (s *serviceImpl) ArchiveValidIngredientPreparation(ctx context.Context, request *mealplanning.ArchiveValidIngredientPreparationRequest) (*mealplanning.ArchiveValidIngredientPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -77,7 +77,7 @@ func (s *ServiceImpl) ArchiveValidIngredientPreparation(ctx context.Context, req
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientState(ctx context.Context, request *mealplanning.ArchiveValidIngredientStateRequest) (*mealplanning.ArchiveValidIngredientStateResponse, error) {
+func (s *serviceImpl) ArchiveValidIngredientState(ctx context.Context, request *mealplanning.ArchiveValidIngredientStateRequest) (*mealplanning.ArchiveValidIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -93,7 +93,7 @@ func (s *ServiceImpl) ArchiveValidIngredientState(ctx context.Context, request *
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context, request *mealplanning.ArchiveValidIngredientStateIngredientRequest) (*mealplanning.ArchiveValidIngredientStateIngredientResponse, error) {
+func (s *serviceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context, request *mealplanning.ArchiveValidIngredientStateIngredientRequest) (*mealplanning.ArchiveValidIngredientStateIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -109,7 +109,7 @@ func (s *ServiceImpl) ArchiveValidIngredientStateIngredient(ctx context.Context,
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidInstrument(ctx context.Context, request *mealplanning.ArchiveValidInstrumentRequest) (*mealplanning.ArchiveValidInstrumentResponse, error) {
+func (s *serviceImpl) ArchiveValidInstrument(ctx context.Context, request *mealplanning.ArchiveValidInstrumentRequest) (*mealplanning.ArchiveValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -125,7 +125,7 @@ func (s *ServiceImpl) ArchiveValidInstrument(ctx context.Context, request *mealp
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *mealplanning.ArchiveValidMeasurementUnitRequest) (*mealplanning.ArchiveValidMeasurementUnitResponse, error) {
+func (s *serviceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *mealplanning.ArchiveValidMeasurementUnitRequest) (*mealplanning.ArchiveValidMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -141,7 +141,7 @@ func (s *ServiceImpl) ArchiveValidMeasurementUnit(ctx context.Context, request *
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.ArchiveValidMeasurementUnitConversionRequest) (*mealplanning.ArchiveValidMeasurementUnitConversionResponse, error) {
+func (s *serviceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.ArchiveValidMeasurementUnitConversionRequest) (*mealplanning.ArchiveValidMeasurementUnitConversionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -157,7 +157,7 @@ func (s *ServiceImpl) ArchiveValidMeasurementUnitConversion(ctx context.Context,
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidPreparation(ctx context.Context, request *mealplanning.ArchiveValidPreparationRequest) (*mealplanning.ArchiveValidPreparationResponse, error) {
+func (s *serviceImpl) ArchiveValidPreparation(ctx context.Context, request *mealplanning.ArchiveValidPreparationRequest) (*mealplanning.ArchiveValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -173,7 +173,7 @@ func (s *ServiceImpl) ArchiveValidPreparation(ctx context.Context, request *meal
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidPreparationInstrument(ctx context.Context, request *mealplanning.ArchiveValidPreparationInstrumentRequest) (*mealplanning.ArchiveValidPreparationInstrumentResponse, error) {
+func (s *serviceImpl) ArchiveValidPreparationInstrument(ctx context.Context, request *mealplanning.ArchiveValidPreparationInstrumentRequest) (*mealplanning.ArchiveValidPreparationInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -189,7 +189,7 @@ func (s *ServiceImpl) ArchiveValidPreparationInstrument(ctx context.Context, req
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidPreparationVessel(ctx context.Context, request *mealplanning.ArchiveValidPreparationVesselRequest) (*mealplanning.ArchiveValidPreparationVesselResponse, error) {
+func (s *serviceImpl) ArchiveValidPreparationVessel(ctx context.Context, request *mealplanning.ArchiveValidPreparationVesselRequest) (*mealplanning.ArchiveValidPreparationVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -205,7 +205,7 @@ func (s *ServiceImpl) ArchiveValidPreparationVessel(ctx context.Context, request
 	return res, nil
 }
 
-func (s *ServiceImpl) ArchiveValidVessel(ctx context.Context, request *mealplanning.ArchiveValidVesselRequest) (*mealplanning.ArchiveValidVesselResponse, error) {
+func (s *serviceImpl) ArchiveValidVessel(ctx context.Context, request *mealplanning.ArchiveValidVesselRequest) (*mealplanning.ArchiveValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -221,7 +221,7 @@ func (s *ServiceImpl) ArchiveValidVessel(ctx context.Context, request *mealplann
 	return res, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredient(ctx context.Context, request *mealplanning.CreateValidIngredientRequest) (*mealplanning.CreateValidIngredientResponse, error) {
+func (s *serviceImpl) CreateValidIngredient(ctx context.Context, request *mealplanning.CreateValidIngredientRequest) (*mealplanning.CreateValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -240,7 +240,7 @@ func (s *ServiceImpl) CreateValidIngredient(ctx context.Context, request *mealpl
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientGroup(ctx context.Context, request *mealplanning.CreateValidIngredientGroupRequest) (*mealplanning.CreateValidIngredientGroupResponse, error) {
+func (s *serviceImpl) CreateValidIngredientGroup(ctx context.Context, request *mealplanning.CreateValidIngredientGroupRequest) (*mealplanning.CreateValidIngredientGroupResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -259,7 +259,7 @@ func (s *ServiceImpl) CreateValidIngredientGroup(ctx context.Context, request *m
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.CreateValidIngredientMeasurementUnitRequest) (*mealplanning.CreateValidIngredientMeasurementUnitResponse, error) {
+func (s *serviceImpl) CreateValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.CreateValidIngredientMeasurementUnitRequest) (*mealplanning.CreateValidIngredientMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -278,7 +278,7 @@ func (s *ServiceImpl) CreateValidIngredientMeasurementUnit(ctx context.Context, 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientPreparation(ctx context.Context, request *mealplanning.CreateValidIngredientPreparationRequest) (*mealplanning.CreateValidIngredientPreparationResponse, error) {
+func (s *serviceImpl) CreateValidIngredientPreparation(ctx context.Context, request *mealplanning.CreateValidIngredientPreparationRequest) (*mealplanning.CreateValidIngredientPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -297,7 +297,7 @@ func (s *ServiceImpl) CreateValidIngredientPreparation(ctx context.Context, requ
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientState(ctx context.Context, request *mealplanning.CreateValidIngredientStateRequest) (*mealplanning.CreateValidIngredientStateResponse, error) {
+func (s *serviceImpl) CreateValidIngredientState(ctx context.Context, request *mealplanning.CreateValidIngredientStateRequest) (*mealplanning.CreateValidIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -316,7 +316,7 @@ func (s *ServiceImpl) CreateValidIngredientState(ctx context.Context, request *m
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidIngredientStateIngredient(ctx context.Context, request *mealplanning.CreateValidIngredientStateIngredientRequest) (*mealplanning.CreateValidIngredientStateIngredientResponse, error) {
+func (s *serviceImpl) CreateValidIngredientStateIngredient(ctx context.Context, request *mealplanning.CreateValidIngredientStateIngredientRequest) (*mealplanning.CreateValidIngredientStateIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -335,7 +335,7 @@ func (s *ServiceImpl) CreateValidIngredientStateIngredient(ctx context.Context, 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidInstrument(ctx context.Context, request *mealplanning.CreateValidInstrumentRequest) (*mealplanning.CreateValidInstrumentResponse, error) {
+func (s *serviceImpl) CreateValidInstrument(ctx context.Context, request *mealplanning.CreateValidInstrumentRequest) (*mealplanning.CreateValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -354,7 +354,7 @@ func (s *ServiceImpl) CreateValidInstrument(ctx context.Context, request *mealpl
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidMeasurementUnit(ctx context.Context, request *mealplanning.CreateValidMeasurementUnitRequest) (*mealplanning.CreateValidMeasurementUnitResponse, error) {
+func (s *serviceImpl) CreateValidMeasurementUnit(ctx context.Context, request *mealplanning.CreateValidMeasurementUnitRequest) (*mealplanning.CreateValidMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -373,7 +373,7 @@ func (s *ServiceImpl) CreateValidMeasurementUnit(ctx context.Context, request *m
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.CreateValidMeasurementUnitConversionRequest) (*mealplanning.CreateValidMeasurementUnitConversionResponse, error) {
+func (s *serviceImpl) CreateValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.CreateValidMeasurementUnitConversionRequest) (*mealplanning.CreateValidMeasurementUnitConversionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -392,7 +392,7 @@ func (s *ServiceImpl) CreateValidMeasurementUnitConversion(ctx context.Context, 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidPreparation(ctx context.Context, request *mealplanning.CreateValidPreparationRequest) (*mealplanning.CreateValidPreparationResponse, error) {
+func (s *serviceImpl) CreateValidPreparation(ctx context.Context, request *mealplanning.CreateValidPreparationRequest) (*mealplanning.CreateValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -411,7 +411,7 @@ func (s *ServiceImpl) CreateValidPreparation(ctx context.Context, request *mealp
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidPreparationInstrument(ctx context.Context, request *mealplanning.CreateValidPreparationInstrumentRequest) (*mealplanning.CreateValidPreparationInstrumentResponse, error) {
+func (s *serviceImpl) CreateValidPreparationInstrument(ctx context.Context, request *mealplanning.CreateValidPreparationInstrumentRequest) (*mealplanning.CreateValidPreparationInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -430,7 +430,7 @@ func (s *ServiceImpl) CreateValidPreparationInstrument(ctx context.Context, requ
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidPreparationVessel(ctx context.Context, request *mealplanning.CreateValidPreparationVesselRequest) (*mealplanning.CreateValidPreparationVesselResponse, error) {
+func (s *serviceImpl) CreateValidPreparationVessel(ctx context.Context, request *mealplanning.CreateValidPreparationVesselRequest) (*mealplanning.CreateValidPreparationVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -449,7 +449,7 @@ func (s *ServiceImpl) CreateValidPreparationVessel(ctx context.Context, request 
 	return result, nil
 }
 
-func (s *ServiceImpl) CreateValidVessel(ctx context.Context, request *mealplanning.CreateValidVesselRequest) (*mealplanning.CreateValidVesselResponse, error) {
+func (s *serviceImpl) CreateValidVessel(ctx context.Context, request *mealplanning.CreateValidVesselRequest) (*mealplanning.CreateValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -468,7 +468,7 @@ func (s *ServiceImpl) CreateValidVessel(ctx context.Context, request *mealplanni
 	return result, nil
 }
 
-func (s *ServiceImpl) GetRandomValidIngredient(ctx context.Context, _ *mealplanning.GetRandomValidIngredientRequest) (*mealplanning.GetRandomValidIngredientResponse, error) {
+func (s *serviceImpl) GetRandomValidIngredient(ctx context.Context, _ *mealplanning.GetRandomValidIngredientRequest) (*mealplanning.GetRandomValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -487,7 +487,7 @@ func (s *ServiceImpl) GetRandomValidIngredient(ctx context.Context, _ *mealplann
 	return res, nil
 }
 
-func (s *ServiceImpl) GetRandomValidInstrument(ctx context.Context, _ *mealplanning.GetRandomValidInstrumentRequest) (*mealplanning.GetRandomValidInstrumentResponse, error) {
+func (s *serviceImpl) GetRandomValidInstrument(ctx context.Context, _ *mealplanning.GetRandomValidInstrumentRequest) (*mealplanning.GetRandomValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -506,7 +506,7 @@ func (s *ServiceImpl) GetRandomValidInstrument(ctx context.Context, _ *mealplann
 	return res, nil
 }
 
-func (s *ServiceImpl) GetRandomValidPreparation(ctx context.Context, _ *mealplanning.GetRandomValidPreparationRequest) (*mealplanning.GetRandomValidPreparationResponse, error) {
+func (s *serviceImpl) GetRandomValidPreparation(ctx context.Context, _ *mealplanning.GetRandomValidPreparationRequest) (*mealplanning.GetRandomValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -525,7 +525,7 @@ func (s *ServiceImpl) GetRandomValidPreparation(ctx context.Context, _ *mealplan
 	return res, nil
 }
 
-func (s *ServiceImpl) GetRandomValidVessel(ctx context.Context, _ *mealplanning.GetRandomValidVesselRequest) (*mealplanning.GetRandomValidVesselResponse, error) {
+func (s *serviceImpl) GetRandomValidVessel(ctx context.Context, _ *mealplanning.GetRandomValidVesselRequest) (*mealplanning.GetRandomValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -544,7 +544,7 @@ func (s *ServiceImpl) GetRandomValidVessel(ctx context.Context, _ *mealplanning.
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredient(ctx context.Context, request *mealplanning.GetValidIngredientRequest) (*mealplanning.GetValidIngredientResponse, error) {
+func (s *serviceImpl) GetValidIngredient(ctx context.Context, request *mealplanning.GetValidIngredientRequest) (*mealplanning.GetValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -563,7 +563,7 @@ func (s *ServiceImpl) GetValidIngredient(ctx context.Context, request *mealplann
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientGroup(ctx context.Context, request *mealplanning.GetValidIngredientGroupRequest) (*mealplanning.GetValidIngredientGroupResponse, error) {
+func (s *serviceImpl) GetValidIngredientGroup(ctx context.Context, request *mealplanning.GetValidIngredientGroupRequest) (*mealplanning.GetValidIngredientGroupResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -582,7 +582,7 @@ func (s *ServiceImpl) GetValidIngredientGroup(ctx context.Context, request *meal
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientGroups(ctx context.Context, request *mealplanning.GetValidIngredientGroupsRequest) (*mealplanning.GetValidIngredientGroupsResponse, error) {
+func (s *serviceImpl) GetValidIngredientGroups(ctx context.Context, request *mealplanning.GetValidIngredientGroupsRequest) (*mealplanning.GetValidIngredientGroupsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -605,7 +605,7 @@ func (s *ServiceImpl) GetValidIngredientGroups(ctx context.Context, request *mea
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitRequest) (*mealplanning.GetValidIngredientMeasurementUnitResponse, error) {
+func (s *serviceImpl) GetValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitRequest) (*mealplanning.GetValidIngredientMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -624,7 +624,7 @@ func (s *ServiceImpl) GetValidIngredientMeasurementUnit(ctx context.Context, req
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitsRequest) (*mealplanning.GetValidIngredientMeasurementUnitsResponse, error) {
+func (s *serviceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitsRequest) (*mealplanning.GetValidIngredientMeasurementUnitsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -647,7 +647,7 @@ func (s *ServiceImpl) GetValidIngredientMeasurementUnits(ctx context.Context, re
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByIngredient(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitsByIngredientRequest) (*mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse, error) {
+func (s *serviceImpl) GetValidIngredientMeasurementUnitsByIngredient(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitsByIngredientRequest) (*mealplanning.GetValidIngredientMeasurementUnitsByIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -672,7 +672,7 @@ func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByIngredient(ctx context
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) (*mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse, error) {
+func (s *serviceImpl) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx context.Context, request *mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitRequest) (*mealplanning.GetValidIngredientMeasurementUnitsByMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -696,7 +696,7 @@ func (s *ServiceImpl) GetValidIngredientMeasurementUnitsByMeasurementUnit(ctx co
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientPreparation(ctx context.Context, request *mealplanning.GetValidIngredientPreparationRequest) (*mealplanning.GetValidIngredientPreparationResponse, error) {
+func (s *serviceImpl) GetValidIngredientPreparation(ctx context.Context, request *mealplanning.GetValidIngredientPreparationRequest) (*mealplanning.GetValidIngredientPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -715,7 +715,7 @@ func (s *ServiceImpl) GetValidIngredientPreparation(ctx context.Context, request
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientPreparations(ctx context.Context, request *mealplanning.GetValidIngredientPreparationsRequest) (*mealplanning.GetValidIngredientPreparationsResponse, error) {
+func (s *serviceImpl) GetValidIngredientPreparations(ctx context.Context, request *mealplanning.GetValidIngredientPreparationsRequest) (*mealplanning.GetValidIngredientPreparationsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -739,7 +739,7 @@ func (s *ServiceImpl) GetValidIngredientPreparations(ctx context.Context, reques
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientPreparationsByIngredient(ctx context.Context, request *mealplanning.GetValidIngredientPreparationsByIngredientRequest) (*mealplanning.GetValidIngredientPreparationsByIngredientResponse, error) {
+func (s *serviceImpl) GetValidIngredientPreparationsByIngredient(ctx context.Context, request *mealplanning.GetValidIngredientPreparationsByIngredientRequest) (*mealplanning.GetValidIngredientPreparationsByIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -764,7 +764,7 @@ func (s *ServiceImpl) GetValidIngredientPreparationsByIngredient(ctx context.Con
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Context, request *mealplanning.GetValidIngredientPreparationsByPreparationRequest) (*mealplanning.GetValidIngredientPreparationsByPreparationResponse, error) {
+func (s *serviceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Context, request *mealplanning.GetValidIngredientPreparationsByPreparationRequest) (*mealplanning.GetValidIngredientPreparationsByPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -789,7 +789,7 @@ func (s *ServiceImpl) GetValidIngredientPreparationsByPreparation(ctx context.Co
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientState(ctx context.Context, request *mealplanning.GetValidIngredientStateRequest) (*mealplanning.GetValidIngredientStateResponse, error) {
+func (s *serviceImpl) GetValidIngredientState(ctx context.Context, request *mealplanning.GetValidIngredientStateRequest) (*mealplanning.GetValidIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -808,7 +808,7 @@ func (s *ServiceImpl) GetValidIngredientState(ctx context.Context, request *meal
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStateIngredient(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientRequest) (*mealplanning.GetValidIngredientStateIngredientResponse, error) {
+func (s *serviceImpl) GetValidIngredientStateIngredient(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientRequest) (*mealplanning.GetValidIngredientStateIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -827,7 +827,7 @@ func (s *ServiceImpl) GetValidIngredientStateIngredient(ctx context.Context, req
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStateIngredients(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientsRequest) (*mealplanning.GetValidIngredientStateIngredientsResponse, error) {
+func (s *serviceImpl) GetValidIngredientStateIngredients(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientsRequest) (*mealplanning.GetValidIngredientStateIngredientsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -851,7 +851,7 @@ func (s *ServiceImpl) GetValidIngredientStateIngredients(ctx context.Context, re
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredient(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientsByIngredientRequest) (*mealplanning.GetValidIngredientStateIngredientsByIngredientResponse, error) {
+func (s *serviceImpl) GetValidIngredientStateIngredientsByIngredient(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientsByIngredientRequest) (*mealplanning.GetValidIngredientStateIngredientsByIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -876,7 +876,7 @@ func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredient(ctx context
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredientState(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientsByIngredientStateRequest) (*mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse, error) {
+func (s *serviceImpl) GetValidIngredientStateIngredientsByIngredientState(ctx context.Context, request *mealplanning.GetValidIngredientStateIngredientsByIngredientStateRequest) (*mealplanning.GetValidIngredientStateIngredientsByIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -901,7 +901,7 @@ func (s *ServiceImpl) GetValidIngredientStateIngredientsByIngredientState(ctx co
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredientStates(ctx context.Context, request *mealplanning.GetValidIngredientStatesRequest) (*mealplanning.GetValidIngredientStatesResponse, error) {
+func (s *serviceImpl) GetValidIngredientStates(ctx context.Context, request *mealplanning.GetValidIngredientStatesRequest) (*mealplanning.GetValidIngredientStatesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -925,7 +925,7 @@ func (s *ServiceImpl) GetValidIngredientStates(ctx context.Context, request *mea
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidIngredients(ctx context.Context, request *mealplanning.GetValidIngredientsRequest) (*mealplanning.GetValidIngredientsResponse, error) {
+func (s *serviceImpl) GetValidIngredients(ctx context.Context, request *mealplanning.GetValidIngredientsRequest) (*mealplanning.GetValidIngredientsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -949,7 +949,7 @@ func (s *ServiceImpl) GetValidIngredients(ctx context.Context, request *mealplan
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidInstrument(ctx context.Context, request *mealplanning.GetValidInstrumentRequest) (*mealplanning.GetValidInstrumentResponse, error) {
+func (s *serviceImpl) GetValidInstrument(ctx context.Context, request *mealplanning.GetValidInstrumentRequest) (*mealplanning.GetValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -968,7 +968,7 @@ func (s *ServiceImpl) GetValidInstrument(ctx context.Context, request *mealplann
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidInstruments(ctx context.Context, request *mealplanning.GetValidInstrumentsRequest) (*mealplanning.GetValidInstrumentsResponse, error) {
+func (s *serviceImpl) GetValidInstruments(ctx context.Context, request *mealplanning.GetValidInstrumentsRequest) (*mealplanning.GetValidInstrumentsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -992,7 +992,7 @@ func (s *ServiceImpl) GetValidInstruments(ctx context.Context, request *mealplan
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitRequest) (*mealplanning.GetValidMeasurementUnitResponse, error) {
+func (s *serviceImpl) GetValidMeasurementUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitRequest) (*mealplanning.GetValidMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1011,7 +1011,7 @@ func (s *ServiceImpl) GetValidMeasurementUnit(ctx context.Context, request *meal
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionRequest) (*mealplanning.GetValidMeasurementUnitConversionResponse, error) {
+func (s *serviceImpl) GetValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionRequest) (*mealplanning.GetValidMeasurementUnitConversionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1030,7 +1030,7 @@ func (s *ServiceImpl) GetValidMeasurementUnitConversion(ctx context.Context, req
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsFromUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsFromUnitResponse, error) {
+func (s *serviceImpl) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsFromUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsFromUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1051,7 +1051,7 @@ func (s *ServiceImpl) GetValidMeasurementUnitConversionsFromUnit(ctx context.Con
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsToUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsToUnitResponse, error) {
+func (s *serviceImpl) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, request *mealplanning.GetValidMeasurementUnitConversionsToUnitRequest) (*mealplanning.GetValidMeasurementUnitConversionsToUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1071,7 +1071,7 @@ func (s *ServiceImpl) GetValidMeasurementUnitConversionsToUnit(ctx context.Conte
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidMeasurementUnits(ctx context.Context, request *mealplanning.GetValidMeasurementUnitsRequest) (*mealplanning.GetValidMeasurementUnitsResponse, error) {
+func (s *serviceImpl) GetValidMeasurementUnits(ctx context.Context, request *mealplanning.GetValidMeasurementUnitsRequest) (*mealplanning.GetValidMeasurementUnitsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1095,7 +1095,7 @@ func (s *ServiceImpl) GetValidMeasurementUnits(ctx context.Context, request *mea
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparation(ctx context.Context, request *mealplanning.GetValidPreparationRequest) (*mealplanning.GetValidPreparationResponse, error) {
+func (s *serviceImpl) GetValidPreparation(ctx context.Context, request *mealplanning.GetValidPreparationRequest) (*mealplanning.GetValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1114,7 +1114,7 @@ func (s *ServiceImpl) GetValidPreparation(ctx context.Context, request *mealplan
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationInstrument(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentRequest) (*mealplanning.GetValidPreparationInstrumentResponse, error) {
+func (s *serviceImpl) GetValidPreparationInstrument(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentRequest) (*mealplanning.GetValidPreparationInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1133,7 +1133,7 @@ func (s *ServiceImpl) GetValidPreparationInstrument(ctx context.Context, request
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationInstruments(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentsRequest) (*mealplanning.GetValidPreparationInstrumentsResponse, error) {
+func (s *serviceImpl) GetValidPreparationInstruments(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentsRequest) (*mealplanning.GetValidPreparationInstrumentsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1157,7 +1157,7 @@ func (s *ServiceImpl) GetValidPreparationInstruments(ctx context.Context, reques
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationInstrumentsByInstrument(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentsByInstrumentRequest) (*mealplanning.GetValidPreparationInstrumentsByInstrumentResponse, error) {
+func (s *serviceImpl) GetValidPreparationInstrumentsByInstrument(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentsByInstrumentRequest) (*mealplanning.GetValidPreparationInstrumentsByInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1182,7 +1182,7 @@ func (s *ServiceImpl) GetValidPreparationInstrumentsByInstrument(ctx context.Con
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentsByPreparationRequest) (*mealplanning.GetValidPreparationInstrumentsByPreparationResponse, error) {
+func (s *serviceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Context, request *mealplanning.GetValidPreparationInstrumentsByPreparationRequest) (*mealplanning.GetValidPreparationInstrumentsByPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1207,7 +1207,7 @@ func (s *ServiceImpl) GetValidPreparationInstrumentsByPreparation(ctx context.Co
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationVessel(ctx context.Context, request *mealplanning.GetValidPreparationVesselRequest) (*mealplanning.GetValidPreparationVesselResponse, error) {
+func (s *serviceImpl) GetValidPreparationVessel(ctx context.Context, request *mealplanning.GetValidPreparationVesselRequest) (*mealplanning.GetValidPreparationVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1226,7 +1226,7 @@ func (s *ServiceImpl) GetValidPreparationVessel(ctx context.Context, request *me
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationVessels(ctx context.Context, request *mealplanning.GetValidPreparationVesselsRequest) (*mealplanning.GetValidPreparationVesselsResponse, error) {
+func (s *serviceImpl) GetValidPreparationVessels(ctx context.Context, request *mealplanning.GetValidPreparationVesselsRequest) (*mealplanning.GetValidPreparationVesselsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1250,7 +1250,7 @@ func (s *ServiceImpl) GetValidPreparationVessels(ctx context.Context, request *m
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationVesselsByPreparation(ctx context.Context, request *mealplanning.GetValidPreparationVesselsByPreparationRequest) (*mealplanning.GetValidPreparationVesselsByPreparationResponse, error) {
+func (s *serviceImpl) GetValidPreparationVesselsByPreparation(ctx context.Context, request *mealplanning.GetValidPreparationVesselsByPreparationRequest) (*mealplanning.GetValidPreparationVesselsByPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1275,7 +1275,7 @@ func (s *ServiceImpl) GetValidPreparationVesselsByPreparation(ctx context.Contex
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparationVesselsByVessel(ctx context.Context, request *mealplanning.GetValidPreparationVesselsByVesselRequest) (*mealplanning.GetValidPreparationVesselsByVesselResponse, error) {
+func (s *serviceImpl) GetValidPreparationVesselsByVessel(ctx context.Context, request *mealplanning.GetValidPreparationVesselsByVesselRequest) (*mealplanning.GetValidPreparationVesselsByVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1300,7 +1300,7 @@ func (s *ServiceImpl) GetValidPreparationVesselsByVessel(ctx context.Context, re
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidPreparations(ctx context.Context, request *mealplanning.GetValidPreparationsRequest) (*mealplanning.GetValidPreparationsResponse, error) {
+func (s *serviceImpl) GetValidPreparations(ctx context.Context, request *mealplanning.GetValidPreparationsRequest) (*mealplanning.GetValidPreparationsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1324,7 +1324,7 @@ func (s *ServiceImpl) GetValidPreparations(ctx context.Context, request *mealpla
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidVessel(ctx context.Context, request *mealplanning.GetValidVesselRequest) (*mealplanning.GetValidVesselResponse, error) {
+func (s *serviceImpl) GetValidVessel(ctx context.Context, request *mealplanning.GetValidVesselRequest) (*mealplanning.GetValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1343,7 +1343,7 @@ func (s *ServiceImpl) GetValidVessel(ctx context.Context, request *mealplanning.
 	return res, nil
 }
 
-func (s *ServiceImpl) GetValidVessels(ctx context.Context, request *mealplanning.GetValidVesselsRequest) (*mealplanning.GetValidVesselsResponse, error) {
+func (s *serviceImpl) GetValidVessels(ctx context.Context, request *mealplanning.GetValidVesselsRequest) (*mealplanning.GetValidVesselsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1367,7 +1367,7 @@ func (s *ServiceImpl) GetValidVessels(ctx context.Context, request *mealplanning
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidIngredientGroups(ctx context.Context, request *mealplanning.SearchForValidIngredientGroupsRequest) (*mealplanning.SearchForValidIngredientGroupsResponse, error) {
+func (s *serviceImpl) SearchForValidIngredientGroups(ctx context.Context, request *mealplanning.SearchForValidIngredientGroupsRequest) (*mealplanning.SearchForValidIngredientGroupsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1391,7 +1391,7 @@ func (s *ServiceImpl) SearchForValidIngredientGroups(ctx context.Context, reques
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidIngredientStates(ctx context.Context, request *mealplanning.SearchForValidIngredientStatesRequest) (*mealplanning.SearchForValidIngredientStatesResponse, error) {
+func (s *serviceImpl) SearchForValidIngredientStates(ctx context.Context, request *mealplanning.SearchForValidIngredientStatesRequest) (*mealplanning.SearchForValidIngredientStatesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1415,7 +1415,7 @@ func (s *ServiceImpl) SearchForValidIngredientStates(ctx context.Context, reques
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidIngredients(ctx context.Context, request *mealplanning.SearchForValidIngredientsRequest) (*mealplanning.SearchForValidIngredientsResponse, error) {
+func (s *serviceImpl) SearchForValidIngredients(ctx context.Context, request *mealplanning.SearchForValidIngredientsRequest) (*mealplanning.SearchForValidIngredientsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1439,7 +1439,7 @@ func (s *ServiceImpl) SearchForValidIngredients(ctx context.Context, request *me
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidInstruments(ctx context.Context, request *mealplanning.SearchForValidInstrumentsRequest) (*mealplanning.SearchForValidInstrumentsResponse, error) {
+func (s *serviceImpl) SearchForValidInstruments(ctx context.Context, request *mealplanning.SearchForValidInstrumentsRequest) (*mealplanning.SearchForValidInstrumentsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1463,7 +1463,7 @@ func (s *ServiceImpl) SearchForValidInstruments(ctx context.Context, request *me
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidMeasurementUnits(ctx context.Context, request *mealplanning.SearchForValidMeasurementUnitsRequest) (*mealplanning.SearchForValidMeasurementUnitsResponse, error) {
+func (s *serviceImpl) SearchForValidMeasurementUnits(ctx context.Context, request *mealplanning.SearchForValidMeasurementUnitsRequest) (*mealplanning.SearchForValidMeasurementUnitsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1487,7 +1487,7 @@ func (s *ServiceImpl) SearchForValidMeasurementUnits(ctx context.Context, reques
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidPreparations(ctx context.Context, request *mealplanning.SearchForValidPreparationsRequest) (*mealplanning.SearchForValidPreparationsResponse, error) {
+func (s *serviceImpl) SearchForValidPreparations(ctx context.Context, request *mealplanning.SearchForValidPreparationsRequest) (*mealplanning.SearchForValidPreparationsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1511,7 +1511,7 @@ func (s *ServiceImpl) SearchForValidPreparations(ctx context.Context, request *m
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchForValidVessels(ctx context.Context, request *mealplanning.SearchForValidVesselsRequest) (*mealplanning.SearchForValidVesselsResponse, error) {
+func (s *serviceImpl) SearchForValidVessels(ctx context.Context, request *mealplanning.SearchForValidVesselsRequest) (*mealplanning.SearchForValidVesselsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1535,7 +1535,7 @@ func (s *ServiceImpl) SearchForValidVessels(ctx context.Context, request *mealpl
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchValidIngredientsByPreparation(ctx context.Context, request *mealplanning.SearchValidIngredientsByPreparationRequest) (*mealplanning.SearchValidIngredientsByPreparationResponse, error) {
+func (s *serviceImpl) SearchValidIngredientsByPreparation(ctx context.Context, request *mealplanning.SearchValidIngredientsByPreparationRequest) (*mealplanning.SearchValidIngredientsByPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1560,7 +1560,7 @@ func (s *ServiceImpl) SearchValidIngredientsByPreparation(ctx context.Context, r
 	return res, nil
 }
 
-func (s *ServiceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Context, request *mealplanning.SearchValidMeasurementUnitsByIngredientRequest) (*mealplanning.SearchValidMeasurementUnitsByIngredientResponse, error) {
+func (s *serviceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Context, request *mealplanning.SearchValidMeasurementUnitsByIngredientRequest) (*mealplanning.SearchValidMeasurementUnitsByIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1585,7 +1585,7 @@ func (s *ServiceImpl) SearchValidMeasurementUnitsByIngredient(ctx context.Contex
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredient(ctx context.Context, request *mealplanning.UpdateValidIngredientRequest) (*mealplanning.UpdateValidIngredientResponse, error) {
+func (s *serviceImpl) UpdateValidIngredient(ctx context.Context, request *mealplanning.UpdateValidIngredientRequest) (*mealplanning.UpdateValidIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1605,7 +1605,7 @@ func (s *ServiceImpl) UpdateValidIngredient(ctx context.Context, request *mealpl
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientGroup(ctx context.Context, request *mealplanning.UpdateValidIngredientGroupRequest) (*mealplanning.UpdateValidIngredientGroupResponse, error) {
+func (s *serviceImpl) UpdateValidIngredientGroup(ctx context.Context, request *mealplanning.UpdateValidIngredientGroupRequest) (*mealplanning.UpdateValidIngredientGroupResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1626,7 +1626,7 @@ func (s *ServiceImpl) UpdateValidIngredientGroup(ctx context.Context, request *m
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.UpdateValidIngredientMeasurementUnitRequest) (*mealplanning.UpdateValidIngredientMeasurementUnitResponse, error) {
+func (s *serviceImpl) UpdateValidIngredientMeasurementUnit(ctx context.Context, request *mealplanning.UpdateValidIngredientMeasurementUnitRequest) (*mealplanning.UpdateValidIngredientMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1647,7 +1647,7 @@ func (s *ServiceImpl) UpdateValidIngredientMeasurementUnit(ctx context.Context, 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientPreparation(ctx context.Context, request *mealplanning.UpdateValidIngredientPreparationRequest) (*mealplanning.UpdateValidIngredientPreparationResponse, error) {
+func (s *serviceImpl) UpdateValidIngredientPreparation(ctx context.Context, request *mealplanning.UpdateValidIngredientPreparationRequest) (*mealplanning.UpdateValidIngredientPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1668,7 +1668,7 @@ func (s *ServiceImpl) UpdateValidIngredientPreparation(ctx context.Context, requ
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientState(ctx context.Context, request *mealplanning.UpdateValidIngredientStateRequest) (*mealplanning.UpdateValidIngredientStateResponse, error) {
+func (s *serviceImpl) UpdateValidIngredientState(ctx context.Context, request *mealplanning.UpdateValidIngredientStateRequest) (*mealplanning.UpdateValidIngredientStateResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1689,7 +1689,7 @@ func (s *ServiceImpl) UpdateValidIngredientState(ctx context.Context, request *m
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidIngredientStateIngredient(ctx context.Context, request *mealplanning.UpdateValidIngredientStateIngredientRequest) (*mealplanning.UpdateValidIngredientStateIngredientResponse, error) {
+func (s *serviceImpl) UpdateValidIngredientStateIngredient(ctx context.Context, request *mealplanning.UpdateValidIngredientStateIngredientRequest) (*mealplanning.UpdateValidIngredientStateIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1710,7 +1710,7 @@ func (s *ServiceImpl) UpdateValidIngredientStateIngredient(ctx context.Context, 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidInstrument(ctx context.Context, request *mealplanning.UpdateValidInstrumentRequest) (*mealplanning.UpdateValidInstrumentResponse, error) {
+func (s *serviceImpl) UpdateValidInstrument(ctx context.Context, request *mealplanning.UpdateValidInstrumentRequest) (*mealplanning.UpdateValidInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1731,7 +1731,7 @@ func (s *ServiceImpl) UpdateValidInstrument(ctx context.Context, request *mealpl
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidMeasurementUnit(ctx context.Context, request *mealplanning.UpdateValidMeasurementUnitRequest) (*mealplanning.UpdateValidMeasurementUnitResponse, error) {
+func (s *serviceImpl) UpdateValidMeasurementUnit(ctx context.Context, request *mealplanning.UpdateValidMeasurementUnitRequest) (*mealplanning.UpdateValidMeasurementUnitResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1752,7 +1752,7 @@ func (s *ServiceImpl) UpdateValidMeasurementUnit(ctx context.Context, request *m
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.UpdateValidMeasurementUnitConversionRequest) (*mealplanning.UpdateValidMeasurementUnitConversionResponse, error) {
+func (s *serviceImpl) UpdateValidMeasurementUnitConversion(ctx context.Context, request *mealplanning.UpdateValidMeasurementUnitConversionRequest) (*mealplanning.UpdateValidMeasurementUnitConversionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1773,7 +1773,7 @@ func (s *ServiceImpl) UpdateValidMeasurementUnitConversion(ctx context.Context, 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidPreparation(ctx context.Context, request *mealplanning.UpdateValidPreparationRequest) (*mealplanning.UpdateValidPreparationResponse, error) {
+func (s *serviceImpl) UpdateValidPreparation(ctx context.Context, request *mealplanning.UpdateValidPreparationRequest) (*mealplanning.UpdateValidPreparationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1794,7 +1794,7 @@ func (s *ServiceImpl) UpdateValidPreparation(ctx context.Context, request *mealp
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidPreparationInstrument(ctx context.Context, request *mealplanning.UpdateValidPreparationInstrumentRequest) (*mealplanning.UpdateValidPreparationInstrumentResponse, error) {
+func (s *serviceImpl) UpdateValidPreparationInstrument(ctx context.Context, request *mealplanning.UpdateValidPreparationInstrumentRequest) (*mealplanning.UpdateValidPreparationInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1815,7 +1815,7 @@ func (s *ServiceImpl) UpdateValidPreparationInstrument(ctx context.Context, requ
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidPreparationVessel(ctx context.Context, request *mealplanning.UpdateValidPreparationVesselRequest) (*mealplanning.UpdateValidPreparationVesselResponse, error) {
+func (s *serviceImpl) UpdateValidPreparationVessel(ctx context.Context, request *mealplanning.UpdateValidPreparationVesselRequest) (*mealplanning.UpdateValidPreparationVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1836,7 +1836,7 @@ func (s *ServiceImpl) UpdateValidPreparationVessel(ctx context.Context, request 
 	return res, nil
 }
 
-func (s *ServiceImpl) UpdateValidVessel(ctx context.Context, request *mealplanning.UpdateValidVesselRequest) (*mealplanning.UpdateValidVesselResponse, error) {
+func (s *serviceImpl) UpdateValidVessel(ctx context.Context, request *mealplanning.UpdateValidVesselRequest) (*mealplanning.UpdateValidVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (s *ServiceImpl) CreateServiceSettingConfiguration(ctx context.Context, request *configurationsvc.CreateServiceSettingConfigurationRequest) (*configurationsvc.CreateServiceSettingConfigurationResponse, error) {
+func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, request *configurationsvc.CreateServiceSettingConfigurationRequest) (*configurationsvc.CreateServiceSettingConfigurationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -34,7 +34,7 @@ func (s *ServiceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 	return x, nil
 }
 
-func (s *ServiceImpl) GetServiceSettingConfigurationByName(ctx context.Context, request *configurationsvc.GetServiceSettingConfigurationByNameRequest) (*configurationsvc.GetServiceSettingConfigurationByNameResponse, error) {
+func (s *serviceImpl) GetServiceSettingConfigurationByName(ctx context.Context, request *configurationsvc.GetServiceSettingConfigurationByNameRequest) (*configurationsvc.GetServiceSettingConfigurationByNameResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -61,7 +61,7 @@ func (s *ServiceImpl) GetServiceSettingConfigurationByName(ctx context.Context, 
 	return x, nil
 }
 
-func (s *ServiceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Context, request *configurationsvc.GetServiceSettingConfigurationsForAccountRequest) (*configurationsvc.GetServiceSettingConfigurationsForAccountResponse, error) {
+func (s *serviceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Context, request *configurationsvc.GetServiceSettingConfigurationsForAccountRequest) (*configurationsvc.GetServiceSettingConfigurationsForAccountResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -91,7 +91,7 @@ func (s *ServiceImpl) GetServiceSettingConfigurationsForAccount(ctx context.Cont
 	return x, nil
 }
 
-func (s *ServiceImpl) GetServiceSettingConfigurationsForUser(ctx context.Context, request *configurationsvc.GetServiceSettingConfigurationsForUserRequest) (*configurationsvc.GetServiceSettingConfigurationsForUserResponse, error) {
+func (s *serviceImpl) GetServiceSettingConfigurationsForUser(ctx context.Context, request *configurationsvc.GetServiceSettingConfigurationsForUserRequest) (*configurationsvc.GetServiceSettingConfigurationsForUserResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -121,7 +121,7 @@ func (s *ServiceImpl) GetServiceSettingConfigurationsForUser(ctx context.Context
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateServiceSettingConfiguration(ctx context.Context, request *configurationsvc.UpdateServiceSettingConfigurationRequest) (*configurationsvc.UpdateServiceSettingConfigurationResponse, error) {
+func (s *serviceImpl) UpdateServiceSettingConfiguration(ctx context.Context, request *configurationsvc.UpdateServiceSettingConfigurationRequest) (*configurationsvc.UpdateServiceSettingConfigurationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -148,7 +148,7 @@ func (s *ServiceImpl) UpdateServiceSettingConfiguration(ctx context.Context, req
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveServiceSettingConfiguration(ctx context.Context, request *configurationsvc.ArchiveServiceSettingConfigurationRequest) (*configurationsvc.ArchiveServiceSettingConfigurationResponse, error) {
+func (s *serviceImpl) ArchiveServiceSettingConfiguration(ctx context.Context, request *configurationsvc.ArchiveServiceSettingConfigurationRequest) (*configurationsvc.ArchiveServiceSettingConfigurationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

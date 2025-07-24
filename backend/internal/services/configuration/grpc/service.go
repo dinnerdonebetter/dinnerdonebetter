@@ -15,10 +15,10 @@ const (
 	o11yName = "configuration_service"
 )
 
-var _ configurationsvc.UserConfigurationServiceServer = (*ServiceImpl)(nil)
+var _ configurationsvc.UserConfigurationServiceServer = (*serviceImpl)(nil)
 
 type (
-	ServiceImpl struct {
+	serviceImpl struct {
 		configurationsvc.UnimplementedUserConfigurationServiceServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
@@ -34,7 +34,7 @@ func NewService(
 	webhookRepository webhooks.Repository,
 	settingsRepository settings.Repository,
 ) configurationsvc.UserConfigurationServiceServer {
-	return &ServiceImpl{
+	return &serviceImpl{
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		webhookRepository:         webhookRepository,

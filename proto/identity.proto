@@ -168,6 +168,7 @@ message GetUserRequest {
 
 message GetUserResponse {
   common.ResponseDetails ResponseDetails = 1;
+  User Result = 2;
 }
 
 // GetUsers
@@ -249,7 +250,17 @@ message ModifyUserPermissionsInput {
 }
 
 // UpdateUserDetails
-message UpdateUserDetailsRequest {}
+message UserDetailsUpdateRequestInput {
+  string FirstName = 1;
+  string LastName = 2;
+  google.protobuf.Timestamp Birthday = 3;
+  string CurrentPassword = 4;
+  string TOTPToken = 5;
+}
+
+message UpdateUserDetailsRequest {
+  UserDetailsUpdateRequestInput Input = 1;
+}
 
 message UpdateUserDetailsResponse {
   common.ResponseDetails ResponseDetails = 1;
@@ -266,14 +277,18 @@ message UpdateUserEmailAddressResponse {
 }
 
 // UpdateUserUsername
-message UpdateUserUsernameRequest {}
+message UpdateUserUsernameRequest {
+  string NewUsername = 1;
+}
 
 message UpdateUserUsernameResponse {
   common.ResponseDetails ResponseDetails = 1;
 }
 
 // UploadUserAvatar
-message UploadUserAvatarRequest {}
+message UploadUserAvatarRequest {
+  bytes data = 1;
+}
 
 message UploadUserAvatarResponse {
   common.ResponseDetails ResponseDetails = 1;
@@ -397,7 +412,7 @@ message User {
   google.protobuf.Timestamp LastAcceptedTermsOfService = 4;
   google.protobuf.Timestamp LastAcceptedPrivacyPolicy = 5;
   google.protobuf.Timestamp TwoFactorSecretVerifiedAt = 6;
-  string AvatarSrc = 7;
+  optional string AvatarSrc = 7;
   google.protobuf.Timestamp Birthday = 8;
   google.protobuf.Timestamp ArchivedAt = 9;
   string AccountStatusExplanation = 10;

@@ -20,10 +20,10 @@ const (
 	o11yName = "notifications_service"
 )
 
-var _ notificationssvc.UserNotificationsServiceServer = (*ServiceImpl)(nil)
+var _ notificationssvc.UserNotificationsServiceServer = (*serviceImpl)(nil)
 
 type (
-	ServiceImpl struct {
+	serviceImpl struct {
 		notificationssvc.UnimplementedUserNotificationsServiceServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
@@ -37,7 +37,7 @@ func NewService(
 	tracerProvider tracing.TracerProvider,
 	notificationsRepository notifications.Repository,
 ) notificationssvc.UserNotificationsServiceServer {
-	return &ServiceImpl{
+	return &serviceImpl{
 		logger:                  logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		notificationsRepository: notificationsRepository,
@@ -55,7 +55,7 @@ func ConvertUserNotificationToGRPCUserNotification(notification *notifications.U
 	}
 }
 
-func (s *ServiceImpl) GetUserNotification(ctx context.Context, request *notificationssvc.GetUserNotificationRequest) (*notificationssvc.GetUserNotificationResponse, error) {
+func (s *serviceImpl) GetUserNotification(ctx context.Context, request *notificationssvc.GetUserNotificationRequest) (*notificationssvc.GetUserNotificationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -81,7 +81,7 @@ func (s *ServiceImpl) GetUserNotification(ctx context.Context, request *notifica
 	return x, nil
 }
 
-func (s *ServiceImpl) GetUserNotifications(ctx context.Context, request *notificationssvc.GetUserNotificationsRequest) (*notificationssvc.GetUserNotificationsResponse, error) {
+func (s *serviceImpl) GetUserNotifications(ctx context.Context, request *notificationssvc.GetUserNotificationsRequest) (*notificationssvc.GetUserNotificationsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -113,7 +113,7 @@ func (s *ServiceImpl) GetUserNotifications(ctx context.Context, request *notific
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateUserNotification(ctx context.Context, request *notificationssvc.UpdateUserNotificationRequest) (*notificationssvc.UpdateUserNotificationResponse, error) {
+func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notificationssvc.UpdateUserNotificationRequest) (*notificationssvc.UpdateUserNotificationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

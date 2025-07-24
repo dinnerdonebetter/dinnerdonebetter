@@ -39,7 +39,7 @@ func Unauthenticated(msg string) error {
 	return status.Error(codes.Unauthenticated, msg)
 }
 
-func (s *ServiceImpl) fetchSessionContext(ctx context.Context) *sessions.ContextData {
+func (s *serviceImpl) fetchSessionContext(ctx context.Context) *sessions.ContextData {
 	sessionContext, ok := ctx.Value(SessionContextKey).(*sessions.ContextData)
 	if !ok {
 		return nil
@@ -48,7 +48,7 @@ func (s *ServiceImpl) fetchSessionContext(ctx context.Context) *sessions.Context
 	return sessionContext
 }
 
-func (s *ServiceImpl) determineZuckMode(ctx context.Context, metadata metadata.MD, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {
+func (s *serviceImpl) determineZuckMode(ctx context.Context, metadata metadata.MD, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -86,7 +86,7 @@ func (s *ServiceImpl) determineZuckMode(ctx context.Context, metadata metadata.M
 	return "", "", nil
 }
 
-func (s *ServiceImpl) extractSessionContextDataFromOAuth2(ctx context.Context, metadata metadata.MD) (*sessions.ContextData, error) {
+func (s *serviceImpl) extractSessionContextDataFromOAuth2(ctx context.Context, metadata metadata.MD) (*sessions.ContextData, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -132,7 +132,7 @@ func (s *ServiceImpl) extractSessionContextDataFromOAuth2(ctx context.Context, m
 	return nil, Unauthenticated("invalid OAuth2 token")
 }
 
-func (s *ServiceImpl) AuthInterceptor() grpc.UnaryServerInterceptor {
+func (s *serviceImpl) AuthInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		logger := s.logger.WithValue("grpc.method", info.FullMethod)
 

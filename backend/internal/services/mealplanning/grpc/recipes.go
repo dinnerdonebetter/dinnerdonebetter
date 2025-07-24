@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (s *ServiceImpl) ArchiveRecipe(ctx context.Context, request *mealplanning.ArchiveRecipeRequest) (*mealplanning.ArchiveRecipeResponse, error) {
+func (s *serviceImpl) ArchiveRecipe(ctx context.Context, request *mealplanning.ArchiveRecipeRequest) (*mealplanning.ArchiveRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -39,7 +39,7 @@ func (s *ServiceImpl) ArchiveRecipe(ctx context.Context, request *mealplanning.A
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveRecipePrepTask(ctx context.Context, request *mealplanning.ArchiveRecipePrepTaskRequest) (*mealplanning.ArchiveRecipePrepTaskResponse, error) {
+func (s *serviceImpl) ArchiveRecipePrepTask(ctx context.Context, request *mealplanning.ArchiveRecipePrepTaskRequest) (*mealplanning.ArchiveRecipePrepTaskResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -61,7 +61,7 @@ func (s *ServiceImpl) ArchiveRecipePrepTask(ctx context.Context, request *mealpl
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveRecipeRating(ctx context.Context, request *mealplanning.ArchiveRecipeRatingRequest) (*mealplanning.ArchiveRecipeRatingResponse, error) {
+func (s *serviceImpl) ArchiveRecipeRating(ctx context.Context, request *mealplanning.ArchiveRecipeRatingRequest) (*mealplanning.ArchiveRecipeRatingResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -83,7 +83,7 @@ func (s *ServiceImpl) ArchiveRecipeRating(ctx context.Context, request *mealplan
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveRecipeStep(ctx context.Context, request *mealplanning.ArchiveRecipeStepRequest) (*mealplanning.ArchiveRecipeStepResponse, error) {
+func (s *serviceImpl) ArchiveRecipeStep(ctx context.Context, request *mealplanning.ArchiveRecipeStepRequest) (*mealplanning.ArchiveRecipeStepResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -105,7 +105,7 @@ func (s *ServiceImpl) ArchiveRecipeStep(ctx context.Context, request *mealplanni
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.ArchiveRecipeStepCompletionConditionRequest) (*mealplanning.ArchiveRecipeStepCompletionConditionResponse, error) {
+func (s *serviceImpl) ArchiveRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.ArchiveRecipeStepCompletionConditionRequest) (*mealplanning.ArchiveRecipeStepCompletionConditionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -128,7 +128,7 @@ func (s *ServiceImpl) ArchiveRecipeStepCompletionCondition(ctx context.Context, 
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveRecipeStepIngredient(ctx context.Context, request *mealplanning.ArchiveRecipeStepIngredientRequest) (*mealplanning.ArchiveRecipeStepIngredientResponse, error) {
+func (s *serviceImpl) ArchiveRecipeStepIngredient(ctx context.Context, request *mealplanning.ArchiveRecipeStepIngredientRequest) (*mealplanning.ArchiveRecipeStepIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -151,7 +151,7 @@ func (s *ServiceImpl) ArchiveRecipeStepIngredient(ctx context.Context, request *
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveRecipeStepInstrument(ctx context.Context, request *mealplanning.ArchiveRecipeStepInstrumentRequest) (*mealplanning.ArchiveRecipeStepInstrumentResponse, error) {
+func (s *serviceImpl) ArchiveRecipeStepInstrument(ctx context.Context, request *mealplanning.ArchiveRecipeStepInstrumentRequest) (*mealplanning.ArchiveRecipeStepInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -174,7 +174,7 @@ func (s *ServiceImpl) ArchiveRecipeStepInstrument(ctx context.Context, request *
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveRecipeStepProduct(ctx context.Context, request *mealplanning.ArchiveRecipeStepProductRequest) (*mealplanning.ArchiveRecipeStepProductResponse, error) {
+func (s *serviceImpl) ArchiveRecipeStepProduct(ctx context.Context, request *mealplanning.ArchiveRecipeStepProductRequest) (*mealplanning.ArchiveRecipeStepProductResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -197,7 +197,7 @@ func (s *ServiceImpl) ArchiveRecipeStepProduct(ctx context.Context, request *mea
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveRecipeStepVessel(ctx context.Context, request *mealplanning.ArchiveRecipeStepVesselRequest) (*mealplanning.ArchiveRecipeStepVesselResponse, error) {
+func (s *serviceImpl) ArchiveRecipeStepVessel(ctx context.Context, request *mealplanning.ArchiveRecipeStepVesselRequest) (*mealplanning.ArchiveRecipeStepVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -220,7 +220,7 @@ func (s *ServiceImpl) ArchiveRecipeStepVessel(ctx context.Context, request *meal
 	return x, nil
 }
 
-func (s *ServiceImpl) CloneRecipe(ctx context.Context, request *mealplanning.CloneRecipeRequest) (*mealplanning.CloneRecipeResponse, error) {
+func (s *serviceImpl) CloneRecipe(ctx context.Context, request *mealplanning.CloneRecipeRequest) (*mealplanning.CloneRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -248,7 +248,7 @@ func (s *ServiceImpl) CloneRecipe(ctx context.Context, request *mealplanning.Clo
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateRecipe(ctx context.Context, request *mealplanning.CreateRecipeRequest) (*mealplanning.CreateRecipeResponse, error) {
+func (s *serviceImpl) CreateRecipe(ctx context.Context, request *mealplanning.CreateRecipeRequest) (*mealplanning.CreateRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -271,7 +271,7 @@ func (s *ServiceImpl) CreateRecipe(ctx context.Context, request *mealplanning.Cr
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateRecipePrepTask(ctx context.Context, request *mealplanning.CreateRecipePrepTaskRequest) (*mealplanning.CreateRecipePrepTaskResponse, error) {
+func (s *serviceImpl) CreateRecipePrepTask(ctx context.Context, request *mealplanning.CreateRecipePrepTaskRequest) (*mealplanning.CreateRecipePrepTaskResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -296,7 +296,7 @@ func (s *ServiceImpl) CreateRecipePrepTask(ctx context.Context, request *mealpla
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateRecipeRating(ctx context.Context, request *mealplanning.CreateRecipeRatingRequest) (*mealplanning.CreateRecipeRatingResponse, error) {
+func (s *serviceImpl) CreateRecipeRating(ctx context.Context, request *mealplanning.CreateRecipeRatingRequest) (*mealplanning.CreateRecipeRatingResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -321,7 +321,7 @@ func (s *ServiceImpl) CreateRecipeRating(ctx context.Context, request *mealplann
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateRecipeStep(ctx context.Context, request *mealplanning.CreateRecipeStepRequest) (*mealplanning.CreateRecipeStepResponse, error) {
+func (s *serviceImpl) CreateRecipeStep(ctx context.Context, request *mealplanning.CreateRecipeStepRequest) (*mealplanning.CreateRecipeStepResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -346,7 +346,7 @@ func (s *ServiceImpl) CreateRecipeStep(ctx context.Context, request *mealplannin
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.CreateRecipeStepCompletionConditionRequest) (*mealplanning.CreateRecipeStepCompletionConditionResponse, error) {
+func (s *serviceImpl) CreateRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.CreateRecipeStepCompletionConditionRequest) (*mealplanning.CreateRecipeStepCompletionConditionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -372,7 +372,7 @@ func (s *ServiceImpl) CreateRecipeStepCompletionCondition(ctx context.Context, r
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateRecipeStepIngredient(ctx context.Context, request *mealplanning.CreateRecipeStepIngredientRequest) (*mealplanning.CreateRecipeStepIngredientResponse, error) {
+func (s *serviceImpl) CreateRecipeStepIngredient(ctx context.Context, request *mealplanning.CreateRecipeStepIngredientRequest) (*mealplanning.CreateRecipeStepIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -398,7 +398,7 @@ func (s *ServiceImpl) CreateRecipeStepIngredient(ctx context.Context, request *m
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateRecipeStepInstrument(ctx context.Context, request *mealplanning.CreateRecipeStepInstrumentRequest) (*mealplanning.CreateRecipeStepInstrumentResponse, error) {
+func (s *serviceImpl) CreateRecipeStepInstrument(ctx context.Context, request *mealplanning.CreateRecipeStepInstrumentRequest) (*mealplanning.CreateRecipeStepInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -424,7 +424,7 @@ func (s *ServiceImpl) CreateRecipeStepInstrument(ctx context.Context, request *m
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateRecipeStepProduct(ctx context.Context, request *mealplanning.CreateRecipeStepProductRequest) (*mealplanning.CreateRecipeStepProductResponse, error) {
+func (s *serviceImpl) CreateRecipeStepProduct(ctx context.Context, request *mealplanning.CreateRecipeStepProductRequest) (*mealplanning.CreateRecipeStepProductResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -450,7 +450,7 @@ func (s *ServiceImpl) CreateRecipeStepProduct(ctx context.Context, request *meal
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateRecipeStepVessel(ctx context.Context, request *mealplanning.CreateRecipeStepVesselRequest) (*mealplanning.CreateRecipeStepVesselResponse, error) {
+func (s *serviceImpl) CreateRecipeStepVessel(ctx context.Context, request *mealplanning.CreateRecipeStepVesselRequest) (*mealplanning.CreateRecipeStepVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -476,7 +476,7 @@ func (s *ServiceImpl) CreateRecipeStepVessel(ctx context.Context, request *mealp
 	return x, nil
 }
 
-func (s *ServiceImpl) GetMermaidDiagramForRecipe(ctx context.Context, request *mealplanning.GetMermaidDiagramForRecipeRequest) (*mealplanning.GetMermaidDiagramForRecipeResponse, error) {
+func (s *serviceImpl) GetMermaidDiagramForRecipe(ctx context.Context, request *mealplanning.GetMermaidDiagramForRecipeRequest) (*mealplanning.GetMermaidDiagramForRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -499,7 +499,7 @@ func (s *ServiceImpl) GetMermaidDiagramForRecipe(ctx context.Context, request *m
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipe(ctx context.Context, request *mealplanning.GetRecipeRequest) (*mealplanning.GetRecipeResponse, error) {
+func (s *serviceImpl) GetRecipe(ctx context.Context, request *mealplanning.GetRecipeRequest) (*mealplanning.GetRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -523,7 +523,7 @@ func (s *ServiceImpl) GetRecipe(ctx context.Context, request *mealplanning.GetRe
 }
 
 // TODO: very aware that this basically just emits a list of strings, and that that isn't very useful
-func (s *ServiceImpl) EstimateRecipePrepTasks(ctx context.Context, request *mealplanning.EstimateRecipePrepTasksRequest) (*mealplanning.EstimateRecipePrepTasksResponse, error) {
+func (s *serviceImpl) EstimateRecipePrepTasks(ctx context.Context, request *mealplanning.EstimateRecipePrepTasksRequest) (*mealplanning.EstimateRecipePrepTasksResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -549,7 +549,7 @@ func (s *ServiceImpl) EstimateRecipePrepTasks(ctx context.Context, request *meal
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipePrepTask(ctx context.Context, request *mealplanning.GetRecipePrepTaskRequest) (*mealplanning.GetRecipePrepTaskResponse, error) {
+func (s *serviceImpl) GetRecipePrepTask(ctx context.Context, request *mealplanning.GetRecipePrepTaskRequest) (*mealplanning.GetRecipePrepTaskResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -573,7 +573,7 @@ func (s *ServiceImpl) GetRecipePrepTask(ctx context.Context, request *mealplanni
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplanning.GetRecipePrepTasksRequest) (*mealplanning.GetRecipePrepTasksResponse, error) {
+func (s *serviceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplanning.GetRecipePrepTasksRequest) (*mealplanning.GetRecipePrepTasksResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -601,7 +601,7 @@ func (s *ServiceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeRating(ctx context.Context, request *mealplanning.GetRecipeRatingRequest) (*mealplanning.GetRecipeRatingResponse, error) {
+func (s *serviceImpl) GetRecipeRating(ctx context.Context, request *mealplanning.GetRecipeRatingRequest) (*mealplanning.GetRecipeRatingResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -625,7 +625,7 @@ func (s *ServiceImpl) GetRecipeRating(ctx context.Context, request *mealplanning
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *mealplanning.GetRecipeRatingsForRecipeRequest) (*mealplanning.GetRecipeRatingsForRecipeResponse, error) {
+func (s *serviceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *mealplanning.GetRecipeRatingsForRecipeRequest) (*mealplanning.GetRecipeRatingsForRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -653,7 +653,7 @@ func (s *ServiceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *me
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStep(ctx context.Context, request *mealplanning.GetRecipeStepRequest) (*mealplanning.GetRecipeStepResponse, error) {
+func (s *serviceImpl) GetRecipeStep(ctx context.Context, request *mealplanning.GetRecipeStepRequest) (*mealplanning.GetRecipeStepResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -677,7 +677,7 @@ func (s *ServiceImpl) GetRecipeStep(ctx context.Context, request *mealplanning.G
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.GetRecipeStepCompletionConditionRequest) (*mealplanning.GetRecipeStepCompletionConditionResponse, error) {
+func (s *serviceImpl) GetRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.GetRecipeStepCompletionConditionRequest) (*mealplanning.GetRecipeStepCompletionConditionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -702,7 +702,7 @@ func (s *ServiceImpl) GetRecipeStepCompletionCondition(ctx context.Context, requ
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepCompletionConditions(ctx context.Context, request *mealplanning.GetRecipeStepCompletionConditionsRequest) (*mealplanning.GetRecipeStepCompletionConditionsResponse, error) {
+func (s *serviceImpl) GetRecipeStepCompletionConditions(ctx context.Context, request *mealplanning.GetRecipeStepCompletionConditionsRequest) (*mealplanning.GetRecipeStepCompletionConditionsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -731,7 +731,7 @@ func (s *ServiceImpl) GetRecipeStepCompletionConditions(ctx context.Context, req
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepIngredient(ctx context.Context, request *mealplanning.GetRecipeStepIngredientRequest) (*mealplanning.GetRecipeStepIngredientResponse, error) {
+func (s *serviceImpl) GetRecipeStepIngredient(ctx context.Context, request *mealplanning.GetRecipeStepIngredientRequest) (*mealplanning.GetRecipeStepIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -756,7 +756,7 @@ func (s *ServiceImpl) GetRecipeStepIngredient(ctx context.Context, request *meal
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepIngredients(ctx context.Context, request *mealplanning.GetRecipeStepIngredientsRequest) (*mealplanning.GetRecipeStepIngredientsResponse, error) {
+func (s *serviceImpl) GetRecipeStepIngredients(ctx context.Context, request *mealplanning.GetRecipeStepIngredientsRequest) (*mealplanning.GetRecipeStepIngredientsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -785,7 +785,7 @@ func (s *ServiceImpl) GetRecipeStepIngredients(ctx context.Context, request *mea
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepInstrument(ctx context.Context, request *mealplanning.GetRecipeStepInstrumentRequest) (*mealplanning.GetRecipeStepInstrumentResponse, error) {
+func (s *serviceImpl) GetRecipeStepInstrument(ctx context.Context, request *mealplanning.GetRecipeStepInstrumentRequest) (*mealplanning.GetRecipeStepInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -810,7 +810,7 @@ func (s *ServiceImpl) GetRecipeStepInstrument(ctx context.Context, request *meal
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepInstruments(ctx context.Context, request *mealplanning.GetRecipeStepInstrumentsRequest) (*mealplanning.GetRecipeStepInstrumentsResponse, error) {
+func (s *serviceImpl) GetRecipeStepInstruments(ctx context.Context, request *mealplanning.GetRecipeStepInstrumentsRequest) (*mealplanning.GetRecipeStepInstrumentsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -839,7 +839,7 @@ func (s *ServiceImpl) GetRecipeStepInstruments(ctx context.Context, request *mea
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepProduct(ctx context.Context, request *mealplanning.GetRecipeStepProductRequest) (*mealplanning.GetRecipeStepProductResponse, error) {
+func (s *serviceImpl) GetRecipeStepProduct(ctx context.Context, request *mealplanning.GetRecipeStepProductRequest) (*mealplanning.GetRecipeStepProductResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -864,7 +864,7 @@ func (s *ServiceImpl) GetRecipeStepProduct(ctx context.Context, request *mealpla
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepProducts(ctx context.Context, request *mealplanning.GetRecipeStepProductsRequest) (*mealplanning.GetRecipeStepProductsResponse, error) {
+func (s *serviceImpl) GetRecipeStepProducts(ctx context.Context, request *mealplanning.GetRecipeStepProductsRequest) (*mealplanning.GetRecipeStepProductsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -893,7 +893,7 @@ func (s *ServiceImpl) GetRecipeStepProducts(ctx context.Context, request *mealpl
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepVessel(ctx context.Context, request *mealplanning.GetRecipeStepVesselRequest) (*mealplanning.GetRecipeStepVesselResponse, error) {
+func (s *serviceImpl) GetRecipeStepVessel(ctx context.Context, request *mealplanning.GetRecipeStepVesselRequest) (*mealplanning.GetRecipeStepVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -918,7 +918,7 @@ func (s *ServiceImpl) GetRecipeStepVessel(ctx context.Context, request *mealplan
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeStepVessels(ctx context.Context, request *mealplanning.GetRecipeStepVesselsRequest) (*mealplanning.GetRecipeStepVesselsResponse, error) {
+func (s *serviceImpl) GetRecipeStepVessels(ctx context.Context, request *mealplanning.GetRecipeStepVesselsRequest) (*mealplanning.GetRecipeStepVesselsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -947,7 +947,7 @@ func (s *ServiceImpl) GetRecipeStepVessels(ctx context.Context, request *mealpla
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.GetRecipeStepsRequest) (*mealplanning.GetRecipeStepsResponse, error) {
+func (s *serviceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.GetRecipeStepsRequest) (*mealplanning.GetRecipeStepsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -975,7 +975,7 @@ func (s *ServiceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 	return x, nil
 }
 
-func (s *ServiceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetRecipesRequest) (*mealplanning.GetRecipesResponse, error) {
+func (s *serviceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetRecipesRequest) (*mealplanning.GetRecipesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -999,7 +999,7 @@ func (s *ServiceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetR
 	return x, nil
 }
 
-func (s *ServiceImpl) SearchForRecipes(ctx context.Context, request *mealplanning.SearchForRecipesRequest) (*mealplanning.SearchForRecipesResponse, error) {
+func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplanning.SearchForRecipesRequest) (*mealplanning.SearchForRecipesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1027,7 +1027,7 @@ func (s *ServiceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.UpdateRecipeRequest) (*mealplanning.UpdateRecipeResponse, error) {
+func (s *serviceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.UpdateRecipeRequest) (*mealplanning.UpdateRecipeResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1056,7 +1056,7 @@ func (s *ServiceImpl) UpdateRecipe(ctx context.Context, request *mealplanning.Up
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateRecipePrepTask(ctx context.Context, request *mealplanning.UpdateRecipePrepTaskRequest) (*mealplanning.UpdateRecipePrepTaskResponse, error) {
+func (s *serviceImpl) UpdateRecipePrepTask(ctx context.Context, request *mealplanning.UpdateRecipePrepTaskRequest) (*mealplanning.UpdateRecipePrepTaskResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1086,7 +1086,7 @@ func (s *ServiceImpl) UpdateRecipePrepTask(ctx context.Context, request *mealpla
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateRecipeRating(ctx context.Context, request *mealplanning.UpdateRecipeRatingRequest) (*mealplanning.UpdateRecipeRatingResponse, error) {
+func (s *serviceImpl) UpdateRecipeRating(ctx context.Context, request *mealplanning.UpdateRecipeRatingRequest) (*mealplanning.UpdateRecipeRatingResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1116,7 +1116,7 @@ func (s *ServiceImpl) UpdateRecipeRating(ctx context.Context, request *mealplann
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateRecipeStep(ctx context.Context, request *mealplanning.UpdateRecipeStepRequest) (*mealplanning.UpdateRecipeStepResponse, error) {
+func (s *serviceImpl) UpdateRecipeStep(ctx context.Context, request *mealplanning.UpdateRecipeStepRequest) (*mealplanning.UpdateRecipeStepResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1146,7 +1146,7 @@ func (s *ServiceImpl) UpdateRecipeStep(ctx context.Context, request *mealplannin
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.UpdateRecipeStepCompletionConditionRequest) (*mealplanning.UpdateRecipeStepCompletionConditionResponse, error) {
+func (s *serviceImpl) UpdateRecipeStepCompletionCondition(ctx context.Context, request *mealplanning.UpdateRecipeStepCompletionConditionRequest) (*mealplanning.UpdateRecipeStepCompletionConditionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1177,7 +1177,7 @@ func (s *ServiceImpl) UpdateRecipeStepCompletionCondition(ctx context.Context, r
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateRecipeStepIngredient(ctx context.Context, request *mealplanning.UpdateRecipeStepIngredientRequest) (*mealplanning.UpdateRecipeStepIngredientResponse, error) {
+func (s *serviceImpl) UpdateRecipeStepIngredient(ctx context.Context, request *mealplanning.UpdateRecipeStepIngredientRequest) (*mealplanning.UpdateRecipeStepIngredientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1208,7 +1208,7 @@ func (s *ServiceImpl) UpdateRecipeStepIngredient(ctx context.Context, request *m
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateRecipeStepInstrument(ctx context.Context, request *mealplanning.UpdateRecipeStepInstrumentRequest) (*mealplanning.UpdateRecipeStepInstrumentResponse, error) {
+func (s *serviceImpl) UpdateRecipeStepInstrument(ctx context.Context, request *mealplanning.UpdateRecipeStepInstrumentRequest) (*mealplanning.UpdateRecipeStepInstrumentResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1239,7 +1239,7 @@ func (s *ServiceImpl) UpdateRecipeStepInstrument(ctx context.Context, request *m
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateRecipeStepProduct(ctx context.Context, request *mealplanning.UpdateRecipeStepProductRequest) (*mealplanning.UpdateRecipeStepProductResponse, error) {
+func (s *serviceImpl) UpdateRecipeStepProduct(ctx context.Context, request *mealplanning.UpdateRecipeStepProductRequest) (*mealplanning.UpdateRecipeStepProductResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1270,7 +1270,7 @@ func (s *ServiceImpl) UpdateRecipeStepProduct(ctx context.Context, request *meal
 	return x, nil
 }
 
-func (s *ServiceImpl) UpdateRecipeStepVessel(ctx context.Context, request *mealplanning.UpdateRecipeStepVesselRequest) (*mealplanning.UpdateRecipeStepVesselResponse, error) {
+func (s *serviceImpl) UpdateRecipeStepVessel(ctx context.Context, request *mealplanning.UpdateRecipeStepVesselRequest) (*mealplanning.UpdateRecipeStepVesselResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

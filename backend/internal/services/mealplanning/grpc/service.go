@@ -9,6 +9,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
+	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
+	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 )
 
 const (
@@ -16,14 +19,17 @@ const (
 )
 
 type (
-	ServiceImpl struct {
+	serviceImpl struct {
 		mealplanningsvc.UnimplementedMealPlanningServiceServer
-		tracer                    tracing.Tracer
-		logger                    logging.Logger
-		sessionContextDataFetcher func(context.Context) (sessions.ContextData, error)
-		recipeManager             managers.RecipeManager
-		validEnumerationsManager  managers.ValidEnumerationsManager
-		mealPlanningManager       managers.MealPlanningManager
+		tracer                               tracing.Tracer
+		logger                               logging.Logger
+		sessionContextDataFetcher            func(context.Context) (sessions.ContextData, error)
+		recipeManager                        managers.RecipeManager
+		validEnumerationsManager             managers.ValidEnumerationsManager
+		mealPlanningManager                  managers.MealPlanningManager
+		mealPlanFinalizerWorker              mealplanfinalizer.Worker
+		mealPlanGroceryListInitializerWorker mealplangrocerylistinitializer.Worker
+		mealPlanTaskCreatorWorker            mealplantaskcreator.Worker
 	}
 )
 
@@ -33,13 +39,19 @@ func NewService(
 	recipeManager managers.RecipeManager,
 	validEnumerationsManager managers.ValidEnumerationsManager,
 	mealPlanningManager managers.MealPlanningManager,
-) *ServiceImpl {
-	return &ServiceImpl{
-		logger:                   logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                   tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		recipeManager:            recipeManager,
-		validEnumerationsManager: validEnumerationsManager,
-		mealPlanningManager:      mealPlanningManager,
+	mealPlanFinalizerWorker mealplanfinalizer.Worker,
+	mealPlanGroceryListInitializerWorker mealplangrocerylistinitializer.Worker,
+	mealPlanTaskCreatorWorker mealplantaskcreator.Worker,
+) *serviceImpl {
+	return &serviceImpl{
+		logger:                               logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		recipeManager:                        recipeManager,
+		validEnumerationsManager:             validEnumerationsManager,
+		mealPlanningManager:                  mealPlanningManager,
+		mealPlanFinalizerWorker:              mealPlanFinalizerWorker,
+		mealPlanGroceryListInitializerWorker: mealPlanGroceryListInitializerWorker,
+		mealPlanTaskCreatorWorker:            mealPlanTaskCreatorWorker,
 	}
 }
 

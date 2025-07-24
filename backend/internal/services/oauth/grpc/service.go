@@ -28,10 +28,10 @@ const (
 	clientSecretSize = 16
 )
 
-var _ oauthsvc.OAuthServiceServer = (*ServiceImpl)(nil)
+var _ oauthsvc.OAuthServiceServer = (*serviceImpl)(nil)
 
 type (
-	ServiceImpl struct {
+	serviceImpl struct {
 		oauthsvc.UnimplementedOAuthServiceServer
 		tracer               tracing.Tracer
 		secretGenerator      random.Generator
@@ -46,14 +46,14 @@ func NewService(
 	tracerProvider tracing.TracerProvider,
 	oauthRepository oauth.Repository,
 ) oauthsvc.OAuthServiceServer {
-	return &ServiceImpl{
+	return &serviceImpl{
 		logger:          logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		oauthRepository: oauthRepository,
 	}
 }
 
-func (s *ServiceImpl) ArchiveOAuth2Client(ctx context.Context, request *oauthsvc.ArchiveOAuth2ClientRequest) (*oauthsvc.ArchiveOAuth2ClientResponse, error) {
+func (s *serviceImpl) ArchiveOAuth2Client(ctx context.Context, request *oauthsvc.ArchiveOAuth2ClientRequest) (*oauthsvc.ArchiveOAuth2ClientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -83,7 +83,7 @@ func (s *ServiceImpl) ArchiveOAuth2Client(ctx context.Context, request *oauthsvc
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateOAuth2Client(ctx context.Context, request *oauthsvc.CreateOAuth2ClientRequest) (*oauthsvc.CreateOAuth2ClientResponse, error) {
+func (s *serviceImpl) CreateOAuth2Client(ctx context.Context, request *oauthsvc.CreateOAuth2ClientRequest) (*oauthsvc.CreateOAuth2ClientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -132,7 +132,7 @@ func (s *ServiceImpl) CreateOAuth2Client(ctx context.Context, request *oauthsvc.
 	return x, nil
 }
 
-func (s *ServiceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.GetOAuth2ClientRequest) (*oauthsvc.GetOAuth2ClientResponse, error) {
+func (s *serviceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.GetOAuth2ClientRequest) (*oauthsvc.GetOAuth2ClientResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -153,7 +153,7 @@ func (s *ServiceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.Get
 	return x, nil
 }
 
-func (s *ServiceImpl) GetOAuth2Clients(ctx context.Context, request *oauthsvc.GetOAuth2ClientsRequest) (*oauthsvc.GetOAuth2ClientsResponse, error) {
+func (s *serviceImpl) GetOAuth2Clients(ctx context.Context, request *oauthsvc.GetOAuth2ClientsRequest) (*oauthsvc.GetOAuth2ClientsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

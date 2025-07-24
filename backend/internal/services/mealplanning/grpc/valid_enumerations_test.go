@@ -16,10 +16,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func buildServiceImplForTest(t *testing.T) *ServiceImpl {
+func buildServiceImplForTest(t *testing.T) *serviceImpl {
 	t.Helper()
 
-	return &ServiceImpl{
+	return &serviceImpl{
 		tracer: tracing.NewTracerForTest(t.Name()),
 		logger: logging.NewNoopLogger(),
 	}

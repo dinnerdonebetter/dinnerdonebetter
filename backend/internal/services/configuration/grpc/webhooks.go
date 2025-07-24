@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (s *ServiceImpl) ArchiveWebhook(ctx context.Context, request *configurationsvc.ArchiveWebhookRequest) (*configurationsvc.ArchiveWebhookResponse, error) {
+func (s *serviceImpl) ArchiveWebhook(ctx context.Context, request *configurationsvc.ArchiveWebhookRequest) (*configurationsvc.ArchiveWebhookResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -38,7 +38,7 @@ func (s *ServiceImpl) ArchiveWebhook(ctx context.Context, request *configuration
 	return x, nil
 }
 
-func (s *ServiceImpl) ArchiveWebhookTriggerEvent(ctx context.Context, request *configurationsvc.ArchiveWebhookTriggerEventRequest) (*configurationsvc.ArchiveWebhookTriggerEventResponse, error) {
+func (s *serviceImpl) ArchiveWebhookTriggerEvent(ctx context.Context, request *configurationsvc.ArchiveWebhookTriggerEventRequest) (*configurationsvc.ArchiveWebhookTriggerEventResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -57,7 +57,7 @@ func (s *ServiceImpl) ArchiveWebhookTriggerEvent(ctx context.Context, request *c
 	return x, nil
 }
 
-func (s *ServiceImpl) CreateWebhook(ctx context.Context, request *configurationsvc.CreateWebhookRequest) (*configurationsvc.CreateWebhookResponse, error) {
+func (s *serviceImpl) CreateWebhook(ctx context.Context, request *configurationsvc.CreateWebhookRequest) (*configurationsvc.CreateWebhookResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -84,7 +84,7 @@ func (s *ServiceImpl) CreateWebhook(ctx context.Context, request *configurations
 	return x, nil
 }
 
-func (s *ServiceImpl) AddWebhookTriggerEvent(ctx context.Context, request *configurationsvc.AddWebhookTriggerEventRequest) (*configurationsvc.AddWebhookTriggerEventResponse, error) {
+func (s *serviceImpl) AddWebhookTriggerEvent(ctx context.Context, request *configurationsvc.AddWebhookTriggerEventRequest) (*configurationsvc.AddWebhookTriggerEventResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -111,7 +111,7 @@ func (s *ServiceImpl) AddWebhookTriggerEvent(ctx context.Context, request *confi
 	return x, nil
 }
 
-func (s *ServiceImpl) GetWebhook(ctx context.Context, request *configurationsvc.GetWebhookRequest) (*configurationsvc.GetWebhookResponse, error) {
+func (s *serviceImpl) GetWebhook(ctx context.Context, request *configurationsvc.GetWebhookRequest) (*configurationsvc.GetWebhookResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -138,7 +138,7 @@ func (s *ServiceImpl) GetWebhook(ctx context.Context, request *configurationsvc.
 	return x, nil
 }
 
-func (s *ServiceImpl) GetWebhooks(ctx context.Context, request *configurationsvc.GetWebhooksRequest) (*configurationsvc.GetWebhooksResponse, error) {
+func (s *serviceImpl) GetWebhooks(ctx context.Context, request *configurationsvc.GetWebhooksRequest) (*configurationsvc.GetWebhooksResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
