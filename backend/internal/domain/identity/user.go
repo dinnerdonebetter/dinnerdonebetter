@@ -226,12 +226,6 @@ type (
 		Successful bool `json:"successful,omitempty"`
 	}
 
-	// AdminUserDataManager contains administrative User functions that we don't necessarily want to expose
-	// to, say, the collection of handlers.
-	AdminUserDataManager interface {
-		UpdateUserAccountStatus(ctx context.Context, userID string, input *UserAccountStatusUpdateInput) error
-	}
-
 	// UserDataManager describes a structure which can manage users in persistent storage.
 	UserDataManager interface {
 		GetUser(ctx context.Context, userID string) (*User, error)

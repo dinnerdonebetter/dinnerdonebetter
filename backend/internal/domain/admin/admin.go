@@ -1,17 +1,14 @@
-package identity
+package admin
 
 import (
 	"context"
-	"net/http"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// AdminDataService describes a structure capable of serving traffic related to users.
-	AdminDataService interface {
-		UserAccountStatusChangeHandler(http.ResponseWriter, *http.Request)
-		WriteArbitraryQueueMessageHandler(http.ResponseWriter, *http.Request)
+	// AdminUserDataManager contains administrative User functions that we don't necessarily want to expose broadly
+	AdminUserDataManager interface {
+		UpdateUserAccountStatus(ctx context.Context, userID string, input *UserAccountStatusUpdateInput) error
 	}
 
 	// UserAccountStatusUpdateInput represents what an admin User could provide as input for changing statuses.
@@ -21,11 +18,6 @@ type (
 		NewStatus    string `json:"newStatus"`
 		Reason       string `json:"reason"`
 		TargetUserID string `json:"targetUserID"`
-	}
-
-	// FrontendService serves static frontend files.
-	FrontendService interface {
-		StaticDir(ctx context.Context, staticFilesDirectory string) (http.HandlerFunc, error)
 	}
 )
 

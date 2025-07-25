@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/domain/admin"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	adminsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/admin"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
@@ -27,14 +27,14 @@ type (
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
 		sessionContextDataFetcher func(context.Context) (sessions.ContextData, error)
-		identityRepository        identity.AdminUserDataManager
+		identityRepository        admin.AdminUserDataManager
 	}
 )
 
 func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	identityRepository identity.AdminUserDataManager,
+	identityRepository admin.AdminUserDataManager,
 ) adminsvc.ServiceAdministrationServiceServer {
 	return &serviceImpl{
 		logger:             logging.EnsureLogger(logger).WithName(o11yName),

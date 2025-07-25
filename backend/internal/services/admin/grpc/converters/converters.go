@@ -1,12 +1,12 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/admin"
+	"github.com/dinnerdonebetter/backend/internal/domain/admin"
+	adminsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/admin"
 )
 
-func ConvertGRPCAdminUpdateUserStatusRequestToUserAccountStatusUpdateInput(input *admin.AdminUpdateUserStatusRequest) *identity.UserAccountStatusUpdateInput {
-	return &identity.UserAccountStatusUpdateInput{
+func ConvertGRPCAdminUpdateUserStatusRequestToUserAccountStatusUpdateInput(input *adminsvc.AdminUpdateUserStatusRequest) *admin.UserAccountStatusUpdateInput {
+	return &admin.UserAccountStatusUpdateInput{
 		NewStatus:    input.NewStatus,
 		Reason:       input.Reason,
 		TargetUserID: input.TargetUserID,
