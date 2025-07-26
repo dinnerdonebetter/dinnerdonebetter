@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.3
-// source: configuration.proto
+// source: settings.proto
 
-package configuration
+package settings
 
 import (
 	context "context"
@@ -20,23 +20,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserConfigurationService_GetServiceSettingConfigurationsForAccount_FullMethodName = "/configuration.UserConfigurationService/GetServiceSettingConfigurationsForAccount"
-	UserConfigurationService_GetServiceSettingConfigurationsForUser_FullMethodName    = "/configuration.UserConfigurationService/GetServiceSettingConfigurationsForUser"
-	UserConfigurationService_SearchForServiceSettings_FullMethodName                  = "/configuration.UserConfigurationService/SearchForServiceSettings"
-	UserConfigurationService_ArchiveServiceSetting_FullMethodName                     = "/configuration.UserConfigurationService/ArchiveServiceSetting"
-	UserConfigurationService_ArchiveServiceSettingConfiguration_FullMethodName        = "/configuration.UserConfigurationService/ArchiveServiceSettingConfiguration"
-	UserConfigurationService_CreateServiceSetting_FullMethodName                      = "/configuration.UserConfigurationService/CreateServiceSetting"
-	UserConfigurationService_CreateServiceSettingConfiguration_FullMethodName         = "/configuration.UserConfigurationService/CreateServiceSettingConfiguration"
-	UserConfigurationService_GetServiceSetting_FullMethodName                         = "/configuration.UserConfigurationService/GetServiceSetting"
-	UserConfigurationService_GetServiceSettingConfigurationByName_FullMethodName      = "/configuration.UserConfigurationService/GetServiceSettingConfigurationByName"
-	UserConfigurationService_GetServiceSettings_FullMethodName                        = "/configuration.UserConfigurationService/GetServiceSettings"
-	UserConfigurationService_UpdateServiceSettingConfiguration_FullMethodName         = "/configuration.UserConfigurationService/UpdateServiceSettingConfiguration"
-	UserConfigurationService_ArchiveWebhook_FullMethodName                            = "/configuration.UserConfigurationService/ArchiveWebhook"
-	UserConfigurationService_ArchiveWebhookTriggerEvent_FullMethodName                = "/configuration.UserConfigurationService/ArchiveWebhookTriggerEvent"
-	UserConfigurationService_CreateWebhook_FullMethodName                             = "/configuration.UserConfigurationService/CreateWebhook"
-	UserConfigurationService_AddWebhookTriggerEvent_FullMethodName                    = "/configuration.UserConfigurationService/AddWebhookTriggerEvent"
-	UserConfigurationService_GetWebhook_FullMethodName                                = "/configuration.UserConfigurationService/GetWebhook"
-	UserConfigurationService_GetWebhooks_FullMethodName                               = "/configuration.UserConfigurationService/GetWebhooks"
+	UserConfigurationService_GetServiceSettingConfigurationsForAccount_FullMethodName = "/settings.UserConfigurationService/GetServiceSettingConfigurationsForAccount"
+	UserConfigurationService_GetServiceSettingConfigurationsForUser_FullMethodName    = "/settings.UserConfigurationService/GetServiceSettingConfigurationsForUser"
+	UserConfigurationService_SearchForServiceSettings_FullMethodName                  = "/settings.UserConfigurationService/SearchForServiceSettings"
+	UserConfigurationService_ArchiveServiceSetting_FullMethodName                     = "/settings.UserConfigurationService/ArchiveServiceSetting"
+	UserConfigurationService_ArchiveServiceSettingConfiguration_FullMethodName        = "/settings.UserConfigurationService/ArchiveServiceSettingConfiguration"
+	UserConfigurationService_CreateServiceSetting_FullMethodName                      = "/settings.UserConfigurationService/CreateServiceSetting"
+	UserConfigurationService_CreateServiceSettingConfiguration_FullMethodName         = "/settings.UserConfigurationService/CreateServiceSettingConfiguration"
+	UserConfigurationService_GetServiceSetting_FullMethodName                         = "/settings.UserConfigurationService/GetServiceSetting"
+	UserConfigurationService_GetServiceSettingConfigurationByName_FullMethodName      = "/settings.UserConfigurationService/GetServiceSettingConfigurationByName"
+	UserConfigurationService_GetServiceSettings_FullMethodName                        = "/settings.UserConfigurationService/GetServiceSettings"
+	UserConfigurationService_UpdateServiceSettingConfiguration_FullMethodName         = "/settings.UserConfigurationService/UpdateServiceSettingConfiguration"
 )
 
 // UserConfigurationServiceClient is the client API for UserConfigurationService service.
@@ -54,12 +48,6 @@ type UserConfigurationServiceClient interface {
 	GetServiceSettingConfigurationByName(ctx context.Context, in *GetServiceSettingConfigurationByNameRequest, opts ...grpc.CallOption) (*GetServiceSettingConfigurationByNameResponse, error)
 	GetServiceSettings(ctx context.Context, in *GetServiceSettingsRequest, opts ...grpc.CallOption) (*GetServiceSettingsResponse, error)
 	UpdateServiceSettingConfiguration(ctx context.Context, in *UpdateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*UpdateServiceSettingConfigurationResponse, error)
-	ArchiveWebhook(ctx context.Context, in *ArchiveWebhookRequest, opts ...grpc.CallOption) (*ArchiveWebhookResponse, error)
-	ArchiveWebhookTriggerEvent(ctx context.Context, in *ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*ArchiveWebhookTriggerEventResponse, error)
-	CreateWebhook(ctx context.Context, in *CreateWebhookRequest, opts ...grpc.CallOption) (*CreateWebhookResponse, error)
-	AddWebhookTriggerEvent(ctx context.Context, in *AddWebhookTriggerEventRequest, opts ...grpc.CallOption) (*AddWebhookTriggerEventResponse, error)
-	GetWebhook(ctx context.Context, in *GetWebhookRequest, opts ...grpc.CallOption) (*GetWebhookResponse, error)
-	GetWebhooks(ctx context.Context, in *GetWebhooksRequest, opts ...grpc.CallOption) (*GetWebhooksResponse, error)
 }
 
 type userConfigurationServiceClient struct {
@@ -180,66 +168,6 @@ func (c *userConfigurationServiceClient) UpdateServiceSettingConfiguration(ctx c
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) ArchiveWebhook(ctx context.Context, in *ArchiveWebhookRequest, opts ...grpc.CallOption) (*ArchiveWebhookResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ArchiveWebhookResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_ArchiveWebhook_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userConfigurationServiceClient) ArchiveWebhookTriggerEvent(ctx context.Context, in *ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*ArchiveWebhookTriggerEventResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ArchiveWebhookTriggerEventResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_ArchiveWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userConfigurationServiceClient) CreateWebhook(ctx context.Context, in *CreateWebhookRequest, opts ...grpc.CallOption) (*CreateWebhookResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateWebhookResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_CreateWebhook_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userConfigurationServiceClient) AddWebhookTriggerEvent(ctx context.Context, in *AddWebhookTriggerEventRequest, opts ...grpc.CallOption) (*AddWebhookTriggerEventResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AddWebhookTriggerEventResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_AddWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userConfigurationServiceClient) GetWebhook(ctx context.Context, in *GetWebhookRequest, opts ...grpc.CallOption) (*GetWebhookResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetWebhookResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_GetWebhook_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userConfigurationServiceClient) GetWebhooks(ctx context.Context, in *GetWebhooksRequest, opts ...grpc.CallOption) (*GetWebhooksResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetWebhooksResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_GetWebhooks_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // UserConfigurationServiceServer is the server API for UserConfigurationService service.
 // All implementations must embed UnimplementedUserConfigurationServiceServer
 // for forward compatibility.
@@ -255,12 +183,6 @@ type UserConfigurationServiceServer interface {
 	GetServiceSettingConfigurationByName(context.Context, *GetServiceSettingConfigurationByNameRequest) (*GetServiceSettingConfigurationByNameResponse, error)
 	GetServiceSettings(context.Context, *GetServiceSettingsRequest) (*GetServiceSettingsResponse, error)
 	UpdateServiceSettingConfiguration(context.Context, *UpdateServiceSettingConfigurationRequest) (*UpdateServiceSettingConfigurationResponse, error)
-	ArchiveWebhook(context.Context, *ArchiveWebhookRequest) (*ArchiveWebhookResponse, error)
-	ArchiveWebhookTriggerEvent(context.Context, *ArchiveWebhookTriggerEventRequest) (*ArchiveWebhookTriggerEventResponse, error)
-	CreateWebhook(context.Context, *CreateWebhookRequest) (*CreateWebhookResponse, error)
-	AddWebhookTriggerEvent(context.Context, *AddWebhookTriggerEventRequest) (*AddWebhookTriggerEventResponse, error)
-	GetWebhook(context.Context, *GetWebhookRequest) (*GetWebhookResponse, error)
-	GetWebhooks(context.Context, *GetWebhooksRequest) (*GetWebhooksResponse, error)
 	mustEmbedUnimplementedUserConfigurationServiceServer()
 }
 
@@ -303,24 +225,6 @@ func (UnimplementedUserConfigurationServiceServer) GetServiceSettings(context.Co
 }
 func (UnimplementedUserConfigurationServiceServer) UpdateServiceSettingConfiguration(context.Context, *UpdateServiceSettingConfigurationRequest) (*UpdateServiceSettingConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateServiceSettingConfiguration not implemented")
-}
-func (UnimplementedUserConfigurationServiceServer) ArchiveWebhook(context.Context, *ArchiveWebhookRequest) (*ArchiveWebhookResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ArchiveWebhook not implemented")
-}
-func (UnimplementedUserConfigurationServiceServer) ArchiveWebhookTriggerEvent(context.Context, *ArchiveWebhookTriggerEventRequest) (*ArchiveWebhookTriggerEventResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ArchiveWebhookTriggerEvent not implemented")
-}
-func (UnimplementedUserConfigurationServiceServer) CreateWebhook(context.Context, *CreateWebhookRequest) (*CreateWebhookResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateWebhook not implemented")
-}
-func (UnimplementedUserConfigurationServiceServer) AddWebhookTriggerEvent(context.Context, *AddWebhookTriggerEventRequest) (*AddWebhookTriggerEventResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddWebhookTriggerEvent not implemented")
-}
-func (UnimplementedUserConfigurationServiceServer) GetWebhook(context.Context, *GetWebhookRequest) (*GetWebhookResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetWebhook not implemented")
-}
-func (UnimplementedUserConfigurationServiceServer) GetWebhooks(context.Context, *GetWebhooksRequest) (*GetWebhooksResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetWebhooks not implemented")
 }
 func (UnimplementedUserConfigurationServiceServer) mustEmbedUnimplementedUserConfigurationServiceServer() {
 }
@@ -542,119 +446,11 @@ func _UserConfigurationService_UpdateServiceSettingConfiguration_Handler(srv int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_ArchiveWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ArchiveWebhookRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).ArchiveWebhook(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserConfigurationService_ArchiveWebhook_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).ArchiveWebhook(ctx, req.(*ArchiveWebhookRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserConfigurationService_ArchiveWebhookTriggerEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ArchiveWebhookTriggerEventRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).ArchiveWebhookTriggerEvent(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserConfigurationService_ArchiveWebhookTriggerEvent_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).ArchiveWebhookTriggerEvent(ctx, req.(*ArchiveWebhookTriggerEventRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserConfigurationService_CreateWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateWebhookRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).CreateWebhook(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserConfigurationService_CreateWebhook_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).CreateWebhook(ctx, req.(*CreateWebhookRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserConfigurationService_AddWebhookTriggerEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddWebhookTriggerEventRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).AddWebhookTriggerEvent(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserConfigurationService_AddWebhookTriggerEvent_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).AddWebhookTriggerEvent(ctx, req.(*AddWebhookTriggerEventRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserConfigurationService_GetWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetWebhookRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).GetWebhook(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserConfigurationService_GetWebhook_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).GetWebhook(ctx, req.(*GetWebhookRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserConfigurationService_GetWebhooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetWebhooksRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).GetWebhooks(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserConfigurationService_GetWebhooks_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).GetWebhooks(ctx, req.(*GetWebhooksRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // UserConfigurationService_ServiceDesc is the grpc.ServiceDesc for UserConfigurationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserConfigurationService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "configuration.UserConfigurationService",
+	ServiceName: "settings.UserConfigurationService",
 	HandlerType: (*UserConfigurationServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -701,31 +497,7 @@ var UserConfigurationService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "UpdateServiceSettingConfiguration",
 			Handler:    _UserConfigurationService_UpdateServiceSettingConfiguration_Handler,
 		},
-		{
-			MethodName: "ArchiveWebhook",
-			Handler:    _UserConfigurationService_ArchiveWebhook_Handler,
-		},
-		{
-			MethodName: "ArchiveWebhookTriggerEvent",
-			Handler:    _UserConfigurationService_ArchiveWebhookTriggerEvent_Handler,
-		},
-		{
-			MethodName: "CreateWebhook",
-			Handler:    _UserConfigurationService_CreateWebhook_Handler,
-		},
-		{
-			MethodName: "AddWebhookTriggerEvent",
-			Handler:    _UserConfigurationService_AddWebhookTriggerEvent_Handler,
-		},
-		{
-			MethodName: "GetWebhook",
-			Handler:    _UserConfigurationService_GetWebhook_Handler,
-		},
-		{
-			MethodName: "GetWebhooks",
-			Handler:    _UserConfigurationService_GetWebhooks_Handler,
-		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "configuration.proto",
+	Metadata: "settings.proto",
 }

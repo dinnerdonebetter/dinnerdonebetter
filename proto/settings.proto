@@ -1,18 +1,16 @@
 syntax = "proto3";
 
-package configuration;
+package settings;
 
 import "common.proto";
 import "filtering.proto";
-import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/configuration";
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings";
 
 message DataCollection {
-  map<string, Webhook> Webhooks = 1;
-  map<string, ServiceSettingConfiguration> ServiceSettingConfigurations = 2;
-  repeated ServiceSettingConfiguration UserServiceSettingConfigurations = 3;
+  map<string, ServiceSettingConfiguration> ServiceSettingConfigurations = 1;
+  repeated ServiceSettingConfiguration UserServiceSettingConfigurations = 2;
 }
 
 // CreateServiceSetting
@@ -181,109 +179,6 @@ message ServiceSettingCreationRequestInput {
   bool AdminsOnly = 6;
 }
 
-message Webhook {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  google.protobuf.Timestamp LastUpdatedAt = 3;
-  string Name = 4;
-  string URL = 5;
-  string Method = 6;
-  string ID = 7;
-  string BelongsToAccount = 8;
-  string ContentType = 9;
-  repeated WebhookTriggerEvent Events = 10;
-}
-
-message WebhookCreationRequestInput {
-  string Name = 1;
-  string ContentType = 2;
-  string URL = 3;
-  string Method = 4;
-  repeated string Events = 5;
-}
-
-message WebhookExecutionRequest {
-  string RequestID = 1;
-  google.protobuf.Any Payload = 2;
-  string WebhookID = 3;
-  string AccountID = 4;
-  string TriggerEvent = 5;
-}
-
-message WebhookTriggerEvent {
-  google.protobuf.Timestamp CreatedAt = 1;
-  google.protobuf.Timestamp ArchivedAt = 2;
-  string ID = 3;
-  string BelongsToWebhook = 4;
-  string TriggerEvent = 5;
-}
-
-message WebhookTriggerEventCreationRequestInput {
-  string BelongsToWebhook = 1;
-  string TriggerEvent = 2;
-}
-
-// CreateWebhook
-message CreateWebhookRequest {
-  WebhookCreationRequestInput Input = 1;
-}
-
-message CreateWebhookResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Webhook Created = 2;
-}
-
-// AddWebhookTriggerEvent
-message AddWebhookTriggerEventRequest {
-  string webhookID = 1;
-  WebhookTriggerEventCreationRequestInput input = 2;
-}
-
-message AddWebhookTriggerEventResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  WebhookTriggerEvent Created = 2;
-}
-
-// ArchiveWebhook
-message ArchiveWebhookRequest {
-  string webhookID = 1;
-}
-
-message ArchiveWebhookResponse {
-  common.ResponseDetails ResponseDetails = 1;
-}
-
-// ArchiveWebhookTriggerEvent
-message ArchiveWebhookTriggerEventRequest {
-  string WebhookID = 1;
-  string WebhookTriggerEventID = 2;
-}
-
-message ArchiveWebhookTriggerEventResponse {
-  common.ResponseDetails ResponseDetails = 1;
-}
-
-// GetWebhook
-message GetWebhookRequest {
-  string webhookID = 1;
-}
-
-message GetWebhookResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  Webhook Result = 2;
-}
-
-// GetWebhooks
-message GetWebhooksRequest {
-  filtering.QueryFilter Filter = 1;
-}
-
-message GetWebhooksResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  filtering.QueryFilter Filter = 2;
-  repeated Webhook Results = 3;
-}
-
 service UserConfigurationService {
   rpc GetServiceSettingConfigurationsForAccount(GetServiceSettingConfigurationsForAccountRequest) returns (GetServiceSettingConfigurationsForAccountResponse);
   rpc GetServiceSettingConfigurationsForUser(GetServiceSettingConfigurationsForUserRequest) returns (GetServiceSettingConfigurationsForUserResponse);
@@ -296,10 +191,4 @@ service UserConfigurationService {
   rpc GetServiceSettingConfigurationByName(GetServiceSettingConfigurationByNameRequest) returns (GetServiceSettingConfigurationByNameResponse);
   rpc GetServiceSettings(GetServiceSettingsRequest) returns (GetServiceSettingsResponse);
   rpc UpdateServiceSettingConfiguration(UpdateServiceSettingConfigurationRequest) returns (UpdateServiceSettingConfigurationResponse);
-  rpc ArchiveWebhook(ArchiveWebhookRequest) returns (ArchiveWebhookResponse);
-  rpc ArchiveWebhookTriggerEvent(ArchiveWebhookTriggerEventRequest) returns (ArchiveWebhookTriggerEventResponse);
-  rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse);
-  rpc AddWebhookTriggerEvent(AddWebhookTriggerEventRequest) returns (AddWebhookTriggerEventResponse);
-  rpc GetWebhook(GetWebhookRequest) returns (GetWebhookResponse);
-  rpc GetWebhooks(GetWebhooksRequest) returns (GetWebhooksResponse);
 }

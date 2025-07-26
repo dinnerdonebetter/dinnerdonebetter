@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/domain/admin"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/admin"
 	adminsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/admin"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"

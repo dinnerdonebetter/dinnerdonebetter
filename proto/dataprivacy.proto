@@ -4,9 +4,10 @@ package dataprivacy;
 
 import "audit.proto";
 import "common.proto";
-import "configuration.proto";
 import "identity.proto";
 import "mealplanning.proto";
+import "settings.proto";
+import "webhooks.proto";
 
 option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy";
 
@@ -52,6 +53,7 @@ message UserDataCollection {
   string ReportID = 1;
   identity.DataCollection IdentityDataCollection = 2;
   audit.DataCollection AuditDataCollection = 3;
-  configuration.DataCollection ConfigurationDataCollection = 4;
-  mealplanning.DataCollection MealPlanningDataCollection = 5;
+  settings.DataCollection SettingsDataCollection = 4;
+  webhooks.DataCollection WebhooksDataCollection = 5;
+  mealplanning.DataCollection MealPlanningDataCollection = 6;
 }

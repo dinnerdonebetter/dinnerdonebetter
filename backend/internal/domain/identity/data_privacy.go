@@ -1,10 +1,5 @@
 package identity
 
-import (
-	"context"
-	"net/http"
-)
-
 type (
 	// DataDeletionResponse is returned when a user requests their data be deleted.
 	DataDeletionResponse struct {
@@ -27,15 +22,10 @@ type (
 		ReportID string `json:"reportID"`
 	}
 
-	// DataPrivacyService describes a structure capable of serving CCPA/GRPC-related requests.
-	DataPrivacyService interface {
-		DataDeletionHandler(http.ResponseWriter, *http.Request)
-		UserDataAggregationRequestHandler(http.ResponseWriter, *http.Request)
-		ReadUserDataAggregationReportHandler(http.ResponseWriter, *http.Request)
-	}
-
-	// DataPrivacyDataManager contains data privacy management functions.
-	DataPrivacyDataManager interface {
-		DeleteUser(ctx context.Context, userID string) error
+	UserDataCollection struct {
+		User                   User                    `json:"user"`
+		Accounts               []Account               `json:"accounts"`
+		AccountInvitations     []AccountInvitation     `json:"account_invitations"`
+		AccountUserMemberships []AccountUserMembership `json:"account_user_memberships"`
 	}
 )

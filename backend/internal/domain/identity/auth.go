@@ -6,21 +6,15 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 const (
-	// SessionContextDataKey is the non-string type we use for referencing SessionContextData structs.
-
-	// UserRegistrationInputContextKey is the non-string type we use for referencing SessionContextData structs.
-	UserRegistrationInputContextKey routing.ContextKey = "user_registration_input"
-
 	// TwoFactorSecretVerifiedServiceEventType indicates a user's two factor secret was verified.
 	/* #nosec G101 */
 	TwoFactorSecretVerifiedServiceEventType = "two_factor_secret_verified"
-	// TwoFactorDeactivatedServiceEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
+	// TwoFactorDeactivatedServiceEventType indicates a user's two factor secret was deactivated and verified_at timestamp was reset.
 	/* #nosec G101 */
 	TwoFactorDeactivatedServiceEventType = "two_factor_deactivated"
 	// TwoFactorSecretChangedServiceEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.

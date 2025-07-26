@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks/generated"
 )
 
 const (
@@ -20,7 +20,7 @@ type repository struct {
 	database.Client
 	tracer            tracing.Tracer
 	logger            logging.Logger
-	generatedQuerier  generated2.Querier
+	generatedQuerier  generated.Querier
 	auditLogEntryRepo audit.Repository
 	db                *sql.DB
 }
@@ -36,7 +36,7 @@ func ProvideWebhooksRepository(
 		Client:            client,
 		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		generatedQuerier:  generated2.New(),
+		generatedQuerier:  generated.New(),
 		auditLogEntryRepo: auditLogEntryRepo,
 		logger:            logging.EnsureLogger(logger).WithName(o11yName),
 	}

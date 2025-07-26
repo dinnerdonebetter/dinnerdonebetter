@@ -2,15 +2,14 @@ package grpc
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
-
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	_ identity.DataPrivacyDataManager = (*repository)(nil)
+	_ dataprivacy.DataPrivacyDataManager = (*repository)(nil)
 )
 
 // DeleteUser archives a user.
@@ -38,4 +38,21 @@ func (r *repository) DeleteUser(ctx context.Context, userID string) error {
 	logger.Info("user deleted")
 
 	return nil
+}
+
+func (r *repository) FetchUserDataCollection(ctx context.Context, userID string) (*dataprivacy.UserDataCollectionResponse, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, r.logger)
+
+	logger.Info("TODO")
+
+	return nil, nil
 }
