@@ -3,6 +3,7 @@ package managers
 import (
 	"context"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
@@ -267,7 +268,7 @@ func (m *validEnumerationManager) CreateValidIngredientGroup(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient group")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientGroupCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientGroupCreatedServiceEventType, map[string]any{
 		keys.ValidIngredientGroupIDKey: created.ID,
 	}))
 
@@ -312,7 +313,7 @@ func (m *validEnumerationManager) UpdateValidIngredientGroup(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid ingredient group")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientGroupUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientGroupUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientGroupIDKey: existingValidIngredientGroup.ID,
 	}))
 
@@ -331,7 +332,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientGroup(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientGroupArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientGroupArchivedServiceEventType, map[string]any{
 		keys.ValidIngredientGroupIDKey: validIngredientGroupID,
 	}))
 
@@ -375,7 +376,7 @@ func (m *validEnumerationManager) CreateValidIngredientMeasurementUnit(ctx conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitCreatedServiceEventType, map[string]any{
 		keys.ValidIngredientMeasurementUnitIDKey: created.ID,
 	}))
 
@@ -420,7 +421,7 @@ func (m *validEnumerationManager) UpdateValidIngredientMeasurementUnit(ctx conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid ingredient measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientMeasurementUnitIDKey: existingValidIngredientMeasurementUnit.ID,
 	}))
 
@@ -439,7 +440,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientMeasurementUnit(ctx cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitArchivedServiceEventType, map[string]any{
 		keys.ValidIngredientMeasurementUnitIDKey: validIngredientMeasurementUnitID,
 	}))
 
@@ -525,7 +526,7 @@ func (m *validEnumerationManager) CreateValidIngredientPreparation(ctx context.C
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationCreatedServiceEventType, map[string]any{
 		keys.ValidIngredientPreparationIDKey: created.ID,
 	}))
 
@@ -570,7 +571,7 @@ func (m *validEnumerationManager) UpdateValidIngredientPreparation(ctx context.C
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientPreparationIDKey: existingValidIngredientPreparation.ID,
 	}))
 
@@ -589,7 +590,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientPreparation(ctx context.
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationArchivedServiceEventType, map[string]any{
 		keys.ValidIngredientPreparationIDKey: validIngredientPreparationID,
 	}))
 
@@ -720,7 +721,7 @@ func (m *validEnumerationManager) CreateValidIngredient(ctx context.Context, inp
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientCreatedServiceEventType, map[string]any{
 		keys.ValidIngredientIDKey: created.ID,
 	}))
 
@@ -780,7 +781,7 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientIDKey: existingValidIngredient.ID,
 	}))
 
@@ -799,7 +800,7 @@ func (m *validEnumerationManager) ArchiveValidIngredient(ctx context.Context, va
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientArchivedServiceEventType, map[string]any{
 		keys.ValidIngredientIDKey: validIngredientID,
 	}))
 
@@ -865,7 +866,7 @@ func (m *validEnumerationManager) CreateValidIngredientStateIngredient(ctx conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient state ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientCreatedServiceEventType, map[string]any{
 		keys.ValidIngredientStateIngredientIDKey: created.ID,
 	}))
 
@@ -910,7 +911,7 @@ func (m *validEnumerationManager) UpdateValidIngredientStateIngredient(ctx conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientStateIngredientIDKey: existingValidIngredientStateIngredient.ID,
 	}))
 
@@ -929,7 +930,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientStateIngredient(ctx cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientArchivedServiceEventType, map[string]any{
 		keys.ValidIngredientStateIngredientIDKey: validIngredientStateIngredientID,
 	}))
 
@@ -1057,7 +1058,7 @@ func (m *validEnumerationManager) CreateValidIngredientState(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient state")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateCreatedServiceEventType, map[string]any{
 		keys.ValidIngredientStateIDKey: created.ID,
 	}))
 
@@ -1102,7 +1103,7 @@ func (m *validEnumerationManager) UpdateValidIngredientState(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientStateIDKey: existingValidIngredientState.ID,
 	}))
 
@@ -1121,7 +1122,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientState(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateArchivedServiceEventType, map[string]any{
 		keys.ValidIngredientStateIDKey: validIngredientStateID,
 	}))
 
@@ -1228,7 +1229,7 @@ func (m *validEnumerationManager) CreateValidMeasurementUnit(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitCreatedServiceEventType, map[string]any{
 		keys.ValidMeasurementUnitIDKey: created.ID,
 	}))
 
@@ -1272,7 +1273,7 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnit(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitUpdatedServiceEventType, map[string]any{
 		keys.ValidMeasurementUnitIDKey: existingValidMeasurementUnit.ID,
 	}))
 
@@ -1291,7 +1292,7 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnit(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitArchivedServiceEventType, map[string]any{
 		keys.ValidMeasurementUnitIDKey: validMeasurementUnitID,
 	}))
 
@@ -1377,7 +1378,7 @@ func (m *validEnumerationManager) CreateValidInstrument(ctx context.Context, inp
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentCreatedServiceEventType, map[string]any{
 		keys.ValidInstrumentIDKey: created.ID,
 	}))
 
@@ -1436,7 +1437,7 @@ func (m *validEnumerationManager) UpdateValidInstrument(ctx context.Context, val
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentUpdatedServiceEventType, map[string]any{
 		keys.ValidInstrumentIDKey: existingValidInstrument.ID,
 	}))
 
@@ -1455,7 +1456,7 @@ func (m *validEnumerationManager) ArchiveValidInstrument(ctx context.Context, va
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentArchivedServiceEventType, map[string]any{
 		keys.ValidInstrumentIDKey: validInstrumentID,
 	}))
 
@@ -1511,7 +1512,7 @@ func (m *validEnumerationManager) CreateValidMeasurementUnitConversion(ctx conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid measurement unit conversion")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitConversionCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitConversionCreatedServiceEventType, map[string]any{
 		keys.ValidMeasurementUnitConversionIDKey: created.ID,
 	}))
 
@@ -1556,7 +1557,7 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnitConversion(ctx conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit conversion")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitConversionUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitConversionUpdatedServiceEventType, map[string]any{
 		keys.ValidMeasurementUnitConversionIDKey: existingValidMeasurementUnitConversion.ID,
 	}))
 
@@ -1575,7 +1576,7 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnitConversion(ctx cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit conversion")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitConversionArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitConversionArchivedServiceEventType, map[string]any{
 		keys.ValidMeasurementUnitConversionIDKey: validMeasurementUnitConversionID,
 	}))
 
@@ -1619,7 +1620,7 @@ func (m *validEnumerationManager) CreateValidPreparationInstrument(ctx context.C
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentCreatedServiceEventType, map[string]any{
 		keys.ValidPreparationInstrumentIDKey: created.ID,
 	}))
 
@@ -1664,7 +1665,7 @@ func (m *validEnumerationManager) UpdateValidPreparationInstrument(ctx context.C
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid preparation instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentUpdatedServiceEventType, map[string]any{
 		keys.ValidPreparationInstrumentIDKey: existingValidPreparationInstrument.ID,
 	}))
 
@@ -1683,7 +1684,7 @@ func (m *validEnumerationManager) ArchiveValidPreparationInstrument(ctx context.
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentArchivedServiceEventType, map[string]any{
 		keys.ValidPreparationInstrumentIDKey: validPreparationInstrumentID,
 	}))
 
@@ -1811,7 +1812,7 @@ func (m *validEnumerationManager) CreateValidPreparation(ctx context.Context, in
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationCreatedServiceEventType, map[string]any{
 		keys.ValidPreparationIDKey: created.ID,
 	}))
 
@@ -1870,7 +1871,7 @@ func (m *validEnumerationManager) UpdateValidPreparation(ctx context.Context, va
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationUpdatedServiceEventType, map[string]any{keys.ValidPreparationIDKey: existingValidPreparation.ID}))
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationUpdatedServiceEventType, map[string]any{keys.ValidPreparationIDKey: existingValidPreparation.ID}))
 
 	return existingValidPreparation, nil
 }
@@ -1887,7 +1888,7 @@ func (m *validEnumerationManager) ArchiveValidPreparation(ctx context.Context, v
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationArchivedServiceEventType, map[string]any{
 		keys.ValidPreparationIDKey: validPreparationID,
 	}))
 
@@ -1931,7 +1932,7 @@ func (m *validEnumerationManager) CreateValidPreparationVessel(ctx context.Conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid preparation vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselCreatedServiceEventType, map[string]any{
 		keys.ValidPreparationVesselIDKey: created.ID,
 	}))
 
@@ -1976,7 +1977,7 @@ func (m *validEnumerationManager) UpdateValidPreparationVessel(ctx context.Conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselUpdatedServiceEventType, map[string]any{
 		keys.ValidPreparationVesselIDKey: existingValidPreparationVessel.ID,
 	}))
 
@@ -1995,7 +1996,7 @@ func (m *validEnumerationManager) ArchiveValidPreparationVessel(ctx context.Cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid preparation vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselArchivedServiceEventType, map[string]any{
 		keys.ValidPreparationVesselIDKey: validPreparationVesselID,
 	}))
 
@@ -2122,7 +2123,7 @@ func (m *validEnumerationManager) CreateValidVessel(ctx context.Context, input *
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidVesselCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidVesselCreatedServiceEventType, map[string]any{
 		keys.ValidVesselIDKey: created.ID,
 	}))
 
@@ -2182,7 +2183,7 @@ func (m *validEnumerationManager) UpdateValidVessel(ctx context.Context, validVe
 		return nil, observability.PrepareAndLogError(err, logger, span, "updating valid vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidVesselUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidVesselUpdatedServiceEventType, map[string]any{
 		keys.ValidVesselIDKey: existingValidVessel.ID,
 	}))
 
@@ -2201,7 +2202,7 @@ func (m *validEnumerationManager) ArchiveValidVessel(ctx context.Context, validV
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.ValidVesselArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidVesselArchivedServiceEventType, map[string]any{
 		keys.ValidVesselIDKey: validVesselID,
 	}))
 

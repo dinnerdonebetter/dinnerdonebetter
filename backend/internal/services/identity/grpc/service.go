@@ -49,6 +49,14 @@ func (s *serviceImpl) AcceptAccountInvitation(ctx context.Context, request *iden
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountInvitationIDKey: request.AccountInvitationID,
+	}, span, s.logger)
+
+	if err := s.identityRepository.AcceptAccountInvitation(ctx, request.AccountInvitationID, request.Input.Token, request.Input.Note); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "accepting account invitation")
+	}
+
 	x := &identitysvc.AcceptAccountInvitationResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
@@ -62,6 +70,19 @@ func (s *serviceImpl) ArchiveAccount(ctx context.Context, request *identitysvc.A
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: request.AccountID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if err = s.identityRepository.ArchiveAccount(ctx, request.AccountID, sessionContextData.GetUserID()); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive account")
+	}
+
 	x := &identitysvc.ArchiveAccountResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
@@ -74,6 +95,12 @@ func (s *serviceImpl) ArchiveAccount(ctx context.Context, request *identitysvc.A
 func (s *serviceImpl) ArchiveUserMembership(ctx context.Context, request *identitysvc.ArchiveUserMembershipRequest) (*identitysvc.ArchiveUserMembershipResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
+
+	// TODO: validate that the user is authorized to do this
+
+	if err := s.identityRepository.RemoveUserFromAccount(ctx, request.UserID, request.AccountID); err != nil {
+
+	}
 
 	x := &identitysvc.ArchiveUserMembershipResponse{
 		ResponseDetails: &types.ResponseDetails{

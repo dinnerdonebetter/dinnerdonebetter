@@ -31,6 +31,8 @@ const (
 	InviteUserToAccountPermission Permission = "account.add.member"
 	// ModifyMemberPermissionsForAccountPermission is an account admin permission.
 	ModifyMemberPermissionsForAccountPermission Permission = "account.membership.modify"
+	// PublishArbitraryQueueMessagePermission is a service admin permission.
+	PublishArbitraryQueueMessagePermission Permission = "queues.publish.message"
 	// RemoveMemberAccountPermission is an account admin permission.
 	RemoveMemberAccountPermission Permission = "remove_member.account"
 	// TransferAccountPermission is an account admin permission.
@@ -427,6 +429,7 @@ var (
 		CreateRecipesPermission,
 		CreateUserNotificationsPermission,
 		ImpersonateUserPermission,
+		PublishArbitraryQueueMessagePermission,
 		// only admins can arbitrarily create these via the API, this is exclusively for integration test purposes.
 		CreateServiceSettingsPermission,
 		CreateMealPlanTasksPermission,

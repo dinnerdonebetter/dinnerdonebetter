@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
-	converters2 "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc/converters"
+	oauthgrpcconverters "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
@@ -126,7 +126,7 @@ func (s *serviceImpl) CreateOAuth2Client(ctx context.Context, request *oauthsvc.
 		ResponseDetails: &grpctypes.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Created: converters2.ConvertOAuth2ClientToGRPCOAuth2Client(created),
+		Created: oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(created),
 	}
 
 	return x, nil
@@ -147,7 +147,7 @@ func (s *serviceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.Get
 		ResponseDetails: &grpctypes.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Result: converters2.ConvertOAuth2ClientToGRPCOAuth2Client(oauth2Client),
+		Result: oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(oauth2Client),
 	}
 
 	return x, nil
@@ -172,7 +172,7 @@ func (s *serviceImpl) GetOAuth2Clients(ctx context.Context, request *oauthsvc.Ge
 	}
 
 	for _, client := range oauth2Clients.Data {
-		x.Results = append(x.Results, converters2.ConvertOAuth2ClientToGRPCOAuth2Client(client))
+		x.Results = append(x.Results, oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(client))
 	}
 
 	return x, nil

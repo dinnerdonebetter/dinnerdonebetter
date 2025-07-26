@@ -3,6 +3,7 @@ package managers
 import (
 	"context"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
@@ -163,7 +164,7 @@ func (m *mealPlanningManager) CreateMeal(ctx context.Context, input *types.MealC
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealCreatedServiceEventType, map[string]any{
 		keys.MealIDKey: created.ID,
 	}))
 
@@ -239,7 +240,7 @@ func (m *mealPlanningManager) ArchiveMeal(ctx context.Context, mealID, ownerID s
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealArchivedServiceEventType, map[string]any{
 		keys.MealIDKey: mealID,
 	}))
 
@@ -282,7 +283,7 @@ func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, input *types.M
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanCreatedServiceEventType, map[string]any{
 		keys.MealPlanIDKey: created.ID,
 	}))
 
@@ -333,7 +334,7 @@ func (m *mealPlanningManager) UpdateMealPlan(ctx context.Context, mealPlanID, ow
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanUpdatedServiceEventType, map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 	}))
 
@@ -355,7 +356,7 @@ func (m *mealPlanningManager) ArchiveMealPlan(ctx context.Context, mealPlanID, o
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanArchivedServiceEventType, map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 	}))
 
@@ -378,7 +379,7 @@ func (m *mealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlanID, 
 		return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanFinalizedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanFinalizedServiceEventType, map[string]any{
 		keys.MealPlanIDKey: mealPlanID,
 	}))
 
@@ -421,7 +422,7 @@ func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, input *ty
 		return nil, observability.PrepareAndLogError(err, logger, span, "created meal plan event")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventCreatedServiceEventType, map[string]any{
 		keys.MealPlanEventIDKey: created.ID,
 	}))
 
@@ -472,7 +473,7 @@ func (m *mealPlanningManager) UpdateMealPlanEvent(ctx context.Context, mealPlanI
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventUpdatedServiceEventType, map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
 		keys.MealPlanEventIDKey: mealPlanEventID,
 	}))
@@ -495,7 +496,7 @@ func (m *mealPlanningManager) ArchiveMealPlanEvent(ctx context.Context, mealPlan
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan event")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanEventArchivedServiceEventType, map[string]any{
 		keys.MealPlanIDKey:      mealPlanID,
 		keys.MealPlanEventIDKey: mealPlanEventID,
 	}))
@@ -543,7 +544,7 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "created meal plan option")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionCreatedServiceEventType, map[string]any{
 		keys.MealPlanOptionIDKey: convertedInput.ID,
 	}))
 
@@ -598,7 +599,7 @@ func (m *mealPlanningManager) UpdateMealPlanOption(ctx context.Context, mealPlan
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionUpdatedServiceEventType, map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
 		keys.MealPlanEventIDKey:  mealPlanEventID,
 		keys.MealPlanOptionIDKey: mealPlanOptionID,
@@ -624,7 +625,7 @@ func (m *mealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mealPla
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionArchivedServiceEventType, map[string]any{
 		keys.MealPlanIDKey:       mealPlanID,
 		keys.MealPlanEventIDKey:  mealPlanEventID,
 		keys.MealPlanOptionIDKey: mealPlanOptionID,
@@ -675,7 +676,7 @@ func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, inp
 		return nil, observability.PrepareAndLogError(err, logger, span, "created meal plan option votes")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionVoteCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionVoteCreatedServiceEventType, map[string]any{
 		"vote_count": len(input.Votes),
 		"created":    len(created),
 	}))
@@ -735,7 +736,7 @@ func (m *mealPlanningManager) UpdateMealPlanOptionVote(ctx context.Context, meal
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option vote")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionVoteUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionVoteUpdatedServiceEventType, map[string]any{
 		keys.MealPlanIDKey:           mealPlanID,
 		keys.MealPlanEventIDKey:      mealPlanEventID,
 		keys.MealPlanOptionIDKey:     mealPlanOptionID,
@@ -764,7 +765,7 @@ func (m *mealPlanningManager) ArchiveMealPlanOptionVote(ctx context.Context, mea
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option vote")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionVoteArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionVoteArchivedServiceEventType, map[string]any{
 		keys.MealPlanIDKey:           mealPlanID,
 		keys.MealPlanEventIDKey:      mealPlanEventID,
 		keys.MealPlanOptionIDKey:     mealPlanOptionID,
@@ -825,7 +826,7 @@ func (m *mealPlanningManager) CreateMealPlanTask(ctx context.Context, input *typ
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanTaskCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanTaskCreatedServiceEventType, map[string]any{
 		keys.MealPlanTaskIDKey: convertedInput.ID,
 	}))
 
@@ -847,7 +848,7 @@ func (m *mealPlanningManager) MealPlanTaskStatusChange(ctx context.Context, inpu
 		return observability.PrepareAndLogError(err, logger, span, "changing meal plan task status")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanTaskStatusChangedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanTaskStatusChangedServiceEventType, map[string]any{
 		keys.MealPlanTaskIDKey: input.ID,
 	}))
 
@@ -886,7 +887,7 @@ func (m *mealPlanningManager) CreateMealPlanGroceryListItem(ctx context.Context,
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan grocery list item")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanGroceryListItemCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanGroceryListItemCreatedServiceEventType, map[string]any{
 		keys.MealPlanGroceryListItemIDKey: convertedInput.ID,
 	}))
 
@@ -937,7 +938,7 @@ func (m *mealPlanningManager) UpdateMealPlanGroceryListItem(ctx context.Context,
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan grocery list item")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanGroceryListItemUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanGroceryListItemUpdatedServiceEventType, map[string]any{
 		keys.MealPlanIDKey:                mealPlanID,
 		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	}))
@@ -960,7 +961,7 @@ func (m *mealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Context
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan grocery list item")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.MealPlanGroceryListItemArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanGroceryListItemArchivedServiceEventType, map[string]any{
 		keys.MealPlanIDKey:                mealPlanID,
 		keys.MealPlanGroceryListItemIDKey: mealPlanGroceryListItemID,
 	}))
@@ -1024,7 +1025,7 @@ func (m *mealPlanningManager) CreateUserIngredientPreference(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating ingredient preference")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.UserIngredientPreferenceCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.UserIngredientPreferenceCreatedServiceEventType, map[string]any{
 		keys.ValidIngredientGroupIDKey: input.ValidIngredientGroupID,
 		keys.ValidIngredientIDKey:      input.ValidIngredientID,
 		"created":                      len(created),
@@ -1058,7 +1059,7 @@ func (m *mealPlanningManager) UpdateUserIngredientPreference(ctx context.Context
 		return observability.PrepareAndLogError(err, logger, span, "updating ingredient preference")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.UserIngredientPreferenceUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.UserIngredientPreferenceUpdatedServiceEventType, map[string]any{
 		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
 	}))
 
@@ -1080,7 +1081,7 @@ func (m *mealPlanningManager) ArchiveUserIngredientPreference(ctx context.Contex
 		return observability.PrepareAndLogError(err, logger, span, "archiving ingredient preference")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.UserIngredientPreferenceArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.UserIngredientPreferenceArchivedServiceEventType, map[string]any{
 		keys.UserIngredientPreferenceIDKey: ingredientPreferenceID,
 	}))
 
@@ -1119,7 +1120,7 @@ func (m *mealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Conte
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating instrument ownership")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.AccountInstrumentOwnershipCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.AccountInstrumentOwnershipCreatedServiceEventType, map[string]any{
 		keys.AccountInstrumentOwnershipIDKey: convertedInput.ID,
 	}))
 
@@ -1170,7 +1171,7 @@ func (m *mealPlanningManager) UpdateAccountInstrumentOwnership(ctx context.Conte
 		return observability.PrepareAndLogError(err, logger, span, "updating instrument ownership")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.AccountInstrumentOwnershipUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.AccountInstrumentOwnershipUpdatedServiceEventType, map[string]any{
 		keys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
 	}))
 
@@ -1192,7 +1193,7 @@ func (m *mealPlanningManager) ArchiveAccountInstrumentOwnership(ctx context.Cont
 		return observability.PrepareAndLogError(err, logger, span, "archiving instrument ownership")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, types.AccountInstrumentOwnershipArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.AccountInstrumentOwnershipArchivedServiceEventType, map[string]any{
 		keys.AccountInstrumentOwnershipIDKey: instrumentOwnershipID,
 	}))
 

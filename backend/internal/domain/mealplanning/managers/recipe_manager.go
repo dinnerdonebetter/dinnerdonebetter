@@ -3,6 +3,7 @@ package managers
 import (
 	"context"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
@@ -176,7 +177,7 @@ func (m *recipeManager) CreateRecipe(ctx context.Context, input *mealplanning.Re
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeCreatedServiceEventType, map[string]any{
 		keys.RecipeIDKey: created.ID,
 	}))
 
@@ -261,7 +262,7 @@ func (m *recipeManager) UpdateRecipe(ctx context.Context, recipeID string, input
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeUpdatedServiceEventType, map[string]any{
 		keys.RecipeIDKey: recipeID,
 	}))
 
@@ -283,7 +284,7 @@ func (m *recipeManager) ArchiveRecipe(ctx context.Context, recipeID, ownerID str
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeArchivedServiceEventType, map[string]any{
 		keys.RecipeIDKey: recipeID,
 	}))
 
@@ -443,7 +444,7 @@ func (m *recipeManager) CloneRecipe(ctx context.Context, recipeID, newOwnerID st
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating clone of recipe")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeClonedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeClonedServiceEventType, map[string]any{
 		keys.RecipeIDKey: recipeID,
 	}))
 
@@ -491,7 +492,7 @@ func (m *recipeManager) CreateRecipeStep(ctx context.Context, recipeID string, i
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCreatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:     recipeID,
 		keys.RecipeStepIDKey: convertedInput.ID,
 	}))
@@ -543,7 +544,7 @@ func (m *recipeManager) UpdateRecipeStep(ctx context.Context, recipeID, recipeSt
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepUpdatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:     recipeID,
 		keys.RecipeStepIDKey: recipeStepID,
 	}))
@@ -566,7 +567,7 @@ func (m *recipeManager) ArchiveRecipeStep(ctx context.Context, recipeID, recipeS
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepArchivedServiceEventType, map[string]any{
 		keys.RecipeIDKey:     recipeID,
 		keys.RecipeStepIDKey: recipeStepID,
 	}))
@@ -630,7 +631,7 @@ func (m *recipeManager) CreateRecipeStepProduct(ctx context.Context, recipeID, r
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step product")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepProductCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepProductCreatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:            recipeID,
 		keys.RecipeStepIDKey:        recipeStepID,
 		keys.RecipeStepProductIDKey: convertedInput.ID,
@@ -687,7 +688,7 @@ func (m *recipeManager) UpdateRecipeStepProduct(ctx context.Context, recipeID, r
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step product")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepProductUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepProductUpdatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:            recipeID,
 		keys.RecipeStepIDKey:        recipeStepID,
 		keys.RecipeStepProductIDKey: recipeStepProductID,
@@ -714,7 +715,7 @@ func (m *recipeManager) ArchiveRecipeStepProduct(ctx context.Context, recipeID, 
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step product")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepProductArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepProductArchivedServiceEventType, map[string]any{
 		keys.RecipeIDKey:            recipeID,
 		keys.RecipeStepIDKey:        recipeStepID,
 		keys.RecipeStepProductIDKey: recipeStepProductID,
@@ -772,7 +773,7 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepInstrumentCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepInstrumentCreatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:               recipeID,
 		keys.RecipeStepIDKey:           recipeStepID,
 		keys.RecipeStepInstrumentIDKey: convertedInput.ID,
@@ -829,7 +830,7 @@ func (m *recipeManager) UpdateRecipeStepInstrument(ctx context.Context, recipeID
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepInstrumentUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepInstrumentUpdatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:               recipeID,
 		keys.RecipeStepIDKey:           recipeStepID,
 		keys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
@@ -856,7 +857,7 @@ func (m *recipeManager) ArchiveRecipeStepInstrument(ctx context.Context, recipeI
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step instrument")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepInstrumentArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepInstrumentArchivedServiceEventType, map[string]any{
 		keys.RecipeIDKey:               recipeID,
 		keys.RecipeStepIDKey:           recipeStepID,
 		keys.RecipeStepInstrumentIDKey: recipeStepInstrumentID,
@@ -914,7 +915,7 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepIngredientCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepIngredientCreatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:               recipeID,
 		keys.RecipeStepIDKey:           recipeStepID,
 		keys.RecipeStepIngredientIDKey: convertedInput.ID,
@@ -970,7 +971,7 @@ func (m *recipeManager) UpdateRecipeStepIngredient(ctx context.Context, recipeID
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepIngredientUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepIngredientUpdatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:               recipeID,
 		keys.RecipeStepIDKey:           recipeStepID,
 		keys.RecipeStepIngredientIDKey: recipeStepIngredientID,
@@ -997,7 +998,7 @@ func (m *recipeManager) ArchiveRecipeStepIngredient(ctx context.Context, recipeI
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step ingredient")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepIngredientArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepIngredientArchivedServiceEventType, map[string]any{
 		keys.RecipeIDKey:               recipeID,
 		keys.RecipeStepIDKey:           recipeStepID,
 		keys.RecipeStepIngredientIDKey: recipeStepIngredientID,
@@ -1047,7 +1048,7 @@ func (m *recipeManager) CreateRecipePrepTask(ctx context.Context, recipeID strin
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipePrepTaskCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipePrepTaskCreatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:         recipeID,
 		keys.RecipePrepTaskIDKey: convertedInput.ID,
 	}))
@@ -1099,7 +1100,7 @@ func (m *recipeManager) UpdateRecipePrepTask(ctx context.Context, recipeID, reci
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipePrepTaskUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipePrepTaskUpdatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:         recipeID,
 		keys.RecipePrepTaskIDKey: recipePrepTaskID,
 	}))
@@ -1122,7 +1123,7 @@ func (m *recipeManager) ArchiveRecipePrepTask(ctx context.Context, recipeID, rec
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe prep task")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipePrepTaskArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipePrepTaskArchivedServiceEventType, map[string]any{
 		keys.RecipeIDKey:         recipeID,
 		keys.RecipePrepTaskIDKey: recipePrepTaskID,
 	}))
@@ -1179,7 +1180,7 @@ func (m *recipeManager) CreateRecipeStepCompletionCondition(ctx context.Context,
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step completion condition")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCompletionConditionCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCompletionConditionCreatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:                        recipeID,
 		keys.RecipeStepIDKey:                    recipeStepID,
 		keys.RecipeStepCompletionConditionIDKey: convertedInput.ID,
@@ -1236,7 +1237,7 @@ func (m *recipeManager) UpdateRecipeStepCompletionCondition(ctx context.Context,
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step completion condition")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCompletionConditionUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCompletionConditionUpdatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:                        recipeID,
 		keys.RecipeStepIDKey:                    recipeStepID,
 		keys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
@@ -1263,7 +1264,7 @@ func (m *recipeManager) ArchiveRecipeStepCompletionCondition(ctx context.Context
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step completion condition")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCompletionConditionArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepCompletionConditionArchivedServiceEventType, map[string]any{
 		keys.RecipeIDKey:                        recipeID,
 		keys.RecipeStepIDKey:                    recipeStepID,
 		keys.RecipeStepCompletionConditionIDKey: recipeStepCompletionConditionID,
@@ -1321,7 +1322,7 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepVesselCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepVesselCreatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:           recipeID,
 		keys.RecipeStepIDKey:       recipeStepID,
 		keys.RecipeStepVesselIDKey: convertedInput.ID,
@@ -1378,7 +1379,7 @@ func (m *recipeManager) UpdateRecipeStepVessel(ctx context.Context, recipeID, re
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepVesselUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepVesselUpdatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:           recipeID,
 		keys.RecipeStepIDKey:       recipeStepID,
 		keys.RecipeStepVesselIDKey: recipeStepVesselID,
@@ -1404,7 +1405,7 @@ func (m *recipeManager) ArchiveRecipeStepVessel(ctx context.Context, recipeID, r
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step vessel")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepVesselArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeStepVesselArchivedServiceEventType, map[string]any{
 		keys.RecipeIDKey:           recipeID,
 		keys.RecipeStepIDKey:       recipeStepID,
 		keys.RecipeStepVesselIDKey: recipeStepVesselID,
@@ -1473,7 +1474,7 @@ func (m *recipeManager) CreateRecipeRating(ctx context.Context, recipeID string,
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe rating")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeRatingCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeRatingCreatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:       recipeID,
 		keys.RecipeRatingIDKey: convertedInput.ID,
 	}))
@@ -1506,7 +1507,7 @@ func (m *recipeManager) UpdateRecipeRating(ctx context.Context, recipeID, recipe
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe rating")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeRatingUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeRatingUpdatedServiceEventType, map[string]any{
 		keys.RecipeIDKey:       recipeID,
 		keys.RecipeRatingIDKey: recipeRatingID,
 	}))
@@ -1529,7 +1530,7 @@ func (m *recipeManager) ArchiveRecipeRating(ctx context.Context, recipeID, recip
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating")
 	}
 
-	m.dataChangesPublisher.PublishAsync(ctx, buildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeRatingArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeRatingArchivedServiceEventType, map[string]any{
 		keys.RecipeIDKey:       recipeID,
 		keys.RecipeRatingIDKey: recipeRatingID,
 	}))
