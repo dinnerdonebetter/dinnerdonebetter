@@ -17,7 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -318,7 +318,7 @@ func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetUsers(ctx, r.db, &generated2.GetUsersParams{
+	results, err := r.generatedQuerier.GetUsers(ctx, r.db, &generated.GetUsersParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -428,7 +428,7 @@ func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabas
 		return nil, observability.PrepareError(err, span, "generating email verification token")
 	}
 
-	if err = r.generatedQuerier.CreateUser(ctx, tx, &generated2.CreateUserParams{
+	if err = r.generatedQuerier.CreateUser(ctx, tx, &generated.CreateUserParams{
 		ID:                            input.ID,
 		FirstName:                     input.FirstName,
 		LastName:                      input.LastName,
@@ -538,7 +538,7 @@ func (r *repository) createAccountForUser(ctx context.Context, querier database.
 	}
 
 	// create the account.
-	if err := r.generatedQuerier.CreateAccount(ctx, querier, &generated2.CreateAccountParams{
+	if err := r.generatedQuerier.CreateAccount(ctx, querier, &generated.CreateAccountParams{
 		City:          accountCreationInput.City,
 		Name:          accountCreationInput.Name,
 		BillingStatus: identity.UnpaidAccountBillingStatus,
@@ -570,7 +570,7 @@ func (r *repository) createAccountForUser(ctx context.Context, querier database.
 	}
 
 	accountMembershipID := identifiers.New()
-	if err := r.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated2.CreateAccountUserMembershipForNewUserParams{
+	if err := r.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated.CreateAccountUserMembershipForNewUserParams{
 		ID:               accountMembershipID,
 		BelongsToUser:    userID,
 		BelongsToAccount: accountID,
@@ -644,7 +644,7 @@ func (r *repository) UpdateUserUsername(ctx context.Context, userID, newUsername
 		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
-	if _, err = r.generatedQuerier.UpdateUserUsername(ctx, tx, &generated2.UpdateUserUsernameParams{
+	if _, err = r.generatedQuerier.UpdateUserUsername(ctx, tx, &generated.UpdateUserUsernameParams{
 		Username: newUsername,
 		ID:       userID,
 	}); err != nil {
@@ -704,7 +704,7 @@ func (r *repository) UpdateUserEmailAddress(ctx context.Context, userID, newEmai
 		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
-	if _, err = r.generatedQuerier.UpdateUserEmailAddress(ctx, tx, &generated2.UpdateUserEmailAddressParams{
+	if _, err = r.generatedQuerier.UpdateUserEmailAddress(ctx, tx, &generated.UpdateUserEmailAddressParams{
 		EmailAddress: newEmailAddress,
 		ID:           userID,
 	}); err != nil {
@@ -763,7 +763,7 @@ func (r *repository) UpdateUserDetails(ctx context.Context, userID string, input
 		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
-	if _, err = r.generatedQuerier.UpdateUserDetails(ctx, tx, &generated2.UpdateUserDetailsParams{
+	if _, err = r.generatedQuerier.UpdateUserDetails(ctx, tx, &generated.UpdateUserDetailsParams{
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 		Birthday:  database.NullTimeFromTime(input.Birthday),
@@ -827,7 +827,7 @@ func (r *repository) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc 
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = r.generatedQuerier.UpdateUserAvatarSrc(ctx, tx, &generated2.UpdateUserAvatarSrcParams{
+	if _, err = r.generatedQuerier.UpdateUserAvatarSrc(ctx, tx, &generated.UpdateUserAvatarSrcParams{
 		AvatarSrc: database.NullStringFromString(newAvatarSrc),
 		ID:        userID,
 	}); err != nil {
@@ -878,7 +878,7 @@ func (r *repository) UpdateUserPassword(ctx context.Context, userID, newHash str
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = r.generatedQuerier.UpdateUserPassword(ctx, tx, &generated2.UpdateUserPasswordParams{
+	if _, err = r.generatedQuerier.UpdateUserPassword(ctx, tx, &generated.UpdateUserPasswordParams{
 		HashedPassword: newHash,
 		ID:             userID,
 	}); err != nil {
@@ -929,7 +929,7 @@ func (r *repository) UpdateUserTwoFactorSecret(ctx context.Context, userID, newS
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = r.generatedQuerier.UpdateUserTwoFactorSecret(ctx, tx, &generated2.UpdateUserTwoFactorSecretParams{
+	if _, err = r.generatedQuerier.UpdateUserTwoFactorSecret(ctx, tx, &generated.UpdateUserTwoFactorSecretParams{
 		TwoFactorSecret: newSecret,
 		ID:              userID,
 	}); err != nil {
@@ -1026,7 +1026,7 @@ func (r *repository) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, us
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = r.generatedQuerier.MarkTwoFactorSecretAsUnverified(ctx, r.db, &generated2.MarkTwoFactorSecretAsUnverifiedParams{
+	if err = r.generatedQuerier.MarkTwoFactorSecretAsUnverified(ctx, r.db, &generated.MarkTwoFactorSecretAsUnverifiedParams{
 		TwoFactorSecret: newSecret,
 		ID:              userID,
 	}); err != nil {
@@ -1199,7 +1199,7 @@ func (r *repository) MarkUserEmailAddressAsVerified(ctx context.Context, userID,
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = r.generatedQuerier.MarkEmailAddressAsVerified(ctx, tx, &generated2.MarkEmailAddressAsVerifiedParams{
+	if err = r.generatedQuerier.MarkEmailAddressAsVerified(ctx, tx, &generated.MarkEmailAddressAsVerifiedParams{
 		ID:                            userID,
 		EmailAddressVerificationToken: database.NullStringFromString(token),
 	}); err != nil {
@@ -1228,7 +1228,7 @@ func (r *repository) MarkUserEmailAddressAsVerified(ctx context.Context, userID,
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	if _, err = r.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated2.SetUserAccountStatusParams{
+	if _, err = r.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated.SetUserAccountStatusParams{
 		UserAccountStatus:            string(identity.GoodStandingUserAccountStatus),
 		UserAccountStatusExplanation: "verified email address",
 		ID:                           userID,
@@ -1287,7 +1287,7 @@ func (r *repository) MarkUserEmailAddressAsUnverified(ctx context.Context, userI
 		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
-	if _, err = r.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated2.SetUserAccountStatusParams{
+	if _, err = r.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated.SetUserAccountStatusParams{
 		UserAccountStatus:            string(identity.UnverifiedAccountStatus),
 		UserAccountStatusExplanation: "unverified email address",
 		ID:                           userID,
@@ -1299,6 +1299,35 @@ func (r *repository) MarkUserEmailAddressAsUnverified(ctx context.Context, userI
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
+
+	return nil
+}
+
+func (r *repository) UpdateUserAccountStatus(ctx context.Context, userID string, input *identity.UserAccountStatusUpdateInput) error {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return database.ErrInvalidIDProvided
+	}
+
+	logger := r.logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+
+	rowsChanged, err := r.generatedQuerier.SetUserAccountStatus(ctx, r.db, &generated.SetUserAccountStatusParams{
+		UserAccountStatus:            input.NewStatus,
+		UserAccountStatusExplanation: input.Reason,
+		ID:                           input.TargetUserID,
+	})
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "user status update")
+	}
+
+	if rowsChanged == 0 {
+		return sql.ErrNoRows
+	}
+
+	logger.Info("user account status updated")
 
 	return nil
 }

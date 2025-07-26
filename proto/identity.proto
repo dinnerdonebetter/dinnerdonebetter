@@ -482,7 +482,20 @@ message UsernameUpdateRequest {
   string CurrentPassword = 2;
   string TOTPToken = 3;
 }
+
+// AdminUpdateUserStatus
+message AdminUpdateUserStatusRequest {
+  string TargetUserID = 1;
+  string NewStatus = 2;
+  string Reason = 3;
+}
+
+message AdminUpdateUserStatusResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
+
 service IdentityService {
+  rpc AdminUpdateUserStatus(AdminUpdateUserStatusRequest) returns (AdminUpdateUserStatusResponse);
   rpc AcceptAccountInvitation(AcceptAccountInvitationRequest) returns (AcceptAccountInvitationResponse);
   rpc ArchiveAccount(ArchiveAccountRequest) returns (ArchiveAccountResponse);
   rpc ArchiveUserMembership(ArchiveUserMembershipRequest) returns (ArchiveUserMembershipResponse);

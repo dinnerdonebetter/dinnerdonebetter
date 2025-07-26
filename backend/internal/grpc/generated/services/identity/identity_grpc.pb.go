@@ -20,6 +20,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	IdentityService_AdminUpdateUserStatus_FullMethodName          = "/identity.IdentityService/AdminUpdateUserStatus"
 	IdentityService_AcceptAccountInvitation_FullMethodName        = "/identity.IdentityService/AcceptAccountInvitation"
 	IdentityService_ArchiveAccount_FullMethodName                 = "/identity.IdentityService/ArchiveAccount"
 	IdentityService_ArchiveUserMembership_FullMethodName          = "/identity.IdentityService/ArchiveUserMembership"
@@ -52,6 +53,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type IdentityServiceClient interface {
+	AdminUpdateUserStatus(ctx context.Context, in *AdminUpdateUserStatusRequest, opts ...grpc.CallOption) (*AdminUpdateUserStatusResponse, error)
 	AcceptAccountInvitation(ctx context.Context, in *AcceptAccountInvitationRequest, opts ...grpc.CallOption) (*AcceptAccountInvitationResponse, error)
 	ArchiveAccount(ctx context.Context, in *ArchiveAccountRequest, opts ...grpc.CallOption) (*ArchiveAccountResponse, error)
 	ArchiveUserMembership(ctx context.Context, in *ArchiveUserMembershipRequest, opts ...grpc.CallOption) (*ArchiveUserMembershipResponse, error)
@@ -86,6 +88,16 @@ type identityServiceClient struct {
 
 func NewIdentityServiceClient(cc grpc.ClientConnInterface) IdentityServiceClient {
 	return &identityServiceClient{cc}
+}
+
+func (c *identityServiceClient) AdminUpdateUserStatus(ctx context.Context, in *AdminUpdateUserStatusRequest, opts ...grpc.CallOption) (*AdminUpdateUserStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AdminUpdateUserStatusResponse)
+	err := c.cc.Invoke(ctx, IdentityService_AdminUpdateUserStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *identityServiceClient) AcceptAccountInvitation(ctx context.Context, in *AcceptAccountInvitationRequest, opts ...grpc.CallOption) (*AcceptAccountInvitationResponse, error) {
@@ -352,6 +364,7 @@ func (c *identityServiceClient) UploadUserAvatar(ctx context.Context, in *Upload
 // All implementations must embed UnimplementedIdentityServiceServer
 // for forward compatibility.
 type IdentityServiceServer interface {
+	AdminUpdateUserStatus(context.Context, *AdminUpdateUserStatusRequest) (*AdminUpdateUserStatusResponse, error)
 	AcceptAccountInvitation(context.Context, *AcceptAccountInvitationRequest) (*AcceptAccountInvitationResponse, error)
 	ArchiveAccount(context.Context, *ArchiveAccountRequest) (*ArchiveAccountResponse, error)
 	ArchiveUserMembership(context.Context, *ArchiveUserMembershipRequest) (*ArchiveUserMembershipResponse, error)
@@ -388,6 +401,9 @@ type IdentityServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedIdentityServiceServer struct{}
 
+func (UnimplementedIdentityServiceServer) AdminUpdateUserStatus(context.Context, *AdminUpdateUserStatusRequest) (*AdminUpdateUserStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdminUpdateUserStatus not implemented")
+}
 func (UnimplementedIdentityServiceServer) AcceptAccountInvitation(context.Context, *AcceptAccountInvitationRequest) (*AcceptAccountInvitationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptAccountInvitation not implemented")
 }
@@ -485,6 +501,24 @@ func RegisterIdentityServiceServer(s grpc.ServiceRegistrar, srv IdentityServiceS
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&IdentityService_ServiceDesc, srv)
+}
+
+func _IdentityService_AdminUpdateUserStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdminUpdateUserStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServiceServer).AdminUpdateUserStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IdentityService_AdminUpdateUserStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServiceServer).AdminUpdateUserStatus(ctx, req.(*AdminUpdateUserStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _IdentityService_AcceptAccountInvitation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -962,6 +996,10 @@ var IdentityService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "identity.IdentityService",
 	HandlerType: (*IdentityServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AdminUpdateUserStatus",
+			Handler:    _IdentityService_AdminUpdateUserStatus_Handler,
+		},
 		{
 			MethodName: "AcceptAccountInvitation",
 			Handler:    _IdentityService_AcceptAccountInvitation_Handler,

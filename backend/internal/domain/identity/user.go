@@ -226,8 +226,18 @@ type (
 		Successful bool `json:"successful,omitempty"`
 	}
 
+	// UserAccountStatusUpdateInput represents what an admin User could provide as input for changing statuses.
+	UserAccountStatusUpdateInput struct {
+		_ struct{} `json:"-"`
+
+		NewStatus    string `json:"newStatus"`
+		Reason       string `json:"reason"`
+		TargetUserID string `json:"targetUserID"`
+	}
+
 	// UserDataManager describes a structure which can manage users in persistent storage.
 	UserDataManager interface {
+		UpdateUserAccountStatus(ctx context.Context, userID string, input *UserAccountStatusUpdateInput) error
 		GetUser(ctx context.Context, userID string) (*User, error)
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)

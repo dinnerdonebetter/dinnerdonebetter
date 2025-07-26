@@ -16,6 +16,11 @@ type RepositoryMock struct {
 	mock.Mock
 }
 
+// UpdateUserAccountStatus is a mock function.
+func (m *RepositoryMock) UpdateUserAccountStatus(ctx context.Context, userID string, input *identity.UserAccountStatusUpdateInput) error {
+	return m.Called(ctx, userID, input).Error(0)
+}
+
 // AccountExists is a mock function.
 func (m *RepositoryMock) AccountExists(ctx context.Context, accountID, userID string) (bool, error) {
 	returnValues := m.Called(ctx, accountID, userID)
