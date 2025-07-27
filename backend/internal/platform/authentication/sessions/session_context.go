@@ -1,6 +1,7 @@
 package sessions
 
 import (
+	"context"
 	"encoding/gob"
 	"errors"
 	"net/http"
@@ -27,6 +28,13 @@ func FetchContextFromRequest(req *http.Request) (*ContextData, error) {
 	}
 
 	return nil, ErrNoSessionContextDataAvailable
+}
+
+func FetchFromContext(ctx context.Context) (*ContextData, bool) {
+	if sessionCtxData, ok := ctx.Value(SessionContextDataKey).(*ContextData); ok && sessionCtxData != nil {
+		return sessionCtxData, true
+	}
+	return nil, false
 }
 
 const SessionContextDataKey routing.ContextKey = "session_context_data"

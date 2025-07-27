@@ -22,6 +22,8 @@ const (
 	AccountMemberRemovedServiceEventType = "account_member_removed"
 	// AccountMembershipPermissionsUpdatedServiceEventType indicates an account member's permissions were modified.
 	AccountMembershipPermissionsUpdatedServiceEventType = "account_membership_permissions_updated"
+	// AccountSetAsDefaultServiceEventType indicates an account was selected as a user's default.
+	AccountSetAsDefaultServiceEventType = "account_set_as_default"
 	// AccountOwnershipTransferredServiceEventType indicates an account was transferred to another owner.
 	AccountOwnershipTransferredServiceEventType = "account_ownership_transferred"
 

@@ -4,7 +4,8 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
+	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/managers"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
@@ -13,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"google.golang.org/grpc/codes"
 )
@@ -30,6 +32,7 @@ type (
 		logger                    logging.Logger
 		sessionContextDataFetcher func(ctx context.Context) (sessions.ContextData, error)
 		identityRepository        identity.Repository
+		identityDataManager       managers.IdentityDataManager
 	}
 )
 
@@ -53,7 +56,9 @@ func (s *serviceImpl) AcceptAccountInvitation(ctx context.Context, request *iden
 		keys.AccountInvitationIDKey: request.AccountInvitationID,
 	}, span, s.logger)
 
-	if err := s.identityRepository.AcceptAccountInvitation(ctx, request.AccountInvitationID, request.Input.Token, request.Input.Note); err != nil {
+	input := converters.ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequestInput(request.Input)
+
+	if err := s.identityDataManager.AcceptAccountInvitation(ctx, request.AccountInvitationID, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "accepting account invitation")
 	}
 
@@ -79,7 +84,7 @@ func (s *serviceImpl) ArchiveAccount(ctx context.Context, request *identitysvc.A
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	if err = s.identityRepository.ArchiveAccount(ctx, request.AccountID, sessionContextData.GetUserID()); err != nil {
+	if err = s.identityDataManager.ArchiveAccount(ctx, request.AccountID, sessionContextData.GetUserID()); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive account")
 	}
 
@@ -96,10 +101,10 @@ func (s *serviceImpl) ArchiveUserMembership(ctx context.Context, request *identi
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	// TODO: validate that the user is authorized to do this
+	// TODO: validate that the user is authorized to do this?
 
-	if err := s.identityRepository.RemoveUserFromAccount(ctx, request.UserID, request.AccountID); err != nil {
-
+	if err := s.identityDataManager.ArchiveUserMembership(ctx, request.UserID, request.AccountID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to archive user membership")
 	}
 
 	x := &identitysvc.ArchiveUserMembershipResponse{
@@ -115,6 +120,10 @@ func (s *serviceImpl) ArchiveUser(ctx context.Context, request *identitysvc.Arch
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if err := s.identityDataManager.ArchiveUser(ctx, request.UserID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to archive user")
+	}
+
 	x := &identitysvc.ArchiveUserResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
@@ -127,6 +136,10 @@ func (s *serviceImpl) ArchiveUser(ctx context.Context, request *identitysvc.Arch
 func (s *serviceImpl) CancelAccountInvitation(ctx context.Context, request *identitysvc.CancelAccountInvitationRequest) (*identitysvc.CancelAccountInvitationResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if err := s.identityDataManager.CancelAccountInvitation(ctx, request.AccountInvitationID, request.Input.Note); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to cancel account invitation")
+	}
 
 	x := &identitysvc.CancelAccountInvitationResponse{
 		ResponseDetails: &types.ResponseDetails{
@@ -141,10 +154,18 @@ func (s *serviceImpl) CreateAccount(ctx context.Context, request *identitysvc.Cr
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	input := converters.ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(request.Input)
+
+	created, err := s.identityDataManager.CreateAccount(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account")
+	}
+
 	x := &identitysvc.CreateAccountResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
+		Created: converters.ConvertAccountToGRPCAccount(created),
 	}
 
 	return x, nil
@@ -271,7 +292,7 @@ func (s *serviceImpl) GetUser(ctx context.Context, request *identitysvc.GetUserR
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Result: ConvertUserToGRPCUser(user),
+		Result: converters.ConvertUserToGRPCUser(user),
 	}
 
 	return x, nil
@@ -310,7 +331,7 @@ func (s *serviceImpl) GetUsers(ctx context.Context, request *identitysvc.GetUser
 	}
 
 	for _, user := range users.Data {
-		x.Result = append(x.Result, ConvertUserToGRPCUser(user))
+		x.Result = append(x.Result, converters.ConvertUserToGRPCUser(user))
 	}
 
 	return x, nil
@@ -392,7 +413,7 @@ func (s *serviceImpl) UpdateUserDetails(ctx context.Context, request *identitysv
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	input := ConvertGRPCUserDetailsUpdateRequestInputToUserDetailsDatabaseUpdateInput(request.Input)
+	input := converters.ConvertGRPCUserDetailsUpdateRequestInputToUserDetailsDatabaseUpdateInput(request.Input)
 
 	if err = s.identityRepository.UpdateUserDetails(ctx, sessionContextData.GetUserID(), input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update user details")
@@ -483,7 +504,7 @@ func (s *serviceImpl) AdminUpdateUserStatus(ctx context.Context, request *identi
 		return nil, observability.PrepareAndLogGRPCStatus(nil, logger, span, codes.Unauthenticated, "user account status update requester does not have permission")
 	}
 
-	if err = s.identityRepository.UpdateUserAccountStatus(ctx, request.TargetUserID, converters.ConvertGRPCAdminUpdateUserStatusRequestToUserAccountStatusUpdateInput(request)); err != nil {
+	if err = s.identityRepository.UpdateUserAccountStatus(ctx, request.TargetUserID, identityconverters.ConvertGRPCAdminUpdateUserStatusRequestToUserAccountStatusUpdateInput(request)); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating user account status")
 	}
 

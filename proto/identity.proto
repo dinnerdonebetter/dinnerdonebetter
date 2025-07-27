@@ -54,10 +54,13 @@ message CreateUserResponse {
 }
 
 // CreateAccount
-message CreateAccountRequest {}
+message CreateAccountRequest {
+  AccountCreationRequestInput Input = 1;
+}
 
 message CreateAccountResponse {
   common.ResponseDetails ResponseDetails = 1;
+  Account Created = 2;
 }
 
 // CreateAccountInvitation
@@ -300,11 +303,11 @@ message UpdateUserAvatarRequest {
 
 message Account {
   google.protobuf.Timestamp CreatedAt = 1;
-  string SubscriptionPlanID = 2;
+  optional string SubscriptionPlanID = 2;
   google.protobuf.Timestamp LastUpdatedAt = 3;
   google.protobuf.Timestamp ArchivedAt = 4;
-  float Longitude = 5;
-  float Latitude = 6;
+  optional float Longitude = 5;
+  optional float Latitude = 6;
   string State = 7;
   string ContactPhone = 8;
   string City = 9;
@@ -322,8 +325,8 @@ message Account {
 }
 
 message AccountCreationRequestInput {
-  float Latitude = 1;
-  float Longitude = 2;
+  optional float Latitude = 1;
+  optional float Longitude = 2;
   string Name = 3;
   string ContactPhone = 4;
   string AddressLine1 = 5;

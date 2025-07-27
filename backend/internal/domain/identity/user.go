@@ -19,6 +19,8 @@ const (
 	UserSignedUpServiceEventType = "user_signed_up"
 	// UserArchivedServiceEventType indicates a user archived their account.
 	UserArchivedServiceEventType = "user_archived"
+	// UserStatusChangedServiceEventType indicates a user had their user status changed.
+	UserStatusChangedServiceEventType = "user_status_changed"
 	// UserDataDestroyedServiceEventType indicates a user destroyed their data.
 	UserDataDestroyedServiceEventType = "user_data_destroyed"
 	// UserDataAggregationRequestServiceEventType indicates a user requested their data be aggregated.

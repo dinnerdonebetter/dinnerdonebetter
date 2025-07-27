@@ -1,9 +1,11 @@
 package managers
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
-	"github.com/stretchr/testify/mock"
 	"slices"
+
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+
+	"github.com/stretchr/testify/mock"
 )
 
 func eventMatches(eventType string, keys []string) any {

@@ -7,55 +7,53 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/boombuler/barcode"
-	"github.com/boombuler/barcode/qr"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
-	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/random"
-	"github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
-	passwordvalidator "github.com/wagslane/go-password-validator"
 	"image/png"
-	strings "strings"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
+	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/random"
+	"github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
+
+	"github.com/boombuler/barcode"
+	"github.com/boombuler/barcode/qr"
+	passwordvalidator "github.com/wagslane/go-password-validator"
 )
-
-/*
-
-TODO:
-- all string and pointered params are checked for emptiness and return errors
-- all methods write a data change message
-- all values are observed in both logs and analytics messages
-- defaults on query filters
-- input parameters are validated and errors returned
-- all parameters accounted for in o11y
-
-*/
 
 const (
 	o11yName = "identity_data_manager"
-
-	// UserIDURIParamKey is used to refer to user IDs in router params.
-	UserIDURIParamKey = "userID"
 
 	totpIssuer             = "DinnerDoneBetter"
 	base64ImagePrefix      = "data:image/jpeg;base64,"
 	minimumPasswordEntropy = 60
 	totpSecretSize         = 64
-	passwordResetTokenSize = 32
+)
+
+var (
+	userAvatarBase64Encoding = base64.RawURLEncoding
+
+	// ErrInvalidIDProvided indicates a required ID was passed in empty.
+	ErrInvalidIDProvided = errors.New("required ID was empty")
+
+	// ErrNilInputProvided indicates that a required parameter was nil
+	ErrNilInputProvided = errors.New("nil input provided")
+
+	// ErrEmptyInputProvided indicates that required input was empty
+	ErrEmptyInputProvided = errors.New("empty input provided")
 )
 
 type (
-	IdentityDataManager struct {
+	manager struct {
 		tracer               tracing.Tracer
 		logger               logging.Logger
 		dataChangesPublisher messagequeue.Publisher
@@ -75,24 +73,42 @@ func NewIdentityDataManager(
 	logger logging.Logger,
 	publisherProvider messagequeue.PublisherProvider,
 	identityRepo identity.Repository,
+	secretGenerator random.Generator,
+	authenticator authentication.Hasher,
+	userSearchIndex indexing.UserTextSearcher,
 	cfg *Config,
-) (*IdentityDataManager, error) {
+) (IdentityDataManager, error) {
 	publisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("setting up data changes publisher: %w", err)
 	}
 
-	return &IdentityDataManager{
+	return &manager{
 		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		logger:               logging.EnsureLogger(logger).WithName(o11yName),
 		identityRepo:         identityRepo,
 		dataChangesPublisher: publisher,
+		secretGenerator:      secretGenerator,
+		authenticator:        authenticator,
+		userSearchIndex:      userSearchIndex,
 	}, nil
 }
 
-func (i *IdentityDataManager) AcceptAccountInvitation(ctx context.Context, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error {
+func (i *manager) AcceptAccountInvitation(ctx context.Context, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if accountInvitationID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return observability.PrepareError(err, span, "invalid input attached to request")
+	}
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountInvitationIDKey: accountInvitationID,
@@ -109,61 +125,153 @@ func (i *IdentityDataManager) AcceptAccountInvitation(ctx context.Context, accou
 	return nil
 }
 
-func (i *IdentityDataManager) ArchiveAccount(ctx context.Context, accountID, ownerID string) error {
+func (i *manager) RejectAccountInvitation(ctx context.Context, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.UserIDKey, ownerID)
+	if accountInvitationID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountInvitationIDKey: accountInvitationID,
+	}, span, i.logger)
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return observability.PrepareError(err, span, "invalid input attached to request")
+	}
+
+	// note, this is where you would call input.ValidateWithContext, if that currently had any effect.
+
+	invitation, err := i.identityRepo.GetAccountInvitationByTokenAndID(ctx, input.Token, accountInvitationID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return observability.PrepareError(err, span, "account invitation not found")
+	} else if err != nil {
+		return observability.PrepareError(err, span, "retrieving invitation")
+	}
+
+	if err = i.identityRepo.RejectAccountInvitation(ctx, invitation.ID, input.Note); err != nil {
+		return observability.PrepareError(err, span, "rejecting invitation")
+	}
+
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationRejectedServiceEventType, map[string]any{
+		keys.AccountInvitationIDKey: accountInvitationID,
+	}))
+
+	return nil
+}
+
+func (i *manager) CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
+	ctx, span := i.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if accountInvitationID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountInvitationIDKey: accountInvitationID,
+	}, span, i.logger)
+
+	if err := i.identityRepo.CancelAccountInvitation(ctx, accountInvitationID, note); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "canceling account invitation")
+	}
+
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCanceledServiceEventType, map[string]any{
+		keys.AccountInvitationIDKey: accountInvitationID,
+	}))
+
+	return nil
+}
+
+func (i *manager) ArchiveAccount(ctx context.Context, accountID, ownerID string) error {
+	ctx, span := i.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if accountID == "" || ownerID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: accountID,
+		keys.UserIDKey:    ownerID,
+	}, span, i.logger)
 
 	if err := i.identityRepo.ArchiveAccount(ctx, accountID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "ArchiveAccount")
 	}
 
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountArchivedServiceEventType, map[string]any{
+		keys.AccountIDKey: accountID,
+		keys.UserIDKey:    ownerID,
+	}))
+
 	return nil
 }
 
-func (i *IdentityDataManager) ArchiveUserMembership(ctx context.Context, userID, accountID string) error {
+func (i *manager) ArchiveUserMembership(ctx context.Context, userID, accountID string) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.UserIDKey, userID)
+	if accountID == "" || userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: accountID,
+		keys.UserIDKey:    userID,
+	}, span, i.logger)
 
 	if err := i.identityRepo.RemoveUserFromAccount(ctx, userID, accountID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "RemoveUserFromAccount")
 	}
 
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountMemberRemovedServiceEventType, map[string]any{
+		keys.AccountIDKey: accountID,
+		keys.UserIDKey:    userID,
+	}))
+
 	return nil
 }
 
-func (i *IdentityDataManager) ArchiveUser(ctx context.Context, userID string) error {
+func (i *manager) ArchiveUser(ctx context.Context, userID string) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.UserIDKey, userID)
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
 
 	if err := i.identityRepo.ArchiveUser(ctx, userID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "ArchiveUser")
 	}
 
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserArchivedServiceEventType, map[string]any{
+		keys.UserIDKey: userID,
+	}))
+
 	return nil
 }
 
-func (i *IdentityDataManager) CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
+func (i *manager) CreateAccount(ctx context.Context, input *identity.AccountCreationRequestInput) (*identity.Account, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span)
-
-	if err := i.identityRepo.CancelAccountInvitation(ctx, accountInvitationID, note); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "creating AccountInvitation")
+	if input == nil {
+		return nil, ErrNilInputProvided
 	}
 
-	return nil
-}
-
-func (i *IdentityDataManager) CreateAccount(ctx context.Context, input *identity.AccountCreationRequestInput) (*identity.Account, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
-	defer span.End()
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "invalid input attached to request")
+	}
 
 	logger := i.logger.WithSpan(span)
 
@@ -172,56 +280,85 @@ func (i *IdentityDataManager) CreateAccount(ctx context.Context, input *identity
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating Account")
 	}
 
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountCreatedServiceEventType, map[string]any{
+		keys.AccountIDKey: created.ID,
+	}))
+
 	return created, nil
 }
 
-func (i *IdentityDataManager) CreateAccountInvitation(ctx context.Context, input *identity.AccountInvitationCreationRequestInput) (*identity.AccountInvitation, error) {
+func (i *manager) CreateAccountInvitation(ctx context.Context, userID string, input *identity.AccountInvitationCreationRequestInput) (*identity.AccountInvitation, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span)
+	if userID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "invalid input attached to request")
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
 
 	created, err := i.identityRepo.CreateAccountInvitation(ctx, converters.ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput(input))
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating AccountInvitation")
 	}
 
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCreatedServiceEventType, map[string]any{
+		keys.AccountInvitationIDKey: created.ID,
+		keys.UserIDKey:              userID,
+	}))
+
 	return created, nil
 }
 
-func (i *IdentityDataManager) CreateUser(ctx context.Context, registrationInput *identity.UserRegistrationInput) (*identity.UserCreationResponse, error) {
+func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrationInput) (*identity.UserCreationResponse, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span)
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
 
-	registrationInput.Username = strings.TrimSpace(registrationInput.Username)
-	tracing.AttachToSpan(span, keys.UsernameKey, registrationInput.Username)
-	registrationInput.EmailAddress = strings.TrimSpace(strings.ToLower(registrationInput.EmailAddress))
-	tracing.AttachToSpan(span, keys.UserEmailAddressKey, registrationInput.EmailAddress)
-	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
+	logger := observability.ObserveValues(map[string]any{
+		keys.UsernameKey: input.Username,
+	}, span, i.logger)
+
+	input.Username = strings.TrimSpace(input.Username)
+	tracing.AttachToSpan(span, keys.UsernameKey, input.Username)
+	input.EmailAddress = strings.TrimSpace(strings.ToLower(input.EmailAddress))
+	tracing.AttachToSpan(span, keys.UserEmailAddressKey, input.EmailAddress)
+	input.Password = strings.TrimSpace(input.Password)
 
 	logger = logger.WithValues(map[string]any{
-		keys.UsernameKey:               registrationInput.Username,
-		keys.UserEmailAddressKey:       registrationInput.EmailAddress,
-		keys.AccountInvitationIDKey:    registrationInput.InvitationID,
-		keys.AccountInvitationTokenKey: registrationInput.InvitationToken,
+		keys.UsernameKey:               input.Username,
+		keys.UserEmailAddressKey:       input.EmailAddress,
+		keys.AccountInvitationIDKey:    input.InvitationID,
+		keys.AccountInvitationTokenKey: input.InvitationToken,
 	})
 
-	if err := registrationInput.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		return nil, observability.PrepareError(err, span, "invalid user creation input provided")
+	if err := input.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided dbInput was invalid")
+		return nil, observability.PrepareError(err, span, "invalid user creation dbInput provided")
 	}
 
 	// ensure the password is not garbage-tier
-	if err := passwordvalidator.Validate(strings.TrimSpace(registrationInput.Password), minimumPasswordEntropy); err != nil {
+	if err := passwordvalidator.Validate(strings.TrimSpace(input.Password), minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("weak password provided to user creation route")
 		return nil, observability.PrepareAndLogError(err, logger, span, "weak password provided for user creation")
 	}
 
 	var invitation *identity.AccountInvitation
-	if registrationInput.InvitationID != "" && registrationInput.InvitationToken != "" {
-		invite, err := i.identityRepo.GetAccountInvitationByTokenAndID(ctx, registrationInput.InvitationToken, registrationInput.InvitationID)
+	if input.InvitationID != "" && input.InvitationToken != "" {
+		invite, err := i.identityRepo.GetAccountInvitationByTokenAndID(ctx, input.InvitationToken, input.InvitationID)
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, observability.PrepareAndLogError(err, logger, span, "no account invitation found")
 		} else if err != nil {
@@ -235,7 +372,7 @@ func (i *IdentityDataManager) CreateUser(ctx context.Context, registrationInput 
 	logger.Debug("completed invitation check")
 
 	// hash the password
-	hp, err := i.authenticator.HashPassword(ctx, strings.TrimSpace(registrationInput.Password))
+	hp, err := i.authenticator.HashPassword(ctx, strings.TrimSpace(input.Password))
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "hashing user creation password")
 	}
@@ -246,27 +383,27 @@ func (i *IdentityDataManager) CreateUser(ctx context.Context, registrationInput 
 		return nil, observability.PrepareAndLogError(err, logger, span, "generating two factor secret")
 	}
 
-	input := &identity.UserDatabaseCreationInput{
+	dbInput := &identity.UserDatabaseCreationInput{
 		ID:              identifiers.New(),
-		Username:        registrationInput.Username,
-		FirstName:       registrationInput.FirstName,
-		LastName:        registrationInput.LastName,
-		EmailAddress:    registrationInput.EmailAddress,
+		Username:        input.Username,
+		FirstName:       input.FirstName,
+		LastName:        input.LastName,
+		EmailAddress:    input.EmailAddress,
 		HashedPassword:  hp,
 		TwoFactorSecret: tfs,
-		InvitationToken: registrationInput.InvitationToken,
-		Birthday:        registrationInput.Birthday,
-		AccountName:     registrationInput.AccountName,
+		InvitationToken: input.InvitationToken,
+		Birthday:        input.Birthday,
+		AccountName:     input.AccountName,
 	}
 
 	if invitation != nil {
-		logger.Debug("supplementing user creation input with invitation data")
-		input.DestinationAccountID = invitation.DestinationAccount.ID
-		input.InvitationToken = invitation.Token
+		logger.Debug("supplementing user creation dbInput with invitation data")
+		dbInput.DestinationAccountID = invitation.DestinationAccount.ID
+		dbInput.InvitationToken = invitation.Token
 	}
 
 	// create the user.
-	user, err := i.identityRepo.CreateUser(ctx, input)
+	user, err := i.identityRepo.CreateUser(ctx, dbInput)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating user")
 		if errors.Is(err, database.ErrUserAlreadyExists) {
@@ -290,18 +427,11 @@ func (i *IdentityDataManager) CreateUser(ctx context.Context, registrationInput 
 	// notify the relevant parties.
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
-	dcm := &audit.DataChangeMessage{
-		AccountID: defaultAccountID,
-		EventType: identity.UserSignedUpServiceEventType,
-		UserID:    user.ID,
-		Context: map[string]any{
-			keys.UserEmailVerificationTokenKey: emailVerificationToken,
-		},
-	}
-
-	if err = i.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserSignedUpServiceEventType, map[string]any{
+		keys.AccountIDKey:                  defaultAccountID,
+		keys.UserIDKey:                     user.ID,
+		keys.UserEmailVerificationTokenKey: emailVerificationToken,
+	}))
 
 	/* TODO: this should be done in a downstream handler
 
@@ -335,11 +465,17 @@ func (i *IdentityDataManager) CreateUser(ctx context.Context, registrationInput 
 	return ucr, nil
 }
 
-func (i *IdentityDataManager) GetAccount(ctx context.Context, accountID string) (*identity.Account, error) {
+func (i *manager) GetAccount(ctx context.Context, accountID string) (*identity.Account, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.AccountIDKey, accountID)
+	if accountID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: accountID,
+	}, span, i.logger)
 
 	account, err := i.identityRepo.GetAccount(ctx, accountID)
 	if err != nil {
@@ -349,11 +485,18 @@ func (i *IdentityDataManager) GetAccount(ctx context.Context, accountID string) 
 	return account, nil
 }
 
-func (i *IdentityDataManager) GetAccountInvitation(ctx context.Context, accountID, accountInvitationID string) (*identity.AccountInvitation, error) {
+func (i *manager) GetAccountInvitation(ctx context.Context, accountID, accountInvitationID string) (*identity.AccountInvitation, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.AccountIDKey, accountID).WithValue(keys.AccountInvitationIDKey, accountInvitationID)
+	if accountID == "" || accountInvitationID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey:           accountID,
+		keys.AccountInvitationIDKey: accountInvitationID,
+	}, span, i.logger)
 
 	invitation, err := i.identityRepo.GetAccountInvitationByAccountAndID(ctx, accountID, accountInvitationID)
 	if err != nil {
@@ -363,11 +506,21 @@ func (i *IdentityDataManager) GetAccountInvitation(ctx context.Context, accountI
 	return invitation, nil
 }
 
-func (i *IdentityDataManager) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.Account, string, error) {
+func (i *manager) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.Account, string, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.UserIDKey, userID)
+	if userID == "" {
+		return nil, "", ErrInvalidIDProvided
+	}
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
 
 	accounts, err := i.identityRepo.GetAccounts(ctx, userID, filter)
 	if err != nil {
@@ -377,11 +530,21 @@ func (i *IdentityDataManager) GetAccounts(ctx context.Context, userID string, fi
 	return accounts.Data, "TODO", nil
 }
 
-func (i *IdentityDataManager) GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
+func (i *manager) GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.UserIDKey, userID)
+	if userID == "" {
+		return nil, "", ErrInvalidIDProvided
+	}
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
 
 	invites, err := i.identityRepo.GetPendingAccountInvitationsForUser(ctx, userID, filter)
 	if err != nil {
@@ -391,11 +554,21 @@ func (i *IdentityDataManager) GetReceivedAccountInvitations(ctx context.Context,
 	return invites.Data, "TODO", nil
 }
 
-func (i *IdentityDataManager) GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
+func (i *manager) GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.UserIDKey, userID)
+	if userID == "" {
+		return nil, "", ErrInvalidIDProvided
+	}
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
 
 	invites, err := i.identityRepo.GetPendingAccountInvitationsFromUser(ctx, userID, filter)
 	if err != nil {
@@ -405,11 +578,17 @@ func (i *IdentityDataManager) GetSentAccountInvitations(ctx context.Context, use
 	return invites.Data, "TODO", nil
 }
 
-func (i *IdentityDataManager) GetUser(ctx context.Context, userID string) (*identity.User, error) {
+func (i *manager) GetUser(ctx context.Context, userID string) (*identity.User, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.UserIDKey, userID)
+	if userID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
 
 	user, err := i.identityRepo.GetUser(ctx, userID)
 	if err != nil {
@@ -419,48 +598,13 @@ func (i *IdentityDataManager) GetUser(ctx context.Context, userID string) (*iden
 	return user, nil
 }
 
-func (i *IdentityDataManager) RejectAccountInvitation(ctx context.Context, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error {
+func (i *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span)
-
-	if err := input.ValidateWithContext(ctx); err != nil {
-		return observability.PrepareError(err, span, "invalid input attached to request")
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
 	}
-
-	// note, this is where you would call input.ValidateWithContext, if that currently had any effect.
-
-	invitation, err := i.identityRepo.GetAccountInvitationByTokenAndID(ctx, input.Token, accountInvitationID)
-	if errors.Is(err, sql.ErrNoRows) {
-		return observability.PrepareError(err, span, "account invitation not found")
-	} else if err != nil {
-		return observability.PrepareError(err, span, "retrieving invitation")
-	}
-
-	if err = i.identityRepo.RejectAccountInvitation(ctx, invitation.ID, input.Note); err != nil {
-		return observability.PrepareError(err, span, "rejecting invitation")
-	}
-
-	dcm := &audit.DataChangeMessage{
-		EventType: identity.AccountInvitationRejectedServiceEventType,
-		AccountID: invitation.DestinationAccount.ID,
-		UserID:    "TODO",
-		Context: map[string]any{
-			keys.AccountInvitationIDKey: accountInvitationID,
-		},
-	}
-
-	if err = i.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message")
-	}
-
-	return nil
-}
-
-func (i *IdentityDataManager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
-	defer span.End()
 
 	logger := i.logger.WithSpan(span)
 
@@ -472,9 +616,21 @@ func (i *IdentityDataManager) GetUsers(ctx context.Context, filter *filtering.Qu
 	return users.Data, "", nil
 }
 
-func (i *IdentityDataManager) SearchForUsers(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+func (i *manager) SearchForUsers(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if query == "" {
+		return nil, "", errors.New("query cannot be empty")
+	}
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UseDatabaseKey: useDatabase,
+	}, span, i.logger)
 
 	if useDatabase {
 		users, err := i.identityRepo.SearchForUsersByUsername(ctx, query, filter)
@@ -482,14 +638,14 @@ func (i *IdentityDataManager) SearchForUsers(ctx context.Context, query string, 
 			if errors.Is(err, sql.ErrNoRows) {
 				return nil, "", observability.PrepareError(err, span, "no users found")
 			}
-			return nil, "", observability.PrepareError(err, span, "searching for users")
+			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
 
 		return users, "TODO", nil
 	} else {
 		uss, err := i.userSearchIndex.Search(ctx, query)
 		if err != nil {
-			return nil, "", observability.PrepareError(err, span, "searching for users")
+			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
 
 		userIDs := []string{}
@@ -499,41 +655,54 @@ func (i *IdentityDataManager) SearchForUsers(ctx context.Context, query string, 
 
 		users, err := i.identityRepo.GetUsersWithIDs(ctx, userIDs)
 		if err != nil {
-			return nil, "", observability.PrepareError(err, span, "searching for users")
+			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
 
 		return users, "TODO", nil
 	}
 }
 
-func (i *IdentityDataManager) SetDefaultAccount(ctx context.Context, userID, accountID string) error {
+func (i *manager) SetDefaultAccount(ctx context.Context, userID, accountID string) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.UserIDKey, userID).WithValue(keys.AccountIDKey, accountID)
+	if userID == "" || accountID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey:    userID,
+		keys.AccountIDKey: accountID,
+	}, span, i.logger)
 
 	// mark household as default in database.
 	if err := i.identityRepo.MarkAccountAsUserDefault(ctx, userID, accountID); err != nil {
 		return observability.PrepareError(err, span, "marking default account as user")
 	}
 
-	dcm := &audit.DataChangeMessage{
-		EventType: identity.AccountMemberRemovedServiceEventType,
-		AccountID: accountID,
-		UserID:    "TODO",
-	}
-	if err := i.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
-	}
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountSetAsDefaultServiceEventType, map[string]any{
+		keys.AccountIDKey: accountID,
+		keys.UserIDKey:    userID,
+	}))
 
 	return nil
 }
 
-func (i *IdentityDataManager) TransferAccountOwnership(ctx context.Context, accountID string, input *identity.AccountOwnershipTransferInput) error {
+func (i *manager) TransferAccountOwnership(ctx context.Context, accountID string, input *identity.AccountOwnershipTransferInput) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span)
+	if accountID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: accountID,
+	}, span, i.logger)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "")
@@ -544,23 +713,28 @@ func (i *IdentityDataManager) TransferAccountOwnership(ctx context.Context, acco
 		return observability.PrepareError(err, span, "")
 	}
 
-	dcm := &audit.DataChangeMessage{
-		EventType: identity.AccountOwnershipTransferredServiceEventType,
-		AccountID: accountID,
-		UserID:    "TODO",
-	}
-	if err := i.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
-	}
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountOwnershipTransferredServiceEventType, map[string]any{
+		keys.AccountIDKey: accountID,
+	}))
 
 	return nil
 }
 
-func (i *IdentityDataManager) UpdateAccount(ctx context.Context, accountID string, input *identity.AccountUpdateRequestInput) error {
+func (i *manager) UpdateAccount(ctx context.Context, accountID string, input *identity.AccountUpdateRequestInput) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span)
+	if accountID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: accountID,
+	}, span, i.logger)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "validating account update")
@@ -586,24 +760,28 @@ func (i *IdentityDataManager) UpdateAccount(ctx context.Context, accountID strin
 		return observability.PrepareError(err, span, "updating account")
 	}
 
-	dcm := &audit.DataChangeMessage{
-		EventType: identity.AccountUpdatedServiceEventType,
-		AccountID: account.ID,
-		UserID:    "TODO",
-	}
-
-	if err = i.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message for created account")
-	}
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountUpdatedServiceEventType, map[string]any{
+		keys.AccountIDKey: accountID,
+	}))
 
 	return nil
 }
 
-func (i *IdentityDataManager) UpdateAccountMemberPermissions(ctx context.Context, userID, accountID string, input *identity.ModifyUserPermissionsInput) error {
+func (i *manager) UpdateAccountMemberPermissions(ctx context.Context, userID, accountID string, input *identity.ModifyUserPermissionsInput) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithSpan(span).WithValue(keys.UserIDKey, userID)
+	if userID == "" || accountID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "invalid input attached to request")
@@ -614,59 +792,158 @@ func (i *IdentityDataManager) UpdateAccountMemberPermissions(ctx context.Context
 		return observability.PrepareError(err, span, "modifying user permissions")
 	}
 
-	dcm := &audit.DataChangeMessage{
-		EventType: identity.AccountMembershipPermissionsUpdatedServiceEventType,
-		AccountID: accountID,
-		UserID:    "TODO",
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountMembershipPermissionsUpdatedServiceEventType, map[string]any{
+		keys.AccountIDKey: accountID,
+	}))
+
+	return nil
+}
+
+func (i *manager) UpdateUserDetails(ctx context.Context, userID string, input *identity.UserDetailsUpdateRequestInput) error {
+	ctx, span := i.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
 	}
-	if err := i.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		observability.AcknowledgeError(err, logger, span, "publishing data change message for created account")
+
+	if input == nil {
+		return ErrNilInputProvided
 	}
 
-	return nil
-}
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return observability.PrepareError(err, span, "invalid input attached to request")
+	}
 
-func (i *IdentityDataManager) UpdateUserDetails(ctx context.Context, input *identity.UserDetailsUpdateRequestInput) error {
-	ctx, span := i.tracer.StartSpan(ctx)
-	defer span.End()
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
 
-	return nil
-}
+	if err := i.identityRepo.UpdateUserDetails(ctx, userID, converters.ConvertUserDetailsUpdateRequestInputToUserDetailsUpdateInput(input)); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating user details")
+	}
 
-func (i *IdentityDataManager) UpdateUserEmailAddress(ctx context.Context, newEmail string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
-	defer span.End()
-
-	return nil
-}
-
-func (i *IdentityDataManager) UpdateUserUsername(ctx context.Context, newUsername string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
-	defer span.End()
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserDetailsChangedEventType, map[string]any{
+		keys.UserIDKey: userID,
+	}))
 
 	return nil
 }
 
-func (i *IdentityDataManager) UploadUserAvatar(ctx context.Context, newAvatar []byte) error {
+func (i *manager) UpdateUserEmailAddress(ctx context.Context, userID, newEmail string) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
+
+	if err := i.identityRepo.UpdateUserEmailAddress(ctx, userID, newEmail); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating user email address")
+	}
+
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.EmailAddressChangedEventType, map[string]any{
+		keys.UserIDKey: userID,
+	}))
 
 	return nil
 }
 
-func (i *IdentityDataManager) AdminUpdateUserStatus(ctx context.Context, input identity.UserAccountStatusUpdateInput) error {
+func (i *manager) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
 	ctx, span := i.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	if newUsername == "" {
+		return ErrEmptyInputProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
+
+	if err := i.identityRepo.UpdateUserUsername(ctx, userID, newUsername); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating user username")
+	}
+
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UsernameChangedEventType, map[string]any{
+		keys.UserIDKey: userID,
+	}))
+
+	return nil
+}
+
+func (i *manager) UploadUserAvatar(ctx context.Context, userID, base64EncodedImageData string) error {
+	ctx, span := i.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: userID,
+	}, span, i.logger)
+
+	data, err := userAvatarBase64Encoding.DecodeString(base64EncodedImageData)
+	if err != nil {
+		return observability.PrepareError(err, span, "decoding base64 encoded image data")
+	}
+
+	logger = observability.ObserveValues(map[string]any{
+		"data.length": len(data),
+	}, span, logger)
+
+	if err = i.identityRepo.UpdateUserAvatar(ctx, userID, base64EncodedImageData); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating user avatar")
+	}
+
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserAvatarChangedEventType, map[string]any{
+		keys.UserIDKey: userID,
+	}))
+
+	return nil
+}
+
+func (i *manager) AdminUpdateUserStatus(ctx context.Context, input *identity.UserAccountStatusUpdateInput) error {
+	ctx, span := i.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: input.TargetUserID,
+		keys.ReasonKey: input.Reason,
+	}, span, i.logger)
+
+	if err := i.identityRepo.UpdateUserAccountStatus(ctx, input.TargetUserID, input); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating user account status")
+	}
+
+	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserStatusChangedServiceEventType, map[string]any{
+		keys.UserIDKey: input.TargetUserID,
+	}))
 
 	return nil
 }
 
 // buildQRCode builds a QR code for a given username and secret.
-func (i *IdentityDataManager) buildQRCode(ctx context.Context, username, twoFactorSecret string) string {
+func (i *manager) buildQRCode(ctx context.Context, username, twoFactorSecret string) string {
 	_, span := i.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := i.logger.WithValue(keys.UsernameKey, username)
+	logger := observability.ObserveValues(map[string]any{
+		keys.UsernameKey: username,
+	}, span, i.logger)
 
 	// "otpauth://totp/{{ .Issuer }}:{{ .EnsureUsername }}?secret={{ .Secret }}&issuer={{ .Issuer }}",
 	otpString := fmt.Sprintf(

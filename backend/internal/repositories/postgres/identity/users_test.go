@@ -95,7 +95,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, firstUser, u)
 
-	foundForUsername, err := dbc.SearchForUsersByUsername(ctx, firstUser.Username)
+	foundForUsername, err := dbc.SearchForUsersByUsername(ctx, firstUser.Username, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, foundForUsername)
 
@@ -299,7 +299,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 		ctx := context.Background()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForUsersByUsername(ctx, "")
+		actual, err := c.SearchForUsersByUsername(ctx, "", nil)
 		assert.Error(t, err)
 		assert.NotNil(t, actual)
 		assert.Empty(t, actual)

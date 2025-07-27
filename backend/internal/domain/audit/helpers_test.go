@@ -2,12 +2,14 @@ package audit
 
 import (
 	"context"
+	"testing"
+
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_buildDataChangeMessageFromContext(T *testing.T) {

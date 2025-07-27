@@ -30,6 +30,8 @@ const (
 	EmailAddressChangedEventType = "email_address_changed"
 	// UsernameChangedEventType indicates a user changed their username.
 	UsernameChangedEventType = "username_changed"
+	// UserAvatarChangedEventType indicates a user changed their avatar.
+	UserAvatarChangedEventType = "user_avatar_changed"
 	// UserDetailsChangedEventType indicates a user changed their information.
 	UserDetailsChangedEventType = "user_details_changed"
 	// UsernameReminderRequestedEventType indicates a user requested a username reminder.
