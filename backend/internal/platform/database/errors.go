@@ -13,4 +13,7 @@ var (
 
 	// ErrEmptyInputProvided indicates a required input was passed in empty.
 	ErrEmptyInputProvided = errors.New("input provided is empty")
+
+	// ErrUserAlreadyExists indicates that a user with that username has already been created.
+	ErrUserAlreadyExists = errors.New("user already exists")
 )

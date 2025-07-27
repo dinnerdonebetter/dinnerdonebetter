@@ -242,8 +242,9 @@ type (
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
 		GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
+		GetUsersWithIDs(ctx context.Context, ids []string) ([]*User, error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
-		SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*User, error)
+		SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) ([]*User, error)
 		CreateUser(ctx context.Context, input *UserDatabaseCreationInput) (*User, error)
 		UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error

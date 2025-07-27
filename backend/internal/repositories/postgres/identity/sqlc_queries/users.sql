@@ -270,6 +270,35 @@ WHERE users.archived_at IS NULL
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
+-- name: GetUsersWithIDs :many
+SELECT
+	users.id,
+	users.username,
+	users.avatar_src,
+	users.email_address,
+	users.hashed_password,
+	users.password_last_changed_at,
+	users.requires_password_change,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
+	users.last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at
+FROM users
+WHERE users.archived_at IS NULL
+	AND users.id = ANY(sqlc.arg(ids)::text[]);
+
 -- name: GetUserIDsNeedingIndexing :many
 SELECT users.id
 FROM users

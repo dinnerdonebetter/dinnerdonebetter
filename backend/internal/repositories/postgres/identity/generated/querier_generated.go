@@ -45,6 +45,7 @@ type Querier interface {
 	GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithUnverifiedTwoFactorRow, error)
 	GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithVerifiedTwoFactorRow, error)
 	GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error)
+	GetUsersWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetUsersWithIDsRow, error)
 	MarkAccountUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkAccountUserMembershipAsUserDefaultParams) error
 	MarkEmailAddressAsUnverified(ctx context.Context, db DBTX, id string) error
 	MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *MarkEmailAddressAsVerifiedParams) error

@@ -327,6 +327,26 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetUsersWithIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
+					strings.Join(applyToEach(usersColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					usersTableName,
+					usersTableName,
+					archivedAtColumn,
+					usersTableName,
+					idColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetUserIDsNeedingIndexing",
 					Type: ManyType,
 				},
