@@ -7,11 +7,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 )
 
-func ConvertGRPCUserDetailsUpdateRequestInputToUserDetailsDatabaseUpdateInput(input *identitysvc.UserDetailsUpdateRequestInput) *identity.UserDetailsDatabaseUpdateInput {
-	return &identity.UserDetailsDatabaseUpdateInput{
-		Birthday:  grpcconverters.ConvertPBTimestampToTime(input.Birthday),
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
+func ConvertGRPCUserDetailsUpdateRequestInputToUserDetailsUpdateRequestInput(input *identitysvc.UserDetailsUpdateRequestInput) *identity.UserDetailsUpdateRequestInput {
+	return &identity.UserDetailsUpdateRequestInput{
+		FirstName:       input.FirstName,
+		LastName:        input.LastName,
+		Birthday:        grpcconverters.ConvertPBTimestampToTime(input.Birthday),
+		CurrentPassword: input.CurrentPassword,
+		TOTPToken:       input.TOTPToken,
 	}
 }
 

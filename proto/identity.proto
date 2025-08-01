@@ -275,15 +275,11 @@ message UpdateUserUsernameResponse {
 
 // UploadUserAvatar
 message UploadUserAvatarRequest {
-  bytes data = 1;
+  string Base64EncodedData = 1;
 }
 
 message UploadUserAvatarResponse {
   common.ResponseDetails ResponseDetails = 1;
-}
-
-message UpdateUserAvatarRequest {
-  string Base64EncodedData = 1;
 }
 
 message Account {

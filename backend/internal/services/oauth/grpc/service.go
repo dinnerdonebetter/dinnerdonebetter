@@ -1,19 +1,10 @@
 package grpc
 
 import (
-	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
-	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	oauthgrpcconverters "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc/converters"
-
-	"google.golang.org/grpc/codes"
 )
 
 const (
@@ -41,90 +32,4 @@ func NewService(
 		tracer:           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		oauthDataManager: oauthDataManager,
 	}
-}
-
-func (s *serviceImpl) ArchiveOAuth2Client(ctx context.Context, request *oauthsvc.ArchiveOAuth2ClientRequest) (*oauthsvc.ArchiveOAuth2ClientResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if err := s.oauthDataManager.ArchiveOAuth2Client(ctx, request.OAuth2ClientID); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "archiving oauth2 client")
-	}
-
-	x := &oauthsvc.ArchiveOAuth2ClientResponse{
-		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
-	}
-
-	return x, nil
-}
-
-func (s *serviceImpl) CreateOAuth2Client(ctx context.Context, request *oauthsvc.CreateOAuth2ClientRequest) (*oauthsvc.CreateOAuth2ClientResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithSpan(span)
-
-	input := oauthgrpcconverters.ConvertGRPCCreateOAuth2ClientRequestToOAuth2ClientCreationRequestInput(request)
-
-	created, err := s.oauthDataManager.CreateOAuth2Client(ctx, input)
-	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating oauth2 client")
-	}
-
-	x := &oauthsvc.CreateOAuth2ClientResponse{
-		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
-		Created: oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(created),
-	}
-
-	return x, nil
-}
-
-func (s *serviceImpl) GetOAuth2Client(ctx context.Context, request *oauthsvc.GetOAuth2ClientRequest) (*oauthsvc.GetOAuth2ClientResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithValue(keys.OAuth2ClientIDKey, request.OAuth2ClientID)
-
-	oauth2Client, err := s.oauthDataManager.GetOAuth2Client(ctx, request.OAuth2ClientID)
-	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
-	}
-
-	x := &oauthsvc.GetOAuth2ClientResponse{
-		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
-		Result: oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(oauth2Client),
-	}
-
-	return x, nil
-}
-
-func (s *serviceImpl) GetOAuth2Clients(ctx context.Context, request *oauthsvc.GetOAuth2ClientsRequest) (*oauthsvc.GetOAuth2ClientsResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.Clone()
-	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
-
-	oauth2Clients, err := s.oauthDataManager.GetOAuth2Clients(ctx, filter)
-	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "getting oauth2 client by database ID")
-	}
-
-	x := &oauthsvc.GetOAuth2ClientsResponse{
-		ResponseDetails: &grpctypes.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
-	}
-
-	for _, client := range oauth2Clients.Data {
-		x.Results = append(x.Results, oauthgrpcconverters.ConvertOAuth2ClientToGRPCOAuth2Client(client))
-	}
-
-	return x, nil
 }

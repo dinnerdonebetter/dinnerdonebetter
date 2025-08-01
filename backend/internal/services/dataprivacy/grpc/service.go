@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
+	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -37,16 +38,40 @@ func NewService(
 }
 
 func (s *serviceImpl) AggregateUserDataReport(ctx context.Context, request *dataprivacysvc.AggregateUserDataReportRequest) (*dataprivacysvc.AggregateUserDataReportResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	x := &dataprivacysvc.AggregateUserDataReportResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
 }
 
 func (s *serviceImpl) DestroyAllUserData(ctx context.Context, request *dataprivacysvc.DestroyAllUserDataRequest) (*dataprivacysvc.DestroyAllUserDataResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	x := &dataprivacysvc.DestroyAllUserDataResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
 }
 
 func (s *serviceImpl) FetchUserDataReport(ctx context.Context, request *dataprivacysvc.FetchUserDataReportRequest) (*dataprivacysvc.FetchUserDataReportResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	_, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	x := &dataprivacysvc.FetchUserDataReportResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
 }

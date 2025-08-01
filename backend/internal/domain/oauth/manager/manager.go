@@ -3,6 +3,7 @@ package manager
 import (
 	"context"
 	"fmt"
+
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
@@ -16,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
+
 	"google.golang.org/grpc/codes"
 )
 

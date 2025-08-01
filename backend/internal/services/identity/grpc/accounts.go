@@ -1,0 +1,238 @@
+package grpc
+
+import (
+	"context"
+
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
+	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
+
+	"google.golang.org/grpc/codes"
+)
+
+func (s *serviceImpl) ArchiveAccount(ctx context.Context, request *identitysvc.ArchiveAccountRequest) (*identitysvc.ArchiveAccountResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: request.AccountID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if err = s.identityDataManager.ArchiveAccount(ctx, request.AccountID, sessionContextData.GetUserID()); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive account")
+	}
+
+	x := &identitysvc.ArchiveAccountResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) CreateAccount(ctx context.Context, request *identitysvc.CreateAccountRequest) (*identitysvc.CreateAccountResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	input := converters.ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(request.Input)
+
+	created, err := s.identityDataManager.CreateAccount(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account")
+	}
+
+	x := &identitysvc.CreateAccountResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Created:         converters.ConvertAccountToGRPCAccount(created),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) CreateAccountInvitation(ctx context.Context, request *identitysvc.CreateAccountInvitationRequest) (*identitysvc.CreateAccountInvitationResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	input := converters.ConvertGRPCAccountInvitationCreationRequestInputToAccountInvitationCreationRequestInput(request.Input)
+	created, err := s.identityDataManager.CreateAccountInvitation(ctx, request.AccountID, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account invitation")
+	}
+
+	x := &identitysvc.CreateAccountInvitationResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Created:         converters.ConvertAccountInvitationToGRPCAccountInvitation(created),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetAccount(ctx context.Context, request *identitysvc.GetAccountRequest) (*identitysvc.GetAccountResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	account, err := s.identityDataManager.GetAccount(ctx, request.AccountID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get account")
+	}
+
+	x := &identitysvc.GetAccountResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Result:          converters.ConvertAccountToGRPCAccount(account),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetAccounts(ctx context.Context, request *identitysvc.GetAccountsRequest) (*identitysvc.GetAccountsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	accounts, _, err := s.identityDataManager.GetAccounts(ctx, sessionContextData.GetUserID(), filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
+	}
+
+	x := &identitysvc.GetAccountsResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	for _, account := range accounts {
+		x.Result = append(x.Result, converters.ConvertAccountToGRPCAccount(account))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) SetDefaultAccount(ctx context.Context, request *identitysvc.SetDefaultAccountRequest) (*identitysvc.SetDefaultAccountResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: request.AccountID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if err = s.identityDataManager.SetDefaultAccount(ctx, sessionContextData.GetUserID(), request.AccountID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to set default account")
+	}
+
+	x := &identitysvc.SetDefaultAccountResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Success:         true,
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) TransferAccountOwnership(ctx context.Context, request *identitysvc.TransferAccountOwnershipRequest) (*identitysvc.TransferAccountOwnershipResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: request.AccountID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	input := converters.ConvertGRPCAccountOwnershipTransferInputToAccountOwnershipTransferInput(request.Input)
+
+	if err = s.identityDataManager.TransferAccountOwnership(ctx, sessionContextData.GetActiveAccountID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to transfer account ownership")
+	}
+
+	x := &identitysvc.TransferAccountOwnershipResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Success:         true,
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) UpdateAccount(ctx context.Context, request *identitysvc.UpdateAccountRequest) (*identitysvc.UpdateAccountResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: request.AccountID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	input := converters.ConvertGRPCAccountUpdateRequestInputToAccountUpdateRequestInput(request.Input)
+
+	if err = s.identityDataManager.UpdateAccount(ctx, sessionContextData.GetActiveAccountID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account")
+	}
+
+	x := &identitysvc.UpdateAccountResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) UpdateAccountMemberPermissions(ctx context.Context, request *identitysvc.UpdateAccountMemberPermissionsRequest) (*identitysvc.UpdateAccountMemberPermissionsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: request.UserID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	input := converters.ConvertGRPCModifyUserPermissionsInputToModifyUserPermissionsInput(request.Input)
+	if err = s.identityDataManager.UpdateAccountMemberPermissions(ctx, request.UserID, sessionContextData.GetActiveAccountID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account member permissions")
+	}
+
+	x := &identitysvc.UpdateAccountMemberPermissionsResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) ArchiveUserMembership(ctx context.Context, request *identitysvc.ArchiveUserMembershipRequest) (*identitysvc.ArchiveUserMembershipResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	// TODO: validate that the user is authorized to do this?
+
+	if err := s.identityDataManager.ArchiveUserMembership(ctx, request.UserID, request.AccountID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to archive user membership")
+	}
+
+	x := &identitysvc.ArchiveUserMembershipResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	return x, nil
+}
