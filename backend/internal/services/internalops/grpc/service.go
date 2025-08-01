@@ -68,13 +68,15 @@ func (s serviceImpl) PublishArbitraryQueueMessage(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "initializing publisher")
 	}
 
-	err = publisher.Publish(ctx, []byte(request.Body))
+	if err = publisher.Publish(ctx, []byte(request.Body)); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "publishing message")
+	}
 
 	x := &settingssvc.PublishArbitraryQueueMessageResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Success: err != nil,
+		Success: true,
 	}
 
 	return x, nil
