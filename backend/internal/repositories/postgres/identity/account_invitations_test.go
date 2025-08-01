@@ -136,9 +136,9 @@ func TestQuerier_Integration_AccountInvitations(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, createdUser)
 
-	assert.NoError(t, dbc.CancelAccountInvitation(ctx, toBeCancelled.ID, "testing"))
-	assert.NoError(t, dbc.RejectAccountInvitation(ctx, toBeRejected.ID, "testing"))
-	assert.NoError(t, dbc.AcceptAccountInvitation(ctx, toBeAccepted.ID, toBeAccepted.Token, "testing"))
+	assert.NoError(t, dbc.CancelAccountInvitation(ctx, "", toBeCancelled.ID, "testing"))
+	assert.NoError(t, dbc.RejectAccountInvitation(ctx, "", toBeRejected.ID, "testing"))
+	assert.NoError(t, dbc.AcceptAccountInvitation(ctx, "", toBeAccepted.ID, toBeAccepted.Token, "testing"))
 }
 
 func TestQuerier_AccountInvitationExists(T *testing.T) {
@@ -288,7 +288,7 @@ func TestSQLQuerier_AcceptAccountInvitation(T *testing.T) {
 
 		c := buildInertClientForTest(t)
 
-		err := c.AcceptAccountInvitation(ctx, "", exampleToken, t.Name())
+		err := c.AcceptAccountInvitation(ctx, "", "", exampleToken, t.Name())
 		assert.Error(t, err)
 	})
 
@@ -300,7 +300,7 @@ func TestSQLQuerier_AcceptAccountInvitation(T *testing.T) {
 
 		c := buildInertClientForTest(t)
 
-		err := c.AcceptAccountInvitation(ctx, exampleAccountInvitation.ID, "", exampleAccountInvitation.Note)
+		err := c.AcceptAccountInvitation(ctx, "", exampleAccountInvitation.ID, "", exampleAccountInvitation.Note)
 		assert.Error(t, err)
 	})
 }

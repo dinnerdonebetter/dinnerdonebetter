@@ -31,7 +31,6 @@ const (
 	IdentityService_CreateUser_FullMethodName                     = "/identity.IdentityService/CreateUser"
 	IdentityService_GetAccount_FullMethodName                     = "/identity.IdentityService/GetAccount"
 	IdentityService_GetAccountInvitation_FullMethodName           = "/identity.IdentityService/GetAccountInvitation"
-	IdentityService_GetAccountInvitationByID_FullMethodName       = "/identity.IdentityService/GetAccountInvitationByID"
 	IdentityService_GetAccounts_FullMethodName                    = "/identity.IdentityService/GetAccounts"
 	IdentityService_GetReceivedAccountInvitations_FullMethodName  = "/identity.IdentityService/GetReceivedAccountInvitations"
 	IdentityService_GetSentAccountInvitations_FullMethodName      = "/identity.IdentityService/GetSentAccountInvitations"
@@ -64,7 +63,6 @@ type IdentityServiceClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*GetAccountResponse, error)
 	GetAccountInvitation(ctx context.Context, in *GetAccountInvitationRequest, opts ...grpc.CallOption) (*GetAccountInvitationResponse, error)
-	GetAccountInvitationByID(ctx context.Context, in *GetAccountInvitationByIDRequest, opts ...grpc.CallOption) (*GetAccountInvitationByIDResponse, error)
 	GetAccounts(ctx context.Context, in *GetAccountsRequest, opts ...grpc.CallOption) (*GetAccountsResponse, error)
 	GetReceivedAccountInvitations(ctx context.Context, in *GetReceivedAccountInvitationsRequest, opts ...grpc.CallOption) (*GetReceivedAccountInvitationsResponse, error)
 	GetSentAccountInvitations(ctx context.Context, in *GetSentAccountInvitationsRequest, opts ...grpc.CallOption) (*GetSentAccountInvitationsResponse, error)
@@ -194,16 +192,6 @@ func (c *identityServiceClient) GetAccountInvitation(ctx context.Context, in *Ge
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAccountInvitationResponse)
 	err := c.cc.Invoke(ctx, IdentityService_GetAccountInvitation_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *identityServiceClient) GetAccountInvitationByID(ctx context.Context, in *GetAccountInvitationByIDRequest, opts ...grpc.CallOption) (*GetAccountInvitationByIDResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetAccountInvitationByIDResponse)
-	err := c.cc.Invoke(ctx, IdentityService_GetAccountInvitationByID_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -375,7 +363,6 @@ type IdentityServiceServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error)
 	GetAccountInvitation(context.Context, *GetAccountInvitationRequest) (*GetAccountInvitationResponse, error)
-	GetAccountInvitationByID(context.Context, *GetAccountInvitationByIDRequest) (*GetAccountInvitationByIDResponse, error)
 	GetAccounts(context.Context, *GetAccountsRequest) (*GetAccountsResponse, error)
 	GetReceivedAccountInvitations(context.Context, *GetReceivedAccountInvitationsRequest) (*GetReceivedAccountInvitationsResponse, error)
 	GetSentAccountInvitations(context.Context, *GetSentAccountInvitationsRequest) (*GetSentAccountInvitationsResponse, error)
@@ -433,9 +420,6 @@ func (UnimplementedIdentityServiceServer) GetAccount(context.Context, *GetAccoun
 }
 func (UnimplementedIdentityServiceServer) GetAccountInvitation(context.Context, *GetAccountInvitationRequest) (*GetAccountInvitationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountInvitation not implemented")
-}
-func (UnimplementedIdentityServiceServer) GetAccountInvitationByID(context.Context, *GetAccountInvitationByIDRequest) (*GetAccountInvitationByIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAccountInvitationByID not implemented")
 }
 func (UnimplementedIdentityServiceServer) GetAccounts(context.Context, *GetAccountsRequest) (*GetAccountsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccounts not implemented")
@@ -697,24 +681,6 @@ func _IdentityService_GetAccountInvitation_Handler(srv interface{}, ctx context.
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IdentityServiceServer).GetAccountInvitation(ctx, req.(*GetAccountInvitationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _IdentityService_GetAccountInvitationByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAccountInvitationByIDRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(IdentityServiceServer).GetAccountInvitationByID(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: IdentityService_GetAccountInvitationByID_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityServiceServer).GetAccountInvitationByID(ctx, req.(*GetAccountInvitationByIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1039,10 +1005,6 @@ var IdentityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccountInvitation",
 			Handler:    _IdentityService_GetAccountInvitation_Handler,
-		},
-		{
-			MethodName: "GetAccountInvitationByID",
-			Handler:    _IdentityService_GetAccountInvitationByID_Handler,
 		},
 		{
 			MethodName: "GetAccounts",

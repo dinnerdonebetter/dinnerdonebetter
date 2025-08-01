@@ -94,11 +94,11 @@ func NewIdentityDataManager(
 	}, nil
 }
 
-func (i *manager) AcceptAccountInvitation(ctx context.Context, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) AcceptAccountInvitation(ctx context.Context, accountID, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountInvitationID == "" {
+	if accountInvitationID == "" || accountID == "" {
 		return ErrInvalidIDProvided
 	}
 
@@ -112,24 +112,24 @@ func (i *manager) AcceptAccountInvitation(ctx context.Context, accountInvitation
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountInvitationIDKey: accountInvitationID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	if err := i.identityRepo.AcceptAccountInvitation(ctx, accountInvitationID, input.Token, input.Note); err != nil {
+	if err := m.identityRepo.AcceptAccountInvitation(ctx, accountID, accountInvitationID, input.Token, input.Note); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCanceledServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCanceledServiceEventType, map[string]any{
 		keys.AccountInvitationIDKey: accountInvitationID,
 	}))
 
 	return nil
 }
 
-func (i *manager) RejectAccountInvitation(ctx context.Context, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) RejectAccountInvitation(ctx context.Context, accountID, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountInvitationID == "" {
+	if accountInvitationID == "" || accountID == "" {
 		return ErrInvalidIDProvided
 	}
 
@@ -139,7 +139,7 @@ func (i *manager) RejectAccountInvitation(ctx context.Context, accountInvitation
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountInvitationIDKey: accountInvitationID,
-	}, span, i.logger)
+	}, span, m.logger)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "invalid input attached to request")
@@ -147,49 +147,49 @@ func (i *manager) RejectAccountInvitation(ctx context.Context, accountInvitation
 
 	// note, this is where you would call input.ValidateWithContext, if that currently had any effect.
 
-	invitation, err := i.identityRepo.GetAccountInvitationByTokenAndID(ctx, input.Token, accountInvitationID)
+	invitation, err := m.identityRepo.GetAccountInvitationByTokenAndID(ctx, input.Token, accountInvitationID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareError(err, span, "account invitation not found")
 	} else if err != nil {
 		return observability.PrepareError(err, span, "retrieving invitation")
 	}
 
-	if err = i.identityRepo.RejectAccountInvitation(ctx, invitation.ID, input.Note); err != nil {
+	if err = m.identityRepo.RejectAccountInvitation(ctx, accountID, invitation.ID, input.Note); err != nil {
 		return observability.PrepareError(err, span, "rejecting invitation")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationRejectedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationRejectedServiceEventType, map[string]any{
 		keys.AccountInvitationIDKey: accountInvitationID,
 	}))
 
 	return nil
 }
 
-func (i *manager) CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) CancelAccountInvitation(ctx context.Context, accountID, accountInvitationID, note string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if accountInvitationID == "" {
+	if accountInvitationID == "" || accountID == "" {
 		return ErrInvalidIDProvided
 	}
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountInvitationIDKey: accountInvitationID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	if err := i.identityRepo.CancelAccountInvitation(ctx, accountInvitationID, note); err != nil {
+	if err := m.identityRepo.CancelAccountInvitation(ctx, accountID, accountInvitationID, note); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "canceling account invitation")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCanceledServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCanceledServiceEventType, map[string]any{
 		keys.AccountInvitationIDKey: accountInvitationID,
 	}))
 
 	return nil
 }
 
-func (i *manager) ArchiveAccount(ctx context.Context, accountID, ownerID string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) ArchiveAccount(ctx context.Context, accountID, ownerID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if accountID == "" || ownerID == "" {
@@ -199,13 +199,13 @@ func (i *manager) ArchiveAccount(ctx context.Context, accountID, ownerID string)
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountIDKey: accountID,
 		keys.UserIDKey:    ownerID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	if err := i.identityRepo.ArchiveAccount(ctx, accountID, ownerID); err != nil {
+	if err := m.identityRepo.ArchiveAccount(ctx, accountID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "ArchiveAccount")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountArchivedServiceEventType, map[string]any{
 		keys.AccountIDKey: accountID,
 		keys.UserIDKey:    ownerID,
 	}))
@@ -213,8 +213,8 @@ func (i *manager) ArchiveAccount(ctx context.Context, accountID, ownerID string)
 	return nil
 }
 
-func (i *manager) ArchiveUserMembership(ctx context.Context, userID, accountID string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) ArchiveUserMembership(ctx context.Context, userID, accountID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if accountID == "" || userID == "" {
@@ -224,13 +224,13 @@ func (i *manager) ArchiveUserMembership(ctx context.Context, userID, accountID s
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountIDKey: accountID,
 		keys.UserIDKey:    userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	if err := i.identityRepo.RemoveUserFromAccount(ctx, userID, accountID); err != nil {
+	if err := m.identityRepo.RemoveUserFromAccount(ctx, userID, accountID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "RemoveUserFromAccount")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountMemberRemovedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountMemberRemovedServiceEventType, map[string]any{
 		keys.AccountIDKey: accountID,
 		keys.UserIDKey:    userID,
 	}))
@@ -238,8 +238,8 @@ func (i *manager) ArchiveUserMembership(ctx context.Context, userID, accountID s
 	return nil
 }
 
-func (i *manager) ArchiveUser(ctx context.Context, userID string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) ArchiveUser(ctx context.Context, userID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -248,21 +248,21 @@ func (i *manager) ArchiveUser(ctx context.Context, userID string) error {
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	if err := i.identityRepo.ArchiveUser(ctx, userID); err != nil {
+	if err := m.identityRepo.ArchiveUser(ctx, userID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "ArchiveUser")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserArchivedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserArchivedServiceEventType, map[string]any{
 		keys.UserIDKey: userID,
 	}))
 
 	return nil
 }
 
-func (i *manager) CreateAccount(ctx context.Context, input *identity.AccountCreationRequestInput) (*identity.Account, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) CreateAccount(ctx context.Context, input *identity.AccountCreationRequestInput) (*identity.Account, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -273,22 +273,22 @@ func (i *manager) CreateAccount(ctx context.Context, input *identity.AccountCrea
 		return nil, observability.PrepareError(err, span, "invalid input attached to request")
 	}
 
-	logger := i.logger.WithSpan(span)
+	logger := m.logger.WithSpan(span)
 
-	created, err := i.identityRepo.CreateAccount(ctx, converters.ConvertAccountCreationInputToAccountDatabaseCreationInput(input))
+	created, err := m.identityRepo.CreateAccount(ctx, converters.ConvertAccountCreationInputToAccountDatabaseCreationInput(input))
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating Account")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountCreatedServiceEventType, map[string]any{
 		keys.AccountIDKey: created.ID,
 	}))
 
 	return created, nil
 }
 
-func (i *manager) CreateAccountInvitation(ctx context.Context, userID string, input *identity.AccountInvitationCreationRequestInput) (*identity.AccountInvitation, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) CreateAccountInvitation(ctx context.Context, userID string, input *identity.AccountInvitationCreationRequestInput) (*identity.AccountInvitation, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -305,14 +305,14 @@ func (i *manager) CreateAccountInvitation(ctx context.Context, userID string, in
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	created, err := i.identityRepo.CreateAccountInvitation(ctx, converters.ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput(input))
+	created, err := m.identityRepo.CreateAccountInvitation(ctx, converters.ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput(input))
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating AccountInvitation")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCreatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCreatedServiceEventType, map[string]any{
 		keys.AccountInvitationIDKey: created.ID,
 		keys.UserIDKey:              userID,
 	}))
@@ -320,8 +320,8 @@ func (i *manager) CreateAccountInvitation(ctx context.Context, userID string, in
 	return created, nil
 }
 
-func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrationInput) (*identity.UserCreationResponse, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) CreateUser(ctx context.Context, input *identity.UserRegistrationInput) (*identity.UserCreationResponse, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -330,7 +330,7 @@ func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UsernameKey: input.Username,
-	}, span, i.logger)
+	}, span, m.logger)
 
 	input.Username = strings.TrimSpace(input.Username)
 	tracing.AttachToSpan(span, keys.UsernameKey, input.Username)
@@ -358,7 +358,7 @@ func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 
 	var invitation *identity.AccountInvitation
 	if input.InvitationID != "" && input.InvitationToken != "" {
-		invite, err := i.identityRepo.GetAccountInvitationByTokenAndID(ctx, input.InvitationToken, input.InvitationID)
+		invite, err := m.identityRepo.GetAccountInvitationByTokenAndID(ctx, input.InvitationToken, input.InvitationID)
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, observability.PrepareAndLogError(err, logger, span, "no account invitation found")
 		} else if err != nil {
@@ -372,13 +372,13 @@ func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 	logger.Debug("completed invitation check")
 
 	// hash the password
-	hp, err := i.authenticator.HashPassword(ctx, strings.TrimSpace(input.Password))
+	hp, err := m.authenticator.HashPassword(ctx, strings.TrimSpace(input.Password))
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "hashing user creation password")
 	}
 
 	// generate a two factor secret.
-	tfs, err := i.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize)
+	tfs, err := m.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "generating two factor secret")
 	}
@@ -403,7 +403,7 @@ func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 	}
 
 	// create the user.
-	user, err := i.identityRepo.CreateUser(ctx, dbInput)
+	user, err := m.identityRepo.CreateUser(ctx, dbInput)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating user")
 		if errors.Is(err, database.ErrUserAlreadyExists) {
@@ -414,12 +414,12 @@ func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 
 	logger.Debug("user created")
 
-	defaultAccountID, err := i.identityRepo.GetDefaultAccountIDForUser(ctx, user.ID)
+	defaultAccountID, err := m.identityRepo.GetDefaultAccountIDForUser(ctx, user.ID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching default account ID for user")
 	}
 
-	emailVerificationToken, err := i.identityRepo.GetEmailAddressVerificationTokenForUser(ctx, user.ID)
+	emailVerificationToken, err := m.identityRepo.GetEmailAddressVerificationTokenForUser(ctx, user.ID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching email verification token for user")
 	}
@@ -427,7 +427,7 @@ func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 	// notify the relevant parties.
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserSignedUpServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserSignedUpServiceEventType, map[string]any{
 		keys.AccountIDKey:                  defaultAccountID,
 		keys.UserIDKey:                     user.ID,
 		keys.UserEmailVerificationTokenKey: emailVerificationToken,
@@ -435,7 +435,7 @@ func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 
 	/* TODO: this should be done in a downstream handler
 
-	if err = i.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
+	if err = m.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
 		"username":        user.Username,
 		"default_account": defaultAccountID,
 		"first_name":      user.FirstName,
@@ -459,14 +459,14 @@ func (i *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 		CreatedAt:       user.CreatedAt,
 		TwoFactorSecret: user.TwoFactorSecret,
 		Birthday:        user.Birthday,
-		TwoFactorQRCode: i.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
+		TwoFactorQRCode: m.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
 
 	return ucr, nil
 }
 
-func (i *manager) GetAccount(ctx context.Context, accountID string) (*identity.Account, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) GetAccount(ctx context.Context, accountID string) (*identity.Account, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if accountID == "" {
@@ -475,9 +475,9 @@ func (i *manager) GetAccount(ctx context.Context, accountID string) (*identity.A
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountIDKey: accountID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	account, err := i.identityRepo.GetAccount(ctx, accountID)
+	account, err := m.identityRepo.GetAccount(ctx, accountID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account")
 	}
@@ -485,8 +485,8 @@ func (i *manager) GetAccount(ctx context.Context, accountID string) (*identity.A
 	return account, nil
 }
 
-func (i *manager) GetAccountInvitation(ctx context.Context, accountID, accountInvitationID string) (*identity.AccountInvitation, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) GetAccountInvitation(ctx context.Context, accountID, accountInvitationID string) (*identity.AccountInvitation, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if accountID == "" || accountInvitationID == "" {
@@ -496,9 +496,9 @@ func (i *manager) GetAccountInvitation(ctx context.Context, accountID, accountIn
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountIDKey:           accountID,
 		keys.AccountInvitationIDKey: accountInvitationID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	invitation, err := i.identityRepo.GetAccountInvitationByAccountAndID(ctx, accountID, accountInvitationID)
+	invitation, err := m.identityRepo.GetAccountInvitationByAccountAndID(ctx, accountID, accountInvitationID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting invitation")
 	}
@@ -506,8 +506,8 @@ func (i *manager) GetAccountInvitation(ctx context.Context, accountID, accountIn
 	return invitation, nil
 }
 
-func (i *manager) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.Account, string, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) GetAccounts(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.Account, string, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -520,9 +520,9 @@ func (i *manager) GetAccounts(ctx context.Context, userID string, filter *filter
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	accounts, err := i.identityRepo.GetAccounts(ctx, userID, filter)
+	accounts, err := m.identityRepo.GetAccounts(ctx, userID, filter)
 	if err != nil {
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching accounts")
 	}
@@ -530,8 +530,8 @@ func (i *manager) GetAccounts(ctx context.Context, userID string, filter *filter
 	return accounts.Data, "TODO", nil
 }
 
-func (i *manager) GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -544,9 +544,9 @@ func (i *manager) GetReceivedAccountInvitations(ctx context.Context, userID stri
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	invites, err := i.identityRepo.GetPendingAccountInvitationsForUser(ctx, userID, filter)
+	invites, err := m.identityRepo.GetPendingAccountInvitationsForUser(ctx, userID, filter)
 	if err != nil {
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching invites")
 	}
@@ -554,8 +554,8 @@ func (i *manager) GetReceivedAccountInvitations(ctx context.Context, userID stri
 	return invites.Data, "TODO", nil
 }
 
-func (i *manager) GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -568,9 +568,9 @@ func (i *manager) GetSentAccountInvitations(ctx context.Context, userID string, 
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	invites, err := i.identityRepo.GetPendingAccountInvitationsFromUser(ctx, userID, filter)
+	invites, err := m.identityRepo.GetPendingAccountInvitationsFromUser(ctx, userID, filter)
 	if err != nil {
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching invites")
 	}
@@ -578,8 +578,8 @@ func (i *manager) GetSentAccountInvitations(ctx context.Context, userID string, 
 	return invites.Data, "TODO", nil
 }
 
-func (i *manager) GetUser(ctx context.Context, userID string) (*identity.User, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) GetUser(ctx context.Context, userID string) (*identity.User, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -588,9 +588,9 @@ func (i *manager) GetUser(ctx context.Context, userID string) (*identity.User, e
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	user, err := i.identityRepo.GetUser(ctx, userID)
+	user, err := m.identityRepo.GetUser(ctx, userID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting user")
 	}
@@ -598,17 +598,17 @@ func (i *manager) GetUser(ctx context.Context, userID string) (*identity.User, e
 	return user, nil
 }
 
-func (i *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
 
-	logger := i.logger.WithSpan(span)
+	logger := m.logger.WithSpan(span)
 
-	users, err := i.identityRepo.GetUsers(ctx, filter)
+	users, err := m.identityRepo.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching users")
 	}
@@ -616,8 +616,8 @@ func (i *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (
 	return users.Data, "", nil
 }
 
-func (i *manager) SearchForUsers(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) SearchForUsers(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if query == "" {
@@ -630,10 +630,10 @@ func (i *manager) SearchForUsers(ctx context.Context, query string, useDatabase 
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UseDatabaseKey: useDatabase,
-	}, span, i.logger)
+	}, span, m.logger)
 
 	if useDatabase {
-		users, err := i.identityRepo.SearchForUsersByUsername(ctx, query, filter)
+		users, err := m.identityRepo.SearchForUsersByUsername(ctx, query, filter)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return nil, "", observability.PrepareError(err, span, "no users found")
@@ -643,7 +643,7 @@ func (i *manager) SearchForUsers(ctx context.Context, query string, useDatabase 
 
 		return users, "TODO", nil
 	} else {
-		uss, err := i.userSearchIndex.Search(ctx, query)
+		uss, err := m.userSearchIndex.Search(ctx, query)
 		if err != nil {
 			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
@@ -653,7 +653,7 @@ func (i *manager) SearchForUsers(ctx context.Context, query string, useDatabase 
 			userIDs = append(userIDs, us.ID)
 		}
 
-		users, err := i.identityRepo.GetUsersWithIDs(ctx, userIDs)
+		users, err := m.identityRepo.GetUsersWithIDs(ctx, userIDs)
 		if err != nil {
 			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
@@ -662,8 +662,8 @@ func (i *manager) SearchForUsers(ctx context.Context, query string, useDatabase 
 	}
 }
 
-func (i *manager) SetDefaultAccount(ctx context.Context, userID, accountID string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) SetDefaultAccount(ctx context.Context, userID, accountID string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" || accountID == "" {
@@ -673,14 +673,14 @@ func (i *manager) SetDefaultAccount(ctx context.Context, userID, accountID strin
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey:    userID,
 		keys.AccountIDKey: accountID,
-	}, span, i.logger)
+	}, span, m.logger)
 
 	// mark household as default in database.
-	if err := i.identityRepo.MarkAccountAsUserDefault(ctx, userID, accountID); err != nil {
+	if err := m.identityRepo.MarkAccountAsUserDefault(ctx, userID, accountID); err != nil {
 		return observability.PrepareError(err, span, "marking default account as user")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountSetAsDefaultServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountSetAsDefaultServiceEventType, map[string]any{
 		keys.AccountIDKey: accountID,
 		keys.UserIDKey:    userID,
 	}))
@@ -688,8 +688,8 @@ func (i *manager) SetDefaultAccount(ctx context.Context, userID, accountID strin
 	return nil
 }
 
-func (i *manager) TransferAccountOwnership(ctx context.Context, accountID string, input *identity.AccountOwnershipTransferInput) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) TransferAccountOwnership(ctx context.Context, accountID string, input *identity.AccountOwnershipTransferInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if accountID == "" {
@@ -702,26 +702,26 @@ func (i *manager) TransferAccountOwnership(ctx context.Context, accountID string
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountIDKey: accountID,
-	}, span, i.logger)
+	}, span, m.logger)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "")
 	}
 
 	// transfer ownership of household in database.
-	if err := i.identityRepo.TransferAccountOwnership(ctx, accountID, input); err != nil {
+	if err := m.identityRepo.TransferAccountOwnership(ctx, accountID, input); err != nil {
 		return observability.PrepareError(err, span, "")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountOwnershipTransferredServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountOwnershipTransferredServiceEventType, map[string]any{
 		keys.AccountIDKey: accountID,
 	}))
 
 	return nil
 }
 
-func (i *manager) UpdateAccount(ctx context.Context, accountID string, input *identity.AccountUpdateRequestInput) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) UpdateAccount(ctx context.Context, accountID string, input *identity.AccountUpdateRequestInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if accountID == "" {
@@ -734,7 +734,7 @@ func (i *manager) UpdateAccount(ctx context.Context, accountID string, input *id
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountIDKey: accountID,
-	}, span, i.logger)
+	}, span, m.logger)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "validating account update")
@@ -745,7 +745,7 @@ func (i *manager) UpdateAccount(ctx context.Context, accountID string, input *id
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
 	// fetch account from database.
-	account, err := i.identityRepo.GetAccount(ctx, accountID)
+	account, err := m.identityRepo.GetAccount(ctx, accountID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareError(err, span, "no account found")
 	} else if err != nil {
@@ -756,19 +756,19 @@ func (i *manager) UpdateAccount(ctx context.Context, accountID string, input *id
 	account.Update(input)
 
 	// update account in database.
-	if err = i.identityRepo.UpdateAccount(ctx, account); err != nil {
+	if err = m.identityRepo.UpdateAccount(ctx, account); err != nil {
 		return observability.PrepareError(err, span, "updating account")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountUpdatedServiceEventType, map[string]any{
 		keys.AccountIDKey: accountID,
 	}))
 
 	return nil
 }
 
-func (i *manager) UpdateAccountMemberPermissions(ctx context.Context, userID, accountID string, input *identity.ModifyUserPermissionsInput) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) UpdateAccountMemberPermissions(ctx context.Context, userID, accountID string, input *identity.ModifyUserPermissionsInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" || accountID == "" {
@@ -781,26 +781,26 @@ func (i *manager) UpdateAccountMemberPermissions(ctx context.Context, userID, ac
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "invalid input attached to request")
 	}
 
 	// create account in database.
-	if err := i.identityRepo.ModifyUserPermissions(ctx, accountID, userID, input); err != nil {
+	if err := m.identityRepo.ModifyUserPermissions(ctx, accountID, userID, input); err != nil {
 		return observability.PrepareError(err, span, "modifying user permissions")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountMembershipPermissionsUpdatedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountMembershipPermissionsUpdatedServiceEventType, map[string]any{
 		keys.AccountIDKey: accountID,
 	}))
 
 	return nil
 }
 
-func (i *manager) UpdateUserDetails(ctx context.Context, userID string, input *identity.UserDetailsUpdateRequestInput) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) UpdateUserDetails(ctx context.Context, userID string, input *identity.UserDetailsUpdateRequestInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -817,21 +817,21 @@ func (i *manager) UpdateUserDetails(ctx context.Context, userID string, input *i
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	if err := i.identityRepo.UpdateUserDetails(ctx, userID, converters.ConvertUserDetailsUpdateRequestInputToUserDetailsUpdateInput(input)); err != nil {
+	if err := m.identityRepo.UpdateUserDetails(ctx, userID, converters.ConvertUserDetailsUpdateRequestInputToUserDetailsUpdateInput(input)); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating user details")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserDetailsChangedEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserDetailsChangedEventType, map[string]any{
 		keys.UserIDKey: userID,
 	}))
 
 	return nil
 }
 
-func (i *manager) UpdateUserEmailAddress(ctx context.Context, userID, newEmail string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) UpdateUserEmailAddress(ctx context.Context, userID, newEmail string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -840,21 +840,21 @@ func (i *manager) UpdateUserEmailAddress(ctx context.Context, userID, newEmail s
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	if err := i.identityRepo.UpdateUserEmailAddress(ctx, userID, newEmail); err != nil {
+	if err := m.identityRepo.UpdateUserEmailAddress(ctx, userID, newEmail); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating user email address")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.EmailAddressChangedEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.EmailAddressChangedEventType, map[string]any{
 		keys.UserIDKey: userID,
 	}))
 
 	return nil
 }
 
-func (i *manager) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -867,21 +867,21 @@ func (i *manager) UpdateUserUsername(ctx context.Context, userID, newUsername st
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	if err := i.identityRepo.UpdateUserUsername(ctx, userID, newUsername); err != nil {
+	if err := m.identityRepo.UpdateUserUsername(ctx, userID, newUsername); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating user username")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UsernameChangedEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UsernameChangedEventType, map[string]any{
 		keys.UserIDKey: userID,
 	}))
 
 	return nil
 }
 
-func (i *manager) UploadUserAvatar(ctx context.Context, userID, base64EncodedImageData string) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) UploadUserAvatar(ctx context.Context, userID, base64EncodedImageData string) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -890,7 +890,7 @@ func (i *manager) UploadUserAvatar(ctx context.Context, userID, base64EncodedIma
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: userID,
-	}, span, i.logger)
+	}, span, m.logger)
 
 	data, err := userAvatarBase64Encoding.DecodeString(base64EncodedImageData)
 	if err != nil {
@@ -901,19 +901,19 @@ func (i *manager) UploadUserAvatar(ctx context.Context, userID, base64EncodedIma
 		"data.length": len(data),
 	}, span, logger)
 
-	if err = i.identityRepo.UpdateUserAvatar(ctx, userID, base64EncodedImageData); err != nil {
+	if err = m.identityRepo.UpdateUserAvatar(ctx, userID, base64EncodedImageData); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating user avatar")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserAvatarChangedEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserAvatarChangedEventType, map[string]any{
 		keys.UserIDKey: userID,
 	}))
 
 	return nil
 }
 
-func (i *manager) AdminUpdateUserStatus(ctx context.Context, input *identity.UserAccountStatusUpdateInput) error {
-	ctx, span := i.tracer.StartSpan(ctx)
+func (m *manager) AdminUpdateUserStatus(ctx context.Context, input *identity.UserAccountStatusUpdateInput) error {
+	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -923,13 +923,13 @@ func (i *manager) AdminUpdateUserStatus(ctx context.Context, input *identity.Use
 	logger := observability.ObserveValues(map[string]any{
 		keys.UserIDKey: input.TargetUserID,
 		keys.ReasonKey: input.Reason,
-	}, span, i.logger)
+	}, span, m.logger)
 
-	if err := i.identityRepo.UpdateUserAccountStatus(ctx, input.TargetUserID, input); err != nil {
+	if err := m.identityRepo.UpdateUserAccountStatus(ctx, input.TargetUserID, input); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating user account status")
 	}
 
-	i.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserStatusChangedServiceEventType, map[string]any{
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.UserStatusChangedServiceEventType, map[string]any{
 		keys.UserIDKey: input.TargetUserID,
 	}))
 
@@ -937,13 +937,13 @@ func (i *manager) AdminUpdateUserStatus(ctx context.Context, input *identity.Use
 }
 
 // buildQRCode builds a QR code for a given username and secret.
-func (i *manager) buildQRCode(ctx context.Context, username, twoFactorSecret string) string {
-	_, span := i.tracer.StartSpan(ctx)
+func (m *manager) buildQRCode(ctx context.Context, username, twoFactorSecret string) string {
+	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := observability.ObserveValues(map[string]any{
 		keys.UsernameKey: username,
-	}, span, i.logger)
+	}, span, m.logger)
 
 	// "otpauth://totp/{{ .Issuer }}:{{ .EnsureUsername }}?secret={{ .Secret }}&issuer={{ .Issuer }}",
 	otpString := fmt.Sprintf(

@@ -67,18 +67,18 @@ func ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(input *
 }
 
 func ConvertAccountToGRPCAccount(input *identity.Account) *identitysvc.Account {
-	var members []identitysvc.AccountUserMembershipWithUser
+	var members []*identitysvc.AccountUserMembershipWithUser
 	for _, member := range input.Members {
-		println(member) // TODO
+		members = append(members, ConvertAccountUserMembershipWithUserToGRPCAccountUserMembershipWithUser(member))
 	}
 
 	return &identitysvc.Account{
 		CreatedAt:                  grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		SubscriptionPlanID:         input.SubscriptionPlanID,
 		LastUpdatedAt:              grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:                 grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		Longitude:                  pointer.To(float32(pointer.Dereference(input.Longitude))),
 		Latitude:                   pointer.To(float32(pointer.Dereference(input.Latitude))),
+		SubscriptionPlanID:         input.SubscriptionPlanID,
 		State:                      input.State,
 		ContactPhone:               input.ContactPhone,
 		City:                       input.City,
@@ -93,5 +93,115 @@ func ConvertAccountToGRPCAccount(input *identity.Account) *identitysvc.Account {
 		Name:                       input.Name,
 		WebhookEncryptionKey:       input.WebhookEncryptionKey,
 		Members:                    members,
+	}
+}
+
+func ConvertAccountUserMembershipWithUserToGRPCAccountUserMembershipWithUser(input *identity.AccountUserMembershipWithUser) *identitysvc.AccountUserMembershipWithUser {
+	return &identitysvc.AccountUserMembershipWithUser{
+		CreatedAt:        grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		LastUpdatedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		BelongsToUser:    ConvertUserToGRPCUser(input.BelongsToUser),
+		ID:               input.ID,
+		BelongsToAccount: input.BelongsToAccount,
+		AccountRole:      input.AccountRole,
+		DefaultAccount:   input.DefaultAccount,
+	}
+}
+
+func ConvertGRPCAccountInvitationCreationRequestInputToAccountInvitationCreationRequestInput(input *identitysvc.AccountInvitationCreationRequestInput) *identity.AccountInvitationCreationRequestInput {
+	return &identity.AccountInvitationCreationRequestInput{
+		ExpiresAt: grpcconverters.ConvertPBTimestampToTimePointer(input.ExpiresAt),
+		Note:      input.Note,
+		ToEmail:   input.ToEmail,
+		ToName:    input.ToName,
+	}
+}
+
+func ConvertAccountInvitationToGRPCAccountInvitation(input *identity.AccountInvitation) *identitysvc.AccountInvitation {
+	return &identitysvc.AccountInvitation{
+		CreatedAt:          grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		LastUpdatedAt:      grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		ArchivedAt:         grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		ToUser:             input.ToUser,
+		Status:             input.Status,
+		ToEmail:            input.ToEmail,
+		StatusNote:         input.StatusNote,
+		Token:              input.Token,
+		ID:                 input.ID,
+		Note:               input.Note,
+		ToName:             input.ToName,
+		ExpiresAt:          grpcconverters.ConvertTimeToPBTimestamp(input.ExpiresAt),
+		DestinationAccount: ConvertAccountToGRPCAccount(&input.DestinationAccount),
+		FromUser:           ConvertUserToGRPCUser(&input.FromUser),
+	}
+}
+
+func ConvertGRPCUserRegistrationInputToUserRegistrationInput(input *identitysvc.UserRegistrationInput) *identity.UserRegistrationInput {
+	return &identity.UserRegistrationInput{
+		Birthday:              grpcconverters.ConvertPBTimestampToTimePointer(input.Birthday),
+		Password:              input.Password,
+		EmailAddress:          input.EmailAddress,
+		InvitationToken:       input.InvitationToken,
+		InvitationID:          input.InvitationID,
+		Username:              input.Username,
+		FirstName:             input.FirstName,
+		LastName:              input.LastName,
+		AccountName:           input.AccountName,
+		AcceptedTOS:           input.AcceptedTOS,
+		AcceptedPrivacyPolicy: input.AcceptedPrivacyPolicy,
+	}
+}
+
+func ConvertUserCreationResponseToGRPCUserCreationResponse(input *identity.UserCreationResponse) *identitysvc.UserCreationResponse {
+	return &identitysvc.UserCreationResponse{
+		CreatedAt:       grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		Birthday:        grpcconverters.ConvertTimePointerToPBTimestamp(input.Birthday),
+		Username:        input.Username,
+		EmailAddress:    input.EmailAddress,
+		TwoFactorQRCode: input.TwoFactorQRCode,
+		CreatedUserID:   input.CreatedUserID,
+		AccountStatus:   input.AccountStatus,
+		TwoFactorSecret: input.TwoFactorSecret,
+		FirstName:       input.FirstName,
+		LastName:        input.LastName,
+	}
+}
+
+func ConvertGRPCAccountOwnershipTransferInputToAccountOwnershipTransferInput(input *identitysvc.AccountOwnershipTransferInput) *identity.AccountOwnershipTransferInput {
+	return &identity.AccountOwnershipTransferInput{
+		Reason:       input.Reason,
+		CurrentOwner: input.CurrentOwner,
+		NewOwner:     input.NewOwner,
+	}
+}
+
+func convertFloat32PointerToFloat64Pointer(input *float32) *float64 {
+	if input == nil {
+		return nil
+	}
+	return pointer.To(float64(*input))
+}
+
+func ConvertGRPCAccountUpdateRequestInputToAccountUpdateRequestInput(input *identitysvc.AccountUpdateRequestInput) *identity.AccountUpdateRequestInput {
+	return &identity.AccountUpdateRequestInput{
+		Name:          input.Name,
+		ContactPhone:  input.ContactPhone,
+		AddressLine1:  input.AddressLine1,
+		AddressLine2:  input.AddressLine2,
+		City:          input.City,
+		State:         input.State,
+		ZipCode:       input.ZipCode,
+		Country:       input.Country,
+		Latitude:      convertFloat32PointerToFloat64Pointer(input.Latitude),
+		Longitude:     convertFloat32PointerToFloat64Pointer(input.Longitude),
+		BelongsToUser: input.BelongsToUser,
+	}
+}
+
+func ConvertGRPCModifyUserPermissionsInputToModifyUserPermissionsInput(input *identitysvc.ModifyUserPermissionsInput) *identity.ModifyUserPermissionsInput {
+	return &identity.ModifyUserPermissionsInput{
+		Reason:  input.Reason,
+		NewRole: input.NewRole,
 	}
 }

@@ -88,7 +88,7 @@ func (x *ContextData) ServiceRolePermissionChecker() authorization.ServiceRolePe
 // AttachToLogger provides a consistent way to attach a ContextData object to a logger.
 func (x *ContextData) AttachToLogger(logger logging.Logger) logging.Logger {
 	if x != nil {
-		logger = logger.WithValue(keys.RequesterIDKey, x.Requester.UserID).
+		logger = logger.WithValue(keys.RequesterIDKey, x.GetUserID()).
 			WithValue(keys.ActiveAccountIDKey, x.ActiveAccountID)
 	}
 

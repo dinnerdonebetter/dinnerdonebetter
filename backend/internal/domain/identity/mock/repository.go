@@ -103,18 +103,18 @@ func (m *RepositoryMock) CreateAccountInvitation(ctx context.Context, input *ide
 }
 
 // CancelAccountInvitation is a mock function.
-func (m *RepositoryMock) CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
-	return m.Called(ctx, accountInvitationID, note).Error(0)
+func (m *RepositoryMock) CancelAccountInvitation(ctx context.Context, accountID, accountInvitationID, note string) error {
+	return m.Called(ctx, accountID, accountInvitationID, note).Error(0)
 }
 
 // AcceptAccountInvitation is a mock function.
-func (m *RepositoryMock) AcceptAccountInvitation(ctx context.Context, accountInvitationID, token, note string) error {
-	return m.Called(ctx, accountInvitationID, token, note).Error(0)
+func (m *RepositoryMock) AcceptAccountInvitation(ctx context.Context, accountID, accountInvitationID, token, note string) error {
+	return m.Called(ctx, accountID, accountInvitationID, token, note).Error(0)
 }
 
 // RejectAccountInvitation is a mock function.
-func (m *RepositoryMock) RejectAccountInvitation(ctx context.Context, accountInvitationID, note string) error {
-	return m.Called(ctx, accountInvitationID, note).Error(0)
+func (m *RepositoryMock) RejectAccountInvitation(ctx context.Context, accountID, accountInvitationID, note string) error {
+	return m.Called(ctx, accountID, accountInvitationID, note).Error(0)
 }
 
 // ArchiveAccountInvitation is a mock function.

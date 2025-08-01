@@ -41,16 +41,7 @@ message CreateUserRequest {
 
 message CreateUserResponse {
   common.ResponseDetails ResponseDetails = 1;
-  google.protobuf.Timestamp CreatedAt = 2;
-  google.protobuf.Timestamp Birthday = 3;
-  string Username = 4;
-  string EmailAddress = 5;
-  string TwoFactorQRCode = 6;
-  string CreatedUserID = 7;
-  string AccountStatus = 8;
-  string TwoFactorSecret = 9;
-  string FirstName = 10;
-  string LastName = 11;
+  UserCreationResponse Created = 2;
 }
 
 // CreateAccount
@@ -71,6 +62,7 @@ message CreateAccountInvitationRequest {
 
 message CreateAccountInvitationResponse {
   common.ResponseDetails ResponseDetails = 1;
+  AccountInvitation Created = 2;
 }
 
 // CancelAccountInvitation
@@ -109,6 +101,7 @@ message GetAccountRequest {
 
 message GetAccountResponse {
   common.ResponseDetails ResponseDetails = 1;
+  Account Result = 2;
 }
 
 // GetAccountInvitation
@@ -117,16 +110,6 @@ message GetAccountInvitationRequest {
 }
 
 message GetAccountInvitationResponse {
-  common.ResponseDetails ResponseDetails = 1;
-}
-
-// GetAccountInvitationByID
-message GetAccountInvitationByIDRequest {
-  string accountID = 1;
-  string accountInvitationID = 2;
-}
-
-message GetAccountInvitationByIDResponse {
   common.ResponseDetails ResponseDetails = 1;
   AccountInvitation Result = 2;
 }
@@ -199,6 +182,7 @@ message RejectAccountInvitationResponse {
 message SearchForUsersRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
+  bool UseDatabase = 3;
 }
 
 message SearchForUsersResponse {
@@ -214,6 +198,7 @@ message SetDefaultAccountRequest {
 
 message SetDefaultAccountResponse {
   common.ResponseDetails ResponseDetails = 1;
+  bool Success = 2;
 }
 
 // TransferAccountOwnership
@@ -224,6 +209,7 @@ message TransferAccountOwnershipRequest {
 
 message TransferAccountOwnershipResponse {
   common.ResponseDetails ResponseDetails = 1;
+  bool Success = 2;
 }
 
 // UpdateAccount
@@ -238,9 +224,8 @@ message UpdateAccountResponse {
 
 // UpdateAccountMemberPermissions
 message UpdateAccountMemberPermissionsRequest {
-  string accountID = 1;
-  string userID = 2;
-  ModifyUserPermissionsInput input = 3;
+  string userID = 1;
+  ModifyUserPermissionsInput input = 2;
 }
 
 message UpdateAccountMemberPermissionsResponse {
@@ -341,7 +326,7 @@ message AccountInvitation {
   google.protobuf.Timestamp CreatedAt = 1;
   google.protobuf.Timestamp LastUpdatedAt = 2;
   google.protobuf.Timestamp ArchivedAt = 3;
-  string ToUser = 4;
+  optional string ToUser = 4;
   string Status = 5;
   string ToEmail = 6;
   string StatusNote = 7;
@@ -373,16 +358,16 @@ message AccountOwnershipTransferInput {
 }
 
 message AccountUpdateRequestInput {
-  string Name = 1;
-  string ContactPhone = 2;
-  string AddressLine1 = 3;
-  string AddressLine2 = 4;
-  string City = 5;
-  string State = 6;
-  string ZipCode = 7;
-  string Country = 8;
-  float Latitude = 9;
-  float Longitude = 10;
+  optional string Name = 1;
+  optional string ContactPhone = 2;
+  optional string AddressLine1 = 3;
+  optional string AddressLine2 = 4;
+  optional string City = 5;
+  optional string State = 6;
+  optional string ZipCode = 7;
+  optional string Country = 8;
+  optional float Latitude = 9;
+  optional float Longitude = 10;
   string BelongsToUser = 11;
 }
 
@@ -509,7 +494,6 @@ service IdentityService {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc GetAccount(GetAccountRequest) returns (GetAccountResponse);
   rpc GetAccountInvitation(GetAccountInvitationRequest) returns (GetAccountInvitationResponse);
-  rpc GetAccountInvitationByID(GetAccountInvitationByIDRequest) returns (GetAccountInvitationByIDResponse);
   rpc GetAccounts(GetAccountsRequest) returns (GetAccountsResponse);
   rpc GetReceivedAccountInvitations(GetReceivedAccountInvitationsRequest) returns (GetReceivedAccountInvitationsResponse);
   rpc GetSentAccountInvitations(GetSentAccountInvitationsRequest) returns (GetSentAccountInvitationsResponse);

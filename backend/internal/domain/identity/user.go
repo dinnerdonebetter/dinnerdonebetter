@@ -117,7 +117,6 @@ type (
 
 		CreatedAt       time.Time  `json:"createdAt"`
 		Birthday        *time.Time `json:"birthday"`
-		AvatarSrc       *string    `json:"avatar"`
 		Username        string     `json:"username"`
 		EmailAddress    string     `json:"emailAddress"`
 		TwoFactorQRCode string     `json:"qrCode"`

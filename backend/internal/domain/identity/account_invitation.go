@@ -94,9 +94,9 @@ type (
 		GetPendingAccountInvitationsFromUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AccountInvitation], error)
 		GetPendingAccountInvitationsForUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[AccountInvitation], error)
 		CreateAccountInvitation(ctx context.Context, input *AccountInvitationDatabaseCreationInput) (*AccountInvitation, error)
-		CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error
-		AcceptAccountInvitation(ctx context.Context, accountInvitationID, token, note string) error
-		RejectAccountInvitation(ctx context.Context, accountInvitationID, note string) error
+		CancelAccountInvitation(ctx context.Context, accountID, accountInvitationID, note string) error
+		AcceptAccountInvitation(ctx context.Context, accountID, accountInvitationID, token, note string) error
+		RejectAccountInvitation(ctx context.Context, accountID, accountInvitationID, note string) error
 	}
 
 	// AccountInvitationDataService describes a structure capable of serving traffic related to account invitations.

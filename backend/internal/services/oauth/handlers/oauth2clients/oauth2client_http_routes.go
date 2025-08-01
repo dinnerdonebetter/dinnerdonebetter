@@ -114,7 +114,7 @@ func (s *service) CreateOAuth2ClientHandler(res http.ResponseWriter, req *http.R
 			keys.OAuth2ClientIDKey: client.ID,
 		},
 		AccountID: sessionCtxData.ActiveAccountID,
-		UserID:    sessionCtxData.Requester.UserID,
+		UserID:    sessionCtxData.GetUserID(),
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -304,7 +304,7 @@ func (s *service) ArchiveOAuth2ClientHandler(res http.ResponseWriter, req *http.
 			keys.OAuth2ClientIDKey: oauth2ClientID,
 		},
 		AccountID: sessionCtxData.ActiveAccountID,
-		UserID:    sessionCtxData.Requester.UserID,
+		UserID:    sessionCtxData.GetUserID(),
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {

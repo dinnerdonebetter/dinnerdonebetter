@@ -30,7 +30,7 @@ type (
 		identitysvc.UnimplementedIdentityServiceServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
-		sessionContextDataFetcher func(ctx context.Context) (sessions.ContextData, error)
+		sessionContextDataFetcher func(ctx context.Context) (*sessions.ContextData, error)
 		identityRepository        identity.Repository
 		identityDataManager       managers.IdentityDataManager
 	}
@@ -39,13 +39,30 @@ type (
 func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
+	sessionContextDataFetcher func(ctx context.Context) (*sessions.ContextData, error),
 	identityRepository identity.Repository,
+	identityDataManager managers.IdentityDataManager,
 ) identitysvc.IdentityServiceServer {
 	return &serviceImpl{
-		logger:             logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		identityRepository: identityRepository,
+		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		sessionContextDataFetcher: sessionContextDataFetcher,
+		identityRepository:        identityRepository,
+		identityDataManager:       identityDataManager,
 	}
+}
+
+func (s *serviceImpl) buildResponseDetails(ctx context.Context, span tracing.Span) *types.ResponseDetails {
+	out := &types.ResponseDetails{}
+	if span != nil {
+		out.TraceID = span.SpanContext().TraceID().String()
+	}
+
+	if sessionContextData, err := s.sessionContextDataFetcher(ctx); err == nil && sessionContextData != nil {
+		out.CurrentAccountID = sessionContextData.GetActiveAccountID()
+	}
+
+	return out
 }
 
 func (s *serviceImpl) AcceptAccountInvitation(ctx context.Context, request *identitysvc.AcceptAccountInvitationRequest) (*identitysvc.AcceptAccountInvitationResponse, error) {
@@ -56,16 +73,67 @@ func (s *serviceImpl) AcceptAccountInvitation(ctx context.Context, request *iden
 		keys.AccountInvitationIDKey: request.AccountInvitationID,
 	}, span, s.logger)
 
-	input := converters.ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequestInput(request.Input)
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
 
-	if err := s.identityDataManager.AcceptAccountInvitation(ctx, request.AccountInvitationID, input); err != nil {
+	input := converters.ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequestInput(request.Input)
+	if err = s.identityDataManager.AcceptAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationID, input); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "accepting account invitation")
 	}
 
 	x := &identitysvc.AcceptAccountInvitationResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) RejectAccountInvitation(ctx context.Context, request *identitysvc.RejectAccountInvitationRequest) (*identitysvc.RejectAccountInvitationResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountInvitationIDKey: request.AccountInvitationID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	input := converters.ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequestInput(request.Input)
+	if err = s.identityDataManager.RejectAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationID, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to reject account invitation")
+	}
+
+	x := &identitysvc.RejectAccountInvitationResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) CancelAccountInvitation(ctx context.Context, request *identitysvc.CancelAccountInvitationRequest) (*identitysvc.CancelAccountInvitationResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountInvitationIDKey: request.AccountInvitationID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if err = s.identityDataManager.CancelAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationID, request.Input.Note); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to cancel account invitation")
+	}
+
+	x := &identitysvc.CancelAccountInvitationResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -89,9 +157,7 @@ func (s *serviceImpl) ArchiveAccount(ctx context.Context, request *identitysvc.A
 	}
 
 	x := &identitysvc.ArchiveAccountResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -108,9 +174,7 @@ func (s *serviceImpl) ArchiveUserMembership(ctx context.Context, request *identi
 	}
 
 	x := &identitysvc.ArchiveUserMembershipResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -125,26 +189,7 @@ func (s *serviceImpl) ArchiveUser(ctx context.Context, request *identitysvc.Arch
 	}
 
 	x := &identitysvc.ArchiveUserResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
-	}
-
-	return x, nil
-}
-
-func (s *serviceImpl) CancelAccountInvitation(ctx context.Context, request *identitysvc.CancelAccountInvitationRequest) (*identitysvc.CancelAccountInvitationResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if err := s.identityDataManager.CancelAccountInvitation(ctx, request.AccountInvitationID, request.Input.Note); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to cancel account invitation")
-	}
-
-	x := &identitysvc.CancelAccountInvitationResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -162,10 +207,8 @@ func (s *serviceImpl) CreateAccount(ctx context.Context, request *identitysvc.Cr
 	}
 
 	x := &identitysvc.CreateAccountResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
-		Created: converters.ConvertAccountToGRPCAccount(created),
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Created:         converters.ConvertAccountToGRPCAccount(created),
 	}
 
 	return x, nil
@@ -175,10 +218,15 @@ func (s *serviceImpl) CreateAccountInvitation(ctx context.Context, request *iden
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	input := converters.ConvertGRPCAccountInvitationCreationRequestInputToAccountInvitationCreationRequestInput(request.Input)
+	created, err := s.identityDataManager.CreateAccountInvitation(ctx, request.AccountID, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account invitation")
+	}
+
 	x := &identitysvc.CreateAccountInvitationResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Created:         converters.ConvertAccountInvitationToGRPCAccountInvitation(created),
 	}
 
 	return x, nil
@@ -188,10 +236,16 @@ func (s *serviceImpl) CreateUser(ctx context.Context, request *identitysvc.Creat
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	input := converters.ConvertGRPCUserRegistrationInputToUserRegistrationInput(request.Input)
+
+	created, err := s.identityDataManager.CreateUser(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create user")
+	}
+
 	x := &identitysvc.CreateUserResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Created:         converters.ConvertUserCreationResponseToGRPCUserCreationResponse(created),
 	}
 
 	return x, nil
@@ -201,10 +255,14 @@ func (s *serviceImpl) GetAccount(ctx context.Context, request *identitysvc.GetAc
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	account, err := s.identityDataManager.GetAccount(ctx, request.AccountID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get account")
+	}
+
 	x := &identitysvc.GetAccountResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Result:          converters.ConvertAccountToGRPCAccount(account),
 	}
 
 	return x, nil
@@ -214,23 +272,19 @@ func (s *serviceImpl) GetAccountInvitation(ctx context.Context, request *identit
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x := &identitysvc.GetAccountInvitationResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
 
-	return x, nil
-}
+	accountInvitation, err := s.identityDataManager.GetAccountInvitation(ctx, sessionContextData.GetActiveAccountID(), request.AccountInvitationID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get account invitation")
+	}
 
-func (s *serviceImpl) GetAccountInvitationByID(ctx context.Context, request *identitysvc.GetAccountInvitationByIDRequest) (*identitysvc.GetAccountInvitationByIDResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x := &identitysvc.GetAccountInvitationByIDResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+	x := &identitysvc.GetAccountInvitationResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Result:          converters.ConvertAccountInvitationToGRPCAccountInvitation(accountInvitation),
 	}
 
 	return x, nil
@@ -240,10 +294,24 @@ func (s *serviceImpl) GetAccounts(ctx context.Context, request *identitysvc.GetA
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	accounts, _, err := s.identityDataManager.GetAccounts(ctx, sessionContextData.GetUserID(), filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
+	}
+
 	x := &identitysvc.GetAccountsResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	for _, account := range accounts {
+		x.Result = append(x.Result, converters.ConvertAccountToGRPCAccount(account))
 	}
 
 	return x, nil
@@ -253,10 +321,25 @@ func (s *serviceImpl) GetReceivedAccountInvitations(ctx context.Context, request
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	logger := filter.AttachToLogger(s.logger.WithSpan(span))
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	invites, _, err := s.identityDataManager.GetReceivedAccountInvitations(ctx, sessionContextData.GetUserID(), filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get received account invitations")
+	}
+
 	x := &identitysvc.GetReceivedAccountInvitationsResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	for _, invite := range invites {
+		x.Result = append(x.Result, converters.ConvertAccountInvitationToGRPCAccountInvitation(invite))
 	}
 
 	return x, nil
@@ -266,10 +349,25 @@ func (s *serviceImpl) GetSentAccountInvitations(ctx context.Context, request *id
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	logger := filter.AttachToLogger(s.logger.WithSpan(span))
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	invites, _, err := s.identityDataManager.GetSentAccountInvitations(ctx, sessionContextData.GetUserID(), filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to get received account invitations")
+	}
+
 	x := &identitysvc.GetSentAccountInvitationsResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	for _, invite := range invites {
+		x.Result = append(x.Result, converters.ConvertAccountInvitationToGRPCAccountInvitation(invite))
 	}
 
 	return x, nil
@@ -289,23 +387,8 @@ func (s *serviceImpl) GetUser(ctx context.Context, request *identitysvc.GetUserR
 	}
 
 	x := &identitysvc.GetUserResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
-		Result: converters.ConvertUserToGRPCUser(user),
-	}
-
-	return x, nil
-}
-
-func (s *serviceImpl) RejectAccountInvitation(ctx context.Context, request *identitysvc.RejectAccountInvitationRequest) (*identitysvc.RejectAccountInvitationResponse, error) {
-	ctx, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x := &identitysvc.RejectAccountInvitationResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Result:          converters.ConvertUserToGRPCUser(user),
 	}
 
 	return x, nil
@@ -325,9 +408,7 @@ func (s *serviceImpl) GetUsers(ctx context.Context, request *identitysvc.GetUser
 	}
 
 	x := &identitysvc.GetUsersResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	for _, user := range users.Data {
@@ -341,10 +422,23 @@ func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.S
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := observability.ObserveValues(map[string]any{
+		keys.SearchQueryKey: request.Query,
+	}, span, s.logger)
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	users, _, err := s.identityDataManager.SearchForUsers(ctx, request.Query, request.UseDatabase, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for users")
+	}
+
 	x := &identitysvc.SearchForUsersResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	for _, user := range users {
+		x.Result = append(x.Result, converters.ConvertUserToGRPCUser(user))
 	}
 
 	return x, nil
@@ -354,10 +448,22 @@ func (s *serviceImpl) SetDefaultAccount(ctx context.Context, request *identitysv
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: request.AccountID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if err = s.identityDataManager.SetDefaultAccount(ctx, sessionContextData.GetUserID(), request.AccountID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to set default account")
+	}
+
 	x := &identitysvc.SetDefaultAccountResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Success:         true,
 	}
 
 	return x, nil
@@ -367,10 +473,24 @@ func (s *serviceImpl) TransferAccountOwnership(ctx context.Context, request *ide
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: request.AccountID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	input := converters.ConvertGRPCAccountOwnershipTransferInputToAccountOwnershipTransferInput(request.Input)
+
+	if err = s.identityDataManager.TransferAccountOwnership(ctx, sessionContextData.GetActiveAccountID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to transfer account ownership")
+	}
+
 	x := &identitysvc.TransferAccountOwnershipResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+		Success:         true,
 	}
 
 	return x, nil
@@ -380,10 +500,23 @@ func (s *serviceImpl) UpdateAccount(ctx context.Context, request *identitysvc.Up
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountIDKey: request.AccountID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	input := converters.ConvertGRPCAccountUpdateRequestInputToAccountUpdateRequestInput(request.Input)
+
+	if err = s.identityDataManager.UpdateAccount(ctx, sessionContextData.GetActiveAccountID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account")
+	}
+
 	x := &identitysvc.UpdateAccountResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -393,10 +526,22 @@ func (s *serviceImpl) UpdateAccountMemberPermissions(ctx context.Context, reques
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := observability.ObserveValues(map[string]any{
+		keys.UserIDKey: request.UserID,
+	}, span, s.logger)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	input := converters.ConvertGRPCModifyUserPermissionsInputToModifyUserPermissionsInput(request.Input)
+	if err = s.identityDataManager.UpdateAccountMemberPermissions(ctx, request.UserID, sessionContextData.GetActiveAccountID(), input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account member permissions")
+	}
+
 	x := &identitysvc.UpdateAccountMemberPermissionsResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -420,9 +565,7 @@ func (s *serviceImpl) UpdateUserDetails(ctx context.Context, request *identitysv
 	}
 
 	x := &identitysvc.UpdateUserDetailsResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -444,9 +587,7 @@ func (s *serviceImpl) UpdateUserEmailAddress(ctx context.Context, request *ident
 	}
 
 	x := &identitysvc.UpdateUserEmailAddressResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -468,9 +609,7 @@ func (s *serviceImpl) UpdateUserUsername(ctx context.Context, request *identitys
 	}
 
 	x := &identitysvc.UpdateUserUsernameResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -481,9 +620,7 @@ func (s *serviceImpl) UploadUserAvatar(ctx context.Context, request *identitysvc
 	defer span.End()
 
 	x := &identitysvc.UploadUserAvatarResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil
@@ -509,9 +646,7 @@ func (s *serviceImpl) AdminUpdateUserStatus(ctx context.Context, request *identi
 	}
 
 	x := &identitysvc.AdminUpdateUserStatusResponse{
-		ResponseDetails: &types.ResponseDetails{
-			TraceID: span.SpanContext().TraceID().String(),
-		},
+		ResponseDetails: s.buildResponseDetails(ctx, span),
 	}
 
 	return x, nil

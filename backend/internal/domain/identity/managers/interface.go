@@ -9,9 +9,9 @@ import (
 
 type (
 	IdentityDataManager interface {
-		AcceptAccountInvitation(ctx context.Context, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error
-		RejectAccountInvitation(ctx context.Context, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error
-		CancelAccountInvitation(ctx context.Context, accountInvitationID, note string) error
+		AcceptAccountInvitation(ctx context.Context, accountID, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error
+		RejectAccountInvitation(ctx context.Context, accountID, accountInvitationID string, input *identity.AccountInvitationUpdateRequestInput) error
+		CancelAccountInvitation(ctx context.Context, accountID, accountInvitationID, note string) error
 		ArchiveAccount(ctx context.Context, accountID, ownerID string) error
 		ArchiveUserMembership(ctx context.Context, userID, accountID string) error
 		ArchiveUser(ctx context.Context, userID string) error
