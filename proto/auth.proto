@@ -60,6 +60,10 @@ message GetAuthStatusRequest {}
 
 message GetAuthStatusResponse {
   common.ResponseDetails ResponseDetails = 1;
+  string UserID = 2;
+  string AccountStatus = 3;
+  string AccountStatusExplanation = 4;
+  string ActiveAccount = 5;
 }
 
 // RedeemPasswordResetToken
@@ -98,7 +102,11 @@ message RequestUsernameReminderResponse {
 }
 
 // UpdatePassword
-message UpdatePasswordRequest {}
+message UpdatePasswordRequest {
+  string NewPassword = 1;
+  string CurrentPassword = 2;
+  string TOTPToken = 3;
+}
 
 message UpdatePasswordResponse {
   common.ResponseDetails ResponseDetails = 1;
@@ -211,15 +219,6 @@ message UserPermissionsResponse {
 
 message UsernameReminderRequestInput {
   string EmailAddress = 1;
-}
-
-message UserStatusResponse {
-  common.ResponseDetails ResponseDetails = 1;
-  string UserID = 2;
-  string AccountStatus = 3;
-  string AccountStatusExplanation = 4;
-  string ActiveAccount = 5;
-  bool UserIsAuthenticated = 6;
 }
 
 // GetSelf

@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -26,6 +27,8 @@ type (
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
 		identityRepository        identity.Repository
 		oauth2ClientManager       oauth2server.Manager
+		authManager               authentication.Manager
+		authenticator             authentication.Authenticator
 	}
 )
 
@@ -34,11 +37,15 @@ func NewService(
 	tracerProvider tracing.TracerProvider,
 	identityRepository identity.Repository,
 	oauth2ClientManager oauth2server.Manager,
+	authManager authentication.Manager,
+	authenticator authentication.Authenticator,
 ) authsvc.AuthServiceServer {
 	return &serviceImpl{
 		logger:              logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:              tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		identityRepository:  identityRepository,
 		oauth2ClientManager: oauth2ClientManager,
+		authManager:         authManager,
+		authenticator:       authenticator,
 	}
 }
