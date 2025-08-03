@@ -44,7 +44,7 @@ type AuthServiceClient interface {
 	GetAuthStatus(ctx context.Context, in *GetAuthStatusRequest, opts ...grpc.CallOption) (*GetAuthStatusResponse, error)
 	ExchangeToken(ctx context.Context, in *ExchangeTokenRequest, opts ...grpc.CallOption) (*ExchangeTokenResponse, error)
 	AdminLoginForToken(ctx context.Context, in *AdminLoginForTokenRequest, opts ...grpc.CallOption) (*AdminLoginForTokenResponse, error)
-	CheckPermissions(ctx context.Context, in *CheckPermissionsRequest, opts ...grpc.CallOption) (*CheckPermissionsResponse, error)
+	CheckPermissions(ctx context.Context, in *UserPermissionsRequestInput, opts ...grpc.CallOption) (*UserPermissionsResponse, error)
 	GetActiveAccount(ctx context.Context, in *GetActiveAccountRequest, opts ...grpc.CallOption) (*GetActiveAccountResponse, error)
 	GetSelf(ctx context.Context, in *GetSelfRequest, opts ...grpc.CallOption) (*GetSelfResponse, error)
 	LoginForToken(ctx context.Context, in *LoginForTokenRequest, opts ...grpc.CallOption) (*LoginForTokenResponse, error)
@@ -96,9 +96,9 @@ func (c *authServiceClient) AdminLoginForToken(ctx context.Context, in *AdminLog
 	return out, nil
 }
 
-func (c *authServiceClient) CheckPermissions(ctx context.Context, in *CheckPermissionsRequest, opts ...grpc.CallOption) (*CheckPermissionsResponse, error) {
+func (c *authServiceClient) CheckPermissions(ctx context.Context, in *UserPermissionsRequestInput, opts ...grpc.CallOption) (*UserPermissionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CheckPermissionsResponse)
+	out := new(UserPermissionsResponse)
 	err := c.cc.Invoke(ctx, AuthService_CheckPermissions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -223,7 +223,7 @@ type AuthServiceServer interface {
 	GetAuthStatus(context.Context, *GetAuthStatusRequest) (*GetAuthStatusResponse, error)
 	ExchangeToken(context.Context, *ExchangeTokenRequest) (*ExchangeTokenResponse, error)
 	AdminLoginForToken(context.Context, *AdminLoginForTokenRequest) (*AdminLoginForTokenResponse, error)
-	CheckPermissions(context.Context, *CheckPermissionsRequest) (*CheckPermissionsResponse, error)
+	CheckPermissions(context.Context, *UserPermissionsRequestInput) (*UserPermissionsResponse, error)
 	GetActiveAccount(context.Context, *GetActiveAccountRequest) (*GetActiveAccountResponse, error)
 	GetSelf(context.Context, *GetSelfRequest) (*GetSelfResponse, error)
 	LoginForToken(context.Context, *LoginForTokenRequest) (*LoginForTokenResponse, error)
@@ -254,7 +254,7 @@ func (UnimplementedAuthServiceServer) ExchangeToken(context.Context, *ExchangeTo
 func (UnimplementedAuthServiceServer) AdminLoginForToken(context.Context, *AdminLoginForTokenRequest) (*AdminLoginForTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdminLoginForToken not implemented")
 }
-func (UnimplementedAuthServiceServer) CheckPermissions(context.Context, *CheckPermissionsRequest) (*CheckPermissionsResponse, error) {
+func (UnimplementedAuthServiceServer) CheckPermissions(context.Context, *UserPermissionsRequestInput) (*UserPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckPermissions not implemented")
 }
 func (UnimplementedAuthServiceServer) GetActiveAccount(context.Context, *GetActiveAccountRequest) (*GetActiveAccountResponse, error) {
@@ -366,7 +366,7 @@ func _AuthService_AdminLoginForToken_Handler(srv interface{}, ctx context.Contex
 }
 
 func _AuthService_CheckPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckPermissionsRequest)
+	in := new(UserPermissionsRequestInput)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -378,7 +378,7 @@ func _AuthService_CheckPermissions_Handler(srv interface{}, ctx context.Context,
 		FullMethod: AuthService_CheckPermissions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).CheckPermissions(ctx, req.(*CheckPermissionsRequest))
+		return srv.(AuthServiceServer).CheckPermissions(ctx, req.(*UserPermissionsRequestInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }

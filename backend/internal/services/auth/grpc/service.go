@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/managers"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
@@ -24,11 +25,12 @@ type (
 		authsvc.UnimplementedAuthServiceServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
-		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
 		identityRepository        identity.Repository
 		oauth2ClientManager       oauth2server.Manager
-		authManager               authentication.Manager
+		authenticationManager     authentication.Manager
 		authenticator             authentication.Authenticator
+		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
+		authManager               managers.AuthManager
 	}
 )
 
@@ -37,7 +39,7 @@ func NewService(
 	tracerProvider tracing.TracerProvider,
 	identityRepository identity.Repository,
 	oauth2ClientManager oauth2server.Manager,
-	authManager authentication.Manager,
+	authManager managers.AuthManager,
 	authenticator authentication.Authenticator,
 ) authsvc.AuthServiceServer {
 	return &serviceImpl{

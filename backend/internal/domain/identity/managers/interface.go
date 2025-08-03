@@ -35,6 +35,5 @@ type (
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
 		UploadUserAvatar(ctx context.Context, userID, base64EncodedImageData string) error
 		AdminUpdateUserStatus(ctx context.Context, input *identity.UserAccountStatusUpdateInput) error
-		buildQRCode(ctx context.Context, username, twoFactorSecret string) string
 	}
 )
