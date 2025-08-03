@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"

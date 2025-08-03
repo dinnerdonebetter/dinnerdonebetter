@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 
 	"google.golang.org/grpc"

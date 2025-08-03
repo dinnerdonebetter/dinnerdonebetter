@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"

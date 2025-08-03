@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"

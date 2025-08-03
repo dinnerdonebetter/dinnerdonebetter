@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"

@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
-
 	"github.com/hashicorp/go-multierror"
 )
 
@@ -22,7 +20,7 @@ type (
 		//Users                        users.Config                        `envPrefix:"USERS_"                          json:"users,omitempty"`
 		//DataPrivacy                  dataprivacy.Config                  `envPrefix:"DATA_PRIVACY_"                   json:"dataPrivacy,omitempty"`
 		//Recipes                      recipemanagement.Config             `envPrefix:"RECIPES_"                        json:"recipes,omitempty"`
-		Auth authentication.Config `envPrefix:"AUTH_"                           json:"auth,omitempty"`
+		// Auth authentication.Config `envPrefix:"AUTH_"                           json:"auth,omitempty"`
 		//OAuth2Clients                oauth2clients.Config                `envPrefix:"OAUTH2_CLIENTS_"                 json:"oauth2Clients,omitempty"`
 		//MealPlanning                 mealplanning.Config                 `envPrefix:"MEAL_PLANNING_"                  json:"meals,omitempty"`
 		//Webhooks                     webhooks.Config                     `envPrefix:"WEBHOOKS_"                       json:"webhooks,omitempty"`
@@ -44,7 +42,7 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		//"Users":                        cfg.Users.ValidateWithContext,
 		//"DataPrivacy":                  cfg.DataPrivacy.ValidateWithContext,
 		//"Recipes":                      cfg.Recipes.ValidateWithContext,
-		"Auth": cfg.Auth.ValidateWithContext,
+		// "Auth": cfg.Auth.ValidateWithContext,
 		//"OAuth2Clients":                cfg.OAuth2Clients.ValidateWithContext,
 		//"MealPlanning":                 cfg.MealPlanning.ValidateWithContext,
 		//"Webhooks":                     cfg.Webhooks.ValidateWithContext,

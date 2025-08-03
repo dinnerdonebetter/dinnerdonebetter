@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
@@ -64,7 +65,7 @@ func BuildInviteMemberEmail(recipient *identity.User, accountInvitation *identit
 }
 
 // BuildGeneratedPasswordResetTokenEmail builds an email notifying a user that they've been invited to join an account.
-func BuildGeneratedPasswordResetTokenEmail(recipient *identity.User, passwordResetToken *identity.PasswordResetToken, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
+func BuildGeneratedPasswordResetTokenEmail(recipient *identity.User, passwordResetToken *auth.PasswordResetToken, envCfg *email.EnvironmentConfig) (*email.OutboundEmailMessage, error) {
 	if envCfg == nil {
 		return nil, internalerrors.NilConfigError("email environment config")
 	}

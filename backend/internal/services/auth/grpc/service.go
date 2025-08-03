@@ -3,11 +3,11 @@ package grpc
 import (
 	"context"
 
+	authentication2 "github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/managers"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
@@ -27,8 +27,8 @@ type (
 		logger                    logging.Logger
 		identityRepository        identity.Repository
 		oauth2ClientManager       oauth2server.Manager
-		authenticationManager     authentication.Manager
-		authenticator             authentication.Authenticator
+		authenticationManager     authentication2.Manager
+		authenticator             authentication2.Authenticator
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
 		authManager               managers.AuthManager
 	}
@@ -40,7 +40,7 @@ func NewService(
 	identityRepository identity.Repository,
 	oauth2ClientManager oauth2server.Manager,
 	authManager managers.AuthManager,
-	authenticator authentication.Authenticator,
+	authenticator authentication2.Authenticator,
 ) authsvc.AuthServiceServer {
 	return &serviceImpl{
 		logger:              logging.EnsureLogger(logger).WithName(o11yName),

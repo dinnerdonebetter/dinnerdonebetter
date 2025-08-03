@@ -3,10 +3,10 @@ package grpc
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/managers"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )

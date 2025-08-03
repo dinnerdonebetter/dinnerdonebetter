@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	mocktypes "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	mockencoding "github.com/dinnerdonebetter/backend/internal/platform/encoding/mock"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"

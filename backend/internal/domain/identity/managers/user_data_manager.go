@@ -10,10 +10,10 @@ import (
 	"image/png"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"

@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	mockmetrics "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 

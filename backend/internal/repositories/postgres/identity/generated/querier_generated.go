@@ -22,7 +22,6 @@ type Querier interface {
 	CreateAccount(ctx context.Context, db DBTX, arg *CreateAccountParams) error
 	CreateAccountInvitation(ctx context.Context, db DBTX, arg *CreateAccountInvitationParams) error
 	CreateAccountUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateAccountUserMembershipForNewUserParams) error
-	CreatePasswordResetToken(ctx context.Context, db DBTX, arg *CreatePasswordResetTokenParams) error
 	CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error
 	DeleteUser(ctx context.Context, db DBTX, id string) (int64, error)
 	GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetAccountByIDWithMembershipsRow, error)
@@ -34,7 +33,6 @@ type Querier interface {
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)
 	GetDefaultAccountIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error)
 	GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX, id string) (sql.NullString, error)
-	GetPasswordResetToken(ctx context.Context, db DBTX, token string) (*GetPasswordResetTokenRow, error)
 	GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *GetPendingInvitesForUserParams) ([]*GetPendingInvitesForUserRow, error)
 	GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *GetPendingInvitesFromUserParams) ([]*GetPendingInvitesFromUserRow, error)
 	GetUserByEmail(ctx context.Context, db DBTX, emailAddress string) (*GetUserByEmailRow, error)
@@ -52,7 +50,6 @@ type Querier interface {
 	MarkTwoFactorSecretAsUnverified(ctx context.Context, db DBTX, arg *MarkTwoFactorSecretAsUnverifiedParams) error
 	MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, id string) error
 	ModifyAccountUserPermissions(ctx context.Context, db DBTX, arg *ModifyAccountUserPermissionsParams) error
-	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
 	RemoveUserFromAccount(ctx context.Context, db DBTX, arg *RemoveUserFromAccountParams) error
 	SearchUsersByUsername(ctx context.Context, db DBTX, username string) ([]*SearchUsersByUsernameRow, error)
 	SetAccountInvitationStatus(ctx context.Context, db DBTX, arg *SetAccountInvitationStatusParams) error

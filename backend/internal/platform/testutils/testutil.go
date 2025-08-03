@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 
 	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"

@@ -3,7 +3,7 @@ package audit
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 )
 

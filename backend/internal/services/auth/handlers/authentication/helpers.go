@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 )
 
 // validateLogin takes login information and returns whether the login is valid.
 // In the event that there's an error, this function will return false and the error.
-func (s *service) validateLogin(ctx context.Context, user *types.User, loginInput *types.UserLoginInput) (bool, error) {
+func (s *service) validateLogin(ctx context.Context, user *types.User, loginInput *auth.UserLoginInput) (bool, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

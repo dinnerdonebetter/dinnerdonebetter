@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
@@ -447,7 +448,7 @@ func (a *AsyncDataChangeMessageHandler) handleOutboundNotifications(
 		}
 	case identity.PasswordResetTokenCreatedEventType:
 		emailType = "password reset request"
-		prt, parseError := parseValueFromEventContext[identity.PasswordResetToken](ctx, changeMessage, a.decoder, keys.PasswordResetTokenKey)
+		prt, parseError := parseValueFromEventContext[auth.PasswordResetToken](ctx, changeMessage, a.decoder, keys.PasswordResetTokenKey)
 		if parseError != nil {
 			return observability.PrepareAndLogError(parseError, logger, span, "parsing email verification token")
 		}

@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"

@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"testing"
 
+	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	oauthmock "github.com/dinnerdonebetter/backend/internal/domain/oauth/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
-	mockauthn "github.com/dinnerdonebetter/backend/internal/platform/authentication/mock"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/platform/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/featureflags"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"

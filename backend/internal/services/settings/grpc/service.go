@@ -3,9 +3,9 @@ package grpc
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )

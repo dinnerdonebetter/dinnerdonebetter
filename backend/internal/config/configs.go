@@ -11,8 +11,8 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/cookies"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"

@@ -3,10 +3,10 @@ package grpc
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"

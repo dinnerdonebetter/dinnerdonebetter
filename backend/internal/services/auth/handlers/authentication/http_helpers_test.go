@@ -6,10 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	authfakes "github.com/dinnerdonebetter/backend/internal/domain/auth/fakes"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -26,7 +28,7 @@ type authServiceHTTPRoutesTestHelper struct {
 	exampleUser         *identity.User
 	exampleAccount      *identity.Account
 	examplePermCheckers map[string]authorization.AccountRolePermissionsChecker
-	exampleLoginInput   *identity.UserLoginInput
+	exampleLoginInput   *auth.UserLoginInput
 }
 
 func (helper *authServiceHTTPRoutesTestHelper) setContextFetcher(t *testing.T) {
@@ -59,14 +61,13 @@ func buildTestHelper(t *testing.T) *authServiceHTTPRoutesTestHelper {
 	helper.exampleUser = fakes.BuildFakeUser()
 	helper.exampleAccount = fakes.BuildFakeAccount()
 	helper.exampleAccount.BelongsToUser = helper.exampleUser.ID
-	helper.exampleLoginInput = fakes.BuildFakeUserLoginInputFromUser(helper.exampleUser)
+	helper.exampleLoginInput = authfakes.BuildFakeUserLoginInputFromUser(helper.exampleUser)
 
 	helper.examplePermCheckers = map[string]authorization.AccountRolePermissionsChecker{
 		helper.exampleAccount.ID: authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String()),
 	}
 
 	helper.setContextFetcher(t)
-
 	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 	var err error

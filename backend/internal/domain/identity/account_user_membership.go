@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

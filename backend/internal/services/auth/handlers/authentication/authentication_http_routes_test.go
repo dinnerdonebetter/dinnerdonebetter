@@ -7,13 +7,14 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/paseto"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identitymock "github.com/dinnerdonebetter/backend/internal/domain/identity/mock"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
-	mockauthn "github.com/dinnerdonebetter/backend/internal/platform/authentication/mock"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/tokens/paseto"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -179,7 +180,7 @@ func TestAuthenticationService_BuildLoginHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, &identity.UserLoginInput{})
+		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, &auth.UserLoginInput{})
 
 		var err error
 		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))

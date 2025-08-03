@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"

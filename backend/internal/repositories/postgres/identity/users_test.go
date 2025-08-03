@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	authfakes "github.com/dinnerdonebetter/backend/internal/domain/auth/fakes"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
@@ -513,7 +514,7 @@ func TestQuerier_MarkUserEmailAddressAsVerified(T *testing.T) {
 	T.Run("with missing user ID", func(t *testing.T) {
 		t.Parallel()
 
-		exampleInput := fakes.BuildFakeEmailAddressVerificationRequestInput()
+		exampleInput := authfakes.BuildFakeEmailAddressVerificationRequestInput()
 
 		ctx := context.Background()
 		c := buildInertClientForTest(t)

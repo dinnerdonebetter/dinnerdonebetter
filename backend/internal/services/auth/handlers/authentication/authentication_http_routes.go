@@ -8,10 +8,11 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -40,7 +41,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			logger = logger.WithValue("admin_only", adminOnly)
 		}
 
-		loginData := new(identity.UserLoginInput)
+		loginData := new(auth.UserLoginInput)
 		if err := s.encoderDecoder.DecodeRequest(ctx, req, loginData); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding request body")
 			errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)

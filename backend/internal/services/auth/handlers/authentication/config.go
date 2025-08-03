@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/platform/authentication/tokens/config"
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

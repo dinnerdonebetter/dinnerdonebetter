@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication"
-	"github.com/dinnerdonebetter/backend/internal/platform/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
