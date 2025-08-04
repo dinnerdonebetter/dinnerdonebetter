@@ -46,7 +46,7 @@ var (
 			// Data
 			"ValidEnumerations",
 			"MealPlanning",
-			"Recipes",
+			"MealPlanning",
 		),
 		ProvideHTTPServerConfigFromAPIServiceConfig,
 		ProvideHTTPServerConfigFromAdminWebappConfig,

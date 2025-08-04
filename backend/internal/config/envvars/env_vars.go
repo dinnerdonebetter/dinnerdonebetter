@@ -443,37 +443,37 @@ const (
 	// ServiceOauth2ClientsCreationDisabledEnvVarKey is the environment variable name to set in order to override `config.Services.OAuth2Clients.OAuth2ClientCreationDisabled`.
 	ServiceOauth2ClientsCreationDisabledEnvVarKey = "DINNER_DONE_BETTER_SERVICE_OAUTH2_CLIENTS_CREATION_DISABLED"
 
-	// ServiceRecipesPublicMediaURLPrefixEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.PublicMediaURLPrefix`.
+	// ServiceRecipesPublicMediaURLPrefixEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.PublicMediaURLPrefix`.
 	ServiceRecipesPublicMediaURLPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_PUBLIC_MEDIA_URL_PREFIX"
 
-	// ServiceRecipesUploadsDebugEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Debug`.
+	// ServiceRecipesUploadsDebugEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.Uploads.Debug`.
 	ServiceRecipesUploadsDebugEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_DEBUG"
 
-	// ServiceRecipesUploadsStorageBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.BucketName`.
+	// ServiceRecipesUploadsStorageBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.Uploads.Storage.BucketName`.
 	ServiceRecipesUploadsStorageBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_BUCKET_NAME"
 
-	// ServiceRecipesUploadsStorageBucketPrefixEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.BucketPrefix`.
+	// ServiceRecipesUploadsStorageBucketPrefixEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.Uploads.Storage.BucketPrefix`.
 	ServiceRecipesUploadsStorageBucketPrefixEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_BUCKET_PREFIX"
 
-	// ServiceRecipesUploadsStorageFilesystemRootDirectoryEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.FilesystemConfig.RootDirectory`.
+	// ServiceRecipesUploadsStorageFilesystemRootDirectoryEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.Uploads.Storage.FilesystemConfig.RootDirectory`.
 	ServiceRecipesUploadsStorageFilesystemRootDirectoryEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_FILESYSTEM_ROOT_DIRECTORY"
 
-	// ServiceRecipesUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.GCP.BucketName`.
+	// ServiceRecipesUploadsStorageGcpBucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.Uploads.Storage.GCP.BucketName`.
 	ServiceRecipesUploadsStorageGcpBucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_GCP_BUCKET_NAME"
 
-	// ServiceRecipesUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.GCP`.
+	// ServiceRecipesUploadsStorageInitEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.Uploads.Storage.GCP`.
 	ServiceRecipesUploadsStorageInitEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_init"
 
-	// ServiceRecipesUploadsStorageProviderEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.Provider`.
+	// ServiceRecipesUploadsStorageProviderEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.Uploads.Storage.Provider`.
 	ServiceRecipesUploadsStorageProviderEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_PROVIDER"
 
-	// ServiceRecipesUploadsStorageS3BucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.S3Config.BucketName`.
+	// ServiceRecipesUploadsStorageS3BucketNameEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.Uploads.Storage.S3Config.BucketName`.
 	ServiceRecipesUploadsStorageS3BucketNameEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_S3_BUCKET_NAME"
 
-	// ServiceRecipesUploadsStorageUploadFilenameKeyEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.Uploads.Storage.UploadFilenameKey`.
+	// ServiceRecipesUploadsStorageUploadFilenameKeyEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.Uploads.Storage.UploadFilenameKey`.
 	ServiceRecipesUploadsStorageUploadFilenameKeyEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_UPLOADS_STORAGE_UPLOAD_FILENAME_KEY"
 
-	// ServiceRecipesUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.Recipes.UseSearchService`.
+	// ServiceRecipesUseSearchServiceEnvVarKey is the environment variable name to set in order to override `config.Services.MealPlanning.UseSearchService`.
 	ServiceRecipesUseSearchServiceEnvVarKey = "DINNER_DONE_BETTER_SERVICE_RECIPES_USE_SEARCH_SERVICE"
 
 	// ServiceUsersPublicMediaURLPrefixEnvVarKey is the environment variable name to set in order to override `config.Services.Users.PublicMediaURLPrefix`.

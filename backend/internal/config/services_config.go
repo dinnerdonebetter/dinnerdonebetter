@@ -4,6 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
+	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
+	mealplanningcfg "github.com/dinnerdonebetter/backend/internal/services/mealplanning/config"
+	oauthcfg "github.com/dinnerdonebetter/backend/internal/services/oauth/config"
+
 	"github.com/hashicorp/go-multierror"
 )
 
@@ -12,20 +18,11 @@ type (
 	ServicesConfig struct {
 		_ struct{} `json:"-"`
 
-		//AuditLogEntries              auditlogentries.Config              `envPrefix:"AUDIT_LOG_ENTRIES_"              json:"auditLogEntries,omitempty"`
-		//ServiceSettingConfigurations servicesettingconfigurations.Config `envPrefix:"SERVICE_SETTING_CONFIGURATIONS_" json:"serviceSettingConfigurations,omitempty"`
-		//UserNotifications            notifications.Config            `envPrefix:"USER_NOTIFICATIONS_"             json:"userNotifications,omitempty"`
-		//Accounts                     accounts.Config                     `envPrefix:"HOUSEHOLDS_"                     json:"accounts,omitempty"`
-		//ServiceSettings              servicesettings.Config              `envPrefix:"SERVICE_SETTINGS_"               json:"serviceSettings,omitempty"`
-		//Users                        users.Config                        `envPrefix:"USERS_"                          json:"users,omitempty"`
-		//DataPrivacy                  dataprivacy.Config                  `envPrefix:"DATA_PRIVACY_"                   json:"dataPrivacy,omitempty"`
-		//Recipes                      recipemanagement.Config             `envPrefix:"RECIPES_"                        json:"recipes,omitempty"`
-		// Auth authentication.Config `envPrefix:"AUTH_"                           json:"auth,omitempty"`
-		//OAuth2Clients                oauth2clients.Config                `envPrefix:"OAUTH2_CLIENTS_"                 json:"oauth2Clients,omitempty"`
-		//MealPlanning                 mealplanning.Config                 `envPrefix:"MEAL_PLANNING_"                  json:"meals,omitempty"`
-		//Webhooks                     webhooks.Config                     `envPrefix:"WEBHOOKS_"                       json:"webhooks,omitempty"`
-		//AccountInvitations           accountinvitations.Config           `envPrefix:"HOUSEHOLD_INVITATIONS_"          json:"accountInvitations,omitempty"`
-		//ValidEnumerations            validenumerations.Config            `envPrefix:"VALID_ENUMERATIONS_"             json:"validEnumerations,omitempty"`
+		Users         identitycfg.Config     `envPrefix:"USERS_"                          json:"users,omitempty"`
+		DataPrivacy   dataprivacycfg.Config  `envPrefix:"DATA_PRIVACY_"                   json:"dataPrivacy,omitempty"`
+		MealPlanning  mealplanningcfg.Config `envPrefix:"MEAL_PLANNING_"                        json:"mealPlanning,omitempty"`
+		Auth          authentication.Config  `envPrefix:"AUTH_"                           json:"auth,omitempty"`
+		OAuth2Clients oauthcfg.Config        `envPrefix:"OAUTH2_CLIENTS_"                 json:"oauth2Clients,omitempty"`
 	}
 )
 
@@ -34,20 +31,11 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 	result := &multierror.Error{}
 
 	validatorsToRun := map[string]func(context.Context) error{
-		//"AuditLogEntries":              cfg.AuditLogEntries.ValidateWithContext,
-		//"ServiceSettingConfigurations": cfg.ServiceSettingConfigurations.ValidateWithContext,
-		//"UserNotifications":            cfg.UserNotifications.ValidateWithContext,
-		//"Accounts":                     cfg.Accounts.ValidateWithContext,
-		//"ServiceSettings":              cfg.ServiceSettings.ValidateWithContext,
-		//"Users":                        cfg.Users.ValidateWithContext,
-		//"DataPrivacy":                  cfg.DataPrivacy.ValidateWithContext,
-		//"Recipes":                      cfg.Recipes.ValidateWithContext,
-		// "Auth": cfg.Auth.ValidateWithContext,
-		//"OAuth2Clients":                cfg.OAuth2Clients.ValidateWithContext,
-		//"MealPlanning":                 cfg.MealPlanning.ValidateWithContext,
-		//"Webhooks":                     cfg.Webhooks.ValidateWithContext,
-		//"AccountInvitations":           cfg.AccountInvitations.ValidateWithContext,
-		//"ValidEnumerations":            cfg.ValidEnumerations.ValidateWithContext,
+		"Users":         cfg.Users.ValidateWithContext,
+		"DataPrivacy":   cfg.DataPrivacy.ValidateWithContext,
+		"MealPlanning":  cfg.MealPlanning.ValidateWithContext,
+		"Auth":          cfg.Auth.ValidateWithContext,
+		"OAuth2Clients": cfg.OAuth2Clients.ValidateWithContext,
 	}
 
 	for name, validator := range validatorsToRun {

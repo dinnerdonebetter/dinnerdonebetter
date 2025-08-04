@@ -31,7 +31,7 @@ type DataCollection struct {
 	AccountInstrumentOwnerships []*AccountInstrumentOwnership `protobuf:"bytes,2,rep,name=AccountInstrumentOwnerships,proto3" json:"AccountInstrumentOwnerships,omitempty"`
 	MealPlans                   []*MealPlan                   `protobuf:"bytes,3,rep,name=MealPlans,proto3" json:"MealPlans,omitempty"`
 	RecipeRatings               []*RecipeRating               `protobuf:"bytes,4,rep,name=RecipeRatings,proto3" json:"RecipeRatings,omitempty"`
-	Recipes                     []*Recipe                     `protobuf:"bytes,5,rep,name=Recipes,proto3" json:"Recipes,omitempty"`
+	Recipes                     []*Recipe                     `protobuf:"bytes,5,rep,name=MealPlanning,proto3" json:"MealPlanning,omitempty"`
 	Meals                       []*Meal                       `protobuf:"bytes,6,rep,name=Meals,proto3" json:"Meals,omitempty"`
 	UserIngredientPreferences   []*UserIngredientPreference   `protobuf:"bytes,7,rep,name=UserIngredientPreferences,proto3" json:"UserIngredientPreferences,omitempty"`
 	unknownFields               protoimpl.UnknownFields
@@ -41263,7 +41263,7 @@ var file_mealplanning_proto_depIdxs = []int32{
 	485, // 0: mealplanning.DataCollection.AccountInstrumentOwnerships:type_name -> mealplanning.AccountInstrumentOwnership
 	374, // 1: mealplanning.DataCollection.MealPlans:type_name -> mealplanning.MealPlan
 	244, // 2: mealplanning.DataCollection.RecipeRatings:type_name -> mealplanning.RecipeRating
-	231, // 3: mealplanning.DataCollection.Recipes:type_name -> mealplanning.Recipe
+	231, // 3: mealplanning.DataCollection.MealPlanning:type_name -> mealplanning.Recipe
 	369, // 4: mealplanning.DataCollection.Meals:type_name -> mealplanning.Meal
 	42,  // 5: mealplanning.DataCollection.UserIngredientPreferences:type_name -> mealplanning.UserIngredientPreference
 	488, // 6: mealplanning.ValidIngredient.CreatedAt:type_name -> google.protobuf.Timestamp
