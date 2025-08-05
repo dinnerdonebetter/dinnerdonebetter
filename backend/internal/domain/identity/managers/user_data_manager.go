@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"image/png"
 	"strings"
 
@@ -62,10 +63,6 @@ type (
 		authenticator        authentication.Hasher
 		userSearchIndex      indexing.UserTextSearcher
 	}
-
-	Config struct {
-		DataChangesTopicName string `json:"dataChangesTopicName" env:"DATA_CHANGES_TOPIC_NAME"`
-	}
 )
 
 func NewIdentityDataManager(
@@ -76,7 +73,7 @@ func NewIdentityDataManager(
 	secretGenerator random.Generator,
 	authenticator authentication.Hasher,
 	userSearchIndex indexing.UserTextSearcher,
-	cfg *Config,
+	cfg *msgconfig.QueuesConfig,
 ) (IdentityDataManager, error) {
 	publisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
