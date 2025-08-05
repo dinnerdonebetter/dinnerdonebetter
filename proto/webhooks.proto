@@ -116,7 +116,7 @@ message GetWebhooksResponse {
   repeated Webhook Results = 3;
 }
 
-service UserConfigurationService {
+service WebhooksService {
   rpc ArchiveWebhook(ArchiveWebhookRequest) returns (ArchiveWebhookResponse);
   rpc ArchiveWebhookTriggerEvent(ArchiveWebhookTriggerEventRequest) returns (ArchiveWebhookTriggerEventResponse);
   rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse);

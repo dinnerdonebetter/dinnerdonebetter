@@ -20,23 +20,23 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserConfigurationService_GetServiceSettingConfigurationsForAccount_FullMethodName = "/settings.UserConfigurationService/GetServiceSettingConfigurationsForAccount"
-	UserConfigurationService_GetServiceSettingConfigurationsForUser_FullMethodName    = "/settings.UserConfigurationService/GetServiceSettingConfigurationsForUser"
-	UserConfigurationService_SearchForServiceSettings_FullMethodName                  = "/settings.UserConfigurationService/SearchForServiceSettings"
-	UserConfigurationService_ArchiveServiceSetting_FullMethodName                     = "/settings.UserConfigurationService/ArchiveServiceSetting"
-	UserConfigurationService_ArchiveServiceSettingConfiguration_FullMethodName        = "/settings.UserConfigurationService/ArchiveServiceSettingConfiguration"
-	UserConfigurationService_CreateServiceSetting_FullMethodName                      = "/settings.UserConfigurationService/CreateServiceSetting"
-	UserConfigurationService_CreateServiceSettingConfiguration_FullMethodName         = "/settings.UserConfigurationService/CreateServiceSettingConfiguration"
-	UserConfigurationService_GetServiceSetting_FullMethodName                         = "/settings.UserConfigurationService/GetServiceSetting"
-	UserConfigurationService_GetServiceSettingConfigurationByName_FullMethodName      = "/settings.UserConfigurationService/GetServiceSettingConfigurationByName"
-	UserConfigurationService_GetServiceSettings_FullMethodName                        = "/settings.UserConfigurationService/GetServiceSettings"
-	UserConfigurationService_UpdateServiceSettingConfiguration_FullMethodName         = "/settings.UserConfigurationService/UpdateServiceSettingConfiguration"
+	SettingsService_GetServiceSettingConfigurationsForAccount_FullMethodName = "/settings.SettingsService/GetServiceSettingConfigurationsForAccount"
+	SettingsService_GetServiceSettingConfigurationsForUser_FullMethodName    = "/settings.SettingsService/GetServiceSettingConfigurationsForUser"
+	SettingsService_SearchForServiceSettings_FullMethodName                  = "/settings.SettingsService/SearchForServiceSettings"
+	SettingsService_ArchiveServiceSetting_FullMethodName                     = "/settings.SettingsService/ArchiveServiceSetting"
+	SettingsService_ArchiveServiceSettingConfiguration_FullMethodName        = "/settings.SettingsService/ArchiveServiceSettingConfiguration"
+	SettingsService_CreateServiceSetting_FullMethodName                      = "/settings.SettingsService/CreateServiceSetting"
+	SettingsService_CreateServiceSettingConfiguration_FullMethodName         = "/settings.SettingsService/CreateServiceSettingConfiguration"
+	SettingsService_GetServiceSetting_FullMethodName                         = "/settings.SettingsService/GetServiceSetting"
+	SettingsService_GetServiceSettingConfigurationByName_FullMethodName      = "/settings.SettingsService/GetServiceSettingConfigurationByName"
+	SettingsService_GetServiceSettings_FullMethodName                        = "/settings.SettingsService/GetServiceSettings"
+	SettingsService_UpdateServiceSettingConfiguration_FullMethodName         = "/settings.SettingsService/UpdateServiceSettingConfiguration"
 )
 
-// UserConfigurationServiceClient is the client API for UserConfigurationService service.
+// SettingsServiceClient is the client API for SettingsService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type UserConfigurationServiceClient interface {
+type SettingsServiceClient interface {
 	GetServiceSettingConfigurationsForAccount(ctx context.Context, in *GetServiceSettingConfigurationsForAccountRequest, opts ...grpc.CallOption) (*GetServiceSettingConfigurationsForAccountResponse, error)
 	GetServiceSettingConfigurationsForUser(ctx context.Context, in *GetServiceSettingConfigurationsForUserRequest, opts ...grpc.CallOption) (*GetServiceSettingConfigurationsForUserResponse, error)
 	SearchForServiceSettings(ctx context.Context, in *SearchForServiceSettingsRequest, opts ...grpc.CallOption) (*SearchForServiceSettingsResponse, error)
@@ -50,128 +50,128 @@ type UserConfigurationServiceClient interface {
 	UpdateServiceSettingConfiguration(ctx context.Context, in *UpdateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*UpdateServiceSettingConfigurationResponse, error)
 }
 
-type userConfigurationServiceClient struct {
+type settingsServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewUserConfigurationServiceClient(cc grpc.ClientConnInterface) UserConfigurationServiceClient {
-	return &userConfigurationServiceClient{cc}
+func NewSettingsServiceClient(cc grpc.ClientConnInterface) SettingsServiceClient {
+	return &settingsServiceClient{cc}
 }
 
-func (c *userConfigurationServiceClient) GetServiceSettingConfigurationsForAccount(ctx context.Context, in *GetServiceSettingConfigurationsForAccountRequest, opts ...grpc.CallOption) (*GetServiceSettingConfigurationsForAccountResponse, error) {
+func (c *settingsServiceClient) GetServiceSettingConfigurationsForAccount(ctx context.Context, in *GetServiceSettingConfigurationsForAccountRequest, opts ...grpc.CallOption) (*GetServiceSettingConfigurationsForAccountResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetServiceSettingConfigurationsForAccountResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_GetServiceSettingConfigurationsForAccount_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_GetServiceSettingConfigurationsForAccount_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) GetServiceSettingConfigurationsForUser(ctx context.Context, in *GetServiceSettingConfigurationsForUserRequest, opts ...grpc.CallOption) (*GetServiceSettingConfigurationsForUserResponse, error) {
+func (c *settingsServiceClient) GetServiceSettingConfigurationsForUser(ctx context.Context, in *GetServiceSettingConfigurationsForUserRequest, opts ...grpc.CallOption) (*GetServiceSettingConfigurationsForUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetServiceSettingConfigurationsForUserResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_GetServiceSettingConfigurationsForUser_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_GetServiceSettingConfigurationsForUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) SearchForServiceSettings(ctx context.Context, in *SearchForServiceSettingsRequest, opts ...grpc.CallOption) (*SearchForServiceSettingsResponse, error) {
+func (c *settingsServiceClient) SearchForServiceSettings(ctx context.Context, in *SearchForServiceSettingsRequest, opts ...grpc.CallOption) (*SearchForServiceSettingsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SearchForServiceSettingsResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_SearchForServiceSettings_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_SearchForServiceSettings_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) ArchiveServiceSetting(ctx context.Context, in *ArchiveServiceSettingRequest, opts ...grpc.CallOption) (*ArchiveServiceSettingResponse, error) {
+func (c *settingsServiceClient) ArchiveServiceSetting(ctx context.Context, in *ArchiveServiceSettingRequest, opts ...grpc.CallOption) (*ArchiveServiceSettingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ArchiveServiceSettingResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_ArchiveServiceSetting_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_ArchiveServiceSetting_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) ArchiveServiceSettingConfiguration(ctx context.Context, in *ArchiveServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*ArchiveServiceSettingConfigurationResponse, error) {
+func (c *settingsServiceClient) ArchiveServiceSettingConfiguration(ctx context.Context, in *ArchiveServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*ArchiveServiceSettingConfigurationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ArchiveServiceSettingConfigurationResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_ArchiveServiceSettingConfiguration_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_ArchiveServiceSettingConfiguration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) CreateServiceSetting(ctx context.Context, in *CreateServiceSettingRequest, opts ...grpc.CallOption) (*CreateServiceSettingResponse, error) {
+func (c *settingsServiceClient) CreateServiceSetting(ctx context.Context, in *CreateServiceSettingRequest, opts ...grpc.CallOption) (*CreateServiceSettingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateServiceSettingResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_CreateServiceSetting_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_CreateServiceSetting_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) CreateServiceSettingConfiguration(ctx context.Context, in *CreateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*CreateServiceSettingConfigurationResponse, error) {
+func (c *settingsServiceClient) CreateServiceSettingConfiguration(ctx context.Context, in *CreateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*CreateServiceSettingConfigurationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateServiceSettingConfigurationResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_CreateServiceSettingConfiguration_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_CreateServiceSettingConfiguration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) GetServiceSetting(ctx context.Context, in *GetServiceSettingRequest, opts ...grpc.CallOption) (*GetServiceSettingResponse, error) {
+func (c *settingsServiceClient) GetServiceSetting(ctx context.Context, in *GetServiceSettingRequest, opts ...grpc.CallOption) (*GetServiceSettingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetServiceSettingResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_GetServiceSetting_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_GetServiceSetting_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) GetServiceSettingConfigurationByName(ctx context.Context, in *GetServiceSettingConfigurationByNameRequest, opts ...grpc.CallOption) (*GetServiceSettingConfigurationByNameResponse, error) {
+func (c *settingsServiceClient) GetServiceSettingConfigurationByName(ctx context.Context, in *GetServiceSettingConfigurationByNameRequest, opts ...grpc.CallOption) (*GetServiceSettingConfigurationByNameResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetServiceSettingConfigurationByNameResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_GetServiceSettingConfigurationByName_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_GetServiceSettingConfigurationByName_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) GetServiceSettings(ctx context.Context, in *GetServiceSettingsRequest, opts ...grpc.CallOption) (*GetServiceSettingsResponse, error) {
+func (c *settingsServiceClient) GetServiceSettings(ctx context.Context, in *GetServiceSettingsRequest, opts ...grpc.CallOption) (*GetServiceSettingsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetServiceSettingsResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_GetServiceSettings_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_GetServiceSettings_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) UpdateServiceSettingConfiguration(ctx context.Context, in *UpdateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*UpdateServiceSettingConfigurationResponse, error) {
+func (c *settingsServiceClient) UpdateServiceSettingConfiguration(ctx context.Context, in *UpdateServiceSettingConfigurationRequest, opts ...grpc.CallOption) (*UpdateServiceSettingConfigurationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateServiceSettingConfigurationResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_UpdateServiceSettingConfiguration_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SettingsService_UpdateServiceSettingConfiguration_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// UserConfigurationServiceServer is the server API for UserConfigurationService service.
-// All implementations must embed UnimplementedUserConfigurationServiceServer
+// SettingsServiceServer is the server API for SettingsService service.
+// All implementations must embed UnimplementedSettingsServiceServer
 // for forward compatibility.
-type UserConfigurationServiceServer interface {
+type SettingsServiceServer interface {
 	GetServiceSettingConfigurationsForAccount(context.Context, *GetServiceSettingConfigurationsForAccountRequest) (*GetServiceSettingConfigurationsForAccountResponse, error)
 	GetServiceSettingConfigurationsForUser(context.Context, *GetServiceSettingConfigurationsForUserRequest) (*GetServiceSettingConfigurationsForUserResponse, error)
 	SearchForServiceSettings(context.Context, *SearchForServiceSettingsRequest) (*SearchForServiceSettingsResponse, error)
@@ -183,319 +183,318 @@ type UserConfigurationServiceServer interface {
 	GetServiceSettingConfigurationByName(context.Context, *GetServiceSettingConfigurationByNameRequest) (*GetServiceSettingConfigurationByNameResponse, error)
 	GetServiceSettings(context.Context, *GetServiceSettingsRequest) (*GetServiceSettingsResponse, error)
 	UpdateServiceSettingConfiguration(context.Context, *UpdateServiceSettingConfigurationRequest) (*UpdateServiceSettingConfigurationResponse, error)
-	mustEmbedUnimplementedUserConfigurationServiceServer()
+	mustEmbedUnimplementedSettingsServiceServer()
 }
 
-// UnimplementedUserConfigurationServiceServer must be embedded to have
+// UnimplementedSettingsServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedUserConfigurationServiceServer struct{}
+type UnimplementedSettingsServiceServer struct{}
 
-func (UnimplementedUserConfigurationServiceServer) GetServiceSettingConfigurationsForAccount(context.Context, *GetServiceSettingConfigurationsForAccountRequest) (*GetServiceSettingConfigurationsForAccountResponse, error) {
+func (UnimplementedSettingsServiceServer) GetServiceSettingConfigurationsForAccount(context.Context, *GetServiceSettingConfigurationsForAccountRequest) (*GetServiceSettingConfigurationsForAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSettingConfigurationsForAccount not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) GetServiceSettingConfigurationsForUser(context.Context, *GetServiceSettingConfigurationsForUserRequest) (*GetServiceSettingConfigurationsForUserResponse, error) {
+func (UnimplementedSettingsServiceServer) GetServiceSettingConfigurationsForUser(context.Context, *GetServiceSettingConfigurationsForUserRequest) (*GetServiceSettingConfigurationsForUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSettingConfigurationsForUser not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) SearchForServiceSettings(context.Context, *SearchForServiceSettingsRequest) (*SearchForServiceSettingsResponse, error) {
+func (UnimplementedSettingsServiceServer) SearchForServiceSettings(context.Context, *SearchForServiceSettingsRequest) (*SearchForServiceSettingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForServiceSettings not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) ArchiveServiceSetting(context.Context, *ArchiveServiceSettingRequest) (*ArchiveServiceSettingResponse, error) {
+func (UnimplementedSettingsServiceServer) ArchiveServiceSetting(context.Context, *ArchiveServiceSettingRequest) (*ArchiveServiceSettingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveServiceSetting not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) ArchiveServiceSettingConfiguration(context.Context, *ArchiveServiceSettingConfigurationRequest) (*ArchiveServiceSettingConfigurationResponse, error) {
+func (UnimplementedSettingsServiceServer) ArchiveServiceSettingConfiguration(context.Context, *ArchiveServiceSettingConfigurationRequest) (*ArchiveServiceSettingConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveServiceSettingConfiguration not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) CreateServiceSetting(context.Context, *CreateServiceSettingRequest) (*CreateServiceSettingResponse, error) {
+func (UnimplementedSettingsServiceServer) CreateServiceSetting(context.Context, *CreateServiceSettingRequest) (*CreateServiceSettingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateServiceSetting not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) CreateServiceSettingConfiguration(context.Context, *CreateServiceSettingConfigurationRequest) (*CreateServiceSettingConfigurationResponse, error) {
+func (UnimplementedSettingsServiceServer) CreateServiceSettingConfiguration(context.Context, *CreateServiceSettingConfigurationRequest) (*CreateServiceSettingConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateServiceSettingConfiguration not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) GetServiceSetting(context.Context, *GetServiceSettingRequest) (*GetServiceSettingResponse, error) {
+func (UnimplementedSettingsServiceServer) GetServiceSetting(context.Context, *GetServiceSettingRequest) (*GetServiceSettingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSetting not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) GetServiceSettingConfigurationByName(context.Context, *GetServiceSettingConfigurationByNameRequest) (*GetServiceSettingConfigurationByNameResponse, error) {
+func (UnimplementedSettingsServiceServer) GetServiceSettingConfigurationByName(context.Context, *GetServiceSettingConfigurationByNameRequest) (*GetServiceSettingConfigurationByNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSettingConfigurationByName not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) GetServiceSettings(context.Context, *GetServiceSettingsRequest) (*GetServiceSettingsResponse, error) {
+func (UnimplementedSettingsServiceServer) GetServiceSettings(context.Context, *GetServiceSettingsRequest) (*GetServiceSettingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceSettings not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) UpdateServiceSettingConfiguration(context.Context, *UpdateServiceSettingConfigurationRequest) (*UpdateServiceSettingConfigurationResponse, error) {
+func (UnimplementedSettingsServiceServer) UpdateServiceSettingConfiguration(context.Context, *UpdateServiceSettingConfigurationRequest) (*UpdateServiceSettingConfigurationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateServiceSettingConfiguration not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) mustEmbedUnimplementedUserConfigurationServiceServer() {
-}
-func (UnimplementedUserConfigurationServiceServer) testEmbeddedByValue() {}
+func (UnimplementedSettingsServiceServer) mustEmbedUnimplementedSettingsServiceServer() {}
+func (UnimplementedSettingsServiceServer) testEmbeddedByValue()                         {}
 
-// UnsafeUserConfigurationServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to UserConfigurationServiceServer will
+// UnsafeSettingsServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SettingsServiceServer will
 // result in compilation errors.
-type UnsafeUserConfigurationServiceServer interface {
-	mustEmbedUnimplementedUserConfigurationServiceServer()
+type UnsafeSettingsServiceServer interface {
+	mustEmbedUnimplementedSettingsServiceServer()
 }
 
-func RegisterUserConfigurationServiceServer(s grpc.ServiceRegistrar, srv UserConfigurationServiceServer) {
-	// If the following call pancis, it indicates UnimplementedUserConfigurationServiceServer was
+func RegisterSettingsServiceServer(s grpc.ServiceRegistrar, srv SettingsServiceServer) {
+	// If the following call pancis, it indicates UnimplementedSettingsServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&UserConfigurationService_ServiceDesc, srv)
+	s.RegisterService(&SettingsService_ServiceDesc, srv)
 }
 
-func _UserConfigurationService_GetServiceSettingConfigurationsForAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_GetServiceSettingConfigurationsForAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetServiceSettingConfigurationsForAccountRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).GetServiceSettingConfigurationsForAccount(ctx, in)
+		return srv.(SettingsServiceServer).GetServiceSettingConfigurationsForAccount(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_GetServiceSettingConfigurationsForAccount_FullMethodName,
+		FullMethod: SettingsService_GetServiceSettingConfigurationsForAccount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).GetServiceSettingConfigurationsForAccount(ctx, req.(*GetServiceSettingConfigurationsForAccountRequest))
+		return srv.(SettingsServiceServer).GetServiceSettingConfigurationsForAccount(ctx, req.(*GetServiceSettingConfigurationsForAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_GetServiceSettingConfigurationsForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_GetServiceSettingConfigurationsForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetServiceSettingConfigurationsForUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).GetServiceSettingConfigurationsForUser(ctx, in)
+		return srv.(SettingsServiceServer).GetServiceSettingConfigurationsForUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_GetServiceSettingConfigurationsForUser_FullMethodName,
+		FullMethod: SettingsService_GetServiceSettingConfigurationsForUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).GetServiceSettingConfigurationsForUser(ctx, req.(*GetServiceSettingConfigurationsForUserRequest))
+		return srv.(SettingsServiceServer).GetServiceSettingConfigurationsForUser(ctx, req.(*GetServiceSettingConfigurationsForUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_SearchForServiceSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_SearchForServiceSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchForServiceSettingsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).SearchForServiceSettings(ctx, in)
+		return srv.(SettingsServiceServer).SearchForServiceSettings(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_SearchForServiceSettings_FullMethodName,
+		FullMethod: SettingsService_SearchForServiceSettings_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).SearchForServiceSettings(ctx, req.(*SearchForServiceSettingsRequest))
+		return srv.(SettingsServiceServer).SearchForServiceSettings(ctx, req.(*SearchForServiceSettingsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_ArchiveServiceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_ArchiveServiceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ArchiveServiceSettingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).ArchiveServiceSetting(ctx, in)
+		return srv.(SettingsServiceServer).ArchiveServiceSetting(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_ArchiveServiceSetting_FullMethodName,
+		FullMethod: SettingsService_ArchiveServiceSetting_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).ArchiveServiceSetting(ctx, req.(*ArchiveServiceSettingRequest))
+		return srv.(SettingsServiceServer).ArchiveServiceSetting(ctx, req.(*ArchiveServiceSettingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_ArchiveServiceSettingConfiguration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_ArchiveServiceSettingConfiguration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ArchiveServiceSettingConfigurationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).ArchiveServiceSettingConfiguration(ctx, in)
+		return srv.(SettingsServiceServer).ArchiveServiceSettingConfiguration(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_ArchiveServiceSettingConfiguration_FullMethodName,
+		FullMethod: SettingsService_ArchiveServiceSettingConfiguration_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).ArchiveServiceSettingConfiguration(ctx, req.(*ArchiveServiceSettingConfigurationRequest))
+		return srv.(SettingsServiceServer).ArchiveServiceSettingConfiguration(ctx, req.(*ArchiveServiceSettingConfigurationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_CreateServiceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_CreateServiceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateServiceSettingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).CreateServiceSetting(ctx, in)
+		return srv.(SettingsServiceServer).CreateServiceSetting(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_CreateServiceSetting_FullMethodName,
+		FullMethod: SettingsService_CreateServiceSetting_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).CreateServiceSetting(ctx, req.(*CreateServiceSettingRequest))
+		return srv.(SettingsServiceServer).CreateServiceSetting(ctx, req.(*CreateServiceSettingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_CreateServiceSettingConfiguration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_CreateServiceSettingConfiguration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateServiceSettingConfigurationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).CreateServiceSettingConfiguration(ctx, in)
+		return srv.(SettingsServiceServer).CreateServiceSettingConfiguration(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_CreateServiceSettingConfiguration_FullMethodName,
+		FullMethod: SettingsService_CreateServiceSettingConfiguration_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).CreateServiceSettingConfiguration(ctx, req.(*CreateServiceSettingConfigurationRequest))
+		return srv.(SettingsServiceServer).CreateServiceSettingConfiguration(ctx, req.(*CreateServiceSettingConfigurationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_GetServiceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_GetServiceSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetServiceSettingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).GetServiceSetting(ctx, in)
+		return srv.(SettingsServiceServer).GetServiceSetting(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_GetServiceSetting_FullMethodName,
+		FullMethod: SettingsService_GetServiceSetting_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).GetServiceSetting(ctx, req.(*GetServiceSettingRequest))
+		return srv.(SettingsServiceServer).GetServiceSetting(ctx, req.(*GetServiceSettingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_GetServiceSettingConfigurationByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_GetServiceSettingConfigurationByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetServiceSettingConfigurationByNameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).GetServiceSettingConfigurationByName(ctx, in)
+		return srv.(SettingsServiceServer).GetServiceSettingConfigurationByName(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_GetServiceSettingConfigurationByName_FullMethodName,
+		FullMethod: SettingsService_GetServiceSettingConfigurationByName_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).GetServiceSettingConfigurationByName(ctx, req.(*GetServiceSettingConfigurationByNameRequest))
+		return srv.(SettingsServiceServer).GetServiceSettingConfigurationByName(ctx, req.(*GetServiceSettingConfigurationByNameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_GetServiceSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_GetServiceSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetServiceSettingsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).GetServiceSettings(ctx, in)
+		return srv.(SettingsServiceServer).GetServiceSettings(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_GetServiceSettings_FullMethodName,
+		FullMethod: SettingsService_GetServiceSettings_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).GetServiceSettings(ctx, req.(*GetServiceSettingsRequest))
+		return srv.(SettingsServiceServer).GetServiceSettings(ctx, req.(*GetServiceSettingsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_UpdateServiceSettingConfiguration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SettingsService_UpdateServiceSettingConfiguration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateServiceSettingConfigurationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).UpdateServiceSettingConfiguration(ctx, in)
+		return srv.(SettingsServiceServer).UpdateServiceSettingConfiguration(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_UpdateServiceSettingConfiguration_FullMethodName,
+		FullMethod: SettingsService_UpdateServiceSettingConfiguration_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).UpdateServiceSettingConfiguration(ctx, req.(*UpdateServiceSettingConfigurationRequest))
+		return srv.(SettingsServiceServer).UpdateServiceSettingConfiguration(ctx, req.(*UpdateServiceSettingConfigurationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// UserConfigurationService_ServiceDesc is the grpc.ServiceDesc for UserConfigurationService service.
+// SettingsService_ServiceDesc is the grpc.ServiceDesc for SettingsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var UserConfigurationService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "settings.UserConfigurationService",
-	HandlerType: (*UserConfigurationServiceServer)(nil),
+var SettingsService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "settings.SettingsService",
+	HandlerType: (*SettingsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetServiceSettingConfigurationsForAccount",
-			Handler:    _UserConfigurationService_GetServiceSettingConfigurationsForAccount_Handler,
+			Handler:    _SettingsService_GetServiceSettingConfigurationsForAccount_Handler,
 		},
 		{
 			MethodName: "GetServiceSettingConfigurationsForUser",
-			Handler:    _UserConfigurationService_GetServiceSettingConfigurationsForUser_Handler,
+			Handler:    _SettingsService_GetServiceSettingConfigurationsForUser_Handler,
 		},
 		{
 			MethodName: "SearchForServiceSettings",
-			Handler:    _UserConfigurationService_SearchForServiceSettings_Handler,
+			Handler:    _SettingsService_SearchForServiceSettings_Handler,
 		},
 		{
 			MethodName: "ArchiveServiceSetting",
-			Handler:    _UserConfigurationService_ArchiveServiceSetting_Handler,
+			Handler:    _SettingsService_ArchiveServiceSetting_Handler,
 		},
 		{
 			MethodName: "ArchiveServiceSettingConfiguration",
-			Handler:    _UserConfigurationService_ArchiveServiceSettingConfiguration_Handler,
+			Handler:    _SettingsService_ArchiveServiceSettingConfiguration_Handler,
 		},
 		{
 			MethodName: "CreateServiceSetting",
-			Handler:    _UserConfigurationService_CreateServiceSetting_Handler,
+			Handler:    _SettingsService_CreateServiceSetting_Handler,
 		},
 		{
 			MethodName: "CreateServiceSettingConfiguration",
-			Handler:    _UserConfigurationService_CreateServiceSettingConfiguration_Handler,
+			Handler:    _SettingsService_CreateServiceSettingConfiguration_Handler,
 		},
 		{
 			MethodName: "GetServiceSetting",
-			Handler:    _UserConfigurationService_GetServiceSetting_Handler,
+			Handler:    _SettingsService_GetServiceSetting_Handler,
 		},
 		{
 			MethodName: "GetServiceSettingConfigurationByName",
-			Handler:    _UserConfigurationService_GetServiceSettingConfigurationByName_Handler,
+			Handler:    _SettingsService_GetServiceSettingConfigurationByName_Handler,
 		},
 		{
 			MethodName: "GetServiceSettings",
-			Handler:    _UserConfigurationService_GetServiceSettings_Handler,
+			Handler:    _SettingsService_GetServiceSettings_Handler,
 		},
 		{
 			MethodName: "UpdateServiceSettingConfiguration",
-			Handler:    _UserConfigurationService_UpdateServiceSettingConfiguration_Handler,
+			Handler:    _SettingsService_UpdateServiceSettingConfiguration_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

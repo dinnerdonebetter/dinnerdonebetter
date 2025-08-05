@@ -20,18 +20,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserConfigurationService_ArchiveWebhook_FullMethodName             = "/webhooks.UserConfigurationService/ArchiveWebhook"
-	UserConfigurationService_ArchiveWebhookTriggerEvent_FullMethodName = "/webhooks.UserConfigurationService/ArchiveWebhookTriggerEvent"
-	UserConfigurationService_CreateWebhook_FullMethodName              = "/webhooks.UserConfigurationService/CreateWebhook"
-	UserConfigurationService_AddWebhookTriggerEvent_FullMethodName     = "/webhooks.UserConfigurationService/AddWebhookTriggerEvent"
-	UserConfigurationService_GetWebhook_FullMethodName                 = "/webhooks.UserConfigurationService/GetWebhook"
-	UserConfigurationService_GetWebhooks_FullMethodName                = "/webhooks.UserConfigurationService/GetWebhooks"
+	WebhooksService_ArchiveWebhook_FullMethodName             = "/webhooks.WebhooksService/ArchiveWebhook"
+	WebhooksService_ArchiveWebhookTriggerEvent_FullMethodName = "/webhooks.WebhooksService/ArchiveWebhookTriggerEvent"
+	WebhooksService_CreateWebhook_FullMethodName              = "/webhooks.WebhooksService/CreateWebhook"
+	WebhooksService_AddWebhookTriggerEvent_FullMethodName     = "/webhooks.WebhooksService/AddWebhookTriggerEvent"
+	WebhooksService_GetWebhook_FullMethodName                 = "/webhooks.WebhooksService/GetWebhook"
+	WebhooksService_GetWebhooks_FullMethodName                = "/webhooks.WebhooksService/GetWebhooks"
 )
 
-// UserConfigurationServiceClient is the client API for UserConfigurationService service.
+// WebhooksServiceClient is the client API for WebhooksService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type UserConfigurationServiceClient interface {
+type WebhooksServiceClient interface {
 	ArchiveWebhook(ctx context.Context, in *ArchiveWebhookRequest, opts ...grpc.CallOption) (*ArchiveWebhookResponse, error)
 	ArchiveWebhookTriggerEvent(ctx context.Context, in *ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*ArchiveWebhookTriggerEventResponse, error)
 	CreateWebhook(ctx context.Context, in *CreateWebhookRequest, opts ...grpc.CallOption) (*CreateWebhookResponse, error)
@@ -40,272 +40,271 @@ type UserConfigurationServiceClient interface {
 	GetWebhooks(ctx context.Context, in *GetWebhooksRequest, opts ...grpc.CallOption) (*GetWebhooksResponse, error)
 }
 
-type userConfigurationServiceClient struct {
+type webhooksServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewUserConfigurationServiceClient(cc grpc.ClientConnInterface) UserConfigurationServiceClient {
-	return &userConfigurationServiceClient{cc}
+func NewWebhooksServiceClient(cc grpc.ClientConnInterface) WebhooksServiceClient {
+	return &webhooksServiceClient{cc}
 }
 
-func (c *userConfigurationServiceClient) ArchiveWebhook(ctx context.Context, in *ArchiveWebhookRequest, opts ...grpc.CallOption) (*ArchiveWebhookResponse, error) {
+func (c *webhooksServiceClient) ArchiveWebhook(ctx context.Context, in *ArchiveWebhookRequest, opts ...grpc.CallOption) (*ArchiveWebhookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ArchiveWebhookResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_ArchiveWebhook_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, WebhooksService_ArchiveWebhook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) ArchiveWebhookTriggerEvent(ctx context.Context, in *ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*ArchiveWebhookTriggerEventResponse, error) {
+func (c *webhooksServiceClient) ArchiveWebhookTriggerEvent(ctx context.Context, in *ArchiveWebhookTriggerEventRequest, opts ...grpc.CallOption) (*ArchiveWebhookTriggerEventResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ArchiveWebhookTriggerEventResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_ArchiveWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, WebhooksService_ArchiveWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) CreateWebhook(ctx context.Context, in *CreateWebhookRequest, opts ...grpc.CallOption) (*CreateWebhookResponse, error) {
+func (c *webhooksServiceClient) CreateWebhook(ctx context.Context, in *CreateWebhookRequest, opts ...grpc.CallOption) (*CreateWebhookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateWebhookResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_CreateWebhook_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, WebhooksService_CreateWebhook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) AddWebhookTriggerEvent(ctx context.Context, in *AddWebhookTriggerEventRequest, opts ...grpc.CallOption) (*AddWebhookTriggerEventResponse, error) {
+func (c *webhooksServiceClient) AddWebhookTriggerEvent(ctx context.Context, in *AddWebhookTriggerEventRequest, opts ...grpc.CallOption) (*AddWebhookTriggerEventResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AddWebhookTriggerEventResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_AddWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, WebhooksService_AddWebhookTriggerEvent_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) GetWebhook(ctx context.Context, in *GetWebhookRequest, opts ...grpc.CallOption) (*GetWebhookResponse, error) {
+func (c *webhooksServiceClient) GetWebhook(ctx context.Context, in *GetWebhookRequest, opts ...grpc.CallOption) (*GetWebhookResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetWebhookResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_GetWebhook_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, WebhooksService_GetWebhook_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userConfigurationServiceClient) GetWebhooks(ctx context.Context, in *GetWebhooksRequest, opts ...grpc.CallOption) (*GetWebhooksResponse, error) {
+func (c *webhooksServiceClient) GetWebhooks(ctx context.Context, in *GetWebhooksRequest, opts ...grpc.CallOption) (*GetWebhooksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetWebhooksResponse)
-	err := c.cc.Invoke(ctx, UserConfigurationService_GetWebhooks_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, WebhooksService_GetWebhooks_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// UserConfigurationServiceServer is the server API for UserConfigurationService service.
-// All implementations must embed UnimplementedUserConfigurationServiceServer
+// WebhooksServiceServer is the server API for WebhooksService service.
+// All implementations must embed UnimplementedWebhooksServiceServer
 // for forward compatibility.
-type UserConfigurationServiceServer interface {
+type WebhooksServiceServer interface {
 	ArchiveWebhook(context.Context, *ArchiveWebhookRequest) (*ArchiveWebhookResponse, error)
 	ArchiveWebhookTriggerEvent(context.Context, *ArchiveWebhookTriggerEventRequest) (*ArchiveWebhookTriggerEventResponse, error)
 	CreateWebhook(context.Context, *CreateWebhookRequest) (*CreateWebhookResponse, error)
 	AddWebhookTriggerEvent(context.Context, *AddWebhookTriggerEventRequest) (*AddWebhookTriggerEventResponse, error)
 	GetWebhook(context.Context, *GetWebhookRequest) (*GetWebhookResponse, error)
 	GetWebhooks(context.Context, *GetWebhooksRequest) (*GetWebhooksResponse, error)
-	mustEmbedUnimplementedUserConfigurationServiceServer()
+	mustEmbedUnimplementedWebhooksServiceServer()
 }
 
-// UnimplementedUserConfigurationServiceServer must be embedded to have
+// UnimplementedWebhooksServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedUserConfigurationServiceServer struct{}
+type UnimplementedWebhooksServiceServer struct{}
 
-func (UnimplementedUserConfigurationServiceServer) ArchiveWebhook(context.Context, *ArchiveWebhookRequest) (*ArchiveWebhookResponse, error) {
+func (UnimplementedWebhooksServiceServer) ArchiveWebhook(context.Context, *ArchiveWebhookRequest) (*ArchiveWebhookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveWebhook not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) ArchiveWebhookTriggerEvent(context.Context, *ArchiveWebhookTriggerEventRequest) (*ArchiveWebhookTriggerEventResponse, error) {
+func (UnimplementedWebhooksServiceServer) ArchiveWebhookTriggerEvent(context.Context, *ArchiveWebhookTriggerEventRequest) (*ArchiveWebhookTriggerEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ArchiveWebhookTriggerEvent not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) CreateWebhook(context.Context, *CreateWebhookRequest) (*CreateWebhookResponse, error) {
+func (UnimplementedWebhooksServiceServer) CreateWebhook(context.Context, *CreateWebhookRequest) (*CreateWebhookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWebhook not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) AddWebhookTriggerEvent(context.Context, *AddWebhookTriggerEventRequest) (*AddWebhookTriggerEventResponse, error) {
+func (UnimplementedWebhooksServiceServer) AddWebhookTriggerEvent(context.Context, *AddWebhookTriggerEventRequest) (*AddWebhookTriggerEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddWebhookTriggerEvent not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) GetWebhook(context.Context, *GetWebhookRequest) (*GetWebhookResponse, error) {
+func (UnimplementedWebhooksServiceServer) GetWebhook(context.Context, *GetWebhookRequest) (*GetWebhookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWebhook not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) GetWebhooks(context.Context, *GetWebhooksRequest) (*GetWebhooksResponse, error) {
+func (UnimplementedWebhooksServiceServer) GetWebhooks(context.Context, *GetWebhooksRequest) (*GetWebhooksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWebhooks not implemented")
 }
-func (UnimplementedUserConfigurationServiceServer) mustEmbedUnimplementedUserConfigurationServiceServer() {
-}
-func (UnimplementedUserConfigurationServiceServer) testEmbeddedByValue() {}
+func (UnimplementedWebhooksServiceServer) mustEmbedUnimplementedWebhooksServiceServer() {}
+func (UnimplementedWebhooksServiceServer) testEmbeddedByValue()                         {}
 
-// UnsafeUserConfigurationServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to UserConfigurationServiceServer will
+// UnsafeWebhooksServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to WebhooksServiceServer will
 // result in compilation errors.
-type UnsafeUserConfigurationServiceServer interface {
-	mustEmbedUnimplementedUserConfigurationServiceServer()
+type UnsafeWebhooksServiceServer interface {
+	mustEmbedUnimplementedWebhooksServiceServer()
 }
 
-func RegisterUserConfigurationServiceServer(s grpc.ServiceRegistrar, srv UserConfigurationServiceServer) {
-	// If the following call pancis, it indicates UnimplementedUserConfigurationServiceServer was
+func RegisterWebhooksServiceServer(s grpc.ServiceRegistrar, srv WebhooksServiceServer) {
+	// If the following call pancis, it indicates UnimplementedWebhooksServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&UserConfigurationService_ServiceDesc, srv)
+	s.RegisterService(&WebhooksService_ServiceDesc, srv)
 }
 
-func _UserConfigurationService_ArchiveWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WebhooksService_ArchiveWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ArchiveWebhookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).ArchiveWebhook(ctx, in)
+		return srv.(WebhooksServiceServer).ArchiveWebhook(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_ArchiveWebhook_FullMethodName,
+		FullMethod: WebhooksService_ArchiveWebhook_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).ArchiveWebhook(ctx, req.(*ArchiveWebhookRequest))
+		return srv.(WebhooksServiceServer).ArchiveWebhook(ctx, req.(*ArchiveWebhookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_ArchiveWebhookTriggerEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WebhooksService_ArchiveWebhookTriggerEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ArchiveWebhookTriggerEventRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).ArchiveWebhookTriggerEvent(ctx, in)
+		return srv.(WebhooksServiceServer).ArchiveWebhookTriggerEvent(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_ArchiveWebhookTriggerEvent_FullMethodName,
+		FullMethod: WebhooksService_ArchiveWebhookTriggerEvent_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).ArchiveWebhookTriggerEvent(ctx, req.(*ArchiveWebhookTriggerEventRequest))
+		return srv.(WebhooksServiceServer).ArchiveWebhookTriggerEvent(ctx, req.(*ArchiveWebhookTriggerEventRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_CreateWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WebhooksService_CreateWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateWebhookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).CreateWebhook(ctx, in)
+		return srv.(WebhooksServiceServer).CreateWebhook(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_CreateWebhook_FullMethodName,
+		FullMethod: WebhooksService_CreateWebhook_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).CreateWebhook(ctx, req.(*CreateWebhookRequest))
+		return srv.(WebhooksServiceServer).CreateWebhook(ctx, req.(*CreateWebhookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_AddWebhookTriggerEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WebhooksService_AddWebhookTriggerEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AddWebhookTriggerEventRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).AddWebhookTriggerEvent(ctx, in)
+		return srv.(WebhooksServiceServer).AddWebhookTriggerEvent(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_AddWebhookTriggerEvent_FullMethodName,
+		FullMethod: WebhooksService_AddWebhookTriggerEvent_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).AddWebhookTriggerEvent(ctx, req.(*AddWebhookTriggerEventRequest))
+		return srv.(WebhooksServiceServer).AddWebhookTriggerEvent(ctx, req.(*AddWebhookTriggerEventRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_GetWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WebhooksService_GetWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetWebhookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).GetWebhook(ctx, in)
+		return srv.(WebhooksServiceServer).GetWebhook(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_GetWebhook_FullMethodName,
+		FullMethod: WebhooksService_GetWebhook_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).GetWebhook(ctx, req.(*GetWebhookRequest))
+		return srv.(WebhooksServiceServer).GetWebhook(ctx, req.(*GetWebhookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserConfigurationService_GetWebhooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WebhooksService_GetWebhooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetWebhooksRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserConfigurationServiceServer).GetWebhooks(ctx, in)
+		return srv.(WebhooksServiceServer).GetWebhooks(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserConfigurationService_GetWebhooks_FullMethodName,
+		FullMethod: WebhooksService_GetWebhooks_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserConfigurationServiceServer).GetWebhooks(ctx, req.(*GetWebhooksRequest))
+		return srv.(WebhooksServiceServer).GetWebhooks(ctx, req.(*GetWebhooksRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// UserConfigurationService_ServiceDesc is the grpc.ServiceDesc for UserConfigurationService service.
+// WebhooksService_ServiceDesc is the grpc.ServiceDesc for WebhooksService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var UserConfigurationService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "webhooks.UserConfigurationService",
-	HandlerType: (*UserConfigurationServiceServer)(nil),
+var WebhooksService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "webhooks.WebhooksService",
+	HandlerType: (*WebhooksServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "ArchiveWebhook",
-			Handler:    _UserConfigurationService_ArchiveWebhook_Handler,
+			Handler:    _WebhooksService_ArchiveWebhook_Handler,
 		},
 		{
 			MethodName: "ArchiveWebhookTriggerEvent",
-			Handler:    _UserConfigurationService_ArchiveWebhookTriggerEvent_Handler,
+			Handler:    _WebhooksService_ArchiveWebhookTriggerEvent_Handler,
 		},
 		{
 			MethodName: "CreateWebhook",
-			Handler:    _UserConfigurationService_CreateWebhook_Handler,
+			Handler:    _WebhooksService_CreateWebhook_Handler,
 		},
 		{
 			MethodName: "AddWebhookTriggerEvent",
-			Handler:    _UserConfigurationService_AddWebhookTriggerEvent_Handler,
+			Handler:    _WebhooksService_AddWebhookTriggerEvent_Handler,
 		},
 		{
 			MethodName: "GetWebhook",
-			Handler:    _UserConfigurationService_GetWebhook_Handler,
+			Handler:    _WebhooksService_GetWebhook_Handler,
 		},
 		{
 			MethodName: "GetWebhooks",
-			Handler:    _UserConfigurationService_GetWebhooks_Handler,
+			Handler:    _WebhooksService_GetWebhooks_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

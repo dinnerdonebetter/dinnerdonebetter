@@ -14,11 +14,11 @@ const (
 	o11yName = "configuration_service"
 )
 
-var _ settingssvc.UserConfigurationServiceServer = (*serviceImpl)(nil)
+var _ settingssvc.SettingsServiceServer = (*serviceImpl)(nil)
 
 type (
 	serviceImpl struct {
-		settingssvc.UnimplementedUserConfigurationServiceServer
+		settingssvc.UnimplementedSettingsServiceServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
 		sessionContextDataFetcher func(context.Context) (sessions.ContextData, error)
@@ -30,7 +30,7 @@ func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	settingsRepository settings.Repository,
-) settingssvc.UserConfigurationServiceServer {
+) settingssvc.SettingsServiceServer {
 	return &serviceImpl{
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),

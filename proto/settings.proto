@@ -179,7 +179,7 @@ message ServiceSettingCreationRequestInput {
   bool AdminsOnly = 6;
 }
 
-service UserConfigurationService {
+service SettingsService {
   rpc GetServiceSettingConfigurationsForAccount(GetServiceSettingConfigurationsForAccountRequest) returns (GetServiceSettingConfigurationsForAccountResponse);
   rpc GetServiceSettingConfigurationsForUser(GetServiceSettingConfigurationsForUserRequest) returns (GetServiceSettingConfigurationsForUserResponse);
   rpc SearchForServiceSettings(SearchForServiceSettingsRequest) returns (SearchForServiceSettingsResponse);

@@ -8,18 +8,17 @@ package datachangemessagehandler
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/functions/datachangemessagehandler"
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
@@ -94,7 +93,7 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	if err != nil {
 		return nil, err
 	}
-	coreDataIndexer := indexing.NewCoreDataIndexer(logger, tracerProvider, identityRepository, userTextSearcher)
+	userDataIndexer := indexing.NewCoreDataIndexer(logger, tracerProvider, identityRepository, userTextSearcher)
 	recipeTextSearcher, err := ProvideRecipeTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
 	if err != nil {
 		return nil, err
@@ -127,8 +126,8 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	if err != nil {
 		return nil, err
 	}
-	eatingDataIndexer := indexing2.NewMealPlanningDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
-	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(logger, tracerProvider, cfg, identityRepository, webhooksRepository, mealplanningRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, coreDataIndexer, eatingDataIndexer)
+	mealPlanningDataIndexer := indexing2.NewMealPlanningDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
+	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(logger, tracerProvider, cfg, identityRepository, webhooksRepository, mealplanningRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer)
 	if err != nil {
 		return nil, err
 	}
