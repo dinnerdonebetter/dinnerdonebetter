@@ -21,8 +21,8 @@ var (
 	ErrNoSessionContextDataAvailable = errors.New("no ContextData attached to session context data")
 )
 
-// FetchContextFromRequest fetches a ContextData from a request.
-func FetchContextFromRequest(req *http.Request) (*ContextData, error) {
+// FetchContextDataFromRequest fetches a ContextData from a request.
+func FetchContextDataFromRequest(req *http.Request) (*ContextData, error) {
 	if sessionCtxData, ok := req.Context().Value(SessionContextDataKey).(*ContextData); ok && sessionCtxData != nil {
 		return sessionCtxData, nil
 	}
@@ -30,11 +30,11 @@ func FetchContextFromRequest(req *http.Request) (*ContextData, error) {
 	return nil, ErrNoSessionContextDataAvailable
 }
 
-func FetchFromContext(ctx context.Context) (*ContextData, bool) {
+func FetchContextDataFromContext(ctx context.Context) (*ContextData, error) {
 	if sessionCtxData, ok := ctx.Value(SessionContextDataKey).(*ContextData); ok && sessionCtxData != nil {
-		return sessionCtxData, true
+		return sessionCtxData, nil
 	}
-	return nil, false
+	return nil, ErrAuthenticationNotFound
 }
 
 const SessionContextDataKey routing.ContextKey = "session_context_data"

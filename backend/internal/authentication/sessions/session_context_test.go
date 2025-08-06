@@ -19,7 +19,7 @@ func TestFetchContextFromRequest(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		actual, err := FetchContextFromRequest(req)
+		actual, err := FetchContextDataFromRequest(req)
 		require.NoError(t, err)
 		require.NotNil(t, actual)
 	})
@@ -31,7 +31,7 @@ func TestFetchContextFromRequest(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		actual, err := FetchContextFromRequest(req)
+		actual, err := FetchContextDataFromRequest(req)
 		require.Error(t, err)
 		require.Nil(t, actual)
 	})

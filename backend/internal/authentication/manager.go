@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
@@ -53,8 +54,7 @@ func NewManager(
 	logger logging.Logger,
 	publisherProvider messagequeue.PublisherProvider,
 	userAuthDataManager identity.Repository,
-	maxAccessTokenLifetime time.Duration,
-	maxRefreshTokenLifetime time.Duration,
+	cfg *authcfg.TokenRefreshConfig,
 ) (Manager, error) {
 
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)
@@ -63,8 +63,8 @@ func NewManager(
 	}
 
 	m := &manager{
-		maxRefreshTokenLifetime: maxRefreshTokenLifetime,
-		maxAccessTokenLifetime:  maxAccessTokenLifetime,
+		maxRefreshTokenLifetime: cfg.MaxRefreshTokenLifetime,
+		maxAccessTokenLifetime:  cfg.MaxAccessTokenLifetime,
 		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracingProvider).Tracer(name)),
 		logger:                  logging.EnsureLogger(logger).WithName(name),
 		tokenIssuer:             tokenIssuer,

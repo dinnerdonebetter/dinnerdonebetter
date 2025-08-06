@@ -27,7 +27,7 @@ func buildTestService(t *testing.T) *service {
 		oauth2ClientDataManager:   mocktypes.NewRepositoryMock(),
 		logger:                    logging.NewNoopLogger(),
 		encoderDecoder:            encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		sessionContextDataFetcher: sessions.FetchContextFromRequest,
+		sessionContextDataFetcher: sessions.FetchContextDataFromRequest,
 		urlClientIDExtractor:      func(req *http.Request) string { return "" },
 		secretGenerator:           &randommock.Generator{},
 		tracer:                    tracing.NewTracerForTest(serviceName),

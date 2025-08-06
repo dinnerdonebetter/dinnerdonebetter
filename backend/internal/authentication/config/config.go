@@ -19,17 +19,21 @@ type (
 		Google GoogleSSOConfig `envPrefix:"GOOGLE_SSO_" json:"google,omitempty"`
 	}
 
+	TokenRefreshConfig struct {
+		MaxAccessTokenLifetime  time.Duration `env:"MAX_ACCESS_TOKEN_LIFETIME"  json:"maxAccessTokenLifetime"`
+		MaxRefreshTokenLifetime time.Duration `env:"MAX_REFRESH_TOKEN_LIFETIME" json:"maxRefreshTokenLifetime"`
+	}
+
 	// Config is our configuration.
 	Config struct {
 		_ struct{} `json:"-"`
 
-		Tokens                  tokenscfg.Config `envPrefix:"TOKENS_"              json:"tokens"`
-		SSO                     SSOConfigs       `envPrefix:"SSO_CONFIG_"          json:"sso,omitempty"`
-		MaxAccessTokenLifetime  time.Duration    `env:"MAX_ACCESS_TOKEN_LIFETIME"  json:"maxAccessTokenLifetime"`
-		MaxRefreshTokenLifetime time.Duration    `env:"MAX_REFRESH_TOKEN_LIFETIME" json:"maxRefreshTokenLifetime"`
-		Debug                   bool             `env:"DEBUG"                      json:"debug,omitempty"`
-		EnableUserSignup        bool             `env:"ENABLE_USER_SIGNUP"         json:"enableUserSignup,omitempty"`
-		MinimumUsernameLength   uint8            `env:"MINIMUM_USERNAME_LENGTH"    json:"minimumUsernameLength,omitempty"`
-		MinimumPasswordLength   uint8            `env:"MINIMUM_PASSWORD_LENGTH"    json:"minimumPasswordLength,omitempty"`
+		Tokens                tokenscfg.Config   `envPrefix:"TOKENS_"              json:"tokens"`
+		SSO                   SSOConfigs         `envPrefix:"SSO_CONFIG_"          json:"sso,omitempty"`
+		TokenRefreshConfig    TokenRefreshConfig `envPrefix:"TOKEN_REFRESH_CONFIG" json:"tokenRefreshConfig,omitempty"`
+		Debug                 bool               `env:"DEBUG"                      json:"debug,omitempty"`
+		EnableUserSignup      bool               `env:"ENABLE_USER_SIGNUP"         json:"enableUserSignup,omitempty"`
+		MinimumUsernameLength uint8              `env:"MINIMUM_USERNAME_LENGTH"    json:"minimumUsernameLength,omitempty"`
+		MinimumPasswordLength uint8              `env:"MINIMUM_PASSWORD_LENGTH"    json:"minimumPasswordLength,omitempty"`
 	}
 )

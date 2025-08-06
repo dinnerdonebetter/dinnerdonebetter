@@ -100,7 +100,7 @@ func ProvideService(
 		userDataManager:           identityRepo,
 		accountMembershipManager:  identityRepo,
 		authenticator:             authenticator,
-		sessionContextDataFetcher: sessions.FetchContextFromRequest,
+		sessionContextDataFetcher: sessions.FetchContextDataFromRequest,
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		dataChangesPublisher:      dataChangesPublisher,
 		featureFlagManager:        featureFlagManager,

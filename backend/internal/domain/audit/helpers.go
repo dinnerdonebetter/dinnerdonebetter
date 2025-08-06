@@ -8,8 +8,8 @@ import (
 )
 
 func BuildDataChangeMessageFromContext(ctx context.Context, logger logging.Logger, eventType string, metadata map[string]any) *DataChangeMessage {
-	sessionContext, ok := sessions.FetchFromContext(ctx)
-	if !ok {
+	sessionContext, err := sessions.FetchContextDataFromContext(ctx)
+	if err != nil {
 		logger.WithValue("event_type", eventType).Info("failed to extract session data from context")
 	}
 

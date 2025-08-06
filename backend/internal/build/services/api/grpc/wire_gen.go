@@ -8,10 +8,16 @@ package grpcapi
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/managers"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
@@ -20,10 +26,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	grpc2 "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
-	grpc3 "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
-	grpc4 "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
-	grpc5 "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
-	grpc6 "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
+	grpc3 "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
+	grpc4 "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
+	grpc5 "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
+	grpc6 "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
+	grpc7 "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 )
 
 // Injectors from build.go:
@@ -51,14 +58,38 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
 	dataprivacyRepository := dataprivacy.ProvideDataPrivacyRepository(logger, tracerProvider, repository, identityRepository, client)
 	dataPrivacyServiceServer := grpc2.NewService(logger, tracerProvider, dataprivacyRepository)
+	v := sessions.ProvideContextDataFetcherFromContext()
 	msgconfigConfig := &cfg.Events
-	internalOperationsServer := grpc3.NewService(logger, tracerProvider, msgconfigConfig)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
+	if err != nil {
+		return nil, err
+	}
+	generator := random.NewGenerator(logger, tracerProvider)
+	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
+	hasher := authentication.ProvideHasher(authenticator)
+	metricscfgConfig := &observabilityConfig.Metrics
+	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	textsearchcfgConfig := &cfg.TextSearch
+	userTextSearcher, err := ProvideUserTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	queuesConfig := &cfg.Queues
+	identityDataManager, err := managers.NewIdentityDataManager(tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
+	identityServiceServer := grpc3.NewService(logger, tracerProvider, v, identityDataManager)
+	internalOperationsServer := grpc4.NewService(logger, tracerProvider, msgconfigConfig)
 	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
-	userNotificationsServiceServer := grpc4.NewService(logger, tracerProvider, notificationsRepository)
+	userNotificationsServiceServer := grpc5.NewService(logger, tracerProvider, notificationsRepository)
 	settingsRepository := settings.ProvideSettingsRepository(logger, tracerProvider, repository, client)
-	settingsServiceServer := grpc5.NewService(logger, tracerProvider, settingsRepository)
+	settingsServiceServer := grpc6.NewService(logger, tracerProvider, settingsRepository)
 	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
-	webhooksServiceServer := grpc6.NewService(logger, tracerProvider, webhooksRepository)
-	grpcService := NewGRPCService(auditServiceServer, dataPrivacyServiceServer, internalOperationsServer, userNotificationsServiceServer, settingsServiceServer, webhooksServiceServer)
+	webhooksServiceServer := grpc7.NewService(logger, tracerProvider, webhooksRepository)
+	grpcService := NewGRPCService(auditServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, userNotificationsServiceServer, settingsServiceServer, webhooksServiceServer)
 	return grpcService, nil
 }

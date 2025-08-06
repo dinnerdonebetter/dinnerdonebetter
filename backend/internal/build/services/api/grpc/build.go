@@ -5,13 +5,18 @@ package grpcapi
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	identitymgr "github.com/dinnerdonebetter/backend/internal/domain/identity/managers"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	dataprivacysrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
@@ -36,9 +41,14 @@ func Build(
 ) (*GRPCService, error) {
 	wire.Build(ConfigProviders,
 		// core
+		metricscfg.Providers,
 		loggingcfg.ProvidersLogConfig,
 		tracingcfg.ProvidersTracingConfig,
+		msgconfig.MessageQueueProviders,
+		authentication.AuthProviders,
+		sessions.Providers,
 		observability.Providers,
+		random.ProvidersRandom,
 		postgres.Providers,
 		// repos
 		auditrepo.Providers,
@@ -57,6 +67,8 @@ func Build(
 		webhookssvc.Providers,
 		// managers
 		identitymgr.Providers,
+		// misc
+		ProvideUserTextSearcher,
 		// BuildUnaryServerInterceptors,
 		// BuildStreamServerInterceptors,
 		// BuildRegistrationFuncs,

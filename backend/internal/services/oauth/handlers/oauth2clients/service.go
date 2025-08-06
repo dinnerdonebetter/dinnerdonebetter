@@ -66,7 +66,7 @@ func ProvideOAuth2ClientsService(
 		oauth2ClientDataManager:   clientDataManager,
 		encoderDecoder:            encoderDecoder,
 		urlClientIDExtractor:      routeParamManager.BuildRouteParamStringIDFetcher(OAuth2ClientIDURIParamKey),
-		sessionContextDataFetcher: sessions.FetchContextFromRequest,
+		sessionContextDataFetcher: sessions.FetchContextDataFromRequest,
 		secretGenerator:           secretGenerator,
 		dataChangesPublisher:      dataChangesPublisher,
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
