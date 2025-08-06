@@ -11,7 +11,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/managers"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	manager2 "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
@@ -22,6 +23,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
@@ -29,8 +31,9 @@ import (
 	grpc3 "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	grpc4 "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
 	grpc5 "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
-	grpc6 "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
-	grpc7 "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
+	grpc6 "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
+	grpc7 "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
+	grpc8 "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 )
 
 // Injectors from build.go:
@@ -78,7 +81,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 		return nil, err
 	}
 	queuesConfig := &cfg.Queues
-	identityDataManager, err := managers.NewIdentityDataManager(tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, queuesConfig)
+	identityDataManager, err := manager.NewIdentityDataManager(tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -86,10 +89,18 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	internalOperationsServer := grpc4.NewService(logger, tracerProvider, msgconfigConfig)
 	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
 	userNotificationsServiceServer := grpc5.NewService(logger, tracerProvider, notificationsRepository)
+	config2 := cfg.Database
+	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
+	msgconfigQueuesConfig := cfg.Queues
+	oAuth2Manager, err := manager2.NewOAuth2Manager(logger, tracerProvider, generator, v, publisherProvider, oauthRepository, msgconfigQueuesConfig)
+	if err != nil {
+		return nil, err
+	}
+	oAuthServiceServer := grpc6.NewService(logger, tracerProvider, oAuth2Manager)
 	settingsRepository := settings.ProvideSettingsRepository(logger, tracerProvider, repository, client)
-	settingsServiceServer := grpc6.NewService(logger, tracerProvider, settingsRepository)
+	settingsServiceServer := grpc7.NewService(logger, tracerProvider, settingsRepository)
 	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
-	webhooksServiceServer := grpc7.NewService(logger, tracerProvider, webhooksRepository)
-	grpcService := NewGRPCService(auditServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, userNotificationsServiceServer, settingsServiceServer, webhooksServiceServer)
+	webhooksServiceServer := grpc8.NewService(logger, tracerProvider, webhooksRepository)
+	grpcService := NewGRPCService(auditServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, userNotificationsServiceServer, oAuthServiceServer, settingsServiceServer, webhooksServiceServer)
 	return grpcService, nil
 }

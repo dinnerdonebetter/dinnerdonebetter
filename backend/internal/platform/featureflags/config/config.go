@@ -23,7 +23,7 @@ const (
 )
 
 type (
-	// Config configures our feature flag managers.
+	// Config configures our feature flag manager.
 	Config struct {
 		LaunchDarkly   *launchdarkly.Config   `env:"init"     envPrefix:"LAUNCH_DARKLY"     json:"launchDarkly"`
 		PostHog        *posthog.Config        `env:"init"     envPrefix:"POSTHOG_"          json:"posthog"`

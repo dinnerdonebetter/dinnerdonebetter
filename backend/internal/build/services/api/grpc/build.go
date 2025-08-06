@@ -5,22 +5,24 @@ package grpcapi
 
 import (
 	"context"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	identitymgr "github.com/dinnerdonebetter/backend/internal/domain/identity/managers"
+	identitymgr "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	oauthmgr "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	dataprivacysrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
+	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
@@ -28,6 +30,7 @@ import (
 	identitysvc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
 	notificationssvc "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
+	oauthsvc "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 
@@ -57,6 +60,7 @@ func Build(
 		notificationsrepo.Providers,
 		settingsrepo.Providers,
 		webhooksrepo.Providers,
+		oauthrepo.Providers,
 		// services
 		auditsvc.Providers,
 		dataprivacysvc.Providers,
@@ -65,8 +69,10 @@ func Build(
 		notificationssvc.Providers,
 		settingssvc.Providers,
 		webhookssvc.Providers,
-		// managers
+		oauthsvc.Providers,
+		// manager
 		identitymgr.Providers,
+		oauthmgr.Providers,
 		// misc
 		ProvideUserTextSearcher,
 		// BuildUnaryServerInterceptors,

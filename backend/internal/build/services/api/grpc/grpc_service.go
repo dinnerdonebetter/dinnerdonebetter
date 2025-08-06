@@ -34,7 +34,7 @@ func NewGRPCService(
 	internalOperationsServer internalopssvc.InternalOperationsServer,
 	// mealPlanningServiceServer mealplanningsvc.MealPlanningServiceServer,
 	userNotificationsServiceServer notificationssvc.UserNotificationsServiceServer,
-	// oauthServiceServer oauthsvc.OAuthServiceServer,
+	oauthServiceServer oauthsvc.OAuthServiceServer,
 	settingsServiceServer settingssvc.SettingsServiceServer,
 	webhooksServiceServer webhookssvc.WebhooksServiceServer,
 ) *GRPCService {
@@ -46,8 +46,8 @@ func NewGRPCService(
 		InternalOperationsServer: internalOperationsServer,
 		//MealPlanningServiceServer:      mealPlanningServiceServer,
 		UserNotificationsServiceServer: userNotificationsServiceServer,
-		//OAuthServiceServer:             oauthServiceServer,
-		SettingsServiceServer: settingsServiceServer,
-		WebhooksServiceServer: webhooksServiceServer,
+		OAuthServiceServer:             oauthServiceServer,
+		SettingsServiceServer:          settingsServiceServer,
+		WebhooksServiceServer:          webhooksServiceServer,
 	}
 }

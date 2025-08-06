@@ -11,7 +11,7 @@ type noopLogger struct{}
 
 var logger = new(noopLogger)
 
-// NewNoopLogger provides our noop Logger to dependency managers.
+// NewNoopLogger provides our noop Logger to dependency manager.
 func NewNoopLogger() Logger { return logger }
 
 // Info satisfies our interface.

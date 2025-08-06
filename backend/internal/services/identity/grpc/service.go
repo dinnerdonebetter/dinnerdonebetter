@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity/managers"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -23,7 +23,7 @@ type (
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
 		sessionContextDataFetcher func(ctx context.Context) (*sessions.ContextData, error)
-		identityDataManager       managers.IdentityDataManager
+		identityDataManager       manager.IdentityDataManager
 	}
 )
 
@@ -31,7 +31,7 @@ func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	sessionContextDataFetcher func(ctx context.Context) (*sessions.ContextData, error),
-	identityDataManager managers.IdentityDataManager,
+	identityDataManager manager.IdentityDataManager,
 ) identitysvc.IdentityServiceServer {
 	return &serviceImpl{
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
