@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	ProvidersGRPCImpl = wire.NewSet(
+	Providers = wire.NewSet(
 		NewService,
 	)
 )

@@ -2,8 +2,6 @@ package grpc
 
 import (
 	"context"
-	"errors"
-
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
@@ -13,6 +11,8 @@ import (
 	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 )
+
+var _ mealplanningsvc.MealPlanningServiceServer = (*serviceImpl)(nil)
 
 const (
 	o11yName = "mealplanning_service"
@@ -27,9 +27,9 @@ type (
 		recipeManager                        managers.RecipeManager
 		validEnumerationsManager             managers.ValidEnumerationsManager
 		mealPlanningManager                  managers.MealPlanningManager
-		mealPlanFinalizerWorker              mealplanfinalizer.Worker
-		mealPlanGroceryListInitializerWorker mealplangrocerylistinitializer.Worker
-		mealPlanTaskCreatorWorker            mealplantaskcreator.Worker
+		mealPlanFinalizerWorker              *mealplanfinalizer.Worker
+		mealPlanGroceryListInitializerWorker *mealplangrocerylistinitializer.Worker
+		mealPlanTaskCreatorWorker            *mealplantaskcreator.Worker
 	}
 )
 
@@ -39,10 +39,10 @@ func NewService(
 	recipeManager managers.RecipeManager,
 	validEnumerationsManager managers.ValidEnumerationsManager,
 	mealPlanningManager managers.MealPlanningManager,
-	mealPlanFinalizerWorker mealplanfinalizer.Worker,
-	mealPlanGroceryListInitializerWorker mealplangrocerylistinitializer.Worker,
-	mealPlanTaskCreatorWorker mealplantaskcreator.Worker,
-) *serviceImpl {
+	mealPlanFinalizerWorker *mealplanfinalizer.Worker,
+	mealPlanGroceryListInitializerWorker *mealplangrocerylistinitializer.Worker,
+	mealPlanTaskCreatorWorker *mealplantaskcreator.Worker,
+) mealplanningsvc.MealPlanningServiceServer {
 	return &serviceImpl{
 		logger:                               logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
@@ -54,7 +54,3 @@ func NewService(
 		mealPlanTaskCreatorWorker:            mealPlanTaskCreatorWorker,
 	}
 }
-
-var (
-	errUnimplemented = errors.New("unimplemented")
-)

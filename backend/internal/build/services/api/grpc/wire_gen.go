@@ -12,6 +12,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
 	manager2 "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
@@ -22,6 +25,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
@@ -30,10 +34,14 @@ import (
 	grpc2 "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
 	grpc3 "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	grpc4 "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
-	grpc5 "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
-	grpc6 "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
-	grpc7 "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
-	grpc8 "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
+	grpc5 "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_finalizer"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
+	grpc6 "github.com/dinnerdonebetter/backend/internal/services/notifications/grpc"
+	grpc7 "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc"
+	grpc8 "github.com/dinnerdonebetter/backend/internal/services/settings/grpc"
+	grpc9 "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc"
 )
 
 // Injectors from build.go:
@@ -87,8 +95,37 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	}
 	identityServiceServer := grpc3.NewService(logger, tracerProvider, v, identityDataManager)
 	internalOperationsServer := grpc4.NewService(logger, tracerProvider, msgconfigConfig)
+	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
+	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
+	recipeManager, err := managers.NewRecipeManager(ctx, logger, tracerProvider, mealplanningRepository, queuesConfig, publisherProvider, recipeAnalyzer, textsearchcfgConfig, provider)
+	if err != nil {
+		return nil, err
+	}
+	validEnumerationDataManager := mealplanning.ProvideValidEnumerationDataManager(mealplanningRepository)
+	validEnumerationsManager, err := managers.NewValidEnumerationsManager(ctx, logger, tracerProvider, validEnumerationDataManager, queuesConfig, publisherProvider, textsearchcfgConfig, provider)
+	if err != nil {
+		return nil, err
+	}
+	mealPlanningManager, err := managers.NewMealPlanningManager(ctx, logger, tracerProvider, mealplanningRepository, queuesConfig, publisherProvider, textsearchcfgConfig, provider)
+	if err != nil {
+		return nil, err
+	}
+	worker, err := mealplanfinalizer.NewMealPlanFinalizer(logger, tracerProvider, mealplanningRepository, publisherProvider, provider, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
+	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
+	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
+	mealplantaskcreatorWorker, err := mealplantaskcreator.NewMealPlanTaskCreator(logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, queuesConfig)
+	if err != nil {
+		return nil, err
+	}
+	mealPlanningServiceServer := grpc5.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, worker, mealplangrocerylistinitializerWorker, mealplantaskcreatorWorker)
 	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
-	userNotificationsServiceServer := grpc5.NewService(logger, tracerProvider, notificationsRepository)
+	userNotificationsServiceServer := grpc6.NewService(logger, tracerProvider, notificationsRepository)
 	config2 := cfg.Database
 	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
 	msgconfigQueuesConfig := cfg.Queues
@@ -96,11 +133,11 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	oAuthServiceServer := grpc6.NewService(logger, tracerProvider, oAuth2Manager)
+	oAuthServiceServer := grpc7.NewService(logger, tracerProvider, oAuth2Manager)
 	settingsRepository := settings.ProvideSettingsRepository(logger, tracerProvider, repository, client)
-	settingsServiceServer := grpc7.NewService(logger, tracerProvider, settingsRepository)
+	settingsServiceServer := grpc8.NewService(logger, tracerProvider, settingsRepository)
 	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
-	webhooksServiceServer := grpc8.NewService(logger, tracerProvider, webhooksRepository)
-	grpcService := NewGRPCService(auditServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, userNotificationsServiceServer, oAuthServiceServer, settingsServiceServer, webhooksServiceServer)
+	webhooksServiceServer := grpc9.NewService(logger, tracerProvider, webhooksRepository)
+	grpcService := NewGRPCService(auditServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, settingsServiceServer, webhooksServiceServer)
 	return grpcService, nil
 }

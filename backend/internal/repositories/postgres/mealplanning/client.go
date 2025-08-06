@@ -5,11 +5,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	settings "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 const (
@@ -21,7 +21,7 @@ type repository struct {
 	database.Client
 	tracer            tracing.Tracer
 	logger            logging.Logger
-	generatedQuerier  generated2.Querier
+	generatedQuerier  generated.Querier
 	identityRepo      identity.Repository
 	auditLogEntryRepo audit.Repository
 	db                *sql.DB
@@ -34,12 +34,12 @@ func ProvideMealPlanningRepository(
 	auditLogEntryRepo audit.Repository,
 	identityRepo identity.Repository,
 	client database.Client,
-) settings.Repository {
+) mealplanning.Repository {
 	c := &repository{
 		Client:            client,
 		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		generatedQuerier:  generated2.New(),
+		generatedQuerier:  generated.New(),
 		auditLogEntryRepo: auditLogEntryRepo,
 		identityRepo:      identityRepo,
 		logger:            logging.EnsureLogger(logger).WithName(o11yName),
