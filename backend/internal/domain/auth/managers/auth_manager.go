@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -27,6 +28,7 @@ import (
 )
 
 const (
+	o11yName               = "auth_manager"
 	passwordResetTokenSize = 32
 	totpSecretSize         = 64
 	minimumPasswordEntropy = 60
@@ -43,6 +45,35 @@ type AuthManager struct {
 	qrCodeBuilder                 qrcodes.Builder
 	sessionContextDataFetcher     func(context.Context) (*sessions.ContextData, error)
 	minimumPasswordLength         uint8
+}
+
+func ProvideAuthManager(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
+	passwordResetTokenDataManager auth.PasswordResetTokenDataManager,
+	userDataManager identity.UserDataManager,
+	authenticator authentication.Authenticator,
+	publisherProvider messagequeue.PublisherProvider,
+	secretGenerator random.Generator,
+	qrCodeBuilder qrcodes.Builder,
+) (*AuthManager, error) {
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher("")
+	if err != nil {
+		return nil, fmt.Errorf("failed to provide data changes publisher: %w", err)
+	}
+
+	return &AuthManager{
+		logger:                        logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                        tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		passwordResetTokenDataManager: passwordResetTokenDataManager,
+		userDataManager:               userDataManager,
+		authenticator:                 authenticator,
+		secretGenerator:               secretGenerator,
+		qrCodeBuilder:                 qrCodeBuilder,
+		dataChangesPublisher:          dataChangesPublisher,
+		sessionContextDataFetcher:     nil,
+		minimumPasswordLength:         0,
+	}, nil
 }
 
 func (l *AuthManager) Self(ctx context.Context) (*identity.User, error) {

@@ -3,11 +3,7 @@ package grpc
 import (
 	"context"
 	"errors"
-	"fmt"
-	"strings"
-
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 
 	"google.golang.org/grpc"
@@ -94,40 +90,41 @@ func (s *serviceImpl) extractSessionContextDataFromOAuth2(ctx context.Context, m
 
 	authHeader := metadata.Get("authorization")
 	if len(authHeader) == 0 {
-		return nil, status.Error(codes.Unauthenticated, "missing authorization header")
+		return nil, observability.PrepareAndLogGRPCStatus(status.Error(codes.Unauthenticated, "missing authorization header"), logger, span, codes.Unauthenticated, "missing authorization header")
 	}
 
-	accessToken := strings.TrimPrefix(authHeader[0], tokenPrefix)
+	/*
+		accessToken := strings.TrimPrefix(authHeader[0], tokenPrefix)
 
-	token, err := s.oauth2ClientManager.LoadAccessToken(ctx, accessToken)
-	if err != nil {
-		return nil, fmt.Errorf("loading access token: %w", err)
-	}
-
-	if userID := token.GetUserID(); userID != "" {
-		sessionCtxData, err := s.identityRepository.BuildSessionContextDataForUser(ctx, userID)
+		token, err := s.oauth2ClientManager.LoadAccessToken(ctx, accessToken)
 		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "fetching user info for cookie")
+			return nil, fmt.Errorf("loading access token: %w", err)
 		}
+		if userID := token.GetUserID(); userID != "" {
+			sessionCtxData, err := s.identityRepository.BuildSessionContextDataForUser(ctx, userID)
+			if err != nil {
+				return nil, observability.PrepareAndLogError(err, logger, span, "fetching user info for cookie")
+			}
 
-		zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metadata, sessionCtxData)
-		if zuckErr != nil {
-			return nil, observability.PrepareAndLogError(zuckErr, logger, span, "fetching user info for zuck mode")
-		}
+			zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metadata, sessionCtxData)
+			if zuckErr != nil {
+				return nil, observability.PrepareAndLogError(zuckErr, logger, span, "fetching user info for zuck mode")
+			}
 
-		if zuckUserID != "" {
-			sessionCtxData.Requester.UserID = zuckUserID
-		}
+			if zuckUserID != "" {
+				sessionCtxData.Requester.UserID = zuckUserID
+			}
 
-		if zuckAccountID != "" {
-			sessionCtxData.ActiveAccountID = zuckAccountID
-			sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String())
-		}
+			if zuckAccountID != "" {
+				sessionCtxData.ActiveAccountID = zuckAccountID
+				sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String())
+			}
 
-		if sessionCtxData != nil {
-			return sessionCtxData, nil
+			if sessionCtxData != nil {
+				return sessionCtxData, nil
+			}
 		}
-	}
+	*/
 
 	return nil, Unauthenticated("invalid OAuth2 token")
 }

@@ -35,11 +35,11 @@ type (
 	}
 )
 
-func NewBuilder(tracerProvider tracing.TracerProvider, logger logging.Logger, issuer Issuer) Builder {
+func NewBuilder(tracerProvider tracing.TracerProvider, logger logging.Logger) Builder {
 	return &builder{
 		tracer:     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		logger:     logging.EnsureLogger(logger).WithName(o11yName),
-		totpIssuer: issuer,
+		totpIssuer: "TODO: REPLACEME",
 	}
 }
 

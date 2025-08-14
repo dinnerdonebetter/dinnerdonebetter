@@ -1,4 +1,4 @@
-package identity
+package auth
 
 import (
 	"database/sql"
@@ -31,8 +31,8 @@ type repository struct {
 	db                *sql.DB
 }
 
-// ProvideIdentityRepository provides a new repository.
-func ProvideIdentityRepository(
+// ProvideAuthRepository provides a new repository.
+func ProvideAuthRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,

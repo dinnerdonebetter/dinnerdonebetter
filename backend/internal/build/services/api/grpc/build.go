@@ -5,10 +5,12 @@ package grpcapi
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	authmgr "github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
 	identitymgr "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
 	grocerylistpreparation "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
 	mealplanningmgr "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
@@ -22,6 +24,7 @@ import (
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	dataprivacysrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
@@ -30,6 +33,7 @@ import (
 	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
+	authsvc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
@@ -61,8 +65,11 @@ func Build(
 		observability.Providers,
 		random.ProvidersRandom,
 		postgres.Providers,
+		// grpc.ProvidersGRPC,
+		qrcodes.Providers,
 		// repos
 		auditrepo.Providers,
+		authrepo.Providers,
 		dataprivacysrepo.Providers,
 		identityrepo.Providers,
 		notificationsrepo.Providers,
@@ -72,6 +79,7 @@ func Build(
 		mealplanningrepo.Providers,
 		// services
 		auditsvc.Providers,
+		authsvc.Providers,
 		dataprivacysvc.Providers,
 		identitysvc.Providers,
 		internalopssvc.Providers,
@@ -84,6 +92,7 @@ func Build(
 		identitymgr.Providers,
 		oauthmgr.Providers,
 		mealplanningmgr.ProvidersManagers,
+		authmgr.Providers,
 		// workers
 		mealplanfinalizer.ProvidersMealPlanFinalizer,
 		mealplangrocerylistinitializer.ProvidersMealPlanGroceryListInitializer,

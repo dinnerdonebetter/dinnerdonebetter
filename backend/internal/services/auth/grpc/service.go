@@ -30,7 +30,7 @@ type (
 		authenticationManager     authentication2.Manager
 		authenticator             authentication2.Authenticator
 		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
-		authManager               managers.AuthManager
+		authManager               *managers.AuthManager
 	}
 )
 
@@ -38,16 +38,16 @@ func NewService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	identityRepository identity.Repository,
-	oauth2ClientManager oauth2server.Manager,
-	authManager managers.AuthManager,
+	// oauth2ClientManager oauth2server.Manager,
+	authManager *managers.AuthManager,
 	authenticator authentication2.Authenticator,
 ) authsvc.AuthServiceServer {
 	return &serviceImpl{
-		logger:              logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:              tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		identityRepository:  identityRepository,
-		oauth2ClientManager: oauth2ClientManager,
-		authManager:         authManager,
-		authenticator:       authenticator,
+		logger:             logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		identityRepository: identityRepository,
+		//oauth2ClientManager: oauth2ClientManager,
+		authManager:   authManager,
+		authenticator: authenticator,
 	}
 }

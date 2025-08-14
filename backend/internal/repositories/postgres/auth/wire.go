@@ -1,9 +1,17 @@
-package identity
+package auth
 
-import "github.com/google/wire"
+import (
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	"github.com/google/wire"
+)
 
 var (
 	Providers = wire.NewSet(
-		ProvideIdentityRepository,
+		ProvideAuthRepository,
+		ProvidePasswordResetTokenDataManager,
 	)
 )
+
+func ProvidePasswordResetTokenDataManager(r auth.Repository) auth.PasswordResetTokenDataManager {
+	return r
+}

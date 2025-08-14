@@ -28,7 +28,7 @@ type GRPCService struct {
 
 func NewGRPCService(
 	auditServiceServer auditsvc.AuditServiceServer,
-	// authServiceServer authsvc.AuthServiceServer,
+	authServiceServer authsvc.AuthServiceServer,
 	dataPrivacyServiceServer dataprivacysvc.DataPrivacyServiceServer,
 	identityServiceServer identitysvc.IdentityServiceServer,
 	internalOperationsServer internalopssvc.InternalOperationsServer,
@@ -39,8 +39,8 @@ func NewGRPCService(
 	webhooksServiceServer webhookssvc.WebhooksServiceServer,
 ) *GRPCService {
 	return &GRPCService{
-		AuditServiceServer: auditServiceServer,
-		//AuthServiceServer:              authServiceServer,
+		AuditServiceServer:             auditServiceServer,
+		AuthServiceServer:              authServiceServer,
 		DataPrivacyServiceServer:       dataPrivacyServiceServer,
 		IdentityServiceServer:          identityServiceServer,
 		InternalOperationsServer:       internalOperationsServer,
