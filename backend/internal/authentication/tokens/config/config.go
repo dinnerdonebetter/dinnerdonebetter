@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	tokens2 "github.com/dinnerdonebetter/backend/internal/authentication/tokens"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/jwt"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/paseto"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -45,7 +45,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // ProvideTokenIssuer provides a token issuer.
-func (cfg *Config) ProvideTokenIssuer(logger logging.Logger, tracerProvider tracing.TracerProvider) (tokens2.Issuer, error) {
+func (cfg *Config) ProvideTokenIssuer(logger logging.Logger, tracerProvider tracing.TracerProvider) (tokens.Issuer, error) {
 	decryptedSigningKey, err := base64.URLEncoding.DecodeString(cfg.Base64EncodedSigningKey)
 	if err != nil {
 		return nil, fmt.Errorf("decoding json web token signing key: %w", err)
@@ -61,6 +61,6 @@ func (cfg *Config) ProvideTokenIssuer(logger logging.Logger, tracerProvider trac
 	case ProviderPASETO:
 		return paseto.NewPASETOSigner(logger, tracerProvider, cfg.Audience, decryptedSigningKey)
 	default:
-		return tokens2.NewNoopTokenIssuer(), nil
+		return tokens.NewNoopTokenIssuer(), nil
 	}
 }

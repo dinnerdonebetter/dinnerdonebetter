@@ -12,14 +12,14 @@ TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
 PROTO_FILES_PATH       := proto/*.proto
 PROTO_OUTPUT_PATH      := internal/grpc
-WIRE_TARGETS           := internal/build/services/api/grpc # \
-	# internal/build/services/api/http \
-	# internal/build/functions/data_change_message_handler \
-	# internal/build/jobs/db_cleaner \
-	# internal/build/jobs/search_data_index_scheduler \
-	# internal/build/jobs/meal_plan_finalizer \
-	# internal/build/jobs/meal_plan_grocery_list_initializer \
-	# internal/build/jobs/meal_plan_task_creator
+WIRE_TARGETS           := internal/build/services/api/grpc \
+	 internal/build/services/api/http \
+	 internal/build/functions/data_change_message_handler \
+	 internal/build/jobs/db_cleaner \
+	 internal/build/jobs/search_data_index_scheduler \
+	 internal/build/jobs/meal_plan_finalizer \
+	 internal/build/jobs/meal_plan_grocery_list_initializer \
+	 internal/build/jobs/meal_plan_task_creator
 
 # COMPUTED
 TOTAL_PACKAGE_LIST    := `go list $(THIS)/...`
@@ -255,7 +255,7 @@ integration-tests: integration_tests
 
 .PHONY: integration_tests
 integration_tests:
-	go test -v $(THIS)/tests/integration
+	go test -v -count=1 $(THIS)/tests/integration
 
 .PHONY: integration_tests_postgres
 integration_tests_postgres:

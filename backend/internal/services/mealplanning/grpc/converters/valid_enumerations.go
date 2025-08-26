@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
-func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInput(request *mealplanninggrpc.CreateValidIngredientRequest) *mealplanning.ValidIngredientCreationRequestInput {
+func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInput(request *mealplanninggrpc.ValidIngredientCreationRequestInput) *mealplanning.ValidIngredientCreationRequestInput {
 	return &mealplanning.ValidIngredientCreationRequestInput{
 		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Max: request.StorageTemperatureInCelsius.Max,
@@ -130,6 +130,46 @@ func ConvertValidIngredientToGRPCValidIngredient(x *mealplanning.ValidIngredient
 		IsHeat:                 x.IsHeat,
 		IsLiquid:               x.IsLiquid,
 		ContainsShellfish:      x.ContainsShellfish,
+	}
+}
+
+func ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(x *mealplanning.ValidIngredientCreationRequestInput) *mealplanninggrpc.ValidIngredientCreationRequestInput {
+	return &mealplanninggrpc.ValidIngredientCreationRequestInput{
+		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
+			Max: x.StorageTemperatureInCelsius.Max,
+			Min: x.StorageTemperatureInCelsius.Min,
+		},
+		Warning:                x.Warning,
+		IconPath:               x.IconPath,
+		PluralName:             x.PluralName,
+		StorageInstructions:    x.StorageInstructions,
+		Name:                   x.Name,
+		Description:            x.Description,
+		Slug:                   x.Slug,
+		ShoppingSuggestions:    x.ShoppingSuggestions,
+		ContainsPeanut:         x.ContainsPeanut,
+		ContainsAlcohol:        x.ContainsAlcohol,
+		IsLiquid:               x.IsLiquid,
+		ContainsSoy:            x.ContainsSoy,
+		AnimalFlesh:            x.AnimalFlesh,
+		AnimalDerived:          x.AnimalDerived,
+		RestrictToPreparations: x.RestrictToPreparations,
+		ContainsDairy:          x.ContainsDairy,
+		ContainsSesame:         x.ContainsSesame,
+		ContainsTreeNut:        x.ContainsTreeNut,
+		ContainsWheat:          x.ContainsWheat,
+		ContainsEgg:            x.ContainsEgg,
+		ContainsGluten:         x.ContainsGluten,
+		IsStarch:               x.IsStarch,
+		IsProtein:              x.IsProtein,
+		IsGrain:                x.IsGrain,
+		IsFruit:                x.IsFruit,
+		IsSalt:                 x.IsSalt,
+		IsFat:                  x.IsFat,
+		IsAcid:                 x.IsAcid,
+		IsHeat:                 x.IsHeat,
+		ContainsShellfish:      x.ContainsShellfish,
+		ContainsFish:           x.ContainsFish,
 	}
 }
 

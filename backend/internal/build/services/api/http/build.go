@@ -6,22 +6,24 @@ package api
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	featureflagscfg "github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
+	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 
 	"github.com/google/wire"
 )
@@ -33,20 +35,23 @@ func Build(
 ) (http.Server, error) {
 	wire.Build(
 		authentication.AuthProviders,
-		database.DBProviders,
-		encoding.EncDecProviders,
+		encoding.Providers,
 		msgconfig.MessageQueueProviders,
-		analyticscfg.ProvidersAnalytics,
+		analyticscfg.Providers,
 		featureflagscfg.ProvidersFeatureFlags,
 		tracing.ProvidersTracing,
 		tracingcfg.ProvidersTracingConfig,
-		observability.ProvidersObservability,
-		postgres.ProvidersPostgres,
-		loggingcfg.ProvidersLoggingConfig,
+		observability.Providers,
+		postgres.Providers,
+		loggingcfg.ProvidersLogConfig,
 		authservice.Providers,
-		metricscfg.ProvidersMetrics,
+		metricscfg.Providers,
 		http.ProvidersHTTP,
 		routingcfg.RoutingConfigProviders,
+		// repos
+		auditrepo.Providers,
+		identityrepo.Providers,
+		oauthrepo.Providers,
 		ConfigProviders,
 		ProvideAPIRouter,
 	)

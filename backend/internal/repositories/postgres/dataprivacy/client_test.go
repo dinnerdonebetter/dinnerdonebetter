@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 
 	"github.com/stretchr/testify/require"
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -31,7 +32,8 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.Postgr
 	require.NoError(t, err)
 
 	auditLogEntryRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
-	c := ProvideDataPrivacyRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
+	identityRepo := identity.ProvideIdentityRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, pgc)
+	c := ProvideDataPrivacyRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, identityRepo, pgc)
 	require.NoError(t, err)
 
 	return c.(*repository), container
@@ -40,7 +42,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.Postgr
 func buildInertClientForTest(t *testing.T) *repository {
 	t.Helper()
 
-	c := ProvideDataPrivacyRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, &database.MockClient{})
+	c := ProvideDataPrivacyRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, nil, &database.MockClient{})
 
 	return c.(*repository)
 }

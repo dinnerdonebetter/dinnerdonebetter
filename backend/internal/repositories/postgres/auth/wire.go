@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+
 	"github.com/google/wire"
 )
 

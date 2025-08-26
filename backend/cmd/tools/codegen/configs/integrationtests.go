@@ -2,11 +2,6 @@ package main
 
 import (
 	"encoding/base64"
-	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
-	uploadscfg "github.com/dinnerdonebetter/backend/internal/platform/uploads/config"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
-	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
-	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
 	"time"
 
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
@@ -26,9 +21,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	uploadscfg "github.com/dinnerdonebetter/backend/internal/platform/uploads/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
+	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
 )
 
 func buildIntegrationTestsConfig() *config.APIServiceConfig {

@@ -5,8 +5,6 @@ package grpcapi
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
-	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
@@ -23,7 +21,9 @@ import (
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
 	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	dataprivacysrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"

@@ -27,22 +27,11 @@ var (
 		),
 		wire.FieldsOf(
 			new(*config.ServicesConfig),
-			// Core
-			"AuditLogEntries",
-			"Auth",
-			"Households",
-			"HouseholdInvitations",
-			"ServiceSettings",
-			"ServiceSettingConfigurations",
 			"Users",
-			"UserNotifications",
-			"Webhooks",
 			"DataPrivacy",
-			"OAuth2Clients",
-			// Data
-			"ValidEnumerations",
 			"MealPlanning",
-			"Recipes",
+			"Auth",
+			"OAuth2Clients",
 		),
 	)
 )

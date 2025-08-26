@@ -2,7 +2,7 @@ package identity
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	
+
 	"github.com/google/wire"
 )
 

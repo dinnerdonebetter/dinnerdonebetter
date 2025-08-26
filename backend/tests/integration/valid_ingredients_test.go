@@ -1,10 +1,14 @@
 package integration
 
 import (
+	"testing"
+
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 /*
@@ -95,12 +99,20 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 func TestValidIngredients_GetRandom(t *testing.T) {
 	ctx := t.Context()
 
-	client, err := buildUnauthenticatedGRPCClientForTest(t)
+	client := buildAuthedGRPCClient(ctx, []string{"*"}, httpLocalServerAddress, "token")
+
+	creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
+
+	convertedInput := grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(creationRequestInput)
+	created, err := client.CreateValidIngredient(ctx, &mealplanning.CreateValidIngredientRequest{
+		Input: convertedInput,
+	})
 	require.NoError(t, err)
+	assert.NotNil(t, created)
 
 	response, err := client.GetRandomValidIngredient(ctx, &mealplanning.GetRandomValidIngredientRequest{})
 	assert.NoError(t, err)
-	assert.Nil(t, response)
+	assert.NotNil(t, response)
 }
 
 /*

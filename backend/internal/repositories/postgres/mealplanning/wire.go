@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+
 	"github.com/google/wire"
 )
 

@@ -3,10 +3,11 @@ package redis
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/require"
-	rediscontainers "github.com/testcontainers/testcontainers-go/modules/redis"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+	rediscontainers "github.com/testcontainers/testcontainers-go/modules/redis"
 )
 
 const (
