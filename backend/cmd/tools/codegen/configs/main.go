@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	defaultPort     = 8000
+	defaultHTTPPort = 8000
+	defaultGRPCPort = 8001
 	maxAttempts     = 50
 	otelServiceName = "dinner_done_better"
 

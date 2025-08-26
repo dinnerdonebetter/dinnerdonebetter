@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	uploadscfg "github.com/dinnerdonebetter/backend/internal/platform/uploads/config"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
@@ -70,8 +71,11 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 		},
 		HTTPServer: http.Config{
 			Debug:           false,
-			HTTPPort:        defaultPort,
+			HTTPPort:        defaultHTTPPort,
 			StartupDeadline: time.Minute,
+		},
+		GRPCServer: grpc.Config{
+			Port: defaultGRPCPort,
 		},
 		Database: databasecfg.Config{
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,

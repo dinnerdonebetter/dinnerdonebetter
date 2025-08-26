@@ -8,7 +8,14 @@ import (
 
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	dataprivacygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	identitygrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	internalopsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
+	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	notificationsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications"
+	oauthgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
+	settingsgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
+	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 
@@ -21,25 +28,46 @@ type Client interface {
 	authgrpc.AuthServiceClient
 	identitygrpc.IdentityServiceClient
 	auditgrpc.AuditServiceClient
+	dataprivacygrpc.DataPrivacyServiceClient
+	internalopsgrpc.InternalOperationsClient
+	mealplanninggrpc.MealPlanningServiceClient
+	notificationsgrpc.UserNotificationsServiceClient
+	oauthgrpc.OAuthServiceClient
+	settingsgrpc.SettingsServiceClient
+	webhooksgrpc.WebhooksServiceClient
 }
 
 type client struct {
 	authgrpc.AuthServiceClient
 	identitygrpc.IdentityServiceClient
 	auditgrpc.AuditServiceClient
+	dataprivacygrpc.DataPrivacyServiceClient
+	internalopsgrpc.InternalOperationsClient
+	mealplanninggrpc.MealPlanningServiceClient
+	notificationsgrpc.UserNotificationsServiceClient
+	oauthgrpc.OAuthServiceClient
+	settingsgrpc.SettingsServiceClient
+	webhooksgrpc.WebhooksServiceClient
 }
 
 // BuildClient builds a new Client
-func BuildClient(grpcServerAddress string, opts []grpc.DialOption) (Client, error) {
+func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, error) {
 	conn, err := grpc.NewClient(grpcServerAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("building grpc client: %w", err)
 	}
 
 	c := &client{
-		AuthServiceClient:     authgrpc.NewAuthServiceClient(conn),
-		IdentityServiceClient: identitygrpc.NewIdentityServiceClient(conn),
-		AuditServiceClient:    auditgrpc.NewAuditServiceClient(conn),
+		AuthServiceClient:              authgrpc.NewAuthServiceClient(conn),
+		IdentityServiceClient:          identitygrpc.NewIdentityServiceClient(conn),
+		AuditServiceClient:             auditgrpc.NewAuditServiceClient(conn),
+		DataPrivacyServiceClient:       dataprivacygrpc.NewDataPrivacyServiceClient(conn),
+		InternalOperationsClient:       internalopsgrpc.NewInternalOperationsClient(conn),
+		MealPlanningServiceClient:      mealplanninggrpc.NewMealPlanningServiceClient(conn),
+		UserNotificationsServiceClient: notificationsgrpc.NewUserNotificationsServiceClient(conn),
+		OAuthServiceClient:             oauthgrpc.NewOAuthServiceClient(conn),
+		SettingsServiceClient:          settingsgrpc.NewSettingsServiceClient(conn),
+		WebhooksServiceClient:          webhooksgrpc.NewWebhooksServiceClient(conn),
 	}
 
 	return c, nil

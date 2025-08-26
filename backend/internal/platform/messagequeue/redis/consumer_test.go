@@ -13,7 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func buildRedisBackedConsumer(t *testing.T, ctx context.Context, cfg *Config, topic string, hf func(context.Context, []byte) error) messagequeue.Consumer {
+// buildRedisBackedConsumer builds a Redis container-backed messagequeue.Consumer
+func buildRedisBackedConsumer(t *testing.T, cfg *Config, topic string, handlerFunc func(context.Context, []byte) error) messagequeue.Consumer {
 	t.Helper()
 
 	provider := ProvideRedisConsumerProvider(
@@ -21,7 +22,7 @@ func buildRedisBackedConsumer(t *testing.T, ctx context.Context, cfg *Config, to
 		*cfg,
 	)
 
-	consumer, err := provider.ProvideConsumer(ctx, topic, hf)
+	consumer, err := provider.ProvideConsumer(t.Context(), topic, handlerFunc)
 	require.NoError(t, err)
 
 	return consumer
@@ -33,9 +34,9 @@ func Test_redisConsumer_Consume(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
-		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
+		cfg, containerShutdown := BuildContainerBackedRedisConfigForTest(t)
 		defer func() {
 			assert.NoError(t, containerShutdown(ctx))
 		}()
@@ -44,7 +45,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 			return nil
 		}
 
-		consumer := buildRedisBackedConsumer(t, ctx, cfg, t.Name(), hf)
+		consumer := buildRedisBackedConsumer(t, cfg, t.Name(), hf)
 		require.NotNil(t, consumer)
 
 		stopChan := make(chan bool)
@@ -61,9 +62,9 @@ func Test_redisConsumer_Consume(T *testing.T) {
 	T.Run("with error handling message", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
-		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
+		cfg, containerShutdown := BuildContainerBackedRedisConfigForTest(t)
 		defer func() {
 			assert.NoError(t, containerShutdown(ctx))
 		}()
@@ -73,7 +74,7 @@ func Test_redisConsumer_Consume(T *testing.T) {
 			return anticipatedError
 		}
 
-		consumer := buildRedisBackedConsumer(t, ctx, cfg, t.Name(), hf)
+		consumer := buildRedisBackedConsumer(t, cfg, t.Name(), hf)
 		require.NotNil(t, consumer)
 
 		stopChan := make(chan bool)
@@ -105,7 +106,7 @@ func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 		conPro := ProvideRedisConsumerProvider(logger, cfg)
 		require.NotNil(t, conPro)
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		actual, err := conPro.ProvideConsumer(ctx, t.Name(), nil)
 		assert.NoError(t, err)
@@ -123,7 +124,7 @@ func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 		conPro := ProvideRedisConsumerProvider(logger, cfg)
 		require.NotNil(t, conPro)
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		actual, err := conPro.ProvideConsumer(ctx, t.Name(), nil)
 		assert.NoError(t, err)

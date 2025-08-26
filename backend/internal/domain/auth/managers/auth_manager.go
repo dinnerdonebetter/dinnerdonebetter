@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"strings"
 	"time"
 
@@ -56,8 +57,9 @@ func ProvideAuthManager(
 	publisherProvider messagequeue.PublisherProvider,
 	secretGenerator random.Generator,
 	qrCodeBuilder qrcodes.Builder,
+	queueConfig msgconfig.QueuesConfig,
 ) (*AuthManager, error) {
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher("")
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to provide data changes publisher: %w", err)
 	}

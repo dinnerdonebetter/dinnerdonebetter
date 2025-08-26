@@ -1,6 +1,9 @@
 package integration
 
 import (
+	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -90,7 +93,14 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 */
 
 func TestValidIngredients_GetRandom(t *testing.T) {
+	ctx := t.Context()
 
+	client, err := buildUnauthenticatedGRPCClientForTest(t)
+	require.NoError(t, err)
+
+	response, err := client.GetRandomValidIngredient(ctx, &mealplanning.GetRandomValidIngredientRequest{})
+	assert.NoError(t, err)
+	assert.Nil(t, response)
 }
 
 /*

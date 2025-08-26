@@ -83,7 +83,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	}
 	generator := random.NewGenerator(logger, tracerProvider)
 	builder := qrcodes.NewBuilder(tracerProvider, logger)
-	authManager, err := managers.ProvideAuthManager(logger, tracerProvider, passwordResetTokenDataManager, userDataManager, authenticator, publisherProvider, generator, builder)
+	queuesConfig := cfg.Queues
+	authManager, err := managers.ProvideAuthManager(logger, tracerProvider, passwordResetTokenDataManager, userDataManager, authenticator, publisherProvider, generator, builder, queuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -102,8 +103,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	queuesConfig := &cfg.Queues
-	identityDataManager, err := manager.NewIdentityDataManager(tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, queuesConfig)
+	msgconfigQueuesConfig := &cfg.Queues
+	identityDataManager, err := manager.NewIdentityDataManager(tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, msgconfigQueuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -111,29 +112,29 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	internalOperationsServer := grpc5.NewService(logger, tracerProvider, msgconfigConfig)
 	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
-	recipeManager, err := managers2.NewRecipeManager(ctx, logger, tracerProvider, mealplanningRepository, queuesConfig, publisherProvider, recipeAnalyzer, textsearchcfgConfig, provider)
+	recipeManager, err := managers2.NewRecipeManager(ctx, logger, tracerProvider, mealplanningRepository, msgconfigQueuesConfig, publisherProvider, recipeAnalyzer, textsearchcfgConfig, provider)
 	if err != nil {
 		return nil, err
 	}
 	validEnumerationDataManager := mealplanning.ProvideValidEnumerationDataManager(mealplanningRepository)
-	validEnumerationsManager, err := managers2.NewValidEnumerationsManager(ctx, logger, tracerProvider, validEnumerationDataManager, queuesConfig, publisherProvider, textsearchcfgConfig, provider)
+	validEnumerationsManager, err := managers2.NewValidEnumerationsManager(ctx, logger, tracerProvider, validEnumerationDataManager, msgconfigQueuesConfig, publisherProvider, textsearchcfgConfig, provider)
 	if err != nil {
 		return nil, err
 	}
-	mealPlanningManager, err := managers2.NewMealPlanningManager(ctx, logger, tracerProvider, mealplanningRepository, queuesConfig, publisherProvider, textsearchcfgConfig, provider)
+	mealPlanningManager, err := managers2.NewMealPlanningManager(ctx, logger, tracerProvider, mealplanningRepository, msgconfigQueuesConfig, publisherProvider, textsearchcfgConfig, provider)
 	if err != nil {
 		return nil, err
 	}
-	worker, err := mealplanfinalizer.NewMealPlanFinalizer(logger, tracerProvider, mealplanningRepository, publisherProvider, provider, queuesConfig)
+	worker, err := mealplanfinalizer.NewMealPlanFinalizer(logger, tracerProvider, mealplanningRepository, publisherProvider, provider, msgconfigQueuesConfig)
 	if err != nil {
 		return nil, err
 	}
 	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
-	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
+	mealplangrocerylistinitializerWorker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, msgconfigQueuesConfig)
 	if err != nil {
 		return nil, err
 	}
-	mealplantaskcreatorWorker, err := mealplantaskcreator.NewMealPlanTaskCreator(logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, queuesConfig)
+	mealplantaskcreatorWorker, err := mealplantaskcreator.NewMealPlanTaskCreator(logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, msgconfigQueuesConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -142,8 +143,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	userNotificationsServiceServer := grpc7.NewService(logger, tracerProvider, notificationsRepository)
 	config2 := cfg.Database
 	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
-	msgconfigQueuesConfig := cfg.Queues
-	oAuth2Manager, err := manager2.NewOAuth2Manager(logger, tracerProvider, generator, v, publisherProvider, oauthRepository, msgconfigQueuesConfig)
+	oAuth2Manager, err := manager2.NewOAuth2Manager(logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

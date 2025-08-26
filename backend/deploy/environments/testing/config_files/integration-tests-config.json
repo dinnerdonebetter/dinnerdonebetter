@@ -118,7 +118,7 @@
 		"debug": false
 	},
 	"grpc": {
-		"port": 0
+		"port": 8001
 	},
 	"database": {
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
