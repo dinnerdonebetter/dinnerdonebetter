@@ -112,14 +112,17 @@
 		},
 		"provider": "chi"
 	},
-	"server": {
+	"http": {
 		"startupDeadline": 60000000000,
 		"httpPort": 8000,
 		"debug": false
 	},
+	"grpc": {
+		"port": 0
+	},
 	"database": {
-		"provider": "",
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"provider": "",
 		"connectionDetails": {
 			"username": "dbuser",
 			"password": "hunter2",
@@ -128,18 +131,14 @@
 			"port": 5432,
 			"disableSSL": true
 		},
+		"migrations": null,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1500000000,
 		"debug": true,
 		"logQueries": true,
-		"runMigrations": true,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1500000000
+		"runMigrations": true
 	},
 	"services": {
-		"auditLogEntries": {},
-		"serviceSettingConfigurations": {},
-		"userNotifications": {},
-		"accounts": {},
-		"serviceSettings": {},
 		"users": {
 			"publicMediaURLPrefix": "",
 			"uploads": {
@@ -162,16 +161,13 @@
 				"debug": false
 			}
 		},
-		"recipes": {
-			"mediaUploadPrefix": "https://media.example.website/lol",
+		"mealPlanning": {
+			"mediaUploadPrefix": "",
 			"uploads": {
-				"storageConfig": {
-					"bucketName": "recipes",
-					"provider": "memory"
-				},
+				"storageConfig": {},
 				"debug": false
 			},
-			"searchFromDatabase": false
+			"useSearchService": false
 		},
 		"auth": {
 			"tokens": {
@@ -195,18 +191,6 @@
 		},
 		"oauth2Clients": {
 			"creationEnabled": false
-		},
-		"meals": {
-			"searchFromDatabase": false
-		},
-		"webhooks": {
-			"debug": false
-		},
-		"accountInvitations": {
-			"debug": false
-		},
-		"validEnumerations": {
-			"useSearchService": false
 		}
 	}
 }

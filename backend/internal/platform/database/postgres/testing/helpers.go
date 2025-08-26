@@ -1,6 +1,7 @@
 package testing
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"hash/fnv"
@@ -30,7 +31,17 @@ import (
 
 var RunContainerTests = strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) != "false" // on by default
 
-func HashStringToNumber(t *testing.T, s string) uint64 {
+func MustHashStringToNumber(s string) uint64 {
+	h := fnv.New64a()
+
+	if _, err := h.Write([]byte(s)); err != nil {
+		panic(err)
+	}
+
+	return h.Sum64()
+}
+
+func HashStringToNumberForTest(t *testing.T, s string) uint64 {
 	t.Helper()
 	h := fnv.New64a()
 
@@ -67,16 +78,23 @@ const (
 	defaultPostgresImage = "postgres:17"
 )
 
-func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql.DB, *databasecfg.Config) {
+func BuildDatabaseContainerForTest(t *testing.T) (*postgres.PostgresContainer, *sql.DB, *databasecfg.Config) {
 	t.Helper()
 
-	dbUsername := fmt.Sprintf("%d", HashStringToNumber(t, t.Name()))
+	container, db, dbConfig, err := BuildDatabaseContainer(t.Context(), t.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return container, db, dbConfig
+}
+
+func BuildDatabaseContainer(ctx context.Context, dbName string) (*postgres.PostgresContainer, *sql.DB, *databasecfg.Config, error) {
+	dbUsername := fmt.Sprintf("%d", MustHashStringToNumber(dbName))
 	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
 
-	ctx := t.Context()
-
 	var container *postgres.PostgresContainer
-	require.NoError(t, try.Do(func(attempt int) (bool, error) {
+	if err := try.Do(func(attempt int) (bool, error) {
 		var containerErr error
 		container, containerErr = postgres.Run(
 			ctx,
@@ -88,22 +106,33 @@ func BuildDatabaseClientForTest(t *testing.T) (*postgres.PostgresContainer, *sql
 		)
 
 		return attempt < 5, containerErr
-	}))
-	require.NotNil(t, container)
+	}); err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to connect to postgres: %w", err)
+	}
+
+	if container == nil {
+		return nil, nil, nil, fmt.Errorf("container %s not found", dbName)
+	}
 
 	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
-	require.NoError(t, err)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to connect to postgres container: %w", err)
+	}
 
 	dbConfig := &databasecfg.Config{
 		RunMigrations:            false,
 		OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
 	}
-	require.NoError(t, dbConfig.LoadConnectionDetailsFromURL(connStr))
+	if err = dbConfig.LoadConnectionDetailsFromURL(connStr); err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to connect to postgres container: %w", err)
+	}
 
 	db, err := dbConfig.ConnectToDatabase()
-	require.NoError(t, err)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to connect to postgres container: %w", err)
+	}
 
-	return container, db, dbConfig
+	return container, db, dbConfig, nil
 }
 
 func CreateUserForTest(t *testing.T, exampleUser *identity.User, db *sql.DB) *identity.User {

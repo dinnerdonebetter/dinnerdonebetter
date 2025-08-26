@@ -20,7 +20,7 @@ func TestQuerier_Migrate(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		c, db, _ := pgtesting.BuildDatabaseClientForTest(t)
+		c, db, _ := pgtesting.BuildDatabaseContainerForTest(t)
 
 		config := &databasecfg.Config{MaxPingAttempts: 1, PingWaitPeriod: time.Second}
 

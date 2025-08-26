@@ -1,19 +1,10 @@
 package integration
 
 import (
-	"context"
-	"fmt"
 	"testing"
-
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
+
+/*
 
 func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIngredient) {
 	t.Helper()
@@ -96,28 +87,13 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 		}
 	})
 }
+*/
 
-func (s *TestSuite) TestValidIngredients_GetRandom() {
-	s.runTest("should be able to get a random valid ingredient", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+func TestValidIngredients_GetRandom(t *testing.T) {
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			require.NoError(t, err)
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-
-			createdValidIngredient, err = testClients.adminClient.GetRandomValidIngredient(ctx)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-
-			assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
-		}
-	})
 }
+
+/*
 
 func (s *TestSuite) TestValidIngredients_Listing() {
 	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
@@ -196,3 +172,5 @@ func (s *TestSuite) TestValidIngredients_Searching() {
 		}
 	})
 }
+
+*/

@@ -3,10 +3,10 @@ package main
 import (
 	"time"
 
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics/segment"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"

@@ -1,6 +1,28 @@
 package main
 
 import (
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+)
+
+const (
+	dockerComposeWorkerQueueAddress = "worker_queue:6379"
+	localOAuth2TokenEncryptionKey   = debugCookieHashKey
+)
+
+var (
+	localdevPostgresDBConnectionDetails = databasecfg.ConnectionDetails{
+		Username:   "dbuser",
+		Password:   "hunter2",
+		Database:   "dinner-done-better",
+		Host:       "pgdatabase",
+		Port:       5432,
+		DisableSSL: true,
+	}
+)
+
+/*
+
+import (
 	"encoding/base64"
 	"time"
 
@@ -222,3 +244,4 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		},
 	}
 }
+*/

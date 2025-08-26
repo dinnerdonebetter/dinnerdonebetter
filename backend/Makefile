@@ -254,7 +254,8 @@ env_vars:
 integration-tests: integration_tests
 
 .PHONY: integration_tests
-integration_tests: integration_tests_postgres
+integration_tests:
+	go test -v $(THIS)/tests/integration
 
 .PHONY: integration_tests_postgres
 integration_tests_postgres:

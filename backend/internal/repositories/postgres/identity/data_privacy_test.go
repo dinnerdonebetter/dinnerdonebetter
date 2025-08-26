@@ -30,7 +30,7 @@ func TestQuerier_Integration_DataPrivacy(t *testing.T) {
 	}(t)
 
 	exampleUser := fakes.BuildFakeUser()
-	exampleUser.Username = fmt.Sprintf("%d", pgtesting.HashStringToNumber(t, exampleUser.Username))
+	exampleUser.Username = fmt.Sprintf("%d", pgtesting.HashStringToNumberForTest(t, exampleUser.Username))
 	exampleUser.TwoFactorSecretVerifiedAt = nil
 
 	// create

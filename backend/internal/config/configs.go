@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
 	"os"
 	"runtime/debug"
 	"time"
@@ -390,14 +389,6 @@ func (cfg *AdminWebappConfig) ValidateWithContext(ctx context.Context) error {
 	}
 
 	return result.ErrorOrNil()
-}
-
-func envVarOnSetFunc(tag string, value any, isDefault bool) {
-	slog.Info("env var set",
-		slog.String("tag", tag),
-		slog.String("value", fmt.Sprintf("%+v", value)),
-		slog.Bool("isDefault", isDefault),
-	)
 }
 
 func LoadConfigFromEnvironment[T configurations]() (*T, error) {

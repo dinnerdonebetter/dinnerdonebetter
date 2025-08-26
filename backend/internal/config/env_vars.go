@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"strings"
@@ -35,6 +36,12 @@ func RunningInKubernetes() bool {
 func ApplyEnvironmentVariables(cfg any) error {
 	return env.ParseWithOptions(cfg, env.Options{
 		Prefix: EnvVarPrefix,
-		OnSet:  envVarOnSetFunc,
+		OnSet: func(tag string, value any, isDefault bool) {
+			slog.Info("env var set",
+				slog.String("tag", tag),
+				slog.String("value", fmt.Sprintf("%+v", value)),
+				slog.Bool("isDefault", isDefault),
+			)
+		},
 	})
 }
