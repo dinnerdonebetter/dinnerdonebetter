@@ -21,6 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 
@@ -74,7 +75,8 @@ type (
 		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Meta          MetaSettings           `envPrefix:"META_"          json:"meta"`
 		Routing       routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
-		HTTPServer    http.Config            `envPrefix:"SERVER_"        json:"server"`
+		HTTPServer    http.Config            `envPrefix:"HTTP_"          json:"http"`
+		GRPCServer    grpc.Config            `envPrefix:"GRPC_"          json:"grpc"`
 		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 		Services      ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
 

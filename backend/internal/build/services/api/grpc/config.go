@@ -23,6 +23,7 @@ var (
 			"Meta",
 			"Routing",
 			"HTTPServer",
+			"GRPCServer",
 			"Database",
 			"Services",
 		),

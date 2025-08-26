@@ -6,6 +6,7 @@ package grpcapi
 import (
 	"context"
 	"github.com/dinnerdonebetter/backend/internal/platform/qrcodes"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
@@ -65,7 +66,7 @@ func Build(
 		observability.Providers,
 		random.ProvidersRandom,
 		postgres.Providers,
-		// grpc.ProvidersGRPC,
+		grpc.ProvidersGRPC,
 		qrcodes.Providers,
 		// repos
 		auditrepo.Providers,
@@ -101,9 +102,9 @@ func Build(
 		recipeanalysis.ProvidersRecipeAnalysis,
 		grocerylistpreparation.ProvidersGroceryListPreparation,
 		ProvideUserTextSearcher,
-		// BuildUnaryServerInterceptors,
-		// BuildStreamServerInterceptors,
-		// BuildRegistrationFuncs,
+		BuildUnaryServerInterceptors,
+		BuildStreamServerInterceptors,
+		BuildRegistrationFuncs,
 		NewGRPCService,
 	)
 

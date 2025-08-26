@@ -11,6 +11,7 @@ import (
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 )
 
 type GRPCService struct {
@@ -24,6 +25,7 @@ type GRPCService struct {
 	oauthsvc.OAuthServiceServer
 	settingssvc.SettingsServiceServer
 	webhookssvc.WebhooksServiceServer
+	*grpc.Server
 }
 
 func NewGRPCService(
@@ -37,8 +39,10 @@ func NewGRPCService(
 	oauthServiceServer oauthsvc.OAuthServiceServer,
 	settingsServiceServer settingssvc.SettingsServiceServer,
 	webhooksServiceServer webhookssvc.WebhooksServiceServer,
+	server *grpc.Server,
 ) *GRPCService {
 	return &GRPCService{
+		Server:                         server,
 		AuditServiceServer:             auditServiceServer,
 		AuthServiceServer:              authServiceServer,
 		DataPrivacyServiceServer:       dataPrivacyServiceServer,
