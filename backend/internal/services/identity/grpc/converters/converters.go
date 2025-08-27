@@ -155,6 +155,22 @@ func ConvertGRPCUserRegistrationInputToUserRegistrationInput(input *identitysvc.
 	}
 }
 
+func ConvertUserRegistrationInputToGRPCUserRegistrationInput(input *identity.UserRegistrationInput) *identitysvc.UserRegistrationInput {
+	return &identitysvc.UserRegistrationInput{
+		Birthday:              grpcconverters.ConvertTimePointerToPBTimestamp(input.Birthday),
+		Password:              input.Password,
+		EmailAddress:          input.EmailAddress,
+		InvitationToken:       input.InvitationToken,
+		InvitationID:          input.InvitationID,
+		Username:              input.Username,
+		FirstName:             input.FirstName,
+		LastName:              input.LastName,
+		AccountName:           input.AccountName,
+		AcceptedTOS:           input.AcceptedTOS,
+		AcceptedPrivacyPolicy: input.AcceptedPrivacyPolicy,
+	}
+}
+
 func ConvertUserCreationResponseToGRPCUserCreationResponse(input *identity.UserCreationResponse) *identitysvc.UserCreationResponse {
 	return &identitysvc.UserCreationResponse{
 		CreatedAt:       grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),

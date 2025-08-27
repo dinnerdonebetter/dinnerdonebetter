@@ -36,13 +36,13 @@ func Unauthenticated(msg string) error {
 	return status.Error(codes.Unauthenticated, msg)
 }
 
-func (s *serviceImpl) fetchSessionContext(ctx context.Context) *sessions.ContextData {
+func (s *serviceImpl) fetchSessionContext(ctx context.Context) (*sessions.ContextData, error) {
 	sessionContext, ok := ctx.Value(SessionContextKey).(*sessions.ContextData)
 	if !ok {
-		return nil
+		return nil, errors.New("session context not found")
 	}
 
-	return sessionContext
+	return sessionContext, nil
 }
 
 func (s *serviceImpl) determineZuckMode(ctx context.Context, metadata metadata.MD, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {

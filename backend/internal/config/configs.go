@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
 	"os"
 	"runtime/debug"
 	"time"
@@ -64,6 +65,7 @@ type (
 	APIServiceConfig struct {
 		_ struct{} `json:"-"`
 
+		Auth          authcfg.Config         `envPrefix:"AUTH_"          json:"auth"`
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
 		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`

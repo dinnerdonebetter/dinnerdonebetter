@@ -90,8 +90,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	oAuth2Service := authentication2.ProvideOAuth2ServiceFromAuthService(authDataService)
-	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, oAuth2Service, authDataService)
+	router, err := ProvideAPIRouter(routingcfgConfig, logger, tracerProvider, provider, authDataService)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	authmgr "github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
 	identitymgr "github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
@@ -68,6 +69,7 @@ func Build(
 		postgres.Providers,
 		grpc.ProvidersGRPC,
 		qrcodes.Providers,
+		tokenscfg.ProvidersTokenIssuers,
 		// repos
 		auditrepo.Providers,
 		authrepo.Providers,

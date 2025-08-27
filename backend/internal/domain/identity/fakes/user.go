@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 
@@ -13,17 +13,17 @@ import (
 )
 
 // BuildFakeUser builds a faked User.
-func BuildFakeUser() *types.User {
+func BuildFakeUser() *identity.User {
 	fakeDate := BuildFakeTime()
 
-	return &types.User{
+	return &identity.User{
 		ID:                        BuildFakeID(),
 		FirstName:                 fake.FirstName(),
 		LastName:                  fake.LastName(),
 		EmailAddress:              fake.Email(),
 		Username:                  fmt.Sprintf("%s_%d_%s", fake.Username(), fake.Uint8(), fake.Username()),
 		Birthday:                  pointer.To(BuildFakeTime()),
-		AccountStatus:             string(types.UnverifiedAccountStatus),
+		AccountStatus:             string(identity.UnverifiedAccountStatus),
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedAt: &fakeDate,
 		ServiceRole:               authorization.ServiceUserRole.String(),
@@ -32,13 +32,13 @@ func BuildFakeUser() *types.User {
 }
 
 // BuildFakeUsersList builds a faked UserList.
-func BuildFakeUsersList() *filtering.QueryFilteredResult[types.User] {
-	var examples []*types.User
+func BuildFakeUsersList() *filtering.QueryFilteredResult[identity.User] {
+	var examples []*identity.User
 	for i := 0; i < exampleQuantity; i++ {
 		examples = append(examples, BuildFakeUser())
 	}
 
-	return &filtering.QueryFilteredResult[types.User]{
+	return &filtering.QueryFilteredResult[identity.User]{
 		Pagination: filtering.Pagination{
 			Page:          1,
 			Limit:         50,
@@ -50,10 +50,10 @@ func BuildFakeUsersList() *filtering.QueryFilteredResult[types.User] {
 }
 
 // BuildFakeUserCreationInput builds a faked UserRegistrationInput.
-func BuildFakeUserCreationInput() *types.UserRegistrationInput {
+func BuildFakeUserCreationInput() *identity.UserRegistrationInput {
 	exampleUser := BuildFakeUser()
 
-	return &types.UserRegistrationInput{
+	return &identity.UserRegistrationInput{
 		Username:     exampleUser.Username,
 		EmailAddress: fake.Email(),
 		FirstName:    exampleUser.FirstName,
@@ -64,9 +64,9 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 }
 
 // BuildFakeUserRegistrationInput builds a faked UserRegistrationInput.
-func BuildFakeUserRegistrationInput() *types.UserRegistrationInput {
+func BuildFakeUserRegistrationInput() *identity.UserRegistrationInput {
 	user := BuildFakeUser()
-	return &types.UserRegistrationInput{
+	return &identity.UserRegistrationInput{
 		Username:     user.Username,
 		FirstName:    user.FirstName,
 		LastName:     user.LastName,
@@ -77,8 +77,8 @@ func BuildFakeUserRegistrationInput() *types.UserRegistrationInput {
 }
 
 // BuildFakeUserRegistrationInputFromUser builds a faked UserRegistrationInput.
-func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistrationInput {
-	return &types.UserRegistrationInput{
+func BuildFakeUserRegistrationInputFromUser(user *identity.User) *identity.UserRegistrationInput {
+	return &identity.UserRegistrationInput{
 		Username:     user.Username,
 		FirstName:    user.FirstName,
 		LastName:     user.LastName,
@@ -89,8 +89,8 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 }
 
 // BuildFakeUserRegistrationInputWithInviteFromUser builds a faked UserRegistrationInput.
-func BuildFakeUserRegistrationInputWithInviteFromUser(user *types.User) *types.UserRegistrationInput {
-	return &types.UserRegistrationInput{
+func BuildFakeUserRegistrationInputWithInviteFromUser(user *identity.User) *identity.UserRegistrationInput {
+	return &identity.UserRegistrationInput{
 		Username:        user.Username,
 		FirstName:       user.FirstName,
 		LastName:        user.LastName,
@@ -103,9 +103,9 @@ func BuildFakeUserRegistrationInputWithInviteFromUser(user *types.User) *types.U
 }
 
 // BuildFakeUserCreationResponse builds a faked UserAccountStatusUpdateInput.
-func BuildFakeUserCreationResponse() *types.UserCreationResponse {
+func BuildFakeUserCreationResponse() *identity.UserCreationResponse {
 	user := BuildFakeUser()
-	return &types.UserCreationResponse{
+	return &identity.UserCreationResponse{
 		CreatedAt:       user.CreatedAt,
 		Birthday:        user.Birthday,
 		Username:        user.Username,
@@ -120,14 +120,14 @@ func BuildFakeUserCreationResponse() *types.UserCreationResponse {
 }
 
 // BuildFakeAvatarUpdateInput builds a faked AvatarUpdateInput.
-func BuildFakeAvatarUpdateInput() *types.AvatarUpdateInput {
-	return &types.AvatarUpdateInput{
+func BuildFakeAvatarUpdateInput() *identity.AvatarUpdateInput {
+	return &identity.AvatarUpdateInput{
 		Base64EncodedData: buildUniqueString(),
 	}
 }
 
-func BuildFakeUserDetailsUpdateRequestInput() *types.UserDetailsUpdateRequestInput {
-	return &types.UserDetailsUpdateRequestInput{
+func BuildFakeUserDetailsUpdateRequestInput() *identity.UserDetailsUpdateRequestInput {
+	return &identity.UserDetailsUpdateRequestInput{
 		FirstName:       buildUniqueString(),
 		LastName:        buildUniqueString(),
 		Birthday:        BuildFakeTime(),
@@ -136,8 +136,8 @@ func BuildFakeUserDetailsUpdateRequestInput() *types.UserDetailsUpdateRequestInp
 	}
 }
 
-func BuildFakeUserDetailsDatabaseUpdateInput() *types.UserDetailsDatabaseUpdateInput {
-	return &types.UserDetailsDatabaseUpdateInput{
+func BuildFakeUserDetailsDatabaseUpdateInput() *identity.UserDetailsDatabaseUpdateInput {
+	return &identity.UserDetailsDatabaseUpdateInput{
 		FirstName: buildUniqueString(),
 		LastName:  buildUniqueString(),
 		Birthday:  BuildFakeTime(),
@@ -145,8 +145,8 @@ func BuildFakeUserDetailsDatabaseUpdateInput() *types.UserDetailsDatabaseUpdateI
 }
 
 // BuildFakeUserPermissionModificationInput builds a faked ModifyUserPermissionsInput.
-func BuildFakeUserPermissionModificationInput() *types.ModifyUserPermissionsInput {
-	return &types.ModifyUserPermissionsInput{
+func BuildFakeUserPermissionModificationInput() *identity.ModifyUserPermissionsInput {
+	return &identity.ModifyUserPermissionsInput{
 		Reason:  fake.Sentence(10),
 		NewRole: authorization.AccountMemberRole.String(),
 	}

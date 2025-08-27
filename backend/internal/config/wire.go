@@ -11,6 +11,7 @@ var (
 	ServiceConfigProviders = wire.NewSet(
 		wire.FieldsOf(
 			new(*APIServiceConfig),
+			"Auth",
 			"Observability",
 			"Email",
 			"Analytics",

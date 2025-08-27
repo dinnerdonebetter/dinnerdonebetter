@@ -96,6 +96,9 @@ type (
 		StatusHandler(http.ResponseWriter, *http.Request)
 		BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *http.Request)
 
+		AuthorizeHandler(res http.ResponseWriter, req *http.Request)
+		TokenHandler(res http.ResponseWriter, req *http.Request)
+
 		SSOLoginHandler(http.ResponseWriter, *http.Request)
 		SSOLoginCallbackHandler(http.ResponseWriter, *http.Request)
 

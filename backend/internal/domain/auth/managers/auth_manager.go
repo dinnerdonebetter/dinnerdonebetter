@@ -73,7 +73,7 @@ func ProvideAuthManager(
 		secretGenerator:               secretGenerator,
 		qrCodeBuilder:                 qrCodeBuilder,
 		dataChangesPublisher:          dataChangesPublisher,
-		sessionContextDataFetcher:     nil,
+		sessionContextDataFetcher:     sessions.FetchContextDataFromContext,
 		minimumPasswordLength:         0,
 	}, nil
 }
@@ -137,13 +137,7 @@ func (l *AuthManager) TOTPSecretVerification(ctx context.Context, input *auth.TO
 
 	logger := l.logger.WithSpan(span)
 
-	sessionContextData, err := l.sessionContextDataFetcher(ctx)
-	if err != nil {
-		return observability.PrepareError(err, span, "failed to get session context data")
-	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
-
-	if err = input.ValidateWithContext(ctx); err != nil {
+	if err := input.ValidateWithContext(ctx); err != nil {
 		logger = logger.WithValue(keys.ValidationErrorKey, err)
 		return observability.PrepareError(err, span, "provided input was invalid")
 	}

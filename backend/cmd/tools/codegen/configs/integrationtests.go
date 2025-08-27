@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	oauthcfg "github.com/dinnerdonebetter/backend/internal/services/oauth/config"
 	"time"
 
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
@@ -127,7 +128,7 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 		},
 		Services: config.ServicesConfig{
 			Auth: authservice.Config{
-				OAuth2: authservice.OAuth2Config{
+				OAuth2: oauthcfg.Config{
 					Domain:               "http://localhost:9000",
 					AccessTokenLifespan:  time.Hour,
 					RefreshTokenLifespan: time.Hour,

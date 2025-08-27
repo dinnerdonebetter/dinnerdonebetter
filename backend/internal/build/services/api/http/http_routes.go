@@ -2,7 +2,7 @@ package api
 
 import (
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -20,7 +20,7 @@ func ProvideAPIRouter(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	metricsProvider metrics.Provider,
-	oauthService oauth.OAuth2Service,
+	authService auth.AuthDataService,
 ) (routing.Router, error) {
 	router, err := routingConfig.ProvideRouter(logger, tracerProvider, metricsProvider)
 	if err != nil {
@@ -41,8 +41,8 @@ func ProvideAPIRouter(
 	})
 
 	router.Route("/oauth2", func(userRouter routing.Router) {
-		userRouter.Get("/authorize", oauthService.AuthorizeHandler)
-		userRouter.Post("/token", oauthService.TokenHandler)
+		userRouter.Get("/authorize", authService.AuthorizeHandler)
+		userRouter.Post("/token", authService.TokenHandler)
 	})
 
 	return router, nil

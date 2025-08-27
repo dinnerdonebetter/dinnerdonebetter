@@ -2,10 +2,20 @@ package integration
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
+	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/require"
+	"hash/fnv"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -250,4 +260,110 @@ func providePostgresClient(ctx context.Context, logger logging.Logger) (database
 	}
 
 	return pgc, func() { dbContainer.Stop(context.Background(), pointer.To(10*time.Second)) }, nil
+}
+
+func hashStringToNumber(s string) uint64 {
+	// Create a new FNV-1a 64-bit hash object
+	h := fnv.New64a()
+
+	// Write the bytes of the string into the hash object
+	_, err := h.Write([]byte(s))
+	if err != nil {
+		// Handle error if necessary
+		panic(err)
+	}
+
+	// Return the resulting hash value as a number (uint64)
+	return h.Sum64()
+}
+
+// createServiceUser creates a user.
+func createServiceUser(ctx context.Context, address string, in *identity.UserRegistrationInput) (*identity.User, error) {
+	if address == "" {
+		return nil, errors.New("empty address not allowed")
+	}
+
+	c, err := buildUnauthenticatedGRPCClient(address)
+	if err != nil {
+		return nil, fmt.Errorf("initializing client: %w", err)
+	}
+
+	if in == nil {
+		in = identityfakes.BuildFakeUserCreationInput()
+	}
+	input := converters.ConvertUserRegistrationInputToGRPCUserRegistrationInput(in)
+
+	res, err := c.CreateUser(ctx, &identitysvc.CreateUserRequest{Input: input})
+	if err != nil {
+		return nil, err
+	}
+	ucr := res.Created
+
+	token, tokenErr := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
+	if tokenErr != nil {
+		return nil, fmt.Errorf("generating totp code: %w", tokenErr)
+	}
+
+	if _, validationErr := c.VerifyTOTPSecret(ctx, &authsvc.VerifyTOTPSecretRequest{
+		TOTPToken: token,
+		UserID:    ucr.CreatedUserID,
+	}); validationErr != nil {
+		return nil, fmt.Errorf("verifying totp code: %w", validationErr)
+	}
+
+	u := &identity.User{
+		ID:              ucr.CreatedUserID,
+		Username:        ucr.Username,
+		EmailAddress:    ucr.EmailAddress,
+		TwoFactorSecret: ucr.TwoFactorSecret,
+		CreatedAt:       grpcconverters.ConvertPBTimestampToTime(ucr.CreatedAt),
+		// this is a dirty trick to reuse this field to provide the password to the caller,
+		HashedPassword: in.Password,
+	}
+
+	return u, nil
+}
+
+func createUserAndClientForTest(t *testing.T, address string) (*identity.User, client.Client) {
+	t.Helper()
+
+	ctx := t.Context()
+
+	input := &identity.UserRegistrationInput{
+		Birthday:              pointer.To(time.Now()),
+		EmailAddress:          fmt.Sprintf("test+%d@whatever.com", hashStringToNumber(t.Name())),
+		FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+		AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+		LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+		Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+		Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+		AcceptedPrivacyPolicy: true,
+		AcceptedTOS:           true,
+	}
+
+	user, err := createServiceUser(ctx, address, input)
+	require.NoError(t, err)
+
+	t.Logf("created user %s", user.ID)
+
+	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
+	require.NoError(t, err)
+
+	loginInput := &authsvc.UserLoginInput{
+		Username:  user.Username,
+		Password:  user.HashedPassword,
+		TOTPToken: code,
+	}
+
+	unauthedClient, err := buildUnauthenticatedGRPCClient(address)
+	require.NoError(t, err)
+
+	tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
+		Input: loginInput,
+	})
+	require.NoError(t, err)
+
+	oauthedClient := buildAuthedGRPCClient(ctx, []string{"*"}, address, tokenRes.Result.AccessToken)
+
+	return user, oauthedClient
 }

@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"fmt"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"net/http"
 	"sync"
 
@@ -71,7 +72,7 @@ func ProvideService(
 	routeParamManager routing.RouteParamManager,
 	metricsProvider metrics.Provider,
 	queuesConfig *msgconfig.QueuesConfig,
-) (identity.AuthDataService, error) {
+) (auth.AuthDataService, error) {
 	if queuesConfig == nil {
 		return nil, internalerrors.NilConfigError("queuesConfig for AuthDataService")
 	}
