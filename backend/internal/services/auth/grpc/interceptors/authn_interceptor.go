@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
@@ -36,6 +37,8 @@ type AuthInterceptor struct {
 	logger                logging.Logger
 	identityRepository    identity.Repository
 	unauthenticatedRoutes []string
+	methodScopesHat       sync.Mutex
+	methodScopes          map[string][]string
 	oauth2ClientManager   *manage.Manager
 }
 
@@ -50,6 +53,14 @@ func ProvideAuthInterceptor(
 		logger:              logging.EnsureLogger(logger).WithName(o11yName),
 		identityRepository:  identityRepository,
 		oauth2ClientManager: oauth2ClientManager,
+		methodScopes: map[string][]string{
+			"/mealplanning.MealPlanningService/CreateValidIngredient": {
+				authorization.CreateValidIngredientsPermission.ID(),
+			},
+			"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
+				authorization.ReadValidIngredientsPermission.ID(),
+			},
+		},
 		unauthenticatedRoutes: []string{
 			// TODO: configure this
 			"/auth.AuthService/AdminLoginForToken",
@@ -175,6 +186,14 @@ func (s *AuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, status.Error(codes.Internal, "building session context data for user")
 		}
+
+		s.methodScopesHat.Lock()
+		if x, methodHasDefinedScopes := s.methodScopes[info.FullMethod]; methodHasDefinedScopes {
+			for _, scope := range x {
+				sessionContextData.AccountRolePermissionsChecker().HasPermission(authorization.Permission(scope))
+			}
+		}
+		s.methodScopesHat.Unlock()
 
 		ctx = context.WithValue(ctx, sessions.SessionContextDataKey, sessionContextData)
 

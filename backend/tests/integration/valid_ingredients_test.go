@@ -99,7 +99,8 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 func TestValidIngredients_GetRandom(t *testing.T) {
 	ctx := t.Context()
 
-	_, client := createUserAndClientForTest(t, httpLocalServerAddress, grpcLocalServerAddress)
+	user, client := createUserAndClientForTest(t, httpLocalServerAddress, grpcLocalServerAddress)
+	t.Logf("created user %s", user.ID)
 
 	creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
 
