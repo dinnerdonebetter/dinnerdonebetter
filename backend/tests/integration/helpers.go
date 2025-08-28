@@ -346,6 +346,15 @@ func createUserAndClientForTest(t *testing.T, httpAddress, grpcAddress string) (
 
 	t.Logf("created user %s", user.ID)
 
+	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, httpAddress, fetchLoginTokenForUser(t, grpcAddress, *user))
+
+	return user, oauthedClient
+}
+
+func fetchLoginTokenForUser(t *testing.T, grpcAddress string, user identity.User) string {
+	t.Helper()
+	ctx := t.Context()
+
 	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
 	require.NoError(t, err)
 
@@ -363,7 +372,5 @@ func createUserAndClientForTest(t *testing.T, httpAddress, grpcAddress string) (
 	})
 	require.NoError(t, err)
 
-	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, httpAddress, tokenRes.Result.AccessToken)
-
-	return user, oauthedClient
+	return tokenRes.Result.AccessToken
 }
