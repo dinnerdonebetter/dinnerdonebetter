@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
@@ -54,7 +54,7 @@ func NewManager(
 	logger logging.Logger,
 	publisherProvider messagequeue.PublisherProvider,
 	userAuthDataManager identity.Repository,
-	cfg *authcfg.TokenRefreshConfig,
+	cfg *tokenscfg.Config,
 ) (Manager, error) {
 
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)

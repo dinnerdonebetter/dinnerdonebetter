@@ -92,7 +92,7 @@ func ProvideService(
 		return nil, fmt.Errorf("creating rejected request counter: %w", err)
 	}
 
-	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))
+	manager := ProvideOAuth2ClientManager(logger, tracerProvider, &cfg.OAuth2, oauthRepo)
 
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
@@ -109,7 +109,7 @@ func ProvideService(
 		tokenIssuer:               signer,
 		rejectedRequestCounter:    rejectedRequestCounter,
 		authProviderFetcher:       routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
-		oauth2Server:              ProvideOAuth2ServerImplementation(logger, tracer, &cfg.OAuth2, oauthRepo, identityRepo, authenticator, signer),
+		oauth2Server:              ProvideOAuth2ServerImplementation(logger, tracerProvider, identityRepo, authenticator, signer, manager),
 	}
 
 	useProvidersMutex.Lock()

@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens"
 	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/jwt"
@@ -25,9 +26,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Provider                string `env:"PROVIDER"    json:"provider"`
-		Audience                string `env:"AUDIENCE"    json:"audience"`
-		Base64EncodedSigningKey string `env:"SIGNING_KEY" json:"base64EncodedSigningKey"`
+		Provider                string        `env:"PROVIDER"    json:"provider"`
+		Audience                string        `env:"AUDIENCE"    json:"audience"`
+		MaxAccessTokenLifetime  time.Duration `env:"MAX_ACCESS_TOKEN_LIFETIME"  json:"maxAccessTokenLifetime"`
+		MaxRefreshTokenLifetime time.Duration `env:"MAX_REFRESH_TOKEN_LIFETIME" json:"maxRefreshTokenLifetime"`
+		Base64EncodedSigningKey string        `env:"SIGNING_KEY" json:"base64EncodedSigningKey"`
 	}
 )
 

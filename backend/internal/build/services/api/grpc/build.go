@@ -5,6 +5,7 @@ package grpcapi
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
@@ -36,6 +37,7 @@ import (
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authsvc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
+	authhttpsvc "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	internalopssvc "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
@@ -70,6 +72,7 @@ func Build(
 		grpc.ProvidersGRPC,
 		qrcodes.Providers,
 		tokenscfg.ProvidersTokenIssuers,
+		interceptors.Providers,
 		// repos
 		auditrepo.Providers,
 		authrepo.Providers,
@@ -81,6 +84,7 @@ func Build(
 		oauthrepo.Providers,
 		mealplanningrepo.Providers,
 		// services
+		authhttpsvc.Providers,
 		auditsvc.Providers,
 		authsvc.Providers,
 		dataprivacysvc.Providers,

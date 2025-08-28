@@ -8,8 +8,9 @@ package grpcapi
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/authentication"
+	authentication2 "github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/manager"
@@ -36,6 +37,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	grpc2 "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
+	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
+	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 	grpc3 "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
 	grpc4 "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"
 	grpc5 "github.com/dinnerdonebetter/backend/internal/services/internalops/grpc"
@@ -72,10 +75,16 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
 	auditServiceServer := grpc.NewService(logger, tracerProvider, repository)
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
+	servicesConfig := &cfg.Services
+	authenticationConfig := &servicesConfig.Auth
+	oAuth2Config := &authenticationConfig.OAuth2
+	config2 := cfg.Database
+	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
+	manageManager := authentication.ProvideOAuth2ClientManager(logger, tracerProvider, oAuth2Config, oauthRepository)
 	authRepository := auth.ProvideAuthRepository(logger, tracerProvider, repository, client)
 	passwordResetTokenDataManager := auth.ProvidePasswordResetTokenDataManager(authRepository)
 	userDataManager := identity.ProvideUserDataManager(identityRepository)
-	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
+	authenticator := authentication2.ProvideArgon2Authenticator(logger, tracerProvider)
 	msgconfigConfig := &cfg.Events
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
 	if err != nil {
@@ -88,11 +97,21 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	authServiceServer := grpc2.NewService(logger, tracerProvider, identityRepository, authManager, authenticator)
+	msgconfigQueuesConfig := &cfg.Queues
+	tokenscfgConfig := &authenticationConfig.Tokens
+	issuer, err := tokenscfg.ProvideTokenIssuer(tokenscfgConfig, logger, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	authenticationManager, err := authentication2.NewManager(msgconfigQueuesConfig, issuer, authenticator, tracerProvider, logger, publisherProvider, identityRepository, tokenscfgConfig)
+	if err != nil {
+		return nil, err
+	}
+	authServiceServer := grpc2.NewService(logger, tracerProvider, identityRepository, manageManager, authManager, authenticator, authenticationManager)
 	dataprivacyRepository := dataprivacy.ProvideDataPrivacyRepository(logger, tracerProvider, repository, identityRepository, client)
 	dataPrivacyServiceServer := grpc3.NewService(logger, tracerProvider, dataprivacyRepository)
 	v := sessions.ProvideContextDataFetcherFromContext()
-	hasher := authentication.ProvideHasher(authenticator)
+	hasher := authentication2.ProvideHasher(authenticator)
 	metricscfgConfig := &observabilityConfig.Metrics
 	provider, err := metricscfg.ProvideMetricsProvider(ctx, logger, metricscfgConfig)
 	if err != nil {
@@ -103,7 +122,6 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	if err != nil {
 		return nil, err
 	}
-	msgconfigQueuesConfig := &cfg.Queues
 	identityDataManager, err := manager.NewIdentityDataManager(tracerProvider, logger, publisherProvider, identityRepository, generator, hasher, userTextSearcher, msgconfigQueuesConfig)
 	if err != nil {
 		return nil, err
@@ -141,8 +159,6 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	mealPlanningServiceServer := grpc6.NewService(logger, tracerProvider, recipeManager, validEnumerationsManager, mealPlanningManager, worker, mealplangrocerylistinitializerWorker, mealplantaskcreatorWorker)
 	notificationsRepository := notifications.ProvideNotificationsRepository(logger, tracerProvider, repository, client)
 	userNotificationsServiceServer := grpc7.NewService(logger, tracerProvider, notificationsRepository)
-	config2 := cfg.Database
-	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
 	oAuth2Manager, err := manager2.NewOAuth2Manager(logger, tracerProvider, generator, v, publisherProvider, oauthRepository, queuesConfig)
 	if err != nil {
 		return nil, err
@@ -153,7 +169,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (*GRPCService, err
 	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
 	webhooksServiceServer := grpc10.NewService(logger, tracerProvider, webhooksRepository)
 	grpcConfig := &cfg.GRPCServer
-	v2 := BuildUnaryServerInterceptors()
+	authInterceptor := interceptors.ProvideAuthInterceptor(tracerProvider, logger, identityRepository, manageManager)
+	v2 := BuildUnaryServerInterceptors(authInterceptor)
 	v3 := BuildStreamServerInterceptors()
 	v4 := BuildRegistrationFuncs(auditServiceServer, authServiceServer, dataPrivacyServiceServer, identityServiceServer, internalOperationsServer, mealPlanningServiceServer, userNotificationsServiceServer, oAuthServiceServer, settingsServiceServer, webhooksServiceServer)
 	server, err := grpc11.NewGRPCServer(grpcConfig, logger, v2, v3, v4...)

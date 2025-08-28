@@ -4,13 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
-	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
-	"github.com/pquerna/otp/totp"
-	"github.com/stretchr/testify/require"
 	"hash/fnv"
 	"log"
 	"net/http"
@@ -22,7 +15,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
+	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
@@ -36,8 +33,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
+	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -278,12 +278,12 @@ func hashStringToNumber(s string) uint64 {
 }
 
 // createServiceUser creates a user.
-func createServiceUser(ctx context.Context, address string, in *identity.UserRegistrationInput) (*identity.User, error) {
-	if address == "" {
-		return nil, errors.New("empty address not allowed")
+func createServiceUser(ctx context.Context, grpcAddress string, in *identity.UserRegistrationInput) (*identity.User, error) {
+	if grpcAddress == "" {
+		return nil, errors.New("empty grpcAddress not allowed")
 	}
 
-	c, err := buildUnauthenticatedGRPCClient(address)
+	c, err := buildUnauthenticatedGRPCClient(grpcAddress)
 	if err != nil {
 		return nil, fmt.Errorf("initializing client: %w", err)
 	}
@@ -295,7 +295,7 @@ func createServiceUser(ctx context.Context, address string, in *identity.UserReg
 
 	res, err := c.CreateUser(ctx, &identitysvc.CreateUserRequest{Input: input})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("creating user: %w", err)
 	}
 	ucr := res.Created
 
@@ -317,14 +317,14 @@ func createServiceUser(ctx context.Context, address string, in *identity.UserReg
 		EmailAddress:    ucr.EmailAddress,
 		TwoFactorSecret: ucr.TwoFactorSecret,
 		CreatedAt:       grpcconverters.ConvertPBTimestampToTime(ucr.CreatedAt),
-		// this is a dirty trick to reuse this field to provide the password to the caller,
+		// this is a dirty trick to reuse this field to provide the password to the caller.
 		HashedPassword: in.Password,
 	}
 
 	return u, nil
 }
 
-func createUserAndClientForTest(t *testing.T, address string) (*identity.User, client.Client) {
+func createUserAndClientForTest(t *testing.T, httpAddress, grpcAddress string) (*identity.User, client.Client) {
 	t.Helper()
 
 	ctx := t.Context()
@@ -341,7 +341,7 @@ func createUserAndClientForTest(t *testing.T, address string) (*identity.User, c
 		AcceptedTOS:           true,
 	}
 
-	user, err := createServiceUser(ctx, address, input)
+	user, err := createServiceUser(ctx, grpcAddress, input)
 	require.NoError(t, err)
 
 	t.Logf("created user %s", user.ID)
@@ -355,7 +355,7 @@ func createUserAndClientForTest(t *testing.T, address string) (*identity.User, c
 		TOTPToken: code,
 	}
 
-	unauthedClient, err := buildUnauthenticatedGRPCClient(address)
+	unauthedClient, err := buildUnauthenticatedGRPCClient(grpcAddress)
 	require.NoError(t, err)
 
 	tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
@@ -363,7 +363,7 @@ func createUserAndClientForTest(t *testing.T, address string) (*identity.User, c
 	})
 	require.NoError(t, err)
 
-	oauthedClient := buildAuthedGRPCClient(ctx, []string{"*"}, address, tokenRes.Result.AccessToken)
+	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, httpAddress, tokenRes.Result.AccessToken)
 
 	return user, oauthedClient
 }

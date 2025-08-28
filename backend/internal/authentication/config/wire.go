@@ -8,11 +8,6 @@ var (
 			new(*Config),
 			"Tokens",
 			"SSO",
-			"TokenRefreshConfig",
-			"Debug",
-			"EnableUserSignup",
-			"MinimumUsernameLength",
-			"MinimumPasswordLength",
 		),
 	)
 )

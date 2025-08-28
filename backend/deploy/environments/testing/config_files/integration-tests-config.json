@@ -1,4 +1,16 @@
 {
+	"auth": {
+		"tokens": {
+			"provider": "",
+			"audience": "",
+			"maxAccessTokenLifetime": 0,
+			"maxRefreshTokenLifetime": 0,
+			"base64EncodedSigningKey": ""
+		},
+		"sso": {
+			"google": {}
+		}
+	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -173,6 +185,8 @@
 			"tokens": {
 				"provider": "paseto",
 				"audience": "https://api.dinnerdonebetter.dev",
+				"maxAccessTokenLifetime": 0,
+				"maxRefreshTokenLifetime": 0,
 				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA="
 			},
 			"sso": {

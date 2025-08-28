@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/managers"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
@@ -16,6 +15,8 @@ import (
 var _ mealplanningsvc.MealPlanningServiceServer = (*serviceImpl)(nil)
 
 const (
+	authHeaderName = "Authorization"
+
 	o11yName = "mealplanning_service"
 )
 

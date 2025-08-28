@@ -22,16 +22,15 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 )
 
-func ProvideOAuth2ServerImplementation(
+func ProvideOAuth2ClientManager(
 	logger logging.Logger,
-	tracer tracing.Tracer,
+	tracerProvider tracing.TracerProvider,
 	cfg *OAuth2Config,
 	dataManager types.Repository,
-	identityRepo identity.Repository,
-	authenticator authentication.Authenticator,
-	tokenIssuer tokens.Issuer,
-) *server.Server {
+) *manage.Manager {
 	manager := manage.NewManager()
+
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("oauth2_client_manager"))
 
 	// we don't care at the moment
 	manager.SetValidateURIHandler(func(_, _ string) error {
@@ -46,6 +45,17 @@ func ProvideOAuth2ServerImplementation(
 		dataManager: dataManager,
 	})
 
+	return manager
+}
+
+func ProvideOAuth2ServerImplementation(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
+	identityRepo identity.Repository,
+	authenticator authentication.Authenticator,
+	tokenIssuer tokens.Issuer,
+	manager *manage.Manager,
+) *server.Server {
 	oauth2ServerConfig := &server.Config{
 		TokenType: "Bearer",
 		AllowedResponseTypes: []oauth2.ResponseType{
@@ -61,6 +71,8 @@ func ProvideOAuth2ServerImplementation(
 	}
 
 	oauth2Server := server.NewServer(oauth2ServerConfig, manager)
+
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("oauth2_server_impl"))
 
 	oauth2Server.AuthorizeScopeHandler = AuthorizeScopeHandler(logger)
 	oauth2Server.AccessTokenExpHandler = AccessTokenExpHandler(logger)

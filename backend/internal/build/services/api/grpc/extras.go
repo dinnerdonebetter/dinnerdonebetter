@@ -2,6 +2,7 @@ package grpcapi
 
 import (
 	"context"
+	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
@@ -51,9 +52,9 @@ func BuildRegistrationFuncs(
 	}
 }
 
-func BuildUnaryServerInterceptors() []grpc.UnaryServerInterceptor {
+func BuildUnaryServerInterceptors(authInterceptor *interceptors.AuthInterceptor) []grpc.UnaryServerInterceptor {
 	return []grpc.UnaryServerInterceptor{
-		//eatingServer.AuthInterceptor(),
+		authInterceptor.UnaryServerInterceptor(),
 	}
 }
 

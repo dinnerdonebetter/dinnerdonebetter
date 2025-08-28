@@ -1,31 +1,64 @@
-package grpc
+package interceptors
 
 import (
 	"context"
 	"errors"
+	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
+	"github.com/dinnerdonebetter/backend/internal/authorization"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
+	"github.com/go-oauth2/oauth2/v4/manage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-type (
-	contextKey string
-)
-
 const (
+	o11yName = "auth_interceptor"
+
 	authHeaderName = "Authorization"
 	tokenPrefix    = "Bearer "
 
 	zuckModeUserHeader    = "X-Zuck-Mode-User"
 	zuckModeAccountHeader = "X-Zuck-Mode-Account"
-
-	SessionContextKey contextKey = "session_context"
 )
+
+type AuthInterceptor struct {
+	tracer                tracing.Tracer
+	logger                logging.Logger
+	identityRepository    identity.Repository
+	unauthenticatedRoutes []string
+	oauth2ClientManager   *manage.Manager
+}
+
+func ProvideAuthInterceptor(
+	tracerProvider tracing.TracerProvider,
+	logger logging.Logger,
+	identityRepository identity.Repository,
+	oauth2ClientManager *manage.Manager,
+) *AuthInterceptor {
+	return &AuthInterceptor{
+		tracer:              tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:              logging.EnsureLogger(logger).WithName(o11yName),
+		identityRepository:  identityRepository,
+		oauth2ClientManager: oauth2ClientManager,
+		unauthenticatedRoutes: []string{
+			// TODO: configure this
+			"/auth.AuthService/AdminLoginForToken",
+			"/identity.IdentityService/CreateUser",
+			"/auth.AuthService/VerifyTOTPSecret",
+			"/auth.AuthService/LoginForToken",
+		},
+	}
+}
 
 var (
 	// ErrUserNotAuthorizedToImpersonateOthers is returned when a user is not authorized to impersonate others.
@@ -36,16 +69,7 @@ func Unauthenticated(msg string) error {
 	return status.Error(codes.Unauthenticated, msg)
 }
 
-func (s *serviceImpl) fetchSessionContext(ctx context.Context) (*sessions.ContextData, error) {
-	sessionContext, ok := ctx.Value(SessionContextKey).(*sessions.ContextData)
-	if !ok {
-		return nil, errors.New("session context not found")
-	}
-
-	return sessionContext, nil
-}
-
-func (s *serviceImpl) determineZuckMode(ctx context.Context, metadata metadata.MD, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {
+func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metadata metadata.MD, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -83,7 +107,7 @@ func (s *serviceImpl) determineZuckMode(ctx context.Context, metadata metadata.M
 	return "", "", nil
 }
 
-func (s *serviceImpl) extractSessionContextDataFromOAuth2(ctx context.Context, metadata metadata.MD) (*sessions.ContextData, error) {
+func (s *AuthInterceptor) extractSessionContextDataFromOAuth2(ctx context.Context, metadata metadata.MD) (*sessions.ContextData, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -94,53 +118,45 @@ func (s *serviceImpl) extractSessionContextDataFromOAuth2(ctx context.Context, m
 		return nil, observability.PrepareAndLogGRPCStatus(status.Error(codes.Unauthenticated, "missing authorization header"), logger, span, codes.Unauthenticated, "missing authorization header")
 	}
 
-	/*
-		accessToken := strings.TrimPrefix(authHeader[0], tokenPrefix)
+	accessToken := strings.TrimPrefix(authHeader[0], tokenPrefix)
 
-		token, err := s.oauth2ClientManager.LoadAccessToken(ctx, accessToken)
+	token, err := s.oauth2ClientManager.LoadAccessToken(ctx, accessToken)
+	if err != nil {
+		return nil, fmt.Errorf("loading access token: %w", err)
+	}
+	if userID := token.GetUserID(); userID != "" {
+		sessionCtxData, err := s.identityRepository.BuildSessionContextDataForUser(ctx, userID)
 		if err != nil {
-			return nil, fmt.Errorf("loading access token: %w", err)
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching user info for cookie")
 		}
-		if userID := token.GetUserID(); userID != "" {
-			sessionCtxData, err := s.identityRepository.BuildSessionContextDataForUser(ctx, userID)
-			if err != nil {
-				return nil, observability.PrepareAndLogError(err, logger, span, "fetching user info for cookie")
-			}
 
-			zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metadata, sessionCtxData)
-			if zuckErr != nil {
-				return nil, observability.PrepareAndLogError(zuckErr, logger, span, "fetching user info for zuck mode")
-			}
-
-			if zuckUserID != "" {
-				sessionCtxData.Requester.UserID = zuckUserID
-			}
-
-			if zuckAccountID != "" {
-				sessionCtxData.ActiveAccountID = zuckAccountID
-				sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String())
-			}
-
-			if sessionCtxData != nil {
-				return sessionCtxData, nil
-			}
+		zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metadata, sessionCtxData)
+		if zuckErr != nil {
+			return nil, observability.PrepareAndLogError(zuckErr, logger, span, "fetching user info for zuck mode")
 		}
-	*/
+
+		if zuckUserID != "" {
+			sessionCtxData.Requester.UserID = zuckUserID
+		}
+
+		if zuckAccountID != "" {
+			sessionCtxData.ActiveAccountID = zuckAccountID
+			sessionCtxData.AccountPermissions[zuckAccountID] = authorization.NewAccountRolePermissionChecker(authorization.AccountMemberRole.String())
+		}
+
+		if sessionCtxData != nil {
+			return sessionCtxData, nil
+		}
+	}
 
 	return nil, Unauthenticated("invalid OAuth2 token")
 }
 
-func (s *serviceImpl) AuthInterceptor() grpc.UnaryServerInterceptor {
+func (s *AuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		logger := s.logger.WithValue("grpc.method", info.FullMethod)
 
-		switch info.FullMethod {
-		// these methods don't require authentication
-		case "/mealplanning.EatingService/AdminLoginForToken",
-			"/mealplanning.EatingService/CreateUser",
-			"/mealplanning.EatingService/Ping",
-			"/mealplanning.EatingService/VerifyTOTPSecret",
-			"/mealplanning.EatingService/LoginForToken":
+		if slices.Contains(s.unauthenticatedRoutes, info.FullMethod) {
 			logger.Info("skipping authentication for method")
 			return handler(ctx, req)
 		}
@@ -160,7 +176,7 @@ func (s *serviceImpl) AuthInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.Internal, "building session context data for user")
 		}
 
-		ctx = context.WithValue(ctx, SessionContextKey, sessionContextData)
+		ctx = context.WithValue(ctx, sessions.SessionContextDataKey, sessionContextData)
 
 		return handler(ctx, req)
 	}

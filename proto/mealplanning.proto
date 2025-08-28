@@ -672,38 +672,7 @@ message ArchiveValidVesselResponse {
 
 // CreateValidIngredient
 message CreateValidIngredientRequest {
-  common.OptionalFloat32Range StorageTemperatureInCelsius = 1;
-  string Warning = 2;
-  string IconPath = 3;
-  string PluralName = 4;
-  string StorageInstructions = 5;
-  string Name = 6;
-  string Description = 7;
-  string Slug = 8;
-  string ShoppingSuggestions = 9;
-  bool ContainsFish = 10;
-  bool ContainsShellfish = 11;
-  bool AnimalFlesh = 12;
-  bool ContainsEgg = 13;
-  bool IsLiquid = 14;
-  bool ContainsSoy = 15;
-  bool ContainsPeanut = 16;
-  bool AnimalDerived = 17;
-  bool RestrictToPreparations = 18;
-  bool ContainsDairy = 19;
-  bool ContainsSesame = 20;
-  bool ContainsTreeNut = 21;
-  bool ContainsWheat = 22;
-  bool ContainsAlcohol = 23;
-  bool ContainsGluten = 24;
-  bool IsStarch = 25;
-  bool IsProtein = 26;
-  bool IsGrain = 27;
-  bool IsFruit = 28;
-  bool IsSalt = 29;
-  bool IsFat = 30;
-  bool IsAcid = 31;
-  bool IsHeat = 32;
+  ValidIngredientCreationRequestInput Input = 1;
 }
 
 message CreateValidIngredientResponse {

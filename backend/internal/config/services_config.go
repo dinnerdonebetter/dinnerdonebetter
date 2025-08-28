@@ -3,8 +3,8 @@ package config
 import (
 	"context"
 	"fmt"
-
 	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+
 	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
 	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
 	mealplanningcfg "github.com/dinnerdonebetter/backend/internal/services/mealplanning/config"
@@ -34,7 +34,6 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"Users":         cfg.Users.ValidateWithContext,
 		"DataPrivacy":   cfg.DataPrivacy.ValidateWithContext,
 		"MealPlanning":  cfg.MealPlanning.ValidateWithContext,
-		"Auth":          cfg.Auth.ValidateWithContext,
 		"OAuth2Clients": cfg.OAuth2Clients.ValidateWithContext,
 	}
 
