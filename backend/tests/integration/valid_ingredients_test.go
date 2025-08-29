@@ -109,11 +109,22 @@ func TestValidIngredients_Creating(T *testing.T) {
 	})
 
 	T.Run("invalid input", func(t *testing.T) {
-		t.Skipf("TODO")
 		t.Parallel()
+		ctx := t.Context()
+
+		creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
+		convertedInput := grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(creationRequestInput)
+		// this is not allowed
+		convertedInput.Name = ""
+
+		created, err := adminClient.CreateValidIngredient(ctx, &mealplanningsvc.CreateValidIngredientRequest{
+			Input: convertedInput,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, created)
 	})
 
-	T.Run("regular users are forbidden from creating", func(t *testing.T) {
+	T.Run("non-admin users are forbidden from creating", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -127,6 +138,32 @@ func TestValidIngredients_Creating(T *testing.T) {
 		})
 		assert.Error(t, err)
 		assert.Nil(t, created)
+	})
+}
+
+func TestValidIngredients_Reading(T *testing.T) {
+	T.Parallel()
+
+	_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Skipf("TODO")
+		ctx := t.Context()
+
+		created := createValidIngredientForTest(t)
+
+		retrieved, err := testClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: created.ID})
+		assert.NoError(t, err)
+
+		assertRoughEquality(t, created, retrieved, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+	})
+
+	T.Run("invalid ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, err := adminClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: nonexistentID})
+		assert.Error(t, err)
 	})
 }
 
@@ -156,11 +193,24 @@ func TestValidIngredients_Updating(T *testing.T) {
 	})
 
 	T.Run("invalid input", func(t *testing.T) {
-		t.Skipf("TODO")
 		t.Parallel()
+		ctx := t.Context()
+
+		created := createValidIngredientForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
+		created.Update(updateInput)
+		// this is not allowed
+		created.Name = ""
+
+		_, err := adminClient.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
+			ValidIngredientID: created.ID,
+			Input:             grpcconverters.ConvertValidIngredientUpdateRequestInputToGRPCValidIngredientUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
 	})
 
-	T.Run("regular users are forbidden from updating", func(t *testing.T) {
+	T.Run("non-admin users are forbidden from updating", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
@@ -176,6 +226,43 @@ func TestValidIngredients_Updating(T *testing.T) {
 		})
 		assert.Error(t, err)
 		assert.Nil(t, response)
+	})
+}
+
+func TestValidIngredients_Archiving(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		created := createValidIngredientForTest(t)
+
+		_, err := adminClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: created.ID})
+		assert.NoError(t, err)
+
+		x, err := adminClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: created.ID})
+		assert.Nil(t, x)
+		assert.Error(t, err)
+	})
+
+	T.Run("invalid ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, err := adminClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: nonexistentID})
+		assert.Error(t, err)
+	})
+
+	T.Run("non-admin users are forbidden from archiving", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		created := createValidIngredientForTest(t)
+		_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		_, err := testClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: created.ID})
+		assert.Error(t, err)
 	})
 }
 

@@ -52,6 +52,8 @@ const (
 	grpcTestServerAddress = ":8001"
 
 	adminUserPassword = "integration-tests-are-cool"
+
+	nonexistentID = "00000000000000000000"
 )
 
 var (

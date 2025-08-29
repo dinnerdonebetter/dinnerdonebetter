@@ -715,6 +715,10 @@ func (m *validEnumerationManager) CreateValidIngredient(ctx context.Context, inp
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, fmt.Errorf("validating creation input: %w", err)
+	}
+
 	convertedInput := converters.ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(input)
 	created, err := m.db.CreateValidIngredient(ctx, convertedInput)
 	if err != nil {
@@ -769,6 +773,10 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, fmt.Errorf("validating update input: %w", err)
 	}
 
 	existingValidIngredient, err := m.db.GetValidIngredient(ctx, validIngredientID)

@@ -53,19 +53,25 @@ func ProvideAuthInterceptor(
 		logger:              logging.EnsureLogger(logger).WithName(o11yName),
 		identityRepository:  identityRepository,
 		oauth2ClientManager: oauth2ClientManager,
-		// TODO: configure this
+		// TODO: configure this elsewhere
 		methodPermissions: map[string][]authorization.Permission{
 			"/mealplanning.MealPlanningService/CreateValidIngredient": {
 				authorization.CreateValidIngredientsPermission,
 			},
+			"/mealplanning.MealPlanningService/GetValidIngredient": {
+				authorization.ReadValidIngredientsPermission,
+			},
 			"/mealplanning.MealPlanningService/UpdateValidIngredient": {
 				authorization.UpdateValidIngredientsPermission,
+			},
+			"/mealplanning.MealPlanningService/ArchiveValidIngredient": {
+				authorization.ArchiveValidIngredientsPermission,
 			},
 			"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
 				authorization.ReadValidIngredientsPermission,
 			},
 		},
-		// TODO: configure this
+		// TODO: configure this elsewhere
 		unauthenticatedRoutes: []string{
 			"/auth.AuthService/AdminLoginForToken",
 			"/identity.IdentityService/CreateUser",
@@ -204,6 +210,9 @@ func (s *AuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 					proceed = false
 				}
 			}
+		} else {
+			logger.Info(fmt.Sprintf("missing required permissions for method %q", info.FullMethod))
+			proceed = false
 		}
 		s.methodScopesHat.Unlock()
 
