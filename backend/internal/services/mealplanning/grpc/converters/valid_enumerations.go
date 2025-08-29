@@ -50,7 +50,52 @@ func ConvertGRPCCreateValidIngredientRequestToValidIngredientCreationRequestInpu
 }
 
 func ConvertGRPCValidIngredientUpdateRequestInputToValidIngredientUpdateRequestInput(x *mealplanninggrpc.ValidIngredientUpdateRequestInput) *mealplanning.ValidIngredientUpdateRequestInput {
+	storageTemperatureInCelsius := types.OptionalFloat32Range{}
+	if x.StorageTemperatureInCelsius != nil {
+		storageTemperatureInCelsius = types.OptionalFloat32Range{
+			Max: x.StorageTemperatureInCelsius.Max,
+			Min: x.StorageTemperatureInCelsius.Min,
+		}
+	}
+
 	return &mealplanning.ValidIngredientUpdateRequestInput{
+		Name:                        x.Name,
+		Description:                 x.Description,
+		Warning:                     x.Warning,
+		IconPath:                    x.IconPath,
+		ContainsDairy:               x.ContainsDairy,
+		ContainsPeanut:              x.ContainsPeanut,
+		ContainsTreeNut:             x.ContainsTreeNut,
+		ContainsEgg:                 x.ContainsEgg,
+		ContainsWheat:               x.ContainsWheat,
+		ContainsShellfish:           x.ContainsShellfish,
+		ContainsSesame:              x.ContainsSesame,
+		ContainsFish:                x.ContainsFish,
+		ContainsGluten:              x.ContainsGluten,
+		AnimalFlesh:                 x.AnimalFlesh,
+		IsLiquid:                    x.IsLiquid,
+		ContainsSoy:                 x.ContainsSoy,
+		PluralName:                  x.PluralName,
+		AnimalDerived:               x.AnimalDerived,
+		RestrictToPreparations:      x.RestrictToPreparations,
+		StorageTemperatureInCelsius: storageTemperatureInCelsius,
+		StorageInstructions:         x.StorageInstructions,
+		Slug:                        x.Slug,
+		ContainsAlcohol:             x.ContainsAlcohol,
+		ShoppingSuggestions:         x.ShoppingSuggestions,
+		IsStarch:                    x.IsStarch,
+		IsProtein:                   x.IsProtein,
+		IsGrain:                     x.IsGrain,
+		IsFruit:                     x.IsFruit,
+		IsSalt:                      x.IsSalt,
+		IsFat:                       x.IsFat,
+		IsAcid:                      x.IsAcid,
+		IsHeat:                      x.IsHeat,
+	}
+}
+
+func ConvertValidIngredientUpdateRequestInputToGRPCValidIngredientUpdateRequestInput(x *mealplanning.ValidIngredientUpdateRequestInput) *mealplanninggrpc.ValidIngredientUpdateRequestInput {
+	return &mealplanninggrpc.ValidIngredientUpdateRequestInput{
 		Name:                   x.Name,
 		Description:            x.Description,
 		Warning:                x.Warning,
@@ -70,7 +115,7 @@ func ConvertGRPCValidIngredientUpdateRequestInputToValidIngredientUpdateRequestI
 		PluralName:             x.PluralName,
 		AnimalDerived:          x.AnimalDerived,
 		RestrictToPreparations: x.RestrictToPreparations,
-		StorageTemperatureInCelsius: types.OptionalFloat32Range{
+		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
 		},
@@ -95,6 +140,50 @@ func ConvertValidIngredientToGRPCValidIngredient(x *mealplanning.ValidIngredient
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		StorageTemperatureInCelsius: &grpctypes.OptionalFloat32Range{
+			Max: x.StorageTemperatureInCelsius.Max,
+			Min: x.StorageTemperatureInCelsius.Min,
+		},
+		StorageInstructions:    x.StorageInstructions,
+		Warning:                x.Warning,
+		PluralName:             x.PluralName,
+		IconPath:               x.IconPath,
+		Name:                   x.Name,
+		ID:                     x.ID,
+		Description:            x.Description,
+		Slug:                   x.Slug,
+		ShoppingSuggestions:    x.ShoppingSuggestions,
+		ContainsEgg:            x.ContainsEgg,
+		ContainsAlcohol:        x.ContainsAlcohol,
+		ContainsPeanut:         x.ContainsPeanut,
+		ContainsWheat:          x.ContainsWheat,
+		ContainsSoy:            x.ContainsSoy,
+		AnimalDerived:          x.AnimalDerived,
+		RestrictToPreparations: x.RestrictToPreparations,
+		ContainsSesame:         x.ContainsSesame,
+		ContainsFish:           x.ContainsFish,
+		ContainsGluten:         x.ContainsGluten,
+		ContainsDairy:          x.ContainsDairy,
+		ContainsTreeNut:        x.ContainsTreeNut,
+		AnimalFlesh:            x.AnimalFlesh,
+		IsStarch:               x.IsStarch,
+		IsProtein:              x.IsProtein,
+		IsGrain:                x.IsGrain,
+		IsFruit:                x.IsFruit,
+		IsSalt:                 x.IsSalt,
+		IsFat:                  x.IsFat,
+		IsAcid:                 x.IsAcid,
+		IsHeat:                 x.IsHeat,
+		IsLiquid:               x.IsLiquid,
+		ContainsShellfish:      x.ContainsShellfish,
+	}
+}
+
+func ConvertGRPCValidIngredientToValidIngredient(x *mealplanninggrpc.ValidIngredient) *mealplanning.ValidIngredient {
+	return &mealplanning.ValidIngredient{
+		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		StorageTemperatureInCelsius: types.OptionalFloat32Range{
 			Max: x.StorageTemperatureInCelsius.Max,
 			Min: x.StorageTemperatureInCelsius.Min,
 		},

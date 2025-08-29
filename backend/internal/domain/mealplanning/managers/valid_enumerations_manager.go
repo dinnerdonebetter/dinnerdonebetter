@@ -785,6 +785,11 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 		keys.ValidIngredientIDKey: existingValidIngredient.ID,
 	}))
 
+	existingValidIngredient, err = m.db.GetValidIngredient(ctx, validIngredientID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient")
+	}
+
 	return existingValidIngredient, nil
 }
 

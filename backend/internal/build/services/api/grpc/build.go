@@ -5,7 +5,6 @@ package grpcapi
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
@@ -37,6 +36,7 @@ import (
 	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	auditsvc "github.com/dinnerdonebetter/backend/internal/services/audit/grpc"
 	authsvc "github.com/dinnerdonebetter/backend/internal/services/auth/grpc"
+	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 	authhttpsvc "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/grpc"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/services/identity/grpc"

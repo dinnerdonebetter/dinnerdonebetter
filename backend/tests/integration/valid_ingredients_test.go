@@ -3,13 +3,32 @@ package integration
 import (
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
-	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func createValidIngredientForTest(t *testing.T) *mealplanning.ValidIngredient {
+	t.Helper()
+
+	ctx := t.Context()
+
+	creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
+	convertedInput := grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(creationRequestInput)
+
+	created, err := adminClient.CreateValidIngredient(ctx, &mealplanningsvc.CreateValidIngredientRequest{
+		Input: convertedInput,
+	})
+	require.NoError(t, err)
+	assert.NotNil(t, created)
+
+	return grpcconverters.ConvertGRPCValidIngredientToValidIngredient(created.Result)
+}
 
 /*
 
@@ -52,22 +71,6 @@ func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIng
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createValidIngredientForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidIngredient {
-	t.Helper()
-
-	exampleValidIngredient := fakes.BuildFakeValidIngredient()
-	exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-	createdValidIngredient, err := adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-	require.NoError(t, err)
-	checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-
-	createdValidIngredient, err = adminClient.GetValidIngredient(ctx, createdValidIngredient.ID)
-	requireNotNilAndNoProblems(t, createdValidIngredient, err)
-	checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-
-	return createdValidIngredient
-}
-
 func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -96,24 +99,102 @@ func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
 }
 */
 
-func TestValidIngredients_GetRandom(t *testing.T) {
-	ctx := t.Context()
+func TestValidIngredients_Creating(T *testing.T) {
+	T.Parallel()
 
-	user, client := createUserAndClientForTest(t, httpLocalServerAddress, grpcLocalServerAddress)
-	t.Logf("created user %s", user.ID)
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
 
-	creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
-
-	convertedInput := grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(creationRequestInput)
-	created, err := client.CreateValidIngredient(ctx, &mealplanning.CreateValidIngredientRequest{
-		Input: convertedInput,
+		createValidIngredientForTest(t)
 	})
-	require.NoError(t, err)
-	assert.NotNil(t, created)
 
-	response, err := client.GetRandomValidIngredient(ctx, &mealplanning.GetRandomValidIngredientRequest{})
-	assert.NoError(t, err)
-	assert.NotNil(t, response)
+	T.Run("invalid input", func(t *testing.T) {
+		t.Skipf("TODO")
+		t.Parallel()
+	})
+
+	T.Run("regular users are forbidden from creating", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
+		convertedInput := grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(creationRequestInput)
+
+		created, err := testClient.CreateValidIngredient(ctx, &mealplanningsvc.CreateValidIngredientRequest{
+			Input: convertedInput,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, created)
+	})
+}
+
+func TestValidIngredients_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		created := createValidIngredientForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
+		created.Update(updateInput)
+
+		response, err := adminClient.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
+			ValidIngredientID: created.ID,
+			Input:             grpcconverters.ConvertValidIngredientUpdateRequestInputToGRPCValidIngredientUpdateRequestInput(updateInput),
+		})
+		assert.NoError(t, err)
+
+		updated := response.Result
+		// Ensure UpdatedAt was set
+		require.NotNil(t, updated.LastUpdatedAt)
+
+		assertRoughEquality(t, created, updated, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+	})
+
+	T.Run("invalid input", func(t *testing.T) {
+		t.Skipf("TODO")
+		t.Parallel()
+	})
+
+	T.Run("regular users are forbidden from updating", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		created := createValidIngredientForTest(t)
+
+		response, err := testClient.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
+			ValidIngredientID: created.ID,
+			Input: &mealplanningsvc.ValidIngredientUpdateRequestInput{
+				Name: pointer.To("doesn't matter"),
+			},
+		})
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
+}
+
+func TestValidIngredients_GetRandom(T *testing.T) {
+	T.Parallel()
+
+	_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		// in case we haven't already
+		createValidIngredientForTest(t)
+
+		response, err := testClient.GetRandomValidIngredient(ctx, &mealplanningsvc.GetRandomValidIngredientRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, response)
+	})
 }
 
 /*

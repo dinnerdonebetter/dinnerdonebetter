@@ -3,8 +3,8 @@ package config
 import (
 	"context"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 
+	"github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
 	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
 	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
 	mealplanningcfg "github.com/dinnerdonebetter/backend/internal/services/mealplanning/config"

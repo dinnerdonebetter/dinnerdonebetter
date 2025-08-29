@@ -36,10 +36,10 @@ type AuthInterceptor struct {
 	tracer                tracing.Tracer
 	logger                logging.Logger
 	identityRepository    identity.Repository
+	methodPermissions     map[string][]authorization.Permission
+	oauth2ClientManager   *manage.Manager
 	unauthenticatedRoutes []string
 	methodScopesHat       sync.Mutex
-	methodScopes          map[string][]string
-	oauth2ClientManager   *manage.Manager
 }
 
 func ProvideAuthInterceptor(
@@ -53,16 +53,20 @@ func ProvideAuthInterceptor(
 		logger:              logging.EnsureLogger(logger).WithName(o11yName),
 		identityRepository:  identityRepository,
 		oauth2ClientManager: oauth2ClientManager,
-		methodScopes: map[string][]string{
+		// TODO: configure this
+		methodPermissions: map[string][]authorization.Permission{
 			"/mealplanning.MealPlanningService/CreateValidIngredient": {
-				authorization.CreateValidIngredientsPermission.ID(),
+				authorization.CreateValidIngredientsPermission,
+			},
+			"/mealplanning.MealPlanningService/UpdateValidIngredient": {
+				authorization.UpdateValidIngredientsPermission,
 			},
 			"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
-				authorization.ReadValidIngredientsPermission.ID(),
+				authorization.ReadValidIngredientsPermission,
 			},
 		},
+		// TODO: configure this
 		unauthenticatedRoutes: []string{
-			// TODO: configure this
 			"/auth.AuthService/AdminLoginForToken",
 			"/identity.IdentityService/CreateUser",
 			"/auth.AuthService/VerifyTOTPSecret",
@@ -187,13 +191,25 @@ func (s *AuthInterceptor) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.Internal, "building session context data for user")
 		}
 
+		proceed := true
+		permissionEvaluation := map[string]bool{}
+
 		s.methodScopesHat.Lock()
-		if x, methodHasDefinedScopes := s.methodScopes[info.FullMethod]; methodHasDefinedScopes {
-			for _, scope := range x {
-				sessionContextData.AccountRolePermissionsChecker().HasPermission(authorization.Permission(scope))
+		if requiredPermissions, methodHasDefinedScopes := s.methodPermissions[info.FullMethod]; methodHasDefinedScopes {
+			for _, scope := range requiredPermissions {
+				hasPerm := sessionContextData.ServiceRolePermissionChecker().HasPermission(scope) || sessionContextData.AccountRolePermissionsChecker().HasPermission(scope)
+				permissionEvaluation[scope.ID()] = hasPerm
+
+				if !hasPerm {
+					proceed = false
+				}
 			}
 		}
 		s.methodScopesHat.Unlock()
+
+		if !proceed {
+			return nil, status.Error(codes.PermissionDenied, "permission denied")
+		}
 
 		ctx = context.WithValue(ctx, sessions.SessionContextDataKey, sessionContextData)
 

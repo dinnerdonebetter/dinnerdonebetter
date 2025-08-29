@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 )
 
 const (
@@ -24,7 +24,7 @@ type repository struct {
 	database.Client
 	tracer            tracing.Tracer
 	logger            logging.Logger
-	generatedQuerier  generated2.Querier
+	generatedQuerier  generated.Querier
 	auditLogEntryRepo audit.Repository
 	secretGenerator   random.Generator
 	timeFunc          func() time.Time
@@ -42,7 +42,7 @@ func ProvideIdentityRepository(
 		Client:            client,
 		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		generatedQuerier:  generated2.New(),
+		generatedQuerier:  generated.New(),
 		auditLogEntryRepo: auditLogEntryRepo,
 		secretGenerator:   random.NewGenerator(logger, tracerProvider),
 		logger:            logging.EnsureLogger(logger).WithName(o11yName),

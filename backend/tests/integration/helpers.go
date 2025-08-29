@@ -8,6 +8,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
+	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -37,6 +40,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
@@ -44,8 +48,22 @@ import (
 )
 
 const (
-	httpLocalServerAddress = "http://localhost:8000"
-	grpcLocalServerAddress = ":8001"
+	httpTestServerAddress = "http://localhost:8000"
+	grpcTestServerAddress = ":8001"
+
+	adminUserPassword = "integration-tests-are-cool"
+)
+
+var (
+	premadeAdminUser = &identity.UserDatabaseCreationInput{
+		ID:              identifiers.New(),
+		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+		EmailAddress:    "integration_tests@example.email",
+		Username:        "admin_user",
+		HashedPassword:  adminUserPassword,
+	}
+
+	adminClient client.Client
 )
 
 func buildUnauthenticatedGRPCClientForTest(t *testing.T) (client.Client, error) {
@@ -55,7 +73,7 @@ func buildUnauthenticatedGRPCClientForTest(t *testing.T) (client.Client, error) 
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	return client.BuildClient(grpcLocalServerAddress, opts...)
+	return client.BuildClient(grpcTestServerAddress, opts...)
 }
 
 func buildUnauthenticatedGRPCClient(address string) (client.Client, error) {
@@ -143,7 +161,7 @@ func buildAuthedGRPCClient(ctx context.Context, scopes []string, httpServerAddre
 		}),
 	}
 
-	c, err := client.BuildClient(grpcLocalServerAddress, opts...)
+	c, err := client.BuildClient(grpcTestServerAddress, opts...)
 	if err != nil {
 		panic(err)
 	}
@@ -218,30 +236,40 @@ func createOAuth2ClientForTests(ctx context.Context, pgc database.Client, dbCfg 
 	return nil
 }
 
-func createPremadeAdminUser(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, identityRepo identity.Repository) error {
+func createPremadeAdminUser(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, identityRepo identity.Repository, dbClient database.Client) (*identity.User, error) {
 	hasher := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
-
-	premadeAdminUser := &identity.UserDatabaseCreationInput{
-		ID:              identifiers.New(),
-		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-		EmailAddress:    "integration_tests@example.email",
-		Username:        "exampleUser",
-		HashedPassword:  "integration-tests-are-cool",
-	}
 
 	actuallyHashedPass, err := hasher.HashPassword(ctx, premadeAdminUser.HashedPassword)
 	if err != nil {
-		return fmt.Errorf("failed to hash password: %w", err)
+		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 	premadeAdminUser.HashedPassword = actuallyHashedPass
 
-	if _, err = identityRepo.GetUserByUsername(ctx, premadeAdminUser.Username); err != nil {
-		if _, err = identityRepo.CreateUser(ctx, premadeAdminUser); err != nil {
-			return fmt.Errorf("failed to create user: %w", err)
-		}
+	var user *identity.User
+	if user, err = identityRepo.GetUserByUsername(ctx, premadeAdminUser.Username); err == nil {
+		return user, nil
 	}
 
-	return nil
+	user, err = identityRepo.CreateUser(ctx, premadeAdminUser)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	// one-off query because I really don't want to make this functionality concrete
+	if _, err = dbClient.DB().Exec(fmt.Sprintf("UPDATE users SET service_role='service_admin' WHERE id='%s'", user.ID)); err != nil {
+		return nil, fmt.Errorf("failed to update user: %w", err)
+	}
+
+	if err = identityRepo.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
+		return nil, fmt.Errorf("failed to mark user as verified: %w", err)
+	}
+
+	adminUser, err := identityRepo.GetAdminUserByUsername(ctx, user.Username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get admin user: %w", err)
+	}
+
+	return adminUser, nil
 }
 
 func providePostgresClient(ctx context.Context, logger logging.Logger) (database.Client, func(), error) {
@@ -324,6 +352,17 @@ func createServiceUser(ctx context.Context, grpcAddress string, in *identity.Use
 	return u, nil
 }
 
+func createClientForUser(ctx context.Context, httpAddress, grpcAddress string, scopes []string, user *identity.User) (client.Client, error) {
+	token, err := fetchLoginTokenForUser(ctx, grpcAddress, *user)
+	if err != nil {
+		return nil, fmt.Errorf("fetching token for user %s: %w", user.Username, err)
+	}
+
+	oauthedClient := buildAuthedGRPCClient(ctx, scopes, httpAddress, token)
+
+	return oauthedClient, nil
+}
+
 func createUserAndClientForTest(t *testing.T, httpAddress, grpcAddress string) (*identity.User, client.Client) {
 	t.Helper()
 
@@ -346,17 +385,26 @@ func createUserAndClientForTest(t *testing.T, httpAddress, grpcAddress string) (
 
 	t.Logf("created user %s", user.ID)
 
-	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, httpAddress, fetchLoginTokenForUser(t, grpcAddress, *user))
+	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, httpAddress, fetchLoginTokenForUserForTest(t, grpcAddress, *user))
 
 	return user, oauthedClient
 }
 
-func fetchLoginTokenForUser(t *testing.T, grpcAddress string, user identity.User) string {
+func fetchLoginTokenForUserForTest(t *testing.T, grpcAddress string, user identity.User) string {
 	t.Helper()
 	ctx := t.Context()
 
-	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
+	rv, err := fetchLoginTokenForUser(ctx, grpcAddress, user)
 	require.NoError(t, err)
+
+	return rv
+}
+
+func fetchLoginTokenForUser(ctx context.Context, grpcAddress string, user identity.User) (string, error) {
+	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
+	if err != nil {
+		return "", fmt.Errorf("generating totp code: %w", err)
+	}
 
 	loginInput := &authsvc.UserLoginInput{
 		Username:  user.Username,
@@ -364,13 +412,210 @@ func fetchLoginTokenForUser(t *testing.T, grpcAddress string, user identity.User
 		TOTPToken: code,
 	}
 
+	// wretched hack that unfortunately works
+	if user.Username == premadeAdminUser.Username {
+		loginInput.Password = adminUserPassword
+	}
+
 	unauthedClient, err := buildUnauthenticatedGRPCClient(grpcAddress)
-	require.NoError(t, err)
+	if err != nil {
+		return "", fmt.Errorf("initializing client: %w", err)
+	}
 
 	tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
 		Input: loginInput,
 	})
-	require.NoError(t, err)
+	if err != nil {
+		return "", fmt.Errorf("fetching login token: %w", err)
+	}
 
-	return tokenRes.Result.AccessToken
+	return tokenRes.Result.AccessToken, nil
+}
+
+//////// ChatGPT Zone
+
+type compareOptions struct {
+	// Ignore any field with these names at any depth (e.g., "LastUpdatedAt").
+	IgnoreFieldNames map[string]struct{}
+	// Only exported fields are considered (safe for cross-package types).
+	ExportedOnly bool
+}
+
+// assertRoughEquality reports whether a and b are deeply equal after ignoring fields by name at any depth.
+// Works across different struct types as long as exported field names/structure align.
+func assertRoughEquality(t *testing.T, a, b any, ignoreFieldNames ...string) {
+	t.Helper()
+
+	opts := compareOptions{
+		IgnoreFieldNames: toSet(ignoreFieldNames),
+		ExportedOnly:     true,
+	}
+	ma := flattenComparable(a, opts)
+	mb := flattenComparable(b, opts)
+	diff := diffMaps(ma, mb)
+
+	assert.True(t, len(diff) == 0, "objects should match except for LastUpdatedAt, diffs: %+v", diff)
+}
+
+func toSet(xs []string) map[string]struct{} {
+	m := make(map[string]struct{}, len(xs))
+	for _, x := range xs {
+		m[x] = struct{}{}
+	}
+	return m
+}
+
+// flattenComparable produces a deterministic, comparable map[path]string for any value.
+// It skips fields listed in opts.IgnoreFieldNames (matched by the field name at any depth),
+// only includes exported fields when opts.ExportedOnly is true, and handles cycles.
+func flattenComparable(v any, opts compareOptions) map[string]string {
+	out := make(map[string]string)
+	visited := make(map[uintptr]struct{})
+	var walk func(rv reflect.Value, path []string)
+
+	shouldIgnoreField := func(fieldName string) bool {
+		_, ok := opts.IgnoreFieldNames[fieldName]
+		return ok
+	}
+
+	join := func(path []string) string {
+		return strings.Join(path, ".")
+	}
+
+	// Handle time.Time specially for stable representation.
+	writeTime := func(tv time.Time, path []string) {
+		// Use RFC3339Nano for human-readable + stable, or UnixNano if you prefer strict numeric
+		out[join(path)] = tv.UTC().Format(time.RFC3339Nano)
+	}
+
+	writeLeaf := func(rv reflect.Value, path []string) {
+		// Convert leaf value to a stable string.
+		switch rv.Kind() {
+		case reflect.String:
+			out[join(path)] = rv.String()
+		case reflect.Bool:
+			out[join(path)] = strconv.FormatBool(rv.Bool())
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			out[join(path)] = strconv.FormatInt(rv.Int(), 10)
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+			out[join(path)] = strconv.FormatUint(rv.Uint(), 10)
+		case reflect.Float32, reflect.Float64:
+			out[join(path)] = strconv.FormatFloat(rv.Float(), 'g', -1, rv.Type().Bits())
+		case reflect.Complex64, reflect.Complex128:
+			c := rv.Complex()
+			out[join(path)] = fmt.Sprintf("(%g+%gi)", real(c), imag(c))
+		default:
+			// Fallback
+			out[join(path)] = fmt.Sprintf("%v", rv.Interface())
+		}
+	}
+
+	walk = func(rv reflect.Value, path []string) {
+		if !rv.IsValid() {
+			out[join(path)] = "nil"
+			return
+		}
+
+		// Unwrap interfaces
+		if rv.Kind() == reflect.Interface {
+			if rv.IsNil() {
+				out[join(path)] = "nil"
+				return
+			}
+			rv = rv.Elem()
+		}
+
+		// Follow pointers with cycle detection
+		if rv.Kind() == reflect.Ptr {
+			if rv.IsNil() {
+				out[join(path)] = "nil"
+				return
+			}
+			ptr := rv.Pointer()
+			if ptr != 0 {
+				if _, seen := visited[ptr]; seen {
+					// Prevent cycles
+					out[join(path)] = "<cycle>"
+					return
+				}
+				visited[ptr] = struct{}{}
+			}
+			walk(rv.Elem(), path)
+			return
+		}
+
+		// time.Time special case
+		if rv.Type() == reflect.TypeOf(time.Time{}) {
+			writeTime(rv.Interface().(time.Time), path)
+			return
+		}
+
+		switch rv.Kind() {
+		case reflect.Struct:
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				sf := rt.Field(i)
+				// Skip unexported fields if requested
+				if opts.ExportedOnly && sf.PkgPath != "" {
+					continue
+				}
+				if shouldIgnoreField(sf.Name) {
+					continue
+				}
+				walk(rv.Field(i), append(path, sf.Name))
+			}
+
+		case reflect.Slice, reflect.Array:
+			l := rv.Len()
+			for i := 0; i < l; i++ {
+				walk(rv.Index(i), append(path, fmt.Sprintf("[%d]", i)))
+			}
+
+		case reflect.Map:
+			if rv.IsNil() {
+				out[join(path)] = "nil"
+				return
+			}
+			keys := rv.MapKeys()
+			// Sort keys deterministically by their string form
+			sort.Slice(keys, func(i, j int) bool {
+				return fmt.Sprint(keys[i].Interface()) < fmt.Sprint(keys[j].Interface())
+			})
+			for _, k := range keys {
+				kv := rv.MapIndex(k)
+				walk(kv, append(path, fmt.Sprintf("[%v]", k.Interface())))
+			}
+
+		default:
+			// Basic leaf
+			writeLeaf(rv, path)
+		}
+	}
+
+	walk(reflect.ValueOf(v), nil)
+	return out
+}
+
+func diffMaps(a, b map[string]string) map[string][2]string {
+	diff := make(map[string][2]string)
+	keys := make(map[string]struct{}, len(a)+len(b))
+	for k := range a {
+		keys[k] = struct{}{}
+	}
+	for k := range b {
+		keys[k] = struct{}{}
+	}
+	for k := range keys {
+		av, aok := a[k]
+		bv, bok := b[k]
+		switch {
+		case aok && !bok:
+			diff[k] = [2]string{av, "<absent>"}
+		case !aok && bok:
+			diff[k] = [2]string{"<absent>", bv}
+		case aok && bok && av != bv:
+			diff[k] = [2]string{av, bv}
+		}
+	}
+	return diff
 }

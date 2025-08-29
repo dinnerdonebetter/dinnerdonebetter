@@ -2,7 +2,6 @@ package grpcapi
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 
 	auditsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
@@ -19,6 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	platformgrpc "github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	"github.com/dinnerdonebetter/backend/internal/services/auth/grpc/interceptors"
 	identityindexing "github.com/dinnerdonebetter/backend/internal/services/identity/indexing"
 
 	grpc "google.golang.org/grpc"

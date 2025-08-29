@@ -67,7 +67,8 @@ func init() {
 	// create premade admin user
 	auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, pgc)
 	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, pgc)
-	if err = createPremadeAdminUser(ctx, logger, tracerProvider, identityRepo); err != nil {
+	adminUser, err := createPremadeAdminUser(ctx, logger, tracerProvider, identityRepo, pgc)
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -89,4 +90,9 @@ func init() {
 	go server.Run()
 
 	time.Sleep(1 * time.Second)
+
+	adminClient, err = createClientForUser(ctx, httpTestServerAddress, grpcTestServerAddress, []string{"service_admin"}, adminUser)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

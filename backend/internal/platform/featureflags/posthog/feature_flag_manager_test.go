@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
+	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -142,7 +142,7 @@ func TestFeatureFlagManager_Identify(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		ctx := context.Background()
 
-		user := authentication.NewMockUser()
+		user := mockauthn.NewMockUser()
 		user.On("GetID").Return("ID").Twice()
 		user.On("GetUsername").Return("Username")
 		user.On("GetFirstName").Return("FirstName")

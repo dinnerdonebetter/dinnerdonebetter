@@ -2,10 +2,11 @@ package authcfg
 
 import (
 	"context"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"time"
 
 	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
@@ -28,10 +29,9 @@ type (
 
 	// Config is our configuration.
 	Config struct {
-		_ struct{} `json:"-"`
-
-		Tokens                tokenscfg.Config `envPrefix:"TOKENS_"              json:"tokens"`
+		_                     struct{}         `json:"-"`
 		SSO                   SSOConfigs       `envPrefix:"SSO_CONFIG_"          json:"sso,omitempty"`
+		Tokens                tokenscfg.Config `envPrefix:"TOKENS_"              json:"tokens"`
 		Debug                 bool             `env:"DEBUG"                      json:"debug,omitempty"`
 		EnableUserSignup      bool             `env:"ENABLE_USER_SIGNUP"         json:"enableUserSignup,omitempty"`
 		MinimumUsernameLength uint8            `env:"MINIMUM_USERNAME_LENGTH"    json:"minimumUsernameLength,omitempty"`

@@ -66,7 +66,7 @@ type (
 		LastName                   string     `json:"lastName"`
 		EmailAddress               string     `json:"emailAddress"`
 		EmailAddressVerifiedAt     *time.Time `json:"emailAddressVerifiedAt"`
-		ServiceRole                string     `json:"serviceRoles"`
+		ServiceRole                string     `json:"serviceRole"`
 		RequiresPasswordChange     bool       `json:"requiresPasswordChange"`
 	}
 

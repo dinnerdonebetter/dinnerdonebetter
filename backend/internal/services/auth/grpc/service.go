@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"errors"
+
 	authentication2 "github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth/managers"

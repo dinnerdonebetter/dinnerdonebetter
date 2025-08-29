@@ -28,9 +28,9 @@ type (
 	Config struct {
 		Provider                string        `env:"PROVIDER"    json:"provider"`
 		Audience                string        `env:"AUDIENCE"    json:"audience"`
+		Base64EncodedSigningKey string        `env:"SIGNING_KEY" json:"base64EncodedSigningKey"`
 		MaxAccessTokenLifetime  time.Duration `env:"MAX_ACCESS_TOKEN_LIFETIME"  json:"maxAccessTokenLifetime"`
 		MaxRefreshTokenLifetime time.Duration `env:"MAX_REFRESH_TOKEN_LIFETIME" json:"maxRefreshTokenLifetime"`
-		Base64EncodedSigningKey string        `env:"SIGNING_KEY" json:"base64EncodedSigningKey"`
 	}
 )
 
