@@ -36,7 +36,7 @@ func (r *repository) CollectUserData(ctx context.Context, accountIDs []string) (
 
 		for _, webhook := range accountWebhooks {
 			x.Data[accountID] = append(x.Data[accountID], webhooks.Webhook{
-				CreatedAt:        webhook.CreatedAt,
+				CreatedAt:        database.TimeFromNullTime(webhook.CreatedAt),
 				ArchivedAt:       database.TimePointerFromNullTime(webhook.ArchivedAt),
 				LastUpdatedAt:    database.TimePointerFromNullTime(webhook.LastUpdatedAt),
 				Name:             webhook.Name,

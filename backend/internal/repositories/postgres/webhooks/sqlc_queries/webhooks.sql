@@ -73,7 +73,7 @@ SELECT
 			AND webhook_trigger_events.archived_at IS NULL
 	) AS total_count
 FROM webhooks
-	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+	LEFT JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhooks.archived_at IS NULL
 	AND webhooks.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND webhooks.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
@@ -126,7 +126,7 @@ SELECT
 	webhooks.archived_at as webhook_archived_at,
 	webhooks.belongs_to_account as webhook_belongs_to_account
 FROM webhooks
-	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+	LEFT JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhook_trigger_events.archived_at IS NULL
 	AND webhooks.archived_at IS NULL
 	AND webhooks.belongs_to_account = sqlc.arg(belongs_to_account)

@@ -79,7 +79,7 @@ func (s *serviceImpl) GetWebhook(ctx context.Context, request *webhookssvc.GetWe
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	webhook, err := s.webhookRepository.GetWebhook(ctx, request.WebhookID, sessionContextData.ActiveAccountID)
+	webhook, err := s.webhookRepository.GetWebhook(ctx, request.WebhookID, sessionContextData.GetActiveAccountID())
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch webhook")
 	}

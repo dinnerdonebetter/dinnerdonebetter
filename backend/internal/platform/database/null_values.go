@@ -8,6 +8,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 )
 
+func TimeFromNullTime(nt sql.NullTime) time.Time {
+	if nt.Valid {
+		return nt.Time
+	}
+
+	return time.Time{}
+}
+
 func TimePointerFromNullTime(nt sql.NullTime) *time.Time {
 	if nt.Valid {
 		return &nt.Time

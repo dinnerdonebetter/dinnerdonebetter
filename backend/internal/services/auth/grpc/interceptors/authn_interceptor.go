@@ -78,9 +78,7 @@ func Unauthenticated(msg string) error {
 func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metadata metadata.MD, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
-
-	logger := s.logger.WithSpan(span)
-
+	
 	if zuckUserHeaders := metadata.Get(zuckModeUserHeader); len(zuckUserHeaders) > 0 {
 		var (
 			zuckUserID    = zuckUserHeaders[0]
@@ -92,16 +90,14 @@ func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metadata metada
 		}
 
 		if _, err = s.identityRepository.GetUser(ctx, zuckUserID); err != nil {
-			observability.AcknowledgeError(err, logger, span, "fetching user info for zuck mode")
-			return "", "", err
+			return "", "", observability.PrepareError(err, span, "fetching user info")
 		}
 
 		if zuckAccountIDs := metadata.Get(zuckModeAccountHeader); len(zuckAccountIDs) > 0 {
 			zuckAccountID = zuckAccountIDs[0]
 			accountID, err = s.identityRepository.GetDefaultAccountIDForUser(ctx, zuckUserID)
 			if err != nil {
-				observability.AcknowledgeError(err, logger, span, "fetching account info for zuck mode")
-				return "", "", err
+				return "", "", observability.PrepareError(err, span, "fetching account info")
 			}
 		} else {
 			return zuckUserID, zuckAccountID, nil

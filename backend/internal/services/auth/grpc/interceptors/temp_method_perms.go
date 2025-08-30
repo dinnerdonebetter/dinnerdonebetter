@@ -5,6 +5,8 @@ import (
 )
 
 var (
+	noPerms = []authorization.Permission{}
+
 	methodPermissions = map[string][]authorization.Permission{
 		"/mealplanning.MealPlanningService/CreateValidIngredient": {
 			authorization.CreateValidIngredientsPermission,
@@ -30,11 +32,12 @@ var (
 		"/webhooks.WebhooksService/CreateWebhook": {
 			authorization.CreateWebhooksPermission,
 		},
-		"/auth.AuthService/GetAuthStatus":             {},
-		"/auth.AuthService/UpdatePassword":            {},
-		"/auth.AuthService/RefreshTOTPSecret":         {},
-		"/auth.AuthService/VerifyTOTPSecret":          {},
-		"/auth.AuthService/RequestPasswordResetToken": {},
-		"/auth.AuthService/RedeemPasswordResetToken":  {},
+		"/auth.AuthService/GetAuthStatus":             noPerms,
+		"/auth.AuthService/GetActiveAccount":          noPerms,
+		"/auth.AuthService/UpdatePassword":            noPerms,
+		"/auth.AuthService/RefreshTOTPSecret":         noPerms,
+		"/auth.AuthService/VerifyTOTPSecret":          noPerms,
+		"/auth.AuthService/RequestPasswordResetToken": noPerms,
+		"/auth.AuthService/RedeemPasswordResetToken":  noPerms,
 	}
 )

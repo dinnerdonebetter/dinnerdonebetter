@@ -108,7 +108,7 @@ WHERE %s IS NULL
 	%s,
 	%s
 FROM %s
-	JOIN %s ON %s.%s = %s.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
 	%s
 %s;`,
@@ -160,7 +160,7 @@ WHERE %s.%s IS NULL
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
 	%s
 FROM %s
-	JOIN %s ON %s.%s = %s.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)

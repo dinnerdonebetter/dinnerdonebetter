@@ -62,7 +62,7 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, testClient := createUserAndClientForTest(t, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(t, httpTestServerAddress, grpcTestServerAddress)
 
 		// Create webhook.
 		exampleWebhookInput := &webhooks.WebhookCreationRequestInput{
@@ -71,6 +71,7 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 			Name:        t.Name(),
 			URL:         "https://whatever.gov",
 			Events:      nil,
+			// Events:      []string{webhooks.WebhookCreatedTriggerEvent},
 		}
 
 		input := converters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
@@ -86,11 +87,7 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, account)
 
-		user, err := testClient.GetSelf(ctx, &authsvc.GetSelfRequest{})
-		require.NoError(t, err)
-		require.NotNil(t, user)
-
-		impersonatedCtx := client.ImpersonateUserContext(ctx, user.Result.ID)
+		impersonatedCtx := client.ImpersonateAccountContext(client.ImpersonateUserContext(ctx, user.ID), account.Result.ID)
 
 		webhook, err := adminClient.GetWebhook(impersonatedCtx, &webhookssvc.GetWebhookRequest{WebhookID: retrievedWebhook.Result.ID})
 		assert.NoError(t, err)

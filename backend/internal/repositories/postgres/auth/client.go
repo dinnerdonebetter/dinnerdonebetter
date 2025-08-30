@@ -14,12 +14,12 @@ import (
 )
 
 const (
-	o11yName = "identity_db_client"
+	o11yName = "auth_db_client"
 )
 
 var _ auth.Repository = (*repository)(nil)
 
-// repository is the identity repository implementation.
+// repository is the auth.Repository implementation.
 type repository struct {
 	database.Client
 	tracer            tracing.Tracer

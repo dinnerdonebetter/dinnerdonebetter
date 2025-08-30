@@ -110,7 +110,7 @@ SELECT
 	webhooks.archived_at as webhook_archived_at,
 	webhooks.belongs_to_account as webhook_belongs_to_account
 FROM webhooks
-	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+	LEFT JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhook_trigger_events.archived_at IS NULL
 	AND webhooks.archived_at IS NULL
 	AND webhooks.belongs_to_account = $1
@@ -128,10 +128,10 @@ type GetWebhookRow struct {
 	WebhookContentType                  string
 	WebhookUrl                          string
 	WebhookMethod                       string
-	WebhookTriggerEventID               string
-	WebhookTriggerEventTriggerEvent     WebhookEvent
-	WebhookTriggerEventBelongsToWebhook string
-	WebhookTriggerEventCreatedAt        time.Time
+	WebhookTriggerEventID               sql.NullString
+	WebhookTriggerEventTriggerEvent     NullWebhookEvent
+	WebhookTriggerEventBelongsToWebhook sql.NullString
+	WebhookTriggerEventCreatedAt        sql.NullTime
 	WebhookTriggerEventArchivedAt       sql.NullTime
 	WebhookCreatedAt                    time.Time
 	WebhookLastUpdatedAt                sql.NullTime
@@ -219,7 +219,7 @@ SELECT
 			AND webhook_trigger_events.archived_at IS NULL
 	) AS total_count
 FROM webhooks
-	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+	LEFT JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhooks.archived_at IS NULL
 	AND webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
@@ -243,10 +243,10 @@ type GetWebhooksForAccountParams struct {
 	CreatedBefore    sql.NullTime
 	UpdatedBefore    sql.NullTime
 	UpdatedAfter     sql.NullTime
+	IncludeArchived  sql.NullBool
 	BelongsToAccount string
 	QueryOffset      sql.NullInt32
 	QueryLimit       sql.NullInt32
-	IncludeArchived  sql.NullBool
 }
 
 type GetWebhooksForAccountRow struct {
@@ -255,10 +255,10 @@ type GetWebhooksForAccountRow struct {
 	ContentType      string
 	URL              string
 	Method           string
-	ID_2             string
-	TriggerEvent     WebhookEvent
-	BelongsToWebhook string
-	CreatedAt        time.Time
+	ID_2             sql.NullString
+	TriggerEvent     NullWebhookEvent
+	BelongsToWebhook sql.NullString
+	CreatedAt        sql.NullTime
 	ArchivedAt       sql.NullTime
 	CreatedAt_2      time.Time
 	LastUpdatedAt    sql.NullTime
