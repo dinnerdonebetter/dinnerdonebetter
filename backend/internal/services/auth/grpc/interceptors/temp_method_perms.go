@@ -21,6 +21,12 @@ var (
 		"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
 			authorization.ReadValidIngredientsPermission,
 		},
+		"/identity.IdentityService/AdminUpdateUserStatus": {
+			authorization.UpdateUserStatusPermission,
+		},
+		"/webhooks.WebhooksService/CreateWebhook": {
+			authorization.CreateWebhooksPermission,
+		},
 		"/auth.AuthService/GetAuthStatus":             {},
 		"/auth.AuthService/UpdatePassword":            {},
 		"/auth.AuthService/RefreshTOTPSecret":         {},

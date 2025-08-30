@@ -28,6 +28,7 @@ const (
 	authHeaderName = "Authorization"
 	tokenPrefix    = "Bearer "
 
+	// TODO: organize this so that the API client gets the same source
 	zuckModeUserHeader    = "X-Zuck-Mode-User"
 	zuckModeAccountHeader = "X-Zuck-Mode-Account"
 )

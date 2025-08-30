@@ -18,10 +18,16 @@ import (
 	webhooksgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
+	"google.golang.org/grpc/metadata"
 
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/oauth"
+)
+
+const (
+	zuckModeUserHeader    = "X-Zuck-Mode-User"
+	zuckModeAccountHeader = "X-Zuck-Mode-Account"
 )
 
 type Client interface {
@@ -156,4 +162,16 @@ func WithOAuth2Credentials(
 			TokenSource: ts,
 		}),
 	}
+}
+
+func ImpersonateUserContext(ctx context.Context, userID string) context.Context {
+	return metadata.NewOutgoingContext(ctx, metadata.New(map[string]string{
+		zuckModeUserHeader: userID,
+	}))
+}
+
+func ImpersonateAccountContext(ctx context.Context, accountID string) context.Context {
+	return metadata.NewOutgoingContext(ctx, metadata.New(map[string]string{
+		zuckModeUserHeader: accountID,
+	}))
 }
