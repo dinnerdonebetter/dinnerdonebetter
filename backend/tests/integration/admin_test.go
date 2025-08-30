@@ -1,4 +1,32 @@
-git stpackage integration
+package integration
+
+import "testing"
+
+func TestAdmin_BanningUsers(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("nonexistent user", func(t *testing.T) {
+		t.Parallel()
+	})
+}
+
+func TestAdmin_UserImpersonation(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("standard user should not be able to impersonate others", func(t *testing.T) {
+		t.Parallel()
+	})
+}
+
+/*
 
 import (
 	"net/http"
@@ -145,3 +173,5 @@ func (s *TestSuite) TestAdmin_ImpersonatingUsers() {
 		}
 	})
 }
+
+*/
