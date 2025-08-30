@@ -4,7 +4,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -31,8 +30,7 @@ func TestAuth_LoginForToken(T *testing.T) {
 			Password: user.HashedPassword,
 		}
 
-		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
-		require.NoError(t, err)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
 
 		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
 			Input: loginInput,
@@ -51,8 +49,7 @@ func TestAuth_LoginForToken(T *testing.T) {
 			TOTPToken: "otp scode",
 		}
 
-		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
-		require.NoError(t, err)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
 
 		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
 			Input: loginInput,
@@ -75,8 +72,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
 		}
 
-		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
-		require.NoError(t, err)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
@@ -97,8 +93,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: generateTOTPCodeForUserForTest(t, user),
 		}
 
-		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
-		require.NoError(t, err)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
@@ -117,8 +112,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
 		}
 
-		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
-		require.NoError(t, err)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
@@ -137,8 +131,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: "000000",
 		}
 
-		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
-		require.NoError(t, err)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
@@ -157,14 +150,40 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: "otp scode",
 		}
 
-		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
-		require.NoError(t, err)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
 		})
 		assert.Error(t, err)
 		assert.Nil(t, tokenRes)
+	})
+}
+
+func TestAuth_GetAuthStatus(T *testing.T) {
+	T.Parallel()
+
+	T.Run("for unauthenticated user", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+
+		res, err := unauthedClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+		assert.Error(t, err)
+		assert.Nil(t, res)
+	})
+
+	T.Run("for logged in user", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		res, err := testClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Equal(t, user.ID, res.UserID)
 	})
 }
 
@@ -186,32 +205,6 @@ func TestAuth_InvalidateToken(T *testing.T) {
 
 /*
 
-func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithoutValidating2FASecret() {
-	s.Run("should be able to login without validating 2FA secret", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartSpan(context.Background())
-		defer span.End()
-
-		testClient := buildSimpleClient(t)
-
-		// create a userClient.
-		exampleUser := fakes.BuildFakeUser()
-		exampleUserCreationInput := fakes.BuildFakeUserRegistrationInputFromUser(exampleUser)
-		ucr, err := testClient.CreateUser(ctx, exampleUserCreationInput)
-		requireNotNilAndNoProblems(t, ucr, err)
-
-		// create login request.
-		r := &types.UserLoginInput{
-			Username: exampleUserCreationInput.Username,
-			Password: exampleUserCreationInput.Password,
-		}
-
-		cookie, err := testClient.LoginForToken(ctx, r)
-		assert.NotNil(t, cookie)
-		assert.NoError(t, err)
-	})
-}
 
 func (s *TestSuite) TestCheckingAuthStatus() {
 	s.Run("checking auth status", func() {

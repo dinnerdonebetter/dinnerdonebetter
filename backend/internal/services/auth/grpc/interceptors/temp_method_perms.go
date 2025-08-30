@@ -21,5 +21,6 @@ var (
 		"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
 			authorization.ReadValidIngredientsPermission,
 		},
+		"/auth.AuthService/GetAuthStatus": {},
 	}
 )

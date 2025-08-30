@@ -69,14 +69,13 @@ var (
 	adminClient client.Client
 )
 
-func buildUnauthenticatedGRPCClientForTest(t *testing.T) (client.Client, error) {
+func buildUnauthenticatedGRPCClientForTest(t *testing.T, address string) client.Client {
 	t.Helper()
 
-	opts := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}
+	c, err := buildUnauthenticatedGRPCClient(address)
+	require.NoError(t, err)
 
-	return client.BuildClient(grpcTestServerAddress, opts...)
+	return c
 }
 
 func buildUnauthenticatedGRPCClient(address string) (client.Client, error) {
