@@ -24,6 +24,9 @@ var (
 		"/identity.IdentityService/AdminUpdateUserStatus": {
 			authorization.UpdateUserStatusPermission,
 		},
+		"/webhooks.WebhooksService/GetWebhook": {
+			authorization.ReadWebhooksPermission,
+		},
 		"/webhooks.WebhooksService/CreateWebhook": {
 			authorization.CreateWebhooksPermission,
 		},

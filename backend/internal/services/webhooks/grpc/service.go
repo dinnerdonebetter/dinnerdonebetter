@@ -21,7 +21,7 @@ type (
 		webhookssvc.UnimplementedWebhooksServiceServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
-		sessionContextDataFetcher func(context.Context) (sessions.ContextData, error)
+		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
 		webhookRepository         webhooks.Repository
 	}
 )
@@ -32,8 +32,9 @@ func NewService(
 	webhookRepository webhooks.Repository,
 ) webhookssvc.WebhooksServiceServer {
 	return &serviceImpl{
-		logger:            logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		webhookRepository: webhookRepository,
+		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
+		webhookRepository:         webhookRepository,
 	}
 }
