@@ -21,7 +21,11 @@ var (
 		"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
 			authorization.ReadValidIngredientsPermission,
 		},
-		"/auth.AuthService/GetAuthStatus":  {},
-		"/auth.AuthService/UpdatePassword": {},
+		"/auth.AuthService/GetAuthStatus":             {},
+		"/auth.AuthService/UpdatePassword":            {},
+		"/auth.AuthService/RefreshTOTPSecret":         {},
+		"/auth.AuthService/VerifyTOTPSecret":          {},
+		"/auth.AuthService/RequestPasswordResetToken": {},
+		"/auth.AuthService/RedeemPasswordResetToken":  {},
 	}
 )

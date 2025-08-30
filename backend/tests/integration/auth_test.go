@@ -1,11 +1,17 @@
 package integration
 
 import (
+	"testing"
+
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestAuth_LoginForToken(T *testing.T) {
@@ -235,6 +241,109 @@ func TestAuth_ChangingPassword(T *testing.T) {
 	})
 }
 
+func TestAuth_ChangingTOTPSecret(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		res, err := testClient.RefreshTOTPSecret(ctx, &authsvc.RefreshTOTPSecretRequest{
+			CurrentPassword: user.HashedPassword,
+			TOTPToken:       generateTOTPCodeForUserForTest(t, user),
+		})
+		require.NoError(t, err)
+		res.Result.TwoFactorSecret = user.TwoFactorSecret
+
+		_, err = testClient.VerifyTOTPSecret(ctx, &authsvc.VerifyTOTPSecretRequest{
+			TOTPToken: generateTOTPCodeForUserForTest(t, user),
+			UserID:    user.ID,
+		})
+		assert.NoError(t, err)
+	})
+
+	T.Run("fails with invalid token", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		_, err := testClient.RefreshTOTPSecret(ctx, &authsvc.RefreshTOTPSecretRequest{
+			CurrentPassword: user.HashedPassword,
+			TOTPToken:       "000000",
+		})
+		assert.Error(t, err)
+	})
+
+	T.Run("fails with invalid password", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		_, err := testClient.RefreshTOTPSecret(ctx, &authsvc.RefreshTOTPSecretRequest{
+			CurrentPassword: user.HashedPassword + "blah",
+			TOTPToken:       generateTOTPCodeForUserForTest(t, user),
+		})
+		assert.Error(t, err)
+	})
+}
+
+func TestAuth_RequestingPasswordReset(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		res, err := testClient.RequestPasswordResetToken(ctx, &authsvc.RequestPasswordResetTokenRequest{
+			EmailAddress: user.EmailAddress,
+		})
+		require.NoError(t, err)
+		assert.NotNil(t, res)
+
+		// boo, hiss, we're talking directly to the database in an _integration test?_ for shame, for shame.
+		var token string
+		queryErr := databaseClient.DB().QueryRow(`SELECT token FROM password_reset_tokens WHERE belongs_to_user = $1`, user.ID).Scan(&token)
+		require.NoError(t, queryErr)
+
+		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), databaseClient)
+		authRepo := authrepo.ProvideAuthRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogRepo, databaseClient)
+
+		resetToken, err := authRepo.GetPasswordResetTokenByToken(ctx, token)
+		require.NoError(t, err)
+		require.NotNil(t, resetToken)
+
+		_, err = testClient.RedeemPasswordResetToken(ctx, &authsvc.RedeemPasswordResetTokenRequest{
+			Token:       resetToken.Token,
+			NewPassword: user.HashedPassword + "blah",
+		})
+		require.NoError(t, err)
+
+		tokenRes, err := testClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
+			Input: &authsvc.UserLoginInput{
+				Username:  user.Username,
+				Password:  user.HashedPassword + "blah",
+				TOTPToken: generateTOTPCodeForUserForTest(t, user),
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, tokenRes)
+		assert.NotEmpty(t, tokenRes.Result.AccessToken)
+
+		// verify that we can't do it twice
+		_, err = testClient.RedeemPasswordResetToken(ctx, &authsvc.RedeemPasswordResetTokenRequest{
+			Token:       resetToken.Token,
+			NewPassword: user.HashedPassword + "blah",
+		})
+		require.Error(t, err)
+	})
+}
+
 // TODO section below this line
 
 /*
@@ -252,140 +361,3 @@ func TestAuth_InvalidateToken(T *testing.T) {
 		t.Skipf("TODO")
 	})
 }
-
-/*
-
-func (s *TestSuite) TestTOTPSecretChanging() {
-	s.Run("should be possible to change your TOTP secret", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
-
-		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
-
-		r, err := testClient.RefreshTOTPSecret(ctx, &types.TOTPSecretRefreshInput{
-			CurrentPassword: testUser.HashedPassword,
-			TOTPToken:       generateTOTPTokenForUser(t, testUser),
-		})
-		require.NoError(t, err)
-
-		testUser.TwoFactorSecret = r.TwoFactorSecret
-		_, err = testClient.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
-			TOTPToken: generateTOTPTokenForUser(t, testUser),
-			UserID:    testUser.ID,
-		})
-		require.NoError(t, err)
-
-		// create login request.
-		newToken, err := totp.GenerateCode(r.TwoFactorSecret, time.Now().UTC())
-		requireNotNilAndNoProblems(t, newToken, err)
-
-		secondCookie, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
-			Username:  testUser.Username,
-			Password:  testUser.HashedPassword,
-			TOTPToken: newToken,
-		})
-		assert.NoError(t, err)
-		assert.NotNil(t, secondCookie)
-	})
-}
-
-func (s *TestSuite) TestTOTPTokenValidation() {
-	s.Run("should be possible to validate TOTP", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartSpan(context.Background())
-		defer span.End()
-
-		testClient := buildSimpleClient(t)
-
-		userCR, err := testClient.CreateUser(ctx, fakes.BuildFakeUserRegistrationInput())
-		requireNotNilAndNoProblems(t, userCR, err)
-
-		user, err := premadeAdminClient.GetUser(ctx, userCR.CreatedUserID)
-		requireNotNilAndNoProblems(t, user, err)
-		user.TwoFactorSecret = userCR.TwoFactorSecret
-
-		_, err = testClient.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
-			TOTPToken: generateTOTPTokenForUser(t, user),
-			UserID:    user.ID,
-		})
-		assert.NoError(t, err)
-	})
-
-	s.Run("should not be possible to validate an invalid TOTP", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
-
-		testClient := buildSimpleClient(t)
-
-		userCR, err := testClient.CreateUser(ctx, fakes.BuildFakeUserRegistrationInput())
-		requireNotNilAndNoProblems(t, userCR, err)
-
-		user, err := premadeAdminClient.GetUser(ctx, userCR.CreatedUserID)
-		requireNotNilAndNoProblems(t, user, err)
-
-		_, err = testClient.VerifyTOTPSecret(ctx, &types.TOTPSecretVerificationInput{
-			TOTPToken: "NOTREAL",
-			UserID:    user.ID,
-		})
-		assert.Error(t, err)
-	})
-}
-
-func (s *TestSuite) TestLogin_RequestingPasswordReset() {
-	s.Run("able to reset one's password and then redeem it", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartSpan(context.Background())
-		defer span.End()
-
-		u, testClient := createUserAndClientForTest(ctx, t, nil)
-
-		_, err := testClient.RequestPasswordResetToken(ctx, &types.PasswordResetTokenCreationRequestInput{EmailAddress: u.EmailAddress})
-		require.NoError(t, err)
-
-		dbAddr := os.Getenv("TARGET_DATABASE")
-		if dbAddr == "" {
-			panic("empty database address provided")
-		}
-
-		db, err := sql.Open("pgx", dbAddr)
-		if err != nil {
-			panic(err)
-		}
-
-		var token string
-		queryErr := db.QueryRow(`SELECT token FROM password_reset_tokens WHERE belongs_to_user = $1`, u.ID).Scan(&token)
-		require.NoError(t, queryErr)
-
-		resetToken, err := dbManager.GetPasswordResetTokenByToken(ctx, token)
-		requireNotNilAndNoProblems(t, resetToken, err)
-
-		fakeInput := fakes.BuildFakeUserCreationInput()
-
-		_, err = testClient.RedeemPasswordResetToken(ctx, &types.PasswordResetTokenRedemptionRequestInput{
-			Token:       resetToken.Token,
-			NewPassword: fakeInput.Password,
-		})
-		require.NoError(t, err)
-
-		cookie, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
-			Username:  u.Username,
-			Password:  fakeInput.Password,
-			TOTPToken: generateTOTPTokenForUser(t, u),
-		})
-		requireNotNilAndNoProblems(t, cookie, err)
-
-		_, err = testClient.RedeemPasswordResetToken(ctx, &types.PasswordResetTokenRedemptionRequestInput{
-			Token:       resetToken.Token,
-			NewPassword: fakeInput.Password,
-		})
-		require.Error(t, err)
-	})
-}
-
-*/

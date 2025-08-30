@@ -6,6 +6,7 @@ import (
 	"time"
 
 	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
+	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
@@ -23,6 +24,7 @@ const (
 
 var (
 	createdClientID, createdClientSecret string
+	databaseClient                       database.Client
 	shutdownFunc                         func()
 )
 
@@ -59,20 +61,20 @@ func init() {
 		log.Fatal(err)
 	}
 
-	pgc, err := postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), dbCfg)
+	databaseClient, err = postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), dbCfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// create premade admin user
-	auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, pgc)
-	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, pgc)
-	adminUser, err := createPremadeAdminUser(ctx, logger, tracerProvider, identityRepo, pgc)
+	auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, databaseClient)
+	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, databaseClient)
+	adminUser, err := createPremadeAdminUser(ctx, logger, tracerProvider, identityRepo, databaseClient)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err = createOAuth2ClientForTests(ctx, pgc, dbCfg); err != nil {
+	if err = createOAuth2ClientForTests(ctx, databaseClient, dbCfg); err != nil {
 		log.Fatal(err)
 	}
 
@@ -82,7 +84,7 @@ func init() {
 	}
 
 	shutdownFunc = func() {
-		pgc.Close()
+		databaseClient.Close()
 		redisShutdownFunc(context.Background())
 		dbContainer.Stop(context.Background(), pointer.To(10*time.Second))
 	}
