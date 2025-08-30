@@ -4,6 +4,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -37,6 +38,7 @@ func TestAuth_LoginForToken(T *testing.T) {
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, tokenRes)
+		assert.NotEmpty(t, tokenRes.Result.AccessToken)
 	})
 
 	T.Run("with bogus input", func(t *testing.T) {
@@ -79,6 +81,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 		})
 		assert.NoError(t, err)
 		assert.NotNil(t, tokenRes)
+		assert.NotEmpty(t, tokenRes.Result.AccessToken)
 	})
 
 	T.Run("non-admin users cannot login via this route", func(t *testing.T) {
@@ -187,6 +190,53 @@ func TestAuth_GetAuthStatus(T *testing.T) {
 	})
 }
 
+func TestAuth_ChangingPassword(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		_, err := testClient.UpdatePassword(ctx, &authsvc.UpdatePasswordRequest{
+			NewPassword:     user.HashedPassword + "blah",
+			CurrentPassword: user.HashedPassword,
+			TOTPToken:       generateTOTPCodeForUserForTest(t, user),
+		})
+		require.NoError(t, err)
+
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+
+		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
+			Input: &authsvc.UserLoginInput{
+				Username:  user.Username,
+				Password:  user.HashedPassword + "blah",
+				TOTPToken: generateTOTPCodeForUserForTest(t, user),
+			},
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, tokenRes)
+		assert.NotEmpty(t, tokenRes.Result.AccessToken)
+	})
+
+	T.Run("with inadequate new password", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+
+		_, err := testClient.UpdatePassword(ctx, &authsvc.UpdatePasswordRequest{
+			NewPassword:     "b",
+			CurrentPassword: user.HashedPassword,
+			TOTPToken:       generateTOTPCodeForUserForTest(t, user),
+		})
+		assert.Error(t, err)
+	})
+}
+
+// TODO section below this line
+
 /*
 
 somewhere here we should validate that a user can't just pretend to be an admin via OAuth somehow?
@@ -204,77 +254,6 @@ func TestAuth_InvalidateToken(T *testing.T) {
 }
 
 /*
-
-
-func (s *TestSuite) TestCheckingAuthStatus() {
-	s.Run("checking auth status", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
-
-		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
-		cookie, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
-			Username:  testUser.Username,
-			Password:  testUser.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, testUser),
-		})
-
-		require.NotNil(t, cookie)
-		assert.NoError(t, err)
-
-		actual, err := testClient.GetAuthStatus(ctx)
-		assert.NoError(t, err)
-
-		assert.Equal(t, true, actual.UserIsAuthenticated, "expected UserIsAuthenticated to equal %v, but got %v", true, actual.UserIsAuthenticated)
-		assert.Equal(t, string(types.UnverifiedAccountStatus), actual.AccountStatus, "expected AccountStatus to equal %v, but got %v", types.GoodStandingUserAccountStatus, actual.AccountStatus)
-		assert.Equal(t, "", actual.AccountStatusExplanation, "expected AccountStatusExplanation to equal %v, but got %v", "", actual.AccountStatusExplanation)
-		assert.NotZero(t, actual.ActiveAccount)
-	})
-}
-
-func (s *TestSuite) TestPasswordChanging() {
-	s.Run("should be possible to change your password", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartSpan(context.Background())
-		defer span.End()
-
-		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
-
-		// login.
-		cookie, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
-			Username:  testUser.Username,
-			Password:  testUser.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, testUser),
-		})
-		require.NotNil(t, cookie)
-		assert.NoError(t, err)
-
-		// create new passwords.
-		var backwardsPass string
-		for _, v := range testUser.HashedPassword {
-			backwardsPass = string(v) + backwardsPass
-		}
-
-		// update passwords.
-		assert.NoError(t, testClient.UpdatePassword(ctx, &types.PasswordUpdateInput{
-			CurrentPassword: testUser.HashedPassword,
-			TOTPToken:       generateTOTPTokenForUser(t, testUser),
-			NewPassword:     backwardsPass,
-		}))
-
-		// login again with new passwords.
-		cookie, err = testClient.LoginForToken(ctx, &types.UserLoginInput{
-			Username:  testUser.Username,
-			Password:  backwardsPass,
-			TOTPToken: generateTOTPTokenForUser(t, testUser),
-		})
-
-		assert.NotNil(t, cookie)
-		assert.NoError(t, err)
-	})
-}
 
 func (s *TestSuite) TestTOTPSecretChanging() {
 	s.Run("should be possible to change your TOTP secret", func() {

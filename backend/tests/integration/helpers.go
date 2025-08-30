@@ -338,15 +338,7 @@ func createServiceUser(ctx context.Context, grpcAddress string, verifyTOTP bool,
 	ucr := res.Created
 
 	if verifyTOTP {
-		token, tokenErr := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
-		if tokenErr != nil {
-			return nil, fmt.Errorf("generating totp code: %w", tokenErr)
-		}
-
-		if _, err = c.VerifyTOTPSecret(ctx, &authsvc.VerifyTOTPSecretRequest{
-			TOTPToken: token,
-			UserID:    ucr.CreatedUserID,
-		}); err != nil {
+		if err = verifyTOTPSecretForUser(ctx, c, ucr.CreatedUserID, ucr.TwoFactorSecret); err != nil {
 			return nil, fmt.Errorf("verifying totp code: %w", err)
 		}
 	}
@@ -361,6 +353,22 @@ func createServiceUser(ctx context.Context, grpcAddress string, verifyTOTP bool,
 	}
 
 	return u, nil
+}
+
+func verifyTOTPSecretForUser(ctx context.Context, c client.Client, userID, twoFactorSecret string) error {
+	token, tokenErr := totp.GenerateCode(twoFactorSecret, time.Now().UTC())
+	if tokenErr != nil {
+		return fmt.Errorf("generating totp code: %w", tokenErr)
+	}
+
+	if _, err := c.VerifyTOTPSecret(ctx, &authsvc.VerifyTOTPSecretRequest{
+		TOTPToken: token,
+		UserID:    userID,
+	}); err != nil {
+		return fmt.Errorf("verifying totp code: %w", err)
+	}
+
+	return nil
 }
 
 func createClientForUser(ctx context.Context, httpAddress, grpcAddress string, scopes []string, user *identity.User) (client.Client, error) {
@@ -381,12 +389,12 @@ func createUserAndClientForTest(t *testing.T, httpAddress, grpcAddress string) (
 
 	input := &identity.UserRegistrationInput{
 		Birthday:              pointer.To(time.Now()),
-		EmailAddress:          fmt.Sprintf("test+%d@whatever.com", hashStringToNumber(t.Name())),
-		FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
-		AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
-		LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
-		Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
-		Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name())),
+		EmailAddress:          fmt.Sprintf("test+%d@whatever.com", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+		FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+		AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+		LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+		Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+		Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 		AcceptedPrivacyPolicy: true,
 		AcceptedTOS:           true,
 	}
