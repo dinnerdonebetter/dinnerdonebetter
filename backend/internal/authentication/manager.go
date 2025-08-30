@@ -120,7 +120,8 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 	if err := validation.ValidateStructWithContext(ctx, loginData,
 		validation.Field(&loginData.Username, validation.Required, validation.Length(4, math.MaxInt8)),
 		validation.Field(&loginData.Password, validation.Required, validation.Length(8, math.MaxInt8)),
-		validation.Field(&loginData.TOTPToken, is.Digit, validation.RuneLength(6, 6)),
+		// non-admin users can have unverified 2FA secrets
+		validation.Field(&loginData.TOTPToken, is.Digit, validation.RuneLength(6, 6), validation.When(adminOnly)),
 	); err != nil {
 		return nil, observability.PrepareError(err, span, "validating input")
 	}
@@ -166,7 +167,7 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 	}
 
 	if user.TwoFactorSecretVerifiedAt != nil && loginData.TOTPToken == "" {
-		return nil, observability.PrepareError(err, span, "TOTP code required but not provided")
+		return nil, observability.PrepareError(errors.New("TOTP code required but not provided"), span, "processing login")
 	}
 
 	defaultAccountID, err := m.userAuthDataManager.GetDefaultAccountIDForUser(ctx, user.ID)
@@ -192,12 +193,12 @@ func (m *manager) ProcessLogin(ctx context.Context, adminOnly bool, loginData *a
 
 	response.AccessToken, err = m.tokenIssuer.IssueToken(ctx, user, m.maxAccessTokenLifetime)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "creating accessToken")
+		return nil, observability.PrepareError(err, span, "creating access token")
 	}
 
 	response.RefreshToken, err = m.tokenIssuer.IssueToken(ctx, user, m.maxRefreshTokenLifetime)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "creating accessToken")
+		return nil, observability.PrepareError(err, span, "creating refresh token")
 	}
 
 	return response, nil

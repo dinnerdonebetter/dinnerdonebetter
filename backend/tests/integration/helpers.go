@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"hash/fnv"
 	"log"
 	"net/http"
@@ -57,7 +58,7 @@ const (
 )
 
 var (
-	premadeAdminUser = &identity.UserDatabaseCreationInput{
+	premadeAdminUser = &identity.User{
 		ID:              identifiers.New(),
 		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 		EmailAddress:    "integration_tests@example.email",
@@ -252,7 +253,7 @@ func createPremadeAdminUser(ctx context.Context, logger logging.Logger, tracerPr
 		return user, nil
 	}
 
-	user, err = identityRepo.CreateUser(ctx, premadeAdminUser)
+	user, err = identityRepo.CreateUser(ctx, identityconverters.ConvertUserToUserDatabaseCreationInput(premadeAdminUser))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
@@ -307,8 +308,16 @@ func hashStringToNumber(s string) uint64 {
 	return h.Sum64()
 }
 
-// createServiceUser creates a user.
-func createServiceUser(ctx context.Context, grpcAddress string, in *identity.UserRegistrationInput) (*identity.User, error) {
+func createServiceUserForTest(t *testing.T, grpcAddress string, verifyTOTP bool, in *identity.UserRegistrationInput) *identity.User {
+	t.Helper()
+
+	user, err := createServiceUser(t.Context(), grpcAddress, verifyTOTP, in)
+	require.NoError(t, err)
+
+	return user
+}
+
+func createServiceUser(ctx context.Context, grpcAddress string, verifyTOTP bool, in *identity.UserRegistrationInput) (*identity.User, error) {
 	if grpcAddress == "" {
 		return nil, errors.New("empty grpcAddress not allowed")
 	}
@@ -329,18 +338,19 @@ func createServiceUser(ctx context.Context, grpcAddress string, in *identity.Use
 	}
 	ucr := res.Created
 
-	token, tokenErr := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
-	if tokenErr != nil {
-		return nil, fmt.Errorf("generating totp code: %w", tokenErr)
-	}
+	if verifyTOTP {
+		token, tokenErr := totp.GenerateCode(ucr.TwoFactorSecret, time.Now().UTC())
+		if tokenErr != nil {
+			return nil, fmt.Errorf("generating totp code: %w", tokenErr)
+		}
 
-	if _, validationErr := c.VerifyTOTPSecret(ctx, &authsvc.VerifyTOTPSecretRequest{
-		TOTPToken: token,
-		UserID:    ucr.CreatedUserID,
-	}); validationErr != nil {
-		return nil, fmt.Errorf("verifying totp code: %w", validationErr)
+		if _, err = c.VerifyTOTPSecret(ctx, &authsvc.VerifyTOTPSecretRequest{
+			TOTPToken: token,
+			UserID:    ucr.CreatedUserID,
+		}); err != nil {
+			return nil, fmt.Errorf("verifying totp code: %w", err)
+		}
 	}
-
 	u := &identity.User{
 		ID:              ucr.CreatedUserID,
 		Username:        ucr.Username,
@@ -355,7 +365,7 @@ func createServiceUser(ctx context.Context, grpcAddress string, in *identity.Use
 }
 
 func createClientForUser(ctx context.Context, httpAddress, grpcAddress string, scopes []string, user *identity.User) (client.Client, error) {
-	token, err := fetchLoginTokenForUser(ctx, grpcAddress, *user)
+	token, err := fetchLoginTokenForUser(ctx, grpcAddress, user)
 	if err != nil {
 		return nil, fmt.Errorf("fetching token for user %s: %w", user.Username, err)
 	}
@@ -382,17 +392,13 @@ func createUserAndClientForTest(t *testing.T, httpAddress, grpcAddress string) (
 		AcceptedTOS:           true,
 	}
 
-	user, err := createServiceUser(ctx, grpcAddress, input)
-	require.NoError(t, err)
-
-	t.Logf("created user %s", user.ID)
-
-	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, httpAddress, fetchLoginTokenForUserForTest(t, grpcAddress, *user))
+	user := createServiceUserForTest(t, grpcAddress, true, input)
+	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, httpAddress, fetchLoginTokenForUserForTest(t, grpcAddress, user))
 
 	return user, oauthedClient
 }
 
-func fetchLoginTokenForUserForTest(t *testing.T, grpcAddress string, user identity.User) string {
+func fetchLoginTokenForUserForTest(t *testing.T, grpcAddress string, user *identity.User) string {
 	t.Helper()
 	ctx := t.Context()
 
@@ -402,10 +408,28 @@ func fetchLoginTokenForUserForTest(t *testing.T, grpcAddress string, user identi
 	return rv
 }
 
-func fetchLoginTokenForUser(ctx context.Context, grpcAddress string, user identity.User) (string, error) {
+func generateTOTPCodeForUserForTest(t *testing.T, user *identity.User) string {
+	t.Helper()
+
+	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
+	require.NoError(t, err)
+
+	return code
+}
+
+func generateTOTPCodeForUser(user *identity.User) (string, error) {
 	code, err := totp.GenerateCode(strings.ToUpper(user.TwoFactorSecret), time.Now().UTC())
 	if err != nil {
 		return "", fmt.Errorf("generating totp code: %w", err)
+	}
+
+	return code, nil
+}
+
+func fetchLoginTokenForUser(ctx context.Context, grpcAddress string, user *identity.User) (string, error) {
+	code, err := generateTOTPCodeForUser(user)
+	if err != nil {
+		return "", err
 	}
 
 	loginInput := &authsvc.UserLoginInput{

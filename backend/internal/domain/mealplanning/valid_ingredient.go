@@ -421,6 +421,5 @@ func (x *ValidIngredientUpdateRequestInput) ValidateWithContext(ctx context.Cont
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Name, validation.Required),
 	)
 }

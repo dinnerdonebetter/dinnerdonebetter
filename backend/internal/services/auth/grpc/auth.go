@@ -77,10 +77,18 @@ func (s *serviceImpl) LoginForToken(ctx context.Context, request *authsvc.LoginF
 
 	logger := s.logger.WithSpan(span)
 
+	if request.Input.TOTPToken == "" {
+		println("")
+	}
+
 	input := converters.ConvertGRPCAdminLoginForTokenRequestToUserLoginInput(request.Input)
 	tokenResponse, err := s.authenticationManager.ProcessLogin(ctx, false, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to process login request")
+	}
+
+	if tokenResponse == nil {
+		println("")
 	}
 
 	x := &authsvc.LoginForTokenResponse{

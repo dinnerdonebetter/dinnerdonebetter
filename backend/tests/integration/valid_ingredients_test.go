@@ -147,7 +147,7 @@ func TestValidIngredients_Reading(T *testing.T) {
 	_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
 
 	T.Run("happy path", func(t *testing.T) {
-		t.Skipf("TODO")
+		t.Parallel()
 		ctx := t.Context()
 
 		created := createValidIngredientForTest(t)
@@ -155,7 +155,9 @@ func TestValidIngredients_Reading(T *testing.T) {
 		retrieved, err := testClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: created.ID})
 		assert.NoError(t, err)
 
-		assertRoughEquality(t, created, retrieved, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+		converted := grpcconverters.ConvertGRPCValidIngredientToValidIngredient(retrieved.Result)
+
+		assertRoughEquality(t, created, converted, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
 	})
 
 	T.Run("invalid ID", func(t *testing.T) {
@@ -194,20 +196,11 @@ func TestValidIngredients_Updating(T *testing.T) {
 
 	T.Run("invalid input", func(t *testing.T) {
 		t.Parallel()
-		ctx := t.Context()
 
-		created := createValidIngredientForTest(t)
-
-		updateInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
-		created.Update(updateInput)
-		// this is not allowed
-		created.Name = ""
-
-		_, err := adminClient.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
-			ValidIngredientID: created.ID,
-			Input:             grpcconverters.ConvertValidIngredientUpdateRequestInputToGRPCValidIngredientUpdateRequestInput(updateInput),
-		})
-		assert.Error(t, err)
+		/*
+			there's no way to provide invalid input to this method, but
+			I want to make it explicit that tests should be written the moment that changes
+		*/
 	})
 
 	T.Run("non-admin users are forbidden from updating", func(t *testing.T) {

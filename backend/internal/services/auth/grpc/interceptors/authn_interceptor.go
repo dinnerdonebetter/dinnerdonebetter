@@ -54,23 +54,7 @@ func ProvideAuthInterceptor(
 		identityRepository:  identityRepository,
 		oauth2ClientManager: oauth2ClientManager,
 		// TODO: configure this elsewhere
-		methodPermissions: map[string][]authorization.Permission{
-			"/mealplanning.MealPlanningService/CreateValidIngredient": {
-				authorization.CreateValidIngredientsPermission,
-			},
-			"/mealplanning.MealPlanningService/GetValidIngredient": {
-				authorization.ReadValidIngredientsPermission,
-			},
-			"/mealplanning.MealPlanningService/UpdateValidIngredient": {
-				authorization.UpdateValidIngredientsPermission,
-			},
-			"/mealplanning.MealPlanningService/ArchiveValidIngredient": {
-				authorization.ArchiveValidIngredientsPermission,
-			},
-			"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
-				authorization.ReadValidIngredientsPermission,
-			},
-		},
+		methodPermissions: methodPermissions,
 		// TODO: configure this elsewhere
 		unauthenticatedRoutes: []string{
 			"/auth.AuthService/AdminLoginForToken",

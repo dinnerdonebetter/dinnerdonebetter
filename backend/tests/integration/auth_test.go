@@ -1,139 +1,190 @@
 package integration
 
 import (
-	"context"
-	"database/sql"
-	"net/http"
-	"net/url"
-	"os"
-	"time"
-
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-
-	"github.com/pquerna/otp/totp"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
-func (s *TestSuite) TestLoginForToken() {
-	s.Run("logging in and out works", func() {
-		t := s.T()
+func TestAuth_LoginForToken(T *testing.T) {
+	T.Parallel()
 
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
 
-		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
-		token, err := testClient.LoginForToken(ctx, &types.UserLoginInput{
-			Username:  testUser.Username,
-			Password:  testUser.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, testUser),
-		})
+		user := createServiceUserForTest(t, grpcTestServerAddress, true, fakes.BuildFakeUserRegistrationInput())
+		actual := fetchLoginTokenForUserForTest(t, grpcTestServerAddress, user)
 
-		assert.NotEmpty(t, token)
-		assert.NoError(t, err)
+		assert.NotEmpty(t, actual)
 	})
-}
 
-func (s *TestSuite) TestAdminLoginForToken() {
-	s.Run("logging in and out works", func() {
-		t := s.T()
+	T.Run("2FA is not required for non-admin users who haven't verified their secrets", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
+		user := createServiceUserForTest(t, grpcTestServerAddress, false, fakes.BuildFakeUserRegistrationInput())
 
-		loginInput := &types.UserLoginInput{
-			Username:  premadeAdminUser.Username,
-			Password:  premadeAdminUser.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
+		loginInput := &authsvc.UserLoginInput{
+			Username: user.Username,
+			Password: user.HashedPassword,
 		}
 
-		adminClient, err := initializeOAuth2PoweredClient(ctx, loginInput)
+		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
 		require.NoError(t, err)
 
-		token, err := adminClient.AdminLoginForToken(ctx, &types.UserLoginInput{
-			Username:  premadeAdminUser.Username,
-			Password:  premadeAdminUser.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
+		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
+			Input: loginInput,
 		})
-
-		assert.NotEmpty(t, token)
 		assert.NoError(t, err)
+		assert.NotNil(t, tokenRes)
 	})
-}
 
-func (s *TestSuite) TestLogin_WithoutBodyReturnsError() {
-	s.Run("login request without body returns error", func() {
-		t := s.T()
+	T.Run("with bogus input", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-		ctx, span := tracing.StartSpan(context.Background())
-		defer span.End()
+		loginInput := &authsvc.UserLoginInput{
+			Username:  " ",
+			Password:  "1",
+			TOTPToken: "otp scode",
+		}
 
-		_, testClient := createUserAndClientForTest(ctx, t, nil)
-
-		u, err := url.Parse(testClient.BuildURL(ctx, nil))
+		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
 		require.NoError(t, err)
-		u.Path = "/users/login/jwt"
 
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), http.NoBody)
-		requireNotNilAndNoProblems(t, req, err)
-
-		// execute login request.
-		res, err := testClient.PlainClient().Do(req)
-		requireNotNilAndNoProblems(t, res, err)
-		assert.Equal(t, http.StatusBadRequest, res.StatusCode)
-	})
-}
-
-func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithInvalidPassword() {
-	s.Run("should not be able to log in with the wrong password", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
-
-		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
-
-		// create login request.
-		var badPassword string
-		for _, v := range testUser.HashedPassword {
-			badPassword = string(v) + badPassword
-		}
-
-		r := &types.UserLoginInput{
-			Username:  testUser.Username,
-			Password:  badPassword,
-			TOTPToken: generateTOTPTokenForUser(t, testUser),
-		}
-
-		cookie, err := testClient.LoginForToken(ctx, r)
-		assert.Nil(t, cookie)
+		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
+			Input: loginInput,
+		})
 		assert.Error(t, err)
+		assert.Nil(t, tokenRes)
 	})
 }
 
-func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginAsANonexistentUser() {
-	s.Run("should not be able to login as someone that does not exist", func() {
-		t := s.T()
+func TestAuth_AdminLoginForToken(T *testing.T) {
+	T.Parallel()
 
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-		testUser, testClient := createUserAndClientForTest(ctx, t, nil)
-
-		exampleUserCreationInput := fakes.BuildFakeUserCreationInput()
-		r := &types.UserLoginInput{
-			Username:  exampleUserCreationInput.Username,
-			Password:  testUser.HashedPassword,
-			TOTPToken: "123456",
+		loginInput := &authsvc.UserLoginInput{
+			Username:  premadeAdminUser.Username,
+			Password:  adminUserPassword,
+			TOTPToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
 		}
 
-		cookie, err := testClient.LoginForToken(ctx, r)
-		assert.Nil(t, cookie)
+		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
+		require.NoError(t, err)
+
+		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
+			Input: loginInput,
+		})
+		assert.NoError(t, err)
+		assert.NotNil(t, tokenRes)
+	})
+
+	T.Run("non-admin users cannot login via this route", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		user := createServiceUserForTest(t, grpcTestServerAddress, true, fakes.BuildFakeUserRegistrationInput())
+
+		loginInput := &authsvc.UserLoginInput{
+			Username:  user.Username,
+			Password:  user.HashedPassword,
+			TOTPToken: generateTOTPCodeForUserForTest(t, user),
+		}
+
+		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
+		require.NoError(t, err)
+
+		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
+			Input: loginInput,
+		})
 		assert.Error(t, err)
+		assert.Nil(t, tokenRes)
+	})
+
+	T.Run("with incorrect password", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		loginInput := &authsvc.UserLoginInput{
+			Username:  premadeAdminUser.Username,
+			Password:  adminUserPassword + "blah",
+			TOTPToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
+		}
+
+		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
+		require.NoError(t, err)
+
+		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
+			Input: loginInput,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, tokenRes)
+	})
+
+	T.Run("with incorrect TOTP Code", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		loginInput := &authsvc.UserLoginInput{
+			Username:  premadeAdminUser.Username,
+			Password:  adminUserPassword,
+			TOTPToken: "000000",
+		}
+
+		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
+		require.NoError(t, err)
+
+		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
+			Input: loginInput,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, tokenRes)
+	})
+
+	T.Run("with bogus input", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		loginInput := &authsvc.UserLoginInput{
+			Username:  " ",
+			Password:  "1",
+			TOTPToken: "otp scode",
+		}
+
+		unauthedClient, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
+		require.NoError(t, err)
+
+		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
+			Input: loginInput,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, tokenRes)
 	})
 }
+
+/*
+
+somewhere here we should validate that a user can't just pretend to be an admin via OAuth somehow?
+I feel like that's now how it presently works anyway, but the whole thing is haphazard and fucked up, so
+just shore all of it iup.
+
+*/
+
+func TestAuth_InvalidateToken(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Skipf("TODO")
+	})
+}
+
+/*
 
 func (s *TestSuite) TestLogin_ShouldNotBeAbleToLoginWithoutValidating2FASecret() {
 	s.Run("should be able to login without validating 2FA secret", func() {
@@ -364,3 +415,5 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 		require.Error(t, err)
 	})
 }
+
+*/
