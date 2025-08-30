@@ -164,14 +164,9 @@ func WithOAuth2Credentials(
 	}
 }
 
-func ImpersonateUserContext(ctx context.Context, userID string) context.Context {
+func ImpersonateUseAndAccountContext(ctx context.Context, userID, accountID string) context.Context {
 	return metadata.NewOutgoingContext(ctx, metadata.New(map[string]string{
-		zuckModeUserHeader: userID,
-	}))
-}
-
-func ImpersonateAccountContext(ctx context.Context, accountID string) context.Context {
-	return metadata.NewOutgoingContext(ctx, metadata.New(map[string]string{
-		zuckModeUserHeader: accountID,
+		zuckModeUserHeader:    userID,
+		zuckModeAccountHeader: accountID,
 	}))
 }
