@@ -46,7 +46,7 @@ func TestValidIngredients_Creating(T *testing.T) {
 		creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
 		convertedInput := grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(creationRequestInput)
 
-		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		c := buildUnauthenticatedGRPCClientForTest(t)
 		created, err := c.CreateValidIngredient(ctx, &mealplanningsvc.CreateValidIngredientRequest{
 			Input: convertedInput,
 		})
@@ -112,7 +112,7 @@ func TestValidIngredients_Reading(T *testing.T) {
 
 		created := createValidIngredientForTest(t)
 
-		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: created.ID})
 		assert.Error(t, err)
@@ -161,7 +161,7 @@ func TestValidIngredients_Updating(T *testing.T) {
 		updateInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
 		created.Update(updateInput)
 
-		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
 			ValidIngredientID: created.ID,
@@ -221,7 +221,7 @@ func TestValidIngredients_Archiving(T *testing.T) {
 
 		created := createValidIngredientForTest(t)
 
-		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := c.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: created.ID})
 		assert.Error(t, err)
@@ -268,7 +268,7 @@ func TestValidIngredients_GetRandom(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		c := buildUnauthenticatedGRPCClientForTest(t)
 
 		response, err := c.GetRandomValidIngredient(ctx, &mealplanningsvc.GetRandomValidIngredientRequest{})
 		assert.Error(t, err)

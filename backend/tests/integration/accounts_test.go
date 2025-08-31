@@ -29,10 +29,32 @@ func TestAccounts_Creating(T *testing.T) {
 
 	T.Run("requires auth", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		testClient := buildUnauthenticatedGRPCClientForTest(t)
+
+		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
+		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+
+		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
+		assert.Error(t, err)
+		assert.Nil(t, createdAccount)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
+		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+		// not allowed
+		exampleAccountInput.Name = ""
+
+		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
+		assert.Error(t, err)
+		assert.Nil(t, createdAccount)
 	})
 }
 

@@ -65,21 +65,21 @@ var (
 	adminClient client.Client
 )
 
-func buildUnauthenticatedGRPCClientForTest(t *testing.T, address string) client.Client {
+func buildUnauthenticatedGRPCClientForTest(t *testing.T) client.Client {
 	t.Helper()
 
-	c, err := buildUnauthenticatedGRPCClient(address)
+	c, err := buildUnauthenticatedGRPCClient()
 	require.NoError(t, err)
 
 	return c
 }
 
-func buildUnauthenticatedGRPCClient(address string) (client.Client, error) {
+func buildUnauthenticatedGRPCClient() (client.Client, error) {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	return client.BuildClient(address, opts...)
+	return client.BuildClient(grpcTestServerAddress, opts...)
 }
 
 func buildAuthedGRPCClient(ctx context.Context, scopes []string, token string) client.Client {
@@ -295,7 +295,7 @@ func createServiceUserForTest(t *testing.T, verifyTOTP bool, in *identity.UserRe
 }
 
 func createServiceUser(ctx context.Context, verifyTOTP bool, in *identity.UserRegistrationInput) (*identity.User, error) {
-	c, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
+	c, err := buildUnauthenticatedGRPCClient()
 	if err != nil {
 		return nil, fmt.Errorf("initializing client: %w", err)
 	}
@@ -346,7 +346,7 @@ func verifyTOTPSecretForUser(ctx context.Context, c client.Client, userID, twoFa
 }
 
 func createClientForUser(ctx context.Context, scopes []string, user *identity.User) (client.Client, error) {
-	token, err := fetchLoginTokenForUser(ctx, grpcTestServerAddress, user)
+	token, err := fetchLoginTokenForUser(ctx, user)
 	if err != nil {
 		return nil, fmt.Errorf("fetching token for user %s: %w", user.Username, err)
 	}
@@ -374,16 +374,16 @@ func createUserAndClientForTest(t *testing.T) (*identity.User, client.Client) {
 	}
 
 	user := createServiceUserForTest(t, true, input)
-	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, fetchLoginTokenForUserForTest(t, grpcTestServerAddress, user))
+	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, fetchLoginTokenForUserForTest(t, user))
 
 	return user, oauthedClient
 }
 
-func fetchLoginTokenForUserForTest(t *testing.T, grpcAddress string, user *identity.User) string {
+func fetchLoginTokenForUserForTest(t *testing.T, user *identity.User) string {
 	t.Helper()
 	ctx := t.Context()
 
-	rv, err := fetchLoginTokenForUser(ctx, grpcTestServerAddress, user)
+	rv, err := fetchLoginTokenForUser(ctx, user)
 	require.NoError(t, err)
 
 	return rv
@@ -407,7 +407,7 @@ func generateTOTPCodeForUser(user *identity.User) (string, error) {
 	return code, nil
 }
 
-func fetchLoginTokenForUser(ctx context.Context, grpcAddress string, user *identity.User) (string, error) {
+func fetchLoginTokenForUser(ctx context.Context, user *identity.User) (string, error) {
 	code, err := generateTOTPCodeForUser(user)
 	if err != nil {
 		return "", err
@@ -424,7 +424,7 @@ func fetchLoginTokenForUser(ctx context.Context, grpcAddress string, user *ident
 		loginInput.Password = adminUserPassword
 	}
 
-	unauthedClient, err := buildUnauthenticatedGRPCClient(grpcAddress)
+	unauthedClient, err := buildUnauthenticatedGRPCClient()
 	if err != nil {
 		return "", fmt.Errorf("initializing client: %w", err)
 	}

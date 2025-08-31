@@ -21,7 +21,7 @@ func TestAuth_LoginForToken(T *testing.T) {
 		t.Parallel()
 
 		user := createServiceUserForTest(t, true, fakes.BuildFakeUserRegistrationInput())
-		actual := fetchLoginTokenForUserForTest(t, grpcTestServerAddress, user)
+		actual := fetchLoginTokenForUserForTest(t, user)
 
 		assert.NotEmpty(t, actual)
 	})
@@ -37,7 +37,7 @@ func TestAuth_LoginForToken(T *testing.T) {
 			Password: user.HashedPassword,
 		}
 
-		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
 			Input: loginInput,
@@ -57,7 +57,7 @@ func TestAuth_LoginForToken(T *testing.T) {
 			TOTPToken: "otp scode",
 		}
 
-		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
 			Input: loginInput,
@@ -80,7 +80,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
 		}
 
-		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
@@ -102,7 +102,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: generateTOTPCodeForUserForTest(t, user),
 		}
 
-		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
@@ -121,7 +121,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: generateTOTPCodeForUserForTest(t, premadeAdminUser),
 		}
 
-		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
@@ -140,7 +140,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: "000000",
 		}
 
-		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
@@ -159,7 +159,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 			TOTPToken: "otp scode",
 		}
 
-		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		tokenRes, err := unauthedClient.AdminLoginForToken(ctx, &authsvc.AdminLoginForTokenRequest{
 			Input: loginInput,
@@ -176,7 +176,7 @@ func TestAuth_GetAuthStatus(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		res, err := unauthedClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
 		assert.Error(t, err)
@@ -212,7 +212,7 @@ func TestAuth_ChangingPassword(T *testing.T) {
 		})
 		require.NoError(t, err)
 
-		unauthedClient := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		unauthedClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		tokenRes, err := unauthedClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{
 			Input: &authsvc.UserLoginInput{
