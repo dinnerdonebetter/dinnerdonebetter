@@ -8,17 +8,18 @@ import (
 // ConvertAccountCreationInputToAccountDatabaseCreationInput creates a AccountDatabaseCreationInput from a AccountCreationRequestInput.
 func ConvertAccountCreationInputToAccountDatabaseCreationInput(input *types.AccountCreationRequestInput) *types.AccountDatabaseCreationInput {
 	x := &types.AccountDatabaseCreationInput{
-		ID:           identifiers.New(),
-		Name:         input.Name,
-		AddressLine1: input.AddressLine1,
-		AddressLine2: input.AddressLine2,
-		City:         input.City,
-		State:        input.State,
-		ZipCode:      input.ZipCode,
-		Country:      input.Country,
-		Latitude:     input.Latitude,
-		Longitude:    input.Longitude,
-		ContactPhone: input.ContactPhone,
+		ID:            identifiers.New(),
+		Name:          input.Name,
+		AddressLine1:  input.AddressLine1,
+		AddressLine2:  input.AddressLine2,
+		City:          input.City,
+		State:         input.State,
+		ZipCode:       input.ZipCode,
+		Country:       input.Country,
+		Latitude:      input.Latitude,
+		Longitude:     input.Longitude,
+		ContactPhone:  input.ContactPhone,
+		BelongsToUser: input.BelongsToUser,
 	}
 
 	return x

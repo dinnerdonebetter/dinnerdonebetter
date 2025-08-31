@@ -78,7 +78,7 @@ func Unauthenticated(msg string) error {
 func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metadata metadata.MD, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
-	
+
 	if zuckUserHeaders := metadata.Get(zuckModeUserHeader); len(zuckUserHeaders) > 0 {
 		var (
 			zuckUserID    = zuckUserHeaders[0]

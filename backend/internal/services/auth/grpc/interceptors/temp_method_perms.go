@@ -32,6 +32,7 @@ var (
 		"/webhooks.WebhooksService/CreateWebhook": {
 			authorization.CreateWebhooksPermission,
 		},
+		"/identity.IdentityService/CreateAccount":     noPerms,
 		"/auth.AuthService/GetAuthStatus":             noPerms,
 		"/auth.AuthService/GetActiveAccount":          noPerms,
 		"/auth.AuthService/UpdatePassword":            noPerms,

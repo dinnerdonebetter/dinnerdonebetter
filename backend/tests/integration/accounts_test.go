@@ -1,208 +1,154 @@
 package integration
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
+	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestAccounts_Creating(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
+		_, testClient := createUserAndClientForTest(t)
+
+		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
+		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+
+		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
+		assert.NoError(t, err)
+		assert.NotNil(t, createdAccount)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
+		t.Parallel()
+	})
+}
 
+func TestAccounts_Listing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+	})
+}
+
+func TestAccounts_Reading(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("for nonexistent account", func(t *testing.T) {
+		t.Parallel()
+	})
+}
+
+func TestAccounts_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("for nonexistent account", func(t *testing.T) {
+		t.Parallel()
+	})
+}
+
+func TestAccounts_Archiving(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("for nonexistent account", func(t *testing.T) {
+		t.Parallel()
+	})
+}
+
+func TestAccounts_InvitingPreExistentUser(T *testing.T) {
+	T.Parallel()
+
+	T.Run("pre existing user", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("user who signed up independently", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("user who signs up independently and then cancels", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("user with invite link", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("invites can be cancelled", func(t *testing.T) {
+		t.Parallel()
+	})
+
+	T.Run("invites can be rejected", func(t *testing.T) {
+		t.Parallel()
+	})
+}
+
+func TestAccounts_ChangingMemberships(T *testing.T) {
+	T.Parallel()
+
+	T.Run("", func(t *testing.T) {
+		t.Parallel()
+	})
+}
+
+func TestAccounts_OwnershipTransfer(T *testing.T) {
+	T.Parallel()
+
+	T.Run("", func(t *testing.T) {
+		t.Parallel()
+	})
+}
+
+func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount(T *testing.T) {
+	T.Parallel()
+
+	T.Run("", func(t *testing.T) {
+		t.Parallel()
 	})
 }
 
 /*
-
-package integration
-
-import (
-	"testing"
-
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-
-	"github.com/brianvoe/gofakeit/v5"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-)
-
-
-func (s *TestSuite) TestAccounts_Creating() {
-	s.runTest("should be possible to create accounts", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create account.
-			exampleAccount := fakes.BuildFakeAccount()
-			exampleAccountInput := converters.ConvertAccountToAccountCreationRequestInput(exampleAccount)
-			createdAccount, err := testClients.userClient.CreateAccount(ctx, exampleAccountInput)
-			requireNotNilAndNoProblems(t, createdAccount, err)
-
-			// Assert account equality.
-			checkAccountEquality(t, exampleAccount, createdAccount)
-
-			// Clean up.
-			assert.NoError(t, testClients.userClient.ArchiveAccount(ctx, createdAccount.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestAccounts_Listing() {
-	s.runTest("should be possible to list accounts", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create accounts.
-			var expected []*types.Account
-			for i := 0; i < 5; i++ {
-				// Create account.
-				exampleAccount := fakes.BuildFakeAccount()
-				exampleAccountInput := converters.ConvertAccountToAccountCreationRequestInput(exampleAccount)
-				createdAccount, accountCreationErr := testClients.userClient.CreateAccount(ctx, exampleAccountInput)
-				requireNotNilAndNoProblems(t, createdAccount, accountCreationErr)
-
-				expected = append(expected, createdAccount)
-			}
-
-			// Assert account list equality.
-			actual, err := testClients.userClient.GetAccounts(ctx, nil)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual.Data),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual.Data),
-			)
-
-			// Clean up.
-			for _, createdAccount := range actual.Data {
-				assert.NoError(t, testClients.userClient.ArchiveAccount(ctx, createdAccount.ID))
-			}
-		}
-	})
-}
-
-func (s *TestSuite) TestAccounts_Reading_Returns404ForNonexistentAccount() {
-	s.runTest("should not be possible to read a non-existent account", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Attempt to fetch nonexistent account.
-			_, err := testClients.userClient.GetAccount(ctx, nonexistentID)
-			assert.Error(t, err)
-		}
-	})
-}
-
-func (s *TestSuite) TestAccounts_Reading() {
-	s.runTest("should be possible to read an account", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create account.
-			exampleAccount := fakes.BuildFakeAccount()
-			exampleAccountInput := converters.ConvertAccountToAccountCreationRequestInput(exampleAccount)
-			createdAccount, err := testClients.userClient.CreateAccount(ctx, exampleAccountInput)
-			requireNotNilAndNoProblems(t, createdAccount, err)
-
-			// Fetch account.
-			actual, err := testClients.userClient.GetAccount(ctx, createdAccount.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// Assert account equality.
-			checkAccountEquality(t, exampleAccount, actual)
-
-			// Clean up account.
-			assert.NoError(t, testClients.userClient.ArchiveAccount(ctx, createdAccount.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestAccounts_Updating_Returns404ForNonexistentAccount() {
-	s.runTest("should not be possible to update a non-existent account", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			assert.Error(t, testClients.userClient.UpdateAccount(ctx, nonexistentID, &types.AccountUpdateRequestInput{}))
-		}
-	})
-}
-
-func (s *TestSuite) TestAccounts_Updating() {
-	s.runTest("should be possible to update an account", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create account.
-			exampleAccount := fakes.BuildFakeAccount()
-			exampleAccountInput := converters.ConvertAccountToAccountCreationRequestInput(exampleAccount)
-			createdAccount, err := testClients.userClient.CreateAccount(ctx, exampleAccountInput)
-			requireNotNilAndNoProblems(t, createdAccount, err)
-
-			// Change account.
-			updateInput := converters.ConvertAccountToAccountUpdateRequestInput(exampleAccount)
-			createdAccount.Update(updateInput)
-			assert.NoError(t, testClients.userClient.UpdateAccount(ctx, createdAccount.ID, updateInput))
-
-			// Fetch account.
-			actual, err := testClients.userClient.GetAccount(ctx, createdAccount.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// Assert account equality.
-			checkAccountEquality(t, exampleAccount, actual)
-			assert.NotNil(t, actual.LastUpdatedAt)
-
-			// Clean up account.
-			assert.NoError(t, testClients.userClient.ArchiveAccount(ctx, createdAccount.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestAccounts_Archiving() {
-	s.runTest("should be possible to archive an account", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// Create account.
-			exampleAccount := fakes.BuildFakeAccount()
-			exampleAccountInput := converters.ConvertAccountToAccountCreationRequestInput(exampleAccount)
-			createdAccount, err := testClients.userClient.CreateAccount(ctx, exampleAccountInput)
-			requireNotNilAndNoProblems(t, createdAccount, err)
-
-			// Clean up account.
-			assert.NoError(t, testClients.userClient.ArchiveAccount(ctx, createdAccount.ID))
-		}
-	})
-}
 
 func (s *TestSuite) TestAccounts_InvitingPreExistentUser() {
 	s.runTest("should be possible to invite an already-registered userClient", func(testClients *testClientWrapper) func() {

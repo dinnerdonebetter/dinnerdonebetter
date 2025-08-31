@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -23,6 +24,7 @@ const (
 )
 
 var (
+	dbConnStr                            string
 	createdClientID, createdClientSecret string
 	databaseClient                       database.Client
 	shutdownFunc                         func()
@@ -50,7 +52,7 @@ func init() {
 	cfg.Events.Publisher.Redis = *redisConfig
 	cfg.Events.Consumer.Redis = *redisConfig
 
-	// setup database container, migrate it, and build connection client
+	// set up a database container, migrate it, and build a connection client
 	dbContainer, db, dbCfg, err := pgtesting.BuildDatabaseContainer(ctx, "integration_testing")
 	if err != nil {
 		log.Fatal(err)
@@ -91,9 +93,12 @@ func init() {
 
 	go server.Run()
 
+	fmt.Printf("DB conn str: %s", dbCfg.ConnectionDetails.String())
+	dbConnStr = dbCfg.ConnectionDetails.String()
+
 	time.Sleep(1 * time.Second)
 
-	adminClient, err = createClientForUser(ctx, httpTestServerAddress, grpcTestServerAddress, []string{"service_admin"}, adminUser)
+	adminClient, err = createClientForUser(ctx, []string{"service_admin"}, adminUser)
 	if err != nil {
 		log.Fatal(err)
 	}

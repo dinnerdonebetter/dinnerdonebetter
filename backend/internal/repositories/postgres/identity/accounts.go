@@ -14,7 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
+	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 )
 
 const (
@@ -129,7 +129,7 @@ func (r *repository) getAccountsForUser(ctx context.Context, querier database.SQ
 		Pagination: filter.ToPagination(),
 	}
 
-	args := &generated2.GetAccountsForUserParams{
+	args := &generated.GetAccountsForUserParams{
 		BelongsToUser:   userID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -200,7 +200,7 @@ func (r *repository) CreateAccount(ctx context.Context, input *identity.AccountD
 	}
 
 	// create the account.
-	if writeErr := r.generatedQuerier.CreateAccount(ctx, tx, &generated2.CreateAccountParams{
+	if writeErr := r.generatedQuerier.CreateAccount(ctx, tx, &generated.CreateAccountParams{
 		City:              input.City,
 		Name:              input.Name,
 		BillingStatus:     identity.UnpaidAccountBillingStatus,
@@ -250,7 +250,7 @@ func (r *repository) CreateAccount(ctx context.Context, input *identity.AccountD
 	}
 
 	accountMembershipID := identifiers.New()
-	if err = r.generatedQuerier.AddUserToAccount(ctx, tx, &generated2.AddUserToAccountParams{
+	if err = r.generatedQuerier.AddUserToAccount(ctx, tx, &generated.AddUserToAccountParams{
 		ID:               accountMembershipID,
 		BelongsToUser:    account.BelongsToUser,
 		BelongsToAccount: account.ID,
@@ -304,7 +304,7 @@ func (r *repository) UpdateAccount(ctx context.Context, updated *identity.Accoun
 		return observability.PrepareError(err, span, "fetching account")
 	}
 
-	if _, err = r.generatedQuerier.UpdateAccount(ctx, r.db, &generated2.UpdateAccountParams{
+	if _, err = r.generatedQuerier.UpdateAccount(ctx, r.db, &generated.UpdateAccountParams{
 		Name:          updated.Name,
 		ContactPhone:  updated.ContactPhone,
 		AddressLine1:  updated.AddressLine1,
@@ -439,7 +439,7 @@ func (r *repository) ArchiveAccount(ctx context.Context, accountID, userID strin
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = r.generatedQuerier.ArchiveAccount(ctx, r.db, &generated2.ArchiveAccountParams{
+	if _, err = r.generatedQuerier.ArchiveAccount(ctx, r.db, &generated.ArchiveAccountParams{
 		BelongsToUser: userID,
 		ID:            accountID,
 	}); err != nil {

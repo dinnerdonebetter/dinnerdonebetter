@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"hash/fnv"
 	"log"
@@ -26,9 +25,6 @@ import (
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -86,7 +82,7 @@ func buildUnauthenticatedGRPCClient(address string) (client.Client, error) {
 	return client.BuildClient(address, opts...)
 }
 
-func buildAuthedGRPCClient(ctx context.Context, scopes []string, httpServerAddress, token string) client.Client {
+func buildAuthedGRPCClient(ctx context.Context, scopes []string, token string) client.Client {
 	state, err := random.GenerateBase64EncodedString(ctx, 32)
 	if err != nil {
 		panic(err)
@@ -95,12 +91,12 @@ func buildAuthedGRPCClient(ctx context.Context, scopes []string, httpServerAddre
 	oauth2Config := oauth2.Config{
 		ClientID:     createdClientID,
 		ClientSecret: createdClientSecret,
-		Scopes:       scopes,
-		RedirectURL:  httpServerAddress,
+		Scopes:       scopes, // TODO: This should be nil-able
+		RedirectURL:  httpTestServerAddress,
 		Endpoint: oauth2.Endpoint{
 			AuthStyle: oauth2.AuthStyleInParams,
-			AuthURL:   httpServerAddress + "/oauth2/authorize",
-			TokenURL:  httpServerAddress + "/oauth2/token",
+			AuthURL:   httpTestServerAddress + "/oauth2/authorize",
+			TokenURL:  httpTestServerAddress + "/oauth2/token",
 		},
 	}
 
@@ -274,24 +270,6 @@ func createPremadeAdminUser(ctx context.Context, logger logging.Logger, tracerPr
 	return adminUser, nil
 }
 
-func providePostgresClient(ctx context.Context, logger logging.Logger) (database.Client, func(), error) {
-	dbContainer, db, dbCfg, err := pgtesting.BuildDatabaseContainer(ctx, "integration_testing")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err = migrations.NewMigrator(logger, tracing.NewNoopTracerProvider(), db, dbCfg).Migrate(ctx); err != nil {
-		log.Fatal(err)
-	}
-
-	pgc, err := postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), dbCfg)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return pgc, func() { dbContainer.Stop(context.Background(), pointer.To(10*time.Second)) }, nil
-}
-
 func hashStringToNumber(s string) uint64 {
 	// Create a new FNV-1a 64-bit hash object
 	h := fnv.New64a()
@@ -307,21 +285,17 @@ func hashStringToNumber(s string) uint64 {
 	return h.Sum64()
 }
 
-func createServiceUserForTest(t *testing.T, grpcAddress string, verifyTOTP bool, in *identity.UserRegistrationInput) *identity.User {
+func createServiceUserForTest(t *testing.T, verifyTOTP bool, in *identity.UserRegistrationInput) *identity.User {
 	t.Helper()
 
-	user, err := createServiceUser(t.Context(), grpcAddress, verifyTOTP, in)
+	user, err := createServiceUser(t.Context(), verifyTOTP, in)
 	require.NoError(t, err)
 
 	return user
 }
 
-func createServiceUser(ctx context.Context, grpcAddress string, verifyTOTP bool, in *identity.UserRegistrationInput) (*identity.User, error) {
-	if grpcAddress == "" {
-		return nil, errors.New("empty grpcAddress not allowed")
-	}
-
-	c, err := buildUnauthenticatedGRPCClient(grpcAddress)
+func createServiceUser(ctx context.Context, verifyTOTP bool, in *identity.UserRegistrationInput) (*identity.User, error) {
+	c, err := buildUnauthenticatedGRPCClient(grpcTestServerAddress)
 	if err != nil {
 		return nil, fmt.Errorf("initializing client: %w", err)
 	}
@@ -371,18 +345,18 @@ func verifyTOTPSecretForUser(ctx context.Context, c client.Client, userID, twoFa
 	return nil
 }
 
-func createClientForUser(ctx context.Context, httpAddress, grpcAddress string, scopes []string, user *identity.User) (client.Client, error) {
-	token, err := fetchLoginTokenForUser(ctx, grpcAddress, user)
+func createClientForUser(ctx context.Context, scopes []string, user *identity.User) (client.Client, error) {
+	token, err := fetchLoginTokenForUser(ctx, grpcTestServerAddress, user)
 	if err != nil {
 		return nil, fmt.Errorf("fetching token for user %s: %w", user.Username, err)
 	}
 
-	oauthedClient := buildAuthedGRPCClient(ctx, scopes, httpAddress, token)
+	oauthedClient := buildAuthedGRPCClient(ctx, scopes, token)
 
 	return oauthedClient, nil
 }
 
-func createUserAndClientForTest(t *testing.T, httpAddress, grpcAddress string) (*identity.User, client.Client) {
+func createUserAndClientForTest(t *testing.T) (*identity.User, client.Client) {
 	t.Helper()
 
 	ctx := t.Context()
@@ -399,8 +373,8 @@ func createUserAndClientForTest(t *testing.T, httpAddress, grpcAddress string) (
 		AcceptedTOS:           true,
 	}
 
-	user := createServiceUserForTest(t, grpcAddress, true, input)
-	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, httpAddress, fetchLoginTokenForUserForTest(t, grpcAddress, user))
+	user := createServiceUserForTest(t, true, input)
+	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, fetchLoginTokenForUserForTest(t, grpcTestServerAddress, user))
 
 	return user, oauthedClient
 }
@@ -409,7 +383,7 @@ func fetchLoginTokenForUserForTest(t *testing.T, grpcAddress string, user *ident
 	t.Helper()
 	ctx := t.Context()
 
-	rv, err := fetchLoginTokenForUser(ctx, grpcAddress, user)
+	rv, err := fetchLoginTokenForUser(ctx, grpcTestServerAddress, user)
 	require.NoError(t, err)
 
 	return rv

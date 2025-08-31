@@ -11,6 +11,7 @@ import (
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +23,7 @@ func TestAdmin_BanningUsers(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		createdUser, testClient := createUserAndClientForTest(t, httpTestServerAddress, grpcTestServerAddress)
+		createdUser, testClient := createUserAndClientForTest(t)
 
 		status, err := testClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
 		require.NoError(t, err)
@@ -40,6 +41,24 @@ func TestAdmin_BanningUsers(T *testing.T) {
 		status, err = testClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
 		assert.NoError(t, err)
 		assert.Equal(t, status.AccountStatus, newStatus)
+	})
+
+	T.Run("fails for non-admin user", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		createdUser, testClient := createUserAndClientForTest(t)
+
+		status, err := testClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, status)
+
+		_, err = testClient.AdminUpdateUserStatus(ctx, &identitysvc.AdminUpdateUserStatusRequest{
+			TargetUserID: createdUser.ID,
+			NewStatus:    identity.BannedUserAccountStatus.String(),
+			Reason:       t.Name(),
+		})
+		require.Error(t, err)
 	})
 
 	T.Run("nonexistent user", func(t *testing.T) {
@@ -62,7 +81,7 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(t, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(t)
 
 		exampleWebhookInput := &webhooks.WebhookCreationRequestInput{
 			ContentType: "application/json",
@@ -98,8 +117,8 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(t, httpTestServerAddress, grpcTestServerAddress)
-		_, testClient2 := createUserAndClientForTest(t, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(t)
+		_, testClient2 := createUserAndClientForTest(t)
 
 		exampleWebhookInput := &webhooks.WebhookCreationRequestInput{
 			ContentType: "application/json",

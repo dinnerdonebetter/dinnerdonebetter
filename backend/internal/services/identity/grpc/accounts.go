@@ -40,7 +40,15 @@ func (s *serviceImpl) CreateAccount(ctx context.Context, request *identitysvc.Cr
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
 	input := converters.ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(request.Input)
+	input.BelongsToUser = sessionContextData.GetUserID()
 
 	created, err := s.identityDataManager.CreateAccount(ctx, input)
 	if err != nil {

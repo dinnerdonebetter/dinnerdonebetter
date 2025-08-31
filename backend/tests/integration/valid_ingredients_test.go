@@ -30,75 +30,6 @@ func createValidIngredientForTest(t *testing.T) *mealplanning.ValidIngredient {
 	return grpcconverters.ConvertGRPCValidIngredientToValidIngredient(created.Result)
 }
 
-/*
-
-func checkValidIngredientEquality(t *testing.T, expected, actual *types.ValidIngredient) {
-	t.Helper()
-
-	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Name, actual.Name, "expected Name for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.Description, actual.Description, "expected Description for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
-	assert.Equal(t, expected.Warning, actual.Warning, "expected Warning for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Warning, actual.Warning)
-	assert.Equal(t, expected.ContainsEgg, actual.ContainsEgg, "expected ContainsEgg for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsEgg, actual.ContainsEgg)
-	assert.Equal(t, expected.ContainsDairy, actual.ContainsDairy, "expected ContainsDairy for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsDairy, actual.ContainsDairy)
-	assert.Equal(t, expected.ContainsPeanut, actual.ContainsPeanut, "expected ContainsPeanut for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsPeanut, actual.ContainsPeanut)
-	assert.Equal(t, expected.ContainsTreeNut, actual.ContainsTreeNut, "expected ContainsTreeNut for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsTreeNut, actual.ContainsTreeNut)
-	assert.Equal(t, expected.ContainsSoy, actual.ContainsSoy, "expected ContainsSoy for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsSoy, actual.ContainsSoy)
-	assert.Equal(t, expected.ContainsWheat, actual.ContainsWheat, "expected ContainsWheat for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsWheat, actual.ContainsWheat)
-	assert.Equal(t, expected.ContainsShellfish, actual.ContainsShellfish, "expected ContainsShellfish for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsShellfish, actual.ContainsShellfish)
-	assert.Equal(t, expected.ContainsSesame, actual.ContainsSesame, "expected ContainsSesame for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsSesame, actual.ContainsSesame)
-	assert.Equal(t, expected.ContainsFish, actual.ContainsFish, "expected ContainsFish for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsFish, actual.ContainsFish)
-	assert.Equal(t, expected.ContainsGluten, actual.ContainsGluten, "expected ContainsGluten for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsGluten, actual.ContainsGluten)
-	assert.Equal(t, expected.AnimalFlesh, actual.AnimalFlesh, "expected AnimalFlesh for valid ingredient %s to be %v, but it was %v", expected.ID, expected.AnimalFlesh, actual.AnimalFlesh)
-	assert.Equal(t, expected.IsLiquid, actual.IsLiquid, "expected IsLiquid for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsLiquid, actual.IsLiquid)
-	assert.Equal(t, expected.IconPath, actual.IconPath, "expected IconPath for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IconPath, actual.IconPath)
-	assert.Equal(t, expected.PluralName, actual.PluralName, "expected PluralName for valid ingredient %s to be %v, but it was %v", expected.ID, expected.PluralName, actual.PluralName)
-	assert.Equal(t, expected.AnimalDerived, actual.AnimalDerived, "expected AnimalDerived for valid ingredient %s to be %v, but it was %v", expected.ID, expected.AnimalDerived, actual.AnimalDerived)
-	assert.Equal(t, expected.RestrictToPreparations, actual.RestrictToPreparations, "expected RestrictToPreparations for valid ingredient %s to be %v, but it was %v", expected.ID, expected.RestrictToPreparations, actual.RestrictToPreparations)
-	assert.Equal(t, expected.StorageTemperatureInCelsius, actual.StorageTemperatureInCelsius, "expected StorageTemperatureInCelsius for valid ingredient %s to be %v, but it was %v", expected.ID, expected.StorageTemperatureInCelsius, actual.StorageTemperatureInCelsius)
-	assert.Equal(t, expected.StorageInstructions, actual.StorageInstructions, "expected StorageInstructions for valid ingredient %s to be %v, but it was %v", expected.ID, expected.StorageInstructions, actual.StorageInstructions)
-	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for valid ingredient %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
-	assert.Equal(t, expected.ShoppingSuggestions, actual.ShoppingSuggestions, "expected ShoppingSuggestions for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ShoppingSuggestions, actual.ShoppingSuggestions)
-	assert.Equal(t, expected.IsStarch, actual.IsStarch, "expected IsStarch for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsStarch, actual.IsStarch)
-	assert.Equal(t, expected.IsProtein, actual.IsProtein, "expected IsProtein for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsProtein, actual.IsProtein)
-	assert.Equal(t, expected.IsGrain, actual.IsGrain, "expected IsGrain for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsGrain, actual.IsGrain)
-	assert.Equal(t, expected.IsFruit, actual.IsFruit, "expected IsFruit for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsFruit, actual.IsFruit)
-	assert.Equal(t, expected.IsSalt, actual.IsSalt, "expected IsSalt for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsSalt, actual.IsSalt)
-	assert.Equal(t, expected.IsFat, actual.IsFat, "expected IsFat for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsFat, actual.IsFat)
-	assert.Equal(t, expected.IsAcid, actual.IsAcid, "expected IsAcid for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsAcid, actual.IsAcid)
-	assert.Equal(t, expected.IsHeat, actual.IsHeat, "expected IsHeat for valid ingredient %s to be %v, but it was %v", expected.ID, expected.IsHeat, actual.IsHeat)
-	assert.Equal(t, expected.ContainsAlcohol, actual.ContainsAlcohol, "expected ContainsAlcohol for valid ingredient %s to be %v, but it was %v", expected.ID, expected.ContainsAlcohol, actual.ContainsAlcohol)
-	assert.NotZero(t, actual.CreatedAt)
-}
-
-func (s *TestSuite) TestValidIngredients_CompleteLifecycle() {
-	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			createdValidIngredient := createValidIngredientForTest(t, ctx, testClients.adminClient)
-
-			newValidIngredient := fakes.BuildFakeValidIngredient()
-			updateInput := converters.ConvertValidIngredientToValidIngredientUpdateRequestInput(newValidIngredient)
-			createdValidIngredient.Update(updateInput)
-			assert.NoError(t, testClients.adminClient.UpdateValidIngredient(ctx, createdValidIngredient.ID, updateInput))
-
-			actual, err := testClients.adminClient.GetValidIngredient(ctx, createdValidIngredient.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// assert valid ingredient equality
-			checkValidIngredientEquality(t, newValidIngredient, actual)
-			assert.NotNil(t, actual.LastUpdatedAt)
-
-			assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
-		}
-	})
-}
-*/
-
 func TestValidIngredients_Creating(T *testing.T) {
 	T.Parallel()
 
@@ -106,6 +37,21 @@ func TestValidIngredients_Creating(T *testing.T) {
 		t.Parallel()
 
 		createValidIngredientForTest(t)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
+		convertedInput := grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(creationRequestInput)
+
+		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		created, err := c.CreateValidIngredient(ctx, &mealplanningsvc.CreateValidIngredientRequest{
+			Input: convertedInput,
+		})
+		assert.Error(t, err)
+		assert.Nil(t, created)
 	})
 
 	T.Run("invalid input", func(t *testing.T) {
@@ -128,7 +74,7 @@ func TestValidIngredients_Creating(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		_, testClient := createUserAndClientForTest(T)
 
 		creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
 		convertedInput := grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(creationRequestInput)
@@ -144,7 +90,7 @@ func TestValidIngredients_Creating(T *testing.T) {
 func TestValidIngredients_Reading(T *testing.T) {
 	T.Parallel()
 
-	_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+	_, testClient := createUserAndClientForTest(T)
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
@@ -158,6 +104,18 @@ func TestValidIngredients_Reading(T *testing.T) {
 		converted := grpcconverters.ConvertGRPCValidIngredientToValidIngredient(retrieved.Result)
 
 		assertRoughEquality(t, created, converted, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		created := createValidIngredientForTest(t)
+
+		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+
+		_, err := c.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{ValidIngredientID: created.ID})
+		assert.Error(t, err)
 	})
 
 	T.Run("invalid ID", func(t *testing.T) {
@@ -194,6 +152,24 @@ func TestValidIngredients_Updating(T *testing.T) {
 		assertRoughEquality(t, created, updated, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
 	})
 
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		created := createValidIngredientForTest(t)
+
+		updateInput := fakes.BuildFakeValidIngredientUpdateRequestInput()
+		created.Update(updateInput)
+
+		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+
+		_, err := c.UpdateValidIngredient(ctx, &mealplanningsvc.UpdateValidIngredientRequest{
+			ValidIngredientID: created.ID,
+			Input:             grpcconverters.ConvertValidIngredientUpdateRequestInputToGRPCValidIngredientUpdateRequestInput(updateInput),
+		})
+		assert.Error(t, err)
+	})
+
 	T.Run("invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -207,7 +183,7 @@ func TestValidIngredients_Updating(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		_, testClient := createUserAndClientForTest(T)
 
 		created := createValidIngredientForTest(t)
 
@@ -239,6 +215,18 @@ func TestValidIngredients_Archiving(T *testing.T) {
 		assert.Error(t, err)
 	})
 
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		created := createValidIngredientForTest(t)
+
+		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+
+		_, err := c.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: created.ID})
+		assert.Error(t, err)
+	})
+
 	T.Run("invalid ID", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
@@ -252,7 +240,7 @@ func TestValidIngredients_Archiving(T *testing.T) {
 		ctx := t.Context()
 
 		created := createValidIngredientForTest(t)
-		_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		_, testClient := createUserAndClientForTest(T)
 
 		_, err := testClient.ArchiveValidIngredient(ctx, &mealplanningsvc.ArchiveValidIngredientRequest{ValidIngredientID: created.ID})
 		assert.Error(t, err)
@@ -262,7 +250,7 @@ func TestValidIngredients_Archiving(T *testing.T) {
 func TestValidIngredients_GetRandom(T *testing.T) {
 	T.Parallel()
 
-	_, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+	_, testClient := createUserAndClientForTest(T)
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
@@ -280,9 +268,9 @@ func TestValidIngredients_GetRandom(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		client := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+		c := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
 
-		response, err := client.GetRandomValidIngredient(ctx, &mealplanningsvc.GetRandomValidIngredientRequest{})
+		response, err := c.GetRandomValidIngredient(ctx, &mealplanningsvc.GetRandomValidIngredientRequest{})
 		assert.Error(t, err)
 		assert.Nil(t, response)
 	})

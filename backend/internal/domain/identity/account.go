@@ -62,16 +62,17 @@ type (
 	AccountCreationRequestInput struct {
 		_ struct{} `json:"-"`
 
-		Latitude     *float64 `json:"latitude"`
-		Longitude    *float64 `json:"longitude"`
-		Name         string   `json:"name"`
-		ContactPhone string   `json:"contactPhone"`
-		AddressLine1 string   `json:"addressLine1"`
-		AddressLine2 string   `json:"addressLine2"`
-		City         string   `json:"city"`
-		State        string   `json:"state"`
-		ZipCode      string   `json:"zipCode"`
-		Country      string   `json:"country"`
+		Latitude      *float64 `json:"latitude"`
+		Longitude     *float64 `json:"longitude"`
+		Name          string   `json:"name"`
+		ContactPhone  string   `json:"contactPhone"`
+		AddressLine1  string   `json:"addressLine1"`
+		AddressLine2  string   `json:"addressLine2"`
+		City          string   `json:"city"`
+		State         string   `json:"state"`
+		ZipCode       string   `json:"zipCode"`
+		Country       string   `json:"country"`
+		BelongsToUser string   `json:"belongsToUser"`
 	}
 
 	// AccountDatabaseCreationInput represents what a User could set as input for creating accounts.

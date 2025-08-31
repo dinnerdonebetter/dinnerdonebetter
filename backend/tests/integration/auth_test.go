@@ -20,7 +20,7 @@ func TestAuth_LoginForToken(T *testing.T) {
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
 
-		user := createServiceUserForTest(t, grpcTestServerAddress, true, fakes.BuildFakeUserRegistrationInput())
+		user := createServiceUserForTest(t, true, fakes.BuildFakeUserRegistrationInput())
 		actual := fetchLoginTokenForUserForTest(t, grpcTestServerAddress, user)
 
 		assert.NotEmpty(t, actual)
@@ -30,7 +30,7 @@ func TestAuth_LoginForToken(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user := createServiceUserForTest(t, grpcTestServerAddress, false, fakes.BuildFakeUserRegistrationInput())
+		user := createServiceUserForTest(t, false, fakes.BuildFakeUserRegistrationInput())
 
 		loginInput := &authsvc.UserLoginInput{
 			Username: user.Username,
@@ -94,7 +94,7 @@ func TestAuth_AdminLoginForToken(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user := createServiceUserForTest(t, grpcTestServerAddress, true, fakes.BuildFakeUserRegistrationInput())
+		user := createServiceUserForTest(t, true, fakes.BuildFakeUserRegistrationInput())
 
 		loginInput := &authsvc.UserLoginInput{
 			Username:  user.Username,
@@ -187,7 +187,7 @@ func TestAuth_GetAuthStatus(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(T)
 
 		res, err := testClient.GetAuthStatus(ctx, &authsvc.GetAuthStatusRequest{})
 		assert.NoError(t, err)
@@ -203,7 +203,7 @@ func TestAuth_ChangingPassword(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(T)
 
 		_, err := testClient.UpdatePassword(ctx, &authsvc.UpdatePasswordRequest{
 			NewPassword:     user.HashedPassword + "blah",
@@ -230,7 +230,7 @@ func TestAuth_ChangingPassword(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(T)
 
 		_, err := testClient.UpdatePassword(ctx, &authsvc.UpdatePasswordRequest{
 			NewPassword:     "b",
@@ -248,7 +248,7 @@ func TestAuth_ChangingTOTPSecret(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(T)
 
 		res, err := testClient.RefreshTOTPSecret(ctx, &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: user.HashedPassword,
@@ -268,7 +268,7 @@ func TestAuth_ChangingTOTPSecret(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(T)
 
 		_, err := testClient.RefreshTOTPSecret(ctx, &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: user.HashedPassword,
@@ -281,7 +281,7 @@ func TestAuth_ChangingTOTPSecret(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(T)
 
 		_, err := testClient.RefreshTOTPSecret(ctx, &authsvc.RefreshTOTPSecretRequest{
 			CurrentPassword: user.HashedPassword + "blah",
@@ -298,7 +298,7 @@ func TestAuth_RequestingPasswordReset(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
-		user, testClient := createUserAndClientForTest(T, httpTestServerAddress, grpcTestServerAddress)
+		user, testClient := createUserAndClientForTest(T)
 
 		res, err := testClient.RequestPasswordResetToken(ctx, &authsvc.RequestPasswordResetTokenRequest{
 			EmailAddress: user.EmailAddress,
