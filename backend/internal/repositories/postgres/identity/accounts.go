@@ -304,7 +304,7 @@ func (r *repository) UpdateAccount(ctx context.Context, updated *identity.Accoun
 		return observability.PrepareError(err, span, "fetching account")
 	}
 
-	if _, err = r.generatedQuerier.UpdateAccount(ctx, r.db, &generated.UpdateAccountParams{
+	if _, err = r.generatedQuerier.UpdateAccount(ctx, tx, &generated.UpdateAccountParams{
 		Name:          updated.Name,
 		ContactPhone:  updated.ContactPhone,
 		AddressLine1:  updated.AddressLine1,
@@ -420,17 +420,17 @@ func buildChangesForAccount(account, updated *identity.Account) map[string]audit
 }
 
 // ArchiveAccount archives an account from the database by its ID.
-func (r *repository) ArchiveAccount(ctx context.Context, accountID, userID string) error {
+func (r *repository) ArchiveAccount(ctx context.Context, accountID, ownerID string) error {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := r.logger.Clone()
 
-	if accountID == "" || userID == "" {
+	if accountID == "" || ownerID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
-	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
+	logger = logger.WithValue(keys.UserIDKey, ownerID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 
@@ -440,7 +440,7 @@ func (r *repository) ArchiveAccount(ctx context.Context, accountID, userID strin
 	}
 
 	if _, err = r.generatedQuerier.ArchiveAccount(ctx, r.db, &generated.ArchiveAccountParams{
-		BelongsToUser: userID,
+		BelongsToUser: ownerID,
 		ID:            accountID,
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
@@ -453,7 +453,7 @@ func (r *repository) ArchiveAccount(ctx context.Context, accountID, userID strin
 		ResourceType:     resourceTypeAccounts,
 		RelevantID:       accountID,
 		EventType:        audit.AuditLogEventTypeCreated,
-		BelongsToUser:    userID,
+		BelongsToUser:    ownerID,
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareError(err, span, "creating audit log entry")

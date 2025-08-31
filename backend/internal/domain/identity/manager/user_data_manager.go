@@ -732,16 +732,14 @@ func (m *manager) UpdateAccount(ctx context.Context, accountID string, input *id
 	logger := observability.ObserveValues(map[string]any{
 		keys.AccountIDKey: accountID,
 	}, span, m.logger)
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "validating account update")
 	}
 
-	// determine account ID.
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
-
-	// fetch account from database.
+	// fetch the account from the database.
 	account, err := m.identityRepo.GetAccount(ctx, accountID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareError(err, span, "no account found")
@@ -749,10 +747,9 @@ func (m *manager) UpdateAccount(ctx context.Context, accountID string, input *id
 		return observability.PrepareError(err, span, "fetching account")
 	}
 
-	// update the data structure.
 	account.Update(input)
 
-	// update account in database.
+	// update the account in the database.
 	if err = m.identityRepo.UpdateAccount(ctx, account); err != nil {
 		return observability.PrepareError(err, span, "updating account")
 	}

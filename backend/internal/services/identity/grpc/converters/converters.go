@@ -43,6 +43,32 @@ func ConvertUserToGRPCUser(input *identity.User) *identitysvc.User {
 	}
 }
 
+func ConvertGRPCUserToUser(input *identitysvc.User) *identity.User {
+	return &identity.User{
+		CreatedAt:                  grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		PasswordLastChangedAt:      grpcconverters.ConvertPBTimestampToTimePointer(input.PasswordLastChangedAt),
+		LastUpdatedAt:              grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		LastAcceptedTermsOfService: grpcconverters.ConvertPBTimestampToTimePointer(input.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  grpcconverters.ConvertPBTimestampToTimePointer(input.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  grpcconverters.ConvertPBTimestampToTimePointer(input.TwoFactorSecretVerifiedAt),
+		EmailAddressVerifiedAt:     grpcconverters.ConvertPBTimestampToTimePointer(input.EmailAddressVerifiedAt),
+		Birthday:                   grpcconverters.ConvertPBTimestampToTimePointer(input.Birthday),
+		ArchivedAt:                 grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		HashedPassword:             input.HashedPassword,
+		LastName:                   input.LastName,
+		AccountStatusExplanation:   input.AccountStatusExplanation,
+		ID:                         input.ID,
+		AccountStatus:              input.AccountStatus,
+		Username:                   input.Username,
+		FirstName:                  input.FirstName,
+		TwoFactorSecret:            input.TwoFactorSecret,
+		EmailAddress:               input.EmailAddress,
+		AvatarSrc:                  input.AvatarSrc,
+		ServiceRole:                input.ServiceRole,
+		RequiresPasswordChange:     input.RequiresPasswordChange,
+	}
+}
+
 // ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequestInput creates a AccountInvitationDatabaseCreationInput from a AccountInvitationCreationRequestInput.
 func ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequestInput(input *identitysvc.AccountInvitationUpdateRequestInput) *identity.AccountInvitationUpdateRequestInput {
 	x := &identity.AccountInvitationUpdateRequestInput{
@@ -119,6 +145,49 @@ func ConvertAccountUserMembershipWithUserToGRPCAccountUserMembershipWithUser(inp
 		LastUpdatedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		ArchivedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		BelongsToUser:    ConvertUserToGRPCUser(input.BelongsToUser),
+		ID:               input.ID,
+		BelongsToAccount: input.BelongsToAccount,
+		AccountRole:      input.AccountRole,
+		DefaultAccount:   input.DefaultAccount,
+	}
+}
+
+func ConvertGRPCAccountToAccount(input *identitysvc.Account) *identity.Account {
+	var members []*identity.AccountUserMembershipWithUser
+	for _, member := range input.Members {
+		members = append(members, ConvertGRPCAccountUserMembershipWithUserToAccountUserMembershipWithUser(member))
+	}
+
+	return &identity.Account{
+		CreatedAt:                  grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:              grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:                 grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		Longitude:                  pointer.To(float64(pointer.Dereference(input.Longitude))),
+		Latitude:                   pointer.To(float64(pointer.Dereference(input.Latitude))),
+		SubscriptionPlanID:         input.SubscriptionPlanID,
+		State:                      input.State,
+		ContactPhone:               input.ContactPhone,
+		City:                       input.City,
+		AddressLine1:               input.AddressLine1,
+		ZipCode:                    input.ZipCode,
+		Country:                    input.Country,
+		BillingStatus:              input.BillingStatus,
+		AddressLine2:               input.AddressLine2,
+		PaymentProcessorCustomerID: input.PaymentProcessorCustomerID,
+		BelongsToUser:              input.BelongsToUser,
+		ID:                         input.ID,
+		Name:                       input.Name,
+		WebhookEncryptionKey:       input.WebhookEncryptionKey,
+		Members:                    members,
+	}
+}
+
+func ConvertGRPCAccountUserMembershipWithUserToAccountUserMembershipWithUser(input *identitysvc.AccountUserMembershipWithUser) *identity.AccountUserMembershipWithUser {
+	return &identity.AccountUserMembershipWithUser{
+		CreatedAt:        grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		BelongsToUser:    ConvertGRPCUserToUser(input.BelongsToUser),
 		ID:               input.ID,
 		BelongsToAccount: input.BelongsToAccount,
 		AccountRole:      input.AccountRole,
@@ -228,6 +297,29 @@ func ConvertGRPCAccountUpdateRequestInputToAccountUpdateRequestInput(input *iden
 		Country:       input.Country,
 		Latitude:      convertFloat32PointerToFloat64Pointer(input.Latitude),
 		Longitude:     convertFloat32PointerToFloat64Pointer(input.Longitude),
+		BelongsToUser: input.BelongsToUser,
+	}
+}
+
+func convertFloat64PointerToFloat32Pointer(input *float64) *float32 {
+	if input == nil {
+		return nil
+	}
+	return pointer.To(float32(*input))
+}
+
+func ConvertAccountUpdateRequestInputToGRPCAccountUpdateRequestInput(input *identity.AccountUpdateRequestInput) *identitysvc.AccountUpdateRequestInput {
+	return &identitysvc.AccountUpdateRequestInput{
+		Name:          input.Name,
+		ContactPhone:  input.ContactPhone,
+		AddressLine1:  input.AddressLine1,
+		AddressLine2:  input.AddressLine2,
+		City:          input.City,
+		State:         input.State,
+		ZipCode:       input.ZipCode,
+		Country:       input.Country,
+		Latitude:      convertFloat64PointerToFloat32Pointer(input.Latitude),
+		Longitude:     convertFloat64PointerToFloat32Pointer(input.Longitude),
 		BelongsToUser: input.BelongsToUser,
 	}
 }

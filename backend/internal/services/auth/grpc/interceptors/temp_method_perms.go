@@ -32,7 +32,16 @@ var (
 		"/webhooks.WebhooksService/CreateWebhook": {
 			authorization.CreateWebhooksPermission,
 		},
+		"/identity.IdentityService/UpdateAccount": {
+			authorization.UpdateAccountPermission,
+		},
+		"/identity.IdentityService/ArchiveAccount": {
+			authorization.ArchiveAccountPermission,
+		},
+		"/identity.IdentityService/SetDefaultAccount": noPerms,
 		"/identity.IdentityService/CreateAccount":     noPerms,
+		"/identity.IdentityService/GetAccount":        noPerms,
+		"/identity.IdentityService/GetAccounts":       noPerms,
 		"/auth.AuthService/GetAuthStatus":             noPerms,
 		"/auth.AuthService/GetActiveAccount":          noPerms,
 		"/auth.AuthService/UpdatePassword":            noPerms,

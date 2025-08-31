@@ -3,11 +3,19 @@ package integration
 import (
 	"testing"
 
+	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+const (
+	defaultNumberOfAccountsAssociatedWithUsers = 1
 )
 
 func TestAccounts_Creating(T *testing.T) {
@@ -63,10 +71,39 @@ func TestAccounts_Listing(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		var createdAccounts []*identitysvc.Account
+		for range 5 {
+			exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
+			exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+
+			createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
+			require.NoError(t, err)
+			require.NotNil(t, createdAccount)
+
+			createdAccounts = append(createdAccounts, createdAccount.Created)
+		}
+
+		accounts, err := testClient.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, accounts)
+		assert.Equal(t, len(accounts.Result), len(createdAccounts)+defaultNumberOfAccountsAssociatedWithUsers)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		// create a user so that the account actually exists
+		_, testClient := createUserAndClientForTest(t)
+
+		testClient = buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := testClient.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
+		assert.Error(t, err)
 	})
 }
 
@@ -75,14 +112,53 @@ func TestAccounts_Reading(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
+		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+
+		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
+		require.NoError(t, err)
+		require.NotNil(t, createdAccount)
+
+		retrievedAccount, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: createdAccount.Created.ID})
+		assert.NoError(t, err)
+		assert.NotNil(t, createdAccount)
+
+		converted := grpcconverters.ConvertGRPCAccountToAccount(retrievedAccount.Result)
+
+		assertRoughEquality(t, createdAccount.Created, converted, "Members", "CreatedAt", "LastUpdatedAt", "ArchivedAt")
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		// create a user so that the account actually exists
+		_, testClient := createUserAndClientForTest(t)
+
+		// fetch the account
+		account, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, account)
+
+		testClient = buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err = testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: account.Result.ID})
+		assert.Error(t, err)
 	})
 
 	T.Run("for nonexistent account", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		retrievedAccount, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: nonexistentID})
+		assert.Error(t, err)
+		assert.Nil(t, retrievedAccount)
 	})
 }
 
@@ -91,14 +167,80 @@ func TestAccounts_Updating(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
+		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+
+		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
+		require.NoError(t, err)
+		require.NotNil(t, createdAccount)
+
+		converted := grpcconverters.ConvertGRPCAccountToAccount(createdAccount.Created)
+		converted.Name = "Updated name"
+
+		_, err = testClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountID: converted.ID})
+		require.NoError(t, err)
+
+		updateInput := identityconverters.ConvertAccountToAccountUpdateRequestInput(converted)
+		_, err = testClient.UpdateAccount(ctx, &identitysvc.UpdateAccountRequest{
+			AccountID: converted.ID,
+			Input:     grpcconverters.ConvertAccountUpdateRequestInputToGRPCAccountUpdateRequestInput(updateInput),
+		})
+		assert.NoError(t, err)
+
+		updatedClient, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: converted.ID})
+		assert.NoError(t, err)
+		assert.NotNil(t, updatedClient)
+		assert.Equal(t, converted.Name, updatedClient.Result.Name)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		// create a user so that the account actually exists
+		_, testClient := createUserAndClientForTest(t)
+
+		// fetch the account
+		account, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, account)
+
+		testClient = buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err = testClient.UpdateAccount(ctx, &identitysvc.UpdateAccountRequest{AccountID: account.Result.ID})
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid input", func(t *testing.T) {
+		t.Parallel()
+
+		/*
+			there's no way to provide invalid input to this method, but
+			I want to make it explicit that tests should be written the moment that changes
+		*/
 	})
 
 	T.Run("for nonexistent account", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		converted := fakes.BuildFakeAccount()
+		updateInput := identityconverters.ConvertAccountToAccountUpdateRequestInput(converted)
+		_, err := testClient.UpdateAccount(ctx, &identitysvc.UpdateAccountRequest{
+			AccountID: nonexistentID,
+			Input:     grpcconverters.ConvertAccountUpdateRequestInputToGRPCAccountUpdateRequestInput(updateInput),
+		})
+		assert.NoError(t, err)
+
+		updatedClient, err := testClient.GetAccount(ctx, &identitysvc.GetAccountRequest{AccountID: converted.ID})
+		assert.Error(t, err)
+		assert.Nil(t, updatedClient)
 	})
 }
 
@@ -107,16 +249,49 @@ func TestAccounts_Archiving(T *testing.T) {
 
 	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
+		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+
+		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
+		require.NoError(t, err)
+		require.NotNil(t, createdAccount)
+
+		_, err = testClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountID: createdAccount.Created.ID})
+		assert.NoError(t, err)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		// create a user so that the account actually exists
+		_, testClient := createUserAndClientForTest(t)
+
+		// fetch the account
+		account, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, account)
+
+		testClient = buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err = testClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountID: account.Result.ID})
+		assert.Error(t, err)
 	})
 
 	T.Run("for nonexistent account", func(t *testing.T) {
 		t.Parallel()
+		ctx := t.Context()
+
+		_, err := adminClient.ArchiveAccount(ctx, &identitysvc.ArchiveAccountRequest{AccountID: nonexistentID})
+		assert.Error(t, err)
 	})
 }
+
+// TODO: do we need invite creation routes or do these tests account for all that? If not, please leave a comment
 
 func TestAccounts_InvitingPreExistentUser(T *testing.T) {
 	T.Parallel()
@@ -555,6 +730,10 @@ func (s *TestSuite) TestAccounts_InviteCanBeRejected() {
 	})
 }
 
+*/
+
+/*
+
 func (s *TestSuite) TestAccounts_ChangingMemberships() {
 	s.runTest("should be possible to change members of an account", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -686,6 +865,10 @@ func (s *TestSuite) TestAccounts_ChangingMemberships() {
 	})
 }
 
+*/
+
+/*
+
 func (s *TestSuite) TestAccounts_OwnershipTransfer() {
 	s.runTest("should be possible to transfer ownership of an account", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -767,6 +950,10 @@ func (s *TestSuite) TestAccounts_OwnershipTransfer() {
 		}
 	})
 }
+
+*/
+
+/*
 
 func (s *TestSuite) TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount() {
 	s.runTest("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
