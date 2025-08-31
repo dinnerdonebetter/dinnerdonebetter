@@ -275,6 +275,17 @@ func TestValidIngredients_GetRandom(T *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
 	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		client := buildUnauthenticatedGRPCClientForTest(t, grpcTestServerAddress)
+
+		response, err := client.GetRandomValidIngredient(ctx, &mealplanningsvc.GetRandomValidIngredientRequest{})
+		assert.Error(t, err)
+		assert.Nil(t, response)
+	})
 }
 
 /*

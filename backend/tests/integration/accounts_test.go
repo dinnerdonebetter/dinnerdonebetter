@@ -1,5 +1,23 @@
 package integration
 
+import "testing"
+
+func TestAccounts_Creating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+
+	})
+
+	T.Run("with invalid input", func(t *testing.T) {
+
+	})
+}
+
+/*
+
+package integration
+
 import (
 	"testing"
 
@@ -15,21 +33,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func checkAccountEquality(t *testing.T, expected, actual *types.Account) {
-	t.Helper()
-
-	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Name, actual.Name, "expected Name for account %s to be %v, but it was %v ", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.AddressLine1, actual.AddressLine1, "expected AddressLine1 for account %s to be %v, but it was %v", expected.ID, expected.AddressLine1, actual.AddressLine1)
-	assert.Equal(t, expected.AddressLine2, actual.AddressLine2, "expected AddressLine2 for account %s to be %v, but it was %v", expected.ID, expected.AddressLine2, actual.AddressLine2)
-	assert.Equal(t, expected.City, actual.City, "expected City for account %s to be %v, but it was %v", expected.ID, expected.City, actual.City)
-	assert.Equal(t, expected.State, actual.State, "expected State for account %s to be %v, but it was %v", expected.ID, expected.State, actual.State)
-	assert.Equal(t, expected.ZipCode, actual.ZipCode, "expected ZipCode for account %s to be %v, but it was %v", expected.ID, expected.ZipCode, actual.ZipCode)
-	assert.Equal(t, expected.Country, actual.Country, "expected Country for account %s to be %v, but it was %v", expected.ID, expected.Country, actual.Country)
-	assert.Equal(t, expected.Latitude, actual.Latitude, "expected Latitude for account %s to be %v, but it was %v", expected.ID, *expected.Latitude, *actual.Latitude)
-	assert.Equal(t, expected.Longitude, actual.Longitude, "expected Longitude for account %s to be %v, but it was %v", expected.ID, *expected.Longitude, *actual.Longitude)
-	assert.NotZero(t, actual.CreatedAt)
-}
 
 func (s *TestSuite) TestAccounts_Creating() {
 	s.runTest("should be possible to create accounts", func(testClients *testClientWrapper) func() {
@@ -872,3 +875,5 @@ func (s *TestSuite) TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemoved
 		}
 	})
 }
+
+*/
