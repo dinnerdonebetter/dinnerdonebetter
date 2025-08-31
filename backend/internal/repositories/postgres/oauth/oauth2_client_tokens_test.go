@@ -67,7 +67,6 @@ func TestQuerier_Integration_OAuth2ClientTokens(t *testing.T) {
 	exampleOAuth2ClientToken := fakes.BuildFakeOAuth2ClientToken()
 	exampleOAuth2ClientToken.BelongsToUser = user.ID
 	exampleOAuth2ClientToken.ClientID = oauth2Client.ClientID
-	exampleOAuth2ClientToken.Scope = "account_member"
 
 	// create
 	createdOAuth2ClientToken := createOAuth2ClientTokenForTest(t, ctx, exampleOAuth2ClientToken, dbc)

@@ -284,11 +284,15 @@ func (m *manager) CreateAccount(ctx context.Context, input *identity.AccountCrea
 	return created, nil
 }
 
-func (m *manager) CreateAccountInvitation(ctx context.Context, userID string, input *identity.AccountInvitationCreationRequestInput) (*identity.AccountInvitation, error) {
+func (m *manager) CreateAccountInvitation(ctx context.Context, userID, accountID string, input *identity.AccountInvitationCreationRequestInput) (*identity.AccountInvitation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+
+	if accountID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 
@@ -301,17 +305,26 @@ func (m *manager) CreateAccountInvitation(ctx context.Context, userID string, in
 	}
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UserIDKey: userID,
+		keys.UserIDKey:    userID,
+		keys.AccountIDKey: accountID,
 	}, span, m.logger)
 
-	created, err := m.identityRepo.CreateAccountInvitation(ctx, converters.ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput(input))
+	token, err := m.secretGenerator.GenerateBase64EncodedString(ctx, 64)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating AccountInvitation")
+		return nil, observability.PrepareError(err, span, "generating account invitation token")
+	}
+
+	convertedInput := converters.ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput(userID, accountID, token, input)
+
+	created, err := m.identityRepo.CreateAccountInvitation(ctx, convertedInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating account invitation")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, identity.AccountInvitationCreatedServiceEventType, map[string]any{
 		keys.AccountInvitationIDKey: created.ID,
 		keys.UserIDKey:              userID,
+		"destination_account":       accountID,
 	}))
 
 	return created, nil
@@ -374,7 +387,7 @@ func (m *manager) CreateUser(ctx context.Context, input *identity.UserRegistrati
 		return nil, observability.PrepareAndLogError(err, logger, span, "hashing user creation password")
 	}
 
-	// generate a two factor secret.
+	// generate a two-factor secret.
 	tfs, err := m.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "generating two factor secret")

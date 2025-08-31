@@ -27,7 +27,6 @@ func BuildFakeOAuth2ClientToken() *types.OAuth2ClientToken {
 		AccessCreatedAt:     BuildFakeTime(),
 		CodeCreatedAt:       BuildFakeTime(),
 		RedirectURI:         fake.URL(),
-		Scope:               "*",
 		Code:                buildUniqueString(),
 		CodeChallenge:       buildUniqueString(),
 		CodeChallengeMethod: "S256",

@@ -98,7 +98,6 @@ type GetAuditLogEntriesForAccountParams struct {
 }
 
 type GetAuditLogEntriesForAccountRow struct {
-	CreatedAt        time.Time
 	ID               string
 	ResourceType     string
 	RelevantID       string
@@ -106,6 +105,7 @@ type GetAuditLogEntriesForAccountRow struct {
 	Changes          json.RawMessage
 	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
+	CreatedAt        time.Time
 	FilteredCount    int64
 	TotalCount       int64
 }
@@ -195,7 +195,6 @@ type GetAuditLogEntriesForAccountAndResourceTypeParams struct {
 }
 
 type GetAuditLogEntriesForAccountAndResourceTypeRow struct {
-	CreatedAt        time.Time
 	ID               string
 	ResourceType     string
 	RelevantID       string
@@ -203,6 +202,7 @@ type GetAuditLogEntriesForAccountAndResourceTypeRow struct {
 	Changes          json.RawMessage
 	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
+	CreatedAt        time.Time
 	FilteredCount    int64
 	TotalCount       int64
 }
@@ -289,7 +289,6 @@ type GetAuditLogEntriesForUserParams struct {
 }
 
 type GetAuditLogEntriesForUserRow struct {
-	CreatedAt        time.Time
 	ID               string
 	ResourceType     string
 	RelevantID       string
@@ -297,6 +296,7 @@ type GetAuditLogEntriesForUserRow struct {
 	Changes          json.RawMessage
 	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
+	CreatedAt        time.Time
 	FilteredCount    int64
 	TotalCount       int64
 }
@@ -386,7 +386,6 @@ type GetAuditLogEntriesForUserAndResourceTypeParams struct {
 }
 
 type GetAuditLogEntriesForUserAndResourceTypeRow struct {
-	CreatedAt        time.Time
 	ID               string
 	ResourceType     string
 	RelevantID       string
@@ -394,6 +393,7 @@ type GetAuditLogEntriesForUserAndResourceTypeRow struct {
 	Changes          json.RawMessage
 	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
+	CreatedAt        time.Time
 	FilteredCount    int64
 	TotalCount       int64
 }
@@ -454,7 +454,6 @@ WHERE audit_log_entries.id = $1
 `
 
 type GetAuditLogEntryRow struct {
-	CreatedAt        time.Time
 	ID               string
 	ResourceType     string
 	RelevantID       string
@@ -462,6 +461,7 @@ type GetAuditLogEntryRow struct {
 	Changes          json.RawMessage
 	BelongsToUser    sql.NullString
 	BelongsToAccount sql.NullString
+	CreatedAt        time.Time
 }
 
 func (q *Queries) GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error) {

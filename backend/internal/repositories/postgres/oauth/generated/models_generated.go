@@ -6,92 +6,25 @@ package generated
 
 import (
 	"database/sql"
-	"database/sql/driver"
-	"fmt"
 	"time"
 )
 
-type Oauth2ClientTokenScopes string
-
-const (
-	Oauth2ClientTokenScopesUnknown       Oauth2ClientTokenScopes = "unknown"
-	Oauth2ClientTokenScopesAccountMember Oauth2ClientTokenScopes = "account_member"
-	Oauth2ClientTokenScopesAccountAdmin  Oauth2ClientTokenScopes = "account_admin"
-	Oauth2ClientTokenScopesServiceAdmin  Oauth2ClientTokenScopes = "service_admin"
-)
-
-func (e *Oauth2ClientTokenScopes) Scan(src interface{}) error {
-	switch s := src.(type) {
-	case []byte:
-		*e = Oauth2ClientTokenScopes(s)
-	case string:
-		*e = Oauth2ClientTokenScopes(s)
-	default:
-		return fmt.Errorf("unsupported scan type for Oauth2ClientTokenScopes: %T", src)
-	}
-	return nil
-}
-
-type NullOauth2ClientTokenScopes struct {
-	Oauth2ClientTokenScopes Oauth2ClientTokenScopes
-	Valid                   bool // Valid is true if Oauth2ClientTokenScopes is not NULL
-}
-
-// Scan implements the Scanner interface.
-func (ns *NullOauth2ClientTokenScopes) Scan(value interface{}) error {
-	if value == nil {
-		ns.Oauth2ClientTokenScopes, ns.Valid = "", false
-		return nil
-	}
-	ns.Valid = true
-	return ns.Oauth2ClientTokenScopes.Scan(value)
-}
-
-// Value implements the driver Valuer interface.
-func (ns NullOauth2ClientTokenScopes) Value() (driver.Value, error) {
-	if !ns.Valid {
-		return nil, nil
-	}
-	return string(ns.Oauth2ClientTokenScopes), nil
-}
-
-func (e Oauth2ClientTokenScopes) Valid() bool {
-	switch e {
-	case Oauth2ClientTokenScopesUnknown,
-		Oauth2ClientTokenScopesAccountMember,
-		Oauth2ClientTokenScopesAccountAdmin,
-		Oauth2ClientTokenScopesServiceAdmin:
-		return true
-	}
-	return false
-}
-
-func AllOauth2ClientTokenScopesValues() []Oauth2ClientTokenScopes {
-	return []Oauth2ClientTokenScopes{
-		Oauth2ClientTokenScopesUnknown,
-		Oauth2ClientTokenScopesAccountMember,
-		Oauth2ClientTokenScopesAccountAdmin,
-		Oauth2ClientTokenScopesServiceAdmin,
-	}
-}
-
 type Oauth2ClientTokens struct {
-	AccessExpiresAt     time.Time
-	CodeExpiresAt       time.Time
-	RefreshExpiresAt    time.Time
-	RefreshCreatedAt    time.Time
-	AccessCreatedAt     time.Time
-	CodeCreatedAt       time.Time
-	Scope               Oauth2ClientTokenScopes
-	ClientID            string
-	Code                string
-	CodeChallengeMethod string
-	Access              string
-	CodeChallenge       string
 	ID                  string
-	Refresh             string
-	RedirectUri         string
+	ClientID            string
 	BelongsToUser       string
+	RedirectUri         string
+	Code                string
+	CodeChallenge       string
+	CodeChallengeMethod string
+	CodeCreatedAt       time.Time
+	CodeExpiresAt       time.Time
+	Access              string
+	AccessCreatedAt     time.Time
+	AccessExpiresAt     time.Time
+	Refresh             string
+	RefreshCreatedAt    time.Time
+	RefreshExpiresAt    time.Time
 }
 
 type Oauth2Clients struct {

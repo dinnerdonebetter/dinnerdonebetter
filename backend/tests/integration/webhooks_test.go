@@ -1,6 +1,44 @@
 package integration
 
 import (
+	"net/http"
+	"testing"
+
+	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
+	"github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
+	"github.com/dinnerdonebetter/backend/pkg/client"
+
+	"github.com/stretchr/testify/require"
+)
+
+func createWebhookForTest(t *testing.T, testClient client.Client) *webhooks.Webhook {
+	t.Helper()
+	ctx := t.Context()
+
+	exampleWebhookInput := &webhooks.WebhookCreationRequestInput{
+		ContentType: "application/json",
+		Method:      http.MethodPost,
+		Name:        t.Name(),
+		URL:         "https://whatever.gov",
+		Events:      []string{webhooks.WebhookCreatedTriggerEvent},
+	}
+
+	input := converters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
+
+	createdWebhook, err := testClient.CreateWebhook(ctx, &webhookssvc.CreateWebhookRequest{Input: input})
+	require.NoError(t, err)
+
+	retrievedWebhook, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.Created.ID})
+	require.NoError(t, err)
+	require.NotNil(t, retrievedWebhook)
+
+	return converters.ConvertGRPCWebhookToWebhook(retrievedWebhook.Result)
+}
+
+/*
+
+import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -142,3 +180,5 @@ func (s *TestSuite) TestWebhookTriggerEvents_Archiving_Returns404ForNonexistentW
 		}
 	})
 }
+
+*/

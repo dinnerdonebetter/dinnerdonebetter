@@ -67,8 +67,16 @@ func (s *serviceImpl) CreateAccountInvitation(ctx context.Context, request *iden
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	// TODO: more fields here, probably
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
 	input := converters.ConvertGRPCAccountInvitationCreationRequestInputToAccountInvitationCreationRequestInput(request.Input)
-	created, err := s.identityDataManager.CreateAccountInvitation(ctx, request.AccountID, input)
+	created, err := s.identityDataManager.CreateAccountInvitation(ctx, sessionContextData.GetUserID(), request.AccountID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account invitation")
 	}

@@ -28,6 +28,13 @@ INSERT INTO account_invitations (
 	sqlc.arg(expires_at)
 );
 
+-- name: AssignInvitationsToUserByEmail :execrows
+UPDATE account_invitations SET
+	to_user = sqlc.arg(to_user),
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND to_email = LOWER(sqlc.arg(email_address));
+
 -- name: CheckAccountInvitationExistence :one
 SELECT EXISTS (
 	SELECT account_invitations.id

@@ -37,6 +37,36 @@ func ConvertWebhookTriggerEventToGRPCWebhookTriggerEvent(z *webhooks.WebhookTrig
 	}
 }
 
+func ConvertGRPCWebhookToWebhook(webhook *webhookssvc.Webhook) *webhooks.Webhook {
+	converted := &webhooks.Webhook{
+		CreatedAt:        grpcconverters.ConvertPBTimestampToTime(webhook.CreatedAt),
+		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(webhook.ArchivedAt),
+		LastUpdatedAt:    grpcconverters.ConvertPBTimestampToTimePointer(webhook.LastUpdatedAt),
+		Name:             webhook.Name,
+		URL:              webhook.URL,
+		Method:           webhook.Method,
+		ID:               webhook.ID,
+		BelongsToAccount: webhook.BelongsToAccount,
+		ContentType:      webhook.ContentType,
+	}
+
+	for _, event := range webhook.Events {
+		converted.Events = append(converted.Events, ConvertGRPCWebhookTriggerEventToWebhookTriggerEvent(event))
+	}
+
+	return converted
+}
+
+func ConvertGRPCWebhookTriggerEventToWebhookTriggerEvent(z *webhookssvc.WebhookTriggerEvent) *webhooks.WebhookTriggerEvent {
+	return &webhooks.WebhookTriggerEvent{
+		CreatedAt:        grpcconverters.ConvertPBTimestampToTime(z.CreatedAt),
+		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(z.ArchivedAt),
+		ID:               z.ID,
+		BelongsToWebhook: z.BelongsToWebhook,
+		TriggerEvent:     z.TriggerEvent,
+	}
+}
+
 func ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(input *webhookssvc.WebhookCreationRequestInput, accountID string) *webhooks.WebhookDatabaseCreationInput {
 	x := &webhooks.WebhookDatabaseCreationInput{
 		ID:               identifiers.New(),

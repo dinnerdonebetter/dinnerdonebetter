@@ -48,7 +48,6 @@ func ConvertOAuth2ClientTokenToOAuth2ClientTokenDatabaseCreationInput(x *types.O
 		AccessCreatedAt:     x.AccessCreatedAt,
 		CodeCreatedAt:       x.CodeCreatedAt,
 		RedirectURI:         x.RedirectURI,
-		Scope:               x.Scope,
 		Code:                x.Code,
 		CodeChallenge:       x.CodeChallenge,
 		CodeChallengeMethod: x.CodeChallengeMethod,

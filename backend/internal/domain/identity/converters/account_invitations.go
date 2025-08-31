@@ -1,26 +1,38 @@
 package converters
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"time"
+
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 )
 
 // ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput creates a AccountInvitationDatabaseCreationInput from a AccountInvitationCreationRequestInput.
-func ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput(input *types.AccountInvitationCreationRequestInput) *types.AccountInvitationDatabaseCreationInput {
-	x := &types.AccountInvitationDatabaseCreationInput{
-		ToEmail: input.ToEmail,
-		ToName:  input.ToName,
+func ConvertAccountInvitationCreationInputToAccountInvitationDatabaseCreationInput(userID, accountID, token string, input *identity.AccountInvitationCreationRequestInput) *identity.AccountInvitationDatabaseCreationInput {
+	// if you don't specify an expiration, then it doesn't expire
+	var expiresAt = time.Date(9999, 12, 12, 12, 12, 12, 12, time.UTC)
+	if input.ExpiresAt != nil && !input.ExpiresAt.IsZero() {
+		expiresAt = *input.ExpiresAt
 	}
 
-	if input.ExpiresAt != nil {
-		x.ExpiresAt = *input.ExpiresAt
+	x := &identity.AccountInvitationDatabaseCreationInput{
+		ID:                   identifiers.New(),
+		DestinationAccountID: accountID,
+		FromUser:             userID,
+		ToUser:               nil,
+		Token:                token,
+		ExpiresAt:            expiresAt,
+		Note:                 input.Note,
+		ToEmail:              input.ToEmail,
+		ToName:               input.ToName,
 	}
 
 	return x
 }
 
 // ConvertAccountInvitationToAccountInvitationCreationInput builds a faked AccountInvitationCreationRequestInput.
-func ConvertAccountInvitationToAccountInvitationCreationInput(accountInvitation *types.AccountInvitation) *types.AccountInvitationCreationRequestInput {
-	return &types.AccountInvitationCreationRequestInput{
+func ConvertAccountInvitationToAccountInvitationCreationInput(accountInvitation *identity.AccountInvitation) *identity.AccountInvitationCreationRequestInput {
+	return &identity.AccountInvitationCreationRequestInput{
 		Note:      accountInvitation.Note,
 		ToName:    accountInvitation.ToName,
 		ToEmail:   accountInvitation.ToEmail,
@@ -29,16 +41,16 @@ func ConvertAccountInvitationToAccountInvitationCreationInput(accountInvitation 
 }
 
 // ConvertAccountInvitationToAccountInvitationUpdateInput builds a faked AccountInvitationUpdateRequestInput.
-func ConvertAccountInvitationToAccountInvitationUpdateInput(accountInvitation *types.AccountInvitation) *types.AccountInvitationUpdateRequestInput {
-	return &types.AccountInvitationUpdateRequestInput{
+func ConvertAccountInvitationToAccountInvitationUpdateInput(accountInvitation *identity.AccountInvitation) *identity.AccountInvitationUpdateRequestInput {
+	return &identity.AccountInvitationUpdateRequestInput{
 		Token: accountInvitation.Token,
 		Note:  accountInvitation.Note,
 	}
 }
 
 // ConvertAccountInvitationToAccountInvitationDatabaseCreationInput builds a faked AccountInvitationCreationRequestInput.
-func ConvertAccountInvitationToAccountInvitationDatabaseCreationInput(accountInvitation *types.AccountInvitation) *types.AccountInvitationDatabaseCreationInput {
-	return &types.AccountInvitationDatabaseCreationInput{
+func ConvertAccountInvitationToAccountInvitationDatabaseCreationInput(accountInvitation *identity.AccountInvitation) *identity.AccountInvitationDatabaseCreationInput {
+	return &identity.AccountInvitationDatabaseCreationInput{
 		ID:                   accountInvitation.ID,
 		FromUser:             accountInvitation.FromUser.ID,
 		ToUser:               accountInvitation.ToUser,

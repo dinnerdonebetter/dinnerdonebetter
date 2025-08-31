@@ -36,7 +36,6 @@ func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo
 		AccessCreatedAt:     info.GetAccessCreateAt(),
 		CodeCreatedAt:       info.GetCodeCreateAt(),
 		RedirectURI:         info.GetRedirectURI(),
-		Scope:               info.GetScope(),
 		Code:                info.GetCode(),
 		CodeChallenge:       info.GetCodeChallenge(),
 		CodeChallengeMethod: info.GetCodeChallengeMethod().String(),

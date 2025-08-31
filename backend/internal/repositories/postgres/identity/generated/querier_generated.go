@@ -17,6 +17,7 @@ type Querier interface {
 	ArchiveAccount(ctx context.Context, db DBTX, arg *ArchiveAccountParams) (int64, error)
 	ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error)
+	AssignInvitationsToUserByEmail(ctx context.Context, db DBTX, arg *AssignInvitationsToUserByEmailParams) (int64, error)
 	AttachAccountInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachAccountInvitationsToUserIDParams) (int64, error)
 	CheckAccountInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CreateAccount(ctx context.Context, db DBTX, arg *CreateAccountParams) error

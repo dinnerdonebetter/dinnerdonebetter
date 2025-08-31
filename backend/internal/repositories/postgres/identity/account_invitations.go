@@ -14,7 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 )
 
 var (
@@ -61,7 +61,7 @@ func (r *repository) GetAccountInvitationByAccountAndID(ctx context.Context, acc
 	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
 
-	result, err := r.generatedQuerier.GetAccountInvitationByAccountAndID(ctx, r.db, &generated2.GetAccountInvitationByAccountAndIDParams{
+	result, err := r.generatedQuerier.GetAccountInvitationByAccountAndID(ctx, r.db, &generated.GetAccountInvitationByAccountAndIDParams{
 		DestinationAccount: accountID,
 		ID:                 accountInvitationID,
 	})
@@ -150,7 +150,7 @@ func (r *repository) GetAccountInvitationByTokenAndID(ctx context.Context, token
 
 	logger.Debug("fetching account invitation")
 
-	result, err := r.generatedQuerier.GetAccountInvitationByTokenAndID(ctx, r.db, &generated2.GetAccountInvitationByTokenAndIDParams{
+	result, err := r.generatedQuerier.GetAccountInvitationByTokenAndID(ctx, r.db, &generated.GetAccountInvitationByTokenAndIDParams{
 		Token: token,
 		ID:    invitationID,
 	})
@@ -239,7 +239,7 @@ func (r *repository) GetAccountInvitationByEmailAndToken(ctx context.Context, em
 	logger = logger.WithValue(keys.AccountInvitationTokenKey, token)
 	tracing.AttachToSpan(span, keys.AccountInvitationTokenKey, token)
 
-	result, err := r.generatedQuerier.GetAccountInvitationByEmailAndToken(ctx, r.db, &generated2.GetAccountInvitationByEmailAndTokenParams{
+	result, err := r.generatedQuerier.GetAccountInvitationByEmailAndToken(ctx, r.db, &generated.GetAccountInvitationByEmailAndTokenParams{
 		ToEmail: emailAddress,
 		Token:   token,
 	})
@@ -321,7 +321,7 @@ func (r *repository) CreateAccountInvitation(ctx context.Context, input *identit
 	logger := r.logger.WithValue(keys.AccountInvitationIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, input.DestinationAccountID)
 
-	if err := r.generatedQuerier.CreateAccountInvitation(ctx, r.db, &generated2.CreateAccountInvitationParams{
+	if err := r.generatedQuerier.CreateAccountInvitation(ctx, r.db, &generated.CreateAccountInvitationParams{
 		ExpiresAt:          input.ExpiresAt,
 		ID:                 input.ID,
 		FromUser:           input.FromUser,
@@ -373,7 +373,7 @@ func (r *repository) GetPendingAccountInvitationsFromUser(ctx context.Context, u
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetPendingInvitesFromUser(ctx, r.db, &generated2.GetPendingInvitesFromUserParams{
+	results, err := r.generatedQuerier.GetPendingInvitesFromUser(ctx, r.db, &generated.GetPendingInvitesFromUserParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -381,7 +381,7 @@ func (r *repository) GetPendingAccountInvitationsFromUser(ctx context.Context, u
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
-		Status:          generated2.InvitationState(identity.PendingAccountInvitationStatus),
+		Status:          generated.InvitationState(identity.PendingAccountInvitationStatus),
 		FromUser:        userID,
 	})
 	if err != nil {
@@ -470,7 +470,7 @@ func (r *repository) GetPendingAccountInvitationsForUser(ctx context.Context, us
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetPendingInvitesForUser(ctx, r.db, &generated2.GetPendingInvitesForUserParams{
+	results, err := r.generatedQuerier.GetPendingInvitesForUser(ctx, r.db, &generated.GetPendingInvitesForUserParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -478,7 +478,7 @@ func (r *repository) GetPendingAccountInvitationsForUser(ctx context.Context, us
 		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
-		Status:          generated2.InvitationState(identity.PendingAccountInvitationStatus),
+		Status:          generated.InvitationState(identity.PendingAccountInvitationStatus),
 		ToUser:          database.NullStringFromString(userID),
 	})
 	if err != nil {
@@ -564,8 +564,8 @@ func (r *repository) setInvitationStatus(ctx context.Context, querier database.S
 	logger = logger.WithValue(keys.AccountInvitationIDKey, accountInvitationID)
 	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, accountInvitationID)
 
-	if err := r.generatedQuerier.SetAccountInvitationStatus(ctx, querier, &generated2.SetAccountInvitationStatusParams{
-		Status:     generated2.InvitationState(status),
+	if err := r.generatedQuerier.SetAccountInvitationStatus(ctx, querier, &generated.SetAccountInvitationStatusParams{
+		Status:     generated.InvitationState(status),
 		StatusNote: note,
 		ID:         accountInvitationID,
 	}); err != nil {
@@ -604,30 +604,29 @@ func (r *repository) AcceptAccountInvitation(ctx context.Context, accountID, acc
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = r.setInvitationStatus(ctx, tx, accountInvitationID, note, string(identity.AcceptedAccountInvitationStatus)); err != nil {
-		r.RollbackTransaction(ctx, tx)
-		return observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
-	}
-
 	invitation, err := r.GetAccountInvitationByTokenAndID(ctx, token, accountInvitationID)
 	if err != nil {
 		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "fetching account invitation")
 	}
 
+	if err = r.setInvitationStatus(ctx, tx, accountInvitationID, note, string(identity.AcceptedAccountInvitationStatus)); err != nil {
+		r.RollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
+	}
+
 	addUserInput := &identity.AccountUserMembershipDatabaseCreationInput{
 		ID:          identifiers.New(),
-		Reason:      fmt.Sprintf("accepted account invitation %r", accountInvitationID),
+		Reason:      fmt.Sprintf("accepted account invitation %s", accountInvitationID),
 		AccountID:   invitation.DestinationAccount.ID,
 		AccountRole: "account_member",
 	}
 	if invitation.ToUser != nil {
 		addUserInput.UserID = *invitation.ToUser
-	}
-
-	if err = r.addUserToAccount(ctx, tx, addUserInput); err != nil {
-		r.RollbackTransaction(ctx, tx)
-		return observability.PrepareAndLogError(err, logger, span, "adding user to account")
+		if err = r.addUserToAccount(ctx, tx, addUserInput); err != nil {
+			r.RollbackTransaction(ctx, tx)
+			return observability.PrepareAndLogError(err, logger, span, "adding user to account")
+		}
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -660,7 +659,7 @@ func (r *repository) attachInvitationsToUser(ctx context.Context, querier databa
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.AccountInvitationIDKey, userID)
 
-	rowCount, err := r.generatedQuerier.AttachAccountInvitationsToUserID(ctx, querier, &generated2.AttachAccountInvitationsToUserIDParams{
+	rowCount, err := r.generatedQuerier.AttachAccountInvitationsToUserID(ctx, querier, &generated.AttachAccountInvitationsToUserIDParams{
 		ToEmail: userEmail,
 		ToUser:  database.NullStringFromString(userID),
 	})
@@ -687,7 +686,7 @@ func (r *repository) acceptInvitationForUser(ctx context.Context, querier databa
 
 	logger.Debug("fetched invitation to accept for user")
 
-	if err := r.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated2.CreateAccountUserMembershipForNewUserParams{
+	if err := r.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated.CreateAccountUserMembershipForNewUserParams{
 		ID:               identifiers.New(),
 		BelongsToUser:    input.ID,
 		BelongsToAccount: input.DestinationAccountID,

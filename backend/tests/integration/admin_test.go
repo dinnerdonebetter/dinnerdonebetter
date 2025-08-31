@@ -82,23 +82,7 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 		ctx := t.Context()
 
 		user, testClient := createUserAndClientForTest(t)
-
-		exampleWebhookInput := &webhooks.WebhookCreationRequestInput{
-			ContentType: "application/json",
-			Method:      http.MethodPost,
-			Name:        t.Name(),
-			URL:         "https://whatever.gov",
-			Events:      []string{webhooks.WebhookCreatedTriggerEvent},
-		}
-
-		input := converters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
-
-		createdWebhook, err := testClient.CreateWebhook(ctx, &webhookssvc.CreateWebhookRequest{Input: input})
-		require.NoError(t, err)
-
-		retrievedWebhook, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.Created.ID})
-		require.NoError(t, err)
-		require.NotNil(t, retrievedWebhook)
+		webhook := createWebhookForTest(t, testClient)
 
 		account, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
 		require.NoError(t, err)
@@ -106,11 +90,11 @@ func TestAdmin_UserImpersonation(T *testing.T) {
 
 		impersonatedCtx := client.ImpersonateUseAndAccountContext(ctx, user.ID, account.Result.ID)
 
-		t.Logf("impersonating user %s and account %s to get webhook %s", user.ID, account.Result.ID, retrievedWebhook.Result.ID)
+		t.Logf("impersonating user %s and account %s to get webhook %s", user.ID, account.Result.ID, webhook.ID)
 
-		webhook, err := adminClient.GetWebhook(impersonatedCtx, &webhookssvc.GetWebhookRequest{WebhookID: retrievedWebhook.Result.ID})
+		retrievedWebhook, err := adminClient.GetWebhook(impersonatedCtx, &webhookssvc.GetWebhookRequest{WebhookID: webhook.ID})
 		assert.NoError(t, err)
-		assert.NotNil(t, webhook)
+		assert.NotNil(t, retrievedWebhook)
 	})
 
 	T.Run("standard user should not be able to impersonate others", func(t *testing.T) {

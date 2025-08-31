@@ -41,12 +41,10 @@ func (t *tokenImpl) SetRedirectURI(s string) {
 }
 
 func (t *tokenImpl) GetScope() string {
-	return t.Token.Scope
+	return "n/a"
 }
 
-func (t *tokenImpl) SetScope(s string) {
-	t.Token.Scope = s
-}
+func (t *tokenImpl) SetScope(_ string) {}
 
 func (t *tokenImpl) GetCode() string {
 	return t.Token.Code

@@ -16,7 +16,7 @@ type (
 		ArchiveUserMembership(ctx context.Context, userID, accountID string) error
 		ArchiveUser(ctx context.Context, userID string) error
 		CreateAccount(ctx context.Context, input *identity.AccountCreationRequestInput) (*identity.Account, error)
-		CreateAccountInvitation(ctx context.Context, userID string, input *identity.AccountInvitationCreationRequestInput) (*identity.AccountInvitation, error)
+		CreateAccountInvitation(ctx context.Context, userID, accountID string, input *identity.AccountInvitationCreationRequestInput) (*identity.AccountInvitation, error)
 		CreateUser(ctx context.Context, registrationInput *identity.UserRegistrationInput) (*identity.UserCreationResponse, error)
 		GetAccount(ctx context.Context, accountID string) (*identity.Account, error)
 		GetAccountInvitation(ctx context.Context, accountID, accountInvitationID string) (*identity.AccountInvitation, error)

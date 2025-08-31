@@ -15,13 +15,6 @@ CREATE TYPE invitation_state AS ENUM (
     'rejected'
 );
 
-CREATE TYPE oauth2_client_token_scopes AS ENUM (
-    'unknown',
-    'account_member',
-    'account_admin',
-    'service_admin'
-);
-
 CREATE TYPE setting_type AS ENUM (
     'user',
     'account',
@@ -161,7 +154,6 @@ CREATE TABLE IF NOT EXISTS oauth2_client_tokens (
     client_id TEXT NOT NULL REFERENCES oauth2_clients("client_id") ON DELETE CASCADE,
     belongs_to_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE,
     redirect_uri TEXT DEFAULT ''::TEXT NOT NULL,
-    scope oauth2_client_token_scopes DEFAULT 'unknown'::oauth2_client_token_scopes NOT NULL,
     code TEXT DEFAULT ''::TEXT NOT NULL,
     code_challenge TEXT DEFAULT ''::TEXT NOT NULL,
     code_challenge_method TEXT DEFAULT ''::TEXT NOT NULL,
@@ -173,7 +165,7 @@ CREATE TABLE IF NOT EXISTS oauth2_client_tokens (
     refresh TEXT DEFAULT ''::TEXT NOT NULL,
     refresh_created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     refresh_expires_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + '01:00:00'::INTERVAL) NOT NULL,
-    UNIQUE(belongs_to_user, client_id, scope, code_expires_at, access_expires_at, refresh_expires_at)
+    UNIQUE(belongs_to_user, client_id, code_expires_at, access_expires_at, refresh_expires_at)
 );
 
 CREATE TABLE IF NOT EXISTS password_reset_tokens (

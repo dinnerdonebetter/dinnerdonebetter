@@ -82,7 +82,7 @@ func buildUnauthenticatedGRPCClient() (client.Client, error) {
 	return client.BuildClient(grpcTestServerAddress, opts...)
 }
 
-func buildAuthedGRPCClient(ctx context.Context, scopes []string, token string) client.Client {
+func buildAuthedGRPCClient(ctx context.Context, token string) client.Client {
 	state, err := random.GenerateBase64EncodedString(ctx, 32)
 	if err != nil {
 		panic(err)
@@ -91,7 +91,7 @@ func buildAuthedGRPCClient(ctx context.Context, scopes []string, token string) c
 	oauth2Config := oauth2.Config{
 		ClientID:     createdClientID,
 		ClientSecret: createdClientSecret,
-		Scopes:       scopes, // TODO: This should be nil-able
+		Scopes:       []string{"anything"}, // TODO: This should be nil-able
 		RedirectURL:  httpTestServerAddress,
 		Endpoint: oauth2.Endpoint{
 			AuthStyle: oauth2.AuthStyleInParams,
@@ -351,15 +351,13 @@ func createClientForUser(ctx context.Context, scopes []string, user *identity.Us
 		return nil, fmt.Errorf("fetching token for user %s: %w", user.Username, err)
 	}
 
-	oauthedClient := buildAuthedGRPCClient(ctx, scopes, token)
+	oauthedClient := buildAuthedGRPCClient(ctx, token)
 
 	return oauthedClient, nil
 }
 
 func createUserAndClientForTest(t *testing.T) (*identity.User, client.Client) {
 	t.Helper()
-
-	ctx := t.Context()
 
 	input := &identity.UserRegistrationInput{
 		Birthday:              pointer.To(time.Now()),
@@ -373,8 +371,16 @@ func createUserAndClientForTest(t *testing.T) (*identity.User, client.Client) {
 		AcceptedTOS:           true,
 	}
 
+	return createUserAndClientForTestWithRegistrationInput(t, input)
+}
+
+func createUserAndClientForTestWithRegistrationInput(t *testing.T, input *identity.UserRegistrationInput) (*identity.User, client.Client) {
+	t.Helper()
+
+	ctx := t.Context()
+
 	user := createServiceUserForTest(t, true, input)
-	oauthedClient := buildAuthedGRPCClient(ctx, []string{"account_admin"}, fetchLoginTokenForUserForTest(t, user))
+	oauthedClient := buildAuthedGRPCClient(ctx, fetchLoginTokenForUserForTest(t, user))
 
 	return user, oauthedClient
 }

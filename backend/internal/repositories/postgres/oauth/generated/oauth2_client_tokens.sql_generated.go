@@ -32,7 +32,6 @@ INSERT INTO oauth2_client_tokens (
 	client_id,
 	belongs_to_user,
 	redirect_uri,
-	scope,
 	code,
 	code_challenge,
 	code_challenge_method,
@@ -59,28 +58,26 @@ INSERT INTO oauth2_client_tokens (
 	$12,
 	$13,
 	$14,
-	$15,
-	$16
+	$15
 )
 `
 
 type CreateOAuth2ClientTokenParams struct {
-	AccessExpiresAt     time.Time
-	CodeExpiresAt       time.Time
-	RefreshExpiresAt    time.Time
-	RefreshCreatedAt    time.Time
-	AccessCreatedAt     time.Time
-	CodeCreatedAt       time.Time
-	Scope               Oauth2ClientTokenScopes
-	ClientID            string
-	Code                string
-	CodeChallengeMethod string
-	Access              string
-	CodeChallenge       string
 	ID                  string
-	Refresh             string
-	RedirectUri         string
+	ClientID            string
 	BelongsToUser       string
+	RedirectUri         string
+	Code                string
+	CodeChallenge       string
+	CodeChallengeMethod string
+	CodeCreatedAt       time.Time
+	CodeExpiresAt       time.Time
+	Access              string
+	AccessCreatedAt     time.Time
+	AccessExpiresAt     time.Time
+	Refresh             string
+	RefreshCreatedAt    time.Time
+	RefreshExpiresAt    time.Time
 }
 
 func (q *Queries) CreateOAuth2ClientToken(ctx context.Context, db DBTX, arg *CreateOAuth2ClientTokenParams) error {
@@ -89,7 +86,6 @@ func (q *Queries) CreateOAuth2ClientToken(ctx context.Context, db DBTX, arg *Cre
 		arg.ClientID,
 		arg.BelongsToUser,
 		arg.RedirectUri,
-		arg.Scope,
 		arg.Code,
 		arg.CodeChallenge,
 		arg.CodeChallengeMethod,
@@ -147,7 +143,6 @@ SELECT
 	oauth2_client_tokens.client_id,
 	oauth2_client_tokens.belongs_to_user,
 	oauth2_client_tokens.redirect_uri,
-	oauth2_client_tokens.scope,
 	oauth2_client_tokens.code,
 	oauth2_client_tokens.code_challenge,
 	oauth2_client_tokens.code_challenge_method,
@@ -171,7 +166,6 @@ func (q *Queries) GetOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, acc
 		&i.ClientID,
 		&i.BelongsToUser,
 		&i.RedirectUri,
-		&i.Scope,
 		&i.Code,
 		&i.CodeChallenge,
 		&i.CodeChallengeMethod,
@@ -193,7 +187,6 @@ SELECT
 	oauth2_client_tokens.client_id,
 	oauth2_client_tokens.belongs_to_user,
 	oauth2_client_tokens.redirect_uri,
-	oauth2_client_tokens.scope,
 	oauth2_client_tokens.code,
 	oauth2_client_tokens.code_challenge,
 	oauth2_client_tokens.code_challenge_method,
@@ -217,7 +210,6 @@ func (q *Queries) GetOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code 
 		&i.ClientID,
 		&i.BelongsToUser,
 		&i.RedirectUri,
-		&i.Scope,
 		&i.Code,
 		&i.CodeChallenge,
 		&i.CodeChallengeMethod,
@@ -239,7 +231,6 @@ SELECT
 	oauth2_client_tokens.client_id,
 	oauth2_client_tokens.belongs_to_user,
 	oauth2_client_tokens.redirect_uri,
-	oauth2_client_tokens.scope,
 	oauth2_client_tokens.code,
 	oauth2_client_tokens.code_challenge,
 	oauth2_client_tokens.code_challenge_method,
@@ -263,7 +254,6 @@ func (q *Queries) GetOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, re
 		&i.ClientID,
 		&i.BelongsToUser,
 		&i.RedirectUri,
-		&i.Scope,
 		&i.Code,
 		&i.CodeChallenge,
 		&i.CodeChallengeMethod,

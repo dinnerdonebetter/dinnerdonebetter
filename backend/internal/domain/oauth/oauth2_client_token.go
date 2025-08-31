@@ -14,7 +14,6 @@ type (
 		AccessCreatedAt     time.Time     `json:"accessCreatedAt"`
 		CodeCreatedAt       time.Time     `json:"codeCreatedAt"`
 		RedirectURI         string        `json:"redirectURI"`
-		Scope               string        `json:"scope"`
 		Code                string        `json:"code"`
 		CodeChallenge       string        `json:"codeChallenge"`
 		CodeChallengeMethod string        `json:"codeChallengeMethod"`
@@ -36,7 +35,6 @@ type (
 		AccessCreatedAt     time.Time     `json:"-"`
 		CodeCreatedAt       time.Time     `json:"-"`
 		RedirectURI         string        `json:"-"`
-		Scope               string        `json:"-"`
 		Code                string        `json:"-"`
 		CodeChallenge       string        `json:"-"`
 		CodeChallengeMethod string        `json:"-"`

@@ -101,6 +101,21 @@ WHERE %s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "AssignInvitationsToUserByEmail",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = sqlc.arg(%s),
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND %s = LOWER(sqlc.arg(%s))`,
+					accountInvitationsTableName,
+					toUserColumn, toUserColumn,
+					toEmailColumn, emailAddressColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "CheckAccountInvitationExistence",
 					Type: OneType,
 				},
