@@ -71,6 +71,27 @@ var (
 		"/mealplanning.MealPlanningService/GetRandomValidMeasurementUnit": {
 			authorization.ReadValidMeasurementUnitsPermission,
 		},
+		"/mealplanning.MealPlanningService/CreateValidVessel": {
+			authorization.CreateValidVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidVessel": {
+			authorization.ReadValidVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidVessels": {
+			authorization.ReadValidVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/SearchForValidVessels": {
+			authorization.ReadValidVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/UpdateValidVessel": {
+			authorization.UpdateValidVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/ArchiveValidVessel": {
+			authorization.ArchiveValidVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetRandomValidVessel": {
+			authorization.ReadValidVesselsPermission,
+		},
 		"/mealplanning.MealPlanningService/CreateValidInstrument": {
 			authorization.CreateValidInstrumentsPermission,
 		},

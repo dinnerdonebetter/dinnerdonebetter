@@ -908,8 +908,27 @@ func ConvertValidPreparationVesselToGRPCValidPreparationVessel(x *mealplanning.V
 	}
 }
 
-func ConvertGRPCCreateValidVesselRequestToValidVesselCreationRequestInput(x *mealplanninggrpc.ValidVesselCreationRequestInput) *mealplanning.ValidVesselCreationRequestInput {
+func ConvertGRPCValidVesselCreationRequestInputToValidVesselCreationRequestInput(x *mealplanninggrpc.ValidVesselCreationRequestInput) *mealplanning.ValidVesselCreationRequestInput {
 	return &mealplanning.ValidVesselCreationRequestInput{
+		CapacityUnitID:                 x.CapacityUnitID,
+		Shape:                          x.Shape,
+		IconPath:                       x.IconPath,
+		PluralName:                     x.PluralName,
+		Name:                           x.Name,
+		Description:                    x.Description,
+		Slug:                           x.Slug,
+		LengthInMillimeters:            x.LengthInMillimeters,
+		HeightInMillimeters:            x.HeightInMillimeters,
+		Capacity:                       x.Capacity,
+		WidthInMillimeters:             x.WidthInMillimeters,
+		UsableForStorage:               x.UsableForStorage,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+	}
+}
+
+func ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput(x *mealplanning.ValidVesselCreationRequestInput) *mealplanninggrpc.ValidVesselCreationRequestInput {
+	return &mealplanninggrpc.ValidVesselCreationRequestInput{
 		CapacityUnitID:                 x.CapacityUnitID,
 		Shape:                          x.Shape,
 		IconPath:                       x.IconPath,
@@ -946,12 +965,54 @@ func ConvertGRPCValidVesselUpdateRequestInputToValidVesselUpdateRequestInput(x *
 	}
 }
 
+func ConvertValidVesselUpdateRequestInputToGRPCValidVesselUpdateRequestInput(x *mealplanning.ValidVesselUpdateRequestInput) *mealplanninggrpc.ValidVesselUpdateRequestInput {
+	return &mealplanninggrpc.ValidVesselUpdateRequestInput{
+		Name:                           x.Name,
+		PluralName:                     x.PluralName,
+		Description:                    x.Description,
+		IconPath:                       x.IconPath,
+		UsableForStorage:               x.UsableForStorage,
+		Slug:                           x.Slug,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+		Capacity:                       x.Capacity,
+		CapacityUnitID:                 x.CapacityUnitID,
+		WidthInMillimeters:             x.WidthInMillimeters,
+		LengthInMillimeters:            x.LengthInMillimeters,
+		HeightInMillimeters:            x.HeightInMillimeters,
+		Shape:                          x.Shape,
+	}
+}
+
 func ConvertValidVesselToGRPCValidVessel(x *mealplanning.ValidVessel) *mealplanninggrpc.ValidVessel {
 	return &mealplanninggrpc.ValidVessel{
 		CreatedAt:                      converters.ConvertTimeToPBTimestamp(x.CreatedAt),
 		LastUpdatedAt:                  converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:                     converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		CapacityUnit:                   ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(x.CapacityUnit),
+		Shape:                          x.Shape,
+		Description:                    x.Description,
+		Name:                           x.Name,
+		Slug:                           x.Slug,
+		IconPath:                       x.IconPath,
+		ID:                             x.ID,
+		PluralName:                     x.PluralName,
+		WidthInMillimeters:             x.WidthInMillimeters,
+		HeightInMillimeters:            x.HeightInMillimeters,
+		Capacity:                       x.Capacity,
+		LengthInMillimeters:            x.LengthInMillimeters,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+		UsableForStorage:               x.UsableForStorage,
+	}
+}
+
+func ConvertGRPCValidVesselToValidVessel(x *mealplanninggrpc.ValidVessel) *mealplanning.ValidVessel {
+	return &mealplanning.ValidVessel{
+		CreatedAt:                      converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt:                  converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:                     converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		CapacityUnit:                   ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(x.CapacityUnit),
 		Shape:                          x.Shape,
 		Description:                    x.Description,
 		Name:                           x.Name,

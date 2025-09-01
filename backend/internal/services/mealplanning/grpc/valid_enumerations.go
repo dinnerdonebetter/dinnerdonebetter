@@ -455,7 +455,7 @@ func (s *serviceImpl) CreateValidVessel(ctx context.Context, request *mealplanni
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidVessel(ctx, mealplanningconverters.ConvertGRPCCreateValidVesselRequestToValidVesselCreationRequestInput(request.Input))
+	created, err := s.validEnumerationsManager.CreateValidVessel(ctx, mealplanningconverters.ConvertGRPCValidVesselCreationRequestInputToValidVesselCreationRequestInput(request.Input))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid vessel")
 	}
