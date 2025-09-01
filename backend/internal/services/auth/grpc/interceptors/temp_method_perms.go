@@ -50,6 +50,27 @@ var (
 		"/mealplanning.MealPlanningService/GetRandomValidPreparation": {
 			authorization.ReadValidPreparationsPermission,
 		},
+		"/mealplanning.MealPlanningService/CreateValidMeasurementUnit": {
+			authorization.CreateValidMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidMeasurementUnit": {
+			authorization.ReadValidMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidMeasurementUnits": {
+			authorization.ReadValidMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/SearchForValidMeasurementUnits": {
+			authorization.ReadValidMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/UpdateValidMeasurementUnit": {
+			authorization.UpdateValidMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/ArchiveValidMeasurementUnit": {
+			authorization.ArchiveValidMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetRandomValidMeasurementUnit": {
+			authorization.ReadValidMeasurementUnitsPermission,
+		},
 		"/mealplanning.MealPlanningService/CreateValidInstrument": {
 			authorization.CreateValidInstrumentsPermission,
 		},

@@ -360,7 +360,7 @@ func (s *serviceImpl) CreateValidMeasurementUnit(ctx context.Context, request *m
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidMeasurementUnit(ctx, mealplanningconverters.ConvertGRPCCreateValidMeasurementUnitRequestToValidMeasurementUnitCreationRequestInput(request.Input))
+	created, err := s.validEnumerationsManager.CreateValidMeasurementUnit(ctx, mealplanningconverters.ConvertGRPCValidMeasurementUnitCreationRequestInputToValidMeasurementUnitCreationRequestInput(request.Input))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid measurement unit")
 	}

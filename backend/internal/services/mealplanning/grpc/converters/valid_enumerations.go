@@ -529,8 +529,22 @@ func ConvertValidInstrumentCreationRequestInputToGRPCValidInstrumentCreationRequ
 	}
 }
 
-func ConvertGRPCCreateValidMeasurementUnitRequestToValidMeasurementUnitCreationRequestInput(x *mealplanninggrpc.ValidMeasurementUnitCreationRequestInput) *mealplanning.ValidMeasurementUnitCreationRequestInput {
+func ConvertGRPCValidMeasurementUnitCreationRequestInputToValidMeasurementUnitCreationRequestInput(x *mealplanninggrpc.ValidMeasurementUnitCreationRequestInput) *mealplanning.ValidMeasurementUnitCreationRequestInput {
 	return &mealplanning.ValidMeasurementUnitCreationRequestInput{
+		Name:        x.Name,
+		Description: x.Description,
+		IconPath:    x.IconPath,
+		PluralName:  x.PluralName,
+		Slug:        x.Slug,
+		Volumetric:  x.Volumetric,
+		Universal:   x.Universal,
+		Metric:      x.Metric,
+		Imperial:    x.Imperial,
+	}
+}
+
+func ConvertValidMeasurementUnitCreationRequestInputToGRPCValidMeasurementUnitCreationRequestInput(x *mealplanning.ValidMeasurementUnitCreationRequestInput) *mealplanninggrpc.ValidMeasurementUnitCreationRequestInput {
+	return &mealplanninggrpc.ValidMeasurementUnitCreationRequestInput{
 		Name:        x.Name,
 		Description: x.Description,
 		IconPath:    x.IconPath,
@@ -557,11 +571,43 @@ func ConvertGRPCValidMeasurementUnitUpdateRequestInputToValidMeasurementUnitUpda
 	}
 }
 
+func ConvertValidMeasurementUnitUpdateRequestInputToGRPCValidMeasurementUnitUpdateRequestInput(x *mealplanning.ValidMeasurementUnitUpdateRequestInput) *mealplanninggrpc.ValidMeasurementUnitUpdateRequestInput {
+	return &mealplanninggrpc.ValidMeasurementUnitUpdateRequestInput{
+		Name:        x.Name,
+		Description: x.Description,
+		IconPath:    x.IconPath,
+		Volumetric:  x.Volumetric,
+		Universal:   x.Universal,
+		Metric:      x.Metric,
+		Imperial:    x.Imperial,
+		PluralName:  x.PluralName,
+		Slug:        x.Slug,
+	}
+}
+
 func ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(x *mealplanning.ValidMeasurementUnit) *mealplanninggrpc.ValidMeasurementUnit {
 	return &mealplanninggrpc.ValidMeasurementUnit{
 		CreatedAt:     converters.ConvertTimeToPBTimestamp(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		PluralName:    x.PluralName,
+		IconPath:      x.IconPath,
+		ID:            x.ID,
+		Description:   x.Description,
+		Name:          x.Name,
+		Slug:          x.Slug,
+		Volumetric:    x.Volumetric,
+		Universal:     x.Universal,
+		Metric:        x.Metric,
+		Imperial:      x.Imperial,
+	}
+}
+
+func ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(x *mealplanninggrpc.ValidMeasurementUnit) *mealplanning.ValidMeasurementUnit {
+	return &mealplanning.ValidMeasurementUnit{
+		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		PluralName:    x.PluralName,
 		IconPath:      x.IconPath,
 		ID:            x.ID,
