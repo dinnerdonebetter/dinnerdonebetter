@@ -116,7 +116,7 @@ var _ validation.ValidatableWithContext = (*AccountInvitationCreationRequestInpu
 // ValidateWithContext validates a AccountCreationRequestInput.
 func (x *AccountInvitationCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
-		validation.Field(&x.ToEmail, validation.Required),
+		validation.Field(&x.ToName, validation.Required),
 	)
 }
 

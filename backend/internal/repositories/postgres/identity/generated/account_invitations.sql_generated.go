@@ -522,6 +522,201 @@ func (q *Queries) GetAccountInvitationByEmailAndToken(ctx context.Context, db DB
 	return &i, err
 }
 
+const getAccountInvitationByToken = `-- name: GetAccountInvitationByToken :one
+SELECT
+	account_invitations.id,
+	accounts.id as account_id,
+	accounts.name as account_name,
+	accounts.billing_status as account_billing_status,
+	accounts.contact_phone as account_contact_phone,
+	accounts.payment_processor_customer_id as account_payment_processor_customer_id,
+	accounts.subscription_plan_id as account_subscription_plan_id,
+	accounts.belongs_to_user as account_belongs_to_user,
+	accounts.time_zone as account_time_zone,
+	accounts.address_line_1 as account_address_line_1,
+	accounts.address_line_2 as account_address_line_2,
+	accounts.city as account_city,
+	accounts.state as account_state,
+	accounts.zip_code as account_zip_code,
+	accounts.country as account_country,
+	accounts.latitude as account_latitude,
+	accounts.longitude as account_longitude,
+	accounts.last_payment_provider_sync_occurred_at as account_last_payment_provider_sync_occurred_at,
+	accounts.webhook_hmac_secret as account_webhook_hmac_secret,
+	accounts.created_at as account_created_at,
+	accounts.last_updated_at as account_last_updated_at,
+	accounts.archived_at as account_archived_at,
+	account_invitations.from_user,
+	account_invitations.to_user,
+	users.id as user_id,
+	users.username as user_username,
+	users.avatar_src as user_avatar_src,
+	users.email_address as user_email_address,
+	users.hashed_password as user_hashed_password,
+	users.password_last_changed_at as user_password_last_changed_at,
+	users.requires_password_change as user_requires_password_change,
+	users.two_factor_secret as user_two_factor_secret,
+	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
+	users.service_role as user_service_role,
+	users.user_account_status as user_user_account_status,
+	users.user_account_status_explanation as user_user_account_status_explanation,
+	users.birthday as user_birthday,
+	users.email_address_verification_token as user_email_address_verification_token,
+	users.email_address_verified_at as user_email_address_verified_at,
+	users.first_name as user_first_name,
+	users.last_name as user_last_name,
+	users.last_accepted_terms_of_service as user_last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy as user_last_accepted_privacy_policy,
+	users.last_indexed_at as user_last_indexed_at,
+	users.created_at as user_created_at,
+	users.last_updated_at as user_last_updated_at,
+	users.archived_at as user_archived_at,
+	account_invitations.to_name,
+	account_invitations.note,
+	account_invitations.to_email,
+	account_invitations.token,
+	account_invitations.destination_account,
+	account_invitations.expires_at,
+	account_invitations.status,
+	account_invitations.status_note,
+	account_invitations.created_at,
+	account_invitations.last_updated_at,
+	account_invitations.archived_at
+FROM account_invitations
+	JOIN accounts ON account_invitations.destination_account = accounts.id
+	JOIN users ON account_invitations.from_user = users.id
+WHERE account_invitations.archived_at IS NULL
+	AND account_invitations.expires_at > NOW()
+	AND account_invitations.token = $1
+`
+
+type GetAccountInvitationByTokenRow struct {
+	ID                                       string
+	AccountID                                string
+	AccountName                              string
+	AccountBillingStatus                     string
+	AccountContactPhone                      string
+	AccountPaymentProcessorCustomerID        string
+	AccountSubscriptionPlanID                sql.NullString
+	AccountBelongsToUser                     string
+	AccountTimeZone                          TimeZone
+	AccountAddressLine1                      string
+	AccountAddressLine2                      string
+	AccountCity                              string
+	AccountState                             string
+	AccountZipCode                           string
+	AccountCountry                           string
+	AccountLatitude                          sql.NullString
+	AccountLongitude                         sql.NullString
+	AccountLastPaymentProviderSyncOccurredAt sql.NullTime
+	AccountWebhookHmacSecret                 string
+	AccountCreatedAt                         time.Time
+	AccountLastUpdatedAt                     sql.NullTime
+	AccountArchivedAt                        sql.NullTime
+	FromUser                                 string
+	ToUser                                   sql.NullString
+	UserID                                   string
+	UserUsername                             string
+	UserAvatarSrc                            sql.NullString
+	UserEmailAddress                         string
+	UserHashedPassword                       string
+	UserPasswordLastChangedAt                sql.NullTime
+	UserRequiresPasswordChange               bool
+	UserTwoFactorSecret                      string
+	UserTwoFactorSecretVerifiedAt            sql.NullTime
+	UserServiceRole                          string
+	UserUserAccountStatus                    string
+	UserUserAccountStatusExplanation         string
+	UserBirthday                             sql.NullTime
+	UserEmailAddressVerificationToken        sql.NullString
+	UserEmailAddressVerifiedAt               sql.NullTime
+	UserFirstName                            string
+	UserLastName                             string
+	UserLastAcceptedTermsOfService           sql.NullTime
+	UserLastAcceptedPrivacyPolicy            sql.NullTime
+	UserLastIndexedAt                        sql.NullTime
+	UserCreatedAt                            time.Time
+	UserLastUpdatedAt                        sql.NullTime
+	UserArchivedAt                           sql.NullTime
+	ToName                                   string
+	Note                                     string
+	ToEmail                                  string
+	Token                                    string
+	DestinationAccount                       string
+	ExpiresAt                                time.Time
+	Status                                   InvitationState
+	StatusNote                               string
+	CreatedAt                                time.Time
+	LastUpdatedAt                            sql.NullTime
+	ArchivedAt                               sql.NullTime
+}
+
+func (q *Queries) GetAccountInvitationByToken(ctx context.Context, db DBTX, token string) (*GetAccountInvitationByTokenRow, error) {
+	row := db.QueryRowContext(ctx, getAccountInvitationByToken, token)
+	var i GetAccountInvitationByTokenRow
+	err := row.Scan(
+		&i.ID,
+		&i.AccountID,
+		&i.AccountName,
+		&i.AccountBillingStatus,
+		&i.AccountContactPhone,
+		&i.AccountPaymentProcessorCustomerID,
+		&i.AccountSubscriptionPlanID,
+		&i.AccountBelongsToUser,
+		&i.AccountTimeZone,
+		&i.AccountAddressLine1,
+		&i.AccountAddressLine2,
+		&i.AccountCity,
+		&i.AccountState,
+		&i.AccountZipCode,
+		&i.AccountCountry,
+		&i.AccountLatitude,
+		&i.AccountLongitude,
+		&i.AccountLastPaymentProviderSyncOccurredAt,
+		&i.AccountWebhookHmacSecret,
+		&i.AccountCreatedAt,
+		&i.AccountLastUpdatedAt,
+		&i.AccountArchivedAt,
+		&i.FromUser,
+		&i.ToUser,
+		&i.UserID,
+		&i.UserUsername,
+		&i.UserAvatarSrc,
+		&i.UserEmailAddress,
+		&i.UserHashedPassword,
+		&i.UserPasswordLastChangedAt,
+		&i.UserRequiresPasswordChange,
+		&i.UserTwoFactorSecret,
+		&i.UserTwoFactorSecretVerifiedAt,
+		&i.UserServiceRole,
+		&i.UserUserAccountStatus,
+		&i.UserUserAccountStatusExplanation,
+		&i.UserBirthday,
+		&i.UserEmailAddressVerificationToken,
+		&i.UserEmailAddressVerifiedAt,
+		&i.UserFirstName,
+		&i.UserLastName,
+		&i.UserLastAcceptedTermsOfService,
+		&i.UserLastAcceptedPrivacyPolicy,
+		&i.UserLastIndexedAt,
+		&i.UserCreatedAt,
+		&i.UserLastUpdatedAt,
+		&i.UserArchivedAt,
+		&i.ToName,
+		&i.Note,
+		&i.ToEmail,
+		&i.Token,
+		&i.DestinationAccount,
+		&i.ExpiresAt,
+		&i.Status,
+		&i.StatusNote,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
+	)
+	return &i, err
+}
+
 const getAccountInvitationByTokenAndID = `-- name: GetAccountInvitationByTokenAndID :one
 SELECT
 	account_invitations.id,

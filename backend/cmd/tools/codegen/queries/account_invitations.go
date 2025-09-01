@@ -205,6 +205,28 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetAccountInvitationByToken",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s > %s
+	AND %s.%s = sqlc.arg(%s);`,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					accountInvitationsTableName,
+					accountsTableName, accountInvitationsTableName, destinationAccountColumn, accountsTableName, idColumn,
+					usersTableName, accountInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					accountInvitationsTableName, archivedAtColumn,
+					accountInvitationsTableName, accountInvitationsExpiresAtColumn, currentTimeExpression,
+					accountInvitationsTableName, accountInvitationsTokenColumn, accountInvitationsTokenColumn,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetPendingInvitesFromUser",
 					Type: ManyType,
 				},

@@ -28,6 +28,7 @@ type Querier interface {
 	GetAccountByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetAccountByIDWithMembershipsRow, error)
 	GetAccountInvitationByAccountAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByAccountAndIDParams) (*GetAccountInvitationByAccountAndIDRow, error)
 	GetAccountInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetAccountInvitationByEmailAndTokenParams) (*GetAccountInvitationByEmailAndTokenRow, error)
+	GetAccountInvitationByToken(ctx context.Context, db DBTX, token string) (*GetAccountInvitationByTokenRow, error)
 	GetAccountInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetAccountInvitationByTokenAndIDParams) (*GetAccountInvitationByTokenAndIDRow, error)
 	GetAccountUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*AccountUserMemberships, error)
 	GetAccountsForUser(ctx context.Context, db DBTX, arg *GetAccountsForUserParams) ([]*GetAccountsForUserRow, error)

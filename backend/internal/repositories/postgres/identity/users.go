@@ -538,7 +538,7 @@ func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabas
 	if hasValidInvite {
 		if err = r.acceptInvitationForUser(ctx, tx, input); err != nil {
 			r.RollbackTransaction(ctx, tx)
-			return nil, observability.PrepareAndLogError(err, logger, span, "accepting account invitation")
+			return nil, observability.PrepareAndLogError(err, logger, span, "accepting account invitations")
 		}
 		logger.Debug("accepted invitation and joined account for user")
 	}

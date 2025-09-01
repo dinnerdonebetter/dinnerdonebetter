@@ -220,6 +220,86 @@ func (r *repository) GetAccountInvitationByTokenAndID(ctx context.Context, token
 	return accountInvitation, nil
 }
 
+// GetAccountInvitationByToken fetches an invitation from the database.
+func (r *repository) GetAccountInvitationByToken(ctx context.Context, token string) (*identity.AccountInvitation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := r.logger.Clone()
+
+	if token == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
+
+	logger.Debug("fetching account invitation")
+
+	result, err := r.generatedQuerier.GetAccountInvitationByToken(ctx, r.db, token)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account invitation")
+	}
+
+	accountInvitation := &identity.AccountInvitation{
+		CreatedAt:     result.CreatedAt,
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+		ToUser:        database.StringPointerFromNullString(result.ToUser),
+		Status:        string(result.Status),
+		ToEmail:       result.ToEmail,
+		StatusNote:    result.StatusNote,
+		Token:         result.Token,
+		ID:            result.ID,
+		Note:          result.Note,
+		ToName:        result.ToName,
+		ExpiresAt:     result.ExpiresAt,
+		DestinationAccount: identity.Account{
+			CreatedAt:                  result.AccountCreatedAt,
+			SubscriptionPlanID:         database.StringPointerFromNullString(result.AccountSubscriptionPlanID),
+			LastUpdatedAt:              database.TimePointerFromNullTime(result.AccountLastUpdatedAt),
+			ArchivedAt:                 database.TimePointerFromNullTime(result.AccountArchivedAt),
+			ContactPhone:               result.AccountContactPhone,
+			BillingStatus:              result.AccountBillingStatus,
+			AddressLine1:               result.AccountAddressLine1,
+			AddressLine2:               result.AccountAddressLine2,
+			City:                       result.AccountCity,
+			State:                      result.AccountState,
+			ZipCode:                    result.AccountZipCode,
+			Country:                    result.AccountCountry,
+			Latitude:                   database.Float64PointerFromNullString(result.AccountLatitude),
+			Longitude:                  database.Float64PointerFromNullString(result.AccountLongitude),
+			PaymentProcessorCustomerID: result.AccountPaymentProcessorCustomerID,
+			BelongsToUser:              result.AccountBelongsToUser,
+			ID:                         result.AccountID,
+			Name:                       result.AccountName,
+			Members:                    nil,
+		},
+		FromUser: identity.User{
+			CreatedAt:                  result.UserCreatedAt,
+			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.UserPasswordLastChangedAt),
+			LastUpdatedAt:              database.TimePointerFromNullTime(result.UserLastUpdatedAt),
+			LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+			AvatarSrc:                  database.StringPointerFromNullString(result.UserAvatarSrc),
+			Birthday:                   database.TimePointerFromNullTime(result.UserBirthday),
+			ArchivedAt:                 database.TimePointerFromNullTime(result.UserArchivedAt),
+			AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
+			TwoFactorSecret:            result.UserTwoFactorSecret,
+			HashedPassword:             result.UserHashedPassword,
+			ID:                         result.UserID,
+			AccountStatus:              result.UserUserAccountStatus,
+			Username:                   result.UserUsername,
+			FirstName:                  result.UserFirstName,
+			LastName:                   result.UserLastName,
+			EmailAddress:               result.UserEmailAddress,
+			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+			ServiceRole:                result.UserServiceRole,
+			RequiresPasswordChange:     result.UserRequiresPasswordChange,
+		},
+	}
+
+	return accountInvitation, nil
+}
+
 // GetAccountInvitationByEmailAndToken fetches an invitation from the database.
 func (r *repository) GetAccountInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*identity.AccountInvitation, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
@@ -684,13 +764,11 @@ func (r *repository) acceptInvitationForUser(ctx context.Context, querier databa
 
 	logger := r.logger.WithValue(keys.UsernameKey, input.Username).WithValue(keys.UserEmailAddressKey, input.EmailAddress)
 
-	invitation, tokenCheckErr := r.GetAccountInvitationByEmailAndToken(ctx, input.EmailAddress, input.InvitationToken)
+	invitation, tokenCheckErr := r.GetAccountInvitationByToken(ctx, input.InvitationToken)
 	if tokenCheckErr != nil {
 		r.RollbackTransaction(ctx, querier)
 		return observability.PrepareError(tokenCheckErr, span, "fetching account invitation")
 	}
-
-	logger.Debug("fetched invitation to accept for user")
 
 	if err := r.generatedQuerier.CreateAccountUserMembershipForNewUser(ctx, querier, &generated.CreateAccountUserMembershipForNewUserParams{
 		ID:               identifiers.New(),
