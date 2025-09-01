@@ -14,6 +14,12 @@ var (
 		"/mealplanning.MealPlanningService/GetValidIngredient": {
 			authorization.ReadValidIngredientsPermission,
 		},
+		"/mealplanning.MealPlanningService/GetValidIngredients": {
+			authorization.ReadValidIngredientsPermission,
+		},
+		"/mealplanning.MealPlanningService/SearchForValidIngredients": {
+			authorization.ReadValidIngredientsPermission,
+		},
 		"/mealplanning.MealPlanningService/UpdateValidIngredient": {
 			authorization.UpdateValidIngredientsPermission,
 		},

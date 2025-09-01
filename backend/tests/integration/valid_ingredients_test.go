@@ -276,84 +276,61 @@ func TestValidIngredients_GetRandom(T *testing.T) {
 	})
 }
 
-/*
+func TestValidIngredients_Listing(T *testing.T) {
+	T.Parallel()
 
-func (s *TestSuite) TestValidIngredients_Listing() {
-	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+	_, testClient := createUserAndClientForTest(T)
+	createdValidIngredients := []*mealplanning.ValidIngredient{}
+	for range exampleQuantity {
+		created := createValidIngredientForTest(T)
+		createdValidIngredients = append(createdValidIngredients, created)
+	}
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			var expected []*types.ValidIngredient
-			for i := 0; i < 5; i++ {
-				exampleValidIngredient := fakes.BuildFakeValidIngredient()
-				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-				createdValidIngredient, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-				require.NoError(t, createdValidIngredientErr)
+		retrieved, err := testClient.GetValidIngredients(ctx, &mealplanningsvc.GetValidIngredientsRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, retrieved)
+		assert.True(t, len(retrieved.Results) >= len(createdValidIngredients))
+	})
 
-				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-				expected = append(expected, createdValidIngredient)
-			}
+		c := buildUnauthenticatedGRPCClientForTest(t)
 
-			// assert valid ingredient list equality
-			actual, err := testClients.adminClient.GetValidIngredients(ctx, nil)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual.Data),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual.Data),
-			)
-
-			for _, createdValidIngredient := range expected {
-				assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
-			}
-		}
+		_, err := c.GetValidIngredients(ctx, &mealplanningsvc.GetValidIngredientsRequest{})
+		assert.Error(t, err)
 	})
 }
 
-func (s *TestSuite) TestValidIngredients_Searching() {
-	s.runTest("should be able to be search for valid ingredients", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+func TestValidIngredients_Searching(T *testing.T) {
+	T.Parallel()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			var expected []*types.ValidIngredient
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredient.Name = fmt.Sprintf("example_%s", testClients.authType)
-			searchQuery := exampleValidIngredient.Name
-			for i := 0; i < 5; i++ {
-				exampleValidIngredient.Name = fmt.Sprintf("%s %d", searchQuery, i)
-				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-				createdValidIngredient, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-				require.NoError(t, createdValidIngredientErr)
-				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+		_, testClient := createUserAndClientForTest(T)
+		created := createValidIngredientForTest(t)
 
-				expected = append(expected, createdValidIngredient)
-			}
+		retrieved, err := testClient.SearchForValidIngredients(ctx, &mealplanningsvc.SearchForValidIngredientsRequest{
+			Query: created.Name[:2],
+		})
+		require.NoError(t, err)
+		require.NotNil(t, retrieved)
+	})
 
-			// assert valid ingredient list equality
-			actual, err := testClients.adminClient.SearchForValidIngredients(ctx, searchQuery, nil)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual.Data),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual.Data),
-			)
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			for _, createdValidIngredient := range expected {
-				assert.NoError(t, testClients.adminClient.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
-			}
-		}
+		c := buildUnauthenticatedGRPCClientForTest(t)
+
+		_, err := c.SearchForValidIngredients(ctx, &mealplanningsvc.SearchForValidIngredientsRequest{})
+		assert.Error(t, err)
 	})
 }
-
-*/
