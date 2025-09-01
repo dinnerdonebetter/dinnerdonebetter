@@ -300,7 +300,7 @@ func TestAccounts_Archiving(T *testing.T) {
 
 // TODO: document the restrictions around invitations and then link them here
 
-func TestAccounts_InvitingPreExistentUser(T *testing.T) {
+func TestAccounts_Inviting(T *testing.T) {
 	T.Parallel()
 
 	T.Run("invite user via their email address", func(t *testing.T) {
@@ -479,16 +479,86 @@ func TestAccounts_InvitingPreExistentUser(T *testing.T) {
 		require.NotNil(t, webhook)
 	})
 
-	T.Run("user who signs up independently and then cancels", func(t *testing.T) {
+	T.Run("invites can be canceled before acceptance", func(t *testing.T) {
 		t.Parallel()
-	})
+		ctx := t.Context()
 
-	T.Run("user with invite link", func(t *testing.T) {
-		t.Parallel()
-	})
+		// create the inviting user and get the account ID to send invites for
+		_, testClient := createUserAndClientForTest(t)
+		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
+		require.NoError(t, err)
+		accountID := accountRes.Result.ID
 
-	T.Run("invites can be cancelled", func(t *testing.T) {
-		t.Parallel()
+		// create a webhook (to demonstrate access with later)
+		createdWebhook := createWebhookForTest(t, testClient)
+
+		// create a user to invite
+		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
+		input := &identity.UserRegistrationInput{
+			Birthday:              pointer.To(time.Now()),
+			EmailAddress:          inviteeEmailAddress,
+			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AcceptedPrivacyPolicy: true,
+			AcceptedTOS:           true,
+		}
+		_, inviteeClient := createUserAndClientForTestWithRegistrationInput(t, input)
+
+		// create the invitation for the user
+		invitation, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
+			AccountID: accountID,
+			Input: &identitysvc.AccountInvitationCreationRequestInput{
+				Note:    t.Name(),
+				ToName:  t.Name(),
+				ToEmail: inviteeEmailAddress,
+			},
+		})
+		require.NoError(t, err)
+
+		// verify that we can retrieve the invitation we just created
+		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, sentInvitations)
+		assert.NotEmpty(t, sentInvitations.Result)
+
+		// verify the invitee can see the invitation as received
+		invitations, err := inviteeClient.GetReceivedAccountInvitations(ctx, &identitysvc.GetReceivedAccountInvitationsRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, invitations)
+		assert.NotEmpty(t, invitations.Result)
+
+		_, err = testClient.CancelAccountInvitation(ctx, &identitysvc.CancelAccountInvitationRequest{
+			AccountInvitationID: invitation.Created.ID,
+			Input: &identitysvc.AccountInvitationUpdateRequestInput{
+				Token: invitation.Created.Token,
+				Note:  t.Name(),
+			},
+		})
+		require.NoError(t, err)
+
+		// accept the invitation
+		_, err = inviteeClient.AcceptAccountInvitation(ctx, &identitysvc.AcceptAccountInvitationRequest{
+			AccountInvitationID: invitation.Created.ID,
+			Input: &identitysvc.AccountInvitationUpdateRequestInput{
+				Token: invitation.Created.Token,
+				Note:  t.Name(),
+			},
+		})
+		assert.Error(t, err)
+
+		// verify that we don't have any sent invitations because they've all been accepted
+		sentInvitations, err = testClient.GetSentAccountInvitations(ctx, nil)
+		require.NoError(t, err)
+		require.NotNil(t, sentInvitations)
+		assert.Empty(t, sentInvitations.Result)
+
+		// validate we can see the webhook created before our user existed
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		assert.Error(t, err)
+		assert.Nil(t, webhook)
 	})
 
 	T.Run("invites can be rejected", func(t *testing.T) {
