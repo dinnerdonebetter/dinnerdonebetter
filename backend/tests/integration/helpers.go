@@ -356,10 +356,8 @@ func createClientForUser(ctx context.Context, scopes []string, user *identity.Us
 	return oauthedClient, nil
 }
 
-func createUserAndClientForTest(t *testing.T) (*identity.User, client.Client) {
-	t.Helper()
-
-	input := &identity.UserRegistrationInput{
+func buildUserRegistrationInputForTest(t *testing.T) *identity.UserRegistrationInput {
+	return &identity.UserRegistrationInput{
 		Birthday:              pointer.To(time.Now()),
 		EmailAddress:          fmt.Sprintf("test+%d@whatever.com", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
 		FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
@@ -370,8 +368,12 @@ func createUserAndClientForTest(t *testing.T) (*identity.User, client.Client) {
 		AcceptedPrivacyPolicy: true,
 		AcceptedTOS:           true,
 	}
+}
 
-	return createUserAndClientForTestWithRegistrationInput(t, input)
+func createUserAndClientForTest(t *testing.T) (*identity.User, client.Client) {
+	t.Helper()
+
+	return createUserAndClientForTestWithRegistrationInput(t, buildUserRegistrationInputForTest(t))
 }
 
 func createUserAndClientForTestWithRegistrationInput(t *testing.T, input *identity.UserRegistrationInput) (*identity.User, client.Client) {

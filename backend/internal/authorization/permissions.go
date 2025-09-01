@@ -22,6 +22,8 @@ const (
 	ReadUserPermission Permission = "read.user"
 	// SearchUserPermission is a service admin permission.
 	SearchUserPermission Permission = "search.user"
+	// ArchiveUserPermission is a service admin permission.
+	ArchiveUserPermission Permission = "archive.user"
 
 	// UpdateAccountPermission is an account admin permission.
 	UpdateAccountPermission Permission = "update.account"
@@ -423,6 +425,7 @@ var (
 		UpdateUserStatusPermission,
 		ReadUserPermission,
 		SearchUserPermission,
+		ArchiveUserPermission,
 		CreateOAuth2ClientsPermission,
 		ArchiveOAuth2ClientsPermission,
 		ArchiveServiceSettingsPermission,

@@ -136,9 +136,9 @@ func (s *serviceImpl) CheckPermissions(ctx context.Context, request *authsvc.Use
 	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
 
 	input := converters.ConvertGRPCCheckPermissionsRequestToUserPermissionsRequestInput(request)
-	result, err := s.authManager.UserPermissions(ctx, input)
+	result, err := s.authManager.CheckUserPermissions(ctx, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "refreshing totp secret")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "checking user permissions")
 	}
 
 	x := &authsvc.UserPermissionsResponse{

@@ -25,7 +25,7 @@ type (
 		GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error)
 		GetUser(ctx context.Context, userID string) (*identity.User, error)
 		GetUsers(ctx context.Context, filter *filtering.QueryFilter) ([]*identity.User, string, error)
-		SearchForUsers(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*identity.User, string, error)
+		SearchForUsers(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*identity.User, string, error)
 		SetDefaultAccount(ctx context.Context, userID, accountID string) error
 		TransferAccountOwnership(ctx context.Context, accountID string, input *identity.AccountOwnershipTransferInput) error
 		UpdateAccount(ctx context.Context, accountID string, input *identity.AccountUpdateRequestInput) error

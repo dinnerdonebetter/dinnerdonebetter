@@ -80,6 +80,16 @@ var (
 		"/identity.IdentityService/ArchiveUserMembership": {
 			authorization.RemoveMemberAccountPermission,
 		},
+		"/identity.IdentityService/GetUser": {
+			authorization.ReadUserPermission,
+		},
+		"/identity.IdentityService/SearchForUsers": {
+			authorization.ReadUserPermission,
+		},
+		"/identity.IdentityService/ArchiveUser": {
+			authorization.ArchiveUserPermission,
+		},
+		"/auth.AuthService/CheckPermissions":                      noPerms,
 		"/identity.IdentityService/RejectAccountInvitation":       noPerms,
 		"/identity.IdentityService/AcceptAccountInvitation":       noPerms,
 		"/identity.IdentityService/GetReceivedAccountInvitations": noPerms,

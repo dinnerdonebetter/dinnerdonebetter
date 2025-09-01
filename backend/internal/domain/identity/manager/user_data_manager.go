@@ -626,7 +626,7 @@ func (m *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (
 	return users.Data, "", nil
 }
 
-func (m *manager) SearchForUsers(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -639,10 +639,10 @@ func (m *manager) SearchForUsers(ctx context.Context, query string, useDatabase 
 	}
 
 	logger := observability.ObserveValues(map[string]any{
-		keys.UseDatabaseKey: useDatabase,
+		keys.UseDatabaseKey: !useSearchService,
 	}, span, m.logger)
 
-	if useDatabase {
+	if !useSearchService {
 		users, err := m.identityRepo.SearchForUsersByUsername(ctx, query, filter)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {

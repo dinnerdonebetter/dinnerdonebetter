@@ -101,7 +101,7 @@ func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.S
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	users, _, err := s.identityDataManager.SearchForUsers(ctx, request.Query, request.UseDatabase, filter)
+	users, _, err := s.identityDataManager.SearchForUsers(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for users")
 	}
@@ -111,7 +111,7 @@ func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.S
 	}
 
 	for _, user := range users {
-		x.Result = append(x.Result, converters.ConvertUserToGRPCUser(user))
+		x.Results = append(x.Results, converters.ConvertUserToGRPCUser(user))
 	}
 
 	return x, nil

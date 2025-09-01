@@ -105,7 +105,7 @@ func (l *AuthManager) Self(ctx context.Context) (*identity.User, error) {
 	return user, nil
 }
 
-func (l *AuthManager) UserPermissions(ctx context.Context, input *auth.UserPermissionsRequestInput) (*auth.UserPermissionsResponse, error) {
+func (l *AuthManager) CheckUserPermissions(ctx context.Context, input *auth.UserPermissionsRequestInput) (*auth.UserPermissionsResponse, error) {
 	ctx, span := l.tracer.StartSpan(ctx)
 	defer span.End()
 

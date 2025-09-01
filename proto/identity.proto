@@ -182,13 +182,13 @@ message RejectAccountInvitationResponse {
 message SearchForUsersRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForUsersResponse {
   common.ResponseDetails ResponseDetails = 1;
   filtering.QueryFilter Filter = 2;
-  repeated User Result = 3;
+  repeated User Results = 3;
 }
 
 // SetDefaultAccount
