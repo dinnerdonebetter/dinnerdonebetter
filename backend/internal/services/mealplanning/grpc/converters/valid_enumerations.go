@@ -262,7 +262,7 @@ func ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequ
 	}
 }
 
-func ConvertGRPCCreateValidIngredientGroupRequestToValidIngredientGroupCreationRequestInput(request *mealplanninggrpc.CreateValidIngredientGroupRequest) *mealplanning.ValidIngredientGroupCreationRequestInput {
+func ConvertGRPCCreateValidIngredientGroupRequestToValidIngredientGroupCreationRequestInput(request *mealplanninggrpc.ValidIngredientGroupCreationRequestInput) *mealplanning.ValidIngredientGroupCreationRequestInput {
 	members := make([]*mealplanning.ValidIngredientGroupMemberCreationRequestInput, len(request.Members))
 	for i, member := range request.Members {
 		members[i] = &mealplanning.ValidIngredientGroupMemberCreationRequestInput{
@@ -310,7 +310,7 @@ func ConvertValidIngredientGroupToGRPCValidIngredientGroup(x *mealplanning.Valid
 	}
 }
 
-func ConvertGRPCCreateValidIngredientMeasurementUnitRequestToValidIngredientMeasurementUnitCreationRequestInput(request *mealplanninggrpc.CreateValidIngredientMeasurementUnitRequest) *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput {
+func ConvertGRPCCreateValidIngredientMeasurementUnitRequestToValidIngredientMeasurementUnitCreationRequestInput(request *mealplanninggrpc.ValidIngredientMeasurementUnitCreationRequestInput) *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput {
 	return &mealplanning.ValidIngredientMeasurementUnitCreationRequestInput{
 		Notes:                  request.Notes,
 		ValidMeasurementUnitID: request.ValidMeasurementUnitID,
@@ -350,7 +350,7 @@ func ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(x
 	}
 }
 
-func ConvertGRPCCreateValidIngredientPreparationRequestToValidIngredientPreparationCreationRequestInput(x *mealplanninggrpc.CreateValidIngredientPreparationRequest) *mealplanning.ValidIngredientPreparationCreationRequestInput {
+func ConvertGRPCCreateValidIngredientPreparationRequestToValidIngredientPreparationCreationRequestInput(x *mealplanninggrpc.ValidIngredientPreparationCreationRequestInput) *mealplanning.ValidIngredientPreparationCreationRequestInput {
 	return &mealplanning.ValidIngredientPreparationCreationRequestInput{
 		Notes:              x.Notes,
 		ValidPreparationID: x.ValidPreparationID,
@@ -378,7 +378,7 @@ func ConvertValidIngredientPreparationToGRPCValidIngredientPreparation(x *mealpl
 	}
 }
 
-func ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(x *mealplanninggrpc.CreateValidIngredientStateRequest) *mealplanning.ValidIngredientStateCreationRequestInput {
+func ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationRequestInput(x *mealplanninggrpc.ValidIngredientStateCreationRequestInput) *mealplanning.ValidIngredientStateCreationRequestInput {
 	return &mealplanning.ValidIngredientStateCreationRequestInput{
 		Name:          x.Name,
 		Slug:          x.Slug,
@@ -415,7 +415,7 @@ func ConvertValidIngredientStateToGRPCValidIngredientState(x *mealplanning.Valid
 	}
 }
 
-func ConvertGRPCCreateValidIngredientStateIngredientRequestToValidIngredientStateIngredientCreationRequestInput(x *mealplanninggrpc.CreateValidIngredientStateIngredientRequest) *mealplanning.ValidIngredientStateIngredientCreationRequestInput {
+func ConvertGRPCCreateValidIngredientStateIngredientRequestToValidIngredientStateIngredientCreationRequestInput(x *mealplanninggrpc.ValidIngredientStateIngredientCreationRequestInput) *mealplanning.ValidIngredientStateIngredientCreationRequestInput {
 	return &mealplanning.ValidIngredientStateIngredientCreationRequestInput{
 		Notes:                  x.Notes,
 		ValidIngredientStateID: x.ValidIngredientStateID,
@@ -529,7 +529,7 @@ func ConvertValidInstrumentCreationRequestInputToGRPCValidInstrumentCreationRequ
 	}
 }
 
-func ConvertGRPCCreateValidMeasurementUnitRequestToValidMeasurementUnitCreationRequestInput(x *mealplanninggrpc.CreateValidMeasurementUnitRequest) *mealplanning.ValidMeasurementUnitCreationRequestInput {
+func ConvertGRPCCreateValidMeasurementUnitRequestToValidMeasurementUnitCreationRequestInput(x *mealplanninggrpc.ValidMeasurementUnitCreationRequestInput) *mealplanning.ValidMeasurementUnitCreationRequestInput {
 	return &mealplanning.ValidMeasurementUnitCreationRequestInput{
 		Name:        x.Name,
 		Description: x.Description,
@@ -575,7 +575,7 @@ func ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(x *mealplanning.Valid
 	}
 }
 
-func ConvertGRPCCreateValidMeasurementUnitConversionRequestToValidMeasurementUnitConversionCreationRequestInput(x *mealplanninggrpc.CreateValidMeasurementUnitConversionRequest) *mealplanning.ValidMeasurementUnitConversionCreationRequestInput {
+func ConvertGRPCCreateValidMeasurementUnitConversionRequestToValidMeasurementUnitConversionCreationRequestInput(x *mealplanninggrpc.ValidMeasurementUnitConversionCreationRequestInput) *mealplanning.ValidMeasurementUnitConversionCreationRequestInput {
 	return &mealplanning.ValidMeasurementUnitConversionCreationRequestInput{
 		OnlyForIngredient: x.OnlyForIngredient,
 		From:              x.From,
@@ -616,7 +616,7 @@ func ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(x
 	return y
 }
 
-func ConvertGRPCCreateValidPreparationRequestToValidPreparationCreationRequestInput(x *mealplanninggrpc.CreateValidPreparationRequest) *mealplanning.ValidPreparationCreationRequestInput {
+func ConvertGRPCValidPreparationCreationRequestInputToValidPreparationCreationRequestInput(x *mealplanninggrpc.ValidPreparationCreationRequestInput) *mealplanning.ValidPreparationCreationRequestInput {
 	return &mealplanning.ValidPreparationCreationRequestInput{
 		InstrumentCount: types.Uint16RangeWithOptionalMax{
 			Min: uint16(x.InstrumentCount.Min),
@@ -629,6 +629,35 @@ func ConvertGRPCCreateValidPreparationRequestToValidPreparationCreationRequestIn
 		VesselCount: types.Uint16RangeWithOptionalMax{
 			Min: uint16(x.VesselCount.Min),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
+		},
+		IconPath:                    x.IconPath,
+		PastTense:                   x.PastTense,
+		Slug:                        x.Slug,
+		Name:                        x.Name,
+		Description:                 x.Description,
+		TemperatureRequired:         x.TemperatureRequired,
+		TimeEstimateRequired:        x.TimeEstimateRequired,
+		ConditionExpressionRequired: x.ConditionExpressionRequired,
+		ConsumesVessel:              x.ConsumesVessel,
+		OnlyForVessels:              x.OnlyForVessels,
+		RestrictToIngredients:       x.RestrictToIngredients,
+		YieldsNothing:               x.YieldsNothing,
+	}
+}
+
+func ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRequestInput(x *mealplanning.ValidPreparationCreationRequestInput) *mealplanninggrpc.ValidPreparationCreationRequestInput {
+	return &mealplanninggrpc.ValidPreparationCreationRequestInput{
+		InstrumentCount: &grpctypes.Uint16RangeWithOptionalMax{
+			Min: uint32(x.InstrumentCount.Min),
+			Max: converters.ConvertUint16PointerToUint32Pointer(x.InstrumentCount.Max),
+		},
+		IngredientCount: &grpctypes.Uint16RangeWithOptionalMax{
+			Min: uint32(x.IngredientCount.Min),
+			Max: converters.ConvertUint16PointerToUint32Pointer(x.IngredientCount.Max),
+		},
+		VesselCount: &grpctypes.Uint16RangeWithOptionalMax{
+			Min: uint32(x.VesselCount.Min),
+			Max: converters.ConvertUint16PointerToUint32Pointer(x.VesselCount.Max),
 		},
 		IconPath:                    x.IconPath,
 		PastTense:                   x.PastTense,
@@ -658,6 +687,35 @@ func ConvertGRPCValidPreparationUpdateRequestInputToValidPreparationUpdateReques
 		VesselCount: types.Uint16RangeWithOptionalMaxUpdateRequestInput{
 			Min: pointer.To(uint16(pointer.Dereference(x.VesselCount.Min))),
 			Max: converters.ConvertUint32PointerToUint16Pointer(x.VesselCount.Max),
+		},
+		Name:                        x.Name,
+		Description:                 x.Description,
+		IconPath:                    x.IconPath,
+		YieldsNothing:               x.YieldsNothing,
+		Slug:                        x.Slug,
+		RestrictToIngredients:       x.RestrictToIngredients,
+		PastTense:                   x.PastTense,
+		TemperatureRequired:         x.TemperatureRequired,
+		TimeEstimateRequired:        x.TimeEstimateRequired,
+		ConditionExpressionRequired: x.ConditionExpressionRequired,
+		ConsumesVessel:              x.ConsumesVessel,
+		OnlyForVessels:              x.OnlyForVessels,
+	}
+}
+
+func ConvertValidPreparationUpdateRequestInputToGRPCValidPreparationUpdateRequestInput(x *mealplanning.ValidPreparationUpdateRequestInput) *mealplanninggrpc.ValidPreparationUpdateRequestInput {
+	return &mealplanninggrpc.ValidPreparationUpdateRequestInput{
+		InstrumentCount: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
+			Min: pointer.To(uint32(pointer.Dereference(x.InstrumentCount.Min))),
+			Max: converters.ConvertUint16PointerToUint32Pointer(x.InstrumentCount.Max),
+		},
+		IngredientCount: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
+			Min: pointer.To(uint32(pointer.Dereference(x.IngredientCount.Min))),
+			Max: converters.ConvertUint16PointerToUint32Pointer(x.IngredientCount.Max),
+		},
+		VesselCount: &grpctypes.Uint16RangeWithOptionalMaxUpdateRequestInput{
+			Min: pointer.To(uint32(pointer.Dereference(x.VesselCount.Min))),
+			Max: converters.ConvertUint16PointerToUint32Pointer(x.VesselCount.Max),
 		},
 		Name:                        x.Name,
 		Description:                 x.Description,
@@ -740,8 +798,16 @@ func ConvertGRPCValidPreparationToValidPreparation(x *mealplanninggrpc.ValidPrep
 	}
 }
 
-func ConvertGRPCCreateValidPreparationInstrumentRequestToValidPreparationInstrumentCreationRequestInput(x *mealplanninggrpc.CreateValidPreparationInstrumentRequest) *mealplanning.ValidPreparationInstrumentCreationRequestInput {
+func ConvertGRPCCreateValidPreparationInstrumentRequestToValidPreparationInstrumentCreationRequestInput(x *mealplanninggrpc.ValidPreparationInstrumentCreationRequestInput) *mealplanning.ValidPreparationInstrumentCreationRequestInput {
 	return &mealplanning.ValidPreparationInstrumentCreationRequestInput{
+		Notes:              x.Notes,
+		ValidPreparationID: x.ValidPreparationID,
+		ValidInstrumentID:  x.ValidInstrumentID,
+	}
+}
+
+func ConvertCreateValidPreparationInstrumentRequestToGRPCValidPreparationInstrumentCreationRequestInput(x *mealplanning.ValidPreparationInstrumentCreationRequestInput) *mealplanninggrpc.ValidPreparationInstrumentCreationRequestInput {
+	return &mealplanninggrpc.ValidPreparationInstrumentCreationRequestInput{
 		Notes:              x.Notes,
 		ValidPreparationID: x.ValidPreparationID,
 		ValidInstrumentID:  x.ValidInstrumentID,
@@ -768,7 +834,7 @@ func ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(x *mealpl
 	}
 }
 
-func ConvertGRPCCreateValidPreparationVesselRequestToValidPreparationVesselCreationRequestInput(x *mealplanninggrpc.CreateValidPreparationVesselRequest) *mealplanning.ValidPreparationVesselCreationRequestInput {
+func ConvertGRPCCreateValidPreparationVesselRequestToValidPreparationVesselCreationRequestInput(x *mealplanninggrpc.ValidPreparationVesselCreationRequestInput) *mealplanning.ValidPreparationVesselCreationRequestInput {
 	return &mealplanning.ValidPreparationVesselCreationRequestInput{
 		Notes:              x.Notes,
 		ValidPreparationID: x.ValidPreparationID,
@@ -796,7 +862,7 @@ func ConvertValidPreparationVesselToGRPCValidPreparationVessel(x *mealplanning.V
 	}
 }
 
-func ConvertGRPCCreateValidVesselRequestToValidVesselCreationRequestInput(x *mealplanninggrpc.CreateValidVesselRequest) *mealplanning.ValidVesselCreationRequestInput {
+func ConvertGRPCCreateValidVesselRequestToValidVesselCreationRequestInput(x *mealplanninggrpc.ValidVesselCreationRequestInput) *mealplanning.ValidVesselCreationRequestInput {
 	return &mealplanning.ValidVesselCreationRequestInput{
 		CapacityUnitID:                 x.CapacityUnitID,
 		Shape:                          x.Shape,

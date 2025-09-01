@@ -27,7 +27,7 @@ const (
 
 type (
 	ValidEnumerationsManager interface {
-		SearchValidIngredientGroups(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error)
+		SearchValidIngredientGroups(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error)
 		ListValidIngredientGroups(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, string, error)
 		CreateValidIngredientGroup(ctx context.Context, input *types.ValidIngredientGroupCreationRequestInput) (*types.ValidIngredientGroup, error)
 		ReadValidIngredientGroup(ctx context.Context, validIngredientGroupID string) (*types.ValidIngredientGroup, error)
@@ -50,7 +50,7 @@ type (
 		SearchValidIngredientPreparationsByIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientPreparation, error)
 		SearchValidIngredientPreparationsByPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientPreparation, error)
 
-		SearchValidIngredients(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error)
+		SearchValidIngredients(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error)
 		ListValidIngredients(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidIngredient, string, error)
 		CreateValidIngredient(ctx context.Context, input *types.ValidIngredientCreationRequestInput) (*types.ValidIngredient, error)
 		ReadValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error)
@@ -67,14 +67,14 @@ type (
 		SearchValidIngredientStateIngredientsByIngredient(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientStateIngredient, error)
 		SearchValidIngredientStateIngredientsByIngredientState(ctx context.Context, validIngredientStateID string, filter *filtering.QueryFilter) ([]*types.ValidIngredientStateIngredient, error)
 
-		SearchValidIngredientStates(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error)
+		SearchValidIngredientStates(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error)
 		ListValidIngredientStates(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, string, error)
 		CreateValidIngredientState(ctx context.Context, input *types.ValidIngredientStateCreationRequestInput) (*types.ValidIngredientState, error)
 		ReadValidIngredientState(ctx context.Context, validIngredientStateID string) (*types.ValidIngredientState, error)
 		UpdateValidIngredientState(ctx context.Context, validIngredientStateID string, input *types.ValidIngredientStateUpdateRequestInput) (*types.ValidIngredientState, error)
 		ArchiveValidIngredientState(ctx context.Context, validIngredientStateID string) error
 
-		SearchValidMeasurementUnits(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error)
+		SearchValidMeasurementUnits(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error)
 		SearchValidMeasurementUnitsByIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error)
 		ListValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, string, error)
 		CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitCreationRequestInput) (*types.ValidMeasurementUnit, error)
@@ -82,7 +82,7 @@ type (
 		UpdateValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string, input *types.ValidMeasurementUnitUpdateRequestInput) (*types.ValidMeasurementUnit, error)
 		ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error
 
-		SearchValidInstruments(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error)
+		SearchValidInstruments(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error)
 		ListValidInstruments(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidInstrument, string, error)
 		CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentCreationRequestInput) (*types.ValidInstrument, error)
 		ReadValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error)
@@ -105,7 +105,7 @@ type (
 		SearchValidPreparationInstrumentsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationInstrument, error)
 		SearchValidPreparationInstrumentsByInstrument(ctx context.Context, validInstrumentID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationInstrument, error)
 
-		SearchValidPreparations(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidPreparation, error)
+		SearchValidPreparations(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidPreparation, error)
 		ListValidPreparations(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidPreparation, string, error)
 		CreateValidPreparation(ctx context.Context, input *types.ValidPreparationCreationRequestInput) (*types.ValidPreparation, error)
 		ReadValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error)
@@ -121,7 +121,7 @@ type (
 		SearchValidPreparationVesselsByPreparation(ctx context.Context, validPreparationID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationVessel, error)
 		SearchValidPreparationVesselsByVessel(ctx context.Context, validVesselID string, filter *filtering.QueryFilter) ([]*types.ValidPreparationVessel, error)
 
-		SearchValidVessels(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidVessel, error)
+		SearchValidVessels(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidVessel, error)
 		ListValidVessels(ctx context.Context, filter *filtering.QueryFilter) ([]*types.ValidVessel, string, error)
 		CreateValidVessel(ctx context.Context, input *types.ValidVesselCreationRequestInput) (*types.ValidVessel, error)
 		ReadValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error)
@@ -210,7 +210,7 @@ func NewValidEnumerationsManager(
 }
 
 // SearchValidIngredientGroups implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredientGroups(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error) {
+func (m *validEnumerationManager) SearchValidIngredientGroups(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientGroup, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -219,9 +219,9 @@ func (m *validEnumerationManager) SearchValidIngredientGroups(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	results, err := m.db.SearchForValidIngredientGroups(ctx, query, nil)
 	if err != nil {
@@ -667,7 +667,7 @@ func (m *validEnumerationManager) SearchValidIngredientPreparationsByPreparation
 }
 
 // SearchValidIngredients implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) {
+func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredient, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -676,14 +676,14 @@ func (m *validEnumerationManager) SearchValidIngredients(ctx context.Context, qu
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
 		results []*types.ValidIngredient
 	)
-	if useDatabase {
+	if !useSearchService {
 		rawResults, err := m.db.SearchForValidIngredients(ctx, query, filter)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "searching database for valid ingredients")
@@ -1029,7 +1029,7 @@ func (m *validEnumerationManager) SearchValidIngredientStateIngredientsByIngredi
 }
 
 // SearchValidIngredientStates implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error) {
+func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1038,15 +1038,15 @@ func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
 		results []*types.ValidIngredientState
 		err     error
 	)
-	if useDatabase {
+	if !useSearchService {
 		results, err = m.db.SearchForValidIngredientStates(ctx, query)
 	} else {
 		var validIngredientStateSubsets []*eatingindexing.ValidIngredientStateSearchSubset
@@ -1188,7 +1188,7 @@ func (m *validEnumerationManager) ArchiveValidIngredientState(ctx context.Contex
 }
 
 // SearchValidMeasurementUnits implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) {
+func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1197,15 +1197,15 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
 		results []*types.ValidMeasurementUnit
 		err     error
 	)
-	if useDatabase {
+	if !useSearchService {
 		results, err = m.db.SearchForValidMeasurementUnits(ctx, query)
 	} else {
 		var validMeasurementUnitSubsets []*eatingindexing.ValidMeasurementUnitSearchSubset
@@ -1367,7 +1367,7 @@ func (m *validEnumerationManager) ArchiveValidMeasurementUnit(ctx context.Contex
 }
 
 // SearchValidInstruments implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error) {
+func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1376,15 +1376,15 @@ func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, qu
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
 		results []*types.ValidInstrument
 		err     error
 	)
-	if useDatabase {
+	if !useSearchService {
 		results, err = m.db.SearchForValidInstruments(ctx, query)
 	} else {
 		var validInstrumentSubsets []*eatingindexing.ValidInstrumentSearchSubset
@@ -1828,7 +1828,7 @@ func (m *validEnumerationManager) SearchValidPreparationInstrumentsByInstrument(
 }
 
 // SearchValidPreparations implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidPreparation, error) {
+func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidPreparation, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1837,15 +1837,15 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
 		results []*types.ValidPreparation
 		err     error
 	)
-	if useDatabase {
+	if !useSearchService {
 		results, err = m.db.SearchForValidPreparations(ctx, query)
 	} else {
 		var validPreparationSubsets []*eatingindexing.ValidPreparationSearchSubset
@@ -2158,7 +2158,7 @@ func (m *validEnumerationManager) SearchValidPreparationVesselsByVessel(ctx cont
 }
 
 // SearchValidVessels implements the ValidEnumerationsManager interface.
-func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.ValidVessel, error) {
+func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*types.ValidVessel, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -2167,15 +2167,15 @@ func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query 
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useSearchService)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, useSearchService)
 
 	var (
 		validVessels []*types.ValidVessel
 		err          error
 	)
-	if useDatabase {
+	if !useSearchService {
 		validVessels, err = m.db.SearchForValidVessels(ctx, query)
 	} else {
 		var validVesselSubsets []*eatingindexing.ValidVesselSearchSubset

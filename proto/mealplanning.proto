@@ -330,7 +330,7 @@ message ValidMeasurementUnitConversion {
 }
 
 message ValidMeasurementUnitConversionCreationRequestInput {
-  string OnlyForIngredient = 1;
+  optional string OnlyForIngredient = 1;
   string From = 2;
   string To = 3;
   string Notes = 4;
@@ -493,7 +493,7 @@ message ValidVessel {
 }
 
 message ValidVesselCreationRequestInput {
-  string CapacityUnitID = 1;
+  optional string CapacityUnitID = 1;
   string Shape = 2;
   string IconPath = 3;
   string PluralName = 4;
@@ -682,10 +682,7 @@ message CreateValidIngredientResponse {
 
 // CreateValidIngredientGroup
 message CreateValidIngredientGroupRequest {
-  string Name = 1;
-  string Slug = 2;
-  string Description = 3;
-  repeated ValidIngredientGroupMemberCreationRequestInput Members = 4;
+  ValidIngredientGroupCreationRequestInput Input = 1;
 }
 
 message CreateValidIngredientGroupResponse {
@@ -695,10 +692,7 @@ message CreateValidIngredientGroupResponse {
 
 // CreateValidIngredientMeasurementUnit
 message CreateValidIngredientMeasurementUnitRequest {
-  string Notes = 1;
-  string ValidMeasurementUnitID = 2;
-  string ValidIngredientID = 3;
-  common.Float32RangeWithOptionalMax AllowableQuantity = 4;
+  ValidIngredientMeasurementUnitCreationRequestInput Input = 1;
 }
 
 message CreateValidIngredientMeasurementUnitResponse {
@@ -708,9 +702,7 @@ message CreateValidIngredientMeasurementUnitResponse {
 
 // CreateValidIngredientPreparation
 message CreateValidIngredientPreparationRequest {
-  string Notes = 1;
-  string ValidPreparationID = 2;
-  string ValidIngredientID = 3;
+  ValidIngredientPreparationCreationRequestInput Input = 1;
 }
 
 message CreateValidIngredientPreparationResponse {
@@ -720,12 +712,7 @@ message CreateValidIngredientPreparationResponse {
 
 // CreateValidIngredientState
 message CreateValidIngredientStateRequest {
-  string Name = 1;
-  string Slug = 2;
-  string PastTense = 3;
-  string Description = 4;
-  string AttributeType = 5;
-  string IconPath = 6;
+  ValidIngredientStateCreationRequestInput Input = 1;
 }
 
 message CreateValidIngredientStateResponse {
@@ -735,9 +722,7 @@ message CreateValidIngredientStateResponse {
 
 // CreateValidIngredientStateIngredient
 message CreateValidIngredientStateIngredientRequest {
-  string Notes = 1;
-  string ValidIngredientStateID = 2;
-  string ValidIngredientID = 3;
+  ValidIngredientStateIngredientCreationRequestInput Input = 1;
 }
 
 message CreateValidIngredientStateIngredientResponse {
@@ -757,15 +742,7 @@ message CreateValidInstrumentResponse {
 
 // CreateValidMeasurementUnit
 message CreateValidMeasurementUnitRequest {
-  string Name = 1;
-  string Description = 2;
-  string IconPath = 3;
-  string PluralName = 4;
-  string Slug = 5;
-  bool Volumetric = 6;
-  bool Universal = 7;
-  bool Metric = 8;
-  bool Imperial = 9;
+  ValidMeasurementUnitCreationRequestInput Input = 1;
 }
 
 message CreateValidMeasurementUnitResponse {
@@ -775,11 +752,7 @@ message CreateValidMeasurementUnitResponse {
 
 // CreateValidMeasurementUnitConversion
 message CreateValidMeasurementUnitConversionRequest {
-  optional string OnlyForIngredient = 1;
-  string From = 2;
-  string To = 3;
-  string Notes = 4;
-  float Modifier = 5;
+  ValidMeasurementUnitConversionCreationRequestInput Input = 1;
 }
 
 message CreateValidMeasurementUnitConversionResponse {
@@ -789,21 +762,7 @@ message CreateValidMeasurementUnitConversionResponse {
 
 // CreateValidPreparation
 message CreateValidPreparationRequest {
-  common.Uint16RangeWithOptionalMax InstrumentCount = 1;
-  common.Uint16RangeWithOptionalMax IngredientCount = 2;
-  common.Uint16RangeWithOptionalMax VesselCount = 3;
-  string IconPath = 4;
-  string PastTense = 5;
-  string Slug = 6;
-  string Name = 7;
-  string Description = 8;
-  bool TemperatureRequired = 9;
-  bool TimeEstimateRequired = 10;
-  bool ConditionExpressionRequired = 11;
-  bool ConsumesVessel = 12;
-  bool OnlyForVessels = 13;
-  bool RestrictToIngredients = 14;
-  bool YieldsNothing = 15;
+  ValidPreparationCreationRequestInput Input = 1;
 }
 
 message CreateValidPreparationResponse {
@@ -813,9 +772,7 @@ message CreateValidPreparationResponse {
 
 // CreateValidPreparationInstrument
 message CreateValidPreparationInstrumentRequest {
-  string Notes = 1;
-  string ValidPreparationID = 2;
-  string ValidInstrumentID = 3;
+  ValidPreparationInstrumentCreationRequestInput Input = 1;
 }
 
 message CreateValidPreparationInstrumentResponse {
@@ -825,9 +782,7 @@ message CreateValidPreparationInstrumentResponse {
 
 // CreateValidPreparationVessel
 message CreateValidPreparationVesselRequest {
-  string Notes = 1;
-  string ValidPreparationID = 2;
-  string ValidVesselID = 3;
+  ValidPreparationVesselCreationRequestInput Input = 1;
 }
 
 message CreateValidPreparationVesselResponse {
@@ -837,20 +792,7 @@ message CreateValidPreparationVesselResponse {
 
 // CreateValidVessel
 message CreateValidVesselRequest {
-  optional string CapacityUnitID = 1;
-  string Shape = 2;
-  string IconPath = 3;
-  string PluralName = 4;
-  string Name = 5;
-  string Description = 6;
-  string Slug = 7;
-  float LengthInMillimeters = 8;
-  float HeightInMillimeters = 9;
-  float Capacity = 10;
-  float WidthInMillimeters = 11;
-  bool UsableForStorage = 12;
-  bool IncludeInGeneratedInstructions = 13;
-  bool DisplayInSummaryLists = 14;
+  ValidVesselCreationRequestInput Input = 1;
 }
 
 message CreateValidVesselResponse {
@@ -1302,7 +1244,7 @@ message GetValidVesselsResponse {
 message SearchForValidIngredientGroupsRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForValidIngredientGroupsResponse {
@@ -1315,7 +1257,7 @@ message SearchForValidIngredientGroupsResponse {
 message SearchForValidIngredientStatesRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForValidIngredientStatesResponse {
@@ -1328,7 +1270,7 @@ message SearchForValidIngredientStatesResponse {
 message SearchForValidIngredientsRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForValidIngredientsResponse {
@@ -1341,7 +1283,7 @@ message SearchForValidIngredientsResponse {
 message SearchForValidInstrumentsRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForValidInstrumentsResponse {
@@ -1354,7 +1296,7 @@ message SearchForValidInstrumentsResponse {
 message SearchForValidMeasurementUnitsRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForValidMeasurementUnitsResponse {
@@ -1367,7 +1309,7 @@ message SearchForValidMeasurementUnitsResponse {
 message SearchForValidPreparationsRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForValidPreparationsResponse {
@@ -1380,7 +1322,7 @@ message SearchForValidPreparationsResponse {
 message SearchForValidVesselsRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForValidVesselsResponse {
@@ -2537,7 +2479,7 @@ message GetRecipesResponse {
 message SearchForRecipesRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForRecipesResponse {
@@ -3254,7 +3196,7 @@ message RunMealPlanTaskCreatorWorkerResponse {
 message SearchForMealsRequest {
   filtering.QueryFilter Filter = 1;
   string Query = 2;
-  bool UseDatabase = 3;
+  bool UseSearchService = 3;
 }
 
 message SearchForMealsResponse {

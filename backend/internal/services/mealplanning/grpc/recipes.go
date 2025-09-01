@@ -1009,7 +1009,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	recipes, _, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseDatabase, filter)
+	recipes, _, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "searching for recipes")
 	}

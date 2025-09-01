@@ -1662,7 +1662,7 @@ func TestServiceImpl_SearchForValidIngredientGroups(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("SearchValidIngredientGroups", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		mvem.On("SearchValidIngredientGroups", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.SearchForValidIngredientGroups(ctx, exampleRequest)
@@ -1687,7 +1687,7 @@ func TestServiceImpl_SearchForValidIngredientStates(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("SearchValidIngredientStates", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		mvem.On("SearchValidIngredientStates", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.SearchForValidIngredientStates(ctx, exampleRequest)
@@ -1712,7 +1712,7 @@ func TestServiceImpl_SearchForValidIngredients(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("SearchValidIngredients", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		mvem.On("SearchValidIngredients", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.SearchForValidIngredients(ctx, exampleRequest)
@@ -1737,7 +1737,7 @@ func TestServiceImpl_SearchForValidInstruments(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("SearchValidInstruments", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		mvem.On("SearchValidInstruments", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.SearchForValidInstruments(ctx, exampleRequest)
@@ -1762,7 +1762,7 @@ func TestServiceImpl_SearchForValidMeasurementUnits(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("SearchValidMeasurementUnits", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		mvem.On("SearchValidMeasurementUnits", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.SearchForValidMeasurementUnits(ctx, exampleRequest)
@@ -1787,7 +1787,7 @@ func TestServiceImpl_SearchForValidPreparations(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("SearchValidPreparations", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		mvem.On("SearchValidPreparations", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.SearchForValidPreparations(ctx, exampleRequest)
@@ -1812,7 +1812,7 @@ func TestServiceImpl_SearchForValidVessels(T *testing.T) {
 		s := buildServiceImplForTest(t)
 
 		mvem := &mockmanagers.MockValidEnumerationsManager{}
-		mvem.On("SearchValidVessels", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseDatabase, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
+		mvem.On("SearchValidVessels", testutils.ContextMatcher, exampleRequest.Query, exampleRequest.UseSearchService, testutils.QueryFilterMatcher).Return(exampleResult.Data, nil)
 		s.validEnumerationsManager = mvem
 
 		result, err := s.SearchForValidVessels(ctx, exampleRequest)

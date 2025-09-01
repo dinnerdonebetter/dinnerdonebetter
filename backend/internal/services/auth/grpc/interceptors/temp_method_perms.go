@@ -29,6 +29,27 @@ var (
 		"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
 			authorization.ReadValidIngredientsPermission,
 		},
+		"/mealplanning.MealPlanningService/CreateValidPreparation": {
+			authorization.CreateValidPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidPreparation": {
+			authorization.ReadValidPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidPreparations": {
+			authorization.ReadValidPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/SearchForValidPreparations": {
+			authorization.ReadValidPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/UpdateValidPreparation": {
+			authorization.UpdateValidPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/ArchiveValidPreparation": {
+			authorization.ArchiveValidPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetRandomValidPreparation": {
+			authorization.ReadValidPreparationsPermission,
+		},
 		"/mealplanning.MealPlanningService/CreateValidInstrument": {
 			authorization.CreateValidInstrumentsPermission,
 		},
