@@ -44,6 +44,7 @@ var (
 		"/identity.IdentityService/CancelAccountInvitation": {
 			authorization.InviteUserToAccountPermission,
 		},
+		"/identity.IdentityService/RejectAccountInvitation":       noPerms,
 		"/identity.IdentityService/AcceptAccountInvitation":       noPerms,
 		"/identity.IdentityService/GetReceivedAccountInvitations": noPerms,
 		"/identity.IdentityService/GetSentAccountInvitations":     noPerms,

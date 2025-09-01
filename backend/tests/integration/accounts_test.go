@@ -562,242 +562,71 @@ func TestAccounts_Inviting(T *testing.T) {
 	})
 
 	T.Run("invites can be rejected", func(t *testing.T) {
+
 		t.Parallel()
-	})
-}
+		ctx := t.Context()
 
-/*
+		// create the inviting user and get the account ID to send invites for
+		_, testClient := createUserAndClientForTest(t)
+		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
+		require.NoError(t, err)
+		accountID := accountRes.Result.ID
 
-func (s *TestSuite) TestAccounts_InvitingUserWhoSignsUpIndependentlyAndThenCancelling() {
-	s.runTest("should be possible to invite a user before they sign up and cancel before they can accept", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+		// create a user to invite
+		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
+		input := &identity.UserRegistrationInput{
+			Birthday:              pointer.To(time.Now()),
+			EmailAddress:          inviteeEmailAddress,
+			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AcceptedPrivacyPolicy: true,
+			AcceptedTOS:           true,
+		}
+		_, inviteeClient := createUserAndClientForTestWithRegistrationInput(t, input)
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
-			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			relevantAccountID := currentStatus.ActiveAccount
-
-			// Create webhook.
-			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
-			createdWebhook, err := testClients.userClient.CreateWebhook(ctx, exampleWebhookInput)
-			require.NoError(t, err)
-
-			checkWebhookEquality(t, exampleWebhook, createdWebhook)
-
-			createdWebhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
-			requireNotNilAndNoProblems(t, createdWebhook, err)
-			require.Equal(t, relevantAccountID, createdWebhook.BelongsToAccount)
-
-			inviteReq := &types.AccountInvitationCreationRequestInput{
+		// create the invitation for the user
+		invitation, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
+			AccountID: accountID,
+			Input: &identitysvc.AccountInvitationCreationRequestInput{
 				Note:    t.Name(),
-				ToEmail: gofakeit.Email(),
-			}
-			invitation, err := testClients.userClient.CreateAccountInvitation(ctx, relevantAccountID, inviteReq)
-			require.NoError(t, err)
+				ToName:  t.Name(),
+				ToEmail: inviteeEmailAddress,
+			},
+		})
+		require.NoError(t, err)
 
-			sentInvitations, err := testClients.userClient.GetSentAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.Data)
+		// verify that we can retrieve the invitation we just created
+		sentInvitations, err := testClient.GetSentAccountInvitations(ctx, &identitysvc.GetSentAccountInvitationsRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, sentInvitations)
+		assert.NotEmpty(t, sentInvitations.Result)
 
-			_, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
-				EmailAddress: inviteReq.ToEmail,
-				Username:     fakes.BuildFakeUser().Username,
-				Password:     gofakeit.Password(true, true, true, true, false, 64),
-			})
+		// verify the invitee can see the invitation as received
+		invitations, err := inviteeClient.GetReceivedAccountInvitations(ctx, &identitysvc.GetReceivedAccountInvitationsRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, invitations)
+		assert.NotEmpty(t, invitations.Result)
 
-			invitations, err := c.GetReceivedAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, invitations, err)
-			assert.NotEmpty(t, invitations.Data)
-
-			err = testClients.userClient.CancelAccountInvitation(ctx, invitation.ID, &types.AccountInvitationUpdateRequestInput{
-				Token: invitation.Token,
+		// accept the invitation
+		_, err = inviteeClient.RejectAccountInvitation(ctx, &identitysvc.RejectAccountInvitationRequest{
+			AccountInvitationID: invitation.Created.ID,
+			Input: &identitysvc.AccountInvitationUpdateRequestInput{
+				Token: invitation.Created.Token,
 				Note:  t.Name(),
-			})
-			require.NoError(t, err)
+			},
+		})
+		require.NoError(t, err)
 
-			sentInvitations, err = testClients.userClient.GetSentAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.Empty(t, sentInvitations.Data)
-		}
+		// verify that we don't have any sent invitations because they've all been accepted
+		sentInvitations, err = testClient.GetSentAccountInvitations(ctx, nil)
+		require.NoError(t, err)
+		require.NotNil(t, sentInvitations)
+		assert.Empty(t, sentInvitations.Result)
 	})
 }
-
-func (s *TestSuite) TestAccounts_InvitingNewUserWithInviteLink() {
-	s.runTest("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
-			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			relevantAccountID := currentStatus.ActiveAccount
-
-			// Create webhook.
-			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
-			createdWebhook, err := testClients.userClient.CreateWebhook(ctx, exampleWebhookInput)
-			require.NoError(t, err)
-
-			checkWebhookEquality(t, exampleWebhook, createdWebhook)
-
-			createdWebhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
-			requireNotNilAndNoProblems(t, createdWebhook, err)
-			require.Equal(t, relevantAccountID, createdWebhook.BelongsToAccount)
-
-			inviteReq := &types.AccountInvitationCreationRequestInput{
-				Note:    t.Name(),
-				ToEmail: gofakeit.Email(),
-			}
-			createdInvitation, err := testClients.userClient.CreateAccountInvitation(ctx, relevantAccountID, inviteReq)
-			require.NoError(t, err)
-
-			createdInvitation, err = testClients.userClient.GetAccountInvitation(ctx, createdInvitation.ID)
-			requireNotNilAndNoProblems(t, createdInvitation, err)
-
-			sentInvitations, err := testClients.userClient.GetSentAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.Data)
-
-			_, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
-				EmailAddress:    inviteReq.ToEmail,
-				Username:        fakes.BuildFakeUser().Username,
-				Password:        gofakeit.Password(true, true, true, true, false, 64),
-				InvitationID:    createdInvitation.ID,
-				InvitationToken: createdInvitation.Token,
-			})
-
-			accounts, err := c.GetAccounts(ctx, nil)
-			require.NoError(t, err)
-
-			var found bool
-			for _, account := range accounts.Data {
-				if account.ID == relevantAccountID {
-					found = true
-					break
-				}
-			}
-
-			require.True(t, found)
-
-			_, err = c.GetWebhook(ctx, createdWebhook.ID)
-			require.NoError(t, err)
-		}
-	})
-}
-
-func (s *TestSuite) TestAccounts_InviteCanBeCancelled() {
-	s.runTest("should be possible to invite an already-registered userClient", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
-			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			relevantAccountID := currentStatus.ActiveAccount
-
-			// Create webhook.
-			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
-			createdWebhook, err := testClients.userClient.CreateWebhook(ctx, exampleWebhookInput)
-			require.NoError(t, err)
-
-			checkWebhookEquality(t, exampleWebhook, createdWebhook)
-
-			createdWebhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
-			requireNotNilAndNoProblems(t, createdWebhook, err)
-			require.Equal(t, relevantAccountID, createdWebhook.BelongsToAccount)
-
-			inviteReq := &types.AccountInvitationCreationRequestInput{
-				Note:    t.Name(),
-				ToEmail: gofakeit.Email(),
-			}
-			invitation, err := testClients.userClient.CreateAccountInvitation(ctx, relevantAccountID, inviteReq)
-			require.NoError(t, err)
-
-			require.NoError(t, testClients.userClient.CancelAccountInvitation(ctx, invitation.ID, &types.AccountInvitationUpdateRequestInput{
-				Token: invitation.Token,
-				Note:  t.Name(),
-			}))
-
-			sentInvitations, err := testClients.userClient.GetSentAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.Empty(t, sentInvitations.Data)
-
-			_, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
-				EmailAddress: inviteReq.ToEmail,
-				Username:     fakes.BuildFakeUser().Username,
-				Password:     gofakeit.Password(true, true, true, true, false, 64),
-			})
-
-			invitations, err := c.GetReceivedAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, invitations, err)
-			assert.Empty(t, invitations.Data)
-		}
-	})
-}
-
-func (s *TestSuite) TestAccounts_InviteCanBeRejected() {
-	s.runTest("should be possible to invite an already-registered userClient", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
-			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			relevantAccountID := currentStatus.ActiveAccount
-
-			// Create webhook.
-			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
-			createdWebhook, err := testClients.userClient.CreateWebhook(ctx, exampleWebhookInput)
-			require.NoError(t, err)
-
-			checkWebhookEquality(t, exampleWebhook, createdWebhook)
-
-			createdWebhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
-			requireNotNilAndNoProblems(t, createdWebhook, err)
-			require.Equal(t, relevantAccountID, createdWebhook.BelongsToAccount)
-
-			u, c := createUserAndClientForTest(ctx, t, nil)
-
-			invitation, err := testClients.userClient.CreateAccountInvitation(ctx, relevantAccountID, &types.AccountInvitationCreationRequestInput{
-				Note:    t.Name(),
-				ToEmail: u.EmailAddress,
-			})
-			require.NoError(t, err)
-
-			sentInvitations, err := testClients.userClient.GetSentAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.Data)
-
-			invitations, err := c.GetReceivedAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, invitations, err)
-			assert.NotEmpty(t, invitations.Data)
-
-			err = c.RejectAccountInvitation(ctx, invitation.ID, &types.AccountInvitationUpdateRequestInput{
-				Token: invitation.Token,
-				Note:  t.Name(),
-			})
-			require.NoError(t, err)
-
-			sentInvitations, err = testClients.userClient.GetSentAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.Empty(t, sentInvitations.Data)
-		}
-	})
-}
-
-*/
 
 func TestAccounts_ChangingMemberships(T *testing.T) {
 	T.Parallel()

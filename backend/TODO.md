@@ -7,4 +7,5 @@ just a list of gripes and things I'd like to accomplish eventually
 - [ ] full use of `go tool` for tool invocations
 - [ ] ensure all repositories create audit log entries
 - [ ] ensure all gRPC methods are wrappers of a "manager" method
+- [ ] integration tests verify ownership things (i.e. created recipes cannot be deleted by people who didn't create them)
 - [ ]
