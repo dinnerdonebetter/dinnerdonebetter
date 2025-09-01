@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS account_invitations (
     archived_at TIMESTAMP WITH TIME ZONE,
     expires_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + '7 days'::INTERVAL) NOT NULL,
     to_name TEXT DEFAULT ''::TEXT NOT NULL,
-    UNIQUE(to_user, from_user, destination_account)
+    UNIQUE(to_user, to_email, from_user, destination_account)
 );
 
 CREATE TABLE IF NOT EXISTS service_settings (

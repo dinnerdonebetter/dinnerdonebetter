@@ -321,6 +321,12 @@ func (r *repository) CreateAccountInvitation(ctx context.Context, input *identit
 	logger := r.logger.WithValue(keys.AccountInvitationIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, input.DestinationAccountID)
 
+	if input.ToUser == nil && input.ToEmail != "" {
+		if invitee, err := r.GetUserByEmail(ctx, input.ToEmail); err == nil {
+			input.ToUser = &invitee.ID
+		}
+	}
+
 	if err := r.generatedQuerier.CreateAccountInvitation(ctx, r.db, &generated.CreateAccountInvitationParams{
 		ExpiresAt:          input.ExpiresAt,
 		ID:                 input.ID,

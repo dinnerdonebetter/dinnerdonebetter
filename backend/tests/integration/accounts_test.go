@@ -2,6 +2,9 @@ package integration
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
@@ -11,8 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 	identitygrpcconverters "github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
