@@ -628,327 +628,147 @@ func TestAccounts_Inviting(T *testing.T) {
 	})
 }
 
-func TestAccounts_ChangingMemberships(T *testing.T) {
-	T.Parallel()
-
-	T.Run("", func(t *testing.T) {
-		t.Parallel()
-	})
-}
-
-/*
-
-func (s *TestSuite) TestAccounts_ChangingMemberships() {
-	s.runTest("should be possible to change members of an account", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			const userCount = 1
-
-			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
-			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-
-			// fetch account data
-			accountCreationInput := &types.AccountCreationRequestInput{
-				Name: fakes.BuildFakeAccount().Name,
-			}
-			account, accountCreationErr := testClients.userClient.CreateAccount(ctx, accountCreationInput)
-			require.NoError(t, accountCreationErr)
-			require.NotNil(t, account)
-
-			_, err := testClients.userClient.SetDefaultAccount(ctx, account.ID)
-			require.NoError(t, err)
-
-			tokenResponse, err := testClients.userClient.LoginForToken(ctx, &types.UserLoginInput{Username: testClients.user.Username, Password: testClients.user.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, testClients.user)})
-			require.NoError(t, err)
-
-			require.NoError(t, testClients.userClient.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"account_member"}, tokenResponse.Token)))
-
-			// Create webhook.
-			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
-			createdWebhook, err := testClients.userClient.CreateWebhook(ctx, exampleWebhookInput)
-			require.NoError(t, err)
-
-			checkWebhookEquality(t, exampleWebhook, createdWebhook)
-
-			createdWebhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
-			requireNotNilAndNoProblems(t, createdWebhook, err)
-			require.Equal(t, account.ID, createdWebhook.BelongsToAccount)
-
-			// create dummy users
-			users := []*types.User{}
-			clients := []*apiclient.Client{}
-
-			// create users
-			for i := 0; i < userCount; i++ {
-				u, c := createUserAndClientForTest(ctx, t, nil)
-				users = append(users, u)
-				clients = append(clients, c)
-
-				currentStatus, statusErr = c.GetAuthStatus(s.ctx)
-				requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			}
-
-			// check that each userClient cannot see the unreachable webhook
-			for i := 0; i < userCount; i++ {
-				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
-				require.Nil(t, webhook)
-				require.Error(t, err)
-			}
-
-			// add them to the account
-			for i := 0; i < userCount; i++ {
-				invitation, invitationErr := testClients.userClient.CreateAccountInvitation(ctx, account.ID, &types.AccountInvitationCreationRequestInput{
-					ToEmail: users[i].EmailAddress,
-					Note:    t.Name(),
-				})
-				require.NoError(t, invitationErr)
-				require.NotEmpty(t, invitation.ID)
-
-				invitations, fetchInvitationsErr := clients[i].GetReceivedAccountInvitations(ctx, nil)
-				requireNotNilAndNoProblems(t, invitations, fetchInvitationsErr)
-				assert.NotEmpty(t, invitations.Data)
-
-				err = clients[i].AcceptAccountInvitation(ctx, invitation.ID, &types.AccountInvitationUpdateRequestInput{
-					Token: invitation.Token,
-					Note:  t.Name(),
-				})
-				require.NoError(t, err)
-
-				_, err = clients[i].SetDefaultAccount(ctx, account.ID)
-				require.NoError(t, err)
-
-				tokenResponse, err = clients[i].LoginForToken(ctx, &types.UserLoginInput{Username: users[i].Username, Password: users[i].HashedPassword, TOTPToken: generateTOTPTokenForUser(t, users[i])})
-				require.NoError(t, err)
-
-				require.NoError(t, clients[i].SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"account_member"}, tokenResponse.Token)))
-
-				currentStatus, statusErr = clients[i].GetAuthStatus(s.ctx)
-				requireNotNilAndNoProblems(t, currentStatus, statusErr)
-				require.Equal(t, currentStatus.ActiveAccount, account.ID)
-			}
-
-			// grant all permissions
-			for i := 0; i < userCount; i++ {
-				input := &types.ModifyUserPermissionsInput{
-					Reason:  t.Name(),
-					NewRole: authorization.AccountAdminRole.String(),
-				}
-				require.NoError(t, testClients.userClient.UpdateAccountMemberPermissions(ctx, account.ID, users[i].ID, input))
-			}
-
-			// check that each userClient can see the webhook
-			for i := 0; i < userCount; i++ {
-				webhook, webhookRetrievalError := clients[i].GetWebhook(ctx, createdWebhook.ID)
-				requireNotNilAndNoProblems(t, webhook, webhookRetrievalError)
-			}
-
-			// remove users from account
-			for i := 0; i < userCount; i++ {
-				require.NoError(t, testClients.userClient.ArchiveUserMembership(ctx, account.ID, users[i].ID))
-			}
-
-			// check that each userClient cannot see the webhook
-			for i := 0; i < userCount; i++ {
-				webhook, webhookRetrievalError := clients[i].GetWebhook(ctx, createdWebhook.ID)
-				require.Nil(t, webhook)
-				require.Error(t, webhookRetrievalError)
-			}
-
-			// Clean up.
-			require.NoError(t, testClients.userClient.ArchiveWebhook(ctx, createdWebhook.ID))
-
-			for i := 0; i < userCount; i++ {
-				require.NoError(t, testClients.adminClient.ArchiveUser(ctx, users[i].ID))
-			}
-		}
-	})
-}
-
-*/
-
 func TestAccounts_OwnershipTransfer(T *testing.T) {
 	T.Parallel()
 
-	T.Run("", func(t *testing.T) {
+	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
-	})
-}
+		ctx := t.Context()
 
-/*
+		// create the inviting user and get the account ID to send invites for
+		ogUser, testClient := createUserAndClientForTest(t)
+		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
+		require.NoError(t, err)
+		accountID := accountRes.Result.ID
 
-func (s *TestSuite) TestAccounts_OwnershipTransfer() {
-	s.runTest("should be possible to transfer ownership of an account", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+		// create a webhook (to demonstrate access with later)
+		createdWebhook := createWebhookForTest(t, testClient)
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			// create users
-			futureOwner, futureOwnerClient := createUserAndClientForTest(ctx, t, nil)
-
-			// fetch account data
-			accountCreationInput := &types.AccountCreationRequestInput{
-				Name: fakes.BuildFakeAccount().Name,
-			}
-			account, accountCreationErr := testClients.userClient.CreateAccount(ctx, accountCreationInput)
-			require.NoError(t, accountCreationErr)
-			require.NotNil(t, account)
-
-			_, err := testClients.userClient.SetDefaultAccount(ctx, account.ID)
-			require.NoError(t, err)
-
-			tokenResponse, err := testClients.userClient.LoginForToken(ctx, &types.UserLoginInput{Username: testClients.user.Username, Password: testClients.user.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, testClients.user)})
-			require.NoError(t, err)
-
-			require.NoError(t, testClients.userClient.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"account_member"}, tokenResponse.Token)))
-
-			// create a webhook
-
-			// Create webhook.
-			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
-			createdWebhook, err := testClients.userClient.CreateWebhook(ctx, exampleWebhookInput)
-			require.NoError(t, err)
-
-			checkWebhookEquality(t, exampleWebhook, createdWebhook)
-
-			createdWebhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
-			requireNotNilAndNoProblems(t, createdWebhook, err)
-
-			require.Equal(t, account.ID, createdWebhook.BelongsToAccount)
-
-			// check that userClient cannot see the webhook
-			webhook, err := futureOwnerClient.GetWebhook(ctx, createdWebhook.ID)
-			require.Nil(t, webhook)
-			require.Error(t, err)
-
-			// add them to the account
-			_, err = testClients.userClient.TransferAccountOwnership(ctx, account.ID, &types.AccountOwnershipTransferInput{
-				Reason:       t.Name(),
-				CurrentOwner: account.BelongsToUser,
-				NewOwner:     futureOwner.ID,
-			})
-			require.NoError(t, err)
-
-			_, err = futureOwnerClient.SetDefaultAccount(ctx, account.ID)
-			require.NoError(t, err)
-
-			tokenResponse, err = futureOwnerClient.LoginForToken(ctx, &types.UserLoginInput{Username: futureOwner.Username, Password: futureOwner.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, futureOwner)})
-			require.NoError(t, err)
-
-			require.NoError(t, futureOwnerClient.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"account_member"}, tokenResponse.Token)))
-
-			// check that userClient can see the webhook
-			webhook, err = futureOwnerClient.GetWebhook(ctx, createdWebhook.ID)
-			requireNotNilAndNoProblems(t, webhook, err)
-
-			// check that old userClient cannot see the webhook
-			webhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
-			require.Nil(t, webhook)
-			require.Error(t, err)
-
-			// check that new owner can delete the webhook
-			require.NoError(t, futureOwnerClient.ArchiveWebhook(ctx, createdWebhook.ID))
-
-			// Clean up.
-			require.Error(t, testClients.userClient.ArchiveWebhook(ctx, createdWebhook.ID))
-			require.NoError(t, testClients.adminClient.ArchiveUser(ctx, futureOwner.ID))
+		// create a user to invite
+		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
+		input := &identity.UserRegistrationInput{
+			Birthday:              pointer.To(time.Now()),
+			EmailAddress:          inviteeEmailAddress,
+			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AcceptedPrivacyPolicy: true,
+			AcceptedTOS:           true,
 		}
+		invitee, inviteeClient := createUserAndClientForTestWithRegistrationInput(t, input)
+
+		// create the invitation for the user
+		_, err = testClient.TransferAccountOwnership(ctx, &identitysvc.TransferAccountOwnershipRequest{
+			AccountID: accountID,
+			Input: &identitysvc.AccountOwnershipTransferInput{
+				Reason:       t.Name(),
+				CurrentOwner: ogUser.ID,
+				NewOwner:     invitee.ID,
+			},
+		})
+		require.NoError(t, err)
+
+		// the invited user needs a new token that indicates they're a member of this account
+		inviteeClient = buildAuthedGRPCClient(ctx, fetchLoginTokenForUserForTest(t, invitee))
+
+		// change to the new account
+		_, err = inviteeClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountID: accountID})
+		require.NoError(t, err)
+
+		// validate we can see the webhook created before our user existed
+		webhook, err := inviteeClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		require.NoError(t, err)
+		require.NotNil(t, webhook)
 	})
 }
-
-*/
 
 func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount(T *testing.T) {
 	T.Parallel()
 
-	T.Run("", func(t *testing.T) {
+	T.Run("happy path", func(t *testing.T) {
 		t.Parallel()
-	})
-}
+		ctx := t.Context()
 
-/*
+		// create the inviting user and get the account ID to send invites for
+		testUser, testClient := createUserAndClientForTest(t)
+		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
+		require.NoError(t, err)
+		accountID := accountRes.Result.ID
 
-func (s *TestSuite) TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount() {
-	s.runTest("should be possible to invite a user via referral link", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			currentStatus, statusErr := testClients.userClient.GetAuthStatus(s.ctx)
-			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			relevantAccountID := currentStatus.ActiveAccount
-
-			inviteReq := &types.AccountInvitationCreationRequestInput{
+		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
+		inviteRes, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
+			AccountID: accountID,
+			Input: &identitysvc.AccountInvitationCreationRequestInput{
 				Note:    t.Name(),
-				ToEmail: gofakeit.Email(),
-			}
-			createdInvitation, err := testClients.userClient.CreateAccountInvitation(ctx, relevantAccountID, inviteReq)
-			require.NoError(t, err)
+				ToEmail: inviteeEmailAddress,
+				ToName:  fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, inviteRes)
 
-			createdInvitation, err = testClients.userClient.GetAccountInvitation(ctx, createdInvitation.ID)
-			requireNotNilAndNoProblems(t, createdInvitation, err)
-
-			sentInvitations, err := testClients.userClient.GetSentAccountInvitations(ctx, nil)
-			requireNotNilAndNoProblems(t, sentInvitations, err)
-			assert.NotEmpty(t, sentInvitations.Data)
-
-			regInput := &types.UserRegistrationInput{
-				EmailAddress:    inviteReq.ToEmail,
-				Username:        fakes.BuildFakeUser().Username,
-				Password:        gofakeit.Password(true, true, true, true, false, 64),
-				InvitationID:    createdInvitation.ID,
-				InvitationToken: createdInvitation.Token,
-			}
-			u, c := createUserAndClientForTest(ctx, t, regInput)
-
-			accounts, err := c.GetAccounts(ctx, nil)
-			require.NoError(t, err)
-
-			assert.Len(t, accounts.Data, 2)
-
-			var (
-				found            bool
-				otherAccountID string
-			)
-
-			for _, account := range accounts.Data {
-				if account.ID == relevantAccountID {
-					if !found {
-						found = true
-					}
-				} else {
-					otherAccountID = account.ID
-				}
-			}
-
-			require.NotEmpty(t, otherAccountID)
-			require.True(t, found)
-
-			require.NoError(t, testClients.userClient.ArchiveUserMembership(ctx, relevantAccountID, u.ID))
-
-			u.HashedPassword = regInput.Password
-
-			tokenResponse, err := c.LoginForToken(ctx, &types.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
-			require.NoError(t, err)
-
-			require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"account_member"}, tokenResponse.Token)))
-
-			account, err := c.GetActiveAccount(ctx)
-			requireNotNilAndNoProblems(t, account, err)
-			assert.NotEqual(t, relevantAccountID, account.ID)
-
-			require.True(t, found)
+		// create a user to invite
+		input := &identity.UserRegistrationInput{
+			Birthday:              pointer.To(time.Now()),
+			EmailAddress:          inviteeEmailAddress,
+			FirstName:             fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			AccountName:           fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			LastName:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Password:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			Username:              fmt.Sprintf("test_%d", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
+			InvitationID:          inviteRes.Created.ID,
+			InvitationToken:       inviteRes.Created.Token,
+			AcceptedPrivacyPolicy: true,
+			AcceptedTOS:           true,
 		}
+		invitee, inviteeClient := createUserAndClientForTestWithRegistrationInput(t, input)
+
+		inviteeAccountsRes, err := inviteeClient.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
+		require.NoError(t, err)
+		require.Len(t, inviteeAccountsRes.Result, 2)
+
+		_, err = testClient.UpdateAccountMemberPermissions(ctx, &identitysvc.UpdateAccountMemberPermissionsRequest{
+			UserID: invitee.ID,
+			Input: &identitysvc.ModifyUserPermissionsInput{
+				Reason:  t.Name(),
+				NewRole: "account_admin",
+			},
+		})
+		require.NoError(t, err)
+
+		///////
+
+		var (
+			found          bool
+			otherAccountID string
+		)
+
+		for _, account := range inviteeAccountsRes.Result {
+			if account.ID == accountID {
+				if !found {
+					found = true
+				}
+			} else {
+				otherAccountID = account.ID
+			}
+		}
+
+		require.NotEmpty(t, otherAccountID)
+		require.True(t, found)
+
+		_, err = inviteeClient.ArchiveUserMembership(ctx, &identitysvc.ArchiveUserMembershipRequest{
+			AccountID: accountID,
+			UserID:    testUser.ID,
+		})
+		require.NoError(t, err)
+
+		account, err := inviteeClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, account)
+		assert.NotEqual(t, account, accountID)
+
+		require.True(t, found)
 	})
 }
-
-*/

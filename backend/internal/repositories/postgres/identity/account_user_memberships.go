@@ -428,7 +428,7 @@ func (r *repository) removeUserFromAccount(ctx context.Context, querier database
 		return observability.PrepareError(err, span, "fetching remaining accounts")
 	}
 
-	if len(remainingAccounts.Data) < 1 {
+	if remainingAccounts == nil || len(remainingAccounts.Data) < 1 {
 		logger.Debug("user has no remaining accounts, creating a new one")
 		if _, err = r.createAccountForUser(ctx, querier, false, "", userID); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "creating account for new user")

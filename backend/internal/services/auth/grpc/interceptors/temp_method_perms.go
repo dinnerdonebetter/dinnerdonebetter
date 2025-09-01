@@ -44,6 +44,15 @@ var (
 		"/identity.IdentityService/CancelAccountInvitation": {
 			authorization.InviteUserToAccountPermission,
 		},
+		"/identity.IdentityService/TransferAccountOwnership": {
+			authorization.TransferAccountPermission,
+		},
+		"/identity.IdentityService/UpdateAccountMemberPermissions": {
+			authorization.ModifyMemberPermissionsForAccountPermission,
+		},
+		"/identity.IdentityService/ArchiveUserMembership": {
+			authorization.RemoveMemberAccountPermission,
+		},
 		"/identity.IdentityService/RejectAccountInvitation":       noPerms,
 		"/identity.IdentityService/AcceptAccountInvitation":       noPerms,
 		"/identity.IdentityService/GetReceivedAccountInvitations": noPerms,
