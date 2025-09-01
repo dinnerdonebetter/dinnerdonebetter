@@ -412,14 +412,17 @@ func (q *repository) ArchiveMealPlanOption(ctx context.Context, mealPlanID, meal
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
-	if _, err := q.generatedQuerier.ArchiveMealPlanOption(ctx, q.db, &generated.ArchiveMealPlanOptionParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanOption(ctx, q.db, &generated.ArchiveMealPlanOptionParams{
 		ID:                     mealPlanOptionID,
 		BelongsToMealPlanEvent: sql.NullString{String: mealPlanEventID, Valid: true},
-	}); err != nil {
+	})
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option")
 	}
 
-	logger.Info("meal plan option archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

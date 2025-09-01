@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -588,11 +589,14 @@ func (q *repository) ArchiveValidIngredientPreparation(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
-	if _, err := q.generatedQuerier.ArchiveValidIngredientPreparation(ctx, q.db, validIngredientPreparationID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveValidIngredientPreparation(ctx, q.db, validIngredientPreparationID)
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation")
 	}
 
-	logger.Info("valid ingredient preparation archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

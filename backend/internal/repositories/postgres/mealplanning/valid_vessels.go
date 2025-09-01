@@ -470,11 +470,14 @@ func (q *repository) ArchiveValidVessel(ctx context.Context, validVesselID strin
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	if _, err := q.generatedQuerier.ArchiveValidVessel(ctx, q.db, validVesselID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveValidVessel(ctx, q.db, validVesselID)
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}
 
-	logger.Info("valid vessel archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

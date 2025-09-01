@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"context"
+	"database/sql"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -419,11 +420,14 @@ func (q *repository) ArchiveValidMeasurementUnit(ctx context.Context, validMeasu
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	if _, err := q.generatedQuerier.ArchiveValidMeasurementUnit(ctx, q.db, validMeasurementUnitID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveValidMeasurementUnit(ctx, q.db, validMeasurementUnitID)
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
 	}
 
-	logger.Info("valid measurement unit archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

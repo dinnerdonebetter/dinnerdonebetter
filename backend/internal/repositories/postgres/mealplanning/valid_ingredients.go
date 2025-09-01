@@ -674,7 +674,5 @@ func (q *repository) ArchiveValidIngredient(ctx context.Context, validIngredient
 		return sql.ErrNoRows
 	}
 
-	logger.Info("valid ingredient archived")
-
 	return nil
 }

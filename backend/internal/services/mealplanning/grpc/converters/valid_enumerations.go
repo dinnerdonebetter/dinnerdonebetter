@@ -443,7 +443,7 @@ func ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(x
 	}
 }
 
-func ConvertGRPCCreateValidInstrumentRequestToValidInstrumentCreationRequestInput(x *mealplanninggrpc.CreateValidInstrumentRequest) *mealplanning.ValidInstrumentCreationRequestInput {
+func ConvertGRPCCreateValidInstrumentRequestToValidInstrumentCreationRequestInput(x *mealplanninggrpc.ValidInstrumentCreationRequestInput) *mealplanning.ValidInstrumentCreationRequestInput {
 	return &mealplanning.ValidInstrumentCreationRequestInput{
 		Name:                           x.Name,
 		PluralName:                     x.PluralName,
@@ -469,6 +469,19 @@ func ConvertGRPCValidInstrumentUpdateRequestInputToValidInstrumentUpdateRequestI
 	}
 }
 
+func ConvertValidInstrumentUpdateRequestInputToGRPCValidInstrumentUpdateRequestInput(x *mealplanning.ValidInstrumentUpdateRequestInput) *mealplanninggrpc.ValidInstrumentUpdateRequestInput {
+	return &mealplanninggrpc.ValidInstrumentUpdateRequestInput{
+		Name:                           x.Name,
+		PluralName:                     x.PluralName,
+		Description:                    x.Description,
+		IconPath:                       x.IconPath,
+		Slug:                           x.Slug,
+		UsableForStorage:               x.UsableForStorage,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+	}
+}
+
 func ConvertValidInstrumentToGRPCValidInstrument(x *mealplanning.ValidInstrument) *mealplanninggrpc.ValidInstrument {
 	return &mealplanninggrpc.ValidInstrument{
 		CreatedAt:                      converters.ConvertTimeToPBTimestamp(x.CreatedAt),
@@ -479,6 +492,36 @@ func ConvertValidInstrumentToGRPCValidInstrument(x *mealplanning.ValidInstrument
 		IconPath:                       x.IconPath,
 		PluralName:                     x.PluralName,
 		Description:                    x.Description,
+		Slug:                           x.Slug,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+		UsableForStorage:               x.UsableForStorage,
+	}
+}
+
+func ConvertGRPCValidInstrumentToValidInstrument(x *mealplanninggrpc.ValidInstrument) *mealplanning.ValidInstrument {
+	return &mealplanning.ValidInstrument{
+		CreatedAt:                      converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt:                  converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:                     converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		Name:                           x.Name,
+		ID:                             x.ID,
+		IconPath:                       x.IconPath,
+		PluralName:                     x.PluralName,
+		Description:                    x.Description,
+		Slug:                           x.Slug,
+		DisplayInSummaryLists:          x.DisplayInSummaryLists,
+		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
+		UsableForStorage:               x.UsableForStorage,
+	}
+}
+
+func ConvertValidInstrumentCreationRequestInputToGRPCValidInstrumentCreationRequestInput(x *mealplanning.ValidInstrumentCreationRequestInput) *mealplanninggrpc.ValidInstrumentCreationRequestInput {
+	return &mealplanninggrpc.ValidInstrumentCreationRequestInput{
+		Name:                           x.Name,
+		PluralName:                     x.PluralName,
+		Description:                    x.Description,
+		IconPath:                       x.IconPath,
 		Slug:                           x.Slug,
 		DisplayInSummaryLists:          x.DisplayInSummaryLists,
 		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,

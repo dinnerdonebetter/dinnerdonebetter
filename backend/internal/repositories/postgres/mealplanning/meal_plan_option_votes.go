@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"context"
+	"database/sql"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -347,14 +348,17 @@ func (q *repository) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, 
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
-	if _, err := q.generatedQuerier.ArchiveMealPlanOptionVote(ctx, q.db, &generated.ArchiveMealPlanOptionVoteParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanOptionVote(ctx, q.db, &generated.ArchiveMealPlanOptionVoteParams{
 		BelongsToMealPlanOption: mealPlanOptionID,
 		ID:                      mealPlanOptionVoteID,
-	}); err != nil {
+	})
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option vote")
 	}
 
-	logger.Info("meal plan option vote archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

@@ -414,14 +414,17 @@ func (q *repository) ArchiveRecipeStepCompletionCondition(ctx context.Context, r
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
-	if _, err := q.generatedQuerier.ArchiveRecipeStepCompletionCondition(ctx, q.db, &generated2.ArchiveRecipeStepCompletionConditionParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepCompletionCondition(ctx, q.db, &generated2.ArchiveRecipeStepCompletionConditionParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepCompletionConditionID,
-	}); err != nil {
+	})
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step completion condition")
 	}
 
-	logger.Info("recipe step completion condition archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

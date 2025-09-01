@@ -747,14 +747,7 @@ message CreateValidIngredientStateIngredientResponse {
 
 // CreateValidInstrument
 message CreateValidInstrumentRequest {
-  string Name = 1;
-  string PluralName = 2;
-  string Description = 3;
-  string IconPath = 4;
-  string Slug = 5;
-  bool DisplayInSummaryLists = 6;
-  bool IncludeInGeneratedInstructions = 7;
-  bool UsableForStorage = 8;
+  ValidInstrumentCreationRequestInput Input = 1;
 }
 
 message CreateValidInstrumentResponse {

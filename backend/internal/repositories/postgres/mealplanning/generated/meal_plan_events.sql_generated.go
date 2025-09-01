@@ -239,10 +239,10 @@ type GetMealPlanEventsParams struct {
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
-	IncludeArchived sql.NullBool
 	MealPlanID      string
 	QueryOffset     sql.NullInt32
 	QueryLimit      sql.NullInt32
+	IncludeArchived sql.NullBool
 }
 
 type GetMealPlanEventsRow struct {

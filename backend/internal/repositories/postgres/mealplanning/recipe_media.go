@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"context"
+	"database/sql"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -234,11 +235,14 @@ func (q *repository) ArchiveRecipeMedia(ctx context.Context, recipeMediaID strin
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, recipeMediaID)
 
-	if _, err := q.generatedQuerier.ArchiveRecipeMedia(ctx, q.db, recipeMediaID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeMedia(ctx, q.db, recipeMediaID)
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe media")
 	}
 
-	logger.Info("recipe media archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

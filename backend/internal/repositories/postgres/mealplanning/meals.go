@@ -475,14 +475,17 @@ func (q *repository) ArchiveMeal(ctx context.Context, mealID, userID string) err
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	if _, err := q.generatedQuerier.ArchiveMeal(ctx, q.db, &generated2.ArchiveMealParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMeal(ctx, q.db, &generated2.ArchiveMealParams{
 		CreatedByUser: userID,
 		ID:            mealID,
-	}); err != nil {
+	})
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal")
 	}
 
-	logger.Info("meal archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

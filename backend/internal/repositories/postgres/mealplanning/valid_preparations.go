@@ -468,11 +468,14 @@ func (q *repository) ArchiveValidPreparation(ctx context.Context, validPreparati
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
-	if _, err := q.generatedQuerier.ArchiveValidPreparation(ctx, q.db, validPreparationID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveValidPreparation(ctx, q.db, validPreparationID)
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 
-	logger.Info("valid preparation archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

@@ -262,6 +262,10 @@ func (m *validEnumerationManager) CreateValidIngredientGroup(ctx context.Context
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
 	convertedInput := converters.ConvertValidIngredientGroupCreationRequestInputToValidIngredientGroupDatabaseCreationInput(input)
 	created, err := m.db.CreateValidIngredientGroup(ctx, convertedInput)
 	if err != nil {
@@ -317,6 +321,11 @@ func (m *validEnumerationManager) UpdateValidIngredientGroup(ctx context.Context
 		keys.ValidIngredientGroupIDKey: existingValidIngredientGroup.ID,
 	}))
 
+	existingValidIngredientGroup, err = m.db.GetValidIngredientGroup(ctx, validIngredientGroupID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid ingredient group")
+	}
+
 	return existingValidIngredientGroup, nil
 }
 
@@ -368,6 +377,10 @@ func (m *validEnumerationManager) CreateValidIngredientMeasurementUnit(ctx conte
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	convertedInput := converters.ConvertValidIngredientMeasurementUnitCreationRequestInputToValidIngredientMeasurementUnitDatabaseCreationInput(input)
@@ -424,6 +437,11 @@ func (m *validEnumerationManager) UpdateValidIngredientMeasurementUnit(ctx conte
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientMeasurementUnitUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientMeasurementUnitIDKey: existingValidIngredientMeasurementUnit.ID,
 	}))
+
+	existingValidIngredientMeasurementUnit, err = m.db.GetValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid ingredient measurement unit")
+	}
 
 	return existingValidIngredientMeasurementUnit, nil
 }
@@ -520,6 +538,10 @@ func (m *validEnumerationManager) CreateValidIngredientPreparation(ctx context.C
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
 	convertedInput := converters.ConvertValidIngredientPreparationCreationRequestInputToValidIngredientPreparationDatabaseCreationInput(input)
 	created, err := m.db.CreateValidIngredientPreparation(ctx, convertedInput)
 	if err != nil {
@@ -574,6 +596,11 @@ func (m *validEnumerationManager) UpdateValidIngredientPreparation(ctx context.C
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientPreparationUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientPreparationIDKey: existingValidIngredientPreparation.ID,
 	}))
+
+	existingValidIngredientPreparation, err = m.db.GetValidIngredientPreparation(ctx, validIngredientPreparationID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid ingredient preparation")
+	}
 
 	return existingValidIngredientPreparation, nil
 }
@@ -716,7 +743,7 @@ func (m *validEnumerationManager) CreateValidIngredient(ctx context.Context, inp
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
-		return nil, fmt.Errorf("validating creation input: %w", err)
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	convertedInput := converters.ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(input)
@@ -795,7 +822,7 @@ func (m *validEnumerationManager) UpdateValidIngredient(ctx context.Context, val
 
 	existingValidIngredient, err = m.db.GetValidIngredient(ctx, validIngredientID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid ingredient")
 	}
 
 	return existingValidIngredient, nil
@@ -873,6 +900,10 @@ func (m *validEnumerationManager) CreateValidIngredientStateIngredient(ctx conte
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
 	convertedInput := converters.ConvertValidIngredientStateIngredientCreationRequestInputToValidIngredientStateIngredientDatabaseCreationInput(input)
 	created, err := m.db.CreateValidIngredientStateIngredient(ctx, convertedInput)
 	if err != nil {
@@ -927,6 +958,11 @@ func (m *validEnumerationManager) UpdateValidIngredientStateIngredient(ctx conte
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateIngredientUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientStateIngredientIDKey: existingValidIngredientStateIngredient.ID,
 	}))
+
+	existingValidIngredientStateIngredient, err = m.db.GetValidIngredientStateIngredient(ctx, validIngredientStateIngredientID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid ingredient state ingredient")
+	}
 
 	return existingValidIngredientStateIngredient, nil
 }
@@ -1065,6 +1101,10 @@ func (m *validEnumerationManager) CreateValidIngredientState(ctx context.Context
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
 	convertedInput := converters.ConvertValidIngredientStateCreationRequestInputToValidIngredientStateDatabaseCreationInput(input)
 	created, err := m.db.CreateValidIngredientState(ctx, convertedInput)
 	if err != nil {
@@ -1119,6 +1159,11 @@ func (m *validEnumerationManager) UpdateValidIngredientState(ctx context.Context
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidIngredientStateUpdatedServiceEventType, map[string]any{
 		keys.ValidIngredientStateIDKey: existingValidIngredientState.ID,
 	}))
+
+	existingValidIngredientState, err = m.db.GetValidIngredientState(ctx, validIngredientStateID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid ingredient state")
+	}
 
 	return existingValidIngredientState, nil
 }
@@ -1236,6 +1281,10 @@ func (m *validEnumerationManager) CreateValidMeasurementUnit(ctx context.Context
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
 	convertedInput := converters.ConvertValidMeasurementUnitCreationRequestInputToValidMeasurementUnitDatabaseCreationInput(input)
 	created, err := m.db.CreateValidMeasurementUnit(ctx, convertedInput)
 	if err != nil {
@@ -1289,6 +1338,11 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnit(ctx context.Context
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidMeasurementUnitUpdatedServiceEventType, map[string]any{
 		keys.ValidMeasurementUnitIDKey: existingValidMeasurementUnit.ID,
 	}))
+
+	existingValidMeasurementUnit, err = m.db.GetValidMeasurementUnit(ctx, validMeasurementUnitID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid measurement unit")
+	}
 
 	return existingValidMeasurementUnit, nil
 }
@@ -1385,10 +1439,14 @@ func (m *validEnumerationManager) CreateValidInstrument(ctx context.Context, inp
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
 	convertedInput := converters.ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreationInput(input)
 	created, err := m.db.CreateValidInstrument(ctx, convertedInput)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid instrument")
+		return nil, observability.PrepareError(err, span, "creating valid instrument")
 	}
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentCreatedServiceEventType, map[string]any{
@@ -1453,6 +1511,11 @@ func (m *validEnumerationManager) UpdateValidInstrument(ctx context.Context, val
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidInstrumentUpdatedServiceEventType, map[string]any{
 		keys.ValidInstrumentIDKey: existingValidInstrument.ID,
 	}))
+
+	existingValidInstrument, err = m.db.GetValidInstrument(ctx, validInstrumentID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid instrument")
+	}
 
 	return existingValidInstrument, nil
 }
@@ -1519,6 +1582,10 @@ func (m *validEnumerationManager) CreateValidMeasurementUnitConversion(ctx conte
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
 	convertedInput := converters.ConvertValidMeasurementUnitConversionCreationRequestInputToValidMeasurementUnitConversionDatabaseCreationInput(input)
 	created, err := m.db.CreateValidMeasurementUnitConversion(ctx, convertedInput)
 	if err != nil {
@@ -1574,6 +1641,11 @@ func (m *validEnumerationManager) UpdateValidMeasurementUnitConversion(ctx conte
 		keys.ValidMeasurementUnitConversionIDKey: existingValidMeasurementUnitConversion.ID,
 	}))
 
+	existingValidMeasurementUnitConversion, err = m.db.GetValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid measurement unit conversion")
+	}
+
 	return existingValidMeasurementUnitConversion, nil
 }
 
@@ -1625,6 +1697,10 @@ func (m *validEnumerationManager) CreateValidPreparationInstrument(ctx context.C
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	convertedInput := converters.ConvertValidPreparationInstrumentCreationRequestInputToValidPreparationInstrumentDatabaseCreationInput(input)
@@ -1681,6 +1757,11 @@ func (m *validEnumerationManager) UpdateValidPreparationInstrument(ctx context.C
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationInstrumentUpdatedServiceEventType, map[string]any{
 		keys.ValidPreparationInstrumentIDKey: existingValidPreparationInstrument.ID,
 	}))
+
+	existingValidPreparationInstrument, err = m.db.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid preparation instrument")
+	}
 
 	return existingValidPreparationInstrument, nil
 }
@@ -1819,6 +1900,10 @@ func (m *validEnumerationManager) CreateValidPreparation(ctx context.Context, in
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
 	convertedInput := converters.ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreationInput(input)
 	created, err := m.db.CreateValidPreparation(ctx, convertedInput)
 	if err != nil {
@@ -1886,6 +1971,11 @@ func (m *validEnumerationManager) UpdateValidPreparation(ctx context.Context, va
 
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationUpdatedServiceEventType, map[string]any{keys.ValidPreparationIDKey: existingValidPreparation.ID}))
 
+	existingValidPreparation, err = m.db.GetValidPreparation(ctx, validPreparationID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid preparation")
+	}
+
 	return existingValidPreparation, nil
 }
 
@@ -1937,6 +2027,10 @@ func (m *validEnumerationManager) CreateValidPreparationVessel(ctx context.Conte
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
 	}
 
 	convertedInput := converters.ConvertValidPreparationVesselCreationRequestInputToValidPreparationVesselDatabaseCreationInput(input)
@@ -1993,6 +2087,11 @@ func (m *validEnumerationManager) UpdateValidPreparationVessel(ctx context.Conte
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidPreparationVesselUpdatedServiceEventType, map[string]any{
 		keys.ValidPreparationVesselIDKey: existingValidPreparationVessel.ID,
 	}))
+
+	existingValidPreparationVessel, err = m.db.GetValidPreparationVessel(ctx, validPreparationVesselID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid preparation vessel")
+	}
 
 	return existingValidPreparationVessel, nil
 }
@@ -2130,6 +2229,10 @@ func (m *validEnumerationManager) CreateValidVessel(ctx context.Context, input *
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating input")
+	}
+
 	convertedInput := converters.ConvertValidVesselCreationRequestInputToValidVesselDatabaseCreationInput(input)
 	created, err := m.db.CreateValidVessel(ctx, convertedInput)
 	if err != nil {
@@ -2199,6 +2302,11 @@ func (m *validEnumerationManager) UpdateValidVessel(ctx context.Context, validVe
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.ValidVesselUpdatedServiceEventType, map[string]any{
 		keys.ValidVesselIDKey: existingValidVessel.ID,
 	}))
+
+	existingValidVessel, err = m.db.GetValidVessel(ctx, validVesselID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching updated valid vessel")
+	}
 
 	return existingValidVessel, nil
 }

@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"context"
+	"database/sql"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -251,14 +252,17 @@ func (q *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, acco
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	if _, err := q.generatedQuerier.ArchiveAccountInstrumentOwnership(ctx, q.db, &generated.ArchiveAccountInstrumentOwnershipParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveAccountInstrumentOwnership(ctx, q.db, &generated.ArchiveAccountInstrumentOwnershipParams{
 		ID:               accountInstrumentOwnershipID,
 		BelongsToAccount: accountID,
-	}); err != nil {
+	})
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving account instrument ownership")
 	}
 
-	logger.Info("account instrument ownership archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

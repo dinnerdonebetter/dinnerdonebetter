@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
@@ -459,14 +460,17 @@ func (q *repository) ArchiveRecipeStepVessel(ctx context.Context, recipeStepID, 
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
 
-	if _, err := q.generatedQuerier.ArchiveRecipeStepVessel(ctx, q.db, &generated.ArchiveRecipeStepVesselParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepVessel(ctx, q.db, &generated.ArchiveRecipeStepVesselParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepVesselID,
-	}); err != nil {
+	})
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step vessel")
 	}
 
-	logger.Info("recipe step vessel archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

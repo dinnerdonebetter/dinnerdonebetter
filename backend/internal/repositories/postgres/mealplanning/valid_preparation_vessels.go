@@ -584,11 +584,14 @@ func (q *repository) ArchiveValidPreparationVessel(ctx context.Context, validPre
 	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
-	if _, err := q.generatedQuerier.ArchiveValidPreparationVessel(ctx, q.db, validPreparationVesselID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveValidPreparationVessel(ctx, q.db, validPreparationVesselID)
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
 
-	logger.Info("valid preparation vessel archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

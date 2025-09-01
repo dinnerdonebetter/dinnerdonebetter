@@ -2,6 +2,7 @@ package mealplanning
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"strings"
 
@@ -286,14 +287,17 @@ func (q *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID 
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	if _, err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated2.ArchiveMealPlanParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated2.ArchiveMealPlanParams{
 		BelongsToAccount: accountID,
 		ID:               mealPlanID,
-	}); err != nil {
+	})
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
 	}
 
-	logger.Info("meal plan archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

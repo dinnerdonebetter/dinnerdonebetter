@@ -704,14 +704,17 @@ func (q *repository) ArchiveRecipe(ctx context.Context, recipeID, userID string)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	if _, err := q.generatedQuerier.ArchiveRecipe(ctx, q.db, &generated2.ArchiveRecipeParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipe(ctx, q.db, &generated2.ArchiveRecipeParams{
 		CreatedByUser: userID,
 		ID:            recipeID,
-	}); err != nil {
+	})
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe")
 	}
 
-	logger.Info("recipe archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

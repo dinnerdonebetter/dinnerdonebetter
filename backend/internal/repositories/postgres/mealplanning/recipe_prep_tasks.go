@@ -378,8 +378,13 @@ func (q *repository) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipe
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	if _, err := q.generatedQuerier.ArchiveRecipePrepTask(ctx, q.db, recipePrepTaskID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipePrepTask(ctx, q.db, recipePrepTaskID)
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task")
+	}
+
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
 	}
 
 	return nil
