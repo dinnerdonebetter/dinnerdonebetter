@@ -190,6 +190,21 @@ var (
 		"/mealplanning.MealPlanningService/GetValidIngredientPreparationsByIngredient": {
 			authorization.ReadValidIngredientPreparationsPermission,
 		},
+		"/mealplanning.MealPlanningService/GetValidIngredientMeasurementUnit": {
+			authorization.ReadValidIngredientMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/CreateValidIngredientMeasurementUnit": {
+			authorization.CreateValidIngredientMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientMeasurementUnits": {
+			authorization.ReadValidIngredientMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientMeasurementUnitsByMeasurementUnit": {
+			authorization.ReadValidIngredientMeasurementUnitsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientMeasurementUnitsByIngredient": {
+			authorization.ReadValidIngredientMeasurementUnitsPermission,
+		},
 		"/mealplanning.MealPlanningService/GetValidPreparationInstrument": {
 			authorization.ReadValidPreparationInstrumentsPermission,
 		},

@@ -322,6 +322,18 @@ func ConvertGRPCCreateValidIngredientMeasurementUnitRequestToValidIngredientMeas
 	}
 }
 
+func ConvertCreateValidIngredientMeasurementUnitRequestToGRPCValidIngredientMeasurementUnitCreationRequestInput(request *mealplanning.ValidIngredientMeasurementUnitCreationRequestInput) *mealplanninggrpc.ValidIngredientMeasurementUnitCreationRequestInput {
+	return &mealplanninggrpc.ValidIngredientMeasurementUnitCreationRequestInput{
+		Notes:                  request.Notes,
+		ValidMeasurementUnitID: request.ValidMeasurementUnitID,
+		ValidIngredientID:      request.ValidIngredientID,
+		AllowableQuantity: &grpctypes.Float32RangeWithOptionalMax{
+			Max: request.AllowableQuantity.Max,
+			Min: request.AllowableQuantity.Min,
+		},
+	}
+}
+
 func ConvertGRPCValidIngredientMeasurementUnitUpdateRequestInputToValidIngredientMeasurementUnitUpdateRequestInput(x *mealplanninggrpc.ValidIngredientMeasurementUnitUpdateRequestInput) *mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput {
 	return &mealplanning.ValidIngredientMeasurementUnitUpdateRequestInput{
 		Notes:                  x.Notes,
@@ -347,6 +359,22 @@ func ConvertValidIngredientMeasurementUnitToGRPCValidIngredientMeasurementUnit(x
 		},
 		MeasurementUnit: ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.MeasurementUnit),
 		Ingredient:      ConvertValidIngredientToGRPCValidIngredient(&x.Ingredient),
+	}
+}
+
+func ConvertGRPCValidIngredientMeasurementUnitToValidIngredientMeasurementUnit(x *mealplanninggrpc.ValidIngredientMeasurementUnit) *mealplanning.ValidIngredientMeasurementUnit {
+	return &mealplanning.ValidIngredientMeasurementUnit{
+		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		Notes:         x.Notes,
+		ID:            x.ID,
+		AllowableQuantity: types.Float32RangeWithOptionalMax{
+			Max: x.AllowableQuantity.Max,
+			Min: x.AllowableQuantity.Min,
+		},
+		MeasurementUnit: *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(x.MeasurementUnit),
+		Ingredient:      *ConvertGRPCValidIngredientToValidIngredient(x.Ingredient),
 	}
 }
 
