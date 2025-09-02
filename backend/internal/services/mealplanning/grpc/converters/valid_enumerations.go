@@ -880,6 +880,18 @@ func ConvertValidPreparationInstrumentToGRPCValidPreparationInstrument(x *mealpl
 	}
 }
 
+func ConvertGRPCValidPreparationInstrumentToValidPreparationInstrument(x *mealplanninggrpc.ValidPreparationInstrument) *mealplanning.ValidPreparationInstrument {
+	return &mealplanning.ValidPreparationInstrument{
+		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		ID:            x.ID,
+		Notes:         x.Notes,
+		Instrument:    *ConvertGRPCValidInstrumentToValidInstrument(x.Instrument),
+		Preparation:   *ConvertGRPCValidPreparationToValidPreparation(x.Preparation),
+	}
+}
+
 func ConvertGRPCCreateValidPreparationVesselRequestToValidPreparationVesselCreationRequestInput(x *mealplanninggrpc.ValidPreparationVesselCreationRequestInput) *mealplanning.ValidPreparationVesselCreationRequestInput {
 	return &mealplanning.ValidPreparationVesselCreationRequestInput{
 		Notes:              x.Notes,

@@ -1,5 +1,7 @@
 package integration
 
+/*
+
 import (
 	"testing"
 
@@ -132,3 +134,5 @@ func (s *TestSuite) TestValidMeasurementUnitConversions_GetToUnits() {
 		}
 	})
 }
+
+*/

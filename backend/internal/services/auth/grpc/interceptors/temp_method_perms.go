@@ -128,6 +128,21 @@ var (
 		"/mealplanning.MealPlanningService/GetValidPreparationVesselsByPreparation": {
 			authorization.ReadValidPreparationVesselsPermission,
 		},
+		"/mealplanning.MealPlanningService/GetValidPreparationInstrument": {
+			authorization.ReadValidPreparationInstrumentsPermission,
+		},
+		"/mealplanning.MealPlanningService/CreateValidPreparationInstrument": {
+			authorization.CreateValidPreparationInstrumentsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidPreparationInstruments": {
+			authorization.ReadValidPreparationInstrumentsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidPreparationInstrumentsByInstrument": {
+			authorization.ReadValidPreparationInstrumentsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidPreparationInstrumentsByPreparation": {
+			authorization.ReadValidPreparationInstrumentsPermission,
+		},
 		"/identity.IdentityService/AdminUpdateUserStatus": {
 			authorization.UpdateUserStatusPermission,
 		},
