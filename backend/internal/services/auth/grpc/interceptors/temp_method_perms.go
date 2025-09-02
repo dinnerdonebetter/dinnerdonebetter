@@ -31,6 +31,27 @@ var (
 		"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
 			authorization.ReadValidIngredientsPermission,
 		},
+		"/mealplanning.MealPlanningService/CreateValidIngredientGroup": {
+			authorization.CreateValidIngredientGroupsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientGroup": {
+			authorization.ReadValidIngredientGroupsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientGroups": {
+			authorization.ReadValidIngredientGroupsPermission,
+		},
+		"/mealplanning.MealPlanningService/SearchForValidIngredientGroups": {
+			authorization.ReadValidIngredientGroupsPermission,
+		},
+		"/mealplanning.MealPlanningService/UpdateValidIngredientGroup": {
+			authorization.UpdateValidIngredientGroupsPermission,
+		},
+		"/mealplanning.MealPlanningService/ArchiveValidIngredientGroup": {
+			authorization.ArchiveValidIngredientGroupsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetRandomValidIngredientGroup": {
+			authorization.ReadValidIngredientGroupsPermission,
+		},
 		"/mealplanning.MealPlanningService/CreateValidIngredientState": {
 			authorization.CreateValidIngredientStatesPermission,
 		},

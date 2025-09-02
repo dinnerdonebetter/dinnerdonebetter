@@ -246,7 +246,7 @@ func (s *serviceImpl) CreateValidIngredientGroup(ctx context.Context, request *m
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.validEnumerationsManager.CreateValidIngredientGroup(ctx, mealplanningconverters.ConvertGRPCCreateValidIngredientGroupRequestToValidIngredientGroupCreationRequestInput(request.Input))
+	created, err := s.validEnumerationsManager.CreateValidIngredientGroup(ctx, mealplanningconverters.ConvertGRPCValidIngredientGroupCreationRequestInputToValidIngredientGroupCreationRequestInput(request.Input))
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating valid ingredient")
 	}

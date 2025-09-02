@@ -262,7 +262,7 @@ func ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequ
 	}
 }
 
-func ConvertGRPCCreateValidIngredientGroupRequestToValidIngredientGroupCreationRequestInput(request *mealplanninggrpc.ValidIngredientGroupCreationRequestInput) *mealplanning.ValidIngredientGroupCreationRequestInput {
+func ConvertGRPCValidIngredientGroupCreationRequestInputToValidIngredientGroupCreationRequestInput(request *mealplanninggrpc.ValidIngredientGroupCreationRequestInput) *mealplanning.ValidIngredientGroupCreationRequestInput {
 	members := make([]*mealplanning.ValidIngredientGroupMemberCreationRequestInput, len(request.Members))
 	for i, member := range request.Members {
 		members[i] = &mealplanning.ValidIngredientGroupMemberCreationRequestInput{
@@ -278,8 +278,32 @@ func ConvertGRPCCreateValidIngredientGroupRequestToValidIngredientGroupCreationR
 	}
 }
 
+func ConvertValidIngredientGroupCreationRequestInputToGRPCValidIngredientGroupCreationRequestInput(request *mealplanning.ValidIngredientGroupCreationRequestInput) *mealplanninggrpc.ValidIngredientGroupCreationRequestInput {
+	members := make([]*mealplanninggrpc.ValidIngredientGroupMemberCreationRequestInput, len(request.Members))
+	for i, member := range request.Members {
+		members[i] = &mealplanninggrpc.ValidIngredientGroupMemberCreationRequestInput{
+			ValidIngredientID: member.ValidIngredientID,
+		}
+	}
+
+	return &mealplanninggrpc.ValidIngredientGroupCreationRequestInput{
+		Name:        request.Name,
+		Slug:        request.Slug,
+		Description: request.Description,
+		Members:     members,
+	}
+}
+
 func ConvertGRPCValidIngredientGroupUpdateRequestInputToValidIngredientGroupUpdateRequestInput(x *mealplanninggrpc.ValidIngredientGroupUpdateRequestInput) *mealplanning.ValidIngredientGroupUpdateRequestInput {
 	return &mealplanning.ValidIngredientGroupUpdateRequestInput{
+		Name:        x.Name,
+		Slug:        x.Slug,
+		Description: x.Description,
+	}
+}
+
+func ConvertValidIngredientGroupUpdateRequestInputToGRPCValidIngredientGroupUpdateRequestInput(x *mealplanning.ValidIngredientGroupUpdateRequestInput) *mealplanninggrpc.ValidIngredientGroupUpdateRequestInput {
+	return &mealplanninggrpc.ValidIngredientGroupUpdateRequestInput{
 		Name:        x.Name,
 		Slug:        x.Slug,
 		Description: x.Description,
@@ -302,6 +326,30 @@ func ConvertValidIngredientGroupToGRPCValidIngredientGroup(x *mealplanning.Valid
 		CreatedAt:     converters.ConvertTimeToPBTimestamp(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		ID:            x.ID,
+		Name:          x.Name,
+		Slug:          x.Slug,
+		Description:   x.Description,
+		Members:       members,
+	}
+}
+
+func ConvertGRPCValidIngredientGroupToValidIngredientGroup(x *mealplanninggrpc.ValidIngredientGroup) *mealplanning.ValidIngredientGroup {
+	members := make([]*mealplanning.ValidIngredientGroupMember, len(x.Members))
+	for i, member := range x.Members {
+		members[i] = &mealplanning.ValidIngredientGroupMember{
+			CreatedAt:       converters.ConvertPBTimestampToTime(member.CreatedAt),
+			ArchivedAt:      converters.ConvertPBTimestampToTimePointer(member.ArchivedAt),
+			ID:              member.ID,
+			BelongsToGroup:  member.BelongsToGroup,
+			ValidIngredient: *ConvertGRPCValidIngredientToValidIngredient(member.ValidIngredient),
+		}
+	}
+
+	return &mealplanning.ValidIngredientGroup{
+		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		ID:            x.ID,
 		Name:          x.Name,
 		Slug:          x.Slug,
