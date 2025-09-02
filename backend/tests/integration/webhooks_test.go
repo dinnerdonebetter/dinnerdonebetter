@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 
@@ -36,149 +37,232 @@ func createWebhookForTest(t *testing.T, testClient client.Client) *webhooks.Webh
 	return converters.ConvertGRPCWebhookToWebhook(retrievedWebhook.Result)
 }
 
-/*
+func TestWebhooks_Creating(T *testing.T) {
+	T.Parallel()
 
-import (
-	"testing"
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
 
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+		_, testClient := createUserAndClientForTest(t)
+		createWebhookForTest(t, testClient)
+	})
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-)
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-func checkWebhookEquality(t *testing.T, expected, actual *types.Webhook) {
-	t.Helper()
+		c := buildUnauthenticatedGRPCClientForTest(t)
 
-	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Name, actual.Name)
-	assert.Equal(t, expected.ContentType, actual.ContentType)
-	assert.Equal(t, expected.URL, actual.URL)
-	assert.Equal(t, expected.Method, actual.Method)
-	assert.NotZero(t, actual.CreatedAt)
-}
+		_, err := c.CreateWebhook(ctx, &webhookssvc.CreateWebhookRequest{})
+		require.Error(t, err)
+	})
 
-func (s *TestSuite) TestWebhooks_Creating() {
-	s.runTest("should be creatable and readable and deletable", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+	T.Run("invalid input", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+		_, testClient := createUserAndClientForTest(t)
 
-			// Create webhook.
-			exampleWebhook := fakes.BuildFakeWebhook()
-			exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
-
-			createdWebhook, err := testClients.userClient.CreateWebhook(ctx, exampleWebhookInput)
-			require.NoError(t, err)
-
-			createdWebhook, err = testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
-			requireNotNilAndNoProblems(t, createdWebhook, err)
-
-			// assert webhook equality
-			checkWebhookEquality(t, exampleWebhook, createdWebhook)
-
-			actual, err := testClients.userClient.GetWebhook(ctx, createdWebhook.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-			checkWebhookEquality(t, exampleWebhook, actual)
-
-			webhookTriggerEvent := fakes.BuildFakeWebhookTriggerEvent()
-			webhookTriggerEvent.BelongsToWebhook = createdWebhook.ID
-			webhookTriggerEvent.TriggerEvent = string(types.WebhookArchivedServiceEventType)
-			eventInput := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(webhookTriggerEvent)
-
-			event, err := testClients.userClient.CreateWebhookTriggerEvent(ctx, createdWebhook.ID, eventInput)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// Archive trigger event
-			assert.NoError(t, testClients.userClient.ArchiveWebhookTriggerEvent(ctx, createdWebhook.ID, event.ID))
-
-			// Archive trigger event
-			assert.NoError(t, testClients.userClient.ArchiveWebhookTriggerEvent(ctx, createdWebhook.ID, actual.Events[0].ID))
-
-			// Clean up.
-			assert.NoError(t, testClients.userClient.ArchiveWebhook(ctx, createdWebhook.ID))
+		exampleWebhookInput := &webhooks.WebhookCreationRequestInput{
+			ContentType: "application/whatever",
+			Method:      "UNRECOGNIZED",
+			Name:        t.Name(),
+			URL:         "invalid protocol :\\ neato.ai",
+			Events:      []string{},
 		}
+
+		input := converters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
+
+		_, err := testClient.CreateWebhook(ctx, &webhookssvc.CreateWebhookRequest{Input: input})
+		assert.Error(t, err)
 	})
 }
 
-func (s *TestSuite) TestWebhooks_Reading_Returns404ForNonexistentWebhook() {
-	s.runTest("should error when reading non-existent webhook", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+func TestWebhooks_Reading(T *testing.T) {
+	T.Parallel()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			// Fetch webhook.
-			_, err := testClients.userClient.GetWebhook(ctx, nonexistentID)
-			assert.Error(t, err)
-		}
+		_, testClient := createUserAndClientForTest(t)
+		createdWebhook := createWebhookForTest(t, testClient)
+
+		retrieved, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.ID})
+		assert.NoError(t, err)
+		assert.NotNil(t, retrieved)
+	})
+
+	T.Run("nonexistent ID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+
+		retrieved, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: nonexistentID})
+		assert.Error(t, err)
+		assert.Nil(t, retrieved)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		_, err := c.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{})
+		assert.Error(t, err)
 	})
 }
 
-func (s *TestSuite) TestWebhooks_Listing() {
-	s.runTest("should be able to be read in a list", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+func TestWebhooks_Listing(T *testing.T) {
+	T.Parallel()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			// Create webhooks.
-			var expected []*types.Webhook
-			for i := 0; i < 5; i++ {
-				// Create webhook.
-				exampleWebhook := fakes.BuildFakeWebhook()
-				exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
-				createdWebhook, webhookCreationErr := testClients.userClient.CreateWebhook(ctx, exampleWebhookInput)
-				requireNotNilAndNoProblems(t, createdWebhook, webhookCreationErr)
+		_, testClient := createUserAndClientForTest(t)
 
-				expected = append(expected, createdWebhook)
-			}
-
-			// Assert webhook list equality.
-			actual, err := testClients.userClient.GetWebhooks(ctx, nil)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			assert.GreaterOrEqual(t, len(actual.Data), len(expected))
-
-			// Clean up.
-			for _, webhook := range actual.Data {
-				assert.NoError(t, testClients.userClient.ArchiveWebhook(ctx, webhook.ID))
-			}
+		createdWebhooks := []*webhooks.Webhook{}
+		for range exampleQuantity {
+			createdWebhooks = append(createdWebhooks, createWebhookForTest(t, testClient))
 		}
+
+		results, err := testClient.GetWebhooks(ctx, &webhookssvc.GetWebhooksRequest{})
+		assert.NoError(t, err)
+		assert.NotNil(t, results)
+		assert.True(t, len(results.Results) >= len(createdWebhooks))
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		_, err := c.GetWebhooks(ctx, &webhookssvc.GetWebhooksRequest{})
+		assert.Error(t, err)
 	})
 }
 
-func (s *TestSuite) TestWebhooks_Archiving_Returns404ForNonexistentWebhook() {
-	s.runTest("should error when archiving a non-existent webhook", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+func TestWebhooks_Archiving(T *testing.T) {
+	T.Parallel()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			assert.Error(t, testClients.userClient.ArchiveWebhook(ctx, nonexistentID))
-		}
+		_, testClient := createUserAndClientForTest(t)
+		createdWebhook := createWebhookForTest(t, testClient)
+
+		_, err := testClient.ArchiveWebhook(ctx, &webhookssvc.ArchiveWebhookRequest{WebhookID: createdWebhook.ID})
+		assert.NoError(t, err)
+	})
+
+	T.Run("nonexistentID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		createWebhookForTest(t, testClient)
+
+		_, err := testClient.ArchiveWebhook(ctx, &webhookssvc.ArchiveWebhookRequest{WebhookID: nonexistentID})
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		_, err := c.ArchiveWebhook(ctx, &webhookssvc.ArchiveWebhookRequest{})
+		assert.Error(t, err)
 	})
 }
 
-func (s *TestSuite) TestWebhookTriggerEvents_Archiving_Returns404ForNonexistentWebhook() {
-	s.runTest("should error when archiving a non-existent webhook", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+func TestWebhookTriggerEvents_Adding(T *testing.T) {
+	T.Parallel()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			assert.Error(t, testClients.userClient.ArchiveWebhookTriggerEvent(ctx, nonexistentID, nonexistentID))
-		}
+		_, testClient := createUserAndClientForTest(t)
+		createdWebhook := createWebhookForTest(t, testClient)
+
+		_, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{
+			WebhookID: createdWebhook.ID,
+			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{
+				BelongsToWebhook: createdWebhook.ID,
+				TriggerEvent:     webhooks.WebhookArchivedTriggerEvent,
+			},
+		})
+		assert.NoError(t, err)
+	})
+
+	T.Run("nonexistentID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		createWebhookForTest(t, testClient)
+
+		_, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{WebhookID: nonexistentID, Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{}})
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		_, err := c.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{})
+		assert.Error(t, err)
 	})
 }
 
-*/
+func TestWebhookTriggerEvents_Removing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		createdWebhook := createWebhookForTest(t, testClient)
+
+		createdTriggerEvent, err := testClient.AddWebhookTriggerEvent(ctx, &webhookssvc.AddWebhookTriggerEventRequest{
+			WebhookID: createdWebhook.ID,
+			Input: &webhookssvc.WebhookTriggerEventCreationRequestInput{
+				BelongsToWebhook: createdWebhook.ID,
+				TriggerEvent:     webhooks.WebhookArchivedTriggerEvent,
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = testClient.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{
+			WebhookID:             createdWebhook.ID,
+			WebhookTriggerEventID: createdTriggerEvent.Created.ID,
+		})
+		assert.NoError(t, err)
+	})
+
+	T.Run("nonexistentID", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, testClient := createUserAndClientForTest(t)
+		createWebhookForTest(t, testClient)
+
+		_, err := testClient.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{WebhookID: nonexistentID})
+		assert.Error(t, err)
+	})
+
+	T.Run("requires auth", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		c := buildUnauthenticatedGRPCClientForTest(t)
+		_, err := c.ArchiveWebhookTriggerEvent(ctx, &webhookssvc.ArchiveWebhookTriggerEventRequest{})
+		assert.Error(t, err)
+	})
+}

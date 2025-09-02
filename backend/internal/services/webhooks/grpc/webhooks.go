@@ -25,7 +25,12 @@ func (s *serviceImpl) CreateWebhook(ctx context.Context, request *webhookssvc.Cr
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	created, err := s.webhookRepository.CreateWebhook(ctx, converters.ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(request.Input, sessionContextData.ActiveAccountID))
+	input := converters.ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(request.Input, sessionContextData.ActiveAccountID)
+	if err = input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate webhook creation request")
+	}
+
+	created, err := s.webhookRepository.CreateWebhook(ctx, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create webhook")
 	}
@@ -52,7 +57,8 @@ func (s *serviceImpl) AddWebhookTriggerEvent(ctx context.Context, request *webho
 	}
 	logger = logger.WithValue(keys.AccountIDKey, sessionContextData.ActiveAccountID)
 
-	created, err := s.webhookRepository.AddWebhookTriggerEvent(ctx, sessionContextData.ActiveAccountID, converters.ConvertGRPCWebhookTriggerEventDatabaseCreationInputToWebhookTriggerEventDatabaseCreationInput(request.Input))
+	input := converters.ConvertGRPCWebhookTriggerEventDatabaseCreationInputToWebhookTriggerEventDatabaseCreationInput(request.Input)
+	created, err := s.webhookRepository.AddWebhookTriggerEvent(ctx, sessionContextData.ActiveAccountID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to add webhook trigger event")
 	}

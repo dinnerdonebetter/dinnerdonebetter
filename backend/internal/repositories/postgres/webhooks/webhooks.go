@@ -359,12 +359,17 @@ func (r *repository) ArchiveWebhook(ctx context.Context, webhookID, accountID st
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = r.generatedQuerier.ArchiveWebhook(ctx, tx, &generated.ArchiveWebhookParams{
+	rowsAffected, err := r.generatedQuerier.ArchiveWebhook(ctx, tx, &generated.ArchiveWebhookParams{
 		BelongsToAccount: accountID,
 		ID:               webhookID,
-	}); err != nil {
+	})
+	if err != nil {
 		r.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
+	}
+
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
 	}
 
 	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{

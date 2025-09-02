@@ -119,8 +119,20 @@ var (
 		"/webhooks.WebhooksService/GetWebhook": {
 			authorization.ReadWebhooksPermission,
 		},
+		"/webhooks.WebhooksService/GetWebhooks": {
+			authorization.ReadWebhooksPermission,
+		},
 		"/webhooks.WebhooksService/CreateWebhook": {
 			authorization.CreateWebhooksPermission,
+		},
+		"/webhooks.WebhooksService/ArchiveWebhook": {
+			authorization.ArchiveWebhooksPermission,
+		},
+		"/webhooks.WebhooksService/AddWebhookTriggerEvent": {
+			authorization.CreateWebhookTriggerEventsPermission,
+		},
+		"/webhooks.WebhooksService/ArchiveWebhookTriggerEvent": {
+			authorization.ArchiveWebhookTriggerEventsPermission,
 		},
 		"/identity.IdentityService/UpdateAccount": {
 			authorization.UpdateAccountPermission,
