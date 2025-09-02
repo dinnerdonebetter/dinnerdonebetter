@@ -1157,8 +1157,6 @@ func (r *repository) ArchiveUser(ctx context.Context, userID string) error {
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("user archived")
-
 	return nil
 }
 

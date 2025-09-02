@@ -36,7 +36,7 @@ func (s *serviceImpl) CreateOAuth2Client(ctx context.Context, request *oauthsvc.
 
 	logger := s.logger.WithSpan(span)
 
-	input := oauthgrpcconverters.ConvertGRPCCreateOAuth2ClientRequestToOAuth2ClientCreationRequestInput(request)
+	input := oauthgrpcconverters.ConvertGRPCOAuth2ClientCreationRequestInputToOAuth2ClientCreationRequestInput(request.Input)
 
 	created, err := s.oauthDataManager.CreateOAuth2Client(ctx, input)
 	if err != nil {

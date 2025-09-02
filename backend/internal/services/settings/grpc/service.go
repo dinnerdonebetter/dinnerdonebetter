@@ -21,7 +21,7 @@ type (
 		settingssvc.UnimplementedSettingsServiceServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
-		sessionContextDataFetcher func(context.Context) (sessions.ContextData, error)
+		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
 		serviceSettingsRepository settings.Repository
 	}
 )
@@ -35,5 +35,6 @@ func NewService(
 		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
 		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		serviceSettingsRepository: settingsRepository,
+		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
 	}
 }

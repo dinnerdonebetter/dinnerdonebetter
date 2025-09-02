@@ -28,6 +28,48 @@ var (
 		"/mealplanning.MealPlanningService/ArchiveValidIngredient": {
 			authorization.ArchiveValidIngredientsPermission,
 		},
+		"/settings.SettingsService/CreateServiceSetting": {
+			authorization.CreateServiceSettingsPermission,
+		},
+		"/settings.SettingsService/GetServiceSetting": {
+			authorization.ReadServiceSettingsPermission,
+		},
+		"/settings.SettingsService/GetServiceSettings": {
+			authorization.ReadServiceSettingsPermission,
+		},
+		"/settings.SettingsService/SearchForServiceSettings": {
+			authorization.ReadServiceSettingsPermission,
+		},
+		"/settings.SettingsService/ArchiveServiceSetting": {
+			authorization.ArchiveServiceSettingsPermission,
+		},
+		"/settings.SettingsService/CreateServiceSettingConfiguration": {
+			authorization.CreateServiceSettingConfigurationsPermission,
+		},
+		"/settings.SettingsService/GetServiceSettingConfigurationByName": {
+			authorization.ReadServiceSettingConfigurationsPermission,
+		},
+		"/settings.SettingsService/GetServiceSettingConfigurationsForAccount": {
+			authorization.ReadServiceSettingConfigurationsPermission,
+		},
+		"/settings.SettingsService/GetServiceSettingConfigurationsForUser": {
+			authorization.ReadServiceSettingConfigurationsPermission,
+		},
+		"/settings.SettingsService/ArchiveServiceSettingConfiguration": {
+			authorization.ArchiveServiceSettingConfigurationsPermission,
+		},
+		"/oauth.OAuthService/CreateOAuth2Client": {
+			authorization.CreateOAuth2ClientsPermission,
+		},
+		"/oauth.OAuthService/GetOAuth2Client": {
+			authorization.ReadOAuth2ClientsPermission,
+		},
+		"/oauth.OAuthService/GetOAuth2Clients": {
+			authorization.ReadOAuth2ClientsPermission,
+		},
+		"/oauth.OAuthService/ArchiveOAuth2Client": {
+			authorization.ArchiveOAuth2ClientsPermission,
+		},
 		"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
 			authorization.ReadValidIngredientsPermission,
 		},
@@ -240,6 +282,30 @@ var (
 		},
 		"/mealplanning.MealPlanningService/GetValidPreparationInstrumentsByPreparation": {
 			authorization.ReadValidPreparationInstrumentsPermission,
+		},
+		"/mealplanning.MealPlanningService/CreateValidMeasurementUnitConversion": {
+			authorization.CreateValidMeasurementUnitConversionsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidMeasurementUnitConversion": {
+			authorization.ReadValidMeasurementUnitConversionsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidMeasurementUnitConversionsFromUnit": {
+			authorization.ReadValidMeasurementUnitConversionsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidMeasurementUnitConversionsToUnit": {
+			authorization.ReadValidMeasurementUnitConversionsPermission,
+		},
+		"/mealplanning.MealPlanningService/CreateUserIngredientPreference": {
+			authorization.CreateUserIngredientPreferencesPermission,
+		},
+		"/mealplanning.MealPlanningService/GetUserIngredientPreference": {
+			authorization.ReadUserIngredientPreferencesPermission,
+		},
+		"/mealplanning.MealPlanningService/GetUserIngredientPreferences": {
+			authorization.ReadUserIngredientPreferencesPermission,
+		},
+		"/mealplanning.MealPlanningService/ArchiveUserIngredientPreference": {
+			authorization.ReadUserIngredientPreferencesPermission,
 		},
 		"/identity.IdentityService/AdminUpdateUserStatus": {
 			authorization.UpdateUserStatusPermission,

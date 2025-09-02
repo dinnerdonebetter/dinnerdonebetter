@@ -387,8 +387,6 @@ func (r *repository) ArchiveWebhook(ctx context.Context, webhookID, accountID st
 		return observability.PrepareAndLogError(err, logger, span, "committing database transaction")
 	}
 
-	logger.Info("webhook archived")
-
 	return nil
 }
 
@@ -427,8 +425,6 @@ func (r *repository) AddWebhookTriggerEvent(ctx context.Context, accountID strin
 	if err = tx.Commit(); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing database transaction")
 	}
-
-	logger.Info("webhook trigger event archived")
 
 	return e, nil
 }
@@ -479,8 +475,6 @@ func (r *repository) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, 
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "committing database transaction")
 	}
-
-	logger.Info("webhook trigger event archived")
 
 	return nil
 }

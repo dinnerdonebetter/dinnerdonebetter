@@ -19,7 +19,20 @@ func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 
 	logger := s.logger.WithSpan(span).WithValue(keys.ServiceSettingIDKey, request.Input.ServiceSettingID)
 
-	created, err := s.serviceSettingsRepository.CreateServiceSettingConfiguration(ctx, converters.ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(request.Input))
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+
+	input := converters.ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(request.Input)
+	input.BelongsToUser = sessionContextData.GetUserID()
+	input.BelongsToAccount = sessionContextData.GetActiveAccountID()
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid service setting configuration")
+	}
+
+	created, err := s.serviceSettingsRepository.CreateServiceSettingConfiguration(ctx, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create service setting")
 	}

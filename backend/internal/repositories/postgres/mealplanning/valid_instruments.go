@@ -358,7 +358,5 @@ func (q *repository) ArchiveValidInstrument(ctx context.Context, validInstrument
 		return sql.ErrNoRows
 	}
 
-	logger.Info("valid instrument archived")
-
 	return nil
 }

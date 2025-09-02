@@ -202,6 +202,7 @@ const (
 	MealPlanningService_CreateUserIngredientPreference_FullMethodName                      = "/mealplanning.MealPlanningService/CreateUserIngredientPreference"
 	MealPlanningService_GetAccountInstrumentOwnership_FullMethodName                       = "/mealplanning.MealPlanningService/GetAccountInstrumentOwnership"
 	MealPlanningService_GetAccountInstrumentOwnerships_FullMethodName                      = "/mealplanning.MealPlanningService/GetAccountInstrumentOwnerships"
+	MealPlanningService_GetUserIngredientPreference_FullMethodName                         = "/mealplanning.MealPlanningService/GetUserIngredientPreference"
 	MealPlanningService_GetUserIngredientPreferences_FullMethodName                        = "/mealplanning.MealPlanningService/GetUserIngredientPreferences"
 	MealPlanningService_UpdateAccountInstrumentOwnership_FullMethodName                    = "/mealplanning.MealPlanningService/UpdateAccountInstrumentOwnership"
 	MealPlanningService_UpdateUserIngredientPreference_FullMethodName                      = "/mealplanning.MealPlanningService/UpdateUserIngredientPreference"
@@ -393,6 +394,7 @@ type MealPlanningServiceClient interface {
 	CreateUserIngredientPreference(ctx context.Context, in *CreateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*CreateUserIngredientPreferenceResponse, error)
 	GetAccountInstrumentOwnership(ctx context.Context, in *GetAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*GetAccountInstrumentOwnershipResponse, error)
 	GetAccountInstrumentOwnerships(ctx context.Context, in *GetAccountInstrumentOwnershipsRequest, opts ...grpc.CallOption) (*GetAccountInstrumentOwnershipsResponse, error)
+	GetUserIngredientPreference(ctx context.Context, in *GetUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferenceResponse, error)
 	GetUserIngredientPreferences(ctx context.Context, in *GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferencesResponse, error)
 	UpdateAccountInstrumentOwnership(ctx context.Context, in *UpdateAccountInstrumentOwnershipRequest, opts ...grpc.CallOption) (*UpdateAccountInstrumentOwnershipResponse, error)
 	UpdateUserIngredientPreference(ctx context.Context, in *UpdateUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*UpdateUserIngredientPreferenceResponse, error)
@@ -2226,6 +2228,16 @@ func (c *mealPlanningServiceClient) GetAccountInstrumentOwnerships(ctx context.C
 	return out, nil
 }
 
+func (c *mealPlanningServiceClient) GetUserIngredientPreference(ctx context.Context, in *GetUserIngredientPreferenceRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferenceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserIngredientPreferenceResponse)
+	err := c.cc.Invoke(ctx, MealPlanningService_GetUserIngredientPreference_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *mealPlanningServiceClient) GetUserIngredientPreferences(ctx context.Context, in *GetUserIngredientPreferencesRequest, opts ...grpc.CallOption) (*GetUserIngredientPreferencesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetUserIngredientPreferencesResponse)
@@ -2442,6 +2454,7 @@ type MealPlanningServiceServer interface {
 	CreateUserIngredientPreference(context.Context, *CreateUserIngredientPreferenceRequest) (*CreateUserIngredientPreferenceResponse, error)
 	GetAccountInstrumentOwnership(context.Context, *GetAccountInstrumentOwnershipRequest) (*GetAccountInstrumentOwnershipResponse, error)
 	GetAccountInstrumentOwnerships(context.Context, *GetAccountInstrumentOwnershipsRequest) (*GetAccountInstrumentOwnershipsResponse, error)
+	GetUserIngredientPreference(context.Context, *GetUserIngredientPreferenceRequest) (*GetUserIngredientPreferenceResponse, error)
 	GetUserIngredientPreferences(context.Context, *GetUserIngredientPreferencesRequest) (*GetUserIngredientPreferencesResponse, error)
 	UpdateAccountInstrumentOwnership(context.Context, *UpdateAccountInstrumentOwnershipRequest) (*UpdateAccountInstrumentOwnershipResponse, error)
 	UpdateUserIngredientPreference(context.Context, *UpdateUserIngredientPreferenceRequest) (*UpdateUserIngredientPreferenceResponse, error)
@@ -3000,6 +3013,9 @@ func (UnimplementedMealPlanningServiceServer) GetAccountInstrumentOwnership(cont
 }
 func (UnimplementedMealPlanningServiceServer) GetAccountInstrumentOwnerships(context.Context, *GetAccountInstrumentOwnershipsRequest) (*GetAccountInstrumentOwnershipsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountInstrumentOwnerships not implemented")
+}
+func (UnimplementedMealPlanningServiceServer) GetUserIngredientPreference(context.Context, *GetUserIngredientPreferenceRequest) (*GetUserIngredientPreferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserIngredientPreference not implemented")
 }
 func (UnimplementedMealPlanningServiceServer) GetUserIngredientPreferences(context.Context, *GetUserIngredientPreferencesRequest) (*GetUserIngredientPreferencesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserIngredientPreferences not implemented")
@@ -6307,6 +6323,24 @@ func _MealPlanningService_GetAccountInstrumentOwnerships_Handler(srv interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MealPlanningService_GetUserIngredientPreference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserIngredientPreferenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MealPlanningServiceServer).GetUserIngredientPreference(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MealPlanningService_GetUserIngredientPreference_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MealPlanningServiceServer).GetUserIngredientPreference(ctx, req.(*GetUserIngredientPreferenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MealPlanningService_GetUserIngredientPreferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserIngredientPreferencesRequest)
 	if err := dec(in); err != nil {
@@ -7095,6 +7129,10 @@ var MealPlanningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccountInstrumentOwnerships",
 			Handler:    _MealPlanningService_GetAccountInstrumentOwnerships_Handler,
+		},
+		{
+			MethodName: "GetUserIngredientPreference",
+			Handler:    _MealPlanningService_GetUserIngredientPreference_Handler,
 		},
 		{
 			MethodName: "GetUserIngredientPreferences",

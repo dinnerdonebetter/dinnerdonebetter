@@ -2,6 +2,7 @@ package settings
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
@@ -12,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
+	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
 )
 
 const (
@@ -47,6 +48,11 @@ func (q *repository) ServiceSettingExists(ctx context.Context, serviceSettingID 
 
 // GetServiceSetting fetches a service setting from the database.
 func (q *repository) GetServiceSetting(ctx context.Context, serviceSettingID string) (*types.ServiceSetting, error) {
+	return q.getServiceSetting(ctx, q.db, serviceSettingID)
+}
+
+// getServiceSetting fetches a service setting from the database.
+func (q *repository) getServiceSetting(ctx context.Context, db database.SQLQueryExecutor, serviceSettingID string) (*types.ServiceSetting, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -58,7 +64,7 @@ func (q *repository) GetServiceSetting(ctx context.Context, serviceSettingID str
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
-	result, err := q.generatedQuerier.GetServiceSetting(ctx, q.db, serviceSettingID)
+	result, err := q.generatedQuerier.GetServiceSetting(ctx, db, serviceSettingID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing service setting fetch")
 	}
@@ -150,7 +156,7 @@ func (q *repository) GetServiceSettings(ctx context.Context, filter *filtering.Q
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetServiceSettings(ctx, q.db, &generated2.GetServiceSettingsParams{
+	results, err := q.generatedQuerier.GetServiceSettings(ctx, q.db, &generated.GetServiceSettingsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -208,10 +214,10 @@ func (q *repository) CreateServiceSetting(ctx context.Context, input *types.Serv
 	}
 
 	// create the service setting.
-	if err = q.generatedQuerier.CreateServiceSetting(ctx, tx, &generated2.CreateServiceSettingParams{
+	if err = q.generatedQuerier.CreateServiceSetting(ctx, tx, &generated.CreateServiceSettingParams{
 		ID:           input.ID,
 		Name:         input.Name,
-		Type:         generated2.SettingType(input.Type),
+		Type:         generated.SettingType(input.Type),
 		Description:  input.Description,
 		Enumeration:  strings.Join(input.Enumeration, serviceSettingsEnumDelimiter),
 		DefaultValue: database.NullStringFromStringPointer(input.DefaultValue),
@@ -269,9 +275,14 @@ func (q *repository) ArchiveServiceSetting(ctx context.Context, serviceSettingID
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID)
+	if err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
+	}
+
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
 	}
 
 	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
@@ -287,8 +298,6 @@ func (q *repository) ArchiveServiceSetting(ctx context.Context, serviceSettingID
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
-
-	logger.Info("service setting archived")
 
 	return nil
 }

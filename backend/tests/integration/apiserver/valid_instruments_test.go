@@ -103,7 +103,7 @@ func TestValidInstruments_Reading(T *testing.T) {
 
 		converted := grpcconverters.ConvertGRPCValidInstrumentToValidInstrument(retrieved.Result)
 
-		assertRoughEquality(t, created, converted, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+		assertRoughEquality(t, created, converted, defaultIgnoredFields()...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -145,11 +145,11 @@ func TestValidInstruments_Updating(T *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		updated := response.Result
+		updated := grpcconverters.ConvertGRPCValidInstrumentToValidInstrument(response.Result)
 		// Ensure UpdatedAt was set
 		require.NotNil(t, updated.LastUpdatedAt)
 
-		assertRoughEquality(t, created, updated, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+		assertRoughEquality(t, created, updated, defaultIgnoredFields()...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

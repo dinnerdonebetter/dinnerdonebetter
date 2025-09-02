@@ -235,8 +235,8 @@ func (m *MockMealPlanningManager) ReadUserIngredientPreference(ctx context.Conte
 	return returnValues.Get(0).(*mealplanning.UserIngredientPreference), returnValues.Error(1)
 }
 
-func (m *MockMealPlanningManager) CreateUserIngredientPreference(ctx context.Context, input *mealplanning.UserIngredientPreferenceCreationRequestInput) ([]*mealplanning.UserIngredientPreference, error) {
-	returnValues := m.Called(ctx, input)
+func (m *MockMealPlanningManager) CreateUserIngredientPreference(ctx context.Context, ownerID string, input *mealplanning.UserIngredientPreferenceCreationRequestInput) ([]*mealplanning.UserIngredientPreference, error) {
+	returnValues := m.Called(ctx, ownerID, input)
 
 	return returnValues.Get(0).([]*mealplanning.UserIngredientPreference), returnValues.Get(1).(error)
 }

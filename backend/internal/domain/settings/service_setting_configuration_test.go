@@ -33,8 +33,7 @@ func TestServiceSettingConfigurationCreationRequestInput_ValidateWithContext(T *
 
 		ctx := context.Background()
 		x := &ServiceSettingConfigurationCreationRequestInput{
-			Value:         t.Name(),
-			BelongsToUser: t.Name(),
+			Value: t.Name(),
 		}
 
 		actual := x.ValidateWithContext(ctx)

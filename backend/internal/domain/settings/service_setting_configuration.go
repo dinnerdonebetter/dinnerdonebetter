@@ -48,8 +48,6 @@ type (
 		Value            string `json:"value"`
 		Notes            string `json:"notes"`
 		ServiceSettingID string `json:"serviceSettingID"`
-		BelongsToUser    string `json:"belongsToUser"`
-		BelongsToAccount string `json:"belongsToAccount"`
 	}
 
 	// ServiceSettingConfigurationDatabaseCreationInput represents what a user could set as input for creating service settings configurations.
@@ -71,8 +69,6 @@ type (
 		Value            *string `json:"value"`
 		Notes            *string `json:"notes"`
 		ServiceSettingID *string `json:"serviceSettingID"`
-		BelongsToUser    *string `json:"belongsToUser"`
-		BelongsToAccount *string `json:"belongsToAccount"`
 	}
 
 	// ServiceSettingConfigurationDataManager describes a structure capable of storing settings permanently.
@@ -112,14 +108,6 @@ func (x *ServiceSettingConfiguration) Update(input *ServiceSettingConfigurationU
 	if input.ServiceSettingID != nil && *input.ServiceSettingID != x.ServiceSetting.ID {
 		x.ServiceSetting.ID = *input.ServiceSettingID
 	}
-
-	if input.BelongsToUser != nil && *input.BelongsToUser != x.BelongsToUser {
-		x.BelongsToUser = *input.BelongsToUser
-	}
-
-	if input.BelongsToAccount != nil && *input.BelongsToAccount != x.BelongsToAccount {
-		x.BelongsToAccount = *input.BelongsToAccount
-	}
 }
 
 var _ validation.ValidatableWithContext = (*ServiceSettingConfigurationCreationRequestInput)(nil)
@@ -130,7 +118,7 @@ func (x *ServiceSettingConfigurationCreationRequestInput) ValidateWithContext(ct
 		ctx,
 		x,
 		validation.Field(&x.Value, validation.Required),
-		validation.Field(&x.BelongsToUser, validation.Required),
+		validation.Field(&x.ServiceSettingID, validation.Required),
 	)
 }
 

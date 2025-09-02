@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	apiConfigurationFilepath = "../../deploy/environments/testing/config_files/integration-tests-config.json"
+	apiConfigurationFilepath = "../../../deploy/environments/testing/config_files/integration-tests-config.json"
 )
 
 var (

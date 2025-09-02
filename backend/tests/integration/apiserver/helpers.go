@@ -458,7 +458,7 @@ type compareOptions struct {
 
 // assertRoughEquality reports whether a and b are deeply equal after ignoring fields by name at any depth.
 // Works across different struct types as long as exported field names/structure align.
-func assertRoughEquality(t *testing.T, a, b any, ignoreFieldNames ...string) {
+func assertRoughEquality[T any](t *testing.T, a, b T, ignoreFieldNames ...string) {
 	t.Helper()
 
 	opts := compareOptions{

@@ -1,51 +1,32 @@
 package converters
 
 import (
-	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 )
 
 // ConvertServiceSettingConfigurationToServiceSettingConfigurationUpdateRequestInput creates a ServiceSettingConfigurationUpdateRequestInput from a ServiceSettingConfiguration.
-func ConvertServiceSettingConfigurationToServiceSettingConfigurationUpdateRequestInput(input *types.ServiceSettingConfiguration) *types.ServiceSettingConfigurationUpdateRequestInput {
-	x := &types.ServiceSettingConfigurationUpdateRequestInput{
+func ConvertServiceSettingConfigurationToServiceSettingConfigurationUpdateRequestInput(input *settings.ServiceSettingConfiguration) *settings.ServiceSettingConfigurationUpdateRequestInput {
+	x := &settings.ServiceSettingConfigurationUpdateRequestInput{
 		Value:            &input.Value,
 		Notes:            &input.Notes,
 		ServiceSettingID: &input.ServiceSetting.ID,
-		BelongsToUser:    &input.BelongsToUser,
-		BelongsToAccount: &input.BelongsToAccount,
-	}
-
-	return x
-}
-
-// ConvertServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput creates a ServiceSettingConfigurationDatabaseCreationInput from a ServiceSettingConfigurationCreationRequestInput.
-func ConvertServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(input *types.ServiceSettingConfigurationCreationRequestInput) *types.ServiceSettingConfigurationDatabaseCreationInput {
-	x := &types.ServiceSettingConfigurationDatabaseCreationInput{
-		ID:               identifiers.New(),
-		Value:            input.Value,
-		Notes:            input.Notes,
-		ServiceSettingID: input.ServiceSettingID,
-		BelongsToUser:    input.BelongsToUser,
-		BelongsToAccount: input.BelongsToAccount,
 	}
 
 	return x
 }
 
 // ConvertServiceSettingConfigurationToServiceSettingConfigurationCreationRequestInput builds a ServiceSettingConfigurationCreationRequestInput from a ServiceSettingConfiguration.
-func ConvertServiceSettingConfigurationToServiceSettingConfigurationCreationRequestInput(input *types.ServiceSettingConfiguration) *types.ServiceSettingConfigurationCreationRequestInput {
-	return &types.ServiceSettingConfigurationCreationRequestInput{
+func ConvertServiceSettingConfigurationToServiceSettingConfigurationCreationRequestInput(input *settings.ServiceSettingConfiguration) *settings.ServiceSettingConfigurationCreationRequestInput {
+	return &settings.ServiceSettingConfigurationCreationRequestInput{
 		Value:            input.Value,
 		Notes:            input.Notes,
 		ServiceSettingID: input.ServiceSetting.ID,
-		BelongsToUser:    input.BelongsToUser,
-		BelongsToAccount: input.BelongsToAccount,
 	}
 }
 
 // ConvertServiceSettingConfigurationToServiceSettingConfigurationDatabaseCreationInput builds a ServiceSettingConfigurationDatabaseCreationInput from a ServiceSettingConfiguration.
-func ConvertServiceSettingConfigurationToServiceSettingConfigurationDatabaseCreationInput(input *types.ServiceSettingConfiguration) *types.ServiceSettingConfigurationDatabaseCreationInput {
-	return &types.ServiceSettingConfigurationDatabaseCreationInput{
+func ConvertServiceSettingConfigurationToServiceSettingConfigurationDatabaseCreationInput(input *settings.ServiceSettingConfiguration) *settings.ServiceSettingConfigurationDatabaseCreationInput {
+	return &settings.ServiceSettingConfigurationDatabaseCreationInput{
 		ID:               input.ID,
 		Value:            input.Value,
 		Notes:            input.Notes,

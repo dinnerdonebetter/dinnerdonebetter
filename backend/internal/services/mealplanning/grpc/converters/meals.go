@@ -177,6 +177,20 @@ func ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(input *mealpl
 	}
 }
 
+func ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(input *mealplanningsvc.UserIngredientPreference) *mealplanning.UserIngredientPreference {
+	return &mealplanning.UserIngredientPreference{
+		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		Ingredient:    *ConvertGRPCValidIngredientToValidIngredient(input.Ingredient),
+		ID:            input.ID,
+		Notes:         input.Notes,
+		BelongsToUser: input.BelongsToUser,
+		Rating:        int8(input.Rating),
+		Allergy:       input.Allergy,
+	}
+}
+
 func ConvertGRPCMealCreationRequestInputToMealCreationRequestInput(input *mealplanningsvc.MealCreationRequestInput) *mealplanning.MealCreationRequestInput {
 	var components []*mealplanning.MealComponentCreationRequestInput
 	for _, component := range input.Components {
@@ -296,6 +310,16 @@ func ConvertGRPCUserIngredientPreferenceCreationRequestInputToUserIngredientPref
 		ValidIngredientID:      input.ValidIngredientID,
 		Notes:                  input.Notes,
 		Rating:                 int8(input.Rating),
+		Allergy:                input.Allergy,
+	}
+}
+
+func ConvertUserIngredientPreferenceCreationRequestInputToGRPCUserIngredientPreferenceCreationRequestInput(input *mealplanning.UserIngredientPreferenceCreationRequestInput) *mealplanningsvc.UserIngredientPreferenceCreationRequestInput {
+	return &mealplanningsvc.UserIngredientPreferenceCreationRequestInput{
+		ValidIngredientGroupID: input.ValidIngredientGroupID,
+		ValidIngredientID:      input.ValidIngredientID,
+		Notes:                  input.Notes,
+		Rating:                 int32(input.Rating),
 		Allergy:                input.Allergy,
 	}
 }

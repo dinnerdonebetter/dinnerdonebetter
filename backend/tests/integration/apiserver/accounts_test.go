@@ -134,7 +134,7 @@ func TestAccounts_Reading(T *testing.T) {
 
 		converted := identitygrpcconverters.ConvertGRPCAccountToAccount(retrievedAccount.Result)
 
-		assertRoughEquality(t, createdAccount.Created, converted, "Members", "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+		assertRoughEquality(t, identitygrpcconverters.ConvertGRPCAccountToAccount(createdAccount.Created), converted, append(defaultIgnoredFields(), "Members")...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

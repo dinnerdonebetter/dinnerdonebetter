@@ -71,7 +71,7 @@ type (
 
 		ReadUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) (*types.UserIngredientPreference, error)
 		ListUserIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.UserIngredientPreference, string, error)
-		CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceCreationRequestInput) ([]*types.UserIngredientPreference, error)
+		CreateUserIngredientPreference(ctx context.Context, ownerID string, input *types.UserIngredientPreferenceCreationRequestInput) ([]*types.UserIngredientPreference, error)
 		UpdateUserIngredientPreference(ctx context.Context, ingredientPreferenceID, ownerID string, input *types.UserIngredientPreferenceUpdateRequestInput) error
 		ArchiveUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) error
 
@@ -1003,12 +1003,16 @@ func (m *mealPlanningManager) ReadUserIngredientPreference(ctx context.Context, 
 	return result, nil
 }
 
-func (m *mealPlanningManager) CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceCreationRequestInput) ([]*types.UserIngredientPreference, error) {
+func (m *mealPlanningManager) CreateUserIngredientPreference(ctx context.Context, ownerID string, input *types.UserIngredientPreferenceCreationRequestInput) ([]*types.UserIngredientPreference, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
+	}
+
+	if ownerID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
 	}
 
 	logger := m.logger.WithSpan(span).WithValues(map[string]any{
@@ -1018,7 +1022,12 @@ func (m *mealPlanningManager) CreateUserIngredientPreference(ctx context.Context
 	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, input.ValidIngredientGroupID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, input.ValidIngredientID)
 
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating ingredient preference creation request input")
+	}
+
 	convertedInput := converters.ConvertUserIngredientPreferenceCreationRequestInputToUserIngredientPreferenceDatabaseCreationInput(input)
+	convertedInput.BelongsToUser = ownerID
 
 	created, err := m.db.CreateUserIngredientPreference(ctx, convertedInput)
 	if err != nil {
@@ -1077,7 +1086,7 @@ func (m *mealPlanningManager) ArchiveUserIngredientPreference(ctx context.Contex
 	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, ingredientPreferenceID)
 	tracing.AttachToSpan(span, keys.UserIDKey, ownerID)
 
-	if err := m.db.ArchiveUserIngredientPreference(ctx, ownerID, ingredientPreferenceID); err != nil {
+	if err := m.db.ArchiveUserIngredientPreference(ctx, ingredientPreferenceID, ownerID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving ingredient preference")
 	}
 

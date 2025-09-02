@@ -170,7 +170,7 @@ func (s *serviceImpl) ArchiveUserIngredientPreference(ctx context.Context, reque
 	}
 
 	if err = s.mealPlanningManager.ArchiveUserIngredientPreference(ctx, sessionContextData.GetUserID(), request.UserIngredientPreferenceID); err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan option vote")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive user ingredient preference")
 	}
 
 	x := &mealplanning.ArchiveUserIngredientPreferenceResponse{
@@ -362,9 +362,14 @@ func (s *serviceImpl) CreateUserIngredientPreference(ctx context.Context, reques
 
 	logger := s.logger.WithSpan(span)
 
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
 	input := converters.ConvertGRPCUserIngredientPreferenceCreationRequestInputToUserIngredientPreferenceCreationRequestInput(request.Input)
 
-	created, err := s.mealPlanningManager.CreateUserIngredientPreference(ctx, input)
+	created, err := s.mealPlanningManager.CreateUserIngredientPreference(ctx, sessionContextData.GetUserID(), input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create user ingredient preference")
 	}
@@ -747,6 +752,32 @@ func (s *serviceImpl) GetMeals(ctx context.Context, request *mealplanning.GetMea
 
 	for _, meal := range meals {
 		x.Results = append(x.Results, converters.ConvertMealToGRPCMeal(meal))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetUserIngredientPreference(ctx context.Context, request *mealplanning.GetUserIngredientPreferenceRequest) (*mealplanning.GetUserIngredientPreferenceResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	userIngredientPreference, err := s.mealPlanningManager.ReadUserIngredientPreference(ctx, sessionContextData.GetUserID(), request.UserIngredientPreferenceID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meals")
+	}
+
+	x := &mealplanning.GetUserIngredientPreferenceResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(userIngredientPreference),
 	}
 
 	return x, nil

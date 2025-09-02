@@ -784,6 +784,16 @@ func ConvertGRPCCreateValidMeasurementUnitConversionRequestToValidMeasurementUni
 	}
 }
 
+func ConvertCreateValidMeasurementUnitConversionRequestToGRPCValidMeasurementUnitConversionCreationRequestInput(x *mealplanning.ValidMeasurementUnitConversionCreationRequestInput) *mealplanninggrpc.ValidMeasurementUnitConversionCreationRequestInput {
+	return &mealplanninggrpc.ValidMeasurementUnitConversionCreationRequestInput{
+		OnlyForIngredient: x.OnlyForIngredient,
+		From:              x.From,
+		To:                x.To,
+		Notes:             x.Notes,
+		Modifier:          x.Modifier,
+	}
+}
+
 func ConvertGRPCValidMeasurementUnitConversionUpdateRequestInputToValidMeasurementUnitConversionUpdateRequestInput(x *mealplanninggrpc.ValidMeasurementUnitConversionUpdateRequestInput) *mealplanning.ValidMeasurementUnitConversionUpdateRequestInput {
 	return &mealplanning.ValidMeasurementUnitConversionUpdateRequestInput{
 		OnlyForIngredient: x.OnlyForIngredient,
@@ -806,6 +816,27 @@ func ConvertValidMeasurementUnitConversionToGRPCValidMeasurementUnitConversion(x
 		ArchivedAt:        converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
 		From:              ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.From),
 		To:                ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&x.To),
+		Notes:             x.Notes,
+		OnlyForIngredient: ingredient,
+		ID:                x.ID,
+		Modifier:          x.Modifier,
+	}
+
+	return y
+}
+
+func ConvertGRPCValidMeasurementUnitConversionToValidMeasurementUnitConversion(x *mealplanninggrpc.ValidMeasurementUnitConversion) *mealplanning.ValidMeasurementUnitConversion {
+	var ingredient *mealplanning.ValidIngredient
+	if x.OnlyForIngredient != nil {
+		ingredient = ConvertGRPCValidIngredientToValidIngredient(x.OnlyForIngredient)
+	}
+
+	y := &mealplanning.ValidMeasurementUnitConversion{
+		CreatedAt:         converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt:     converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:        converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		From:              *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(x.From),
+		To:                *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(x.To),
 		Notes:             x.Notes,
 		OnlyForIngredient: ingredient,
 		ID:                x.ID,

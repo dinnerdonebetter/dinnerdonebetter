@@ -9,7 +9,8 @@ import (
 
 func ConvertGPRCServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput(input *settingssvc.ServiceSettingCreationRequestInput) *settings.ServiceSettingDatabaseCreationInput {
 	return &settings.ServiceSettingDatabaseCreationInput{
-		DefaultValue: &input.DefaultValue,
+		ID:           identifiers.New(),
+		DefaultValue: input.DefaultValue,
 		Name:         input.Name,
 		Type:         input.Type,
 		Description:  input.Description,
@@ -19,7 +20,7 @@ func ConvertGPRCServiceSettingCreationRequestInputToServiceSettingDatabaseCreati
 }
 
 func ConvertServiceSettingToGRPCServiceSetting(input *settings.ServiceSetting) *settingssvc.ServiceSetting {
-	x := &settingssvc.ServiceSetting{
+	return &settingssvc.ServiceSetting{
 		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		ArchivedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
 		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
@@ -29,13 +30,23 @@ func ConvertServiceSettingToGRPCServiceSetting(input *settings.ServiceSetting) *
 		Description:   input.Description,
 		Enumeration:   input.Enumeration,
 		AdminsOnly:    input.AdminsOnly,
+		DefaultValue:  input.DefaultValue,
 	}
+}
 
-	if input.DefaultValue != nil {
-		x.DefaultValue = *input.DefaultValue
+func ConvertGRPCServiceSettingToServiceSetting(input *settingssvc.ServiceSetting) *settings.ServiceSetting {
+	return &settings.ServiceSetting{
+		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		Name:          input.Name,
+		ID:            input.ID,
+		Type:          input.Type,
+		Description:   input.Description,
+		Enumeration:   input.Enumeration,
+		AdminsOnly:    input.AdminsOnly,
+		DefaultValue:  input.DefaultValue,
 	}
-
-	return x
 }
 
 func ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(input *settingssvc.ServiceSettingConfigurationCreationRequestInput) *settings.ServiceSettingConfigurationDatabaseCreationInput {
@@ -44,8 +55,25 @@ func ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingC
 		Value:            input.Value,
 		Notes:            input.Notes,
 		ServiceSettingID: input.ServiceSettingID,
-		BelongsToUser:    input.BelongsToUser,
-		BelongsToAccount: input.BelongsToAccount,
+	}
+}
+
+func ConvertServiceSettingConfigurationCreationRequestInputToGRPCServiceSettingConfigurationCreationRequestInput(input *settings.ServiceSettingConfigurationCreationRequestInput) *settingssvc.ServiceSettingConfigurationCreationRequestInput {
+	return &settingssvc.ServiceSettingConfigurationCreationRequestInput{
+		Value:            input.Value,
+		Notes:            input.Notes,
+		ServiceSettingID: input.ServiceSettingID,
+	}
+}
+
+func ConvertServiceSettingCreationRequestInputToGRPCServiceSettingCreationRequestInput(input *settings.ServiceSettingCreationRequestInput) *settingssvc.ServiceSettingCreationRequestInput {
+	return &settingssvc.ServiceSettingCreationRequestInput{
+		DefaultValue: input.DefaultValue,
+		Name:         input.Name,
+		Type:         input.Type,
+		Description:  input.Description,
+		Enumeration:  input.Enumeration,
+		AdminsOnly:   input.AdminsOnly,
 	}
 }
 
@@ -63,12 +91,24 @@ func ConvertServiceSettingConfigurationToGRPCServiceSettingConfiguration(input *
 	}
 }
 
+func ConvertGRPCServiceSettingConfigurationToServiceSettingConfiguration(input *settingssvc.ServiceSettingConfiguration) *settings.ServiceSettingConfiguration {
+	return &settings.ServiceSettingConfiguration{
+		CreatedAt:        grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		ID:               input.ID,
+		Value:            input.Value,
+		Notes:            input.Notes,
+		BelongsToUser:    input.BelongsToUser,
+		BelongsToAccount: input.BelongsToAccount,
+		ServiceSetting:   *ConvertGRPCServiceSettingToServiceSetting(input.ServiceSetting),
+	}
+}
+
 func ConvertGRPCServiceSettingConfigurationUpdateRequestInputToServiceSettingConfigurationUpdateRequestInputTo(input *settingssvc.ServiceSettingConfigurationUpdateRequestInput) *settings.ServiceSettingConfigurationUpdateRequestInput {
 	return &settings.ServiceSettingConfigurationUpdateRequestInput{
 		Value:            input.Value,
 		Notes:            input.Notes,
 		ServiceSettingID: input.ServiceSettingID,
-		BelongsToUser:    input.BelongsToUser,
-		BelongsToAccount: input.BelongsToAccount,
 	}
 }

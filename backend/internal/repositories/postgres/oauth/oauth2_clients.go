@@ -173,14 +173,17 @@ func (q *repository) ArchiveOAuth2Client(ctx context.Context, clientID string) e
 	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, clientID)
 	logger := q.logger.WithValue(keys.OAuth2ClientIDKey, clientID)
 
-	if _, err := q.generatedQuerier.ArchiveOAuth2Client(ctx, q.db, clientID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveOAuth2Client(ctx, q.db, clientID)
+	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
 		return observability.PrepareAndLogError(err, logger, span, "archiving OAuth2 client")
 	}
 
-	logger.Info("OAuth2 client archived")
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
 
 	return nil
 }

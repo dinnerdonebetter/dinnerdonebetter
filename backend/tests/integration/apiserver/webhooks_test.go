@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 

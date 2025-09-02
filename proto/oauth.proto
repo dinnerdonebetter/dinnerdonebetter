@@ -11,8 +11,7 @@ option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated
 
 // CreateOAuth2Client
 message CreateOAuth2ClientRequest {
-  string Name = 1;
-  string Description = 2;
+  OAuth2ClientCreationRequestInput Input = 1;
 }
 
 message CreateOAuth2ClientResponse {

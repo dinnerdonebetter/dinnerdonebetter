@@ -463,7 +463,5 @@ func (r *repository) ArchiveAccount(ctx context.Context, accountID, ownerID stri
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	logger.Info("account archived")
-
 	return nil
 }

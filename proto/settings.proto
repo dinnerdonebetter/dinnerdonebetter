@@ -131,7 +131,7 @@ message UpdateServiceSettingConfigurationResponse {
 
 message ServiceSetting {
   google.protobuf.Timestamp CreatedAt = 1;
-  string DefaultValue = 2;
+  optional string DefaultValue = 2;
   google.protobuf.Timestamp LastUpdatedAt = 3;
   google.protobuf.Timestamp ArchivedAt = 4;
   string ID = 5;
@@ -158,20 +158,16 @@ message ServiceSettingConfigurationCreationRequestInput {
   string Value = 1;
   string Notes = 2;
   string ServiceSettingID = 3;
-  string BelongsToUser = 4;
-  string BelongsToAccount = 5;
 }
 
 message ServiceSettingConfigurationUpdateRequestInput {
   optional string Value = 1;
   optional string Notes = 2;
   optional string ServiceSettingID = 3;
-  optional string BelongsToUser = 4;
-  optional string BelongsToAccount = 5;
 }
 
 message ServiceSettingCreationRequestInput {
-  string DefaultValue = 1;
+  optional string DefaultValue = 1;
   string Name = 2;
   string Type = 3;
   string Description = 4;

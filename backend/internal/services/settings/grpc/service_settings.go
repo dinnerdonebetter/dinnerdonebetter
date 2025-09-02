@@ -19,7 +19,12 @@ func (s *serviceImpl) CreateServiceSetting(ctx context.Context, request *setting
 
 	logger := s.logger.WithSpan(span)
 
-	created, err := s.serviceSettingsRepository.CreateServiceSetting(ctx, converters.ConvertGPRCServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput(request.Input))
+	input := converters.ConvertGPRCServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput(request.Input)
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid service setting")
+	}
+
+	created, err := s.serviceSettingsRepository.CreateServiceSetting(ctx, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create service setting")
 	}

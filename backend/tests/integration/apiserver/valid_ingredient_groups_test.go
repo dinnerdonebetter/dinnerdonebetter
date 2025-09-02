@@ -103,7 +103,7 @@ func TestValidIngredientGroups_Reading(T *testing.T) {
 
 		converted := grpcconverters.ConvertGRPCValidIngredientGroupToValidIngredientGroup(retrieved.Result)
 
-		assertRoughEquality(t, created, converted, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+		assertRoughEquality(t, created, converted, defaultIgnoredFields()...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -144,12 +144,12 @@ func TestValidIngredientGroups_Updating(T *testing.T) {
 			Input:                  grpcconverters.ConvertValidIngredientGroupUpdateRequestInputToGRPCValidIngredientGroupUpdateRequestInput(updateInput),
 		})
 		assert.NoError(t, err)
+		updated := grpcconverters.ConvertGRPCValidIngredientGroupToValidIngredientGroup(response.Result)
 
-		updated := response.Result
 		// Ensure UpdatedAt was set
 		require.NotNil(t, updated.LastUpdatedAt)
 
-		assertRoughEquality(t, created, updated, "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+		assertRoughEquality(t, created, updated, defaultIgnoredFields()...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

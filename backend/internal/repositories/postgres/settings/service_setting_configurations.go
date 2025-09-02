@@ -2,6 +2,7 @@ package settings
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
@@ -377,11 +378,17 @@ func (q *repository) CreateServiceSettingConfiguration(ctx context.Context, inpu
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing service setting configuration creation query")
 	}
 
+	serviceSetting, err := q.getServiceSetting(ctx, tx, input.ServiceSettingID)
+	if err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching service setting")
+	}
+
 	x := &types.ServiceSettingConfiguration{
 		ID:               input.ID,
 		Value:            input.Value,
 		Notes:            input.Notes,
-		ServiceSetting:   types.ServiceSetting{ID: input.ServiceSettingID},
+		ServiceSetting:   *serviceSetting,
 		BelongsToUser:    input.BelongsToUser,
 		BelongsToAccount: input.BelongsToAccount,
 		CreatedAt:        q.CurrentTime(),
@@ -477,16 +484,19 @@ func (q *repository) ArchiveServiceSettingConfiguration(ctx context.Context, ser
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = q.generatedQuerier.ArchiveServiceSettingConfiguration(ctx, q.db, serviceSettingConfigurationID); err != nil {
+	rowsAffected, err := q.generatedQuerier.ArchiveServiceSettingConfiguration(ctx, q.db, serviceSettingConfigurationID)
+	if err != nil {
 		q.RollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving service setting configuration")
+	}
+
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
 	}
 
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
-
-	logger.Info("service setting configuration archived")
 
 	return nil
 }

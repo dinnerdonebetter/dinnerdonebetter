@@ -26,7 +26,7 @@ type (
 		mealplanningsvc.UnimplementedMealPlanningServiceServer
 		tracer                               tracing.Tracer
 		logger                               logging.Logger
-		sessionContextDataFetcher            func(context.Context) (sessions.ContextData, error)
+		sessionContextDataFetcher            func(context.Context) (*sessions.ContextData, error)
 		recipeManager                        managers.RecipeManager
 		validEnumerationsManager             managers.ValidEnumerationsManager
 		mealPlanningManager                  managers.MealPlanningManager
@@ -55,5 +55,6 @@ func NewService(
 		mealPlanFinalizerWorker:              mealPlanFinalizerWorker,
 		mealPlanGroceryListInitializerWorker: mealPlanGroceryListInitializerWorker,
 		mealPlanTaskCreatorWorker:            mealPlanTaskCreatorWorker,
+		sessionContextDataFetcher:            sessions.FetchContextDataFromContext,
 	}
 }

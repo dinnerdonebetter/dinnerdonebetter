@@ -1149,6 +1149,7 @@ func TestMealPlanningManager_CreateUserIngredientPreference(T *testing.T) {
 		mpm := buildMealPlanManagerForTest(t)
 
 		expected := fakes.BuildFakeUserIngredientPreferencesList().Data
+		userID := fakes.BuildFakeID()
 		fakeInput := fakes.BuildFakeUserIngredientPreferenceCreationRequestInput()
 
 		expectations := setupExpectationsForMealPlanningManager(
@@ -1161,7 +1162,7 @@ func TestMealPlanningManager_CreateUserIngredientPreference(T *testing.T) {
 			},
 		)
 
-		actual, err := mpm.CreateUserIngredientPreference(ctx, fakeInput)
+		actual, err := mpm.CreateUserIngredientPreference(ctx, userID, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 

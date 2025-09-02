@@ -106,7 +106,7 @@ func TestValidVessels_Reading(T *testing.T) {
 
 		converted := grpcconverters.ConvertGRPCValidVesselToValidVessel(retrieved.Result)
 
-		assertRoughEquality(t, created, converted, "CapacityUnit", "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+		assertRoughEquality(t, created, converted, append(defaultIgnoredFields(), "CapacityUnit")...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {
@@ -149,11 +149,11 @@ func TestValidVessels_Updating(T *testing.T) {
 		})
 		assert.NoError(t, err)
 
-		updated := response.Result
+		updated := grpcconverters.ConvertGRPCValidVesselToValidVessel(response.Result)
 		// Ensure UpdatedAt was set
 		require.NotNil(t, updated.LastUpdatedAt)
 
-		assertRoughEquality(t, created, updated, "CapacityUnit", "CreatedAt", "LastUpdatedAt", "ArchivedAt")
+		assertRoughEquality(t, created, updated, append(defaultIgnoredFields(), "CapacityUnit")...)
 	})
 
 	T.Run("requires auth", func(t *testing.T) {

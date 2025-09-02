@@ -95,7 +95,5 @@ func (r *repository) RedeemPasswordResetToken(ctx context.Context, passwordReset
 		return observability.PrepareAndLogError(err, logger, span, "archiving password reset token")
 	}
 
-	logger.Info("password reset token archived")
-
 	return nil
 }

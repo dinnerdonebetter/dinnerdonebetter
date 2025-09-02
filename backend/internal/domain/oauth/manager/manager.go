@@ -79,6 +79,10 @@ func (m *manager) CreateOAuth2Client(ctx context.Context, input *oauth.OAuth2Cli
 		return nil, observability.PrepareError(err, span, "fetching session context data")
 	}
 
+	if err = input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid oauth2 client creation request")
+	}
+
 	dbInput := converters.ConvertOAuth2ClientCreationRequestInputToOAuth2ClientDatabaseCreationInput(input)
 	dbInput.ID = identifiers.New()
 
@@ -106,7 +110,7 @@ func (m *manager) CreateOAuth2Client(ctx context.Context, input *oauth.OAuth2Cli
 		AccountID: sessionContextData.GetActiveAccountID(),
 	})
 
-	return nil, nil
+	return created, nil
 }
 
 func (m *manager) GetOAuth2Client(ctx context.Context, oauth2ClientID string) (*oauth.OAuth2Client, error) {
