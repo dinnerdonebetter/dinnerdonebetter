@@ -460,6 +460,14 @@ func ConvertGRPCCreateValidIngredientStateIngredientRequestToValidIngredientStat
 	}
 }
 
+func ConvertCreateValidIngredientStateIngredientRequestToGRPCValidIngredientStateIngredientCreationRequestInput(x *mealplanning.ValidIngredientStateIngredientCreationRequestInput) *mealplanninggrpc.ValidIngredientStateIngredientCreationRequestInput {
+	return &mealplanninggrpc.ValidIngredientStateIngredientCreationRequestInput{
+		Notes:                  x.Notes,
+		ValidIngredientStateID: x.ValidIngredientStateID,
+		ValidIngredientID:      x.ValidIngredientID,
+	}
+}
+
 func ConvertGRPCValidIngredientStateIngredientUpdateRequestInputToValidIngredientStateIngredientUpdateRequestInput(x *mealplanninggrpc.ValidIngredientStateIngredientUpdateRequestInput) *mealplanning.ValidIngredientStateIngredientUpdateRequestInput {
 	return &mealplanning.ValidIngredientStateIngredientUpdateRequestInput{
 		Notes:                  x.Notes,
@@ -477,6 +485,18 @@ func ConvertValidIngredientStateIngredientToGRPCValidIngredientStateIngredient(x
 		ID:              x.ID,
 		IngredientState: ConvertValidIngredientStateToGRPCValidIngredientState(&x.IngredientState),
 		Ingredient:      ConvertValidIngredientToGRPCValidIngredient(&x.Ingredient),
+	}
+}
+
+func ConvertGRPCValidIngredientStateIngredientToValidIngredientStateIngredient(x *mealplanninggrpc.ValidIngredientStateIngredient) *mealplanning.ValidIngredientStateIngredient {
+	return &mealplanning.ValidIngredientStateIngredient{
+		CreatedAt:       converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt:   converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:      converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		Notes:           x.Notes,
+		ID:              x.ID,
+		IngredientState: *ConvertGRPCValidIngredientStateToValidIngredientState(x.IngredientState),
+		Ingredient:      *ConvertGRPCValidIngredientToValidIngredient(x.Ingredient),
 	}
 }
 

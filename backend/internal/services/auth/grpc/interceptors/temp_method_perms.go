@@ -7,6 +7,8 @@ import (
 var (
 	noPerms = []authorization.Permission{}
 
+	// TODO: ensure this map doesn't end up with configs for methods that don't exist
+
 	methodPermissions = map[string][]authorization.Permission{
 		"/mealplanning.MealPlanningService/CreateValidIngredient": {
 			authorization.CreateValidIngredientsPermission,
@@ -49,6 +51,33 @@ var (
 		},
 		"/mealplanning.MealPlanningService/GetRandomValidIngredientState": {
 			authorization.ReadValidIngredientStatesPermission,
+		},
+		"/mealplanning.MealPlanningService/CreateValidIngredientStateIngredient": {
+			authorization.CreateValidIngredientStateIngredientsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientStateIngredient": {
+			authorization.ReadValidIngredientStateIngredientsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientStateIngredients": {
+			authorization.ReadValidIngredientStateIngredientsPermission,
+		},
+		"/mealplanning.MealPlanningService/SearchForValidIngredientStateIngredients": {
+			authorization.ReadValidIngredientStateIngredientsPermission,
+		},
+		"/mealplanning.MealPlanningService/UpdateValidIngredientStateIngredient": {
+			authorization.UpdateValidIngredientStateIngredientsPermission,
+		},
+		"/mealplanning.MealPlanningService/ArchiveValidIngredientStateIngredient": {
+			authorization.ArchiveValidIngredientStateIngredientsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetRandomValidIngredientStateIngredient": {
+			authorization.ReadValidIngredientStateIngredientsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientStateIngredientsByIngredient": {
+			authorization.ReadValidIngredientStateIngredientsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientStateIngredientsByIngredientState": {
+			authorization.ReadValidIngredientStateIngredientsPermission,
 		},
 		"/mealplanning.MealPlanningService/CreateValidPreparation": {
 			authorization.CreateValidPreparationsPermission,
