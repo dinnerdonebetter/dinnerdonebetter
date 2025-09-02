@@ -70,9 +70,6 @@ var (
 		"/mealplanning.MealPlanningService/ArchiveValidIngredientStateIngredient": {
 			authorization.ArchiveValidIngredientStateIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetRandomValidIngredientStateIngredient": {
-			authorization.ReadValidIngredientStateIngredientsPermission,
-		},
 		"/mealplanning.MealPlanningService/GetValidIngredientStateIngredientsByIngredient": {
 			authorization.ReadValidIngredientStateIngredientsPermission,
 		},
@@ -177,6 +174,21 @@ var (
 		},
 		"/mealplanning.MealPlanningService/GetValidPreparationVesselsByPreparation": {
 			authorization.ReadValidPreparationVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientPreparation": {
+			authorization.ReadValidIngredientPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/CreateValidIngredientPreparation": {
+			authorization.CreateValidIngredientPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientPreparations": {
+			authorization.ReadValidIngredientPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientPreparationsByPreparation": {
+			authorization.ReadValidIngredientPreparationsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidIngredientPreparationsByIngredient": {
+			authorization.ReadValidIngredientPreparationsPermission,
 		},
 		"/mealplanning.MealPlanningService/GetValidPreparationInstrument": {
 			authorization.ReadValidPreparationInstrumentsPermission,

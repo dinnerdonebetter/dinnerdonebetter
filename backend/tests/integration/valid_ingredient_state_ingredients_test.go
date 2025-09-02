@@ -101,7 +101,7 @@ func TestValidIngredientStateIngredients_Listing(T *testing.T) {
 		assert.True(t, len(results.Results) >= len(createdValidIngredientStateIngredients))
 	})
 
-	T.Run("by Ingredient", func(t *testing.T) {
+	T.Run("by ingredient", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
