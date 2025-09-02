@@ -389,8 +389,30 @@ func ConvertGRPCCreateValidIngredientStateRequestToValidIngredientStateCreationR
 	}
 }
 
+func ConvertValidIngredientStateCreationRequestInputToGRPCValidIngredientStateCreationRequestInput(x *mealplanning.ValidIngredientStateCreationRequestInput) *mealplanninggrpc.ValidIngredientStateCreationRequestInput {
+	return &mealplanninggrpc.ValidIngredientStateCreationRequestInput{
+		Name:          x.Name,
+		Slug:          x.Slug,
+		PastTense:     x.PastTense,
+		Description:   x.Description,
+		AttributeType: x.AttributeType,
+		IconPath:      x.IconPath,
+	}
+}
+
 func ConvertGRPCValidIngredientStateUpdateRequestInputToValidIngredientStateUpdateRequestInput(x *mealplanninggrpc.ValidIngredientStateUpdateRequestInput) *mealplanning.ValidIngredientStateUpdateRequestInput {
 	return &mealplanning.ValidIngredientStateUpdateRequestInput{
+		Name:          x.Name,
+		Slug:          x.Slug,
+		PastTense:     x.PastTense,
+		Description:   x.Description,
+		AttributeType: x.AttributeType,
+		IconPath:      x.IconPath,
+	}
+}
+
+func ConvertValidIngredientStateUpdateRequestInputToGRPCValidIngredientStateUpdateRequestInput(x *mealplanning.ValidIngredientStateUpdateRequestInput) *mealplanninggrpc.ValidIngredientStateUpdateRequestInput {
+	return &mealplanninggrpc.ValidIngredientStateUpdateRequestInput{
 		Name:          x.Name,
 		Slug:          x.Slug,
 		PastTense:     x.PastTense,
@@ -405,6 +427,21 @@ func ConvertValidIngredientStateToGRPCValidIngredientState(x *mealplanning.Valid
 		CreatedAt:     converters.ConvertTimeToPBTimestamp(x.CreatedAt),
 		LastUpdatedAt: converters.ConvertTimePointerToPBTimestamp(x.LastUpdatedAt),
 		ArchivedAt:    converters.ConvertTimePointerToPBTimestamp(x.ArchivedAt),
+		PastTense:     x.PastTense,
+		Description:   x.Description,
+		IconPath:      x.IconPath,
+		ID:            x.ID,
+		Name:          x.Name,
+		AttributeType: x.AttributeType,
+		Slug:          x.Slug,
+	}
+}
+
+func ConvertGRPCValidIngredientStateToValidIngredientState(x *mealplanninggrpc.ValidIngredientState) *mealplanning.ValidIngredientState {
+	return &mealplanning.ValidIngredientState{
+		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
 		PastTense:     x.PastTense,
 		Description:   x.Description,
 		IconPath:      x.IconPath,
