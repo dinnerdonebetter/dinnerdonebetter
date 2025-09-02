@@ -888,6 +888,14 @@ func ConvertGRPCCreateValidPreparationVesselRequestToValidPreparationVesselCreat
 	}
 }
 
+func ConvertCreateValidPreparationVesselRequestToGRPCValidPreparationVesselCreationRequestInput(x *mealplanning.ValidPreparationVesselCreationRequestInput) *mealplanninggrpc.ValidPreparationVesselCreationRequestInput {
+	return &mealplanninggrpc.ValidPreparationVesselCreationRequestInput{
+		Notes:              x.Notes,
+		ValidPreparationID: x.ValidPreparationID,
+		ValidVesselID:      x.ValidVesselID,
+	}
+}
+
 func ConvertGRPCValidPreparationVesselUpdateRequestInputToValidPreparationVesselUpdateRequestInput(x *mealplanninggrpc.ValidPreparationVesselUpdateRequestInput) *mealplanning.ValidPreparationVesselUpdateRequestInput {
 	return &mealplanning.ValidPreparationVesselUpdateRequestInput{
 		Notes:              x.Notes,
@@ -905,6 +913,18 @@ func ConvertValidPreparationVesselToGRPCValidPreparationVessel(x *mealplanning.V
 		Notes:         x.Notes,
 		Preparation:   ConvertValidPreparationToGRPCValidPreparation(&x.Preparation),
 		Vessel:        ConvertValidVesselToGRPCValidVessel(&x.Vessel),
+	}
+}
+
+func ConvertGRPCValidPreparationVesselToValidPreparationVessel(x *mealplanninggrpc.ValidPreparationVessel) *mealplanning.ValidPreparationVessel {
+	return &mealplanning.ValidPreparationVessel{
+		CreatedAt:     converters.ConvertPBTimestampToTime(x.CreatedAt),
+		LastUpdatedAt: converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
+		ArchivedAt:    converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
+		ID:            x.ID,
+		Notes:         x.Notes,
+		Preparation:   *ConvertGRPCValidPreparationToValidPreparation(x.Preparation),
+		Vessel:        *ConvertGRPCValidVesselToValidVessel(x.Vessel),
 	}
 }
 

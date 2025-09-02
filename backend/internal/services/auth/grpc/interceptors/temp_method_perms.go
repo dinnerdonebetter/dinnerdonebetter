@@ -113,6 +113,21 @@ var (
 		"/mealplanning.MealPlanningService/GetRandomValidInstrument": {
 			authorization.ReadValidInstrumentsPermission,
 		},
+		"/mealplanning.MealPlanningService/GetValidPreparationVessel": {
+			authorization.ReadValidPreparationVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/CreateValidPreparationVessel": {
+			authorization.CreateValidPreparationVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidPreparationVessels": {
+			authorization.ReadValidPreparationVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidPreparationVesselsByVessel": {
+			authorization.ReadValidPreparationVesselsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetValidPreparationVesselsByPreparation": {
+			authorization.ReadValidPreparationVesselsPermission,
+		},
 		"/identity.IdentityService/AdminUpdateUserStatus": {
 			authorization.UpdateUserStatusPermission,
 		},
