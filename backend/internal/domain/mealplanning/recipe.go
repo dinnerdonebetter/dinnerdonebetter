@@ -53,7 +53,6 @@ type (
 		PrepTasks           []*RecipePrepTask                 `json:"prepTasks"`
 		Steps               []*RecipeStep                     `json:"steps"`
 		Media               []*RecipeMedia                    `json:"media"`
-		SupportingRecipes   []*Recipe                         `json:"supportingRecipes"`
 		SealOfApproval      bool                              `json:"sealOfApproval"`
 		EligibleForMeals    bool                              `json:"eligibleForMeals"`
 	}
@@ -73,6 +72,7 @@ type (
 		EstimatedPortions   types.Float32RangeWithOptionalMax                 `json:"estimatedPortions"`
 		PrepTasks           []*RecipePrepTaskWithinRecipeCreationRequestInput `json:"prepTasks"`
 		Steps               []*RecipeStepCreationRequestInput                 `json:"steps"`
+		Media               []*RecipeMediaCreationRequestInput                `json:"media"`
 		AlsoCreateMeal      bool                                              `json:"alsoCreateMeal"`
 		SealOfApproval      bool                                              `json:"sealOfApproval"`
 		EligibleForMeals    bool                                              `json:"eligibleForMeals"`
@@ -95,6 +95,7 @@ type (
 		EstimatedPortions   types.Float32RangeWithOptionalMax      `json:"-"`
 		PrepTasks           []*RecipePrepTaskDatabaseCreationInput `json:"-"`
 		Steps               []*RecipeStepDatabaseCreationInput     `json:"-"`
+		Media               []*RecipeMediaDatabaseCreationInput    `json:"-"`
 		AlsoCreateMeal      bool                                   `json:"-"`
 		SealOfApproval      bool                                   `json:"-"`
 		EligibleForMeals    bool                                   `json:"-"`

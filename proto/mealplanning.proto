@@ -1555,7 +1555,7 @@ message UpdateUserIngredientPreferenceResponse {
 
 message Recipe {
   google.protobuf.Timestamp CreatedAt = 1;
-  string InspiredByRecipeID = 2;
+  optional string InspiredByRecipeID = 2;
   optional google.protobuf.Timestamp LastUpdatedAt = 3;
   optional google.protobuf.Timestamp ArchivedAt = 4;
   common.Float32RangeWithOptionalMax EstimatedPortions = 5;
@@ -1571,7 +1571,6 @@ message Recipe {
   repeated RecipePrepTask PrepTasks = 15;
   repeated RecipeStep Steps = 16;
   repeated RecipeMedia Media = 17;
-  repeated Recipe SupportingRecipes = 18;
   bool SealOfApproval = 19;
   bool EligibleForMeals = 20;
 }
@@ -1598,8 +1597,8 @@ message RecipeMedia {
   optional google.protobuf.Timestamp ArchivedAt = 2;
   optional google.protobuf.Timestamp LastUpdatedAt = 3;
   string ID = 4;
-  string BelongsToRecipe = 5;
-  string BelongsToRecipeStep = 6;
+  optional string BelongsToRecipe = 5;
+  optional string BelongsToRecipeStep = 6;
   string MimeType = 7;
   string InternalPath = 8;
   string ExternalPath = 9;
@@ -1932,7 +1931,7 @@ message RecipeStepProduct {
   optional google.protobuf.Timestamp ArchivedAt = 5;
   optional google.protobuf.Timestamp LastUpdatedAt = 6;
   ValidMeasurementUnit MeasurementUnit = 7;
-  uint32 ContainedInVesselIndex = 8;
+  optional uint32 ContainedInVesselIndex = 8;
   string Name = 9;
   string BelongsToRecipeStep = 10;
   string Type = 11;

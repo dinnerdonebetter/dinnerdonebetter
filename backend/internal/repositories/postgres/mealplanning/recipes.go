@@ -75,11 +75,10 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 					Max: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 					Min: database.Float32FromString(result.MinEstimatedPortions),
 				},
-				SealOfApproval:    result.SealOfApproval,
-				EligibleForMeals:  result.EligibleForMeals,
-				PrepTasks:         []*mealplanning.RecipePrepTask{},
-				SupportingRecipes: []*mealplanning.Recipe{},
-				Media:             []*mealplanning.RecipeMedia{},
+				SealOfApproval:   result.SealOfApproval,
+				EligibleForMeals: result.EligibleForMeals,
+				PrepTasks:        []*mealplanning.RecipePrepTask{},
+				Media:            []*mealplanning.RecipeMedia{},
 			}
 		}
 
@@ -225,7 +224,6 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 		x.Steps[i].Media = recipeMedia
 	}
 
-	x.SupportingRecipes, err = q.GetRecipesWithIDs(ctx, supportingRecipeIDs)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching supporting recipes")
 	}
@@ -514,7 +512,6 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		PrepTasks:           []*mealplanning.RecipePrepTask{},
 		Steps:               []*mealplanning.RecipeStep{},
 		Media:               []*mealplanning.RecipeMedia{},
-		SupportingRecipes:   []*mealplanning.Recipe{},
 	}
 
 	findCreatedRecipeStepProductsForIngredients(input)
@@ -546,6 +543,25 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		}
 
 		x.PrepTasks = append(x.PrepTasks, pt)
+	}
+
+	for i, m := range input.Media {
+		var rm *mealplanning.RecipeMedia
+		rm, err = q.CreateRecipeMedia(ctx, &mealplanning.RecipeMediaDatabaseCreationInput{
+			ID:                  m.ID,
+			BelongsToRecipe:     m.BelongsToRecipe,
+			BelongsToRecipeStep: m.BelongsToRecipeStep,
+			MimeType:            m.MimeType,
+			InternalPath:        m.InternalPath,
+			ExternalPath:        m.ExternalPath,
+			Index:               m.Index,
+		})
+		if err != nil {
+			q.RollbackTransaction(ctx, tx)
+			return nil, observability.PrepareError(err, span, "creating recipe media #%d", i+1)
+		}
+
+		x.Media = append(x.Media, rm)
 	}
 
 	if input.AlsoCreateMeal {

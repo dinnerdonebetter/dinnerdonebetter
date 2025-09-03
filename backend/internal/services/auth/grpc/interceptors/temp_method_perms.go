@@ -319,6 +319,12 @@ var (
 		"/mealplanning.MealPlanningService/ArchiveAccountInstrumentOwnership": {
 			authorization.ReadAccountInstrumentOwnershipsPermission,
 		},
+		"/mealplanning.MealPlanningService/CreateRecipe": {
+			authorization.CreateRecipesPermission,
+		},
+		"/mealplanning.MealPlanningService/GetRecipe": {
+			authorization.ReadRecipesPermission,
+		},
 		"/notifications.UserNotificationsService/CreateUserNotification": {
 			authorization.CreateUserNotificationsPermission,
 		},

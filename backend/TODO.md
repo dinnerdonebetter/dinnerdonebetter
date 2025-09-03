@@ -11,3 +11,4 @@ just a list of gripes and things I'd like to accomplish eventually
 - [ ] integration tests verify audit log entries are made
 - [ ] integration tests verify that query filtering works
 - [ ] all GRPC payload routes (creates/updates) reference an "input" field
+- [ ] better error handling (i.e. naming missing parameters)

@@ -19,8 +19,8 @@ func (m *MockRecipeManager) ListRecipes(ctx context.Context, filter *filtering.Q
 	return returnValues.Get(0).([]*mealplanning.Recipe), returnValues.Get(1).(string), returnValues.Get(2).(error)
 }
 
-func (m *MockRecipeManager) CreateRecipe(ctx context.Context, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error) {
-	returnValues := m.Called(ctx, input)
+func (m *MockRecipeManager) CreateRecipe(ctx context.Context, creatorID string, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error) {
+	returnValues := m.Called(ctx, creatorID, input)
 
 	return returnValues.Get(0).(*mealplanning.Recipe), returnValues.Get(1).(error)
 }

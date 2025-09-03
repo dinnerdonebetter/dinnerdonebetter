@@ -31,7 +31,7 @@ const (
 type (
 	RecipeManager interface {
 		ListRecipes(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error)
-		CreateRecipe(ctx context.Context, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error)
+		CreateRecipe(ctx context.Context, creatorID string, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error)
 		ReadRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error)
 		SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error)
 		UpdateRecipe(ctx context.Context, recipeID string, input *mealplanning.RecipeUpdateRequestInput) error
@@ -154,20 +154,30 @@ func (m *recipeManager) ListRecipes(ctx context.Context, filter *filtering.Query
 	return results.Data, "", nil
 }
 
-func (m *recipeManager) CreateRecipe(ctx context.Context, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error) {
+func (m *recipeManager) CreateRecipe(ctx context.Context, creatorID string, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
+
+	logger := m.logger.WithSpan(span)
 
 	if input == nil {
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
-	logger := m.logger.WithSpan(span)
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareError(err, span, "validating recipe input")
+	}
+
+	if creatorID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
 
 	convertedInput, err := converters.ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "converting recipe input")
 	}
+
+	convertedInput.CreatedByUser = creatorID
 
 	logger = logger.WithValue(keys.RecipeIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, convertedInput.ID)

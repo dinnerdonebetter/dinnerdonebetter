@@ -254,9 +254,14 @@ func (s *serviceImpl) CreateRecipe(ctx context.Context, request *mealplanning.Cr
 
 	logger := s.logger.WithSpan(span)
 
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching session context data")
+	}
+
 	input := converters.ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(request.Input)
 
-	created, err := s.recipeManager.CreateRecipe(ctx, input)
+	created, err := s.recipeManager.CreateRecipe(ctx, sessionContextData.GetUserID(), input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe")
 	}

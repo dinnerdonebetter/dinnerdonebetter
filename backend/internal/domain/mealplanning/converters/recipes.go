@@ -64,6 +64,19 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *mealp
 		x.PrepTasks = append(x.PrepTasks, prepTaskDatabaseCreationInput)
 	}
 
+	for _, m := range input.Media {
+		x.Media = append(x.Media, ConvertRecipeMediaCreationRequestInputToRecipeMediaDatabaseCreationInput(m))
+	}
+
+	for _, task := range input.PrepTasks {
+		prepTaskDatabaseCreationInput, err := ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput(x, task)
+		if err != nil {
+			return nil, err
+		}
+		prepTaskDatabaseCreationInput.BelongsToRecipe = x.ID
+		x.PrepTasks = append(x.PrepTasks, prepTaskDatabaseCreationInput)
+	}
+
 	return x, nil
 }
 

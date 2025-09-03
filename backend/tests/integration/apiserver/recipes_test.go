@@ -1,51 +1,27 @@
 package integration
 
 import (
-	"context"
-	"fmt"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	"github.com/dinnerdonebetter/backend/pkg/apiclient"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	mealplanningconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
+	"github.com/dinnerdonebetter/backend/pkg/client"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
+func createRecipeForTest(t *testing.T, clientToUse client.Client, recipe *types.Recipe, inputFilter ...func(input *types.RecipeCreationRequestInput)) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
 	t.Helper()
+	ctx := t.Context()
 
-	assert.NotZero(t, actual.ID)
-	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for recipe %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
-	assert.Equal(t, expected.Source, actual.Source, "expected Source for recipe %s to be %v, but it was %v", expected.ID, expected.Source, actual.Source)
-	assert.Equal(t, expected.Description, actual.Description, "expected Description for recipe %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
-	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe %s to be %v, but it was %v", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
-	assert.Equal(t, expected.EstimatedPortions, actual.EstimatedPortions, "expected EstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.EstimatedPortions, actual.EstimatedPortions)
-	assert.Equal(t, expected.YieldsComponentType, actual.YieldsComponentType, "expected YieldsComponentType for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsComponentType, actual.YieldsComponentType)
-	assert.Equal(t, expected.PortionName, actual.PortionName, "expected PortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PortionName, actual.PortionName)
-	assert.Equal(t, expected.PluralPortionName, actual.PluralPortionName, "expected PluralPortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PluralPortionName, actual.PluralPortionName)
-	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
-	assert.Equal(t, expected.EligibleForMeals, actual.EligibleForMeals, "expected EligibleForMeals for recipe %s to be %v, but it was %v", expected.ID, expected.EligibleForMeals, actual.EligibleForMeals)
-	assert.NotZero(t, actual.CreatedAt)
-}
-
-func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client *apiclient.Client, recipe *types.Recipe, inputFilter ...func(input *types.RecipeCreationRequestInput)) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
-	t.Helper()
-
-	exampleValidPreparation := fakes.BuildFakeValidPreparation()
-	exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-	createdValidPreparation, err := adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
-	require.NoError(t, err)
-
-	createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, adminClient)
-	createdValidInstrument := createValidInstrumentForTest(t, ctx, adminClient)
-	createdValidIngredientState := createValidIngredientStateForTest(t, ctx, adminClient)
-	createdValidVessel := createValidVesselForTest(t, ctx, nil, adminClient)
+	createdValidPreparation := createValidPreparationForTest(t)
+	createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
+	createdValidInstrument := createValidInstrumentForTest(t)
+	createdValidIngredientState := createValidIngredientStateForTest(t)
+	createdValidVessel := createValidVesselForTest(t)
 
 	exampleRecipe := fakes.BuildFakeRecipe()
 	if recipe != nil {
@@ -55,11 +31,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	createdValidIngredients := []*types.ValidIngredient{}
 	for i, recipeStep := range exampleRecipe.Steps {
 		for j := range recipeStep.Ingredients {
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, createdValidIngredientErr := adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			require.NoError(t, createdValidIngredientErr)
-
+			createdValidIngredient := createValidIngredientForTest(t)
 			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
 
 			exampleRecipe.Steps[i].Ingredients[j].Ingredient = createdValidIngredient
@@ -107,18 +79,32 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 		filter(exampleRecipeInput)
 	}
 
-	createdRecipe, err := adminClient.CreateRecipe(ctx, exampleRecipeInput)
+	createdRecipeRes, err := clientToUse.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: mealplanningconverters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(exampleRecipeInput)})
 	require.NoError(t, err)
-	checkRecipeEquality(t, exampleRecipe, createdRecipe)
+	require.NoError(t, err)
 
-	createdRecipe, err = client.GetRecipe(ctx, createdRecipe.ID)
-	requireNotNilAndNoProblems(t, createdRecipe, err)
-	checkRecipeEquality(t, exampleRecipe, createdRecipe)
+	recipeRes, err := clientToUse.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRecipeRes.Created.ID})
+	require.NoError(t, err)
+
+	createdRecipe := mealplanningconverters.ConvertGRPCRecipeToRecipe(recipeRes.Result)
+	assertRoughEquality(t, exampleRecipe, createdRecipe, defaultIgnoredFields("CreatedByUser", "ID")...)
 
 	require.NotEmpty(t, createdRecipe.Steps, "created recipe must have steps")
 
 	return createdValidIngredients, createdValidPreparation, createdRecipe
 }
+
+func TestRecipes_Creating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("happy path", func(t *testing.T) {
+		t.FailNow()
+
+		createRecipeForTest(t, adminClient, nil)
+	})
+}
+
+/*
 
 func (s *TestSuite) TestRecipes_Realistic() {
 	s.runTest("sopa de frijol", func(testClients *testClientWrapper) func() {
@@ -828,3 +814,5 @@ func (s *TestSuite) TestRecipes_Cloning() {
 //		}
 //	})
 //}
+
+*/

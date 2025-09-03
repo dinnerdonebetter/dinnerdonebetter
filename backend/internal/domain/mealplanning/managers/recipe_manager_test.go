@@ -124,6 +124,7 @@ func TestRecipeManager_CreateRecipe(T *testing.T) {
 		ctx := t.Context()
 		rm := buildRecipeManagerForTest(t)
 
+		fakeCreatorID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeRecipe()
 		fakeInput := fakes.BuildFakeRecipeCreationRequestInput()
 
@@ -139,7 +140,7 @@ func TestRecipeManager_CreateRecipe(T *testing.T) {
 			},
 		)
 
-		actual, err := rm.CreateRecipe(ctx, fakeInput)
+		actual, err := rm.CreateRecipe(ctx, fakeCreatorID, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
