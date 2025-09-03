@@ -307,6 +307,30 @@ var (
 		"/mealplanning.MealPlanningService/ArchiveUserIngredientPreference": {
 			authorization.ReadUserIngredientPreferencesPermission,
 		},
+		"/mealplanning.MealPlanningService/CreateAccountInstrumentOwnership": {
+			authorization.CreateAccountInstrumentOwnershipsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetAccountInstrumentOwnership": {
+			authorization.ReadAccountInstrumentOwnershipsPermission,
+		},
+		"/mealplanning.MealPlanningService/GetAccountInstrumentOwnerships": {
+			authorization.ReadAccountInstrumentOwnershipsPermission,
+		},
+		"/mealplanning.MealPlanningService/ArchiveAccountInstrumentOwnership": {
+			authorization.ReadAccountInstrumentOwnershipsPermission,
+		},
+		"/notifications.UserNotificationsService/CreateUserNotification": {
+			authorization.CreateUserNotificationsPermission,
+		},
+		"/notifications.UserNotificationsService/GetUserNotification": {
+			authorization.ReadUserNotificationsPermission,
+		},
+		"/notifications.UserNotificationsService/GetUserNotifications": {
+			authorization.ReadUserNotificationsPermission,
+		},
+		"/notifications.UserNotificationsService/UpdateUserNotification": {
+			authorization.UpdateUserNotificationsPermission,
+		},
 		"/identity.IdentityService/AdminUpdateUserStatus": {
 			authorization.UpdateUserStatusPermission,
 		},

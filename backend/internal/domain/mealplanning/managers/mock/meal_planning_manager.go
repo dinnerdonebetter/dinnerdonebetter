@@ -259,8 +259,8 @@ func (m *MockMealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Co
 	return returnValues.Get(0).([]*mealplanning.AccountInstrumentOwnership), returnValues.Get(1).(string), returnValues.Get(2).(error)
 }
 
-func (m *MockMealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Context, input *mealplanning.AccountInstrumentOwnershipCreationRequestInput) (*mealplanning.AccountInstrumentOwnership, error) {
-	returnValues := m.Called(ctx, input)
+func (m *MockMealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Context, ownerID string, input *mealplanning.AccountInstrumentOwnershipCreationRequestInput) (*mealplanning.AccountInstrumentOwnership, error) {
+	returnValues := m.Called(ctx, ownerID, input)
 
 	return returnValues.Get(0).(*mealplanning.AccountInstrumentOwnership), returnValues.Get(1).(error)
 }

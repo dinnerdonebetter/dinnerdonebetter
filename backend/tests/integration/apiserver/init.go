@@ -7,6 +7,7 @@ import (
 	"time"
 
 	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
+	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
@@ -17,6 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 )
 
 const (
@@ -28,6 +30,7 @@ var (
 	createdClientID, createdClientSecret string
 	databaseClient                       database.Client
 	shutdownFunc                         func()
+	notifsRepo                           notifications.Repository
 )
 
 func init() {
@@ -71,6 +74,7 @@ func init() {
 	// create premade admin user
 	auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, databaseClient)
 	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, databaseClient)
+	notifsRepo = notificationsrepo.ProvideNotificationsRepository(nil, nil, auditLogRepo, databaseClient)
 	adminUser, err := createPremadeAdminUser(ctx, logger, tracerProvider, identityRepo, databaseClient)
 	if err != nil {
 		log.Fatal(err)

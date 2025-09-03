@@ -34,7 +34,6 @@ func ConvertAccountInstrumentOwnershipToAccountInstrumentOwnershipCreationReques
 		Notes:             x.Notes,
 		Quantity:          x.Quantity,
 		ValidInstrumentID: x.Instrument.ID,
-		BelongsToAccount:  x.BelongsToAccount,
 	}
 }
 

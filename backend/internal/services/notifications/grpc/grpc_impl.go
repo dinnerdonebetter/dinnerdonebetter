@@ -21,7 +21,7 @@ type (
 		notificationssvc.UnimplementedUserNotificationsServiceServer
 		tracer                    tracing.Tracer
 		logger                    logging.Logger
-		sessionContextDataFetcher func(context.Context) (sessions.ContextData, error)
+		sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error)
 		notificationsRepository   notifications.Repository
 	}
 )
@@ -32,8 +32,9 @@ func NewService(
 	notificationsRepository notifications.Repository,
 ) notificationssvc.UserNotificationsServiceServer {
 	return &serviceImpl{
-		logger:                  logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		notificationsRepository: notificationsRepository,
+		logger:                    logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		notificationsRepository:   notificationsRepository,
+		sessionContextDataFetcher: sessions.FetchContextDataFromContext,
 	}
 }

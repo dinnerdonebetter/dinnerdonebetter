@@ -90,7 +90,7 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
 	}
 
-	existing.Update(&notifications.UserNotificationUpdateRequestInput{Status: &request.Input.Status})
+	existing.Update(&notifications.UserNotificationUpdateRequestInput{Status: request.Input.Status})
 	if err = s.notificationsRepository.UpdateUserNotification(ctx, existing); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating existing notification")
 	}

@@ -397,3 +397,58 @@ func ConvertGRPCUserIngredientPreferenceUpdateRequestInputToUserIngredientPrefer
 		Allergy:      input.Allergy,
 	}
 }
+
+func ConvertAccountInstrumentOwnershipCreationRequestInputToGRPCAccountInstrumentOwnershipCreationRequestInput(input *mealplanning.AccountInstrumentOwnershipCreationRequestInput) *mealplanningsvc.AccountInstrumentOwnershipCreationRequestInput {
+	return &mealplanningsvc.AccountInstrumentOwnershipCreationRequestInput{
+		Notes:             input.Notes,
+		ValidInstrumentID: input.ValidInstrumentID,
+		Quantity:          uint32(input.Quantity),
+	}
+}
+
+func ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(input *mealplanningsvc.AccountInstrumentOwnership) *mealplanning.AccountInstrumentOwnership {
+	return &mealplanning.AccountInstrumentOwnership{
+		CreatedAt:        grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		ArchivedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		LastUpdatedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ID:               input.ID,
+		Notes:            input.Notes,
+		BelongsToAccount: input.BelongsToAccount,
+		Instrument:       *ConvertGRPCValidInstrumentToValidInstrument(input.Instrument),
+		Quantity:         uint16(input.Quantity),
+	}
+}
+
+func ConvertGRPCAccountInstrumentOwnershipCreationRequestInputToAccountInstrumentOwnershipCreationRequestInput(input *mealplanningsvc.AccountInstrumentOwnershipCreationRequestInput) *mealplanning.AccountInstrumentOwnershipCreationRequestInput {
+	return &mealplanning.AccountInstrumentOwnershipCreationRequestInput{
+		Notes:             input.Notes,
+		ValidInstrumentID: input.ValidInstrumentID,
+		Quantity:          uint16(input.Quantity),
+	}
+}
+
+func ConvertAccountInstrumentOwnershipToGRPCAccountInstrumentOwnership(input *mealplanning.AccountInstrumentOwnership) *mealplanningsvc.AccountInstrumentOwnership {
+	return &mealplanningsvc.AccountInstrumentOwnership{
+		CreatedAt:        grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
+		ArchivedAt:       grpcconverters.ConvertTimePointerToPBTimestamp(input.ArchivedAt),
+		LastUpdatedAt:    grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
+		Instrument:       ConvertValidInstrumentToGRPCValidInstrument(&input.Instrument),
+		ID:               input.ID,
+		Notes:            input.Notes,
+		BelongsToAccount: input.BelongsToAccount,
+		Quantity:         uint32(input.Quantity),
+	}
+}
+
+func ConvertGRPCAccountInstrumentOwnershipUpdateRequestInputToAccountInstrumentOwnershipUpdateRequestInput(input *mealplanningsvc.AccountInstrumentOwnershipUpdateRequestInput) *mealplanning.AccountInstrumentOwnershipUpdateRequestInput {
+	var quantity *uint16
+	if input.Quantity != nil {
+		quantity = pointer.To(uint16(*input.Quantity))
+	}
+
+	return &mealplanning.AccountInstrumentOwnershipUpdateRequestInput{
+		Notes:             input.Notes,
+		Quantity:          quantity,
+		ValidInstrumentID: input.ValidInstrumentID,
+	}
+}

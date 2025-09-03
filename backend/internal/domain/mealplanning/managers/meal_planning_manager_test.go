@@ -1270,6 +1270,7 @@ func TestMealPlanningManager_CreateAccountInstrumentOwnership(T *testing.T) {
 		ctx := t.Context()
 		mpm := buildMealPlanManagerForTest(t)
 
+		fakeOwnerID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeAccountInstrumentOwnership()
 		fakeInput := fakes.BuildFakeAccountInstrumentOwnershipCreationRequestInput()
 
@@ -1283,7 +1284,7 @@ func TestMealPlanningManager_CreateAccountInstrumentOwnership(T *testing.T) {
 			},
 		)
 
-		actual, err := mpm.CreateAccountInstrumentOwnership(ctx, fakeInput)
+		actual, err := mpm.CreateAccountInstrumentOwnership(ctx, fakeOwnerID, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 

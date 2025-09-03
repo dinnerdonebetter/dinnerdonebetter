@@ -47,7 +47,6 @@ type (
 
 		Notes             string `json:"notes"`
 		ValidInstrumentID string `json:"validInstrumentID"`
-		BelongsToAccount  string `json:"belongsToAccount"`
 		Quantity          uint16 `json:"quantity"`
 	}
 

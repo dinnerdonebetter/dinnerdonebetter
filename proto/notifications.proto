@@ -56,7 +56,7 @@ message UserNotificationCreationRequestInput {
 }
 
 message UserNotificationUpdateRequestInput {
-  string Status = 1;
+  optional string Status = 1;
 }
 
 service UserNotificationsService {

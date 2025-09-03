@@ -3370,7 +3370,6 @@ message AccountInstrumentOwnership {
 message AccountInstrumentOwnershipCreationRequestInput {
   string Notes = 1;
   string ValidInstrumentID = 2;
-  string BelongsToAccount = 3;
   uint32 Quantity = 4;
 }
 

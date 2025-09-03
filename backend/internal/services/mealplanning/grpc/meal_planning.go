@@ -4,7 +4,7 @@ import (
 	"context"
 
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
-	"github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanning.ArchiveMealRequest) (*mealplanning.ArchiveMealResponse, error) {
+func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanningsvc.ArchiveMealRequest) (*mealplanningsvc.ArchiveMealResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -30,7 +30,7 @@ func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanning.Arc
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal")
 	}
 
-	x := &mealplanning.ArchiveMealResponse{
+	x := &mealplanningsvc.ArchiveMealResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -39,7 +39,7 @@ func (s *serviceImpl) ArchiveMeal(ctx context.Context, request *mealplanning.Arc
 	return x, nil
 }
 
-func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning.ArchiveMealPlanRequest) (*mealplanning.ArchiveMealPlanResponse, error) {
+func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanningsvc.ArchiveMealPlanRequest) (*mealplanningsvc.ArchiveMealPlanResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -56,7 +56,7 @@ func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan")
 	}
 
-	x := &mealplanning.ArchiveMealPlanResponse{
+	x := &mealplanningsvc.ArchiveMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -65,7 +65,7 @@ func (s *serviceImpl) ArchiveMealPlan(ctx context.Context, request *mealplanning
 	return x, nil
 }
 
-func (s *serviceImpl) ArchiveMealPlanEvent(ctx context.Context, request *mealplanning.ArchiveMealPlanEventRequest) (*mealplanning.ArchiveMealPlanEventResponse, error) {
+func (s *serviceImpl) ArchiveMealPlanEvent(ctx context.Context, request *mealplanningsvc.ArchiveMealPlanEventRequest) (*mealplanningsvc.ArchiveMealPlanEventResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -78,7 +78,7 @@ func (s *serviceImpl) ArchiveMealPlanEvent(ctx context.Context, request *mealpla
 		return nil, observability.PrepareAndLogError(err, logger, span, "failed to archive meal plan event")
 	}
 
-	x := &mealplanning.ArchiveMealPlanEventResponse{
+	x := &mealplanningsvc.ArchiveMealPlanEventResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -87,7 +87,7 @@ func (s *serviceImpl) ArchiveMealPlanEvent(ctx context.Context, request *mealpla
 	return x, nil
 }
 
-func (s *serviceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, request *mealplanning.ArchiveMealPlanGroceryListItemRequest) (*mealplanning.ArchiveMealPlanGroceryListItemResponse, error) {
+func (s *serviceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, request *mealplanningsvc.ArchiveMealPlanGroceryListItemRequest) (*mealplanningsvc.ArchiveMealPlanGroceryListItemResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -100,7 +100,7 @@ func (s *serviceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, reques
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan grocery list item")
 	}
 
-	x := &mealplanning.ArchiveMealPlanGroceryListItemResponse{
+	x := &mealplanningsvc.ArchiveMealPlanGroceryListItemResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -109,7 +109,7 @@ func (s *serviceImpl) ArchiveMealPlanGroceryListItem(ctx context.Context, reques
 	return x, nil
 }
 
-func (s *serviceImpl) ArchiveMealPlanOption(ctx context.Context, request *mealplanning.ArchiveMealPlanOptionRequest) (*mealplanning.ArchiveMealPlanOptionResponse, error) {
+func (s *serviceImpl) ArchiveMealPlanOption(ctx context.Context, request *mealplanningsvc.ArchiveMealPlanOptionRequest) (*mealplanningsvc.ArchiveMealPlanOptionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -123,7 +123,7 @@ func (s *serviceImpl) ArchiveMealPlanOption(ctx context.Context, request *mealpl
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan option")
 	}
 
-	x := &mealplanning.ArchiveMealPlanOptionResponse{
+	x := &mealplanningsvc.ArchiveMealPlanOptionResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -132,7 +132,7 @@ func (s *serviceImpl) ArchiveMealPlanOption(ctx context.Context, request *mealpl
 	return x, nil
 }
 
-func (s *serviceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *mealplanning.ArchiveMealPlanOptionVoteRequest) (*mealplanning.ArchiveMealPlanOptionVoteResponse, error) {
+func (s *serviceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *mealplanningsvc.ArchiveMealPlanOptionVoteRequest) (*mealplanningsvc.ArchiveMealPlanOptionVoteResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -147,7 +147,7 @@ func (s *serviceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *me
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive meal plan option vote")
 	}
 
-	x := &mealplanning.ArchiveMealPlanOptionVoteResponse{
+	x := &mealplanningsvc.ArchiveMealPlanOptionVoteResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -156,7 +156,7 @@ func (s *serviceImpl) ArchiveMealPlanOptionVote(ctx context.Context, request *me
 	return x, nil
 }
 
-func (s *serviceImpl) ArchiveUserIngredientPreference(ctx context.Context, request *mealplanning.ArchiveUserIngredientPreferenceRequest) (*mealplanning.ArchiveUserIngredientPreferenceResponse, error) {
+func (s *serviceImpl) ArchiveUserIngredientPreference(ctx context.Context, request *mealplanningsvc.ArchiveUserIngredientPreferenceRequest) (*mealplanningsvc.ArchiveUserIngredientPreferenceResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -173,7 +173,7 @@ func (s *serviceImpl) ArchiveUserIngredientPreference(ctx context.Context, reque
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive user ingredient preference")
 	}
 
-	x := &mealplanning.ArchiveUserIngredientPreferenceResponse{
+	x := &mealplanningsvc.ArchiveUserIngredientPreferenceResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -182,7 +182,7 @@ func (s *serviceImpl) ArchiveUserIngredientPreference(ctx context.Context, reque
 	return x, nil
 }
 
-func (s *serviceImpl) CreateMeal(ctx context.Context, request *mealplanning.CreateMealRequest) (*mealplanning.CreateMealResponse, error) {
+func (s *serviceImpl) CreateMeal(ctx context.Context, request *mealplanningsvc.CreateMealRequest) (*mealplanningsvc.CreateMealResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -195,7 +195,7 @@ func (s *serviceImpl) CreateMeal(ctx context.Context, request *mealplanning.Crea
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal")
 	}
 
-	x := &mealplanning.CreateMealResponse{
+	x := &mealplanningsvc.CreateMealResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -205,7 +205,7 @@ func (s *serviceImpl) CreateMeal(ctx context.Context, request *mealplanning.Crea
 	return x, nil
 }
 
-func (s *serviceImpl) CreateMealPlan(ctx context.Context, request *mealplanning.CreateMealPlanRequest) (*mealplanning.CreateMealPlanResponse, error) {
+func (s *serviceImpl) CreateMealPlan(ctx context.Context, request *mealplanningsvc.CreateMealPlanRequest) (*mealplanningsvc.CreateMealPlanResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -218,7 +218,7 @@ func (s *serviceImpl) CreateMealPlan(ctx context.Context, request *mealplanning.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan")
 	}
 
-	x := &mealplanning.CreateMealPlanResponse{
+	x := &mealplanningsvc.CreateMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -228,7 +228,7 @@ func (s *serviceImpl) CreateMealPlan(ctx context.Context, request *mealplanning.
 	return x, nil
 }
 
-func (s *serviceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplanning.CreateMealPlanEventRequest) (*mealplanning.CreateMealPlanEventResponse, error) {
+func (s *serviceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplanningsvc.CreateMealPlanEventRequest) (*mealplanningsvc.CreateMealPlanEventResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -243,7 +243,7 @@ func (s *serviceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplan
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan event")
 	}
 
-	x := &mealplanning.CreateMealPlanEventResponse{
+	x := &mealplanningsvc.CreateMealPlanEventResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -253,7 +253,7 @@ func (s *serviceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplan
 	return x, nil
 }
 
-func (s *serviceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request *mealplanning.CreateMealPlanGroceryListItemRequest) (*mealplanning.CreateMealPlanGroceryListItemResponse, error) {
+func (s *serviceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request *mealplanningsvc.CreateMealPlanGroceryListItemRequest) (*mealplanningsvc.CreateMealPlanGroceryListItemResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -268,7 +268,7 @@ func (s *serviceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan grocery list item")
 	}
 
-	x := &mealplanning.CreateMealPlanGroceryListItemResponse{
+	x := &mealplanningsvc.CreateMealPlanGroceryListItemResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -278,7 +278,7 @@ func (s *serviceImpl) CreateMealPlanGroceryListItem(ctx context.Context, request
 	return x, nil
 }
 
-func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealplanning.CreateMealPlanOptionRequest) (*mealplanning.CreateMealPlanOptionResponse, error) {
+func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealplanningsvc.CreateMealPlanOptionRequest) (*mealplanningsvc.CreateMealPlanOptionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -293,7 +293,7 @@ func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealpla
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan option")
 	}
 
-	x := &mealplanning.CreateMealPlanOptionResponse{
+	x := &mealplanningsvc.CreateMealPlanOptionResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -303,7 +303,7 @@ func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealpla
 	return x, nil
 }
 
-func (s *serviceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mealplanning.CreateMealPlanOptionVoteRequest) (*mealplanning.CreateMealPlanOptionVoteResponse, error) {
+func (s *serviceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mealplanningsvc.CreateMealPlanOptionVoteRequest) (*mealplanningsvc.CreateMealPlanOptionVoteResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -318,7 +318,7 @@ func (s *serviceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mea
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan option vote")
 	}
 
-	x := &mealplanning.CreateMealPlanOptionVoteResponse{
+	x := &mealplanningsvc.CreateMealPlanOptionVoteResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -331,7 +331,7 @@ func (s *serviceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mea
 	return x, nil
 }
 
-func (s *serviceImpl) CreateMealPlanTask(ctx context.Context, request *mealplanning.CreateMealPlanTaskRequest) (*mealplanning.CreateMealPlanTaskResponse, error) {
+func (s *serviceImpl) CreateMealPlanTask(ctx context.Context, request *mealplanningsvc.CreateMealPlanTaskRequest) (*mealplanningsvc.CreateMealPlanTaskResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -346,7 +346,7 @@ func (s *serviceImpl) CreateMealPlanTask(ctx context.Context, request *mealplann
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan task")
 	}
 
-	x := &mealplanning.CreateMealPlanTaskResponse{
+	x := &mealplanningsvc.CreateMealPlanTaskResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -356,7 +356,7 @@ func (s *serviceImpl) CreateMealPlanTask(ctx context.Context, request *mealplann
 	return x, nil
 }
 
-func (s *serviceImpl) CreateUserIngredientPreference(ctx context.Context, request *mealplanning.CreateUserIngredientPreferenceRequest) (*mealplanning.CreateUserIngredientPreferenceResponse, error) {
+func (s *serviceImpl) CreateUserIngredientPreference(ctx context.Context, request *mealplanningsvc.CreateUserIngredientPreferenceRequest) (*mealplanningsvc.CreateUserIngredientPreferenceResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -374,7 +374,7 @@ func (s *serviceImpl) CreateUserIngredientPreference(ctx context.Context, reques
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create user ingredient preference")
 	}
 
-	x := &mealplanning.CreateUserIngredientPreferenceResponse{
+	x := &mealplanningsvc.CreateUserIngredientPreferenceResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -387,7 +387,7 @@ func (s *serviceImpl) CreateUserIngredientPreference(ctx context.Context, reques
 	return x, nil
 }
 
-func (s *serviceImpl) FinalizeMealPlan(ctx context.Context, request *mealplanning.FinalizeMealPlanRequest) (*mealplanning.FinalizeMealPlanResponse, error) {
+func (s *serviceImpl) FinalizeMealPlan(ctx context.Context, request *mealplanningsvc.FinalizeMealPlanRequest) (*mealplanningsvc.FinalizeMealPlanResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -405,7 +405,7 @@ func (s *serviceImpl) FinalizeMealPlan(ctx context.Context, request *mealplannin
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to finalize meal plan")
 	}
 
-	x := &mealplanning.FinalizeMealPlanResponse{
+	x := &mealplanningsvc.FinalizeMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -415,7 +415,7 @@ func (s *serviceImpl) FinalizeMealPlan(ctx context.Context, request *mealplannin
 	return x, nil
 }
 
-func (s *serviceImpl) GetMeal(ctx context.Context, request *mealplanning.GetMealRequest) (*mealplanning.GetMealResponse, error) {
+func (s *serviceImpl) GetMeal(ctx context.Context, request *mealplanningsvc.GetMealRequest) (*mealplanningsvc.GetMealResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -428,7 +428,7 @@ func (s *serviceImpl) GetMeal(ctx context.Context, request *mealplanning.GetMeal
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal")
 	}
 
-	x := &mealplanning.GetMealResponse{
+	x := &mealplanningsvc.GetMealResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -438,7 +438,7 @@ func (s *serviceImpl) GetMeal(ctx context.Context, request *mealplanning.GetMeal
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlan(ctx context.Context, request *mealplanning.GetMealPlanRequest) (*mealplanning.GetMealPlanResponse, error) {
+func (s *serviceImpl) GetMealPlan(ctx context.Context, request *mealplanningsvc.GetMealPlanRequest) (*mealplanningsvc.GetMealPlanResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -456,7 +456,7 @@ func (s *serviceImpl) GetMealPlan(ctx context.Context, request *mealplanning.Get
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan")
 	}
 
-	x := &mealplanning.GetMealPlanResponse{
+	x := &mealplanningsvc.GetMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -466,7 +466,12 @@ func (s *serviceImpl) GetMealPlan(ctx context.Context, request *mealplanning.Get
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanEvent(ctx context.Context, request *mealplanning.GetMealPlanEventRequest) (*mealplanning.GetMealPlanEventResponse, error) {
+func (s *serviceImpl) GetMealPlansForAccount(ctx context.Context, request *mealplanningsvc.GetMealPlansForAccountRequest) (*mealplanningsvc.GetMealPlansForAccountResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s *serviceImpl) GetMealPlanEvent(ctx context.Context, request *mealplanningsvc.GetMealPlanEventRequest) (*mealplanningsvc.GetMealPlanEventResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -480,7 +485,7 @@ func (s *serviceImpl) GetMealPlanEvent(ctx context.Context, request *mealplannin
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan")
 	}
 
-	x := &mealplanning.GetMealPlanEventResponse{
+	x := &mealplanningsvc.GetMealPlanEventResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -490,7 +495,7 @@ func (s *serviceImpl) GetMealPlanEvent(ctx context.Context, request *mealplannin
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanning.GetMealPlanEventsRequest) (*mealplanning.GetMealPlanEventsResponse, error) {
+func (s *serviceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanningsvc.GetMealPlanEventsRequest) (*mealplanningsvc.GetMealPlanEventsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -505,7 +510,7 @@ func (s *serviceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanni
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan events")
 	}
 
-	x := &mealplanning.GetMealPlanEventsResponse{
+	x := &mealplanningsvc.GetMealPlanEventsResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -518,7 +523,7 @@ func (s *serviceImpl) GetMealPlanEvents(ctx context.Context, request *mealplanni
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *mealplanning.GetMealPlanGroceryListItemRequest) (*mealplanning.GetMealPlanGroceryListItemResponse, error) {
+func (s *serviceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *mealplanningsvc.GetMealPlanGroceryListItemRequest) (*mealplanningsvc.GetMealPlanGroceryListItemResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -532,7 +537,7 @@ func (s *serviceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *m
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan grocery list item")
 	}
 
-	x := &mealplanning.GetMealPlanGroceryListItemResponse{
+	x := &mealplanningsvc.GetMealPlanGroceryListItemResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -542,7 +547,7 @@ func (s *serviceImpl) GetMealPlanGroceryListItem(ctx context.Context, request *m
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, request *mealplanning.GetMealPlanGroceryListItemsForMealPlanRequest) (*mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse, error) {
+func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, request *mealplanningsvc.GetMealPlanGroceryListItemsForMealPlanRequest) (*mealplanningsvc.GetMealPlanGroceryListItemsForMealPlanResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -557,7 +562,7 @@ func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan grocery list items")
 	}
 
-	x := &mealplanning.GetMealPlanGroceryListItemsForMealPlanResponse{
+	x := &mealplanningsvc.GetMealPlanGroceryListItemsForMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -570,7 +575,7 @@ func (s *serviceImpl) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanOption(ctx context.Context, request *mealplanning.GetMealPlanOptionRequest) (*mealplanning.GetMealPlanOptionResponse, error) {
+func (s *serviceImpl) GetMealPlanOption(ctx context.Context, request *mealplanningsvc.GetMealPlanOptionRequest) (*mealplanningsvc.GetMealPlanOptionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -585,7 +590,7 @@ func (s *serviceImpl) GetMealPlanOption(ctx context.Context, request *mealplanni
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan grocery list item")
 	}
 
-	x := &mealplanning.GetMealPlanOptionResponse{
+	x := &mealplanningsvc.GetMealPlanOptionResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -595,7 +600,7 @@ func (s *serviceImpl) GetMealPlanOption(ctx context.Context, request *mealplanni
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanOptionVote(ctx context.Context, request *mealplanning.GetMealPlanOptionVoteRequest) (*mealplanning.GetMealPlanOptionVoteResponse, error) {
+func (s *serviceImpl) GetMealPlanOptionVote(ctx context.Context, request *mealplanningsvc.GetMealPlanOptionVoteRequest) (*mealplanningsvc.GetMealPlanOptionVoteResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -611,7 +616,7 @@ func (s *serviceImpl) GetMealPlanOptionVote(ctx context.Context, request *mealpl
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan grocery list item")
 	}
 
-	x := &mealplanning.GetMealPlanOptionVoteResponse{
+	x := &mealplanningsvc.GetMealPlanOptionVoteResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -621,7 +626,7 @@ func (s *serviceImpl) GetMealPlanOptionVote(ctx context.Context, request *mealpl
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealplanning.GetMealPlanOptionVotesRequest) (*mealplanning.GetMealPlanOptionVotesResponse, error) {
+func (s *serviceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealplanningsvc.GetMealPlanOptionVotesRequest) (*mealplanningsvc.GetMealPlanOptionVotesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -638,7 +643,7 @@ func (s *serviceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealp
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan option votes")
 	}
 
-	x := &mealplanning.GetMealPlanOptionVotesResponse{
+	x := &mealplanningsvc.GetMealPlanOptionVotesResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -651,7 +656,7 @@ func (s *serviceImpl) GetMealPlanOptionVotes(ctx context.Context, request *mealp
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanOptions(ctx context.Context, request *mealplanning.GetMealPlanOptionsRequest) (*mealplanning.GetMealPlanOptionsResponse, error) {
+func (s *serviceImpl) GetMealPlanOptions(ctx context.Context, request *mealplanningsvc.GetMealPlanOptionsRequest) (*mealplanningsvc.GetMealPlanOptionsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -666,7 +671,7 @@ func (s *serviceImpl) GetMealPlanOptions(ctx context.Context, request *mealplann
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan options")
 	}
 
-	x := &mealplanning.GetMealPlanOptionsResponse{
+	x := &mealplanningsvc.GetMealPlanOptionsResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -679,7 +684,7 @@ func (s *serviceImpl) GetMealPlanOptions(ctx context.Context, request *mealplann
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanTask(ctx context.Context, request *mealplanning.GetMealPlanTaskRequest) (*mealplanning.GetMealPlanTaskResponse, error) {
+func (s *serviceImpl) GetMealPlanTask(ctx context.Context, request *mealplanningsvc.GetMealPlanTaskRequest) (*mealplanningsvc.GetMealPlanTaskResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -693,7 +698,7 @@ func (s *serviceImpl) GetMealPlanTask(ctx context.Context, request *mealplanning
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to read meal plan grocery list item")
 	}
 
-	x := &mealplanning.GetMealPlanTaskResponse{
+	x := &mealplanningsvc.GetMealPlanTaskResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -703,7 +708,7 @@ func (s *serviceImpl) GetMealPlanTask(ctx context.Context, request *mealplanning
 	return x, nil
 }
 
-func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplanning.GetMealPlanTasksRequest) (*mealplanning.GetMealPlanTasksResponse, error) {
+func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplanningsvc.GetMealPlanTasksRequest) (*mealplanningsvc.GetMealPlanTasksResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -718,7 +723,7 @@ func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplannin
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meal plan tasks")
 	}
 
-	x := &mealplanning.GetMealPlanTasksResponse{
+	x := &mealplanningsvc.GetMealPlanTasksResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -731,7 +736,7 @@ func (s *serviceImpl) GetMealPlanTasks(ctx context.Context, request *mealplannin
 	return x, nil
 }
 
-func (s *serviceImpl) GetMeals(ctx context.Context, request *mealplanning.GetMealsRequest) (*mealplanning.GetMealsResponse, error) {
+func (s *serviceImpl) GetMeals(ctx context.Context, request *mealplanningsvc.GetMealsRequest) (*mealplanningsvc.GetMealsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -744,7 +749,7 @@ func (s *serviceImpl) GetMeals(ctx context.Context, request *mealplanning.GetMea
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meals")
 	}
 
-	x := &mealplanning.GetMealsResponse{
+	x := &mealplanningsvc.GetMealsResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -757,7 +762,7 @@ func (s *serviceImpl) GetMeals(ctx context.Context, request *mealplanning.GetMea
 	return x, nil
 }
 
-func (s *serviceImpl) GetUserIngredientPreference(ctx context.Context, request *mealplanning.GetUserIngredientPreferenceRequest) (*mealplanning.GetUserIngredientPreferenceResponse, error) {
+func (s *serviceImpl) GetUserIngredientPreference(ctx context.Context, request *mealplanningsvc.GetUserIngredientPreferenceRequest) (*mealplanningsvc.GetUserIngredientPreferenceResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -773,7 +778,7 @@ func (s *serviceImpl) GetUserIngredientPreference(ctx context.Context, request *
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meals")
 	}
 
-	x := &mealplanning.GetUserIngredientPreferenceResponse{
+	x := &mealplanningsvc.GetUserIngredientPreferenceResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -783,7 +788,7 @@ func (s *serviceImpl) GetUserIngredientPreference(ctx context.Context, request *
 	return x, nil
 }
 
-func (s *serviceImpl) GetUserIngredientPreferences(ctx context.Context, request *mealplanning.GetUserIngredientPreferencesRequest) (*mealplanning.GetUserIngredientPreferencesResponse, error) {
+func (s *serviceImpl) GetUserIngredientPreferences(ctx context.Context, request *mealplanningsvc.GetUserIngredientPreferencesRequest) (*mealplanningsvc.GetUserIngredientPreferencesResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -800,7 +805,7 @@ func (s *serviceImpl) GetUserIngredientPreferences(ctx context.Context, request 
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch list of meals")
 	}
 
-	x := &mealplanning.GetUserIngredientPreferencesResponse{
+	x := &mealplanningsvc.GetUserIngredientPreferencesResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -813,7 +818,7 @@ func (s *serviceImpl) GetUserIngredientPreferences(ctx context.Context, request 
 	return x, nil
 }
 
-func (s *serviceImpl) RunFinalizeMealPlanWorker(ctx context.Context, _ *mealplanning.RunFinalizeMealPlanWorkerRequest) (*mealplanning.RunFinalizeMealPlanWorkerResponse, error) {
+func (s *serviceImpl) RunFinalizeMealPlanWorker(ctx context.Context, _ *mealplanningsvc.RunFinalizeMealPlanWorkerRequest) (*mealplanningsvc.RunFinalizeMealPlanWorkerResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -824,7 +829,7 @@ func (s *serviceImpl) RunFinalizeMealPlanWorker(ctx context.Context, _ *mealplan
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "running meal plan finalizer worker")
 	}
 
-	x := &mealplanning.RunFinalizeMealPlanWorkerResponse{
+	x := &mealplanningsvc.RunFinalizeMealPlanWorkerResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -834,7 +839,7 @@ func (s *serviceImpl) RunFinalizeMealPlanWorker(ctx context.Context, _ *mealplan
 	return x, nil
 }
 
-func (s *serviceImpl) RunMealPlanGroceryListInitializerWorker(ctx context.Context, _ *mealplanning.RunMealPlanGroceryListInitializerWorkerRequest) (*mealplanning.RunMealPlanGroceryListInitializerWorkerResponse, error) {
+func (s *serviceImpl) RunMealPlanGroceryListInitializerWorker(ctx context.Context, _ *mealplanningsvc.RunMealPlanGroceryListInitializerWorkerRequest) (*mealplanningsvc.RunMealPlanGroceryListInitializerWorkerResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -844,7 +849,7 @@ func (s *serviceImpl) RunMealPlanGroceryListInitializerWorker(ctx context.Contex
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "running meal plan grocery list initializer worker")
 	}
 
-	x := &mealplanning.RunMealPlanGroceryListInitializerWorkerResponse{
+	x := &mealplanningsvc.RunMealPlanGroceryListInitializerWorkerResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -853,7 +858,7 @@ func (s *serviceImpl) RunMealPlanGroceryListInitializerWorker(ctx context.Contex
 	return x, nil
 }
 
-func (s *serviceImpl) RunMealPlanTaskCreatorWorker(ctx context.Context, _ *mealplanning.RunMealPlanTaskCreatorWorkerRequest) (*mealplanning.RunMealPlanTaskCreatorWorkerResponse, error) {
+func (s *serviceImpl) RunMealPlanTaskCreatorWorker(ctx context.Context, _ *mealplanningsvc.RunMealPlanTaskCreatorWorkerRequest) (*mealplanningsvc.RunMealPlanTaskCreatorWorkerResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -863,7 +868,7 @@ func (s *serviceImpl) RunMealPlanTaskCreatorWorker(ctx context.Context, _ *mealp
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "running meal plan task creator worker")
 	}
 
-	x := &mealplanning.RunMealPlanTaskCreatorWorkerResponse{
+	x := &mealplanningsvc.RunMealPlanTaskCreatorWorkerResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -872,7 +877,7 @@ func (s *serviceImpl) RunMealPlanTaskCreatorWorker(ctx context.Context, _ *mealp
 	return x, nil
 }
 
-func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplanning.SearchForMealsRequest) (*mealplanning.SearchForMealsResponse, error) {
+func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplanningsvc.SearchForMealsRequest) (*mealplanningsvc.SearchForMealsResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -885,7 +890,7 @@ func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplanning.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for meals")
 	}
 
-	x := &mealplanning.SearchForMealsResponse{
+	x := &mealplanningsvc.SearchForMealsResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -898,7 +903,7 @@ func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplanning.
 	return x, nil
 }
 
-func (s *serviceImpl) UpdateMealPlan(ctx context.Context, request *mealplanning.UpdateMealPlanRequest) (*mealplanning.UpdateMealPlanResponse, error) {
+func (s *serviceImpl) UpdateMealPlan(ctx context.Context, request *mealplanningsvc.UpdateMealPlanRequest) (*mealplanningsvc.UpdateMealPlanResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -922,7 +927,7 @@ func (s *serviceImpl) UpdateMealPlan(ctx context.Context, request *mealplanning.
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan")
 	}
 
-	x := &mealplanning.UpdateMealPlanResponse{
+	x := &mealplanningsvc.UpdateMealPlanResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -932,7 +937,7 @@ func (s *serviceImpl) UpdateMealPlan(ctx context.Context, request *mealplanning.
 	return x, nil
 }
 
-func (s *serviceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplanning.UpdateMealPlanEventRequest) (*mealplanning.UpdateMealPlanEventResponse, error) {
+func (s *serviceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplanningsvc.UpdateMealPlanEventRequest) (*mealplanningsvc.UpdateMealPlanEventResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -952,7 +957,7 @@ func (s *serviceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplan
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan event")
 	}
 
-	x := &mealplanning.UpdateMealPlanEventResponse{
+	x := &mealplanningsvc.UpdateMealPlanEventResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -962,7 +967,7 @@ func (s *serviceImpl) UpdateMealPlanEvent(ctx context.Context, request *mealplan
 	return x, nil
 }
 
-func (s *serviceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request *mealplanning.UpdateMealPlanGroceryListItemRequest) (*mealplanning.UpdateMealPlanGroceryListItemResponse, error) {
+func (s *serviceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request *mealplanningsvc.UpdateMealPlanGroceryListItemRequest) (*mealplanningsvc.UpdateMealPlanGroceryListItemResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -982,7 +987,7 @@ func (s *serviceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan grocery list item")
 	}
 
-	x := &mealplanning.UpdateMealPlanGroceryListItemResponse{
+	x := &mealplanningsvc.UpdateMealPlanGroceryListItemResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -992,7 +997,7 @@ func (s *serviceImpl) UpdateMealPlanGroceryListItem(ctx context.Context, request
 	return x, nil
 }
 
-func (s *serviceImpl) UpdateMealPlanOption(ctx context.Context, request *mealplanning.UpdateMealPlanOptionRequest) (*mealplanning.UpdateMealPlanOptionResponse, error) {
+func (s *serviceImpl) UpdateMealPlanOption(ctx context.Context, request *mealplanningsvc.UpdateMealPlanOptionRequest) (*mealplanningsvc.UpdateMealPlanOptionResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1013,7 +1018,7 @@ func (s *serviceImpl) UpdateMealPlanOption(ctx context.Context, request *mealpla
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan option")
 	}
 
-	x := &mealplanning.UpdateMealPlanOptionResponse{
+	x := &mealplanningsvc.UpdateMealPlanOptionResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -1023,7 +1028,7 @@ func (s *serviceImpl) UpdateMealPlanOption(ctx context.Context, request *mealpla
 	return x, nil
 }
 
-func (s *serviceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mealplanning.UpdateMealPlanOptionVoteRequest) (*mealplanning.UpdateMealPlanOptionVoteResponse, error) {
+func (s *serviceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mealplanningsvc.UpdateMealPlanOptionVoteRequest) (*mealplanningsvc.UpdateMealPlanOptionVoteResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1044,7 +1049,7 @@ func (s *serviceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mea
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan option vote")
 	}
 
-	x := &mealplanning.UpdateMealPlanOptionVoteResponse{
+	x := &mealplanningsvc.UpdateMealPlanOptionVoteResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -1054,7 +1059,7 @@ func (s *serviceImpl) UpdateMealPlanOptionVote(ctx context.Context, request *mea
 	return x, nil
 }
 
-func (s *serviceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mealplanning.UpdateMealPlanTaskStatusRequest) (*mealplanning.UpdateMealPlanTaskStatusResponse, error) {
+func (s *serviceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mealplanningsvc.UpdateMealPlanTaskStatusRequest) (*mealplanningsvc.UpdateMealPlanTaskStatusResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1074,7 +1079,7 @@ func (s *serviceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mea
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan task status")
 	}
 
-	x := &mealplanning.UpdateMealPlanTaskStatusResponse{
+	x := &mealplanningsvc.UpdateMealPlanTaskStatusResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
@@ -1084,7 +1089,7 @@ func (s *serviceImpl) UpdateMealPlanTaskStatus(ctx context.Context, request *mea
 	return x, nil
 }
 
-func (s *serviceImpl) UpdateUserIngredientPreference(ctx context.Context, request *mealplanning.UpdateUserIngredientPreferenceRequest) (*mealplanning.UpdateUserIngredientPreferenceResponse, error) {
+func (s *serviceImpl) UpdateUserIngredientPreference(ctx context.Context, request *mealplanningsvc.UpdateUserIngredientPreferenceRequest) (*mealplanningsvc.UpdateUserIngredientPreferenceResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -1108,11 +1113,160 @@ func (s *serviceImpl) UpdateUserIngredientPreference(ctx context.Context, reques
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch updated meal plan task status")
 	}
 
-	x := &mealplanning.UpdateUserIngredientPreferenceResponse{
+	x := &mealplanningsvc.UpdateUserIngredientPreferenceResponse{
 		ResponseDetails: &types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
 		Updated: converters.ConvertUserIngredientPreferenceToGRPCUserIngredientPreference(updated),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) CreateAccountInstrumentOwnership(ctx context.Context, request *mealplanningsvc.CreateAccountInstrumentOwnershipRequest) (*mealplanningsvc.CreateAccountInstrumentOwnershipResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+
+	logger := observability.ObserveValues(nil, span, s.logger)
+
+	input := converters.ConvertGRPCAccountInstrumentOwnershipCreationRequestInputToAccountInstrumentOwnershipCreationRequestInput(request.Input)
+	if err = input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "failed to validate account instrument ownership creation request input")
+	}
+
+	created, err := s.mealPlanningManager.CreateAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), input)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create account instrument ownership")
+	}
+
+	x := &mealplanningsvc.CreateAccountInstrumentOwnershipResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Created: converters.ConvertAccountInstrumentOwnershipToGRPCAccountInstrumentOwnership(created),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetAccountInstrumentOwnership(ctx context.Context, request *mealplanningsvc.GetAccountInstrumentOwnershipRequest) (*mealplanningsvc.GetAccountInstrumentOwnershipResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipID,
+	}, span, s.logger)
+
+	result, err := s.mealPlanningManager.ReadAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch account instrument ownership")
+	}
+
+	x := &mealplanningsvc.GetAccountInstrumentOwnershipResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Result: converters.ConvertAccountInstrumentOwnershipToGRPCAccountInstrumentOwnership(result),
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) GetAccountInstrumentOwnerships(ctx context.Context, request *mealplanningsvc.GetAccountInstrumentOwnershipsRequest) (*mealplanningsvc.GetAccountInstrumentOwnershipsResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	logger := observability.ObserveValues(nil, span, s.logger)
+
+	results, _, err := s.mealPlanningManager.ListAccountInstrumentOwnerships(ctx, sessionContextData.GetActiveAccountID(), filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to list account instrument ownerships")
+	}
+
+	x := &mealplanningsvc.GetAccountInstrumentOwnershipsResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	for _, result := range results {
+		x.Results = append(x.Results, converters.ConvertAccountInstrumentOwnershipToGRPCAccountInstrumentOwnership(result))
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) UpdateAccountInstrumentOwnership(ctx context.Context, request *mealplanningsvc.UpdateAccountInstrumentOwnershipRequest) (*mealplanningsvc.UpdateAccountInstrumentOwnershipResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipID,
+	}, span, s.logger)
+
+	input := converters.ConvertGRPCAccountInstrumentOwnershipUpdateRequestInputToAccountInstrumentOwnershipUpdateRequestInput(request.Input)
+
+	accountInstrumentOwnership, err := s.mealPlanningManager.ReadAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch account instrument ownership")
+	}
+
+	if err = s.mealPlanningManager.UpdateAccountInstrumentOwnership(ctx, accountInstrumentOwnership.ID, accountInstrumentOwnership.BelongsToAccount, input); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to update account instrument ownership")
+	}
+
+	x := &mealplanningsvc.UpdateAccountInstrumentOwnershipResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+	}
+
+	return x, nil
+}
+
+func (s *serviceImpl) ArchiveAccountInstrumentOwnership(ctx context.Context, request *mealplanningsvc.ArchiveAccountInstrumentOwnershipRequest) (*mealplanningsvc.ArchiveAccountInstrumentOwnershipResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to fetch session context data")
+	}
+
+	logger := observability.ObserveValues(map[string]any{
+		keys.AccountInstrumentOwnershipIDKey: request.AccountInstrumentOwnershipID,
+	}, span, s.logger)
+
+	if err = s.mealPlanningManager.ArchiveAccountInstrumentOwnership(ctx, sessionContextData.GetActiveAccountID(), request.AccountInstrumentOwnershipID); err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to archive account instrument ownership")
+	}
+
+	x := &mealplanningsvc.ArchiveAccountInstrumentOwnershipResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
 	}
 
 	return x, nil

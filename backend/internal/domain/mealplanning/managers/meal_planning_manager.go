@@ -76,7 +76,7 @@ type (
 		ArchiveUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) error
 
 		ListAccountInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.AccountInstrumentOwnership, string, error)
-		CreateAccountInstrumentOwnership(ctx context.Context, input *types.AccountInstrumentOwnershipCreationRequestInput) (*types.AccountInstrumentOwnership, error)
+		CreateAccountInstrumentOwnership(ctx context.Context, ownerID string, input *types.AccountInstrumentOwnershipCreationRequestInput) (*types.AccountInstrumentOwnership, error)
 		ReadAccountInstrumentOwnership(ctx context.Context, ownerID, instrumentOwnershipID string) (*types.AccountInstrumentOwnership, error)
 		UpdateAccountInstrumentOwnership(ctx context.Context, instrumentOwnershipID, ownerID string, input *types.AccountInstrumentOwnershipUpdateRequestInput) error
 		ArchiveAccountInstrumentOwnership(ctx context.Context, ownerID, instrumentOwnershipID string) error
@@ -1116,11 +1116,13 @@ func (m *mealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Contex
 	return results.Data, "", nil
 }
 
-func (m *mealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Context, input *types.AccountInstrumentOwnershipCreationRequestInput) (*types.AccountInstrumentOwnership, error) {
+func (m *mealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Context, ownerID string, input *types.AccountInstrumentOwnershipCreationRequestInput) (*types.AccountInstrumentOwnership, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
 	convertedInput := converters.ConvertAccountInstrumentOwnershipCreationRequestInputToAccountInstrumentOwnershipDatabaseCreationInput(input)
+	convertedInput.BelongsToAccount = ownerID
+
 	logger := m.logger.WithSpan(span).WithValue(keys.AccountInstrumentOwnershipIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, convertedInput.ID)
 
