@@ -224,10 +224,6 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 		x.Steps[i].Media = recipeMedia
 	}
 
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching supporting recipes")
-	}
-
 	return x, nil
 }
 

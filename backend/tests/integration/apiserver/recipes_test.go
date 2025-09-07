@@ -1,384 +1,286 @@
 package integration
 
 import (
+	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	mealplanningconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
-	"github.com/dinnerdonebetter/backend/pkg/client"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func createRecipeForTest(t *testing.T, clientToUse client.Client, recipe *types.Recipe, inputFilter ...func(input *types.RecipeCreationRequestInput)) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
+func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
 	t.Helper()
-	ctx := t.Context()
 
-	createdValidPreparation := createValidPreparationForTest(t)
-	createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
-	createdValidInstrument := createValidInstrumentForTest(t)
-	createdValidIngredientState := createValidIngredientStateForTest(t)
-	createdValidVessel := createValidVesselForTest(t)
+	assert.NotZero(t, actual.ID)
+	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 
-	exampleRecipe := fakes.BuildFakeRecipe()
-	if recipe != nil {
-		exampleRecipe = recipe
-	}
+	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe %s to be %v, but it was %v", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
+	assert.Zero(t, actual.LastUpdatedAt)
+	assert.Zero(t, actual.ArchivedAt)
+	assert.Equal(t, expected.EstimatedPortions, actual.EstimatedPortions, "expected EstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.EstimatedPortions, actual.EstimatedPortions)
+	assert.Equal(t, expected.PluralPortionName, actual.PluralPortionName, "expected PluralPortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PluralPortionName, actual.PluralPortionName)
+	assert.Equal(t, expected.Description, actual.Description, "expected Description for recipe %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
+	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
+	assert.Equal(t, expected.PortionName, actual.PortionName, "expected PortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PortionName, actual.PortionName)
+	assert.NotZero(t, actual.CreatedByUser)
+	assert.Equal(t, expected.Source, actual.Source, "expected Source for recipe %s to be %v, but it was %v", expected.ID, expected.Source, actual.Source)
+	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for recipe %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
+	assert.Equal(t, expected.YieldsComponentType, actual.YieldsComponentType, "expected YieldsComponentType for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsComponentType, actual.YieldsComponentType)
+	assert.Equal(t, expected.PrepTasks, actual.PrepTasks, "expected PrepTasks for recipe %s to be %v, but it was %v", expected.ID, expected.PrepTasks, actual.PrepTasks)
+	//assert.Equal(t, expected.Steps, actual.Steps, "expected Steps for recipe %s to be %v, but it was %v", expected.ID, expected.Steps, actual.Steps)
+	assert.Equal(t, expected.Media, actual.Media, "expected Media for recipe %s to be %v, but it was %v", expected.ID, expected.Media, actual.Media)
+	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
+	assert.Equal(t, expected.EligibleForMeals, actual.EligibleForMeals, "expected EligibleForMeals for recipe %s to be %v, but it was %v", expected.ID, expected.EligibleForMeals, actual.EligibleForMeals)
 
-	createdValidIngredients := []*types.ValidIngredient{}
-	for i, recipeStep := range exampleRecipe.Steps {
-		for j := range recipeStep.Ingredients {
-			createdValidIngredient := createValidIngredientForTest(t)
-			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
-
-			exampleRecipe.Steps[i].Ingredients[j].Ingredient = createdValidIngredient
-			exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
-		}
-
-		for j := range recipeStep.Products {
-			exampleRecipe.Steps[i].Products[j].MeasurementUnit = createdValidMeasurementUnit
-		}
-
-		for j := range recipeStep.Instruments {
-			recipeStep.Instruments[j].Instrument = createdValidInstrument
-		}
-
-		for j := range recipeStep.Vessels {
-			recipeStep.Vessels[j].Vessel = createdValidVessel
-		}
-
-		for j := range recipeStep.CompletionConditions {
-			recipeStep.CompletionConditions[j].IngredientState = *createdValidIngredientState
-			for k := range recipeStep.CompletionConditions[j].Ingredients {
-				recipeStep.CompletionConditions[j].Ingredients[k].RecipeStepIngredient = createdValidIngredients[0].ID
-			}
-		}
-	}
-
-	exampleRecipeInput := converters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
-	exampleRecipeInput.AlsoCreateMeal = true
-	for i := range exampleRecipeInput.Steps {
-		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
-	}
-
-	examplePrepTask := fakes.BuildFakeRecipePrepTask()
-	examplePrepTask.TaskSteps = []*types.RecipePrepTaskStep{
-		{
-			BelongsToRecipeStep: exampleRecipe.Steps[0].ID,
-			SatisfiesRecipeStep: false,
-		},
-	}
-	exampleRecipeInput.PrepTasks = []*types.RecipePrepTaskWithinRecipeCreationRequestInput{
-		converters.ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(exampleRecipe, examplePrepTask),
-	}
-
-	for _, filter := range inputFilter {
-		filter(exampleRecipeInput)
-	}
-
-	createdRecipeRes, err := clientToUse.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: mealplanningconverters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(exampleRecipeInput)})
-	require.NoError(t, err)
-	require.NoError(t, err)
-
-	recipeRes, err := clientToUse.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRecipeRes.Created.ID})
-	require.NoError(t, err)
-
-	createdRecipe := mealplanningconverters.ConvertGRPCRecipeToRecipe(recipeRes.Result)
-	assertRoughEquality(t, exampleRecipe, createdRecipe, defaultIgnoredFields("CreatedByUser", "ID")...)
-
-	require.NotEmpty(t, createdRecipe.Steps, "created recipe must have steps")
-
-	return createdValidIngredients, createdValidPreparation, createdRecipe
+	assert.NotZero(t, actual.CreatedAt)
 }
 
-func TestRecipes_Creating(T *testing.T) {
+func TestRecipes_Realistic(T *testing.T) {
 	T.Parallel()
 
-	T.Run("happy path", func(t *testing.T) {
-		t.FailNow()
+	T.Run("should CRUD", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-		createRecipeForTest(t, adminClient, nil)
+		soak := createValidPreparationForTest(t)
+		mix := createValidPreparationForTest(t)
+		grams := createValidMeasurementUnitForTest(t)
+		cups := createValidMeasurementUnitForTest(t)
+		pintoBeans := createValidIngredientForTest(t)
+		water := createValidIngredientForTest(t)
+		garlicPaste := createValidIngredientForTest(t)
+		createdValidInstrument := createValidInstrumentForTest(t)
+
+		expected := &mealplanning.Recipe{
+			Name:                "sopa de frijol",
+			Slug:                "sopa-de-frijol",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         t.Name(),
+			PluralPortionName:   t.Name(),
+			Media:               []*mealplanning.RecipeMedia{},
+			PrepTasks:           []*mealplanning.RecipePrepTask{},
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Max: nil,
+				Min: 1,
+			},
+			Steps: []*mealplanning.RecipeStep{
+				{
+					Products: []*mealplanning.RecipeStepProduct{
+						{
+							Name:            "soaked pinto beans",
+							Type:            mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit: grams,
+							QuantityNotes:   "",
+							Quantity: types.OptionalFloat32Range{
+								Max: nil,
+								Min: pointer.To(float32(1000)),
+							},
+						},
+					},
+					Notes:       "first step",
+					Preparation: *soak,
+					Instruments: []*mealplanning.RecipeStepInstrument{
+						{
+							Name:       "whatever",
+							Instrument: createdValidInstrument,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredient{
+						{
+							Ingredient:      pintoBeans,
+							Name:            "pinto beans",
+							MeasurementUnit: *grams,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Min: 500,
+							},
+						},
+						{
+							Ingredient:      water,
+							Name:            "water",
+							MeasurementUnit: *cups,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Min: 5,
+							},
+						},
+					},
+					Index: 0,
+				},
+				{
+					Products: []*mealplanning.RecipeStepProduct{
+						{
+							Name:            "final output",
+							Type:            mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit: grams,
+							QuantityNotes:   "",
+							Quantity: types.OptionalFloat32Range{
+								Max: nil,
+								Min: pointer.To(float32(1010)),
+							},
+						},
+					},
+					Notes:       "second step",
+					Preparation: *mix,
+					Instruments: []*mealplanning.RecipeStepInstrument{
+						{
+							Name:       "whatever",
+							Instrument: createdValidInstrument,
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredient{
+						{
+							Name:            "soaked pinto beans",
+							MeasurementUnit: *grams,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Min: 1000,
+							},
+						},
+						{
+							Ingredient:      garlicPaste,
+							Name:            "garlic paste",
+							MeasurementUnit: *grams,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Min: 10,
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
+		}
+
+		expectedInput := &mealplanning.RecipeCreationRequestInput{
+			Name:                expected.Name,
+			Description:         expected.Description,
+			Slug:                expected.Slug,
+			YieldsComponentType: expected.YieldsComponentType,
+			PortionName:         expected.PortionName,
+			PluralPortionName:   expected.PluralPortionName,
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Max: expected.EstimatedPortions.Max,
+				Min: expected.EstimatedPortions.Min,
+			},
+			Steps: []*mealplanning.RecipeStepCreationRequestInput{
+				{
+					TemperatureInCelsius: expected.Steps[0].TemperatureInCelsius,
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              expected.Steps[0].Products[0].Name,
+							Type:              expected.Steps[0].Products[0].Type,
+							MeasurementUnitID: &expected.Steps[0].Products[0].MeasurementUnit.ID,
+							QuantityNotes:     expected.Steps[0].Products[0].QuantityNotes,
+							Quantity:          expected.Steps[0].Products[0].Quantity,
+						},
+					},
+					Notes:         expected.Steps[0].Notes,
+					PreparationID: expected.Steps[0].Preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:         "whatever",
+							InstrumentID: pointer.To(createdValidInstrument.ID),
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							IngredientID:      &expected.Steps[0].Ingredients[0].Ingredient.ID,
+							Name:              expected.Steps[0].Ingredients[0].Name,
+							MeasurementUnitID: expected.Steps[0].Ingredients[0].MeasurementUnit.ID,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Max: nil,
+								Min: expected.Steps[0].Ingredients[0].Quantity.Min,
+							},
+						},
+						{
+							IngredientID:      &expected.Steps[0].Ingredients[1].Ingredient.ID,
+							Name:              expected.Steps[0].Ingredients[1].Name,
+							MeasurementUnitID: expected.Steps[0].Ingredients[1].MeasurementUnit.ID,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Max: nil,
+								Min: expected.Steps[0].Ingredients[1].Quantity.Min,
+							},
+						},
+					},
+					Index: expected.Steps[0].Index,
+				},
+				{
+					TemperatureInCelsius: expected.Steps[1].TemperatureInCelsius,
+					Products: []*mealplanning.RecipeStepProductCreationRequestInput{
+						{
+							Name:              expected.Steps[1].Products[0].Name,
+							Type:              expected.Steps[1].Products[0].Type,
+							MeasurementUnitID: &expected.Steps[1].Products[0].MeasurementUnit.ID,
+							QuantityNotes:     expected.Steps[1].Products[0].QuantityNotes,
+							Quantity:          expected.Steps[1].Products[0].Quantity,
+						},
+					},
+					Notes:         expected.Steps[1].Notes,
+					PreparationID: expected.Steps[1].Preparation.ID,
+					Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
+						{
+							Name:         "whatever",
+							InstrumentID: pointer.To(createdValidInstrument.ID),
+						},
+					},
+					Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
+						{
+							Name:                            expected.Steps[1].Ingredients[0].Name,
+							MeasurementUnitID:               expected.Steps[1].Ingredients[0].MeasurementUnit.ID,
+							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							Quantity: types.Float32RangeWithOptionalMax{
+								Max: nil,
+								Min: expected.Steps[1].Ingredients[0].Quantity.Min,
+							},
+						},
+						{
+							IngredientID:      &expected.Steps[1].Ingredients[1].Ingredient.ID,
+							Name:              expected.Steps[1].Ingredients[1].Name,
+							MeasurementUnitID: expected.Steps[1].Ingredients[1].MeasurementUnit.ID,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Max: nil,
+								Min: expected.Steps[1].Ingredients[1].Quantity.Min,
+							},
+						},
+					},
+					Index: expected.Steps[1].Index,
+				},
+			},
+		}
+
+		createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(expectedInput)})
+		require.NoError(t, err)
+		created := converters.ConvertGRPCRecipeToRecipe(createdRes.Created)
+		//checkRecipeEquality(t, expected, created)
+
+		e, c := dumpToJSON(expected), dumpToJSON(created)
+		_, _ = e, c
+
+		assertRoughEquality(t, expected, created, defaultIgnoredFields("CreatedByUser", "ID", "BelongsToRecipe", "BelongsToRecipeStep")...)
+
+		//_, testClient := createUserAndClientForTest(t)
+		//
+		//recipeRes, err := testClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: created.ID})
+		//require.NoError(t, err)
+		//checkRecipeEquality(t, expected, converters.ConvertGRPCRecipeToRecipe(recipeRes.Result))
+		//
+		//recipeStepProductIndex := -1
+		//for i, ingredient := range created.Steps[1].Ingredients {
+		//	if ingredient.RecipeStepProductID != nil {
+		//		recipeStepProductIndex = i
+		//	}
+		//}
+		//
+		//require.NotEqual(t, -1, recipeStepProductIndex)
+		//require.NotNil(t, created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
+		//assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
 	})
 }
 
 /*
-
-func (s *TestSuite) TestRecipes_Realistic() {
-	s.runTest("sopa de frijol", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			soakBase := fakes.BuildFakeValidPreparation()
-			soakInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(soakBase)
-			soak, err := testClients.adminClient.CreateValidPreparation(ctx, soakInput)
-			require.NoError(t, err)
-
-			mixBase := fakes.BuildFakeValidPreparation()
-			mixInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(mixBase)
-			mix, err := testClients.adminClient.CreateValidPreparation(ctx, mixInput)
-			require.NoError(t, err)
-
-			exampleGrams := fakes.BuildFakeValidMeasurementUnit()
-			exampleGramsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleGrams)
-			grams, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleGramsInput)
-			require.NoError(t, err)
-			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
-
-			grams, err = testClients.adminClient.GetValidMeasurementUnit(ctx, grams.ID)
-			requireNotNilAndNoProblems(t, grams, err)
-			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
-
-			exampleCups := fakes.BuildFakeValidMeasurementUnit()
-			exampleCupsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleCups)
-			cups, err := testClients.adminClient.CreateValidMeasurementUnit(ctx, exampleCupsInput)
-			require.NoError(t, err)
-			checkValidMeasurementUnitEquality(t, exampleCups, cups)
-
-			cups, err = testClients.adminClient.GetValidMeasurementUnit(ctx, cups.ID)
-			requireNotNilAndNoProblems(t, cups, err)
-			checkValidMeasurementUnitEquality(t, exampleCups, cups)
-
-			pintoBeanBase := fakes.BuildFakeValidIngredient()
-			pintoBeanInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(pintoBeanBase)
-			pintoBeans, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, pintoBeanInput)
-			require.NoError(t, createdValidIngredientErr)
-
-			waterBase := fakes.BuildFakeValidIngredient()
-			waterInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(waterBase)
-			water, createdValidIngredientErr := testClients.adminClient.CreateValidIngredient(ctx, waterInput)
-			require.NoError(t, createdValidIngredientErr)
-
-			garlicPaste := fakes.BuildFakeValidIngredient()
-			garlicPasteInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(garlicPaste)
-			garlicPaste, garlicPasteErr := testClients.adminClient.CreateValidIngredient(ctx, garlicPasteInput)
-			require.NoError(t, garlicPasteErr)
-
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-			createdValidInstrument, err := testClients.adminClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-			require.NoError(t, err)
-			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
-
-			expected := &types.Recipe{
-				Name:                "sopa de frijol",
-				Slug:                "sopa-de-frijol-whatever-who-cares",
-				YieldsComponentType: types.MealComponentTypesMain,
-				PortionName:         t.Name(),
-				PluralPortionName:   t.Name(),
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
-					Max: nil,
-					Min: 1,
-				},
-				Steps: []*types.RecipeStep{
-					{
-						Products: []*types.RecipeStepProduct{
-							{
-								Name:            "soaked pinto beans",
-								Type:            types.RecipeStepProductIngredientType,
-								MeasurementUnit: grams,
-								QuantityNotes:   "",
-								Quantity: types.OptionalFloat32Range{
-									Max: nil,
-									Min: pointer.To(float32(1000)),
-								},
-							},
-						},
-						Notes:       "first step",
-						Preparation: *soak,
-						Instruments: []*types.RecipeStepInstrument{
-							{
-								Name:       "whatever",
-								Instrument: createdValidInstrument,
-							},
-						},
-						Ingredients: []*types.RecipeStepIngredient{
-							{
-								Ingredient:      pintoBeans,
-								Name:            "pinto beans",
-								MeasurementUnit: *grams,
-								Quantity: types.Float32RangeWithOptionalMax{
-									Min: 500,
-								},
-							},
-							{
-								Ingredient:      water,
-								Name:            "water",
-								MeasurementUnit: *cups,
-								Quantity: types.Float32RangeWithOptionalMax{
-									Min: 5,
-								},
-							},
-						},
-						Index: 0,
-					},
-					{
-						Products: []*types.RecipeStepProduct{
-							{
-								Name:            "final output",
-								Type:            types.RecipeStepProductIngredientType,
-								MeasurementUnit: grams,
-								QuantityNotes:   "",
-								Quantity: types.OptionalFloat32Range{
-									Max: nil,
-									Min: pointer.To(float32(1010)),
-								},
-							},
-						},
-						Notes:       "second step",
-						Preparation: *mix,
-						Instruments: []*types.RecipeStepInstrument{
-							{
-								Name:       "whatever",
-								Instrument: createdValidInstrument,
-							},
-						},
-						Ingredients: []*types.RecipeStepIngredient{
-							{
-								Name:            "soaked pinto beans",
-								MeasurementUnit: *grams,
-								Quantity: types.Float32RangeWithOptionalMax{
-									Min: 1000,
-								},
-							},
-							{
-								Ingredient:      garlicPaste,
-								Name:            "garlic paste",
-								MeasurementUnit: *grams,
-								Quantity: types.Float32RangeWithOptionalMax{
-									Min: 10,
-								},
-							},
-						},
-						Index: 1,
-					},
-				},
-			}
-
-			expectedInput := &types.RecipeCreationRequestInput{
-				Name:                expected.Name,
-				Description:         expected.Description,
-				Slug:                expected.Slug,
-				YieldsComponentType: expected.YieldsComponentType,
-				PortionName:         expected.PortionName,
-				PluralPortionName:   expected.PluralPortionName,
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
-					Max: expected.EstimatedPortions.Max,
-					Min: expected.EstimatedPortions.Min,
-				},
-				Steps: []*types.RecipeStepCreationRequestInput{
-					{
-						TemperatureInCelsius: expected.Steps[0].TemperatureInCelsius,
-						Products: []*types.RecipeStepProductCreationRequestInput{
-							{
-								Name:              expected.Steps[0].Products[0].Name,
-								Type:              expected.Steps[0].Products[0].Type,
-								MeasurementUnitID: &expected.Steps[0].Products[0].MeasurementUnit.ID,
-								QuantityNotes:     expected.Steps[0].Products[0].QuantityNotes,
-								Quantity:          expected.Steps[0].Products[0].Quantity,
-							},
-						},
-						Notes:         expected.Steps[0].Notes,
-						PreparationID: expected.Steps[0].Preparation.ID,
-						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
-							{
-								Name:         "whatever",
-								InstrumentID: pointer.To(createdValidInstrument.ID),
-							},
-						},
-						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
-							{
-								IngredientID:      &expected.Steps[0].Ingredients[0].Ingredient.ID,
-								Name:              expected.Steps[0].Ingredients[0].Name,
-								MeasurementUnitID: expected.Steps[0].Ingredients[0].MeasurementUnit.ID,
-								Quantity: types.Float32RangeWithOptionalMax{
-									Max: nil,
-									Min: expected.Steps[0].Ingredients[0].Quantity.Min,
-								},
-							},
-							{
-								IngredientID:      &expected.Steps[0].Ingredients[1].Ingredient.ID,
-								Name:              expected.Steps[0].Ingredients[1].Name,
-								MeasurementUnitID: expected.Steps[0].Ingredients[1].MeasurementUnit.ID,
-								Quantity: types.Float32RangeWithOptionalMax{
-									Max: nil,
-									Min: expected.Steps[0].Ingredients[1].Quantity.Min,
-								},
-							},
-						},
-						Index: expected.Steps[0].Index,
-					},
-					{
-						TemperatureInCelsius: expected.Steps[1].TemperatureInCelsius,
-						Products: []*types.RecipeStepProductCreationRequestInput{
-							{
-								Name:              expected.Steps[1].Products[0].Name,
-								Type:              expected.Steps[1].Products[0].Type,
-								MeasurementUnitID: &expected.Steps[1].Products[0].MeasurementUnit.ID,
-								QuantityNotes:     expected.Steps[1].Products[0].QuantityNotes,
-								Quantity:          expected.Steps[1].Products[0].Quantity,
-							},
-						},
-						Notes:         expected.Steps[1].Notes,
-						PreparationID: expected.Steps[1].Preparation.ID,
-						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
-							{
-								Name:         "whatever",
-								InstrumentID: pointer.To(createdValidInstrument.ID),
-							},
-						},
-						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
-							{
-								Name:                            expected.Steps[1].Ingredients[0].Name,
-								MeasurementUnitID:               expected.Steps[1].Ingredients[0].MeasurementUnit.ID,
-								ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
-								ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
-								Quantity: types.Float32RangeWithOptionalMax{
-									Max: nil,
-									Min: expected.Steps[1].Ingredients[0].Quantity.Min,
-								},
-							},
-							{
-								IngredientID:      &expected.Steps[1].Ingredients[1].Ingredient.ID,
-								Name:              expected.Steps[1].Ingredients[1].Name,
-								MeasurementUnitID: expected.Steps[1].Ingredients[1].MeasurementUnit.ID,
-								Quantity: types.Float32RangeWithOptionalMax{
-									Max: nil,
-									Min: expected.Steps[1].Ingredients[1].Quantity.Min,
-								},
-							},
-						},
-						Index: expected.Steps[1].Index,
-					},
-				},
-			}
-
-			created, err := testClients.adminClient.CreateRecipe(ctx, expectedInput)
-			require.NoError(t, err)
-			checkRecipeEquality(t, expected, created)
-
-			created, err = testClients.userClient.GetRecipe(ctx, created.ID)
-			requireNotNilAndNoProblems(t, created, err)
-			checkRecipeEquality(t, expected, created)
-
-			recipeStepProductIndex := -1
-			for i, ingredient := range created.Steps[1].Ingredients {
-				if ingredient.RecipeStepProductID != nil {
-					recipeStepProductIndex = i
-				}
-			}
-
-			require.NotEqual(t, -1, recipeStepProductIndex)
-			require.NotNil(t, created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
-			assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
-		}
-	})
-}
 
 func (s *TestSuite) TestRecipes_Updating() {
 	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
@@ -455,7 +357,7 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil, func(input *types.RecipeCreationRequestInput) {
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil, func(input *mealplanning.RecipeCreationRequestInput) {
 				input.AlsoCreateMeal = true
 			})
 
@@ -489,7 +391,7 @@ func (s *TestSuite) TestRecipes_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			var expected []*types.Recipe
+			var expected []*mealplanning.Recipe
 			for i := 0; i < 5; i++ {
 				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
 
@@ -546,7 +448,7 @@ func (s *TestSuite) TestRecipes_Searching() {
 
 			exampleRecipe := fakes.BuildFakeRecipe()
 
-			var expected []*types.Recipe
+			var expected []*mealplanning.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe.Name = fmt.Sprintf("example%d", i)
 				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, exampleRecipe)
@@ -612,25 +514,25 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			sautee, err := testClients.adminClient.CreateValidPreparation(ctx, sauteeInput)
 			require.NoError(t, err)
 
-			expected := &types.Recipe{
+			expected := &mealplanning.Recipe{
 				Name:                "sopa de frijol",
 				Slug:                "whatever-who-cares-sopa-de-frijol",
-				YieldsComponentType: types.MealComponentTypesMain,
+				YieldsComponentType: mealplanning.MealComponentTypesMain,
 				PortionName:         t.Name(),
 				PluralPortionName:   t.Name(),
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
+				EstimatedPortions: mealplanning.Float32RangeWithOptionalMax{
 					Max: nil,
 					Min: 1,
 				},
-				Steps: []*types.RecipeStep{
+				Steps: []*mealplanning.RecipeStep{
 					{
-						Products: []*types.RecipeStepProduct{
+						Products: []*mealplanning.RecipeStepProduct{
 							{
 								Name:            "diced chicken breast",
-								Type:            types.RecipeStepProductIngredientType,
+								Type:            mealplanning.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								Quantity: types.OptionalFloat32Range{
+								Quantity: mealplanning.OptionalFloat32Range{
 									Max: nil,
 									Min: pointer.To(float32(1000)),
 								},
@@ -638,19 +540,19 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						},
 						Notes:       "first step",
 						Preparation: *dice,
-						Instruments: []*types.RecipeStepInstrument{
+						Instruments: []*mealplanning.RecipeStepInstrument{
 							{
 								Name:       "whatever",
 								Instrument: createdValidInstrument,
 							},
 						},
-						Ingredients: []*types.RecipeStepIngredient{
+						Ingredients: []*mealplanning.RecipeStepIngredient{
 							{
 								RecipeStepProductID: nil,
 								Ingredient:          chickenBreast,
 								Name:                "pinto beans",
 								MeasurementUnit:     *grams,
-								Quantity: types.Float32RangeWithOptionalMax{
+								Quantity: mealplanning.Float32RangeWithOptionalMax{
 									Min: 500,
 								},
 							},
@@ -658,13 +560,13 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Index: 0,
 					},
 					{
-						Products: []*types.RecipeStepProduct{
+						Products: []*mealplanning.RecipeStepProduct{
 							{
 								Name:            "final output",
-								Type:            types.RecipeStepProductIngredientType,
+								Type:            mealplanning.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								Quantity: types.OptionalFloat32Range{
+								Quantity: mealplanning.OptionalFloat32Range{
 									Max: nil,
 									Min: pointer.To(float32(1010)),
 								},
@@ -672,17 +574,17 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						},
 						Notes:       "second step",
 						Preparation: *sautee,
-						Instruments: []*types.RecipeStepInstrument{
+						Instruments: []*mealplanning.RecipeStepInstrument{
 							{
 								Name:       "whatever",
 								Instrument: createdValidInstrument,
 							},
 						},
-						Ingredients: []*types.RecipeStepIngredient{
+						Ingredients: []*mealplanning.RecipeStepIngredient{
 							{
 								Name:            "diced chicken breast",
 								MeasurementUnit: *grams,
-								Quantity: types.Float32RangeWithOptionalMax{
+								Quantity: mealplanning.Float32RangeWithOptionalMax{
 									Min: 1000,
 								},
 							},
@@ -692,68 +594,68 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 				},
 			}
 
-			expectedInput := &types.RecipeCreationRequestInput{
+			expectedInput := &mealplanning.RecipeCreationRequestInput{
 				Name:                expected.Name,
 				Slug:                expected.Slug,
 				YieldsComponentType: expected.YieldsComponentType,
 				PortionName:         expected.PortionName,
 				PluralPortionName:   expected.PluralPortionName,
-				EstimatedPortions: types.Float32RangeWithOptionalMax{
+				EstimatedPortions: mealplanning.Float32RangeWithOptionalMax{
 					Min: expected.EstimatedPortions.Min,
 					Max: expected.EstimatedPortions.Max,
 				},
-				Steps: []*types.RecipeStepCreationRequestInput{
+				Steps: []*mealplanning.RecipeStepCreationRequestInput{
 					{
-						Products: []*types.RecipeStepProductCreationRequestInput{
+						Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 							{
 								Name:              "diced chicken breast",
-								Type:              types.RecipeStepProductIngredientType,
+								Type:              mealplanning.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								Quantity:          types.OptionalFloat32Range{Min: pointer.To(float32(1000))},
+								Quantity:          mealplanning.OptionalFloat32Range{Min: pointer.To(float32(1000))},
 							},
 						},
 						Notes:         "first step",
 						PreparationID: dice.ID,
-						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
+						Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
 								InstrumentID: pointer.To(createdValidInstrument.ID),
 							},
 						},
-						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
+						Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 							{
 								IngredientID:      &chickenBreast.ID,
 								Name:              "pinto beans",
 								MeasurementUnitID: grams.ID,
-								Quantity:          types.Float32RangeWithOptionalMax{Min: 500},
+								Quantity:          mealplanning.Float32RangeWithOptionalMax{Min: 500},
 							},
 						},
 						Index: 0,
 					},
 					{
-						Products: []*types.RecipeStepProductCreationRequestInput{
+						Products: []*mealplanning.RecipeStepProductCreationRequestInput{
 							{
 								Name:              "final output",
-								Type:              types.RecipeStepProductIngredientType,
+								Type:              mealplanning.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								Quantity:          types.OptionalFloat32Range{Min: pointer.To(float32(1010))},
+								Quantity:          mealplanning.OptionalFloat32Range{Min: pointer.To(float32(1010))},
 							},
 						},
 						Notes:         "second step",
 						PreparationID: sautee.ID,
-						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
+						Instruments: []*mealplanning.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
 								InstrumentID: pointer.To(createdValidInstrument.ID),
 							},
 						},
-						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
+						Ingredients: []*mealplanning.RecipeStepIngredientCreationRequestInput{
 							{
 								Name:                            "diced chicken breast",
 								MeasurementUnitID:               grams.ID,
-								Quantity:                        types.Float32RangeWithOptionalMax{Min: 1000},
+								Quantity:                        mealplanning.Float32RangeWithOptionalMax{Min: 1000},
 								ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
 								ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 							},

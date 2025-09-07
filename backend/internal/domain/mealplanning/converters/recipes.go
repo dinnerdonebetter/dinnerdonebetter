@@ -68,15 +68,6 @@ func ConvertRecipeCreationRequestInputToRecipeDatabaseCreationInput(input *mealp
 		x.Media = append(x.Media, ConvertRecipeMediaCreationRequestInputToRecipeMediaDatabaseCreationInput(m))
 	}
 
-	for _, task := range input.PrepTasks {
-		prepTaskDatabaseCreationInput, err := ConvertRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskDatabaseCreationInput(x, task)
-		if err != nil {
-			return nil, err
-		}
-		prepTaskDatabaseCreationInput.BelongsToRecipe = x.ID
-		x.PrepTasks = append(x.PrepTasks, prepTaskDatabaseCreationInput)
-	}
-
 	return x, nil
 }
 
@@ -90,6 +81,11 @@ func ConvertRecipeToRecipeCreationRequestInput(input *mealplanning.Recipe) *meal
 	prepTasks := []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{}
 	for _, prepTask := range input.PrepTasks {
 		prepTasks = append(prepTasks, ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(input, prepTask))
+	}
+
+	media := []*mealplanning.RecipeMediaCreationRequestInput{}
+	for _, m := range input.Media {
+		media = append(media, ConvertRecipeMediaToRecipeMediaCreationRequestInput(m))
 	}
 
 	return &mealplanning.RecipeCreationRequestInput{

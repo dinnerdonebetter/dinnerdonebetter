@@ -57,10 +57,15 @@ func ConvertRecipeStepIngredientToRecipeStepIngredientUpdateRequestInput(input *
 
 // ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput builds a RecipeStepIngredientCreationRequestInput from a RecipeStepIngredient.
 func ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(input *mealplanning.RecipeStepIngredient) *mealplanning.RecipeStepIngredientCreationRequestInput {
+	var ingredientID *string
+	if input.Ingredient != nil {
+		ingredientID = &input.Ingredient.ID
+	}
+
 	return &mealplanning.RecipeStepIngredientCreationRequestInput{
 		Name:              input.Name,
 		Optional:          input.Optional,
-		IngredientID:      &input.Ingredient.ID,
+		IngredientID:      ingredientID,
 		MeasurementUnitID: input.MeasurementUnit.ID,
 		Quantity: types.Float32RangeWithOptionalMax{
 			Max: input.Quantity.Max,

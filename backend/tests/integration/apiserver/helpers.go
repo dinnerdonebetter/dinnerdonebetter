@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"hash/fnv"
 	"log"
@@ -447,6 +448,15 @@ func fetchLoginTokenForUser(ctx context.Context, user *identity.User) (string, e
 	return tokenRes.Result.AccessToken, nil
 }
 
+func dumpToJSON(x any) string {
+	b, err := json.MarshalIndent(x, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+
+	return string(b)
+}
+
 //////// ChatGPT Zone
 
 type compareOptions struct {
@@ -458,18 +468,22 @@ type compareOptions struct {
 
 // assertRoughEquality reports whether a and b are deeply equal after ignoring fields by name at any depth.
 // Works across different struct types as long as exported field names/structure align.
-func assertRoughEquality[T any](t *testing.T, a, b T, ignoreFieldNames ...string) {
+func assertRoughEquality[T any](t *testing.T, expected, actual T, ignoreFieldNames ...string) {
 	t.Helper()
 
 	opts := compareOptions{
 		IgnoreFieldNames: toSet(ignoreFieldNames),
 		ExportedOnly:     true,
 	}
-	ma := flattenComparable(a, opts)
-	mb := flattenComparable(b, opts)
+	ma := flattenComparable(expected, opts)
+	mb := flattenComparable(actual, opts)
 	diff := diffMaps(ma, mb)
 
-	assert.True(t, len(diff) == 0, "objects should match except for LastUpdatedAt, diffs: %+v", diff)
+	if diff != nil {
+		func() { /* some no-op to set expected breakpoint on */ }()
+	}
+
+	assert.True(t, len(diff) == 0, "diffs: %+v", diff)
 }
 
 func toSet(xs []string) map[string]struct{} {

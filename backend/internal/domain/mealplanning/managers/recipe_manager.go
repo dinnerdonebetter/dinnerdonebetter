@@ -187,11 +187,16 @@ func (m *recipeManager) CreateRecipe(ctx context.Context, creatorID string, inpu
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe")
 	}
 
+	recipe, err := m.db.GetRecipe(ctx, created.ID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
+	}
+
 	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, mealplanning.RecipeCreatedServiceEventType, map[string]any{
-		keys.RecipeIDKey: created.ID,
+		keys.RecipeIDKey: recipe.ID,
 	}))
 
-	return created, nil
+	return recipe, nil
 }
 
 func (m *recipeManager) ReadRecipe(ctx context.Context, recipeID string) (*mealplanning.Recipe, error) {
