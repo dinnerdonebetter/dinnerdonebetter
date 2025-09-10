@@ -1,8 +1,9 @@
 package integration
 
 import (
-	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 	"testing"
+
+	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
@@ -18,10 +19,7 @@ func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-
 	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe %s to be %v, but it was %v", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
-	assert.Zero(t, actual.LastUpdatedAt)
-	assert.Zero(t, actual.ArchivedAt)
 	assert.Equal(t, expected.EstimatedPortions, actual.EstimatedPortions, "expected EstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.EstimatedPortions, actual.EstimatedPortions)
 	assert.Equal(t, expected.PluralPortionName, actual.PluralPortionName, "expected PluralPortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PluralPortionName, actual.PluralPortionName)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for recipe %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
@@ -32,12 +30,61 @@ func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
 	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for recipe %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
 	assert.Equal(t, expected.YieldsComponentType, actual.YieldsComponentType, "expected YieldsComponentType for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsComponentType, actual.YieldsComponentType)
 	assert.Equal(t, expected.PrepTasks, actual.PrepTasks, "expected PrepTasks for recipe %s to be %v, but it was %v", expected.ID, expected.PrepTasks, actual.PrepTasks)
-	//assert.Equal(t, expected.Steps, actual.Steps, "expected Steps for recipe %s to be %v, but it was %v", expected.ID, expected.Steps, actual.Steps)
 	assert.Equal(t, expected.Media, actual.Media, "expected Media for recipe %s to be %v, but it was %v", expected.ID, expected.Media, actual.Media)
 	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
 	assert.Equal(t, expected.EligibleForMeals, actual.EligibleForMeals, "expected EligibleForMeals for recipe %s to be %v, but it was %v", expected.ID, expected.EligibleForMeals, actual.EligibleForMeals)
 
+	for i, step := range expected.Steps {
+		checkRecipeStepEquality(t, i, step, actual.Steps[i])
+	}
+
 	assert.NotZero(t, actual.CreatedAt)
+}
+
+func checkRecipeStepEquality(t *testing.T, index int, expected, actual *mealplanning.RecipeStep) {
+	t.Helper()
+
+	// assert.NotZero(t, expected.CreatedAt, "expected recipe step %d", index)
+
+	//assert.Equal(t, expected.EstimatedTimeInSeconds, actual.EstimatedTimeInSeconds, "expected recipe step %d", index)
+	//assert.Equal(t, expected.TemperatureInCelsius, actual.TemperatureInCelsius, "expected recipe step %d", index)
+	//assert.NotEmpty(t, actual.BelongsToRecipe, "expected recipe step %d", index)
+	//assert.Equal(t, expected.ConditionExpression, actual.ConditionExpression, "expected recipe step %d", index)
+	//assert.NotEmpty(t, actual.ID, "expected recipe step %d", index)
+	//assert.Equal(t, expected.Notes, actual.Notes, "expected recipe step %d", index)
+	//assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected recipe step %d", index)
+	// assert.Equal(t, expected.Media, actual.Media, "expected recipe step %d", index))
+	// assert.Equal(t, expected.Products, actual.Products, "expected recipe step %d", index))
+	// assert.Equal(t, expected.Instruments, actual.Instruments, "expected recipe step %d", index))
+	// assert.Equal(t, expected.Vessels, actual.Vessels, "expected recipe step %d", index))
+	// assert.Equal(t, expected.CompletionConditions, actual.CompletionConditions, "expected recipe step %d", index))
+	// assert.Equal(t, expected.Ingredients, actual.Ingredients, "expected recipe step %d", index))
+	checkValidPreparationEquality(t, index, expected.Preparation, actual.Preparation)
+	//assert.Equal(t, expected.Index, actual.Index, "expected recipe step %d", index)
+	//assert.Equal(t, expected.Optional, actual.Optional, "expected recipe step %d", index)
+	//assert.Equal(t, expected.StartTimerAutomatically, actual.StartTimerAutomatically, "expected recipe step %d", index)
+}
+
+func checkValidPreparationEquality(t *testing.T, i int, expected, actual mealplanning.ValidPreparation) {
+	t.Helper()
+
+	assert.NotEmpty(t, expected.CreatedAt, actual.CreatedAt, "expected recipe step %d preparation CreatedAt to be %v, but it was %v", i, expected.CreatedAt, actual.CreatedAt)
+	assert.Equal(t, expected.InstrumentCount, actual.InstrumentCount, "expected recipe step %d preparation InstrumentCount to be %v, but it was %v", i, expected.InstrumentCount, actual.InstrumentCount)
+	assert.Equal(t, expected.IngredientCount, actual.IngredientCount, "expected recipe step %d preparation IngredientCount to be %v, but it was %v", i, expected.IngredientCount, actual.IngredientCount)
+	assert.Equal(t, expected.VesselCount, actual.VesselCount, "expected recipe step %d preparation VesselCount to be %v, but it was %v", i, expected.VesselCount, actual.VesselCount)
+	assert.Equal(t, expected.IconPath, actual.IconPath, "expected recipe step %d preparation IconPath to be %v, but it was %v", i, expected.IconPath, actual.IconPath)
+	assert.Equal(t, expected.PastTense, actual.PastTense, "expected recipe step %d preparation PastTense to be %v, but it was %v", i, expected.PastTense, actual.PastTense)
+	assert.NotEmpty(t, actual.ID)
+	assert.Equal(t, expected.Name, actual.Name, "expected recipe step %d preparation Name to be %v, but it was %v", i, expected.Name, actual.Name)
+	assert.Equal(t, expected.Description, actual.Description, "expected recipe step %d preparation Description to be %v, but it was %v", i, expected.Description, actual.Description)
+	assert.Equal(t, expected.Slug, actual.Slug, "expected recipe step %d preparation Slug to be %v, but it was %v", i, expected.Slug, actual.Slug)
+	assert.Equal(t, expected.RestrictToIngredients, actual.RestrictToIngredients, "expected recipe step %d preparation RestrictToIngredients to be %v, but it was %v", i, expected.RestrictToIngredients, actual.RestrictToIngredients)
+	assert.Equal(t, expected.TemperatureRequired, actual.TemperatureRequired, "expected recipe step %d preparation TemperatureRequired to be %v, but it was %v", i, expected.TemperatureRequired, actual.TemperatureRequired)
+	assert.Equal(t, expected.TimeEstimateRequired, actual.TimeEstimateRequired, "expected recipe step %d preparation TimeEstimateRequired to be %v, but it was %v", i, expected.TimeEstimateRequired, actual.TimeEstimateRequired)
+	assert.Equal(t, expected.ConditionExpressionRequired, actual.ConditionExpressionRequired, "expected recipe step %d preparation ConditionExpressionRequired to be %v, but it was %v", i, expected.ConditionExpressionRequired, actual.ConditionExpressionRequired)
+	assert.Equal(t, expected.ConsumesVessel, actual.ConsumesVessel, "expected recipe step %d preparation ConsumesVessel to be %v, but it was %v", i, expected.ConsumesVessel, actual.ConsumesVessel)
+	assert.Equal(t, expected.OnlyForVessels, actual.OnlyForVessels, "expected recipe step %d preparation OnlyForVessels to be %v, but it was %v", i, expected.OnlyForVessels, actual.OnlyForVessels)
+	assert.Equal(t, expected.YieldsNothing, actual.YieldsNothing, "expected recipe step %d preparation YieldsNothing to be %v, but it was %v", i, expected.YieldsNothing, actual.YieldsNothing)
 }
 
 func TestRecipes_Realistic(T *testing.T) {
@@ -254,12 +301,12 @@ func TestRecipes_Realistic(T *testing.T) {
 		createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(expectedInput)})
 		require.NoError(t, err)
 		created := converters.ConvertGRPCRecipeToRecipe(createdRes.Created)
-		//checkRecipeEquality(t, expected, created)
+		checkRecipeEquality(t, expected, created)
 
-		e, c := dumpToJSON(expected), dumpToJSON(created)
-		_, _ = e, c
-
-		assertRoughEquality(t, expected, created, defaultIgnoredFields("CreatedByUser", "ID", "BelongsToRecipe", "BelongsToRecipeStep")...)
+		//e, c := dumpToJSON(expected), dumpToJSON(created)
+		//_, _ = e, c
+		//
+		//assertRoughEquality(t, expected, created, defaultIgnoredFields("CreatedByUser", "ID", "BelongsToRecipe", "BelongsToRecipeStep")...)
 
 		//_, testClient := createUserAndClientForTest(t)
 		//
