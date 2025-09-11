@@ -107,7 +107,7 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 				},
 				IngredientCount: types.Uint16RangeWithOptionalMax{
 					Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
-					Min: uint16(result.RecipeStepPreparationMinimumInstrumentCount),
+					Min: uint16(result.RecipeStepPreparationMinimumIngredientCount),
 				},
 				VesselCount: types.Uint16RangeWithOptionalMax{
 					Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),

@@ -44,25 +44,24 @@ func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
 func checkRecipeStepEquality(t *testing.T, index int, expected, actual *mealplanning.RecipeStep) {
 	t.Helper()
 
-	// assert.NotZero(t, expected.CreatedAt, "expected recipe step %d", index)
-
-	//assert.Equal(t, expected.EstimatedTimeInSeconds, actual.EstimatedTimeInSeconds, "expected recipe step %d", index)
-	//assert.Equal(t, expected.TemperatureInCelsius, actual.TemperatureInCelsius, "expected recipe step %d", index)
-	//assert.NotEmpty(t, actual.BelongsToRecipe, "expected recipe step %d", index)
-	//assert.Equal(t, expected.ConditionExpression, actual.ConditionExpression, "expected recipe step %d", index)
-	//assert.NotEmpty(t, actual.ID, "expected recipe step %d", index)
-	//assert.Equal(t, expected.Notes, actual.Notes, "expected recipe step %d", index)
-	//assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected recipe step %d", index)
-	// assert.Equal(t, expected.Media, actual.Media, "expected recipe step %d", index))
-	// assert.Equal(t, expected.Products, actual.Products, "expected recipe step %d", index))
-	// assert.Equal(t, expected.Instruments, actual.Instruments, "expected recipe step %d", index))
-	// assert.Equal(t, expected.Vessels, actual.Vessels, "expected recipe step %d", index))
-	// assert.Equal(t, expected.CompletionConditions, actual.CompletionConditions, "expected recipe step %d", index))
-	// assert.Equal(t, expected.Ingredients, actual.Ingredients, "expected recipe step %d", index))
+	assert.NotZero(t, actual.CreatedAt, "expected recipe step %d", index)
+	assert.Equal(t, expected.EstimatedTimeInSeconds, actual.EstimatedTimeInSeconds, "expected recipe step %d", index)
+	assert.Equal(t, expected.TemperatureInCelsius, actual.TemperatureInCelsius, "expected recipe step %d", index)
+	assert.NotEmpty(t, actual.BelongsToRecipe, "expected recipe step %d", index)
+	assert.Equal(t, expected.ConditionExpression, actual.ConditionExpression, "expected recipe step %d", index)
+	assert.NotEmpty(t, actual.ID, "expected recipe step %d", index)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected recipe step %d", index)
+	assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected recipe step %d", index)
+	//assert.Equal(t, expected.Media, actual.Media, "expected recipe step %d", index)
+	//assert.Equal(t, expected.Products, actual.Products, "expected recipe step %d", index)
+	//assert.Equal(t, expected.Instruments, actual.Instruments, "expected recipe step %d", index)
+	//assert.Equal(t, expected.Vessels, actual.Vessels, "expected recipe step %d", index)
+	//assert.Equal(t, expected.CompletionConditions, actual.CompletionConditions, "expected recipe step %d", index)
+	//assert.Equal(t, expected.Ingredients, actual.Ingredients, "expected recipe step %d", index)
 	checkValidPreparationEquality(t, index, expected.Preparation, actual.Preparation)
-	//assert.Equal(t, expected.Index, actual.Index, "expected recipe step %d", index)
-	//assert.Equal(t, expected.Optional, actual.Optional, "expected recipe step %d", index)
-	//assert.Equal(t, expected.StartTimerAutomatically, actual.StartTimerAutomatically, "expected recipe step %d", index)
+	assert.Equal(t, expected.Index, actual.Index, "expected recipe step %d", index)
+	assert.Equal(t, expected.Optional, actual.Optional, "expected recipe step %d", index)
+	assert.Equal(t, expected.StartTimerAutomatically, actual.StartTimerAutomatically, "expected recipe step %d", index)
 }
 
 func checkValidPreparationEquality(t *testing.T, i int, expected, actual mealplanning.ValidPreparation) {
@@ -130,7 +129,7 @@ func TestRecipes_Realistic(T *testing.T) {
 						},
 					},
 					Notes:       "first step",
-					Preparation: *soak,
+					Preparation: *soak, // This will be updated after recipe creation
 					Instruments: []*mealplanning.RecipeStepInstrument{
 						{
 							Name:       "whatever",
@@ -171,7 +170,7 @@ func TestRecipes_Realistic(T *testing.T) {
 						},
 					},
 					Notes:       "second step",
-					Preparation: *mix,
+					Preparation: *mix, // This will be updated after recipe creation
 					Instruments: []*mealplanning.RecipeStepInstrument{
 						{
 							Name:       "whatever",
@@ -300,7 +299,9 @@ func TestRecipes_Realistic(T *testing.T) {
 
 		createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(expectedInput)})
 		require.NoError(t, err)
-		created := converters.ConvertGRPCRecipeToRecipe(createdRes.Created)
+
+		recipeRes, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRes.Created.ID})
+		created := converters.ConvertGRPCRecipeToRecipe(recipeRes.Result)
 		checkRecipeEquality(t, expected, created)
 
 		//e, c := dumpToJSON(expected), dumpToJSON(created)
