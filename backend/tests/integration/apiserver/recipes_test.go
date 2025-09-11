@@ -3,16 +3,103 @@ package integration
 import (
 	"testing"
 
-	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
-
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
+	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func createRecipeForTest(t *testing.T, recipe *mealplanning.Recipe, inputFilter ...func(input *mealplanning.RecipeCreationRequestInput)) ([]*mealplanning.ValidIngredient, *mealplanning.ValidPreparation, *mealplanning.Recipe) {
+	t.Helper()
+
+	ctx := t.Context()
+
+	createdValidPreparation := createValidPreparationForTest(t)
+	createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
+	createdValidInstrument := createValidInstrumentForTest(t)
+	createdValidIngredientState := createValidIngredientStateForTest(t)
+	createdValidVessel := createValidVesselForTest(t)
+
+	exampleRecipe := fakes.BuildFakeRecipe()
+	if recipe != nil {
+		exampleRecipe = recipe
+	}
+	exampleRecipe.Media = []*mealplanning.RecipeMedia{}
+
+	createdValidIngredients := []*mealplanning.ValidIngredient{}
+	for i, recipeStep := range exampleRecipe.Steps {
+		for j := range recipeStep.Ingredients {
+			createdValidIngredient := createValidIngredientForTest(t)
+			createdValidIngredients = append(createdValidIngredients, createdValidIngredient)
+
+			exampleRecipe.Steps[i].Ingredients[j].Ingredient = createdValidIngredient
+			exampleRecipe.Steps[i].Ingredients[j].MeasurementUnit = *createdValidMeasurementUnit
+		}
+
+		for j := range recipeStep.Products {
+			exampleRecipe.Steps[i].Products[j].MeasurementUnit = createdValidMeasurementUnit
+		}
+
+		for j := range recipeStep.Instruments {
+			recipeStep.Instruments[j].Instrument = createdValidInstrument
+		}
+
+		for j := range recipeStep.Vessels {
+			recipeStep.Vessels[j].Vessel = createdValidVessel
+		}
+
+		for j := range recipeStep.CompletionConditions {
+			recipeStep.CompletionConditions[j].IngredientState = *createdValidIngredientState
+			for k := range recipeStep.CompletionConditions[j].Ingredients {
+				recipeStep.CompletionConditions[j].Ingredients[k].RecipeStepIngredient = createdValidIngredients[0].ID
+			}
+		}
+	}
+
+	exampleRecipeInput := mpconverters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
+	exampleRecipeInput.AlsoCreateMeal = true
+	for i := range exampleRecipeInput.Steps {
+		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
+	}
+
+	examplePrepTask := fakes.BuildFakeRecipePrepTask()
+	examplePrepTask.TaskSteps = []*mealplanning.RecipePrepTaskStep{
+		{
+			BelongsToRecipeStep: exampleRecipe.Steps[0].ID,
+			SatisfiesRecipeStep: false,
+		},
+	}
+	exampleRecipeInput.PrepTasks = []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput{
+		mpconverters.ConvertRecipePrepTaskToRecipePrepTaskWithinRecipeCreationRequestInput(exampleRecipe, examplePrepTask),
+	}
+	// Update the exampleRecipe to match what we're actually creating
+	exampleRecipe.PrepTasks = []*mealplanning.RecipePrepTask{examplePrepTask}
+
+	for _, filter := range inputFilter {
+		filter(exampleRecipeInput)
+	}
+
+	createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(exampleRecipeInput)})
+	require.NoError(t, err)
+
+	createdRecipe, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRes.Created.ID})
+	require.NoError(t, err)
+	require.NotNil(t, createdRecipe)
+	checkRecipeEquality(t, exampleRecipe, converters.ConvertGRPCRecipeToRecipe(createdRes.Created))
+
+	converted := converters.ConvertGRPCRecipeToRecipe(createdRecipe.Result)
+	checkRecipeEquality(t, exampleRecipe, converted)
+
+	require.NotEmpty(t, createdRecipe.Result.Steps, "created recipe must have steps")
+
+	return createdValidIngredients, createdValidPreparation, converted
+}
 
 func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
 	t.Helper()
@@ -29,8 +116,8 @@ func checkRecipeEquality(t *testing.T, expected, actual *mealplanning.Recipe) {
 	assert.Equal(t, expected.Source, actual.Source, "expected Source for recipe %s to be %v, but it was %v", expected.ID, expected.Source, actual.Source)
 	assert.Equal(t, expected.Slug, actual.Slug, "expected Slug for recipe %s to be %v, but it was %v", expected.ID, expected.Slug, actual.Slug)
 	assert.Equal(t, expected.YieldsComponentType, actual.YieldsComponentType, "expected YieldsComponentType for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsComponentType, actual.YieldsComponentType)
-	assert.Equal(t, expected.PrepTasks, actual.PrepTasks, "expected PrepTasks for recipe %s to be %v, but it was %v", expected.ID, expected.PrepTasks, actual.PrepTasks)
-	assert.Equal(t, expected.Media, actual.Media, "expected Media for recipe %s to be %v, but it was %v", expected.ID, expected.Media, actual.Media)
+	checkRecipePrepTaskSliceEquality(t, expected.PrepTasks, actual.PrepTasks)
+	checkRecipeLevelMediaSliceEquality(t, expected.Media, actual.Media)
 	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
 	assert.Equal(t, expected.EligibleForMeals, actual.EligibleForMeals, "expected EligibleForMeals for recipe %s to be %v, but it was %v", expected.ID, expected.EligibleForMeals, actual.EligibleForMeals)
 
@@ -52,38 +139,16 @@ func checkRecipeStepEquality(t *testing.T, index int, expected, actual *mealplan
 	assert.NotEmpty(t, actual.ID, "expected recipe step %d", index)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected recipe step %d", index)
 	assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected recipe step %d", index)
-	//assert.Equal(t, expected.Media, actual.Media, "expected recipe step %d", index)
-	//assert.Equal(t, expected.Products, actual.Products, "expected recipe step %d", index)
-	//assert.Equal(t, expected.Instruments, actual.Instruments, "expected recipe step %d", index)
-	//assert.Equal(t, expected.Vessels, actual.Vessels, "expected recipe step %d", index)
-	//assert.Equal(t, expected.CompletionConditions, actual.CompletionConditions, "expected recipe step %d", index)
-	//assert.Equal(t, expected.Ingredients, actual.Ingredients, "expected recipe step %d", index)
+	checkRecipeMediaSliceEquality(t, index, expected.Media, actual.Media)
+	checkRecipeStepProductSliceEquality(t, index, expected.Products, actual.Products)
+	checkRecipeStepInstrumentSliceEquality(t, index, expected.Instruments, actual.Instruments)
+	checkRecipeStepVesselSliceEquality(t, index, expected.Vessels, actual.Vessels)
+	checkRecipeStepCompletionConditionSliceEquality(t, index, expected.CompletionConditions, actual.CompletionConditions)
+	checkRecipeStepIngredientSliceEquality(t, index, expected.Ingredients, actual.Ingredients)
 	checkValidPreparationEquality(t, index, expected.Preparation, actual.Preparation)
 	assert.Equal(t, expected.Index, actual.Index, "expected recipe step %d", index)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected recipe step %d", index)
 	assert.Equal(t, expected.StartTimerAutomatically, actual.StartTimerAutomatically, "expected recipe step %d", index)
-}
-
-func checkValidPreparationEquality(t *testing.T, i int, expected, actual mealplanning.ValidPreparation) {
-	t.Helper()
-
-	assert.NotEmpty(t, expected.CreatedAt, actual.CreatedAt, "expected recipe step %d preparation CreatedAt to be %v, but it was %v", i, expected.CreatedAt, actual.CreatedAt)
-	assert.Equal(t, expected.InstrumentCount, actual.InstrumentCount, "expected recipe step %d preparation InstrumentCount to be %v, but it was %v", i, expected.InstrumentCount, actual.InstrumentCount)
-	assert.Equal(t, expected.IngredientCount, actual.IngredientCount, "expected recipe step %d preparation IngredientCount to be %v, but it was %v", i, expected.IngredientCount, actual.IngredientCount)
-	assert.Equal(t, expected.VesselCount, actual.VesselCount, "expected recipe step %d preparation VesselCount to be %v, but it was %v", i, expected.VesselCount, actual.VesselCount)
-	assert.Equal(t, expected.IconPath, actual.IconPath, "expected recipe step %d preparation IconPath to be %v, but it was %v", i, expected.IconPath, actual.IconPath)
-	assert.Equal(t, expected.PastTense, actual.PastTense, "expected recipe step %d preparation PastTense to be %v, but it was %v", i, expected.PastTense, actual.PastTense)
-	assert.NotEmpty(t, actual.ID)
-	assert.Equal(t, expected.Name, actual.Name, "expected recipe step %d preparation Name to be %v, but it was %v", i, expected.Name, actual.Name)
-	assert.Equal(t, expected.Description, actual.Description, "expected recipe step %d preparation Description to be %v, but it was %v", i, expected.Description, actual.Description)
-	assert.Equal(t, expected.Slug, actual.Slug, "expected recipe step %d preparation Slug to be %v, but it was %v", i, expected.Slug, actual.Slug)
-	assert.Equal(t, expected.RestrictToIngredients, actual.RestrictToIngredients, "expected recipe step %d preparation RestrictToIngredients to be %v, but it was %v", i, expected.RestrictToIngredients, actual.RestrictToIngredients)
-	assert.Equal(t, expected.TemperatureRequired, actual.TemperatureRequired, "expected recipe step %d preparation TemperatureRequired to be %v, but it was %v", i, expected.TemperatureRequired, actual.TemperatureRequired)
-	assert.Equal(t, expected.TimeEstimateRequired, actual.TimeEstimateRequired, "expected recipe step %d preparation TimeEstimateRequired to be %v, but it was %v", i, expected.TimeEstimateRequired, actual.TimeEstimateRequired)
-	assert.Equal(t, expected.ConditionExpressionRequired, actual.ConditionExpressionRequired, "expected recipe step %d preparation ConditionExpressionRequired to be %v, but it was %v", i, expected.ConditionExpressionRequired, actual.ConditionExpressionRequired)
-	assert.Equal(t, expected.ConsumesVessel, actual.ConsumesVessel, "expected recipe step %d preparation ConsumesVessel to be %v, but it was %v", i, expected.ConsumesVessel, actual.ConsumesVessel)
-	assert.Equal(t, expected.OnlyForVessels, actual.OnlyForVessels, "expected recipe step %d preparation OnlyForVessels to be %v, but it was %v", i, expected.OnlyForVessels, actual.OnlyForVessels)
-	assert.Equal(t, expected.YieldsNothing, actual.YieldsNothing, "expected recipe step %d preparation YieldsNothing to be %v, but it was %v", i, expected.YieldsNothing, actual.YieldsNothing)
 }
 
 func TestRecipes_Realistic(T *testing.T) {
@@ -206,6 +271,7 @@ func TestRecipes_Realistic(T *testing.T) {
 			YieldsComponentType: expected.YieldsComponentType,
 			PortionName:         expected.PortionName,
 			PluralPortionName:   expected.PluralPortionName,
+			AlsoCreateMeal:      true,
 			EstimatedPortions: types.Float32RangeWithOptionalMax{
 				Max: expected.EstimatedPortions.Max,
 				Min: expected.EstimatedPortions.Min,
@@ -300,169 +366,83 @@ func TestRecipes_Realistic(T *testing.T) {
 		createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(expectedInput)})
 		require.NoError(t, err)
 
-		recipeRes, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRes.Created.ID})
-		created := converters.ConvertGRPCRecipeToRecipe(recipeRes.Result)
+		created := converters.ConvertGRPCRecipeToRecipe(createdRes.Created)
 		checkRecipeEquality(t, expected, created)
 
-		//e, c := dumpToJSON(expected), dumpToJSON(created)
-		//_, _ = e, c
-		//
-		//assertRoughEquality(t, expected, created, defaultIgnoredFields("CreatedByUser", "ID", "BelongsToRecipe", "BelongsToRecipeStep")...)
+		recipeRes, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRes.Created.ID})
+		created = converters.ConvertGRPCRecipeToRecipe(recipeRes.Result)
 
-		//_, testClient := createUserAndClientForTest(t)
-		//
-		//recipeRes, err := testClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: created.ID})
-		//require.NoError(t, err)
-		//checkRecipeEquality(t, expected, converters.ConvertGRPCRecipeToRecipe(recipeRes.Result))
-		//
-		//recipeStepProductIndex := -1
-		//for i, ingredient := range created.Steps[1].Ingredients {
-		//	if ingredient.RecipeStepProductID != nil {
-		//		recipeStepProductIndex = i
-		//	}
-		//}
-		//
-		//require.NotEqual(t, -1, recipeStepProductIndex)
-		//require.NotNil(t, created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
-		//assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
+		recipeStepProductIndex := -1
+		for i, ingredient := range created.Steps[1].Ingredients {
+			if ingredient.RecipeStepProductID != nil {
+				recipeStepProductIndex = i
+			}
+		}
+
+		require.NotEqual(t, -1, recipeStepProductIndex)
+		require.NotNil(t, created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
+		assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Ingredients[recipeStepProductIndex].RecipeStepProductID)
+
+		mealResults, err := adminClient.GetMeals(ctx, &mealplanninggrpc.GetMealsRequest{})
+		require.NotNil(t, mealResults)
+		require.NoError(t, err)
+
+		fart := dbConnStr
+		t.Log(fart)
+
+		foundMealID := ""
+		for _, m := range mealResults.Results {
+			meal, mealFetchErr := adminClient.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealID: m.ID})
+			require.NotNil(t, meal)
+			require.NoError(t, mealFetchErr)
+
+			for _, component := range meal.Result.Components {
+				if component.Recipe.ID == created.ID {
+					foundMealID = meal.Result.ID
+				}
+			}
+		}
+
+		require.NotEmpty(t, foundMealID)
+	})
+}
+
+func TestRecipes_Updating(T *testing.T) {
+	T.Parallel()
+
+	T.Run("should update recipe", func(t *testing.T) {
+		t.Parallel()
+
+		t.Log(dbConnStr)
+
+		ctx := t.Context()
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		newRecipe := fakes.BuildFakeRecipe()
+		updateInput := mpconverters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe)
+		createdRecipe.Update(updateInput)
+
+		_, err := adminClient.UpdateRecipe(ctx, &mealplanninggrpc.UpdateRecipeRequest{
+			RecipeID: createdRecipe.ID,
+			Input:    converters.ConvertRecipeUpdateRequestInputToGRPCRecipeUpdateRequestInput(updateInput),
+		})
+		require.NoError(t, err)
+		assert.NoError(t, err)
+
+		actual, err := adminClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: createdRecipe.ID})
+		require.NoError(t, err)
+		require.NotNil(t, actual)
+
+		// assert recipe equality
+		checkRecipeEquality(t, newRecipe, converters.ConvertGRPCRecipeToRecipe(actual.Result))
+		assert.NotNil(t, actual.Result.LastUpdatedAt)
+
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		assert.NoError(t, err)
 	})
 }
 
 /*
-
-func (s *TestSuite) TestRecipes_Updating() {
-	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
-
-			newRecipe := fakes.BuildFakeRecipe()
-			updateInput := converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe)
-			createdRecipe.Update(updateInput)
-			assert.NoError(t, testClients.adminClient.UpdateRecipe(ctx, createdRecipe.ID, updateInput))
-
-			actual, err := testClients.userClient.GetRecipe(ctx, createdRecipe.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			// assert recipe equality
-			checkRecipeEquality(t, newRecipe, actual)
-			assert.NotNil(t, actual.LastUpdatedAt)
-
-			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
-
-// TODO: uncomment me
-//func (s *TestSuite) TestRecipes_UploadRecipeMedia() {
-//	s.runTest("should be able to upload content for a recipe", func(testClients *testClientWrapper) func() {
-//		return func() {
-//			t := s.T()
-//
-//			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-//			defer span.End()
-//
-//			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
-//
-//			newRecipe := fakes.BuildFakeRecipe()
-//			updateInput := converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe)
-//			createdRecipe.Update(updateInput)
-//			assert.NoError(t, testClients.adminClient.UpdateRecipe(ctx, createdRecipe.ID, updateInput))
-//
-//			actual, err := testClients.userClient.GetRecipe(ctx, createdRecipe.ID)
-//			requireNotNilAndNoProblems(t, actual, err)
-//
-//			// assert recipe equality
-//			checkRecipeEquality(t, newRecipe, actual)
-//			assert.NotNil(t, actual.LastUpdatedAt)
-//
-//			_, img1Bytes := testutils.BuildArbitraryImagePNGBytes(200)
-//			_, img2Bytes := testutils.BuildArbitraryImagePNGBytes(250)
-//			_, img3Bytes := testutils.BuildArbitraryImagePNGBytes(300)
-//
-//			files := map[string][]byte{
-//				"image_1.png": img1Bytes,
-//				"image_2.png": img2Bytes,
-//				"image_3.png": img3Bytes,
-//			}
-//
-//			require.NoError(t, testClients.userClient.UploadRecipeMedia(ctx, files, actual.ID))
-//
-//			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
-//		}
-//	})
-//}
-
-func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
-	s.runTest("should be able to create a meal and a recipe", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil, func(input *mealplanning.RecipeCreationRequestInput) {
-				input.AlsoCreateMeal = true
-			})
-
-			mealResults, err := testClients.userClient.SearchForMeals(ctx, createdRecipe.Name, nil)
-			requireNotNilAndNoProblems(t, mealResults, err)
-
-			foundMealID := ""
-			for _, m := range mealResults.Data {
-				meal, mealFetchErr := testClients.userClient.GetMeal(ctx, m.ID)
-				requireNotNilAndNoProblems(t, meal, mealFetchErr)
-
-				for _, component := range meal.Components {
-					if component.Recipe.ID == createdRecipe.ID {
-						foundMealID = meal.ID
-					}
-				}
-			}
-
-			require.NotEmpty(t, foundMealID)
-
-			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestRecipes_Listing() {
-	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			var expected []*mealplanning.Recipe
-			for i := 0; i < 5; i++ {
-				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
-
-				expected = append(expected, createdRecipe)
-			}
-
-			// assert recipe list equality
-			actual, err := testClients.userClient.GetRecipes(ctx, nil)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual.Data),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual.Data),
-			)
-
-			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
-			}
-		}
-	})
-}
 
 func (s *TestSuite) TestRecipes_Searching() {
 	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
@@ -745,24 +725,5 @@ func (s *TestSuite) TestRecipes_Cloning() {
 		}
 	})
 }
-
-// TODO: uncomment me
-//func (s *TestSuite) TestRecipes_DAGGeneration() {
-//	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
-//		return func() {
-//			t := s.T()
-//
-//			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-//			defer span.End()
-//
-//			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
-//
-//			actual, err := testClients.userClient.GetRecipeDAG(ctx, createdRecipe.ID)
-//			requireNotNilAndNoProblems(t, actual, err)
-//
-//			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
-//		}
-//	})
-//}
 
 */

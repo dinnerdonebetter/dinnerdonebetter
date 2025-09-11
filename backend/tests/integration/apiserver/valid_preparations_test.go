@@ -30,6 +30,28 @@ func createValidPreparationForTest(t *testing.T) *mealplanning.ValidPreparation 
 	return grpcconverters.ConvertGRPCValidPreparationToValidPreparation(created.Result)
 }
 
+func checkValidPreparationEquality(t *testing.T, i int, expected, actual mealplanning.ValidPreparation) {
+	t.Helper()
+
+	assert.NotEmpty(t, expected.CreatedAt, actual.CreatedAt, "expected recipe step %d preparation CreatedAt to be %v, but it was %v", i, expected.CreatedAt, actual.CreatedAt)
+	assert.Equal(t, expected.InstrumentCount, actual.InstrumentCount, "expected recipe step %d preparation InstrumentCount to be %v, but it was %v", i, expected.InstrumentCount, actual.InstrumentCount)
+	assert.Equal(t, expected.IngredientCount, actual.IngredientCount, "expected recipe step %d preparation IngredientCount to be %v, but it was %v", i, expected.IngredientCount, actual.IngredientCount)
+	assert.Equal(t, expected.VesselCount, actual.VesselCount, "expected recipe step %d preparation VesselCount to be %v, but it was %v", i, expected.VesselCount, actual.VesselCount)
+	assert.Equal(t, expected.IconPath, actual.IconPath, "expected recipe step %d preparation IconPath to be %v, but it was %v", i, expected.IconPath, actual.IconPath)
+	assert.Equal(t, expected.PastTense, actual.PastTense, "expected recipe step %d preparation PastTense to be %v, but it was %v", i, expected.PastTense, actual.PastTense)
+	assert.NotEmpty(t, actual.ID)
+	assert.Equal(t, expected.Name, actual.Name, "expected recipe step %d preparation Name to be %v, but it was %v", i, expected.Name, actual.Name)
+	assert.Equal(t, expected.Description, actual.Description, "expected recipe step %d preparation Description to be %v, but it was %v", i, expected.Description, actual.Description)
+	assert.Equal(t, expected.Slug, actual.Slug, "expected recipe step %d preparation Slug to be %v, but it was %v", i, expected.Slug, actual.Slug)
+	assert.Equal(t, expected.RestrictToIngredients, actual.RestrictToIngredients, "expected recipe step %d preparation RestrictToIngredients to be %v, but it was %v", i, expected.RestrictToIngredients, actual.RestrictToIngredients)
+	assert.Equal(t, expected.TemperatureRequired, actual.TemperatureRequired, "expected recipe step %d preparation TemperatureRequired to be %v, but it was %v", i, expected.TemperatureRequired, actual.TemperatureRequired)
+	assert.Equal(t, expected.TimeEstimateRequired, actual.TimeEstimateRequired, "expected recipe step %d preparation TimeEstimateRequired to be %v, but it was %v", i, expected.TimeEstimateRequired, actual.TimeEstimateRequired)
+	assert.Equal(t, expected.ConditionExpressionRequired, actual.ConditionExpressionRequired, "expected recipe step %d preparation ConditionExpressionRequired to be %v, but it was %v", i, expected.ConditionExpressionRequired, actual.ConditionExpressionRequired)
+	assert.Equal(t, expected.ConsumesVessel, actual.ConsumesVessel, "expected recipe step %d preparation ConsumesVessel to be %v, but it was %v", i, expected.ConsumesVessel, actual.ConsumesVessel)
+	assert.Equal(t, expected.OnlyForVessels, actual.OnlyForVessels, "expected recipe step %d preparation OnlyForVessels to be %v, but it was %v", i, expected.OnlyForVessels, actual.OnlyForVessels)
+	assert.Equal(t, expected.YieldsNothing, actual.YieldsNothing, "expected recipe step %d preparation YieldsNothing to be %v, but it was %v", i, expected.YieldsNothing, actual.YieldsNothing)
+}
+
 func TestValidPreparations_Creating(T *testing.T) {
 	T.Parallel()
 

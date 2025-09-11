@@ -73,9 +73,9 @@ INSERT INTO account_instrument_ownerships (
 type CreateAccountInstrumentOwnershipParams struct {
 	ID                string
 	Notes             string
+	Quantity          int32
 	ValidInstrumentID string
 	BelongsToAccount  string
-	Quantity          int32
 }
 
 func (q *Queries) CreateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateAccountInstrumentOwnershipParams) error {
@@ -124,26 +124,26 @@ type GetAccountInstrumentOwnershipParams struct {
 }
 
 type GetAccountInstrumentOwnershipRow struct {
-	CreatedAt                                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ArchivedAt                                    sql.NullTime
-	LastUpdatedAt                                 sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentDescription                    string
-	ValidInstrumentSlug                           string
-	ValidInstrumentPluralName                     string
-	ValidInstrumentIconPath                       string
 	ID                                            string
-	ValidInstrumentName                           string
-	BelongsToAccount                              string
-	ValidInstrumentID                             string
 	Notes                                         string
 	Quantity                                      int32
+	ValidInstrumentID                             string
+	ValidInstrumentName                           string
+	ValidInstrumentDescription                    string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentPluralName                     string
 	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentSlug                           string
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	BelongsToAccount                              string
+	CreatedAt                                     time.Time
+	LastUpdatedAt                                 sql.NullTime
+	ArchivedAt                                    sql.NullTime
 }
 
 func (q *Queries) GetAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipParams) (*GetAccountInstrumentOwnershipRow, error) {
@@ -250,35 +250,35 @@ type GetAccountInstrumentOwnershipsParams struct {
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
+	IncludeArchived sql.NullBool
 	AccountID       string
 	QueryOffset     sql.NullInt32
 	QueryLimit      sql.NullInt32
-	IncludeArchived sql.NullBool
 }
 
 type GetAccountInstrumentOwnershipsRow struct {
-	CreatedAt                                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentLastIndexedAt                  sql.NullTime
-	ArchivedAt                                    sql.NullTime
-	LastUpdatedAt                                 sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentDescription                    string
-	ValidInstrumentID                             string
-	ValidInstrumentSlug                           string
-	Notes                                         string
-	BelongsToAccount                              string
-	ValidInstrumentPluralName                     string
-	ValidInstrumentIconPath                       string
 	ID                                            string
+	Notes                                         string
+	Quantity                                      int32
+	ValidInstrumentID                             string
 	ValidInstrumentName                           string
+	ValidInstrumentDescription                    string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentPluralName                     string
+	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentSlug                           string
+	ValidInstrumentDisplayInSummaryLists          bool
+	ValidInstrumentIncludeInGeneratedInstructions bool
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	BelongsToAccount                              string
+	CreatedAt                                     time.Time
+	LastUpdatedAt                                 sql.NullTime
+	ArchivedAt                                    sql.NullTime
 	FilteredCount                                 int64
 	TotalCount                                    int64
-	Quantity                                      int32
-	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidInstrumentUsableForStorage               bool
-	ValidInstrumentDisplayInSummaryLists          bool
 }
 
 func (q *Queries) GetAccountInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetAccountInstrumentOwnershipsParams) ([]*GetAccountInstrumentOwnershipsRow, error) {
@@ -349,10 +349,10 @@ WHERE archived_at IS NULL
 
 type UpdateAccountInstrumentOwnershipParams struct {
 	Notes             string
+	Quantity          int32
 	ValidInstrumentID string
 	ID                string
 	BelongsToAccount  string
-	Quantity          int32
 }
 
 func (q *Queries) UpdateAccountInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateAccountInstrumentOwnershipParams) (int64, error) {

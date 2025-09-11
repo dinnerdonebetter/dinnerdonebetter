@@ -20,6 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
@@ -647,4 +648,247 @@ func diffMaps(a, b map[string]string) map[string][2]string {
 		}
 	}
 	return diff
+}
+
+// ===== Recipe step equality helpers =====
+
+func checkRecipeStepProductSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepProduct) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected recipe step %d products length", stepIndex)
+	for i := range expected {
+		checkRecipeStepProductEquality(t, stepIndex, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipeStepProductEquality(t *testing.T, stepIndex, productIndex int, expected, actual *mealplanning.RecipeStepProduct) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected step %d product %d to have ID", stepIndex, productIndex)
+	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d product %d to have CreatedAt", stepIndex, productIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d product %d to have BelongsToRecipeStep", stepIndex, productIndex)
+	assert.Equal(t, expected.Name, actual.Name, "expected step %d product %d Name", stepIndex, productIndex)
+	assert.Equal(t, expected.Type, actual.Type, "expected step %d product %d Type", stepIndex, productIndex)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d product %d Quantity", stepIndex, productIndex)
+	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected step %d product %d QuantityNotes", stepIndex, productIndex)
+	assert.Equal(t, expected.Index, actual.Index, "expected step %d product %d Index", stepIndex, productIndex)
+	if expected.MeasurementUnit != nil {
+		require.NotNil(t, actual.MeasurementUnit, "expected step %d product %d MeasurementUnit non-nil", stepIndex, productIndex)
+		assert.NotEmpty(t, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.ID", stepIndex, productIndex)
+		assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.ID", stepIndex, productIndex)
+	}
+}
+
+func checkRecipeStepInstrumentSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepInstrument) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected recipe step %d instruments length", stepIndex)
+	for i := range expected {
+		checkRecipeStepInstrumentEquality(t, stepIndex, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, expected, actual *mealplanning.RecipeStepInstrument) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected step %d instrument %d to have ID", stepIndex, instrIndex)
+	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d instrument %d to have CreatedAt", stepIndex, instrIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d instrument %d to have BelongsToRecipeStep", stepIndex, instrIndex)
+	assert.Equal(t, expected.Name, actual.Name, "expected step %d instrument %d Name", stepIndex, instrIndex)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d instrument %d Notes", stepIndex, instrIndex)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d instrument %d Quantity", stepIndex, instrIndex)
+	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d instrument %d OptionIndex", stepIndex, instrIndex)
+	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected step %d instrument %d PreferenceRank", stepIndex, instrIndex)
+	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d instrument %d Optional", stepIndex, instrIndex)
+	if expected.Instrument != nil {
+		require.NotNil(t, actual.Instrument, "expected step %d instrument %d Instrument non-nil", stepIndex, instrIndex)
+		assert.NotEmpty(t, actual.Instrument.ID, "expected step %d instrument %d Instrument.ID", stepIndex, instrIndex)
+		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected step %d instrument %d Instrument.ID", stepIndex, instrIndex)
+	}
+}
+
+func checkRecipeStepVesselSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepVessel) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected recipe step %d vessels length", stepIndex)
+	for i := range expected {
+		checkRecipeStepVesselEquality(t, stepIndex, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipeStepVesselEquality(t *testing.T, stepIndex, vesselIndex int, expected, actual *mealplanning.RecipeStepVessel) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected step %d vessel %d to have ID", stepIndex, vesselIndex)
+	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d vessel %d to have CreatedAt", stepIndex, vesselIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d vessel %d to have BelongsToRecipeStep", stepIndex, vesselIndex)
+	assert.Equal(t, expected.Name, actual.Name, "expected step %d vessel %d Name", stepIndex, vesselIndex)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d vessel %d Notes", stepIndex, vesselIndex)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d vessel %d Quantity", stepIndex, vesselIndex)
+	assert.Equal(t, expected.VesselPreposition, actual.VesselPreposition, "expected step %d vessel %d VesselPreposition", stepIndex, vesselIndex)
+	assert.Equal(t, expected.UnavailableAfterStep, actual.UnavailableAfterStep, "expected step %d vessel %d UnavailableAfterStep", stepIndex, vesselIndex)
+	if expected.Vessel != nil {
+		require.NotNil(t, actual.Vessel, "expected step %d vessel %d Vessel non-nil", stepIndex, vesselIndex)
+		assert.NotEmpty(t, actual.Vessel.ID, "expected step %d vessel %d Vessel.ID", stepIndex, vesselIndex)
+		assert.Equal(t, expected.Vessel.ID, actual.Vessel.ID, "expected step %d vessel %d Vessel.ID", stepIndex, vesselIndex)
+	}
+}
+
+func checkRecipeStepCompletionConditionSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepCompletionCondition) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected recipe step %d completion conditions length", stepIndex)
+	for i := range expected {
+		checkRecipeStepCompletionConditionEquality(t, stepIndex, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipeStepCompletionConditionEquality(t *testing.T, stepIndex, condIndex int, expected, actual *mealplanning.RecipeStepCompletionCondition) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected step %d condition %d to have ID", stepIndex, condIndex)
+	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d condition %d to have CreatedAt", stepIndex, condIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d condition %d to have BelongsToRecipeStep", stepIndex, condIndex)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d condition %d Notes", stepIndex, condIndex)
+	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d condition %d Optional", stepIndex, condIndex)
+	assert.Equal(t, expected.IngredientState.ID, actual.IngredientState.ID, "expected step %d condition %d IngredientState.ID", stepIndex, condIndex)
+	checkRecipeStepCompletionConditionIngredientSliceEquality(t, stepIndex, condIndex, expected.Ingredients, actual.Ingredients)
+}
+
+func checkRecipeStepCompletionConditionIngredientSliceEquality(t *testing.T, stepIndex, condIndex int, expected, actual []*mealplanning.RecipeStepCompletionConditionIngredient) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected step %d condition %d ingredients length", stepIndex, condIndex)
+	for i := range expected {
+		e, a := expected[i], actual[i]
+		assert.NotEmpty(t, a.ID, "expected step %d condition %d ingredient %d to have ID", stepIndex, condIndex, i)
+		assert.False(t, a.CreatedAt.IsZero(), "expected step %d condition %d ingredient %d to have CreatedAt", stepIndex, condIndex, i)
+		assert.NotEmpty(t, a.BelongsToRecipeStepCompletionCondition, "expected step %d condition %d ingredient %d to have BelongsTo...", stepIndex, condIndex, i)
+		assert.Equal(t, e.RecipeStepIngredient, a.RecipeStepIngredient, "expected step %d condition %d ingredient %d RecipeStepIngredient", stepIndex, condIndex, i)
+	}
+}
+
+func checkRecipeStepIngredientSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepIngredient) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected recipe step %d ingredients length", stepIndex)
+	for i := range expected {
+		checkRecipeStepIngredientEquality(t, stepIndex, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipeStepIngredientEquality(t *testing.T, stepIndex, ingIndex int, expected, actual *mealplanning.RecipeStepIngredient) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected step %d ingredient %d to have ID", stepIndex, ingIndex)
+	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d ingredient %d to have CreatedAt", stepIndex, ingIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d ingredient %d to have BelongsToRecipeStep", stepIndex, ingIndex)
+	assert.Equal(t, expected.Name, actual.Name, "expected step %d ingredient %d Name", stepIndex, ingIndex)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d ingredient %d Quantity", stepIndex, ingIndex)
+	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected step %d ingredient %d QuantityNotes", stepIndex, ingIndex)
+	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected step %d ingredient %d IngredientNotes", stepIndex, ingIndex)
+	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d ingredient %d OptionIndex", stepIndex, ingIndex)
+	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d ingredient %d Optional", stepIndex, ingIndex)
+	assert.Equal(t, expected.ToTaste, actual.ToTaste, "expected step %d ingredient %d ToTaste", stepIndex, ingIndex)
+	if expected.VesselIndex != nil {
+		require.NotNil(t, actual.VesselIndex, "expected step %d ingredient %d VesselIndex non-nil", stepIndex, ingIndex)
+		assert.Equal(t, *expected.VesselIndex, *actual.VesselIndex, "expected step %d ingredient %d VesselIndex", stepIndex, ingIndex)
+	}
+	if expected.ProductPercentageToUse != nil {
+		require.NotNil(t, actual.ProductPercentageToUse, "expected step %d ingredient %d ProductPercentageToUse non-nil", stepIndex, ingIndex)
+		assert.Equal(t, *expected.ProductPercentageToUse, *actual.ProductPercentageToUse, "expected step %d ingredient %d ProductPercentageToUse", stepIndex, ingIndex)
+	}
+	// MeasurementUnit comparison by ID (and ranges already compared above)
+	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected step %d ingredient %d MeasurementUnit.ID", stepIndex, ingIndex)
+	// Ingredient pointer may be nil if this ingredient refers to a product of a prior step
+	if expected.Ingredient != nil {
+		require.NotNil(t, actual.Ingredient, "expected step %d ingredient %d Ingredient non-nil", stepIndex, ingIndex)
+		assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected step %d ingredient %d Ingredient.ID", stepIndex, ingIndex)
+	}
+}
+
+// ===== Recipe prep task equality helpers =====
+
+func checkRecipePrepTaskSliceEquality(t *testing.T, expected, actual []*mealplanning.RecipePrepTask) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected recipe prep tasks length")
+	for i := range expected {
+		checkRecipePrepTaskEquality(t, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipePrepTaskEquality(t *testing.T, taskIndex int, expected, actual *mealplanning.RecipePrepTask) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected prep task %d to have ID", taskIndex)
+	assert.False(t, actual.CreatedAt.IsZero(), "expected prep task %d to have CreatedAt", taskIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipe, "expected prep task %d to have BelongsToRecipe", taskIndex)
+	assert.Equal(t, expected.Name, actual.Name, "expected prep task %d Name", taskIndex)
+	assert.Equal(t, expected.Description, actual.Description, "expected prep task %d Description", taskIndex)
+	assert.Equal(t, expected.StorageType, actual.StorageType, "expected prep task %d StorageType", taskIndex)
+	assert.Equal(t, expected.ExplicitStorageInstructions, actual.ExplicitStorageInstructions, "expected prep task %d ExplicitStorageInstructions", taskIndex)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected prep task %d Notes", taskIndex)
+	assert.Equal(t, expected.Optional, actual.Optional, "expected prep task %d Optional", taskIndex)
+	assert.Equal(t, expected.StorageTemperatureInCelsius, actual.StorageTemperatureInCelsius, "expected prep task %d StorageTemperatureInCelsius", taskIndex)
+	assert.Equal(t, expected.TimeBufferBeforeRecipeInSeconds, actual.TimeBufferBeforeRecipeInSeconds, "expected prep task %d TimeBufferBeforeRecipeInSeconds", taskIndex)
+	checkRecipePrepTaskStepSliceEquality(t, taskIndex, expected.TaskSteps, actual.TaskSteps)
+}
+
+func checkRecipePrepTaskStepSliceEquality(t *testing.T, taskIndex int, expected, actual []*mealplanning.RecipePrepTaskStep) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected prep task %d steps length", taskIndex)
+	for i := range expected {
+		checkRecipePrepTaskStepEquality(t, taskIndex, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipePrepTaskStepEquality(t *testing.T, taskIndex, stepIndex int, expected, actual *mealplanning.RecipePrepTaskStep) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected prep task %d step %d to have ID", taskIndex, stepIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected prep task %d step %d to have BelongsToRecipeStep", taskIndex, stepIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipePrepTask, "expected prep task %d step %d to have BelongsToRecipePrepTask", taskIndex, stepIndex)
+	assert.Equal(t, expected.SatisfiesRecipeStep, actual.SatisfiesRecipeStep, "expected prep task %d step %d SatisfiesRecipeStep", taskIndex, stepIndex)
+}
+
+// ===== Recipe media equality helpers =====
+
+func checkRecipeMediaSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeMedia) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected recipe step %d media length", stepIndex)
+	for i := range expected {
+		e, a := expected[i], actual[i]
+		checkRecipeMediaEquality(t, stepIndex, i, e, a)
+	}
+}
+
+func checkRecipeMediaEquality(t *testing.T, stepIndex, mediaIndex int, expected, actual *mealplanning.RecipeMedia) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected step %d media %d to have ID", stepIndex, mediaIndex)
+	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d media %d to have CreatedAt", stepIndex, mediaIndex)
+	assert.Equal(t, expected.MimeType, actual.MimeType, "expected step %d media %d MimeType", stepIndex, mediaIndex)
+	assert.Equal(t, expected.InternalPath, actual.InternalPath, "expected step %d media %d InternalPath", stepIndex, mediaIndex)
+	assert.Equal(t, expected.ExternalPath, actual.ExternalPath, "expected step %d media %d ExternalPath", stepIndex, mediaIndex)
+	assert.Equal(t, expected.Index, actual.Index, "expected step %d media %d Index", stepIndex, mediaIndex)
+	if expected.BelongsToRecipe != nil {
+		require.NotNil(t, actual.BelongsToRecipe, "expected step %d media %d BelongsToRecipe non-nil", stepIndex, mediaIndex)
+		assert.Equal(t, *expected.BelongsToRecipe, *actual.BelongsToRecipe, "expected step %d media %d BelongsToRecipe", stepIndex, mediaIndex)
+	}
+	if expected.BelongsToRecipeStep != nil {
+		require.NotNil(t, actual.BelongsToRecipeStep, "expected step %d media %d BelongsToRecipeStep non-nil", stepIndex, mediaIndex)
+		assert.Equal(t, *expected.BelongsToRecipeStep, *actual.BelongsToRecipeStep, "expected step %d media %d BelongsToRecipeStep", stepIndex, mediaIndex)
+	}
+}
+
+func checkRecipeLevelMediaSliceEquality(t *testing.T, expected, actual []*mealplanning.RecipeMedia) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected recipe media length")
+	for i := range expected {
+		checkRecipeLevelMediaEquality(t, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipeLevelMediaEquality(t *testing.T, mediaIndex int, expected, actual *mealplanning.RecipeMedia) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected recipe media %d to have ID", mediaIndex)
+	assert.False(t, actual.CreatedAt.IsZero(), "expected recipe media %d to have CreatedAt", mediaIndex)
+	assert.Equal(t, expected.MimeType, actual.MimeType, "expected recipe media %d MimeType", mediaIndex)
+	assert.Equal(t, expected.InternalPath, actual.InternalPath, "expected recipe media %d InternalPath", mediaIndex)
+	assert.Equal(t, expected.ExternalPath, actual.ExternalPath, "expected recipe media %d ExternalPath", mediaIndex)
+	assert.Equal(t, expected.Index, actual.Index, "expected recipe media %d Index", mediaIndex)
+	if expected.BelongsToRecipe != nil {
+		require.NotNil(t, actual.BelongsToRecipe, "expected recipe media %d BelongsToRecipe non-nil", mediaIndex)
+		assert.Equal(t, *expected.BelongsToRecipe, *actual.BelongsToRecipe, "expected recipe media %d BelongsToRecipe", mediaIndex)
+	}
+	if expected.BelongsToRecipeStep != nil {
+		require.NotNil(t, actual.BelongsToRecipeStep, "expected recipe media %d BelongsToRecipeStep non-nil", mediaIndex)
+		assert.Equal(t, *expected.BelongsToRecipeStep, *actual.BelongsToRecipeStep, "expected recipe media %d BelongsToRecipeStep", mediaIndex)
+	}
 }

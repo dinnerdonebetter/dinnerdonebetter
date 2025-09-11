@@ -1,6 +1,7 @@
 package interceptors
 
 import (
+	"fmt"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 )
 
@@ -325,6 +326,15 @@ var (
 		"/mealplanning.MealPlanningService/GetRecipe": {
 			authorization.ReadRecipesPermission,
 		},
+		mealPlanningPerm("SearchForMeals"): {
+			authorization.ReadMealsPermission,
+		},
+		mealPlanningPerm("GetMeals"): {
+			authorization.ReadMealsPermission,
+		},
+		mealPlanningPerm("GetMeal"): {
+			authorization.ReadMealsPermission,
+		},
 		"/notifications.UserNotificationsService/CreateUserNotification": {
 			authorization.CreateUserNotificationsPermission,
 		},
@@ -403,6 +413,18 @@ var (
 		"/auth.AuthService/RefreshTOTPSecret":                     noPerms,
 		"/auth.AuthService/VerifyTOTPSecret":                      noPerms,
 		"/auth.AuthService/RequestPasswordResetToken":             noPerms,
-		"/auth.AuthService/RedeemPasswordResetToken":              noPerms,
+		authPerm("RedeemPasswordResetToken"):                      noPerms,
 	}
 )
+
+func mealPlanningPerm(method string) string {
+	return permString("mealplanning", "MealPlanningService", method)
+}
+
+func authPerm(method string) string {
+	return permString("auth", "AuthService", method)
+}
+
+func permString(collectionName, serviceName, methodName string) string {
+	return fmt.Sprintf("/%s.%s/%s", collectionName, serviceName, methodName)
+}

@@ -3,8 +3,6 @@ package mealplanning
 import (
 	"context"
 	"database/sql"
-	"time"
-
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -159,16 +157,16 @@ func (q *repository) getRecipeStepCompletionConditionsForRecipe(ctx context.Cont
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			IngredientState: types.ValidIngredientState{
-				CreatedAt:     time.Time{},
-				ArchivedAt:    nil,
-				LastUpdatedAt: nil,
-				PastTense:     "",
-				Description:   "",
-				IconPath:      "",
-				ID:            "",
-				Name:          "",
-				AttributeType: "",
-				Slug:          "",
+				CreatedAt:     result.ValidIngredientStateCreatedAt,
+				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientStateArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
+				PastTense:     result.ValidIngredientStatePastTense,
+				Description:   result.ValidIngredientStateDescription,
+				IconPath:      result.ValidIngredientStateIconPath,
+				ID:            result.ValidIngredientStateID,
+				Name:          result.ValidIngredientStateName,
+				AttributeType: string(result.ValidIngredientStateAttributeType),
+				Slug:          result.ValidIngredientStateSlug,
 			},
 			ID:                  result.ID,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,

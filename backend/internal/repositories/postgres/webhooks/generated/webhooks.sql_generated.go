@@ -123,20 +123,20 @@ type GetWebhookParams struct {
 }
 
 type GetWebhookRow struct {
-	WebhookCreatedAt                    time.Time
-	WebhookTriggerEventCreatedAt        sql.NullTime
-	WebhookArchivedAt                   sql.NullTime
-	WebhookLastUpdatedAt                sql.NullTime
-	WebhookTriggerEventArchivedAt       sql.NullTime
+	WebhookID                           string
+	WebhookName                         string
+	WebhookContentType                  string
 	WebhookUrl                          string
 	WebhookMethod                       string
-	WebhookID                           string
-	WebhookContentType                  string
-	WebhookName                         string
-	WebhookBelongsToAccount             string
+	WebhookTriggerEventID               sql.NullString
 	WebhookTriggerEventTriggerEvent     NullWebhookEvent
 	WebhookTriggerEventBelongsToWebhook sql.NullString
-	WebhookTriggerEventID               sql.NullString
+	WebhookTriggerEventCreatedAt        sql.NullTime
+	WebhookTriggerEventArchivedAt       sql.NullTime
+	WebhookCreatedAt                    time.Time
+	WebhookLastUpdatedAt                sql.NullTime
+	WebhookArchivedAt                   sql.NullTime
+	WebhookBelongsToAccount             string
 }
 
 func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) ([]*GetWebhookRow, error) {
@@ -243,27 +243,27 @@ type GetWebhooksForAccountParams struct {
 	CreatedBefore    sql.NullTime
 	UpdatedBefore    sql.NullTime
 	UpdatedAfter     sql.NullTime
+	IncludeArchived  sql.NullBool
 	BelongsToAccount string
 	QueryOffset      sql.NullInt32
 	QueryLimit       sql.NullInt32
-	IncludeArchived  sql.NullBool
 }
 
 type GetWebhooksForAccountRow struct {
-	CreatedAt_2      time.Time
-	ArchivedAt_2     sql.NullTime
-	CreatedAt        sql.NullTime
-	ArchivedAt       sql.NullTime
-	LastUpdatedAt    sql.NullTime
-	ContentType      string
-	Method           string
-	Name             string
-	URL              string
 	ID               string
-	BelongsToAccount string
+	Name             string
+	ContentType      string
+	URL              string
+	Method           string
 	ID_2             sql.NullString
 	TriggerEvent     NullWebhookEvent
 	BelongsToWebhook sql.NullString
+	CreatedAt        sql.NullTime
+	ArchivedAt       sql.NullTime
+	CreatedAt_2      time.Time
+	LastUpdatedAt    sql.NullTime
+	ArchivedAt_2     sql.NullTime
+	BelongsToAccount string
 	FilteredCount    int64
 	TotalCount       int64
 }

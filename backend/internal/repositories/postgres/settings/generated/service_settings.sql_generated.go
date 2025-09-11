@@ -64,8 +64,8 @@ type CreateServiceSettingParams struct {
 	Name         string
 	Type         SettingType
 	Description  string
-	Enumeration  string
 	DefaultValue sql.NullString
+	Enumeration  string
 	AdminsOnly   bool
 }
 
@@ -179,18 +179,18 @@ type GetServiceSettingsParams struct {
 }
 
 type GetServiceSettingsRow struct {
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 	ID            string
 	Name          string
 	Type          SettingType
 	Description   string
-	Enumeration   string
 	DefaultValue  sql.NullString
+	Enumeration   string
+	AdminsOnly    bool
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 	FilteredCount int64
 	TotalCount    int64
-	AdminsOnly    bool
 }
 
 func (q *Queries) GetServiceSettings(ctx context.Context, db DBTX, arg *GetServiceSettingsParams) ([]*GetServiceSettingsRow, error) {
