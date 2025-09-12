@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication"
+	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mocks"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"

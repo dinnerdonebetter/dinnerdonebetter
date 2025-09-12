@@ -95,11 +95,16 @@ func (s *serviceImpl) UpdateUserNotification(ctx context.Context, request *notif
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "updating existing notification")
 	}
 
+	updated, err := s.notificationsRepository.GetUserNotification(ctx, sessionContextData.GetUserID(), request.UserNotificationID)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching existing notification")
+	}
+
 	x := &notificationssvc.UpdateUserNotificationResponse{
 		ResponseDetails: &grpctypes.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),
 		},
-		Updated: converters.ConvertUserNotificationToGRPCUserNotification(existing),
+		Updated: converters.ConvertUserNotificationToGRPCUserNotification(updated),
 	}
 
 	return x, nil

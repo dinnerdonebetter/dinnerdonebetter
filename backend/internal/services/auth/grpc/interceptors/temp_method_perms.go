@@ -2,6 +2,7 @@ package interceptors
 
 import (
 	"fmt"
+
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 )
 
@@ -325,6 +326,12 @@ var (
 		},
 		"/mealplanning.MealPlanningService/GetRecipe": {
 			authorization.ReadRecipesPermission,
+		},
+		mealPlanningPerm("UpdateRecipe"): {
+			authorization.UpdateRecipesPermission,
+		},
+		mealPlanningPerm("ArchiveRecipe"): {
+			authorization.ArchiveRecipesPermission,
 		},
 		mealPlanningPerm("SearchForMeals"): {
 			authorization.ReadMealsPermission,

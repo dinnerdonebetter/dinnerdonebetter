@@ -127,11 +127,21 @@ func ConvertRecipeStepCompletionConditionIngredientToRecipeStepCompletionConditi
 
 // ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput builds a RecipeStepCompletionConditionDatabaseCreationInput from a RecipeStepCompletionCondition.
 func ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(recipeStepCompletionCondition *types.RecipeStepCompletionCondition) *types.RecipeStepCompletionConditionDatabaseCreationInput {
+	ingredients := []*types.RecipeStepCompletionConditionIngredientDatabaseCreationInput{}
+	for _, ingredient := range recipeStepCompletionCondition.Ingredients {
+		ingredients = append(ingredients, &types.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
+			ID:                                     ingredient.ID,
+			BelongsToRecipeStepCompletionCondition: ingredient.BelongsToRecipeStepCompletionCondition,
+			RecipeStepIngredient:                   ingredient.RecipeStepIngredient,
+		})
+	}
+
 	return &types.RecipeStepCompletionConditionDatabaseCreationInput{
 		ID:                  recipeStepCompletionCondition.ID,
 		Optional:            recipeStepCompletionCondition.Optional,
 		Notes:               recipeStepCompletionCondition.Notes,
 		IngredientStateID:   recipeStepCompletionCondition.IngredientState.ID,
 		BelongsToRecipeStep: recipeStepCompletionCondition.BelongsToRecipeStep,
+		Ingredients:         ingredients,
 	}
 }

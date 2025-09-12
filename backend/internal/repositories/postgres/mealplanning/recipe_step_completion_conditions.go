@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"database/sql"
+
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
@@ -176,15 +177,15 @@ func (q *repository) getRecipeStepCompletionConditionsForRecipe(ctx context.Cont
 
 		if byID[recipeStepCompletionCondition.ID] == nil {
 			byID[recipeStepCompletionCondition.ID] = recipeStepCompletionCondition
-		} else {
 			idOrder = append(idOrder, recipeStepCompletionCondition.ID)
-			byID[recipeStepCompletionCondition.ID].Ingredients = append(byID[recipeStepCompletionCondition.ID].Ingredients, &types.RecipeStepCompletionConditionIngredient{
-				ID:                                     result.RecipeStepCompletionConditionIngredientID,
-				BelongsToRecipeStepCompletionCondition: result.RecipeStepCompletionConditionIngredientBelongsToRecipeS,
-				RecipeStepIngredient:                   result.RecipeStepCompletionConditionIngredientRecipeStepIngredi,
-			})
-			byID[recipeStepCompletionCondition.ID] = recipeStepCompletionCondition
 		}
+
+		// Add ingredient to the completion condition
+		byID[recipeStepCompletionCondition.ID].Ingredients = append(byID[recipeStepCompletionCondition.ID].Ingredients, &types.RecipeStepCompletionConditionIngredient{
+			ID:                                     result.RecipeStepCompletionConditionIngredientID,
+			BelongsToRecipeStepCompletionCondition: result.RecipeStepCompletionConditionIngredientBelongsToRecipeS,
+			RecipeStepIngredient:                   result.RecipeStepCompletionConditionIngredientRecipeStepIngredi,
+		})
 	}
 
 	recipeStepConditions := []*types.RecipeStepCompletionCondition{}
@@ -266,14 +267,14 @@ func (q *repository) GetRecipeStepCompletionConditions(ctx context.Context, reci
 		if byID[recipeStepCompletionCondition.ID] == nil {
 			byID[recipeStepCompletionCondition.ID] = recipeStepCompletionCondition
 			idOrder = append(idOrder, recipeStepCompletionCondition.ID)
-		} else {
-			byID[recipeStepCompletionCondition.ID].Ingredients = append(byID[recipeStepCompletionCondition.ID].Ingredients, &types.RecipeStepCompletionConditionIngredient{
-				ID:                                     result.RecipeStepCompletionConditionIngredientID,
-				BelongsToRecipeStepCompletionCondition: result.RecipeStepCompletionConditionIngredientBelongsToRecipeS,
-				RecipeStepIngredient:                   result.RecipeStepCompletionConditionIngredientRecipeStepIngredi,
-			})
-			byID[recipeStepCompletionCondition.ID] = recipeStepCompletionCondition
 		}
+
+		// Add ingredient to the completion condition
+		byID[recipeStepCompletionCondition.ID].Ingredients = append(byID[recipeStepCompletionCondition.ID].Ingredients, &types.RecipeStepCompletionConditionIngredient{
+			ID:                                     result.RecipeStepCompletionConditionIngredientID,
+			BelongsToRecipeStepCompletionCondition: result.RecipeStepCompletionConditionIngredientBelongsToRecipeS,
+			RecipeStepIngredient:                   result.RecipeStepCompletionConditionIngredientRecipeStepIngredi,
+		})
 
 		x.FilteredCount = uint64(result.FilteredCount)
 		x.TotalCount = uint64(result.TotalCount)

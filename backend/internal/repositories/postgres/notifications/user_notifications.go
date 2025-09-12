@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications/generated"
+	generated "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications/generated"
 )
 
 const (
@@ -41,7 +41,7 @@ func (q *repository) UserNotificationExists(ctx context.Context, userID, userNot
 	logger = logger.WithValue(keys.UserNotificationIDKey, userNotificationID)
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotificationID)
 
-	result, err := q.generatedQuerier.CheckUserNotificationExistence(ctx, q.db, &generated2.CheckUserNotificationExistenceParams{
+	result, err := q.generatedQuerier.CheckUserNotificationExistence(ctx, q.db, &generated.CheckUserNotificationExistenceParams{
 		ID:            userNotificationID,
 		BelongsToUser: userID,
 	})
@@ -71,7 +71,7 @@ func (q *repository) GetUserNotification(ctx context.Context, userID, userNotifi
 	logger = logger.WithValue(keys.UserNotificationIDKey, userNotificationID)
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotificationID)
 
-	result, err := q.generatedQuerier.GetUserNotification(ctx, q.db, &generated2.GetUserNotificationParams{
+	result, err := q.generatedQuerier.GetUserNotification(ctx, q.db, &generated.GetUserNotificationParams{
 		BelongsToUser: userID,
 		ID:            userNotificationID,
 	})
@@ -114,7 +114,7 @@ func (q *repository) GetUserNotifications(ctx context.Context, userID string, fi
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetUserNotificationsForUser(ctx, q.db, &generated2.GetUserNotificationsForUserParams{
+	results, err := q.generatedQuerier.GetUserNotificationsForUser(ctx, q.db, &generated.GetUserNotificationsForUserParams{
 		UserID:        userID,
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -159,7 +159,7 @@ func (q *repository) CreateUserNotification(ctx context.Context, input *types.Us
 	}
 
 	// create the user notification.
-	if err = q.generatedQuerier.CreateUserNotification(ctx, tx, &generated2.CreateUserNotificationParams{
+	if err = q.generatedQuerier.CreateUserNotification(ctx, tx, &generated.CreateUserNotificationParams{
 		ID:            input.ID,
 		Content:       input.Content,
 		BelongsToUser: input.BelongsToUser,
@@ -212,8 +212,8 @@ func (q *repository) UpdateUserNotification(ctx context.Context, updated *types.
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = q.generatedQuerier.UpdateUserNotification(ctx, tx, &generated2.UpdateUserNotificationParams{
-		Status: generated2.UserNotificationStatus(updated.Status),
+	if _, err = q.generatedQuerier.UpdateUserNotification(ctx, tx, &generated.UpdateUserNotificationParams{
+		Status: generated.UserNotificationStatus(updated.Status),
 		ID:     updated.ID,
 	}); err != nil {
 		q.RollbackTransaction(ctx, tx)

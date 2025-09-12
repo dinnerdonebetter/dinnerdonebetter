@@ -480,7 +480,7 @@ func assertRoughEquality[T any](t *testing.T, expected, actual T, ignoreFieldNam
 	mb := flattenComparable(actual, opts)
 	diff := diffMaps(ma, mb)
 
-	if diff != nil {
+	if len(diff) == 0 {
 		func() { /* some no-op to set expected breakpoint on */ }()
 	}
 

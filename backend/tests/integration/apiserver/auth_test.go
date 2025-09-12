@@ -358,6 +358,13 @@ func TestAuth_InvalidateToken(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
+
+		/*
+
+			there's currently no logout mechanism surfaced in the client, but there should be, and it should be tested
+
+		*/
+
 		t.Skipf("TODO")
 	})
 }
