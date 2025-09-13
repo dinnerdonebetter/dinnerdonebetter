@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
@@ -420,8 +421,6 @@ func TestRecipes_Updating(T *testing.T) {
 	T.Run("should update recipe", func(t *testing.T) {
 		t.Parallel()
 
-		t.Log(dbConnStr)
-
 		ctx := t.Context()
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
@@ -486,65 +485,62 @@ func TestRecipes_Updating(T *testing.T) {
 	})
 }
 
-/*
+func TestRecipes_Searching(T *testing.T) {
+	T.Parallel()
 
-func (s *TestSuite) TestRecipes_Searching() {
-	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+	T.Run("should be searchable by name", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+		exampleRecipe := fakes.BuildFakeRecipe()
 
-			exampleValidIngredient := fakes.BuildFakeValidIngredient()
-			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
-			createdValidIngredient, err := testClients.adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
-			require.NoError(t, err)
+		var expected []*mealplanning.Recipe
+		for i := 0; i < 5; i++ {
+			exampleRecipe.Name = fmt.Sprintf("example%d", i)
+			_, _, createdRecipe := createRecipeForTest(t, exampleRecipe)
 
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+			expected = append(expected, createdRecipe)
+		}
 
-			createdValidIngredient, err = testClients.userClient.GetValidIngredient(ctx, createdValidIngredient.ID)
-			requireNotNilAndNoProblems(t, createdValidIngredient, err)
-			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
+		// assert recipe list equality
+		actual, err := adminClient.SearchForRecipes(ctx, &mealplanninggrpc.SearchForRecipesRequest{
+			Query: "example",
+		})
+		require.NoError(t, err)
+		assert.True(
+			t,
+			len(expected) <= len(actual.Results),
+			"expected %d to be <= %d",
+			len(expected),
+			len(actual.Results),
+		)
 
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-			createdValidPreparation, err := testClients.adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			require.NoError(t, err)
-
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-			createdValidPreparation, err = testClients.userClient.GetValidPreparation(ctx, createdValidPreparation.ID)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-			exampleRecipe := fakes.BuildFakeRecipe()
-
-			var expected []*mealplanning.Recipe
-			for i := 0; i < 5; i++ {
-				exampleRecipe.Name = fmt.Sprintf("example%d", i)
-				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, exampleRecipe)
-
-				expected = append(expected, createdRecipe)
-			}
-
-			// assert recipe list equality
-			actual, err := testClients.userClient.SearchForRecipes(ctx, "example", nil)
-			requireNotNilAndNoProblems(t, actual, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual.Data),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual.Data),
-			)
-
-			for _, createdRecipe := range expected {
-				assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
-			}
+		for _, createdRecipe := range expected {
+			_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+			assert.NoError(t, err)
 		}
 	})
 }
+
+func TestRecipes_Cloning(T *testing.T) {
+	T.Run("should CRUD", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		actual, err := adminClient.CloneRecipe(ctx, &mealplanninggrpc.CloneRecipeRequest{RecipeID: createdRecipe.ID})
+		require.NoError(t, err)
+
+		require.Equal(t, createdRecipe.Name, actual.Cloned.Name)
+		require.Equal(t, len(createdRecipe.Steps), len(actual.Cloned.Steps))
+
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		assert.NoError(t, err)
+	})
+}
+
+/*
 
 func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 	s.runTest("meal plan tasks with frozen chicken breast", func(testClients *testClientWrapper) func() {
@@ -745,27 +741,6 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			requireNotNilAndNoProblems(t, created, err)
 
 			require.NotEmpty(t, steps)
-		}
-	})
-}
-
-func (s *TestSuite) TestRecipes_Cloning() {
-	s.runTest("should CRUD", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.adminClient, testClients.userClient, nil)
-
-			actual, err := testClients.userClient.CloneRecipe(ctx, createdRecipe.ID)
-			requireNotNilAndNoProblems(t, actual, err)
-
-			require.Equal(t, createdRecipe.Name, actual.Name)
-			require.Equal(t, len(createdRecipe.Steps), len(actual.Steps))
-
-			assert.NoError(t, testClients.adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }

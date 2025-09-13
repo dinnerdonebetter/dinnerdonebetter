@@ -214,13 +214,13 @@ func (m *recipeManager) ReadRecipe(ctx context.Context, recipeID string) (*mealp
 	return x, nil
 }
 
-func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error) {
+func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, useDatabase)
+	logger := m.logger.WithSpan(span).WithValue(keys.SearchQueryKey, query).WithValue(keys.UseDatabaseKey, !useSearchService)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
-	tracing.AttachToSpan(span, keys.UseDatabaseKey, useDatabase)
+	tracing.AttachToSpan(span, keys.UseDatabaseKey, !useSearchService)
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -233,7 +233,7 @@ func (m *recipeManager) SearchRecipes(ctx context.Context, query string, useData
 		err     error
 	)
 
-	if useDatabase {
+	if !useSearchService {
 		recipes, err = m.db.SearchForRecipes(ctx, query, filter)
 	} else {
 		var recipeSubsets []*eatingindexing.RecipeSearchSubset

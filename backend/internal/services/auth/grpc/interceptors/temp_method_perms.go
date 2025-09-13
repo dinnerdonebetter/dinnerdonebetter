@@ -333,6 +333,12 @@ var (
 		mealPlanningPerm("ArchiveRecipe"): {
 			authorization.ArchiveRecipesPermission,
 		},
+		mealPlanningPerm("SearchForRecipes"): {
+			authorization.ReadRecipesPermission,
+		},
+		mealPlanningPerm("CloneRecipe"): {
+			authorization.CreateRecipesPermission,
+		},
 		mealPlanningPerm("SearchForMeals"): {
 			authorization.ReadMealsPermission,
 		},
