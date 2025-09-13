@@ -158,7 +158,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
 		ss := ConvertValidVesselToValidVesselSearchSubset(exampleValidVessel)
-		rim.On("Index", testutils.ContextMatcher, exampleValidVessel.ID, ss).Return(nil)
+		vvim.On("Index", testutils.ContextMatcher, exampleValidVessel.ID, ss).Return(nil)
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -208,16 +208,15 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		rim := &mocksearch.IndexManager[RecipeSearchSubset]{}
 		mim := &mocksearch.IndexManager[MealSearchSubset]{}
-
-		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
-		ss := ConvertValidIngredientToValidIngredientSearchSubset(exampleValidIngredient)
-		rim.On("Index", testutils.ContextMatcher, exampleValidIngredient.ID, ss).Return(nil)
-
 		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
 		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
 		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
+
+		vinm := &mocksearch.IndexManager[ValidIngredientSearchSubset]{}
+		ss := ConvertValidIngredientToValidIngredientSearchSubset(exampleValidIngredient)
+		vinm.On("Index", testutils.ContextMatcher, exampleValidIngredient.ID, ss).Return(nil)
 
 		cdi := NewMealPlanningDataIndexer(
 			logger,
@@ -271,7 +270,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		vism := &mocksearch.IndexManager[ValidInstrumentSearchSubset]{}
 		ss := ConvertValidInstrumentToValidInstrumentSearchSubset(exampleValidInstrument)
-		rim.On("Index", testutils.ContextMatcher, exampleValidInstrument.ID, ss).Return(nil)
+		vism.On("Index", testutils.ContextMatcher, exampleValidInstrument.ID, ss).Return(nil)
 
 		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
 		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
@@ -332,7 +331,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
 		ss := ConvertValidPreparationToValidPreparationSearchSubset(exampleValidPreparation)
-		rim.On("Index", testutils.ContextMatcher, exampleValidPreparation.ID, ss).Return(nil)
+		vpim.On("Index", testutils.ContextMatcher, exampleValidPreparation.ID, ss).Return(nil)
 
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
@@ -390,7 +389,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		vmuim := &mocksearch.IndexManager[ValidMeasurementUnitSearchSubset]{}
 		ss := ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(exampleValidMeasurementUnit)
-		rim.On("Index", testutils.ContextMatcher, exampleValidMeasurementUnit.ID, ss).Return(nil)
+		vmuim.On("Index", testutils.ContextMatcher, exampleValidMeasurementUnit.ID, ss).Return(nil)
 
 		vpim := &mocksearch.IndexManager[ValidPreparationSearchSubset]{}
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
@@ -451,7 +450,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		visim := &mocksearch.IndexManager[ValidIngredientStateSearchSubset]{}
 		ss := ConvertValidIngredientStateToValidIngredientStateSearchSubset(exampleValidIngredientState)
-		rim.On("Index", testutils.ContextMatcher, exampleValidIngredientState.ID, ss).Return(nil)
+		visim.On("Index", testutils.ContextMatcher, exampleValidIngredientState.ID, ss).Return(nil)
 
 		vvim := &mocksearch.IndexManager[ValidVesselSearchSubset]{}
 

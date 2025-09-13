@@ -15,7 +15,7 @@ func TestAccountInvitationCreationInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &AccountInvitationCreationRequestInput{
-			ToEmail: t.Name(),
+			ToName: t.Name(),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

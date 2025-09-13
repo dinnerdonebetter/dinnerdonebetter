@@ -150,7 +150,12 @@ func createRecipeStepForTest(t *testing.T, ctx context.Context, recipeID string,
 		assert.Equal(t, exampleRecipeStep.CompletionConditions[j].IngredientState.ID, created.CompletionConditions[j].IngredientState.ID)
 		exampleRecipeStep.CompletionConditions[j].IngredientState = created.CompletionConditions[j].IngredientState
 
-		exampleRecipeStep.CompletionConditions[j].Ingredients = nil // []*types.RecipeStepCompletionConditionIngredient{}
+		// Update the CreatedAt for each ingredient in the completion condition
+		for k := range created.CompletionConditions[j].Ingredients {
+			if k < len(exampleRecipeStep.CompletionConditions[j].Ingredients) {
+				exampleRecipeStep.CompletionConditions[j].Ingredients[k].CreatedAt = created.CompletionConditions[j].Ingredients[k].CreatedAt
+			}
+		}
 	}
 
 	for j := range created.Products {

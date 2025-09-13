@@ -1075,7 +1075,7 @@ func (m *mealPlanningManager) UpdateUserIngredientPreference(ctx context.Context
 	return nil
 }
 
-func (m *mealPlanningManager) ArchiveUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) error {
+func (m *mealPlanningManager) ArchiveUserIngredientPreference(ctx context.Context, ingredientPreferenceID, ownerID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 

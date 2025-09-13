@@ -181,13 +181,8 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 		return nil, observability.PrepareError(err, span, "fetching recipe step completion conditions for recipe")
 	}
 
-	supportingRecipeIDs := []string{}
 	for i, step := range x.Steps {
 		for _, ingredient := range ingredients {
-			if ingredient.RecipeStepProductRecipeID != nil {
-				supportingRecipeIDs = append(supportingRecipeIDs, *ingredient.RecipeStepProductRecipeID)
-			}
-
 			if ingredient.BelongsToRecipeStep == step.ID {
 				x.Steps[i].Ingredients = append(x.Steps[i].Ingredients, ingredient)
 			}

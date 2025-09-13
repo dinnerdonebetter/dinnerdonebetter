@@ -132,6 +132,7 @@ func TestRecipeManager_CreateRecipe(T *testing.T) {
 			rm,
 			func(db *mealplanningmock.Repository) {
 				db.On(testutils.GetMethodName(rm.db.CreateRecipe), testutils.ContextMatcher, testutils.MatchType[*types.RecipeDatabaseCreationInput]()).Return(expected, nil)
+				db.On(testutils.GetMethodName(rm.db.GetRecipe), testutils.ContextMatcher, expected.ID).Return(expected, nil)
 			},
 			map[string][]string{
 				types.RecipeCreatedServiceEventType: {

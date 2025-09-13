@@ -88,7 +88,7 @@ func TestValidEnumerationManager_SearchValidIngredientGroups(T *testing.T) {
 			},
 		)
 
-		actual, err := vem.SearchValidIngredientGroups(ctx, exampleQuery, true, nil)
+		actual, err := vem.SearchValidIngredientGroups(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected.Data, actual)
 
@@ -646,7 +646,7 @@ func TestValidEnumerationManager_SearchValidIngredients(T *testing.T) {
 			},
 		)
 
-		actual, err := vem.SearchValidIngredients(ctx, exampleQuery, true, nil)
+		actual, err := vem.SearchValidIngredients(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected.Data, actual)
 
@@ -1063,7 +1063,7 @@ func TestValidEnumerationManager_SearchValidIngredientStates(T *testing.T) {
 			},
 		)
 
-		actual, err := vem.SearchValidIngredientStates(ctx, exampleQuery, true, nil)
+		actual, err := vem.SearchValidIngredientStates(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected.Data, actual)
 
@@ -1231,7 +1231,7 @@ func TestValidEnumerationManager_SearchValidMeasurementUnits(T *testing.T) {
 			},
 		)
 
-		actual, err := vem.SearchValidMeasurementUnits(ctx, exampleQuery, true, nil)
+		actual, err := vem.SearchValidMeasurementUnits(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected.Data, actual)
 
@@ -1426,7 +1426,7 @@ func TestValidEnumerationManager_SearchValidInstruments(T *testing.T) {
 			},
 		)
 
-		actual, err := vem.SearchValidInstruments(ctx, exampleQuery, true, nil)
+		actual, err := vem.SearchValidInstruments(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected.Data, actual)
 
@@ -1983,7 +1983,7 @@ func TestValidEnumerationManager_SearchValidPreparations(T *testing.T) {
 			},
 		)
 
-		actual, err := vem.SearchValidPreparations(ctx, exampleQuery, true, nil)
+		actual, err := vem.SearchValidPreparations(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected.Data, actual)
 
@@ -2372,7 +2372,7 @@ func TestValidEnumerationManager_SearchValidVessels(T *testing.T) {
 			},
 		)
 
-		actual, err := vem.SearchValidVessels(ctx, exampleQuery, true, nil)
+		actual, err := vem.SearchValidVessels(ctx, exampleQuery, false, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, expected.Data, actual)
 
