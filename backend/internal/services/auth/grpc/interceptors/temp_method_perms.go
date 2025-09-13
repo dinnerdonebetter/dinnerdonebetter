@@ -348,6 +348,9 @@ var (
 		mealPlanningPerm("GetMeal"): {
 			authorization.ReadMealsPermission,
 		},
+		mealPlanningPerm("GetMealPlanTasks"): {
+			authorization.ReadMealPlanTasksPermission,
+		},
 		"/notifications.UserNotificationsService/CreateUserNotification": {
 			authorization.CreateUserNotificationsPermission,
 		},
