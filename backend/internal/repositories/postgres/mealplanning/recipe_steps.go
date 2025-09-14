@@ -92,12 +92,12 @@ func (q *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 		ID:                   result.ID,
 		Notes:                result.Notes,
 		ExplicitInstructions: result.ExplicitInstructions,
-		Media:                nil,
-		Products:             nil,
-		Instruments:          nil,
-		Vessels:              nil,
-		CompletionConditions: nil,
-		Ingredients:          nil,
+		Media:                []*mealplanning.RecipeMedia{},
+		Products:             []*mealplanning.RecipeStepProduct{},
+		Instruments:          []*mealplanning.RecipeStepInstrument{},
+		Vessels:              []*mealplanning.RecipeStepVessel{},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionCondition{},
+		Ingredients:          []*mealplanning.RecipeStepIngredient{},
 		Preparation: mealplanning.ValidPreparation{
 			CreatedAt: result.ValidPreparationCreatedAt,
 			InstrumentCount: types.Uint16RangeWithOptionalMax{
@@ -132,6 +132,63 @@ func (q *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 		Optional:                result.Optional,
 		StartTimerAutomatically: result.StartTimerAutomatically,
 	}
+
+	// Fetch related data for this recipe step
+	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step ingredients for recipe step")
+	}
+	for _, ingredient := range ingredients {
+		if ingredient.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.Ingredients = append(recipeStep.Ingredients, ingredient)
+		}
+	}
+
+	products, err := q.getRecipeStepProductsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step products for recipe step")
+	}
+	for _, product := range products {
+		if product.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.Products = append(recipeStep.Products, product)
+		}
+	}
+
+	instruments, err := q.getRecipeStepInstrumentsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step instruments for recipe step")
+	}
+	for _, instrument := range instruments {
+		if instrument.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.Instruments = append(recipeStep.Instruments, instrument)
+		}
+	}
+
+	vessels, err := q.getRecipeStepVesselsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step vessels for recipe step")
+	}
+	for _, vessel := range vessels {
+		if vessel.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.Vessels = append(recipeStep.Vessels, vessel)
+		}
+	}
+
+	completionConditions, err := q.getRecipeStepCompletionConditionsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step completion conditions for recipe step")
+	}
+	for _, completionCondition := range completionConditions {
+		if completionCondition.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.CompletionConditions = append(recipeStep.CompletionConditions, completionCondition)
+		}
+	}
+
+	recipeMedia, err := q.getRecipeMediaForRecipeStep(ctx, recipeID, recipeStep.ID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe media for recipe step")
+	}
+	recipeStep.Media = recipeMedia
 
 	return recipeStep, nil
 }
@@ -171,12 +228,12 @@ func (q *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 		ID:                   result.ID,
 		Notes:                result.Notes,
 		ExplicitInstructions: result.ExplicitInstructions,
-		Media:                nil,
-		Products:             nil,
-		Instruments:          nil,
-		Vessels:              nil,
-		CompletionConditions: nil,
-		Ingredients:          nil,
+		Media:                []*mealplanning.RecipeMedia{},
+		Products:             []*mealplanning.RecipeStepProduct{},
+		Instruments:          []*mealplanning.RecipeStepInstrument{},
+		Vessels:              []*mealplanning.RecipeStepVessel{},
+		CompletionConditions: []*mealplanning.RecipeStepCompletionCondition{},
+		Ingredients:          []*mealplanning.RecipeStepIngredient{},
 		Preparation: mealplanning.ValidPreparation{
 			CreatedAt: result.ValidPreparationCreatedAt,
 			InstrumentCount: types.Uint16RangeWithOptionalMax{
@@ -211,6 +268,63 @@ func (q *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 		Optional:                result.Optional,
 		StartTimerAutomatically: result.StartTimerAutomatically,
 	}
+
+	// Fetch related data for this recipe step
+	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, result.BelongsToRecipe)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step ingredients for recipe step")
+	}
+	for _, ingredient := range ingredients {
+		if ingredient.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.Ingredients = append(recipeStep.Ingredients, ingredient)
+		}
+	}
+
+	products, err := q.getRecipeStepProductsForRecipe(ctx, result.BelongsToRecipe)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step products for recipe step")
+	}
+	for _, product := range products {
+		if product.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.Products = append(recipeStep.Products, product)
+		}
+	}
+
+	instruments, err := q.getRecipeStepInstrumentsForRecipe(ctx, result.BelongsToRecipe)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step instruments for recipe step")
+	}
+	for _, instrument := range instruments {
+		if instrument.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.Instruments = append(recipeStep.Instruments, instrument)
+		}
+	}
+
+	vessels, err := q.getRecipeStepVesselsForRecipe(ctx, result.BelongsToRecipe)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step vessels for recipe step")
+	}
+	for _, vessel := range vessels {
+		if vessel.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.Vessels = append(recipeStep.Vessels, vessel)
+		}
+	}
+
+	completionConditions, err := q.getRecipeStepCompletionConditionsForRecipe(ctx, result.BelongsToRecipe)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step completion conditions for recipe step")
+	}
+	for _, completionCondition := range completionConditions {
+		if completionCondition.BelongsToRecipeStep == recipeStep.ID {
+			recipeStep.CompletionConditions = append(recipeStep.CompletionConditions, completionCondition)
+		}
+	}
+
+	recipeMedia, err := q.getRecipeMediaForRecipeStep(ctx, result.BelongsToRecipe, recipeStep.ID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe media for recipe step")
+	}
+	recipeStep.Media = recipeMedia
 
 	return recipeStep, nil
 }
@@ -270,12 +384,12 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 			ID:                   result.ID,
 			Notes:                result.Notes,
 			ExplicitInstructions: result.ExplicitInstructions,
-			Media:                nil,
-			Products:             nil,
-			Instruments:          nil,
-			Vessels:              nil,
-			CompletionConditions: nil,
-			Ingredients:          nil,
+			Media:                []*mealplanning.RecipeMedia{},
+			Products:             []*mealplanning.RecipeStepProduct{},
+			Instruments:          []*mealplanning.RecipeStepInstrument{},
+			Vessels:              []*mealplanning.RecipeStepVessel{},
+			CompletionConditions: []*mealplanning.RecipeStepCompletionCondition{},
+			Ingredients:          []*mealplanning.RecipeStepIngredient{},
 			Preparation: mealplanning.ValidPreparation{
 				CreatedAt: result.ValidPreparationCreatedAt,
 				InstrumentCount: types.Uint16RangeWithOptionalMax{
@@ -314,6 +428,71 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 		x.Data = append(x.Data, recipeStep)
 		x.FilteredCount = uint64(result.FilteredCount)
 		x.TotalCount = uint64(result.TotalCount)
+	}
+
+	// Fetch all related data for all recipe steps
+	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step ingredients for recipe steps")
+	}
+
+	products, err := q.getRecipeStepProductsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step products for recipe steps")
+	}
+
+	instruments, err := q.getRecipeStepInstrumentsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step instruments for recipe steps")
+	}
+
+	vessels, err := q.getRecipeStepVesselsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step vessels for recipe steps")
+	}
+
+	completionConditions, err := q.getRecipeStepCompletionConditionsForRecipe(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step completion conditions for recipe steps")
+	}
+
+	// Populate each recipe step with its related data
+	for i, step := range x.Data {
+		for _, ingredient := range ingredients {
+			if ingredient.BelongsToRecipeStep == step.ID {
+				x.Data[i].Ingredients = append(x.Data[i].Ingredients, ingredient)
+			}
+		}
+
+		for _, product := range products {
+			if product.BelongsToRecipeStep == step.ID {
+				x.Data[i].Products = append(x.Data[i].Products, product)
+			}
+		}
+
+		for _, instrument := range instruments {
+			if instrument.BelongsToRecipeStep == step.ID {
+				x.Data[i].Instruments = append(x.Data[i].Instruments, instrument)
+			}
+		}
+
+		for _, vessel := range vessels {
+			if vessel.BelongsToRecipeStep == step.ID {
+				x.Data[i].Vessels = append(x.Data[i].Vessels, vessel)
+			}
+		}
+
+		for _, completionCondition := range completionConditions {
+			if completionCondition.BelongsToRecipeStep == step.ID {
+				x.Data[i].CompletionConditions = append(x.Data[i].CompletionConditions, completionCondition)
+			}
+		}
+
+		recipeMedia, err := q.getRecipeMediaForRecipeStep(ctx, recipeID, step.ID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe media for recipe step")
+		}
+		x.Data[i].Media = recipeMedia
 	}
 
 	return x, nil

@@ -35,6 +35,12 @@ func TestRecipeSteps_CompleteLifecycle(T *testing.T) {
 
 		newRecipeStep := fakes.BuildFakeRecipeStep()
 		newRecipeStep.BelongsToRecipe = createdRecipe.ID
+		newRecipeStep.Media = createdRecipeStep.Media
+		newRecipeStep.Products = createdRecipeStep.Products
+		newRecipeStep.Instruments = createdRecipeStep.Instruments
+		newRecipeStep.Vessels = createdRecipeStep.Vessels
+		newRecipeStep.CompletionConditions = createdRecipeStep.CompletionConditions
+		newRecipeStep.Ingredients = createdRecipeStep.Ingredients
 		for j := range newRecipeStep.Ingredients {
 			newRecipeStep.Ingredients[j].Ingredient = createdValidIngredients[j]
 		}
