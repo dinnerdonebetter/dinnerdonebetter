@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -37,7 +36,7 @@ func TestValidIngredientPreparationCreationRequestInput_Validate(T *testing.T) {
 			ValidIngredientID:  t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -46,7 +45,7 @@ func TestValidIngredientPreparationCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidIngredientPreparationCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -63,7 +62,7 @@ func TestValidIngredientPreparationDatabaseCreationInput_Validate(T *testing.T) 
 			ValidIngredientID:  t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -72,7 +71,7 @@ func TestValidIngredientPreparationDatabaseCreationInput_Validate(T *testing.T) 
 
 		x := &ValidIngredientPreparationDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -89,7 +88,7 @@ func TestValidIngredientPreparationUpdateRequestInput_Validate(T *testing.T) {
 			ValidIngredientID:  pointer.To(t.Name()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -98,7 +97,7 @@ func TestValidIngredientPreparationUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidIngredientPreparationUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

@@ -44,7 +44,7 @@ func TestQuerier_Integration_RecipeRatings(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -98,7 +98,7 @@ func TestQuerier_RecipeRatingExists(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.RecipeRatingExists(ctx, "", t.Name())
@@ -109,7 +109,7 @@ func TestQuerier_RecipeRatingExists(T *testing.T) {
 	T.Run("with invalid recipe rating ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.RecipeRatingExists(ctx, t.Name(), "")
@@ -124,7 +124,7 @@ func TestQuerier_GetRecipeRating(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetRecipeRating(ctx, "", t.Name())
@@ -135,7 +135,7 @@ func TestQuerier_GetRecipeRating(T *testing.T) {
 	T.Run("with invalid recipe rating ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetRecipeRating(ctx, t.Name(), "")
@@ -150,7 +150,7 @@ func TestQuerier_CreateRecipeRating(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateRecipeRating(ctx, nil)
@@ -165,7 +165,7 @@ func TestQuerier_UpdateRecipeRating(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateRecipeRating(ctx, nil))
@@ -178,7 +178,7 @@ func TestQuerier_ArchiveRecipeRating(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveRecipeRating(ctx, "", t.Name()))
@@ -187,7 +187,7 @@ func TestQuerier_ArchiveRecipeRating(T *testing.T) {
 	T.Run("with invalid recipe rating ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveRecipeRating(ctx, t.Name(), ""))

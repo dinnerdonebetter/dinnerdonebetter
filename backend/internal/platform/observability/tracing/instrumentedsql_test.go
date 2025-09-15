@@ -1,7 +1,6 @@
 package tracing
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,7 +22,7 @@ func Test_instrumentedSQLTracerWrapper_GetSpan(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		w := NewInstrumentedSQLTracer(NewNoopTracerProvider(), t.Name())
 
 		assert.NotNil(t, w.GetSpan(ctx))

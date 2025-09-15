@@ -43,6 +43,6 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 			},
 		}
 
-		assert.NoError(t, cfg.ValidateWithContext(context.Background()))
+		assert.NoError(t, cfg.ValidateWithContext(t.Context()))
 	})
 }

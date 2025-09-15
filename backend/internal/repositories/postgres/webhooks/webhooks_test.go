@@ -53,7 +53,7 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -133,7 +133,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetWebhook(ctx, "", exampleAccountID)
@@ -146,7 +146,7 @@ func TestQuerier_GetWebhook(T *testing.T) {
 
 		exampleWebhook := fakes.BuildFakeWebhook()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetWebhook(ctx, exampleWebhook.ID, "")
@@ -161,7 +161,7 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		filter := filtering.DefaultQueryFilter()
 		c := buildInertClientForTest(t)
 
@@ -177,7 +177,7 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateWebhook(ctx, nil)
@@ -192,7 +192,7 @@ func TestQuerier_createWebhookTriggerEvent(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		created, err := c.createWebhookTriggerEvent(ctx, c.db, fakes.BuildFakeID(), nil)
@@ -203,7 +203,7 @@ func TestQuerier_createWebhookTriggerEvent(T *testing.T) {
 	T.Run("with missing account ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 		fakes.BuildFakeWebhookTriggerEvent()
 
@@ -223,7 +223,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveWebhook(ctx, "", exampleAccountID))
@@ -234,7 +234,7 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 
 		exampleWebhookID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhookID, ""))
@@ -249,7 +249,7 @@ func TestQuerier_ArchiveWebhookTriggerEvent(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveWebhookTriggerEvent(ctx, "", exampleAccountID))
@@ -260,7 +260,7 @@ func TestQuerier_ArchiveWebhookTriggerEvent(T *testing.T) {
 
 		exampleWebhookID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveWebhookTriggerEvent(ctx, exampleWebhookID, ""))

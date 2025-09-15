@@ -76,7 +76,7 @@ func (s *serviceImpl) CreateAccountInvitation(ctx context.Context, request *iden
 	}
 
 	input := converters.ConvertGRPCAccountInvitationCreationRequestInputToAccountInvitationCreationRequestInput(request.Input)
-	created, err := s.identityDataManager.CreateAccountInvitation(ctx, sessionContextData.GetUserID(), request.AccountID, input)
+	created, err := s.identityDataManager.CreateAccountInvitation(ctx, sessionContextData.GetUserID(), sessionContextData.GetActiveAccountID(), input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to create account invitation")
 	}

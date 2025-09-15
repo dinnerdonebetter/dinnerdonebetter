@@ -1,7 +1,6 @@
 package encoding
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -58,7 +57,7 @@ func Test_clientEncoder_Unmarshal(T *testing.T) {
 		T.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			ctx := context.Background()
+			ctx := t.Context()
 			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), tc.contentType)
 
 			expected := &example{Name: "name"}
@@ -72,7 +71,7 @@ func Test_clientEncoder_Unmarshal(T *testing.T) {
 	T.Run("with invalid data", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		actual := &example{}
@@ -89,7 +88,7 @@ func Test_clientEncoder_Encode(T *testing.T) {
 		T.Run(ContentTypeToString(ct), func(t *testing.T) {
 			t.Parallel()
 
-			ctx := context.Background()
+			ctx := t.Context()
 			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct)
 
 			res := httptest.NewRecorder()
@@ -102,7 +101,7 @@ func Test_clientEncoder_Encode(T *testing.T) {
 		T.Run(fmt.Sprintf("%s handles io.Writer errors", ContentTypeToString(ct)), func(t *testing.T) {
 			t.Parallel()
 
-			ctx := context.Background()
+			ctx := t.Context()
 			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct)
 
 			mw := &mockWriter{}
@@ -115,7 +114,7 @@ func Test_clientEncoder_Encode(T *testing.T) {
 	T.Run("with invalid data", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		assert.Error(t, e.Encode(ctx, nil, &broken{Name: json.Number(t.Name())}))
@@ -129,7 +128,7 @@ func Test_clientEncoder_EncodeReader(T *testing.T) {
 		T.Run(ContentTypeToString(ct), func(t *testing.T) {
 			t.Parallel()
 
-			ctx := context.Background()
+			ctx := t.Context()
 			e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ct)
 
 			actual, err := e.EncodeReader(ctx, &example{Name: t.Name()})
@@ -141,7 +140,7 @@ func Test_clientEncoder_EncodeReader(T *testing.T) {
 	T.Run("with invalid data", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		e := ProvideClientEncoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 
 		actual, err := e.EncodeReader(ctx, &broken{Name: json.Number(t.Name())})

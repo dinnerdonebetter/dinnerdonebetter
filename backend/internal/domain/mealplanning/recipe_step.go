@@ -150,16 +150,8 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.Index = *input.Index
 	}
 
-	if input.Preparation.Name != "" && input.Preparation.Name != x.Preparation.Name {
-		x.Preparation.Name = input.Preparation.Name
-	}
-
-	if input.Preparation.Description != "" && input.Preparation.Description != x.Preparation.Description {
-		x.Preparation.Description = input.Preparation.Description
-	}
-
-	if input.Preparation.IconPath != "" && input.Preparation.IconPath != x.Preparation.IconPath {
-		x.Preparation.IconPath = input.Preparation.IconPath
+	if input.Preparation != nil {
+		x.Preparation = *input.Preparation
 	}
 
 	if input.EstimatedTimeInSeconds.Min != nil && input.EstimatedTimeInSeconds.Min != x.EstimatedTimeInSeconds.Min {

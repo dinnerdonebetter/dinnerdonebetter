@@ -46,7 +46,7 @@ func TestQuerier_Integration_RecipePrepTasks(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -109,7 +109,7 @@ func TestQuerier_RecipePrepTaskExists(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 
 		c := buildInertClientForTest(t)
@@ -126,7 +126,7 @@ func TestQuerier_GetRecipePrepTask(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleRecipePrepTaskID := fakes.BuildFakeID()
 
 		c := buildInertClientForTest(t)
@@ -143,7 +143,7 @@ func TestQuerier_CreateRecipePrepTask(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateRecipePrepTask(ctx, nil)
@@ -158,7 +158,7 @@ func TestQuerier_GetRecipePrepTasksForRecipe(T *testing.T) {
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetRecipePrepTasksForRecipe(ctx, "")
@@ -173,7 +173,7 @@ func TestQuerier_UpdateRecipePrepTask(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateRecipePrepTask(ctx, nil))
@@ -186,7 +186,7 @@ func TestQuerier_ArchiveRecipePrepTask(T *testing.T) {
 	T.Run("with missing recipe ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 
 		c := buildInertClientForTest(t)

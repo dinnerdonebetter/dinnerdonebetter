@@ -30,7 +30,7 @@ func Test_BuildRouteParamIDFetcher(T *testing.T) {
 
 		r := &chiRouteParamManager{}
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleKey := "blah"
 		fn := r.BuildRouteParamIDFetcher(logging.NewNoopLogger(), exampleKey, "thing")
 		expected := uint64(123)
@@ -57,7 +57,7 @@ func Test_BuildRouteParamIDFetcher(T *testing.T) {
 
 		r := &chiRouteParamManager{}
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleKey := "blah"
 		fn := r.BuildRouteParamIDFetcher(logging.NewNoopLogger(), exampleKey, "thing")
 		expected := uint64(0)
@@ -89,7 +89,7 @@ func Test_BuildRouteParamStringIDFetcher(T *testing.T) {
 
 		r := &chiRouteParamManager{}
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleKey := "blah"
 		fn := r.BuildRouteParamStringIDFetcher(exampleKey)
 		expectedInt := uint64(123)

@@ -12,7 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 var (
@@ -121,7 +121,7 @@ func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetMeals(ctx, q.db, &generated2.GetMealsParams{
+	results, err := q.generatedQuerier.GetMeals(ctx, q.db, &generated.GetMealsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -181,7 +181,7 @@ func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	results, err := q.generatedQuerier.GetMealsCreatedByUser(ctx, q.db, &generated2.GetMealsCreatedByUserParams{
+	results, err := q.generatedQuerier.GetMealsCreatedByUser(ctx, q.db, &generated.GetMealsCreatedByUserParams{
 		CreatedByUser:   userID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -269,7 +269,7 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.SearchForMeals(ctx, q.db, &generated2.SearchForMealsParams{
+	results, err := q.generatedQuerier.SearchForMeals(ctx, q.db, &generated.SearchForMealsParams{
 		Query:           mealNameQuery,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -338,7 +338,7 @@ func (q *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 	logger := q.logger.WithValue(keys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
 
 	// create the meal.
-	if err := q.generatedQuerier.CreateMeal(ctx, querier, &generated2.CreateMealParams{
+	if err := q.generatedQuerier.CreateMeal(ctx, querier, &generated.CreateMealParams{
 		ID:                   input.ID,
 		Name:                 input.Name,
 		Description:          input.Description,
@@ -421,14 +421,14 @@ func (q *repository) CreateMealComponent(ctx context.Context, querier database.S
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	// create the meal.
-	if err := q.generatedQuerier.CreateMealComponent(ctx, querier, &generated2.CreateMealComponentParams{
+	if err := q.generatedQuerier.CreateMealComponent(ctx, querier, &generated.CreateMealComponentParams{
 		ID:                identifiers.New(),
 		MealID:            mealID,
 		RecipeID:          input.RecipeID,
-		MealComponentType: generated2.ComponentType(input.ComponentType),
+		MealComponentType: generated.ComponentType(input.ComponentType),
 		RecipeScale:       database.StringFromFloat32(input.RecipeScale),
 	}); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "performing meal creation query")
+		return observability.PrepareAndLogError(err, logger, span, "creating meal component")
 	}
 
 	return nil
@@ -475,7 +475,7 @@ func (q *repository) ArchiveMeal(ctx context.Context, mealID, userID string) err
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMeal(ctx, q.db, &generated2.ArchiveMealParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMeal(ctx, q.db, &generated.ArchiveMealParams{
 		CreatedByUser: userID,
 		ID:            mealID,
 	})

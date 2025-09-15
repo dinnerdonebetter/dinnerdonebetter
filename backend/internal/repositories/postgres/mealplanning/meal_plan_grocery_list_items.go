@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 var (
@@ -36,7 +36,7 @@ func (q *repository) MealPlanGroceryListItemExists(ctx context.Context, mealPlan
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
-	result, err := q.generatedQuerier.CheckMealPlanGroceryListItemExistence(ctx, q.db, &generated2.CheckMealPlanGroceryListItemExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanGroceryListItemExistence(ctx, q.db, &generated.CheckMealPlanGroceryListItemExistenceParams{
 		MealPlanID:                mealPlanID,
 		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
 	})
@@ -101,7 +101,7 @@ func (q *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
-	result, err := q.generatedQuerier.GetMealPlanGroceryListItem(ctx, q.db, &generated2.GetMealPlanGroceryListItemParams{
+	result, err := q.generatedQuerier.GetMealPlanGroceryListItem(ctx, q.db, &generated.GetMealPlanGroceryListItemParams{
 		MealPlanID:                mealPlanID,
 		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
 	})
@@ -332,14 +332,14 @@ func (q *repository) createMealPlanGroceryListItem(ctx context.Context, querier 
 	logger := q.logger.WithValue(keys.MealPlanGroceryListItemIDKey, input.ID)
 
 	// create the meal plan grocery list.
-	if err := q.generatedQuerier.CreateMealPlanGroceryListItem(ctx, querier, &generated2.CreateMealPlanGroceryListItemParams{
+	if err := q.generatedQuerier.CreateMealPlanGroceryListItem(ctx, querier, &generated.CreateMealPlanGroceryListItemParams{
 		ID:                       input.ID,
 		BelongsToMealPlan:        input.BelongsToMealPlan,
 		ValidIngredient:          input.ValidIngredientID,
 		ValidMeasurementUnit:     input.ValidMeasurementUnitID,
 		MinimumQuantityNeeded:    database.StringFromFloat32(input.QuantityNeeded.Min),
 		StatusExplanation:        input.StatusExplanation,
-		Status:                   generated2.GroceryListItemStatus(input.Status),
+		Status:                   generated.GroceryListItemStatus(input.Status),
 		MaximumQuantityNeeded:    database.NullStringFromFloat32Pointer(input.QuantityNeeded.Max),
 		QuantityPurchased:        database.NullStringFromFloat32Pointer(input.QuantityPurchased),
 		PurchasedMeasurementUnit: database.NullStringFromStringPointer(input.PurchasedMeasurementUnitID),
@@ -397,13 +397,13 @@ func (q *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated 
 		purchasedMeasurementUnitID = &updated.PurchasedMeasurementUnit.ID
 	}
 
-	if _, err := q.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, q.db, &generated2.UpdateMealPlanGroceryListItemParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, q.db, &generated.UpdateMealPlanGroceryListItemParams{
 		BelongsToMealPlan:        updated.BelongsToMealPlan,
 		ValidIngredient:          updated.Ingredient.ID,
 		ValidMeasurementUnit:     updated.MeasurementUnit.ID,
 		MinimumQuantityNeeded:    database.StringFromFloat32(updated.QuantityNeeded.Min),
 		StatusExplanation:        updated.StatusExplanation,
-		Status:                   generated2.GroceryListItemStatus(updated.Status),
+		Status:                   generated.GroceryListItemStatus(updated.Status),
 		ID:                       updated.ID,
 		MaximumQuantityNeeded:    database.NullStringFromFloat32Pointer(updated.QuantityNeeded.Max),
 		QuantityPurchased:        database.NullStringFromFloat32Pointer(updated.QuantityPurchased),

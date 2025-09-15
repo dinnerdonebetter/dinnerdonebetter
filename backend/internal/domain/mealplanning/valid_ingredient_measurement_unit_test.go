@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -45,7 +44,7 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -54,7 +53,7 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 
 		x := &ValidIngredientMeasurementUnitCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -74,7 +73,7 @@ func TestValidIngredientMeasurementUnitDatabaseCreationInput_Validate(T *testing
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -83,7 +82,7 @@ func TestValidIngredientMeasurementUnitDatabaseCreationInput_Validate(T *testing
 
 		x := &ValidIngredientMeasurementUnitDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -104,7 +103,7 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -113,7 +112,7 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 
 		x := &ValidIngredientMeasurementUnitUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

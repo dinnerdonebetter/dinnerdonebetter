@@ -52,7 +52,7 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -110,7 +110,7 @@ func TestQuerier_MealPlanTaskExists(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanTaskID := fakes.BuildFakeID()
 
@@ -124,7 +124,7 @@ func TestQuerier_MealPlanTaskExists(T *testing.T) {
 	T.Run("with invalid meal plan task ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanID := fakes.BuildFakeID()
 
@@ -142,7 +142,7 @@ func TestQuerier_GetMealPlanTask(T *testing.T) {
 	T.Run("with invalid meal plan task ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanTask(ctx, "")
@@ -157,7 +157,7 @@ func TestQuerier_CreateMealPlanTask(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateMealPlanTask(ctx, nil)
@@ -172,7 +172,7 @@ func TestQuerier_GetMealPlanTasksForMealPlan(T *testing.T) {
 	T.Run("with missing meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanTasksForMealPlan(ctx, "")
@@ -187,7 +187,7 @@ func TestQuerier_MarkMealPlanAsHavingTasksCreated(T *testing.T) {
 	T.Run("with empty meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkMealPlanAsHavingTasksCreated(ctx, ""))
@@ -200,7 +200,7 @@ func TestQuerier_MarkMealPlanAsHavingGroceryListInitialized(T *testing.T) {
 	T.Run("with empty meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkMealPlanAsHavingGroceryListInitialized(ctx, ""))
@@ -213,7 +213,7 @@ func TestQuerier_ChangeMealPlanTaskStatus(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ChangeMealPlanTaskStatus(ctx, nil))

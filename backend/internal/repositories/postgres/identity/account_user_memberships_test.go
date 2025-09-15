@@ -1,7 +1,6 @@
 package identity
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -93,7 +92,7 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.BuildSessionContextDataForUser(ctx, "")
@@ -108,7 +107,7 @@ func TestQuerier_GetDefaultAccountIDForUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetDefaultAccountIDForUser(ctx, "")
@@ -123,7 +122,7 @@ func TestQuerier_MarkAccountAsUserDefault(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleAccount := fakes.BuildFakeAccount()
 
 		c := buildInertClientForTest(t)
@@ -134,7 +133,7 @@ func TestQuerier_MarkAccountAsUserDefault(T *testing.T) {
 	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUser := fakes.BuildFakeUser()
 
 		c := buildInertClientForTest(t)
@@ -149,7 +148,7 @@ func TestQuerier_UserIsMemberOfAccount(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleAccountID := fakes.BuildFakeID()
 
 		c := buildInertClientForTest(t)
@@ -162,7 +161,7 @@ func TestQuerier_UserIsMemberOfAccount(T *testing.T) {
 	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 
 		c := buildInertClientForTest(t)
@@ -179,7 +178,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 	T.Run("with invalid account id", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 
@@ -191,7 +190,7 @@ func TestQuerier_ModifyUserPermissions(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 		exampleAccountID := fakes.BuildFakeID()
 
@@ -207,7 +206,7 @@ func TestSQLQuerier_addUserToAccount(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c := buildInertClientForTest(t)
 
@@ -222,7 +221,7 @@ func TestQuerier_RemoveUserFromAccount(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleAccount := fakes.BuildFakeAccount()
 
 		c := buildInertClientForTest(t)
@@ -233,7 +232,7 @@ func TestQuerier_RemoveUserFromAccount(T *testing.T) {
 	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUser := fakes.BuildFakeUser()
 
 		c := buildInertClientForTest(t)
@@ -244,7 +243,7 @@ func TestQuerier_RemoveUserFromAccount(T *testing.T) {
 	T.Run("with error creating transaction", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 		exampleAccountID := fakes.BuildFakeID()
 

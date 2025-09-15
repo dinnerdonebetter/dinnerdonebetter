@@ -48,7 +48,7 @@ func TestQuerier_Integration_UserNotifications(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -103,7 +103,7 @@ func TestQuerier_UserNotificationExists(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c := buildInertClientForTest(t)
 
@@ -115,7 +115,7 @@ func TestQuerier_UserNotificationExists(T *testing.T) {
 	T.Run("with invalid user notification ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c := buildInertClientForTest(t)
 
@@ -131,7 +131,7 @@ func TestQuerier_GetUserNotification(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetUserNotification(ctx, "", fakes.BuildFakeID())
@@ -142,7 +142,7 @@ func TestQuerier_GetUserNotification(T *testing.T) {
 	T.Run("with invalid user notification ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetUserNotification(ctx, fakes.BuildFakeID(), "")
@@ -157,7 +157,7 @@ func TestQuerier_CreateUserNotification(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateUserNotification(ctx, nil)
@@ -172,7 +172,7 @@ func TestQuerier_UpdateUserNotification(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateUserNotification(ctx, nil))

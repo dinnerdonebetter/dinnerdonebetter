@@ -142,7 +142,7 @@ func (q *repository) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context
 		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan option votes for meal plan option")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan option votes for meal plan option")
 	}
 
 	x = make([]*types.MealPlanOptionVote, len(results))
@@ -240,8 +240,7 @@ func (q *repository) CreateMealPlanOptionVote(ctx context.Context, input *types.
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue("vote_count", len(input.Votes)).
-		WithValue(keys.UserIDKey, input.ByUser)
+	logger := q.logger.WithValue("vote_count", len(input.Votes))
 
 	// begin transaction
 	tx, err := q.db.BeginTx(ctx, nil)

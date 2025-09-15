@@ -117,7 +117,7 @@ func (q *repository) SearchForValidInstruments(ctx context.Context, query string
 
 	results, err := q.generatedQuerier.SearchForValidInstruments(ctx, q.db, query)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
 	}
 
 	validInstruments := []*types.ValidInstrument{}

@@ -1229,11 +1229,16 @@ func ConvertValidVesselToGRPCValidVessel(x *mealplanning.ValidVessel) *mealplann
 }
 
 func ConvertGRPCValidVesselToValidVessel(x *mealplanninggrpc.ValidVessel) *mealplanning.ValidVessel {
+	var capacityUnit *mealplanning.ValidMeasurementUnit
+	if x.CapacityUnit != nil {
+		capacityUnit = ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(x.CapacityUnit)
+	}
+
 	return &mealplanning.ValidVessel{
 		CreatedAt:                      converters.ConvertPBTimestampToTime(x.CreatedAt),
 		LastUpdatedAt:                  converters.ConvertPBTimestampToTimePointer(x.LastUpdatedAt),
 		ArchivedAt:                     converters.ConvertPBTimestampToTimePointer(x.ArchivedAt),
-		CapacityUnit:                   ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(x.CapacityUnit),
+		CapacityUnit:                   capacityUnit,
 		Shape:                          x.Shape,
 		Description:                    x.Description,
 		Name:                           x.Name,

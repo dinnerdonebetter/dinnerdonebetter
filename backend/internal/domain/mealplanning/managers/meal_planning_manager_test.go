@@ -105,6 +105,7 @@ func TestMealPlanningManager_CreateMeal(T *testing.T) {
 		ctx := t.Context()
 		mpm := buildMealPlanManagerForTest(t)
 
+		creator := fakes.BuildFakeID()
 		expected := fakes.BuildFakeMeal()
 		fakeInput := fakes.BuildFakeMealCreationRequestInput()
 
@@ -118,7 +119,7 @@ func TestMealPlanningManager_CreateMeal(T *testing.T) {
 			},
 		)
 
-		actual, err := mpm.CreateMeal(ctx, fakeInput)
+		actual, err := mpm.CreateMeal(ctx, creator, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -244,6 +245,8 @@ func TestMealPlanningManager_CreateMealPlan(T *testing.T) {
 		ctx := t.Context()
 		mpm := buildMealPlanManagerForTest(t)
 
+		ownerID := fakes.BuildFakeID()
+		creatorID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeMealPlan()
 		fakeInput := fakes.BuildFakeMealPlanCreationRequestInput()
 
@@ -257,7 +260,7 @@ func TestMealPlanningManager_CreateMealPlan(T *testing.T) {
 			},
 		)
 
-		actual, err := mpm.CreateMealPlan(ctx, fakeInput)
+		actual, err := mpm.CreateMealPlan(ctx, ownerID, creatorID, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -724,6 +727,7 @@ func TestMealPlanningManager_CreateMealPlanOptionVotes(T *testing.T) {
 		ctx := t.Context()
 		mpm := buildMealPlanManagerForTest(t)
 
+		creatorID := fakes.BuildFakeID()
 		expected := fakes.BuildFakeMealPlanOptionVotesList().Data
 		fakeInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
 
@@ -737,7 +741,7 @@ func TestMealPlanningManager_CreateMealPlanOptionVotes(T *testing.T) {
 			},
 		)
 
-		actual, err := mpm.CreateMealPlanOptionVotes(ctx, fakeInput)
+		actual, err := mpm.CreateMealPlanOptionVotes(ctx, creatorID, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 

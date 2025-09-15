@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 var (
@@ -217,7 +217,7 @@ func (q *repository) GetValidVessels(ctx context.Context, filter *filtering.Quer
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetValidVessels(ctx, q.db, &generated2.GetValidVesselsParams{
+	results, err := q.generatedQuerier.GetValidVessels(ctx, q.db, &generated.GetValidVesselsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -347,13 +347,13 @@ func (q *repository) CreateValidVessel(ctx context.Context, input *types.ValidVe
 	logger := q.logger.WithValue(keys.ValidVesselIDKey, input.ID)
 
 	// create the valid vessel.
-	if err := q.generatedQuerier.CreateValidVessel(ctx, q.db, &generated2.CreateValidVesselParams{
+	if err := q.generatedQuerier.CreateValidVessel(ctx, q.db, &generated.CreateValidVesselParams{
 		Slug:                           input.Slug,
 		ID:                             input.ID,
 		PluralName:                     input.PluralName,
 		Description:                    input.Description,
 		IconPath:                       input.IconPath,
-		Shape:                          generated2.VesselShape(input.Shape),
+		Shape:                          generated.VesselShape(input.Shape),
 		Name:                           input.Name,
 		Capacity:                       database.StringFromFloat32(input.Capacity),
 		CapacityUnit:                   database.NullStringFromStringPointer(input.CapacityUnitID),
@@ -410,7 +410,7 @@ func (q *repository) UpdateValidVessel(ctx context.Context, updated *types.Valid
 		return fmt.Errorf("capacity unit: %w", database.ErrNilInputProvided)
 	}
 
-	if _, err := q.generatedQuerier.UpdateValidVessel(ctx, q.db, &generated2.UpdateValidVesselParams{
+	if _, err := q.generatedQuerier.UpdateValidVessel(ctx, q.db, &generated.UpdateValidVesselParams{
 		Name:                           updated.Name,
 		PluralName:                     updated.PluralName,
 		Description:                    updated.Description,
@@ -424,7 +424,7 @@ func (q *repository) UpdateValidVessel(ctx context.Context, updated *types.Valid
 		WidthInMillimeters:             database.NullStringFromFloat32(updated.WidthInMillimeters),
 		LengthInMillimeters:            database.NullStringFromFloat32(updated.LengthInMillimeters),
 		HeightInMillimeters:            database.NullStringFromFloat32(updated.HeightInMillimeters),
-		Shape:                          generated2.VesselShape(updated.Shape),
+		Shape:                          generated.VesselShape(updated.Shape),
 		ID:                             updated.ID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid vessel")

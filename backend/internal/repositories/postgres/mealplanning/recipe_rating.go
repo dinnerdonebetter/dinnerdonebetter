@@ -65,7 +65,7 @@ func (q *repository) GetRecipeRating(ctx context.Context, recipeID, recipeRating
 
 	result, err := q.generatedQuerier.GetRecipeRating(ctx, q.db, recipeRatingID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe rating existence check")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe rating")
 	}
 
 	recipeRating := &types.RecipeRating{

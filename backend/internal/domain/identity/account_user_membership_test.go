@@ -1,7 +1,6 @@
 package identity
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
@@ -15,7 +14,7 @@ func TestTransferAccountOwnershipInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &AccountOwnershipTransferInput{
 			CurrentOwner: "123",
 			NewOwner:     "321",
@@ -32,7 +31,7 @@ func TestModifyUserPermissionsInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ModifyUserPermissionsInput{
 			NewRole: authorization.AccountMemberRole.String(),
 			Reason:  t.Name(),

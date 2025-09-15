@@ -53,7 +53,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -222,7 +222,7 @@ func TestQuerier_GetUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetUser(ctx, "")
@@ -237,7 +237,7 @@ func TestQuerier_GetUserWithUnverifiedTwoFactorSecret(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetUserWithUnverifiedTwoFactorSecret(ctx, "")
@@ -252,7 +252,7 @@ func TestQuerier_GetUserByEmail(T *testing.T) {
 	T.Run("with invalid email", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetUserByEmail(ctx, "")
@@ -267,7 +267,7 @@ func TestQuerier_GetUserByUsername(T *testing.T) {
 	T.Run("with invalid username", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetUserByUsername(ctx, "")
@@ -282,7 +282,7 @@ func TestQuerier_GetAdminUserByUsername(T *testing.T) {
 	T.Run("with empty username", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAdminUserByUsername(ctx, "")
@@ -297,7 +297,7 @@ func TestQuerier_SearchForUsersByUsername(T *testing.T) {
 	T.Run("with invalid username", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.SearchForUsersByUsername(ctx, "", nil)
@@ -313,7 +313,7 @@ func TestQuerier_MarkUserAsIndexed(T *testing.T) {
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkUserAsIndexed(ctx, ""))
@@ -326,7 +326,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateUser(ctx, nil)
@@ -341,7 +341,7 @@ func TestQuerier_UpdateUsername(T *testing.T) {
 	T.Run("with empty user", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateUserUsername(ctx, "", t.Name()))
@@ -356,7 +356,7 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateUserDetails(ctx, exampleUser.ID, nil))
@@ -371,7 +371,7 @@ func TestQuerier_UpdateUserAvatar(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateUserAvatar(ctx, exampleUser.ID, ""))
@@ -386,7 +386,7 @@ func TestQuerier_UpdateUserPassword(T *testing.T) {
 
 		exampleHashedPassword := "$argon2i$v=19$m=64,t=10,p=4$RjFtMmRmU2lGYU9CMk1mMw$cuGR9AhTczPR6xDOSAMW+SvEYFyLEIS+7nlRdC9f6ys"
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateUserPassword(ctx, "", exampleHashedPassword))
@@ -397,7 +397,7 @@ func TestQuerier_UpdateUserPassword(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateUserPassword(ctx, exampleUser.ID, ""))
@@ -412,7 +412,7 @@ func TestQuerier_UpdateUserTwoFactorSecret(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateUserTwoFactorSecret(ctx, "", exampleUser.TwoFactorSecret))
@@ -423,7 +423,7 @@ func TestQuerier_UpdateUserTwoFactorSecret(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateUserTwoFactorSecret(ctx, exampleUser.ID, ""))
@@ -436,7 +436,7 @@ func TestQuerier_MarkUserTwoFactorSecretAsVerified(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkUserTwoFactorSecretAsVerified(ctx, ""))
@@ -449,7 +449,7 @@ func TestQuerier_MarkUserTwoFactorSecretAsUnverified(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleSecret := fakes.BuildFakeID()
 		c := buildInertClientForTest(t)
 
@@ -459,7 +459,7 @@ func TestQuerier_MarkUserTwoFactorSecretAsUnverified(T *testing.T) {
 	T.Run("with invalid secret", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUserID := fakes.BuildFakeID()
 		c := buildInertClientForTest(t)
 
@@ -473,7 +473,7 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveUser(ctx, ""))
@@ -484,7 +484,7 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 
 		exampleUserID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildMockSQLTestClient(t)
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
@@ -499,7 +499,7 @@ func TestQuerier_GetUserByEmailAddressVerificationToken(T *testing.T) {
 	T.Run("with missing token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetUserByEmailAddressVerificationToken(ctx, "")
@@ -516,7 +516,7 @@ func TestQuerier_MarkUserEmailAddressAsVerified(T *testing.T) {
 
 		exampleInput := authfakes.BuildFakeEmailAddressVerificationRequestInput()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		err := c.MarkUserEmailAddressAsVerified(ctx, "", exampleInput.Token)
@@ -528,7 +528,7 @@ func TestQuerier_MarkUserEmailAddressAsVerified(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		err := c.MarkUserEmailAddressAsVerified(ctx, exampleUser.ID, "")

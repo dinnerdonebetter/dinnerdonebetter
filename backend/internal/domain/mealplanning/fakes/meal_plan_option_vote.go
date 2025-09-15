@@ -60,5 +60,5 @@ func BuildFakeMealPlanOptionVoteCreationRequestInput() *types.MealPlanOptionVote
 // BuildFakeMealPlanOptionVoteDatabaseCreationInput builds a faked MealPlanOptionVotesDatabaseCreationInput.
 func BuildFakeMealPlanOptionVoteDatabaseCreationInput() *types.MealPlanOptionVotesDatabaseCreationInput {
 	mealPlanOptionVote := BuildFakeMealPlanOptionVote()
-	return converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(mealPlanOptionVote)
+	return converters.ConvertMealPlanOptionVoteToMealPlanOptionVotesDatabaseCreationInput(mealPlanOptionVote)
 }

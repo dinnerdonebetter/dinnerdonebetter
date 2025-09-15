@@ -18,7 +18,7 @@ func createMealPlanOptionVoteForTest(t *testing.T, ctx context.Context, mealPlan
 	t.Helper()
 
 	// create
-	dbInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(exampleMealPlanOptionVote)
+	dbInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVotesDatabaseCreationInput(exampleMealPlanOptionVote)
 
 	rawCreated, err := dbc.CreateMealPlanOptionVote(ctx, dbInput)
 	assert.NoError(t, err)
@@ -47,7 +47,7 @@ func TestQuerier_Integration_MealPlanOptionVotes(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -105,7 +105,7 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
@@ -121,7 +121,7 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 	T.Run("with invalid meal plan option ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEventID := fakes.BuildFakeID()
@@ -137,7 +137,7 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 	T.Run("with invalid meal plan option vote ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEventID := fakes.BuildFakeID()
@@ -161,7 +161,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanOptionVote(ctx, "", exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
@@ -176,7 +176,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, "", exampleMealPlanOptionVote.ID)
@@ -191,7 +191,7 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, "")
@@ -210,7 +210,7 @@ func TestQuerier_GetMealPlanOptionVotes(T *testing.T) {
 		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanOptionVotes(ctx, "", exampleMealPlanEventID, exampleMealPlanOptionID, filter)
@@ -225,7 +225,7 @@ func TestQuerier_GetMealPlanOptionVotes(T *testing.T) {
 		exampleMealPlanID := fakes.BuildFakeID()
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanOptionVotes(ctx, exampleMealPlanID, exampleMealPlanEventID, "", filter)
@@ -240,7 +240,7 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateMealPlanOptionVote(ctx, nil)
@@ -255,7 +255,7 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateMealPlanOptionVote(ctx, nil))
@@ -272,7 +272,7 @@ func TestQuerier_ArchiveMealPlanOptionVote(T *testing.T) {
 		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, "", exampleMealPlanOptionVote.ID))
@@ -285,7 +285,7 @@ func TestQuerier_ArchiveMealPlanOptionVote(T *testing.T) {
 		exampleMealPlanEventID := fakes.BuildFakeID()
 		exampleMealPlanOptionID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, ""))

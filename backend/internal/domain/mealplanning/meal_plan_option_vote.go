@@ -70,6 +70,18 @@ type (
 		Abstain                 bool   `json:"abstain"`
 	}
 
+	// MealPlanOptionVoteDatabaseCreationInput represents what a user could set as input for creating meal plan option votes.
+	MealPlanOptionVoteDatabaseCreationInput struct {
+		_ struct{} `json:"-"`
+
+		ID                      string `json:"-"`
+		Notes                   string `json:"-"`
+		ByUser                  string `json:"-"`
+		BelongsToMealPlanOption string `json:"-"`
+		Rank                    uint8  `json:"-"`
+		Abstain                 bool   `json:"-"`
+	}
+
 	// MealPlanOptionVoteCreationRequestInput is a pending container for multiple votes.
 	MealPlanOptionVoteCreationRequestInput struct {
 		_ struct{} `json:"-"`
@@ -81,8 +93,7 @@ type (
 	MealPlanOptionVotesDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		ByUser string                             `json:"-"`
-		Votes  []*MealPlanOptionVoteCreationInput `json:"-"`
+		Votes []*MealPlanOptionVoteDatabaseCreationInput `json:"-"`
 	}
 
 	// MealPlanOptionVoteUpdateRequestInput represents what a user could set as input for updating meal plan option votes.

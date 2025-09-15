@@ -63,7 +63,7 @@ func Test_ProvideIndexManager(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg, shutdownFunc := buildContainerBackedElasticsearchConfig(t, ctx)
 		defer func() {
 			require.NoError(t, shutdownFunc(ctx))
@@ -77,7 +77,7 @@ func Test_ProvideIndexManager(T *testing.T) {
 	T.Run("without available instance", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		cfg := &Config{}
 
 		im, err := ProvideIndexManager[example](ctx, nil, nil, cfg, t.Name(), circuitbreaking.NewNoopCircuitBreaker())

@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -40,7 +39,7 @@ func TestValidInstrumentCreationRequestInput_Validate(T *testing.T) {
 			IconPath:    t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -49,7 +48,7 @@ func TestValidInstrumentCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidInstrumentCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -65,7 +64,7 @@ func TestValidInstrumentDatabaseCreationInput_Validate(T *testing.T) {
 			Name: t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -74,7 +73,7 @@ func TestValidInstrumentDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &ValidInstrumentDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -91,7 +90,7 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			IconPath:    pointer.To(t.Name()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -100,7 +99,7 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidInstrumentUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

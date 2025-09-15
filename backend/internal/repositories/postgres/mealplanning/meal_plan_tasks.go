@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 var (
@@ -36,7 +36,7 @@ func (q *repository) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 
-	result, err := q.generatedQuerier.CheckMealPlanTaskExistence(ctx, q.db, &generated2.CheckMealPlanTaskExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanTaskExistence(ctx, q.db, &generated.CheckMealPlanTaskExistenceParams{
 		MealPlanID:     mealPlanID,
 		MealPlanTaskID: mealPlanTaskID,
 	})
@@ -64,7 +64,7 @@ func (q *repository) GetMealPlanTask(ctx context.Context, mealPlanTaskID string)
 
 	result, err := q.generatedQuerier.GetMealPlanTask(ctx, q.db, mealPlanTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan task existence check")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan task")
 	}
 
 	mealPlanTask := &types.MealPlanTask{
@@ -112,7 +112,7 @@ func (q *repository) createMealPlanTask(ctx context.Context, querier database.SQ
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 
 	// create the meal plan task.
-	if err := q.generatedQuerier.CreateMealPlanTask(ctx, querier, &generated2.CreateMealPlanTaskParams{
+	if err := q.generatedQuerier.CreateMealPlanTask(ctx, querier, &generated.CreateMealPlanTaskParams{
 		ID:                      input.ID,
 		Status:                  types.MealPlanTaskStatusUnfinished,
 		StatusExplanation:       input.StatusExplanation,
@@ -334,9 +334,9 @@ func (q *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.
 		newStatus = *input.Status
 	}
 
-	if err := q.generatedQuerier.ChangeMealPlanTaskStatus(ctx, q.db, &generated2.ChangeMealPlanTaskStatusParams{
+	if err := q.generatedQuerier.ChangeMealPlanTaskStatus(ctx, q.db, &generated.ChangeMealPlanTaskStatusParams{
 		ID:                input.ID,
-		Status:            generated2.PrepStepStatus(newStatus),
+		Status:            generated.PrepStepStatus(newStatus),
 		StatusExplanation: input.StatusExplanation,
 		CompletedAt:       database.NullTimeFromTimePointer(settledAt),
 	}); err != nil {

@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings/generated"
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 type repository struct {
 	tracer            tracing.Tracer
 	logger            logging.Logger
-	generatedQuerier  generated2.Querier
+	generatedQuerier  generated.Querier
 	auditLogEntryRepo audit.Repository
 	db                *sql.DB
 	database.Client
@@ -36,7 +36,7 @@ func ProvideSettingsRepository(
 		Client:            client,
 		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		generatedQuerier:  generated2.New(),
+		generatedQuerier:  generated.New(),
 		auditLogEntryRepo: auditLogEntryRepo,
 		logger:            logging.EnsureLogger(logger).WithName(o11yName),
 	}

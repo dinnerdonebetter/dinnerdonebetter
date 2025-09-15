@@ -54,7 +54,7 @@ func TestQuerier_Integration_Accounts(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -117,7 +117,7 @@ func TestQuerier_GetAccount(T *testing.T) {
 	T.Run("with invalid account ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleUserID := fakes.BuildFakeID()
 		exampleAccount := fakes.BuildFakeAccount()
@@ -139,7 +139,7 @@ func TestQuerier_GetAccounts(T *testing.T) {
 
 		filter := filtering.DefaultQueryFilter()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccounts(ctx, "", filter)
@@ -154,7 +154,7 @@ func TestQuerier_CreateAccount(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateAccount(ctx, nil)
@@ -173,7 +173,7 @@ func TestQuerier_UpdateAccount(T *testing.T) {
 		exampleAccount := fakes.BuildFakeAccount()
 		exampleAccount.BelongsToUser = exampleUserID
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateAccount(ctx, nil))
@@ -188,7 +188,7 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 
 		exampleUserID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveAccount(ctx, "", exampleUserID))
@@ -199,7 +199,7 @@ func TestQuerier_ArchiveAccount(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveAccount(ctx, exampleAccountID, ""))

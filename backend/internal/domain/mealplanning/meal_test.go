@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -27,7 +26,7 @@ func TestMealCreationRequestInput_ValidateWithContext(T *testing.T) {
 			},
 		}
 
-		assert.NoError(t, x.ValidateWithContext(context.Background()))
+		assert.NoError(t, x.ValidateWithContext(t.Context()))
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -35,7 +34,7 @@ func TestMealCreationRequestInput_ValidateWithContext(T *testing.T) {
 
 		x := &MealCreationRequestInput{}
 
-		assert.Error(t, x.ValidateWithContext(context.Background()))
+		assert.Error(t, x.ValidateWithContext(t.Context()))
 	})
 
 	T.Run("with invalid component", func(t *testing.T) {
@@ -49,7 +48,7 @@ func TestMealCreationRequestInput_ValidateWithContext(T *testing.T) {
 			},
 		}
 
-		assert.Error(t, x.ValidateWithContext(context.Background()))
+		assert.Error(t, x.ValidateWithContext(t.Context()))
 	})
 }
 
@@ -72,7 +71,7 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -81,7 +80,7 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &MealUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -98,7 +97,7 @@ func TestMealComponentCreationRequestInput_ValidateWithContext(T *testing.T) {
 			ComponentType: MealComponentTypesAmuseBouche,
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 }
@@ -109,7 +108,7 @@ func TestMealDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &MealDatabaseCreationInput{
 			Name: t.Name(),
 			Components: []*MealComponentDatabaseCreationInput{
@@ -130,7 +129,7 @@ func TestMealUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &MealUpdateRequestInput{
 			Name:        pointer.To(t.Name()),
 			Description: pointer.To(t.Name()),

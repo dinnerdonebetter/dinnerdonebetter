@@ -67,7 +67,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		actual, ok := a.(*redisPublisher)
 		require.True(t, ok)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		inputData := &struct {
 			Name string `json:"name"`
 		}{
@@ -108,7 +108,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 		actual, ok := a.(*redisPublisher)
 		require.True(t, ok)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		inputData := &struct {
 			Name json.Number `json:"name"`
 		}{

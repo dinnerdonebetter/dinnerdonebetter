@@ -1,7 +1,6 @@
 package identity
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +12,7 @@ func TestAccountInvitationCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &AccountInvitationCreationRequestInput{
 			ToName: t.Name(),
 		}
@@ -28,7 +27,7 @@ func TestAccountInvitationUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &AccountInvitationUpdateRequestInput{
 			Token: t.Name(),
 		}

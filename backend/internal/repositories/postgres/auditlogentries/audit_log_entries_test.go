@@ -55,7 +55,7 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -104,7 +104,7 @@ func TestQuerier_GetAuditLogEntry(T *testing.T) {
 	T.Run("with invalid audit log entry ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAuditLogEntry(ctx, "")
@@ -119,7 +119,7 @@ func TestQuerier_CreateAuditLogEntry(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateAuditLogEntry(ctx, c.db, nil)

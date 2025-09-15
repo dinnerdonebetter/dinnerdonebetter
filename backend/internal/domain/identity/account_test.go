@@ -1,7 +1,6 @@
 package identity
 
 import (
-	"context"
 	"testing"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -29,7 +28,7 @@ func TestAccountCreationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &AccountCreationRequestInput{
 			Name: t.Name(),
 		}
@@ -44,7 +43,7 @@ func TestAccountUpdateInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		name := t.Name()
 
 		x := &AccountUpdateRequestInput{

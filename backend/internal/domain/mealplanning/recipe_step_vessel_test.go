@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -54,7 +53,7 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -63,7 +62,7 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepVesselCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -79,7 +78,7 @@ func TestRecipeStepVesselDatabaseCreationInput_Validate(T *testing.T) {
 			BelongsToRecipeStep: t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -88,7 +87,7 @@ func TestRecipeStepVesselDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &RecipeStepVesselDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -110,7 +109,7 @@ func TestRecipeStepVesselUpdateRequestInput_Validate(T *testing.T) {
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -119,7 +118,7 @@ func TestRecipeStepVesselUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepVesselUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

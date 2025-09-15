@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -31,7 +30,7 @@ func TestAccountInstrumentOwnershipCreationRequestInput_ValidateWithContext(T *t
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &AccountInstrumentOwnershipCreationRequestInput{
 			Quantity:          1,
 			ValidInstrumentID: t.Name(),
@@ -47,7 +46,7 @@ func TestAccountInstrumentOwnershipDatabaseCreationInput_ValidateWithContext(T *
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &AccountInstrumentOwnershipDatabaseCreationInput{
 			ID:                t.Name(),
 			Quantity:          1,
@@ -64,7 +63,7 @@ func TestAccountInstrumentOwnershipUpdateRequestInput_ValidateWithContext(T *tes
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &AccountInstrumentOwnershipUpdateRequestInput{
 			Quantity:          pointer.To[uint16](1),
 			ValidInstrumentID: pointer.To(t.Name()),

@@ -1,6 +1,9 @@
 package converters
 
-import types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+import (
+	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+)
 
 // ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput creates a MealPlanOptionUpdateRequestInput from a BelongsToMealPlan.
 func ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(input *types.MealPlanOption) *types.MealPlanOptionUpdateRequestInput {
@@ -17,9 +20,12 @@ func ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(input *types.MealPl
 // ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput creates a MealPlanOptionDatabaseCreationInput from a MealPlanOptionCreationRequestInput.
 func ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input *types.MealPlanOptionCreationRequestInput) *types.MealPlanOptionDatabaseCreationInput {
 	x := &types.MealPlanOptionDatabaseCreationInput{
-		MealID:    input.MealID,
-		MealScale: input.MealScale,
-		Notes:     input.Notes,
+		ID:                 identifiers.New(),
+		MealID:             input.MealID,
+		MealScale:          input.MealScale,
+		Notes:              input.Notes,
+		AssignedCook:       input.AssignedCook,
+		AssignedDishwasher: input.AssignedDishwasher,
 	}
 
 	return x
@@ -41,10 +47,10 @@ func ConvertMealPlanOptionVoteToMealPlanOptionVoteCreationRequestInput(mealPlanO
 	}
 }
 
-// ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput builds a MealPlanOptionVotesDatabaseCreationInput from a meal plan option vote.
-func ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVotesDatabaseCreationInput {
+// ConvertMealPlanOptionVoteToMealPlanOptionVotesDatabaseCreationInput builds a MealPlanOptionVotesDatabaseCreationInput from a meal plan option vote.
+func ConvertMealPlanOptionVoteToMealPlanOptionVotesDatabaseCreationInput(mealPlanOptionVote *types.MealPlanOptionVote) *types.MealPlanOptionVotesDatabaseCreationInput {
 	return &types.MealPlanOptionVotesDatabaseCreationInput{
-		Votes: []*types.MealPlanOptionVoteCreationInput{
+		Votes: []*types.MealPlanOptionVoteDatabaseCreationInput{
 			{
 				ID:                      mealPlanOptionVote.ID,
 				Rank:                    mealPlanOptionVote.Rank,
@@ -54,7 +60,6 @@ func ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(mealPlan
 				ByUser:                  mealPlanOptionVote.ByUser,
 			},
 		},
-		ByUser: mealPlanOptionVote.ByUser,
 	}
 }
 

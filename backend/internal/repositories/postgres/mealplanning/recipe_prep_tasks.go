@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 var (
@@ -36,7 +36,7 @@ func (q *repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipeP
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	result, err := q.generatedQuerier.CheckRecipePrepTaskExistence(ctx, q.db, &generated2.CheckRecipePrepTaskExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipePrepTaskExistence(ctx, q.db, &generated.CheckRecipePrepTaskExistenceParams{
 		RecipeID:         recipeID,
 		RecipePrepTaskID: recipePrepTaskID,
 	})
@@ -133,14 +133,14 @@ func (q *repository) createRecipePrepTask(ctx context.Context, querier database.
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
 
 	// create the recipe prep task.
-	if err := q.generatedQuerier.CreateRecipePrepTask(ctx, querier, &generated2.CreateRecipePrepTaskParams{
+	if err := q.generatedQuerier.CreateRecipePrepTask(ctx, querier, &generated.CreateRecipePrepTaskParams{
 		ID:                                     input.ID,
 		Name:                                   input.Name,
 		Description:                            input.Description,
 		Notes:                                  input.Notes,
 		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
 		BelongsToRecipe:                        input.BelongsToRecipe,
-		StorageType:                            generated2.NullStorageContainerType{StorageContainerType: generated2.StorageContainerType(input.StorageType), Valid: true},
+		StorageType:                            generated.NullStorageContainerType{StorageContainerType: generated.StorageContainerType(input.StorageType), Valid: true},
 		MinimumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Min),
 		MaximumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(input.StorageTemperatureInCelsius.Max),
 		MaximumTimeBufferBeforeRecipeInSeconds: database.NullInt32FromUint32Pointer(input.TimeBufferBeforeRecipeInSeconds.Max),
@@ -231,7 +231,7 @@ func (q *repository) createRecipePrepTaskStep(ctx context.Context, querier datab
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, input.BelongsToRecipePrepTask)
 
 	// create the meal plan.
-	if err := q.generatedQuerier.CreateRecipePrepTaskStep(ctx, querier, &generated2.CreateRecipePrepTaskStepParams{
+	if err := q.generatedQuerier.CreateRecipePrepTaskStep(ctx, querier, &generated.CreateRecipePrepTaskStepParams{
 		ID:                      input.ID,
 		BelongsToRecipePrepTask: input.BelongsToRecipePrepTask,
 		BelongsToRecipeStep:     input.BelongsToRecipeStep,
@@ -337,7 +337,7 @@ func (q *repository) UpdateRecipePrepTask(ctx context.Context, updated *mealplan
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateRecipePrepTask(ctx, q.db, &generated2.UpdateRecipePrepTaskParams{
+	if _, err := q.generatedQuerier.UpdateRecipePrepTask(ctx, q.db, &generated.UpdateRecipePrepTaskParams{
 		Name:                                   updated.Name,
 		Description:                            updated.Description,
 		Notes:                                  updated.Notes,
@@ -345,7 +345,7 @@ func (q *repository) UpdateRecipePrepTask(ctx context.Context, updated *mealplan
 		ExplicitStorageInstructions:            updated.ExplicitStorageInstructions,
 		MinimumTimeBufferBeforeRecipeInSeconds: int32(updated.TimeBufferBeforeRecipeInSeconds.Min),
 		MaximumTimeBufferBeforeRecipeInSeconds: database.NullInt32FromUint32Pointer(updated.TimeBufferBeforeRecipeInSeconds.Max),
-		StorageType:                            generated2.NullStorageContainerType{StorageContainerType: generated2.StorageContainerType(updated.StorageType), Valid: true},
+		StorageType:                            generated.NullStorageContainerType{StorageContainerType: generated.StorageContainerType(updated.StorageType), Valid: true},
 		MinimumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(updated.StorageTemperatureInCelsius.Min),
 		MaximumStorageTemperatureInCelsius:     database.NullStringFromFloat32Pointer(updated.StorageTemperatureInCelsius.Max),
 		BelongsToRecipe:                        updated.BelongsToRecipe,

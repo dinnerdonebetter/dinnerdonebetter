@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -56,7 +55,7 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -65,7 +64,7 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepProductCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -87,7 +86,7 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 			StorageDurationInSeconds:    types.OptionalUint32Range{Max: pointer.To(fake.Uint32()), Min: pointer.To(fake.Uint32())},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -96,7 +95,7 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepProductUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -21,7 +20,7 @@ func TestValidPreparationVesselCreationRequestInput_Validate(T *testing.T) {
 			ValidVesselID:      t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -30,7 +29,7 @@ func TestValidPreparationVesselCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidPreparationVesselCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -47,7 +46,7 @@ func TestValidPreparationVesselUpdateRequestInput_Validate(T *testing.T) {
 			ValidVesselID:      pointer.To(t.Name()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -56,7 +55,7 @@ func TestValidPreparationVesselUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidPreparationVesselUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -67,7 +66,7 @@ func TestValidPreparationVesselCreationRequestInput_ValidateWithContext(T *testi
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidPreparationVesselCreationRequestInput{
 			ValidPreparationID: t.Name(),
 			ValidVesselID:      t.Name(),
@@ -83,7 +82,7 @@ func TestValidPreparationVesselDatabaseCreationInput_ValidateWithContext(T *test
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidPreparationVesselDatabaseCreationInput{
 			ID:                 t.Name(),
 			ValidPreparationID: t.Name(),
@@ -100,7 +99,7 @@ func TestValidPreparationVesselUpdateRequestInput_ValidateWithContext(T *testing
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidPreparationVesselUpdateRequestInput{
 			ValidPreparationID: pointer.To(t.Name()),
 			ValidVesselID:      pointer.To(t.Name()),

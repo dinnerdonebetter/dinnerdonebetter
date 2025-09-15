@@ -333,7 +333,6 @@ func TestAccounts_Inviting(T *testing.T) {
 
 		// create the invitation for the user
 		invitation, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
-			AccountID: accountID,
 			Input: &identitysvc.AccountInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToName:  t.Name(),
@@ -412,7 +411,6 @@ func TestAccounts_Inviting(T *testing.T) {
 
 		// create the invitation for the user
 		invitation, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
-			AccountID: accountID,
 			Input: &identitysvc.AccountInvitationCreationRequestInput{
 				Note:   t.Name(),
 				ToName: t.Name(),
@@ -485,9 +483,6 @@ func TestAccounts_Inviting(T *testing.T) {
 
 		// create the inviting user and get the account ID to send invites for
 		_, testClient := createUserAndClientForTest(t)
-		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
-		require.NoError(t, err)
-		accountID := accountRes.Result.ID
 
 		// create a webhook (to demonstrate access with later)
 		createdWebhook := createWebhookForTest(t, testClient)
@@ -509,7 +504,6 @@ func TestAccounts_Inviting(T *testing.T) {
 
 		// create the invitation for the user
 		invitation, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
-			AccountID: accountID,
 			Input: &identitysvc.AccountInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToName:  t.Name(),
@@ -568,9 +562,6 @@ func TestAccounts_Inviting(T *testing.T) {
 
 		// create the inviting user and get the account ID to send invites for
 		_, testClient := createUserAndClientForTest(t)
-		accountRes, err := testClient.GetActiveAccount(ctx, &authsvc.GetActiveAccountRequest{})
-		require.NoError(t, err)
-		accountID := accountRes.Result.ID
 
 		// create a user to invite
 		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
@@ -589,7 +580,6 @@ func TestAccounts_Inviting(T *testing.T) {
 
 		// create the invitation for the user
 		invitation, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
-			AccountID: accountID,
 			Input: &identitysvc.AccountInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToName:  t.Name(),
@@ -699,7 +689,6 @@ func TestAccounts_UsersHaveBackupAccountCreatedForThemWhenRemovedFromLastAccount
 
 		inviteeEmailAddress := fmt.Sprintf("some_fake_email%d@testing.com", time.Now().UnixMicro())
 		inviteRes, err := testClient.CreateAccountInvitation(ctx, &identitysvc.CreateAccountInvitationRequest{
-			AccountID: accountID,
 			Input: &identitysvc.AccountInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToEmail: inviteeEmailAddress,

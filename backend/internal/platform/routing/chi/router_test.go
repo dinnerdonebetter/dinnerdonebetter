@@ -285,7 +285,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 
 		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &Config{})
 		l := logging.NewNoopLogger()
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleKey := "blah"
 
 		rf := r.BuildRouteParamIDFetcher(l, exampleKey, "desc")
@@ -313,7 +313,7 @@ func Test_router_BuildRouteParamIDFetcher(T *testing.T) {
 
 		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &Config{})
 		l := logging.NewNoopLogger()
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleKey := "blah"
 
 		rf := r.BuildRouteParamIDFetcher(l, exampleKey, "desc")
@@ -335,7 +335,7 @@ func Test_router_BuildRouteParamStringIDFetcher(T *testing.T) {
 		t.Parallel()
 
 		r := buildRouter(nil, nil, tracing.NewNoopTracerProvider(), metrics.NewNoopMetricsProvider(), &Config{})
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleKey := "blah"
 
 		rf := r.BuildRouteParamStringIDFetcher(exampleKey)

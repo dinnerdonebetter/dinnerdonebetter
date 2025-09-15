@@ -1,7 +1,6 @@
 package indexing
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
@@ -24,7 +23,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		identityRepo := &identitymock.RepositoryMock{}
@@ -59,7 +58,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleUser := fakes.BuildFakeUser()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		identityRepo := &identitymock.RepositoryMock{}

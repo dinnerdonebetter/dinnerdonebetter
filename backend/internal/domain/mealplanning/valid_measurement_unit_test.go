@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -42,7 +41,7 @@ func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 			Metric: true,
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -55,7 +54,7 @@ func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 			Imperial: true,
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 
@@ -64,7 +63,7 @@ func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidMeasurementUnitCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -81,7 +80,7 @@ func TestValidMeasurementUnitDatabaseCreationInput_Validate(T *testing.T) {
 			Imperial: true,
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -95,7 +94,7 @@ func TestValidMeasurementUnitDatabaseCreationInput_Validate(T *testing.T) {
 			Metric:   true,
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 
@@ -104,7 +103,7 @@ func TestValidMeasurementUnitDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &ValidMeasurementUnitDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -119,7 +118,7 @@ func TestValidMeasurementUnitUpdateRequestInput_Validate(T *testing.T) {
 			Name: pointer.To(t.Name()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -128,7 +127,7 @@ func TestValidMeasurementUnitUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidMeasurementUnitUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

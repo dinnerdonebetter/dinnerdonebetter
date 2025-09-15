@@ -6,6 +6,7 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
@@ -188,9 +189,18 @@ func (s *serviceImpl) CreateMeal(ctx context.Context, request *mealplanningsvc.C
 
 	logger := s.logger.WithSpan(span)
 
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	if request.Input == nil {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
 	input := converters.ConvertGRPCMealCreationRequestInputToMealCreationRequestInput(request.Input)
 
-	created, err := s.mealPlanningManager.CreateMeal(ctx, input)
+	created, err := s.mealPlanningManager.CreateMeal(ctx, sessionContextData.GetUserID(), input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal")
 	}
@@ -211,9 +221,14 @@ func (s *serviceImpl) CreateMealPlan(ctx context.Context, request *mealplannings
 
 	logger := s.logger.WithSpan(span)
 
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
 	input := converters.ConvertGRPCMealPlanCreationRequestInputToMealPlanCreationRequestInput(request.Input)
 
-	created, err := s.mealPlanningManager.CreateMealPlan(ctx, input)
+	created, err := s.mealPlanningManager.CreateMealPlan(ctx, sessionContextData.GetActiveAccountID(), sessionContextData.GetUserID(), input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan")
 	}
@@ -311,9 +326,17 @@ func (s *serviceImpl) CreateMealPlanOptionVote(ctx context.Context, request *mea
 		keys.MealPlanIDKey: request.MealPlanID,
 	}, span, s.logger)
 
-	input := converters.ConvertGRPCMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteCreationRequestInput(request.Input)
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
 
-	created, err := s.mealPlanningManager.CreateMealPlanOptionVotes(ctx, input)
+	input := converters.ConvertGRPCMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteCreationRequestInput(request.Input)
+	for i := range input.Votes {
+		input.Votes[i].ByUser = sessionContextData.GetUserID()
+	}
+
+	created, err := s.mealPlanningManager.CreateMealPlanOptionVotes(ctx, sessionContextData.GetUserID(), input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan option vote")
 	}
@@ -467,8 +490,35 @@ func (s *serviceImpl) GetMealPlan(ctx context.Context, request *mealplanningsvc.
 }
 
 func (s *serviceImpl) GetMealPlansForAccount(ctx context.Context, request *mealplanningsvc.GetMealPlansForAccountRequest) (*mealplanningsvc.GetMealPlansForAccountResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	logger := observability.ObserveValues(nil, span, s.logger)
+
+	mealPlans, _, err := s.mealPlanningManager.ListMealPlans(ctx, sessionContextData.GetActiveAccountID(), filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to list meal plans")
+	}
+
+	x := &mealplanningsvc.GetMealPlansForAccountResponse{
+		ResponseDetails: &types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		},
+		Filter: request.Filter,
+	}
+
+	for _, mealPlan := range mealPlans {
+		x.Results = append(x.Results, converters.ConvertMealPlanToGRPCMealPlan(mealPlan))
+	}
+
+	return x, nil
 }
 
 func (s *serviceImpl) GetMealPlanEvent(ctx context.Context, request *mealplanningsvc.GetMealPlanEventRequest) (*mealplanningsvc.GetMealPlanEventResponse, error) {
@@ -885,7 +935,7 @@ func (s *serviceImpl) SearchForMeals(ctx context.Context, request *mealplannings
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
 
-	meals, err := s.mealPlanningManager.SearchMeals(ctx, request.Query, request.UseSearchService, filter)
+	meals, err := s.mealPlanningManager.SearchMeals(ctx, request.Query, !request.UseSearchService, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to search for meals")
 	}

@@ -56,8 +56,7 @@ message CreateAccountResponse {
 
 // CreateAccountInvitation
 message CreateAccountInvitationRequest {
-  string accountID = 1;
-  AccountInvitationCreationRequestInput input = 2;
+  AccountInvitationCreationRequestInput input = 1;
 }
 
 message CreateAccountInvitationResponse {

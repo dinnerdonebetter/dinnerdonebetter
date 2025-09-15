@@ -1,7 +1,6 @@
 package posthog
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,6 +14,6 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		cfg := &Config{APIKey: t.Name()}
 
-		require.NoError(t, cfg.ValidateWithContext(context.Background()))
+		require.NoError(t, cfg.ValidateWithContext(t.Context()))
 	})
 }

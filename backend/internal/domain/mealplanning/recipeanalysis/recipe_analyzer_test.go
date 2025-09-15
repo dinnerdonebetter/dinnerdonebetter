@@ -1,7 +1,6 @@
 package recipeanalysis
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -32,7 +31,7 @@ func TestRecipeGrapher_makeGraphForRecipe(T *testing.T) {
 
 		g := newAnalyzerForTest(t)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		r := &mealplanning.Recipe{
 			Steps: []*mealplanning.RecipeStep{
 				{},
@@ -53,7 +52,7 @@ func TestRecipeGrapher_makeDAGForRecipe(T *testing.T) {
 
 		g := newAnalyzerForTest(t)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		r := &mealplanning.Recipe{
 			Steps: []*mealplanning.RecipeStep{
 				{},
@@ -73,7 +72,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 		t.Parallel()
 
 		g := newAnalyzerForTest(t)
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMeal := fakes.BuildFakeMeal()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
@@ -159,7 +158,7 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 	T.Run("basic", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		g := newAnalyzerForTest(t)
 
 		dice := fakes.BuildFakeValidPreparation()

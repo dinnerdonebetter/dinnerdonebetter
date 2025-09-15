@@ -12,7 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries/generated"
 )
 
 var (
@@ -76,7 +76,7 @@ func (q *repository) GetAuditLogEntriesForUser(ctx context.Context, userID strin
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetAuditLogEntriesForUser(ctx, q.db, &generated2.GetAuditLogEntriesForUserParams{
+	results, err := q.generatedQuerier.GetAuditLogEntriesForUser(ctx, q.db, &generated.GetAuditLogEntriesForUserParams{
 		BelongsToUser: database.NullStringFromString(userID),
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -138,7 +138,7 @@ func (q *repository) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Conte
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetAuditLogEntriesForUserAndResourceType(ctx, q.db, &generated2.GetAuditLogEntriesForUserAndResourceTypeParams{
+	results, err := q.generatedQuerier.GetAuditLogEntriesForUserAndResourceType(ctx, q.db, &generated.GetAuditLogEntriesForUserAndResourceTypeParams{
 		BelongsToUser: database.NullStringFromString(userID),
 		Resources:     resourceTypes,
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -195,7 +195,7 @@ func (q *repository) GetAuditLogEntriesForAccount(ctx context.Context, accountID
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetAuditLogEntriesForAccount(ctx, q.db, &generated2.GetAuditLogEntriesForAccountParams{
+	results, err := q.generatedQuerier.GetAuditLogEntriesForAccount(ctx, q.db, &generated.GetAuditLogEntriesForAccountParams{
 		BelongsToAccount: database.NullStringFromString(accountID),
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -257,7 +257,7 @@ func (q *repository) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Co
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetAuditLogEntriesForAccountAndResourceType(ctx, q.db, &generated2.GetAuditLogEntriesForAccountAndResourceTypeParams{
+	results, err := q.generatedQuerier.GetAuditLogEntriesForAccountAndResourceType(ctx, q.db, &generated.GetAuditLogEntriesForAccountAndResourceTypeParams{
 		BelongsToAccount: database.NullStringFromString(accountID),
 		Resources:        resourceTypes,
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -314,11 +314,11 @@ func (q *repository) CreateAuditLogEntry(ctx context.Context, querier database.S
 		return nil, observability.PrepareAndLogError(err, logger, span, "serializing audit log change list")
 	}
 
-	if err = q.generatedQuerier.CreateAuditLogEntry(ctx, querier, &generated2.CreateAuditLogEntryParams{
+	if err = q.generatedQuerier.CreateAuditLogEntry(ctx, querier, &generated.CreateAuditLogEntryParams{
 		ID:               input.ID,
 		ResourceType:     input.ResourceType,
 		RelevantID:       input.RelevantID,
-		EventType:        generated2.AuditLogEventType(input.EventType),
+		EventType:        generated.AuditLogEventType(input.EventType),
 		Changes:          marshaledChanges,
 		BelongsToUser:    sql.NullString{String: input.BelongsToUser, Valid: strings.TrimSpace(input.BelongsToUser) != ""},
 		BelongsToAccount: database.NullStringFromStringPointer(input.BelongsToAccount),

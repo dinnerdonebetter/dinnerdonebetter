@@ -1,7 +1,6 @@
 package migrations
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -27,7 +26,7 @@ func TestQuerier_Migrate(T *testing.T) {
 		migrator := NewMigrator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db, config)
 		migrator.migrateOnce.Do(func() {})
 
-		ctx := context.Background()
+		ctx := t.Context()
 		assert.NoError(t, migrator.Migrate(ctx))
 
 		require.NoError(t, c.Terminate(ctx))

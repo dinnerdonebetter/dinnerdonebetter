@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 var (
@@ -43,7 +43,7 @@ func (q *repository) RecipeStepProductExists(ctx context.Context, recipeID, reci
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	result, err := q.generatedQuerier.CheckRecipeStepProductExistence(ctx, q.db, &generated2.CheckRecipeStepProductExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipeStepProductExistence(ctx, q.db, &generated.CheckRecipeStepProductExistenceParams{
 		RecipeStepID:        recipeStepID,
 		RecipeStepProductID: recipeStepProductID,
 		RecipeID:            recipeID,
@@ -80,7 +80,7 @@ func (q *repository) GetRecipeStepProduct(ctx context.Context, recipeID, recipeS
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	result, err := q.generatedQuerier.GetRecipeStepProduct(ctx, q.db, &generated2.GetRecipeStepProductParams{
+	result, err := q.generatedQuerier.GetRecipeStepProduct(ctx, q.db, &generated.GetRecipeStepProductParams{
 		RecipeStepID:        recipeStepID,
 		RecipeStepProductID: recipeStepProductID,
 		RecipeID:            recipeID,
@@ -154,7 +154,7 @@ func (q *repository) getRecipeStepProductsForRecipe(ctx context.Context, recipeI
 
 	results, err := q.generatedQuerier.GetRecipeStepProductsForRecipe(ctx, q.db, recipeID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step products for recipe")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step products for recipe")
 	}
 
 	recipeStepProducts := []*mealplanning.RecipeStepProduct{}
@@ -241,7 +241,7 @@ func (q *repository) GetRecipeStepProducts(ctx context.Context, recipeID, recipe
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetRecipeStepProducts(ctx, q.db, &generated2.GetRecipeStepProductsParams{
+	results, err := q.generatedQuerier.GetRecipeStepProducts(ctx, q.db, &generated.GetRecipeStepProductsParams{
 		RecipeStepID:    recipeStepID,
 		RecipeID:        recipeID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -322,10 +322,10 @@ func (q *repository) createRecipeStepProduct(ctx context.Context, db database.SQ
 	}
 
 	// create the recipe step product.
-	if err := q.generatedQuerier.CreateRecipeStepProduct(ctx, db, &generated2.CreateRecipeStepProductParams{
+	if err := q.generatedQuerier.CreateRecipeStepProduct(ctx, db, &generated.CreateRecipeStepProductParams{
 		QuantityNotes:                      input.QuantityNotes,
 		Name:                               input.Name,
-		Type:                               generated2.RecipeStepProductType(input.Type),
+		Type:                               generated.RecipeStepProductType(input.Type),
 		BelongsToRecipeStep:                input.BelongsToRecipeStep,
 		ID:                                 input.ID,
 		StorageInstructions:                input.StorageInstructions,
@@ -400,9 +400,9 @@ func (q *repository) UpdateRecipeStepProduct(ctx context.Context, updated *mealp
 		measurementUnitID = &updated.MeasurementUnit.ID
 	}
 
-	if _, err := q.generatedQuerier.UpdateRecipeStepProduct(ctx, q.db, &generated2.UpdateRecipeStepProductParams{
+	if _, err := q.generatedQuerier.UpdateRecipeStepProduct(ctx, q.db, &generated.UpdateRecipeStepProductParams{
 		Name:                               updated.Name,
-		Type:                               generated2.RecipeStepProductType(updated.Type),
+		Type:                               generated.RecipeStepProductType(updated.Type),
 		MeasurementUnit:                    database.NullStringFromStringPointer(measurementUnitID),
 		MinimumQuantityValue:               database.NullStringFromFloat32Pointer(updated.Quantity.Min),
 		MaximumQuantityValue:               database.NullStringFromFloat32Pointer(updated.Quantity.Max),
@@ -446,7 +446,7 @@ func (q *repository) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID,
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepProduct(ctx, q.db, &generated2.ArchiveRecipeStepProductParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepProduct(ctx, q.db, &generated.ArchiveRecipeStepProductParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepProductID,
 	})

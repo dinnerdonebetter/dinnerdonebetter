@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -39,7 +38,7 @@ func TestRecipeStepCompletionConditionCreationRequestInput_Validate(T *testing.T
 			Ingredients:         []uint64{123},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -48,7 +47,7 @@ func TestRecipeStepCompletionConditionCreationRequestInput_Validate(T *testing.T
 
 		x := &RecipeStepCompletionConditionCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -68,7 +67,7 @@ func TestRecipeStepCompletionConditionForExistingRecipeCreationRequestInput_Vali
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -77,7 +76,7 @@ func TestRecipeStepCompletionConditionForExistingRecipeCreationRequestInput_Vali
 
 		x := &RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -92,7 +91,7 @@ func TestRecipeStepCompletionConditionIngredientForExistingRecipeCreationRequest
 			RecipeStepIngredient: t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -101,7 +100,7 @@ func TestRecipeStepCompletionConditionIngredientForExistingRecipeCreationRequest
 
 		x := &RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -124,7 +123,7 @@ func TestRecipeStepCompletionConditionDatabaseCreationInput_Validate(T *testing.
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -133,7 +132,7 @@ func TestRecipeStepCompletionConditionDatabaseCreationInput_Validate(T *testing.
 
 		x := &RecipeStepCompletionConditionDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -149,7 +148,7 @@ func TestRecipeStepCompletionConditionIngredientDatabaseCreationInput_Validate(T
 			BelongsToRecipeStepCompletionCondition: t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -158,7 +157,7 @@ func TestRecipeStepCompletionConditionIngredientDatabaseCreationInput_Validate(T
 
 		x := &RecipeStepCompletionConditionIngredientDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -175,7 +174,7 @@ func TestRecipeStepCompletionConditionUpdateRequestInput_Validate(T *testing.T) 
 			Optional:            pointer.To(fake.Bool()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -184,7 +183,7 @@ func TestRecipeStepCompletionConditionUpdateRequestInput_Validate(T *testing.T) 
 
 		x := &RecipeStepCompletionConditionUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

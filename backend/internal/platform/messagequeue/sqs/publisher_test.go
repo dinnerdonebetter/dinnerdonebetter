@@ -1,7 +1,6 @@
 package sqs
 
 import (
-	"context"
 	"encoding/json"
 	"testing"
 
@@ -46,7 +45,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 		actual, ok := a.(*sqsPublisher)
 		require.True(t, ok)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		inputData := &struct {
 			Name string `json:"name"`
 		}{
@@ -84,7 +83,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 		actual, ok := a.(*sqsPublisher)
 		require.True(t, ok)
 
-		ctx := context.Background()
+		ctx := t.Context()
 		inputData := &struct {
 			Name json.Number `json:"name"`
 		}{

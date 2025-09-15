@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"math"
 	"testing"
 
@@ -39,7 +38,7 @@ func TestMealPlanOptionVoteCreationRequestInput_Validate(T *testing.T) {
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -48,7 +47,7 @@ func TestMealPlanOptionVoteCreationRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanOptionVoteCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -60,12 +59,12 @@ func TestMealPlanOptionVotesDatabaseCreationInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionVotesDatabaseCreationInput{
-			Votes: []*MealPlanOptionVoteCreationInput{
+			Votes: []*MealPlanOptionVoteDatabaseCreationInput{
 				{},
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -74,7 +73,7 @@ func TestMealPlanOptionVotesDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &MealPlanOptionVotesDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -92,7 +91,7 @@ func TestMealPlanOptionVoteUpdateRequestInput_Validate(T *testing.T) {
 			BelongsToMealPlanOption: t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -101,7 +100,7 @@ func TestMealPlanOptionVoteUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanOptionVoteUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

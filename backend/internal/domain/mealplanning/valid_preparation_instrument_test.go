@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -21,7 +20,7 @@ func TestValidPreparationInstrumentCreationRequestInput_Validate(T *testing.T) {
 			ValidInstrumentID:  t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -30,7 +29,7 @@ func TestValidPreparationInstrumentCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidPreparationInstrumentCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -47,7 +46,7 @@ func TestValidPreparationInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			ValidInstrumentID:  pointer.To(t.Name()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -56,7 +55,7 @@ func TestValidPreparationInstrumentUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidPreparationInstrumentUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -67,7 +66,7 @@ func TestValidPreparationInstrumentCreationRequestInput_ValidateWithContext(T *t
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidPreparationInstrumentCreationRequestInput{
 			ValidPreparationID: t.Name(),
 			ValidInstrumentID:  t.Name(),
@@ -83,7 +82,7 @@ func TestValidPreparationInstrumentDatabaseCreationInput_ValidateWithContext(T *
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidPreparationInstrumentDatabaseCreationInput{
 			ID:                 t.Name(),
 			ValidPreparationID: t.Name(),
@@ -100,7 +99,7 @@ func TestValidPreparationInstrumentUpdateRequestInput_ValidateWithContext(T *tes
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidPreparationInstrumentUpdateRequestInput{
 			ValidPreparationID: pointer.To(t.Name()),
 			ValidInstrumentID:  pointer.To(t.Name()),

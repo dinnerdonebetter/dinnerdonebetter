@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"math"
 	"testing"
 
@@ -52,7 +51,7 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -61,7 +60,7 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepInstrumentCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -78,7 +77,7 @@ func TestRecipeStepInstrumentDatabaseCreationInput_Validate(T *testing.T) {
 			BelongsToRecipeStep: t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -87,7 +86,7 @@ func TestRecipeStepInstrumentDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &RecipeStepInstrumentDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -112,7 +111,7 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 			},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -121,7 +120,7 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepInstrumentUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

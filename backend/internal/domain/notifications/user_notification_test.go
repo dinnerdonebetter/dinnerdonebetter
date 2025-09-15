@@ -1,7 +1,6 @@
 package notifications
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -36,7 +35,7 @@ func TestUserNotificationCreationRequestInput_Validate(T *testing.T) {
 			Status:  UserNotificationStatusTypeUnread,
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -45,7 +44,7 @@ func TestUserNotificationCreationRequestInput_Validate(T *testing.T) {
 
 		x := &UserNotificationCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -61,7 +60,7 @@ func TestUserNotificationDatabaseCreationInput_Validate(T *testing.T) {
 			Content: t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -70,7 +69,7 @@ func TestUserNotificationDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &UserNotificationDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -85,7 +84,7 @@ func TestUserNotificationUpdateRequestInput_Validate(T *testing.T) {
 			Status: pointer.To(UserNotificationStatusTypeUnread),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -94,7 +93,7 @@ func TestUserNotificationUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &UserNotificationUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

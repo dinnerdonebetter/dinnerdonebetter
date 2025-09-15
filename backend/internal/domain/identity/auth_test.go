@@ -1,7 +1,6 @@
 package identity
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
@@ -17,7 +16,7 @@ func TestChangeActiveAccountInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ChangeActiveAccountInput{
 			AccountID: "123",
 		}

@@ -309,11 +309,17 @@ func (s *serviceImpl) CreateRecipeRating(ctx context.Context, request *mealplann
 		keys.RecipeIDKey: request.RecipeID,
 	}, span, s.logger)
 
+	sessionContextData, err := s.sessionContextDataFetcher(ctx)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
+	}
+
 	input := converters.ConvertGRPCRecipeRatingCreationRequestInputToRecipeRatingCreationRequestInput(request.Input)
+	input.ByUser = sessionContextData.GetUserID()
 
 	created, err := s.recipeManager.CreateRecipeRating(ctx, request.RecipeID, input)
 	if err != nil {
-		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe prep task")
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "creating recipe rating")
 	}
 
 	x := &mealplanning.CreateRecipeRatingResponse{

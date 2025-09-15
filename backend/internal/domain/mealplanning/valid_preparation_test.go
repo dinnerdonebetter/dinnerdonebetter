@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -26,7 +25,7 @@ func TestValidPreparationCreationRequestInput_Validate(T *testing.T) {
 			RestrictToIngredients: fake.Bool(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -35,7 +34,7 @@ func TestValidPreparationCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidPreparationCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -55,7 +54,7 @@ func TestValidPreparationUpdateRequestInput_Validate(T *testing.T) {
 			RestrictToIngredients: pointer.To(fake.Bool()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -64,7 +63,7 @@ func TestValidPreparationUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidPreparationUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -104,7 +103,7 @@ func TestValidPreparationCreationRequestInput_ValidateWithContext(T *testing.T) 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidPreparationCreationRequestInput{
 			Name: t.Name(),
 		}
@@ -119,7 +118,7 @@ func TestValidPreparationDatabaseCreationInput_ValidateWithContext(T *testing.T)
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidPreparationDatabaseCreationInput{
 			ID:   t.Name(),
 			Name: t.Name(),
@@ -135,7 +134,7 @@ func TestValidPreparationUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidPreparationUpdateRequestInput{
 			Name: pointer.To(t.Name()),
 		}

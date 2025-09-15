@@ -64,7 +64,7 @@ func TestQuerier_Integration_Meals(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -129,7 +129,7 @@ func TestQuerier_MealExists(T *testing.T) {
 	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c := buildInertClientForTest(t)
 
@@ -145,7 +145,7 @@ func TestQuerier_GetMeal(T *testing.T) {
 	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMeal(ctx, "")
@@ -160,7 +160,7 @@ func TestQuerier_CreateMeal(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateMeal(ctx, nil)
@@ -177,7 +177,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 
 		exampleMeal := fakes.BuildFakeMeal()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		exampleInput := converters.ConvertMealComponentToMealComponentDatabaseCreationInput(exampleMeal.Components[0])
@@ -191,7 +191,7 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 
 		exampleMeal := fakes.BuildFakeMeal()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, nil)
@@ -207,7 +207,7 @@ func TestQuerier_ArchiveMeal(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveMeal(ctx, "", exampleAccountID))
@@ -218,7 +218,7 @@ func TestQuerier_ArchiveMeal(T *testing.T) {
 
 		exampleMeal := fakes.BuildFakeMeal()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveMeal(ctx, exampleMeal.ID, ""))
@@ -231,7 +231,7 @@ func TestQuerier_MarkMealAsIndexed(T *testing.T) {
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkMealAsIndexed(ctx, ""))

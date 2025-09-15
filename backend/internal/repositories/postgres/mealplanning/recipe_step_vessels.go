@@ -278,7 +278,7 @@ func (q *repository) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID
 
 	results, err := q.generatedQuerier.GetRecipeStepVesselsForRecipe(ctx, q.db, recipeID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step vessels for a recipe")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step vessels for recipe")
 	}
 
 	recipeStepVessels := []*mealplanning.RecipeStepVessel{}

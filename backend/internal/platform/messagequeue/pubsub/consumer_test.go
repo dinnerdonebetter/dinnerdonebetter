@@ -68,7 +68,7 @@ func Test_pubSubConsumer_Consume(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		publisher, publisherShutdownFunc := buildPubSubBackedPublisher(t, ctx)
 		defer func() {
 			require.NoError(t, publisherShutdownFunc(ctx))

@@ -1,7 +1,6 @@
 package identity
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -54,7 +53,7 @@ func TestUserRegistrationInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &UserRegistrationInput{
 			Username:     t.Name(),
 			Password:     t.Name(),
@@ -67,7 +66,7 @@ func TestUserRegistrationInput_ValidateWithContext(T *testing.T) {
 	T.Run("invalid", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &UserRegistrationInput{
 			Username:     "",
 			EmailAddress: "",
@@ -85,7 +84,7 @@ func TestUserDetailsUpdateRequestInput_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &UserDetailsUpdateRequestInput{
 			FirstName:       t.Name(),
 			CurrentPassword: t.Name(),

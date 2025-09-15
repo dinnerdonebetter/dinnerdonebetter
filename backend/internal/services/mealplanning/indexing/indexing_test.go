@@ -1,7 +1,6 @@
 package indexing
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
@@ -24,7 +23,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
@@ -82,7 +81,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleMeal := fakes.BuildFakeMeal()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
@@ -141,7 +140,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidVessel := fakes.BuildFakeValidVessel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
@@ -199,7 +198,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
@@ -257,7 +256,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
@@ -316,7 +315,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
@@ -375,7 +374,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}
@@ -434,7 +433,7 @@ func TestHandleIndexRequest(T *testing.T) {
 
 		exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		logger := logging.NewNoopLogger()
 
 		mealPlanningRepo := &mealplanningmock.Repository{}

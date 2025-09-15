@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -36,7 +35,7 @@ func TestValidIngredientStateCreationRequestInput_Validate(T *testing.T) {
 			AttributeType: ValidIngredientStateAttributeTypeTexture,
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -45,7 +44,7 @@ func TestValidIngredientStateCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidIngredientStateCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -62,7 +61,7 @@ func TestValidIngredientStateDatabaseCreationInput_Validate(T *testing.T) {
 			AttributeType: ValidIngredientStateAttributeTypeTexture,
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -71,7 +70,7 @@ func TestValidIngredientStateDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &ValidIngredientStateDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -87,7 +86,7 @@ func TestValidIngredientStateUpdateRequestInput_Validate(T *testing.T) {
 			AttributeType: pointer.To(ValidIngredientStateAttributeTypeTexture),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -96,7 +95,7 @@ func TestValidIngredientStateUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidIngredientStateUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

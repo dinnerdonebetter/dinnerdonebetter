@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -21,7 +20,7 @@ func TestValidIngredientGroupCreationRequestInput_Validate(T *testing.T) {
 			Slug:        t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -30,7 +29,7 @@ func TestValidIngredientGroupCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidIngredientGroupCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -47,7 +46,7 @@ func TestValidIngredientGroupUpdateRequestInput_Validate(T *testing.T) {
 			Slug:        pointer.To(t.Name()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -56,7 +55,7 @@ func TestValidIngredientGroupUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidIngredientGroupUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -67,7 +66,7 @@ func TestValidIngredientGroupCreationRequestInput_ValidateWithContext(T *testing
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidIngredientGroupCreationRequestInput{
 			Name: t.Name(),
 		}
@@ -82,7 +81,7 @@ func TestValidIngredientGroupDatabaseCreationInput_ValidateWithContext(T *testin
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidIngredientGroupDatabaseCreationInput{
 			ID:   t.Name(),
 			Name: t.Name(),
@@ -98,7 +97,7 @@ func TestValidIngredientGroupUpdateRequestInput_ValidateWithContext(T *testing.T
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		x := &ValidIngredientGroupUpdateRequestInput{
 			Name: pointer.To(t.Name()),
 		}

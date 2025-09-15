@@ -12,319 +12,319 @@ var (
 	// TODO: ensure this map doesn't end up with configs for methods that don't exist
 
 	methodPermissions = map[string][]authorization.Permission{
-		"/mealplanning.MealPlanningService/CreateValidIngredient": {
+		mealPlanningPerm("CreateValidIngredient"): {
 			authorization.CreateValidIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredient": {
+		mealPlanningPerm("GetValidIngredient"): {
 			authorization.ReadValidIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredients": {
+		mealPlanningPerm("GetValidIngredients"): {
 			authorization.ReadValidIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/SearchForValidIngredients": {
+		mealPlanningPerm("SearchForValidIngredients"): {
 			authorization.ReadValidIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/UpdateValidIngredient": {
+		mealPlanningPerm("UpdateValidIngredient"): {
 			authorization.UpdateValidIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveValidIngredient": {
+		mealPlanningPerm("ArchiveValidIngredient"): {
 			authorization.ArchiveValidIngredientsPermission,
 		},
-		"/settings.SettingsService/CreateServiceSetting": {
+		settingsServicePerm("CreateServiceSetting"): {
 			authorization.CreateServiceSettingsPermission,
 		},
-		"/settings.SettingsService/GetServiceSetting": {
+		settingsServicePerm("GetServiceSetting"): {
 			authorization.ReadServiceSettingsPermission,
 		},
-		"/settings.SettingsService/GetServiceSettings": {
+		settingsServicePerm("GetServiceSettings"): {
 			authorization.ReadServiceSettingsPermission,
 		},
-		"/settings.SettingsService/SearchForServiceSettings": {
+		settingsServicePerm("SearchForServiceSettings"): {
 			authorization.ReadServiceSettingsPermission,
 		},
-		"/settings.SettingsService/ArchiveServiceSetting": {
+		settingsServicePerm("ArchiveServiceSetting"): {
 			authorization.ArchiveServiceSettingsPermission,
 		},
-		"/settings.SettingsService/CreateServiceSettingConfiguration": {
+		settingsServicePerm("CreateServiceSettingConfiguration"): {
 			authorization.CreateServiceSettingConfigurationsPermission,
 		},
-		"/settings.SettingsService/GetServiceSettingConfigurationByName": {
+		settingsServicePerm("GetServiceSettingConfigurationByName"): {
 			authorization.ReadServiceSettingConfigurationsPermission,
 		},
-		"/settings.SettingsService/GetServiceSettingConfigurationsForAccount": {
+		settingsServicePerm("GetServiceSettingConfigurationsForAccount"): {
 			authorization.ReadServiceSettingConfigurationsPermission,
 		},
-		"/settings.SettingsService/GetServiceSettingConfigurationsForUser": {
+		settingsServicePerm("GetServiceSettingConfigurationsForUser"): {
 			authorization.ReadServiceSettingConfigurationsPermission,
 		},
-		"/settings.SettingsService/ArchiveServiceSettingConfiguration": {
+		settingsServicePerm("ArchiveServiceSettingConfiguration"): {
 			authorization.ArchiveServiceSettingConfigurationsPermission,
 		},
-		"/oauth.OAuthService/CreateOAuth2Client": {
+		oauthServicePerm("CreateOAuth2Client"): {
 			authorization.CreateOAuth2ClientsPermission,
 		},
-		"/oauth.OAuthService/GetOAuth2Client": {
+		oauthServicePerm("GetOAuth2Client"): {
 			authorization.ReadOAuth2ClientsPermission,
 		},
-		"/oauth.OAuthService/GetOAuth2Clients": {
+		oauthServicePerm("GetOAuth2Clients"): {
 			authorization.ReadOAuth2ClientsPermission,
 		},
-		"/oauth.OAuthService/ArchiveOAuth2Client": {
+		oauthServicePerm("ArchiveOAuth2Client"): {
 			authorization.ArchiveOAuth2ClientsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetRandomValidIngredient": {
+		mealPlanningPerm("GetRandomValidIngredient"): {
 			authorization.ReadValidIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidIngredientGroup": {
+		mealPlanningPerm("CreateValidIngredientGroup"): {
 			authorization.CreateValidIngredientGroupsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientGroup": {
+		mealPlanningPerm("GetValidIngredientGroup"): {
 			authorization.ReadValidIngredientGroupsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientGroups": {
+		mealPlanningPerm("GetValidIngredientGroups"): {
 			authorization.ReadValidIngredientGroupsPermission,
 		},
-		"/mealplanning.MealPlanningService/SearchForValidIngredientGroups": {
+		mealPlanningPerm("SearchForValidIngredientGroups"): {
 			authorization.ReadValidIngredientGroupsPermission,
 		},
-		"/mealplanning.MealPlanningService/UpdateValidIngredientGroup": {
+		mealPlanningPerm("UpdateValidIngredientGroup"): {
 			authorization.UpdateValidIngredientGroupsPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveValidIngredientGroup": {
+		mealPlanningPerm("ArchiveValidIngredientGroup"): {
 			authorization.ArchiveValidIngredientGroupsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetRandomValidIngredientGroup": {
+		mealPlanningPerm("GetRandomValidIngredientGroup"): {
 			authorization.ReadValidIngredientGroupsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidIngredientState": {
+		mealPlanningPerm("CreateValidIngredientState"): {
 			authorization.CreateValidIngredientStatesPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientState": {
+		mealPlanningPerm("GetValidIngredientState"): {
 			authorization.ReadValidIngredientStatesPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientStates": {
+		mealPlanningPerm("GetValidIngredientStates"): {
 			authorization.ReadValidIngredientStatesPermission,
 		},
-		"/mealplanning.MealPlanningService/SearchForValidIngredientStates": {
+		mealPlanningPerm("SearchForValidIngredientStates"): {
 			authorization.ReadValidIngredientStatesPermission,
 		},
-		"/mealplanning.MealPlanningService/UpdateValidIngredientState": {
+		mealPlanningPerm("UpdateValidIngredientState"): {
 			authorization.UpdateValidIngredientStatesPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveValidIngredientState": {
+		mealPlanningPerm("ArchiveValidIngredientState"): {
 			authorization.ArchiveValidIngredientStatesPermission,
 		},
-		"/mealplanning.MealPlanningService/GetRandomValidIngredientState": {
+		mealPlanningPerm("GetRandomValidIngredientState"): {
 			authorization.ReadValidIngredientStatesPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidIngredientStateIngredient": {
+		mealPlanningPerm("CreateValidIngredientStateIngredient"): {
 			authorization.CreateValidIngredientStateIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientStateIngredient": {
+		mealPlanningPerm("GetValidIngredientStateIngredient"): {
 			authorization.ReadValidIngredientStateIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientStateIngredients": {
+		mealPlanningPerm("GetValidIngredientStateIngredients"): {
 			authorization.ReadValidIngredientStateIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/SearchForValidIngredientStateIngredients": {
+		mealPlanningPerm("SearchForValidIngredientStateIngredients"): {
 			authorization.ReadValidIngredientStateIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/UpdateValidIngredientStateIngredient": {
+		mealPlanningPerm("UpdateValidIngredientStateIngredient"): {
 			authorization.UpdateValidIngredientStateIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveValidIngredientStateIngredient": {
+		mealPlanningPerm("ArchiveValidIngredientStateIngredient"): {
 			authorization.ArchiveValidIngredientStateIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientStateIngredientsByIngredient": {
+		mealPlanningPerm("GetValidIngredientStateIngredientsByIngredient"): {
 			authorization.ReadValidIngredientStateIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientStateIngredientsByIngredientState": {
+		mealPlanningPerm("GetValidIngredientStateIngredientsByIngredientState"): {
 			authorization.ReadValidIngredientStateIngredientsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidPreparation": {
+		mealPlanningPerm("CreateValidPreparation"): {
 			authorization.CreateValidPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparation": {
+		mealPlanningPerm("GetValidPreparation"): {
 			authorization.ReadValidPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparations": {
+		mealPlanningPerm("GetValidPreparations"): {
 			authorization.ReadValidPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/SearchForValidPreparations": {
+		mealPlanningPerm("SearchForValidPreparations"): {
 			authorization.ReadValidPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/UpdateValidPreparation": {
+		mealPlanningPerm("UpdateValidPreparation"): {
 			authorization.UpdateValidPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveValidPreparation": {
+		mealPlanningPerm("ArchiveValidPreparation"): {
 			authorization.ArchiveValidPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetRandomValidPreparation": {
+		mealPlanningPerm("GetRandomValidPreparation"): {
 			authorization.ReadValidPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidMeasurementUnit": {
+		mealPlanningPerm("CreateValidMeasurementUnit"): {
 			authorization.CreateValidMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidMeasurementUnit": {
+		mealPlanningPerm("GetValidMeasurementUnit"): {
 			authorization.ReadValidMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidMeasurementUnits": {
+		mealPlanningPerm("GetValidMeasurementUnits"): {
 			authorization.ReadValidMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/SearchForValidMeasurementUnits": {
+		mealPlanningPerm("SearchForValidMeasurementUnits"): {
 			authorization.ReadValidMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/UpdateValidMeasurementUnit": {
+		mealPlanningPerm("UpdateValidMeasurementUnit"): {
 			authorization.UpdateValidMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveValidMeasurementUnit": {
+		mealPlanningPerm("ArchiveValidMeasurementUnit"): {
 			authorization.ArchiveValidMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetRandomValidMeasurementUnit": {
+		mealPlanningPerm("GetRandomValidMeasurementUnit"): {
 			authorization.ReadValidMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidVessel": {
+		mealPlanningPerm("CreateValidVessel"): {
 			authorization.CreateValidVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidVessel": {
+		mealPlanningPerm("GetValidVessel"): {
 			authorization.ReadValidVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidVessels": {
+		mealPlanningPerm("GetValidVessels"): {
 			authorization.ReadValidVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/SearchForValidVessels": {
+		mealPlanningPerm("SearchForValidVessels"): {
 			authorization.ReadValidVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/UpdateValidVessel": {
+		mealPlanningPerm("UpdateValidVessel"): {
 			authorization.UpdateValidVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveValidVessel": {
+		mealPlanningPerm("ArchiveValidVessel"): {
 			authorization.ArchiveValidVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetRandomValidVessel": {
+		mealPlanningPerm("GetRandomValidVessel"): {
 			authorization.ReadValidVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidInstrument": {
+		mealPlanningPerm("CreateValidInstrument"): {
 			authorization.CreateValidInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidInstrument": {
+		mealPlanningPerm("GetValidInstrument"): {
 			authorization.ReadValidInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidInstruments": {
+		mealPlanningPerm("GetValidInstruments"): {
 			authorization.ReadValidInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/SearchForValidInstruments": {
+		mealPlanningPerm("SearchForValidInstruments"): {
 			authorization.ReadValidInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/UpdateValidInstrument": {
+		mealPlanningPerm("UpdateValidInstrument"): {
 			authorization.UpdateValidInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveValidInstrument": {
+		mealPlanningPerm("ArchiveValidInstrument"): {
 			authorization.ArchiveValidInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetRandomValidInstrument": {
+		mealPlanningPerm("GetRandomValidInstrument"): {
 			authorization.ReadValidInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparationVessel": {
+		mealPlanningPerm("GetValidPreparationVessel"): {
 			authorization.ReadValidPreparationVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidPreparationVessel": {
+		mealPlanningPerm("CreateValidPreparationVessel"): {
 			authorization.CreateValidPreparationVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparationVessels": {
+		mealPlanningPerm("GetValidPreparationVessels"): {
 			authorization.ReadValidPreparationVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparationVesselsByVessel": {
+		mealPlanningPerm("GetValidPreparationVesselsByVessel"): {
 			authorization.ReadValidPreparationVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparationVesselsByPreparation": {
+		mealPlanningPerm("GetValidPreparationVesselsByPreparation"): {
 			authorization.ReadValidPreparationVesselsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientPreparation": {
+		mealPlanningPerm("GetValidIngredientPreparation"): {
 			authorization.ReadValidIngredientPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidIngredientPreparation": {
+		mealPlanningPerm("CreateValidIngredientPreparation"): {
 			authorization.CreateValidIngredientPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientPreparations": {
+		mealPlanningPerm("GetValidIngredientPreparations"): {
 			authorization.ReadValidIngredientPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientPreparationsByPreparation": {
+		mealPlanningPerm("GetValidIngredientPreparationsByPreparation"): {
 			authorization.ReadValidIngredientPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientPreparationsByIngredient": {
+		mealPlanningPerm("GetValidIngredientPreparationsByIngredient"): {
 			authorization.ReadValidIngredientPreparationsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientMeasurementUnit": {
+		mealPlanningPerm("GetValidIngredientMeasurementUnit"): {
 			authorization.ReadValidIngredientMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidIngredientMeasurementUnit": {
+		mealPlanningPerm("CreateValidIngredientMeasurementUnit"): {
 			authorization.CreateValidIngredientMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientMeasurementUnits": {
+		mealPlanningPerm("GetValidIngredientMeasurementUnits"): {
 			authorization.ReadValidIngredientMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientMeasurementUnitsByMeasurementUnit": {
+		mealPlanningPerm("GetValidIngredientMeasurementUnitsByMeasurementUnit"): {
 			authorization.ReadValidIngredientMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidIngredientMeasurementUnitsByIngredient": {
+		mealPlanningPerm("GetValidIngredientMeasurementUnitsByIngredient"): {
 			authorization.ReadValidIngredientMeasurementUnitsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparationInstrument": {
+		mealPlanningPerm("GetValidPreparationInstrument"): {
 			authorization.ReadValidPreparationInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidPreparationInstrument": {
+		mealPlanningPerm("CreateValidPreparationInstrument"): {
 			authorization.CreateValidPreparationInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparationInstruments": {
+		mealPlanningPerm("GetValidPreparationInstruments"): {
 			authorization.ReadValidPreparationInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparationInstrumentsByInstrument": {
+		mealPlanningPerm("GetValidPreparationInstrumentsByInstrument"): {
 			authorization.ReadValidPreparationInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidPreparationInstrumentsByPreparation": {
+		mealPlanningPerm("GetValidPreparationInstrumentsByPreparation"): {
 			authorization.ReadValidPreparationInstrumentsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateValidMeasurementUnitConversion": {
+		mealPlanningPerm("CreateValidMeasurementUnitConversion"): {
 			authorization.CreateValidMeasurementUnitConversionsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidMeasurementUnitConversion": {
+		mealPlanningPerm("GetValidMeasurementUnitConversion"): {
 			authorization.ReadValidMeasurementUnitConversionsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidMeasurementUnitConversionsFromUnit": {
+		mealPlanningPerm("GetValidMeasurementUnitConversionsFromUnit"): {
 			authorization.ReadValidMeasurementUnitConversionsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetValidMeasurementUnitConversionsToUnit": {
+		mealPlanningPerm("GetValidMeasurementUnitConversionsToUnit"): {
 			authorization.ReadValidMeasurementUnitConversionsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateUserIngredientPreference": {
+		mealPlanningPerm("CreateUserIngredientPreference"): {
 			authorization.CreateUserIngredientPreferencesPermission,
 		},
-		"/mealplanning.MealPlanningService/GetUserIngredientPreference": {
+		mealPlanningPerm("GetUserIngredientPreference"): {
 			authorization.ReadUserIngredientPreferencesPermission,
 		},
-		"/mealplanning.MealPlanningService/GetUserIngredientPreferences": {
+		mealPlanningPerm("GetUserIngredientPreferences"): {
 			authorization.ReadUserIngredientPreferencesPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveUserIngredientPreference": {
+		mealPlanningPerm("ArchiveUserIngredientPreference"): {
 			authorization.ReadUserIngredientPreferencesPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateAccountInstrumentOwnership": {
+		mealPlanningPerm("CreateAccountInstrumentOwnership"): {
 			authorization.CreateAccountInstrumentOwnershipsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetAccountInstrumentOwnership": {
+		mealPlanningPerm("GetAccountInstrumentOwnership"): {
 			authorization.ReadAccountInstrumentOwnershipsPermission,
 		},
-		"/mealplanning.MealPlanningService/GetAccountInstrumentOwnerships": {
+		mealPlanningPerm("GetAccountInstrumentOwnerships"): {
 			authorization.ReadAccountInstrumentOwnershipsPermission,
 		},
-		"/mealplanning.MealPlanningService/ArchiveAccountInstrumentOwnership": {
+		mealPlanningPerm("ArchiveAccountInstrumentOwnership"): {
 			authorization.ReadAccountInstrumentOwnershipsPermission,
 		},
-		"/mealplanning.MealPlanningService/CreateRecipe": {
+		mealPlanningPerm("CreateRecipe"): {
 			authorization.CreateRecipesPermission,
 		},
-		"/mealplanning.MealPlanningService/GetRecipe": {
+		mealPlanningPerm("GetRecipe"): {
 			authorization.ReadRecipesPermission,
 		},
 		mealPlanningPerm("UpdateRecipe"): {
@@ -336,8 +336,38 @@ var (
 		mealPlanningPerm("SearchForRecipes"): {
 			authorization.ReadRecipesPermission,
 		},
+		mealPlanningPerm("CreateMeal"): {
+			authorization.CreateMealsPermission,
+		},
+		mealPlanningPerm("GetMeal"): {
+			authorization.ReadMealsPermission,
+		},
+		mealPlanningPerm("UpdateMeal"): {
+			authorization.UpdateMealsPermission,
+		},
+		mealPlanningPerm("ArchiveMeal"): {
+			authorization.ArchiveMealsPermission,
+		},
+		mealPlanningPerm("SearchForMeals"): {
+			authorization.ReadMealsPermission,
+		},
+		mealPlanningPerm("CreateMealPlan"): {
+			authorization.CreateMealPlansPermission,
+		},
+		mealPlanningPerm("GetMealPlan"): {
+			authorization.ReadMealPlansPermission,
+		},
+		mealPlanningPerm("UpdateMealPlan"): {
+			authorization.UpdateMealPlansPermission,
+		},
+		mealPlanningPerm("ArchiveMealPlan"): {
+			authorization.ArchiveMealPlansPermission,
+		},
+		mealPlanningPerm("SearchForMealPlans"): {
+			authorization.ReadMealPlansPermission,
+		},
 		mealPlanningPerm("CloneRecipe"): {
-			authorization.CreateRecipesPermission,
+			authorization.ReadRecipesPermission, // TODO: this should be its own perm
 		},
 		mealPlanningPerm("SearchForMeals"): {
 			authorization.ReadMealsPermission,
@@ -345,99 +375,163 @@ var (
 		mealPlanningPerm("GetMeals"): {
 			authorization.ReadMealsPermission,
 		},
+		mealPlanningPerm("GetMealPlansForAccount"): {
+			authorization.ReadMealPlansPermission,
+		},
 		mealPlanningPerm("GetMeal"): {
 			authorization.ReadMealsPermission,
 		},
 		mealPlanningPerm("GetMealPlanTasks"): {
 			authorization.ReadMealPlanTasksPermission,
 		},
-		mealPlanningPerm("UpdateRecipeStep"): {
-			authorization.UpdateRecipeStepsPermission,
+		mealPlanningPerm("CreateRecipeStep"): {
+			authorization.CreateRecipeStepsPermission,
+		},
+		mealPlanningPerm("GetRecipeSteps"): {
+			authorization.ReadRecipeStepsPermission,
 		},
 		mealPlanningPerm("GetRecipeStep"): {
 			authorization.ReadRecipeStepsPermission,
 		},
-		"/notifications.UserNotificationsService/CreateUserNotification": {
+		mealPlanningPerm("UpdateRecipeStep"): {
+			authorization.UpdateRecipeStepsPermission,
+		},
+		mealPlanningPerm("ArchiveRecipeStep"): {
+			authorization.ArchiveRecipeStepsPermission,
+		},
+		mealPlanningPerm("CreateRecipeRating"): {
+			authorization.CreateRecipeRatingsPermission,
+		},
+		mealPlanningPerm("GetRecipeRatings"): {
+			authorization.ReadRecipeRatingsPermission,
+		},
+		mealPlanningPerm("GetRecipeRating"): {
+			authorization.ReadRecipeRatingsPermission,
+		},
+		mealPlanningPerm("UpdateRecipeRating"): {
+			authorization.UpdateRecipeRatingsPermission,
+		},
+		mealPlanningPerm("ArchiveRecipeRating"): {
+			authorization.ArchiveRecipeRatingsPermission,
+		},
+		mealPlanningPerm("GetRecipeRatingsForRecipe"): {
+			authorization.ReadRecipeRatingsPermission,
+		},
+		mealPlanningPerm("CreateMealPlanOptionVote"): {
+			authorization.CreateMealPlanOptionVotesPermission,
+		},
+		mealPlanningPerm("RunFinalizeMealPlanWorker"): {
+			authorization.UpdateMealPlansPermission, // TODO: this should be its own perm
+		},
+		userNotifsServicePerm("CreateUserNotification"): {
 			authorization.CreateUserNotificationsPermission,
 		},
-		"/notifications.UserNotificationsService/GetUserNotification": {
+		userNotifsServicePerm("GetUserNotification"): {
 			authorization.ReadUserNotificationsPermission,
 		},
-		"/notifications.UserNotificationsService/GetUserNotifications": {
+		userNotifsServicePerm("GetUserNotifications"): {
 			authorization.ReadUserNotificationsPermission,
 		},
-		"/notifications.UserNotificationsService/UpdateUserNotification": {
+		userNotifsServicePerm("UpdateUserNotification"): {
 			authorization.UpdateUserNotificationsPermission,
 		},
-		"/identity.IdentityService/AdminUpdateUserStatus": {
+		identityServicePerm("AdminUpdateUserStatus"): {
 			authorization.UpdateUserStatusPermission,
 		},
-		"/webhooks.WebhooksService/GetWebhook": {
+		webhooksServicePerm("GetWebhook"): {
 			authorization.ReadWebhooksPermission,
 		},
-		"/webhooks.WebhooksService/GetWebhooks": {
+		webhooksServicePerm("GetWebhooks"): {
 			authorization.ReadWebhooksPermission,
 		},
-		"/webhooks.WebhooksService/CreateWebhook": {
+		webhooksServicePerm("CreateWebhook"): {
 			authorization.CreateWebhooksPermission,
 		},
-		"/webhooks.WebhooksService/ArchiveWebhook": {
+		webhooksServicePerm("ArchiveWebhook"): {
 			authorization.ArchiveWebhooksPermission,
 		},
-		"/webhooks.WebhooksService/AddWebhookTriggerEvent": {
+		webhooksServicePerm("AddWebhookTriggerEvent"): {
 			authorization.CreateWebhookTriggerEventsPermission,
 		},
-		"/webhooks.WebhooksService/ArchiveWebhookTriggerEvent": {
+		webhooksServicePerm("ArchiveWebhookTriggerEvent"): {
 			authorization.ArchiveWebhookTriggerEventsPermission,
 		},
-		"/identity.IdentityService/UpdateAccount": {
+		identityServicePerm("UpdateAccount"): {
 			authorization.UpdateAccountPermission,
 		},
-		"/identity.IdentityService/ArchiveAccount": {
+		identityServicePerm("ArchiveAccount"): {
 			authorization.ArchiveAccountPermission,
 		},
-		"/identity.IdentityService/CreateAccountInvitation": {
+		identityServicePerm("CreateAccountInvitation"): {
 			authorization.InviteUserToAccountPermission,
 		},
-		"/identity.IdentityService/CancelAccountInvitation": {
+		identityServicePerm("CancelAccountInvitation"): {
 			authorization.InviteUserToAccountPermission,
 		},
-		"/identity.IdentityService/TransferAccountOwnership": {
+		identityServicePerm("TransferAccountOwnership"): {
 			authorization.TransferAccountPermission,
 		},
-		"/identity.IdentityService/UpdateAccountMemberPermissions": {
+		identityServicePerm("UpdateAccountMemberPermissions"): {
 			authorization.ModifyMemberPermissionsForAccountPermission,
 		},
-		"/identity.IdentityService/ArchiveUserMembership": {
+		identityServicePerm("ArchiveUserMembership"): {
 			authorization.RemoveMemberAccountPermission,
 		},
-		"/identity.IdentityService/GetUser": {
+		identityServicePerm("GetUser"): {
 			authorization.ReadUserPermission,
 		},
-		"/identity.IdentityService/SearchForUsers": {
+		identityServicePerm("SearchForUsers"): {
 			authorization.ReadUserPermission,
 		},
-		"/identity.IdentityService/ArchiveUser": {
+		identityServicePerm("ArchiveUser"): {
 			authorization.ArchiveUserPermission,
 		},
-		"/auth.AuthService/CheckPermissions":                      noPerms,
-		"/identity.IdentityService/RejectAccountInvitation":       noPerms,
-		"/identity.IdentityService/AcceptAccountInvitation":       noPerms,
-		"/identity.IdentityService/GetReceivedAccountInvitations": noPerms,
-		"/identity.IdentityService/GetSentAccountInvitations":     noPerms,
-		"/identity.IdentityService/SetDefaultAccount":             noPerms,
-		"/identity.IdentityService/CreateAccount":                 noPerms,
-		"/identity.IdentityService/GetAccount":                    noPerms,
-		"/identity.IdentityService/GetAccounts":                   noPerms,
-		"/auth.AuthService/GetAuthStatus":                         noPerms,
-		"/auth.AuthService/GetActiveAccount":                      noPerms,
-		"/auth.AuthService/UpdatePassword":                        noPerms,
-		"/auth.AuthService/RefreshTOTPSecret":                     noPerms,
-		"/auth.AuthService/VerifyTOTPSecret":                      noPerms,
-		"/auth.AuthService/RequestPasswordResetToken":             noPerms,
-		authPerm("RedeemPasswordResetToken"):                      noPerms,
+		identityServicePerm("RejectAccountInvitation"):       noPerms,
+		identityServicePerm("AcceptAccountInvitation"):       noPerms,
+		identityServicePerm("GetReceivedAccountInvitations"): noPerms,
+		identityServicePerm("GetSentAccountInvitations"):     noPerms,
+		identityServicePerm("SetDefaultAccount"):             noPerms,
+		identityServicePerm("CreateAccount"):                 noPerms,
+		identityServicePerm("GetAccount"):                    noPerms,
+		identityServicePerm("GetAccounts"):                   noPerms,
+		authServicePerm("CheckPermissions"):                  noPerms,
+		authServicePerm("GetAuthStatus"):                     noPerms,
+		authServicePerm("GetActiveAccount"):                  noPerms,
+		authServicePerm("UpdatePassword"):                    noPerms,
+		authServicePerm("RefreshTOTPSecret"):                 noPerms,
+		authServicePerm("VerifyTOTPSecret"):                  noPerms,
+		authServicePerm("RequestPasswordResetToken"):         noPerms,
+		authPerm("RedeemPasswordResetToken"):                 noPerms,
 	}
 )
+
+func permString(collectionName, serviceName, methodName string) string {
+	return fmt.Sprintf("/%s.%s/%s", collectionName, serviceName, methodName)
+}
+
+func oauthServicePerm(method string) string {
+	return permString("oauth", "OAuthService", method)
+}
+
+func settingsServicePerm(method string) string {
+	return permString("settings", "SettingsService", method)
+}
+
+func userNotifsServicePerm(method string) string {
+	return permString("notifications", "UserNotificationsService", method)
+}
+
+func webhooksServicePerm(method string) string {
+	return permString("webhooks", "WebhooksService", method)
+}
+
+func identityServicePerm(method string) string {
+	return permString("identity", "IdentityService", method)
+}
+
+func authServicePerm(method string) string {
+	return permString("auth", "AuthService", method)
+}
 
 func mealPlanningPerm(method string) string {
 	return permString("mealplanning", "MealPlanningService", method)
@@ -445,8 +539,4 @@ func mealPlanningPerm(method string) string {
 
 func authPerm(method string) string {
 	return permString("auth", "AuthService", method)
-}
-
-func permString(collectionName, serviceName, methodName string) string {
-	return fmt.Sprintf("/%s.%s/%s", collectionName, serviceName, methodName)
 }

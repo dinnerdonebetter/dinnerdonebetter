@@ -69,7 +69,7 @@ func TestQuerier_Integration_MealPlanEvents(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -137,7 +137,7 @@ func TestQuerier_MealPlanEventExists(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
@@ -151,7 +151,7 @@ func TestQuerier_MealPlanEventExists(T *testing.T) {
 	T.Run("with invalid meal plan event ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlanID := fakes.BuildFakeID()
 
@@ -171,7 +171,7 @@ func TestQuerier_GetMealPlanEvent(T *testing.T) {
 
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanEvent(ctx, "", exampleMealPlanEventID)
@@ -184,7 +184,7 @@ func TestQuerier_GetMealPlanEvent(T *testing.T) {
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanEvent(ctx, exampleMealPlan.ID, "")
@@ -199,7 +199,7 @@ func TestQuerier_getMealPlanEventsForMealPlan(T *testing.T) {
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.getMealPlanEventsForMealPlan(ctx, "")
@@ -214,7 +214,7 @@ func TestQuerier_GetMealPlanEvents(T *testing.T) {
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetMealPlanEvents(ctx, "", nil)
@@ -229,7 +229,7 @@ func TestQuerier_CreateMealPlanEvent(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateMealPlanEvent(ctx, nil)
@@ -244,7 +244,7 @@ func TestQuerier_UpdateMealPlanEvent(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		err := c.UpdateMealPlanEvent(ctx, nil)
@@ -260,7 +260,7 @@ func TestQuerier_ArchiveMealPlanEvent(T *testing.T) {
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveMealPlanEvent(ctx, "", exampleMealPlan.ID))
@@ -271,7 +271,7 @@ func TestQuerier_ArchiveMealPlanEvent(T *testing.T) {
 
 		exampleMealPlanEventID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveMealPlanEvent(ctx, exampleMealPlanEventID, ""))

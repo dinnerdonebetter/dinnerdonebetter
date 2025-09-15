@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"math"
 	"testing"
 
@@ -32,7 +31,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		input := &UserIngredientPreferenceCreationRequestInput{
 			ValidIngredientID: t.Name(),
 			Rating:            1,
@@ -44,7 +43,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 	T.Run("invalid range", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		input := &UserIngredientPreferenceCreationRequestInput{
 			ValidIngredientID: t.Name(),
 			Rating:            math.MaxInt8,
@@ -56,7 +55,7 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 	T.Run("with valid ingredient group ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		input := &UserIngredientPreferenceCreationRequestInput{
 			ValidIngredientGroupID: t.Name(),
 			Rating:                 1,
@@ -78,7 +77,7 @@ func TestUserIngredientPreferenceDatabaseCreationInput_Validate(T *testing.T) {
 			BelongsToUser:     t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -87,7 +86,7 @@ func TestUserIngredientPreferenceDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &UserIngredientPreferenceDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -103,7 +102,7 @@ func TestUserIngredientPreferenceUpdateRequestInput_Validate(T *testing.T) {
 			Rating:       pointer.To(minRating),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -112,7 +111,7 @@ func TestUserIngredientPreferenceUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &UserIngredientPreferenceUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

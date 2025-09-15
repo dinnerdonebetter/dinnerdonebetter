@@ -106,7 +106,7 @@ func (q *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 			},
 			IngredientCount: types.Uint16RangeWithOptionalMax{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-				Min: uint16(result.ValidPreparationMinimumInstrumentCount),
+				Min: uint16(result.ValidPreparationMinimumIngredientCount),
 			},
 			VesselCount: types.Uint16RangeWithOptionalMax{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
@@ -242,7 +242,7 @@ func (q *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 			},
 			IngredientCount: types.Uint16RangeWithOptionalMax{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-				Min: uint16(result.ValidPreparationMinimumInstrumentCount),
+				Min: uint16(result.ValidPreparationMinimumIngredientCount),
 			},
 			VesselCount: types.Uint16RangeWithOptionalMax{
 				Max: database.Uint16PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
@@ -526,10 +526,16 @@ func (q *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		return nil, observability.PrepareError(err, span, "performing recipe step creation")
 	}
 
+	// Fetch the preparation data
+	preparation, err := q.GetValidPreparation(ctx, input.PreparationID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching preparation data")
+	}
+
 	x := &mealplanning.RecipeStep{
 		ID:                      input.ID,
 		Index:                   input.Index,
-		Preparation:             mealplanning.ValidPreparation{ID: input.PreparationID},
+		Preparation:             *preparation,
 		EstimatedTimeInSeconds:  input.EstimatedTimeInSeconds,
 		TemperatureInCelsius:    input.TemperatureInCelsius,
 		Notes:                   input.Notes,
@@ -628,8 +634,6 @@ func (q *repository) UpdateRecipeStep(ctx context.Context, updated *mealplanning
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}
-
-	logger.Info("recipe step updated")
 
 	return nil
 }

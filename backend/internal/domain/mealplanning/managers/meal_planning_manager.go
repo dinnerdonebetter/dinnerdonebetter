@@ -28,13 +28,13 @@ const (
 type (
 	MealPlanningManager interface {
 		ListMeals(ctx context.Context, filter *filtering.QueryFilter) ([]*types.Meal, string, error)
-		CreateMeal(ctx context.Context, input *types.MealCreationRequestInput) (*types.Meal, error)
+		CreateMeal(ctx context.Context, creatorID string, input *types.MealCreationRequestInput) (*types.Meal, error)
 		ReadMeal(ctx context.Context, mealID string) (*types.Meal, error)
 		SearchMeals(ctx context.Context, query string, useDatabase bool, filter *filtering.QueryFilter) ([]*types.Meal, error)
 		ArchiveMeal(ctx context.Context, mealID, ownerID string) error
 
 		ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*types.MealPlan, string, error)
-		CreateMealPlan(ctx context.Context, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error)
+		CreateMealPlan(ctx context.Context, ownerID, creatorID string, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error)
 		ReadMealPlan(ctx context.Context, mealPlanID, ownerID string) (*types.MealPlan, error)
 		UpdateMealPlan(ctx context.Context, mealPlanID, ownerID string, input *types.MealPlanUpdateRequestInput) error
 		ArchiveMealPlan(ctx context.Context, mealPlanID, ownerID string) error
@@ -53,7 +53,7 @@ type (
 		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error
 
 		ListMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) ([]*types.MealPlanOptionVote, string, error)
-		CreateMealPlanOptionVotes(ctx context.Context, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error)
+		CreateMealPlanOptionVotes(ctx context.Context, creatorID string, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error)
 		ReadMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error)
 		UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string, input *types.MealPlanOptionVoteUpdateRequestInput) error
 		ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error
@@ -147,7 +147,7 @@ func (m *mealPlanningManager) ListMeals(ctx context.Context, filter *filtering.Q
 	return results.Data, "", nil
 }
 
-func (m *mealPlanningManager) CreateMeal(ctx context.Context, input *types.MealCreationRequestInput) (*types.Meal, error) {
+func (m *mealPlanningManager) CreateMeal(ctx context.Context, creatorID string, input *types.MealCreationRequestInput) (*types.Meal, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -156,6 +156,7 @@ func (m *mealPlanningManager) CreateMeal(ctx context.Context, input *types.MealC
 	}
 
 	convertedInput := converters.ConvertMealCreationRequestInputToMealDatabaseCreationInput(input)
+	convertedInput.CreatedByUser = creatorID
 	logger := m.logger.WithSpan(span).WithValue(keys.MealIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealIDKey, convertedInput.ID)
 
@@ -266,7 +267,7 @@ func (m *mealPlanningManager) ListMealPlans(ctx context.Context, ownerID string,
 	return mealPlans.Data, "", nil
 }
 
-func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error) {
+func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, ownerID, creatorID string, input *types.MealPlanCreationRequestInput) (*types.MealPlan, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -274,7 +275,18 @@ func (m *mealPlanningManager) CreateMealPlan(ctx context.Context, input *types.M
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
+	if creatorID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
+	if ownerID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
 	convertedInput := converters.ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input)
+	convertedInput.CreatedByUser = creatorID
+	convertedInput.BelongsToAccount = ownerID
+
 	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, convertedInput.ID)
 
@@ -659,7 +671,7 @@ func (m *mealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealP
 	return results.Data, "", nil
 }
 
-func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error) {
+func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, creatorID string, input *types.MealPlanOptionVoteCreationRequestInput) ([]*types.MealPlanOptionVote, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -667,9 +679,13 @@ func (m *mealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, inp
 		return nil, internalerrors.ErrNilInputParameter
 	}
 
-	convertedInput := converters.ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVoteDatabaseCreationInput(input)
+	convertedInput := converters.ConvertMealPlanOptionVoteCreationRequestInputToMealPlanOptionVotesDatabaseCreationInput(input)
 	logger := m.logger.WithSpan(span).WithValue("vote_count", len(input.Votes))
 	tracing.AttachToSpan(span, "vote_count", len(input.Votes))
+
+	for i := range input.Votes {
+		convertedInput.Votes[i].ByUser = creatorID
+	}
 
 	created, err := m.db.CreateMealPlanOptionVote(ctx, convertedInput)
 	if err != nil {
@@ -1075,7 +1091,7 @@ func (m *mealPlanningManager) UpdateUserIngredientPreference(ctx context.Context
 	return nil
 }
 
-func (m *mealPlanningManager) ArchiveUserIngredientPreference(ctx context.Context, ingredientPreferenceID, ownerID string) error {
+func (m *mealPlanningManager) ArchiveUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) error {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 

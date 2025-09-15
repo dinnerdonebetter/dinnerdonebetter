@@ -1,7 +1,6 @@
 package cookies
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +18,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 			Base64EncodedBlockKey: t.Name(),
 		}
 
-		assert.NoError(t, cfg.ValidateWithContext(context.Background()))
+		assert.NoError(t, cfg.ValidateWithContext(t.Context()))
 	})
 
 	T.Run("with missing name", func(t *testing.T) {
@@ -30,7 +29,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 			Base64EncodedBlockKey: t.Name(),
 		}
 
-		assert.Error(t, cfg.ValidateWithContext(context.Background()))
+		assert.Error(t, cfg.ValidateWithContext(t.Context()))
 	})
 
 	T.Run("with missing hash key", func(t *testing.T) {
@@ -40,7 +39,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 			Base64EncodedBlockKey: t.Name(),
 		}
 
-		assert.Error(t, cfg.ValidateWithContext(context.Background()))
+		assert.Error(t, cfg.ValidateWithContext(t.Context()))
 	})
 
 	T.Run("with missing block key", func(t *testing.T) {
@@ -50,6 +49,6 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 			Base64EncodedHashKey: t.Name(),
 		}
 
-		assert.Error(t, cfg.ValidateWithContext(context.Background()))
+		assert.Error(t, cfg.ValidateWithContext(t.Context()))
 	})
 }

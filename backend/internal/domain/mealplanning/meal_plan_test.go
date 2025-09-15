@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -37,7 +36,7 @@ func TestMealPlanDatabaseCreationInput_Validate(T *testing.T) {
 			CreatedByUser:    t.Name(),
 		}
 
-		assert.NoError(t, x.ValidateWithContext(context.Background()))
+		assert.NoError(t, x.ValidateWithContext(t.Context()))
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -45,7 +44,7 @@ func TestMealPlanDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &MealPlanDatabaseCreationInput{}
 
-		assert.Error(t, x.ValidateWithContext(context.Background()))
+		assert.Error(t, x.ValidateWithContext(t.Context()))
 	})
 }
 
@@ -67,7 +66,7 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 			},
 		}
 
-		assert.NoError(t, x.ValidateWithContext(context.Background()))
+		assert.NoError(t, x.ValidateWithContext(t.Context()))
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -75,7 +74,7 @@ func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanCreationRequestInput{}
 
-		assert.Error(t, x.ValidateWithContext(context.Background()))
+		assert.Error(t, x.ValidateWithContext(t.Context()))
 	})
 }
 
@@ -91,7 +90,7 @@ func TestMealPlanUpdateRequestInput_Validate(T *testing.T) {
 			VotingDeadline: &exampleTime,
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -100,7 +99,7 @@ func TestMealPlanUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &MealPlanUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

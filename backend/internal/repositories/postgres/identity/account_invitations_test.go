@@ -60,7 +60,7 @@ func TestQuerier_Integration_AccountInvitations(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -147,7 +147,7 @@ func TestQuerier_AccountInvitationExists(T *testing.T) {
 	T.Run("with invalid account invitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.AccountInvitationExists(ctx, "")
@@ -164,7 +164,7 @@ func TestQuerier_GetAccountInvitationByTokenAndID(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByTokenAndID(ctx, "", exampleAccountID)
@@ -177,7 +177,7 @@ func TestQuerier_GetAccountInvitationByTokenAndID(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByTokenAndID(ctx, exampleAccountID, "")
@@ -194,7 +194,7 @@ func TestQuerier_GetAccountInvitationByAccountAndID(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByAccountAndID(ctx, "", exampleAccountID)
@@ -207,7 +207,7 @@ func TestQuerier_GetAccountInvitationByAccountAndID(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByAccountAndID(ctx, exampleAccountID, "")
@@ -224,7 +224,7 @@ func TestQuerier_GetAccountInvitationByEmailAndToken(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByEmailAndToken(ctx, "", exampleAccountID)
@@ -237,7 +237,7 @@ func TestQuerier_GetAccountInvitationByEmailAndToken(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInvitationByEmailAndToken(ctx, exampleAccountID, "")
@@ -252,7 +252,7 @@ func TestQuerier_CreateAccountInvitation(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateAccountInvitation(ctx, nil)
@@ -267,7 +267,7 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 	T.Run("with invalid account invitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleAccountInvitation := fakes.BuildFakeAccountInvitation()
 
 		c := buildInertClientForTest(t)
@@ -283,7 +283,7 @@ func TestSQLQuerier_AcceptAccountInvitation(T *testing.T) {
 	T.Run("with invalid invitation ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleToken := fakes.BuildFakeID()
 
 		c := buildInertClientForTest(t)
@@ -295,7 +295,7 @@ func TestSQLQuerier_AcceptAccountInvitation(T *testing.T) {
 	T.Run("with invalid token", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleAccountInvitation := fakes.BuildFakeAccountInvitation()
 
 		c := buildInertClientForTest(t)
@@ -311,7 +311,7 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 	T.Run("with invalid email address", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUser := fakes.BuildFakeUser()
 
 		c := buildInertClientForTest(t)
@@ -323,7 +323,7 @@ func TestSQLQuerier_attachInvitationsToUser(T *testing.T) {
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleUser := fakes.BuildFakeUser()
 
 		c := buildInertClientForTest(t)

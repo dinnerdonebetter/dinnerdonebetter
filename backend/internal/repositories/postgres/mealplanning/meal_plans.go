@@ -12,7 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 var (
@@ -40,7 +40,7 @@ func (q *repository) MealPlanExists(ctx context.Context, mealPlanID, accountID s
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.CheckMealPlanExistence(ctx, q.db, &generated2.CheckMealPlanExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanExistence(ctx, q.db, &generated.CheckMealPlanExistenceParams{
 		MealPlanID:       mealPlanID,
 		BelongsToAccount: accountID,
 	})
@@ -70,7 +70,7 @@ func (q *repository) getMealPlan(ctx context.Context, mealPlanID, accountID stri
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.GetMealPlan(ctx, q.db, &generated2.GetMealPlanParams{
+	result, err := q.generatedQuerier.GetMealPlan(ctx, q.db, &generated.GetMealPlanParams{
 		ID:               mealPlanID,
 		BelongsToAccount: accountID,
 	})
@@ -127,7 +127,7 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetMealPlansForAccount(ctx, q.db, &generated2.GetMealPlansForAccountParams{
+	results, err := q.generatedQuerier.GetMealPlansForAccount(ctx, q.db, &generated.GetMealPlansForAccountParams{
 		BelongsToAccount: accountID,
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -197,10 +197,10 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 	}
 
 	// create the meal plan.
-	if err = q.generatedQuerier.CreateMealPlan(ctx, q.db, &generated2.CreateMealPlanParams{
+	if err = q.generatedQuerier.CreateMealPlan(ctx, q.db, &generated.CreateMealPlanParams{
 		ID:               input.ID,
 		Notes:            input.Notes,
-		Status:           generated2.MealPlanStatus(status),
+		Status:           generated.MealPlanStatus(status),
 		VotingDeadline:   input.VotingDeadline,
 		BelongsToAccount: input.BelongsToAccount,
 		CreatedByUser:    input.CreatedByUser,
@@ -253,9 +253,9 @@ func (q *repository) UpdateMealPlan(ctx context.Context, updated *types.MealPlan
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, updated.BelongsToAccount)
 
-	if _, err := q.generatedQuerier.UpdateMealPlan(ctx, q.db, &generated2.UpdateMealPlanParams{
+	if _, err := q.generatedQuerier.UpdateMealPlan(ctx, q.db, &generated.UpdateMealPlanParams{
 		Notes:            updated.Notes,
-		Status:           generated2.MealPlanStatus(updated.Status),
+		Status:           generated.MealPlanStatus(updated.Status),
 		VotingDeadline:   updated.VotingDeadline,
 		BelongsToAccount: updated.BelongsToAccount,
 		ID:               updated.ID,
@@ -287,7 +287,7 @@ func (q *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID 
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated2.ArchiveMealPlanParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated.ArchiveMealPlanParams{
 		BelongsToAccount: accountID,
 		ID:               mealPlanID,
 	})
@@ -394,7 +394,7 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 		if chosen {
 			logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
 
-			if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated2.FinalizeMealPlanOptionParams{
+			if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
 				MealPlanEventID: database.NullStringFromString(event.ID),
 				ID:              winner,
 				Tiebroken:       tiebroken,
@@ -411,8 +411,8 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 	if allVotesAreSubmitted || (!allVotesAreSubmitted && votingDeadlineHasPassed) {
 		logger.Info("finalizing meal plan")
 
-		if err = q.generatedQuerier.FinalizeMealPlan(ctx, q.db, &generated2.FinalizeMealPlanParams{
-			Status: generated2.MealPlanStatus(types.MealPlanStatusFinalized),
+		if err = q.generatedQuerier.FinalizeMealPlan(ctx, q.db, &generated.FinalizeMealPlanParams{
+			Status: generated.MealPlanStatus(types.MealPlanStatusFinalized),
 			ID:     mealPlanID,
 		}); err != nil {
 			return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")

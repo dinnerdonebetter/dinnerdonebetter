@@ -10,7 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 var (
@@ -126,7 +126,7 @@ func (q *repository) GetValidIngredientStates(ctx context.Context, filter *filte
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetValidIngredientStates(ctx, q.db, &generated2.GetValidIngredientStatesParams{
+	results, err := q.generatedQuerier.GetValidIngredientStates(ctx, q.db, &generated.GetValidIngredientStatesParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -215,14 +215,14 @@ func (q *repository) CreateValidIngredientState(ctx context.Context, input *type
 	logger := q.logger.WithValue(keys.ValidIngredientStateIDKey, input.ID)
 
 	// create the valid ingredient state.
-	if err := q.generatedQuerier.CreateValidIngredientState(ctx, q.db, &generated2.CreateValidIngredientStateParams{
+	if err := q.generatedQuerier.CreateValidIngredientState(ctx, q.db, &generated.CreateValidIngredientStateParams{
 		ID:            input.ID,
 		Name:          input.Name,
 		Description:   input.Description,
 		IconPath:      input.IconPath,
 		PastTense:     input.PastTense,
 		Slug:          input.Slug,
-		AttributeType: generated2.IngredientAttributeType(input.AttributeType),
+		AttributeType: generated.IngredientAttributeType(input.AttributeType),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient state creation query")
 	}
@@ -255,13 +255,13 @@ func (q *repository) UpdateValidIngredientState(ctx context.Context, updated *ty
 	logger := q.logger.WithValue(keys.ValidIngredientStateIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateValidIngredientState(ctx, q.db, &generated2.UpdateValidIngredientStateParams{
+	if _, err := q.generatedQuerier.UpdateValidIngredientState(ctx, q.db, &generated.UpdateValidIngredientStateParams{
 		Name:          updated.Name,
 		Description:   updated.Description,
 		IconPath:      updated.IconPath,
 		Slug:          updated.Slug,
 		PastTense:     updated.PastTense,
-		AttributeType: generated2.IngredientAttributeType(updated.AttributeType),
+		AttributeType: generated.IngredientAttributeType(updated.AttributeType),
 		ID:            updated.ID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state")

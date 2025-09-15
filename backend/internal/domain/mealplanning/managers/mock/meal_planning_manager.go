@@ -19,8 +19,8 @@ func (m *MockMealPlanningManager) ListMeals(ctx context.Context, filter *filteri
 	return returnValues.Get(0).([]*mealplanning.Meal), returnValues.Get(1).(string), returnValues.Get(2).(error)
 }
 
-func (m *MockMealPlanningManager) CreateMeal(ctx context.Context, input *mealplanning.MealCreationRequestInput) (*mealplanning.Meal, error) {
-	returnValues := m.Called(ctx, input)
+func (m *MockMealPlanningManager) CreateMeal(ctx context.Context, creatorID string, input *mealplanning.MealCreationRequestInput) (*mealplanning.Meal, error) {
+	returnValues := m.Called(ctx, creatorID, input)
 
 	return returnValues.Get(0).(*mealplanning.Meal), returnValues.Get(1).(error)
 }
@@ -49,8 +49,8 @@ func (m *MockMealPlanningManager) ListMealPlans(ctx context.Context, ownerID str
 	return returnValues.Get(0).([]*mealplanning.MealPlan), returnValues.Get(1).(string), returnValues.Get(2).(error)
 }
 
-func (m *MockMealPlanningManager) CreateMealPlan(ctx context.Context, input *mealplanning.MealPlanCreationRequestInput) (*mealplanning.MealPlan, error) {
-	returnValues := m.Called(ctx, input)
+func (m *MockMealPlanningManager) CreateMealPlan(ctx context.Context, ownerID, creatorID string, input *mealplanning.MealPlanCreationRequestInput) (*mealplanning.MealPlan, error) {
+	returnValues := m.Called(ctx, ownerID, creatorID, input)
 
 	return returnValues.Get(0).(*mealplanning.MealPlan), returnValues.Get(1).(error)
 }
@@ -145,8 +145,8 @@ func (m *MockMealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, m
 	return returnValues.Get(0).([]*mealplanning.MealPlanOptionVote), returnValues.Get(1).(string), returnValues.Get(2).(error)
 }
 
-func (m *MockMealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, input *mealplanning.MealPlanOptionVoteCreationRequestInput) ([]*mealplanning.MealPlanOptionVote, error) {
-	returnValues := m.Called(ctx, input)
+func (m *MockMealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, creatorID string, input *mealplanning.MealPlanOptionVoteCreationRequestInput) ([]*mealplanning.MealPlanOptionVote, error) {
+	returnValues := m.Called(ctx, creatorID, input)
 
 	return returnValues.Get(0).([]*mealplanning.MealPlanOptionVote), returnValues.Get(1).(error)
 }

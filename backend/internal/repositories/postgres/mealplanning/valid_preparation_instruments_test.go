@@ -50,7 +50,7 @@ func TestQuerier_Integration_ValidPreparationInstruments(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -124,7 +124,7 @@ func TestQuerier_ValidPreparationInstrumentExists(T *testing.T) {
 	T.Run("with invalid valid preparation instrument ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c := buildInertClientForTest(t)
 
@@ -140,7 +140,7 @@ func TestQuerier_GetValidPreparationInstrument(T *testing.T) {
 	T.Run("with invalid valid preparation instrument ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetValidPreparationInstrument(ctx, "")
@@ -155,7 +155,7 @@ func TestQuerier_CreateValidPreparationInstrument(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateValidPreparationInstrument(ctx, nil)
@@ -170,7 +170,7 @@ func TestQuerier_UpdateValidPreparationInstrument(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateValidPreparationInstrument(ctx, nil))
@@ -183,7 +183,7 @@ func TestQuerier_ArchiveValidPreparationInstrument(T *testing.T) {
 	T.Run("with invalid valid preparation instrument ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveValidPreparationInstrument(ctx, ""))

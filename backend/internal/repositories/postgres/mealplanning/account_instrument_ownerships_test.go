@@ -48,7 +48,7 @@ func TestQuerier_Integration_AccountInstrumentOwnerships(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -116,7 +116,7 @@ func TestQuerier_AccountInstrumentOwnershipExists(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.AccountInstrumentOwnershipExists(ctx, "", exampleAccountID)
@@ -133,7 +133,7 @@ func TestQuerier_GetAccountInstrumentOwnership(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetAccountInstrumentOwnership(ctx, "", exampleAccountID)
@@ -148,7 +148,7 @@ func TestQuerier_CreateAccountInstrumentOwnership(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateAccountInstrumentOwnership(ctx, nil)
@@ -163,7 +163,7 @@ func TestQuerier_UpdateAccountInstrumentOwnership(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateAccountInstrumentOwnership(ctx, nil))
@@ -178,7 +178,7 @@ func TestQuerier_ArchiveAccountInstrumentOwnership(T *testing.T) {
 
 		exampleAccountID := fakes.BuildFakeID()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveAccountInstrumentOwnership(ctx, "", exampleAccountID))

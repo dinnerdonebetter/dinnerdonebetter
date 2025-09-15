@@ -14,7 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
-	generated2 "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
 )
 
 var (
@@ -244,7 +244,7 @@ func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilt
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetRecipes(ctx, q.db, &generated2.GetRecipesParams{
+	results, err := q.generatedQuerier.GetRecipes(ctx, q.db, &generated.GetRecipesParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -309,7 +309,7 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetRecipesCreatedByUser(ctx, q.db, &generated2.GetRecipesCreatedByUserParams{
+	results, err := q.generatedQuerier.GetRecipesCreatedByUser(ctx, q.db, &generated.GetRecipesCreatedByUserParams{
 		CreatedByUser:   userID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -402,7 +402,7 @@ func (q *repository) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.RecipeSearch(ctx, q.db, &generated2.RecipeSearchParams{
+	results, err := q.generatedQuerier.RecipeSearch(ctx, q.db, &generated.RecipeSearchParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -462,7 +462,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 	}
 
 	// create the recipe.
-	if err = q.generatedQuerier.CreateRecipe(ctx, tx, &generated2.CreateRecipeParams{
+	if err = q.generatedQuerier.CreateRecipe(ctx, tx, &generated.CreateRecipeParams{
 		MinEstimatedPortions: database.StringFromFloat32(input.EstimatedPortions.Min),
 		ID:                   input.ID,
 		Slug:                 input.Slug,
@@ -470,7 +470,7 @@ func (q *repository) CreateRecipe(ctx context.Context, input *mealplanning.Recip
 		Description:          input.Description,
 		CreatedByUser:        input.CreatedByUser,
 		Name:                 input.Name,
-		YieldsComponentType:  generated2.ComponentType(input.YieldsComponentType),
+		YieldsComponentType:  generated.ComponentType(input.YieldsComponentType),
 		PortionName:          input.PortionName,
 		PluralPortionName:    input.PluralPortionName,
 		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(input.EstimatedPortions.Max),
@@ -648,7 +648,7 @@ func (q *repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Rec
 	tracing.AttachToSpan(span, keys.RecipeIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.UserIDKey, updated.CreatedByUser)
 
-	if _, err := q.generatedQuerier.UpdateRecipe(ctx, q.db, &generated2.UpdateRecipeParams{
+	if _, err := q.generatedQuerier.UpdateRecipe(ctx, q.db, &generated.UpdateRecipeParams{
 		Name:                 updated.Name,
 		Slug:                 updated.Slug,
 		Source:               updated.Source,
@@ -660,7 +660,7 @@ func (q *repository) UpdateRecipe(ctx context.Context, updated *mealplanning.Rec
 		PluralPortionName:    updated.PluralPortionName,
 		SealOfApproval:       updated.SealOfApproval,
 		EligibleForMeals:     updated.EligibleForMeals,
-		YieldsComponentType:  generated2.ComponentType(updated.YieldsComponentType),
+		YieldsComponentType:  generated.ComponentType(updated.YieldsComponentType),
 		CreatedByUser:        updated.CreatedByUser,
 		ID:                   updated.ID,
 	}); err != nil {
@@ -711,7 +711,7 @@ func (q *repository) ArchiveRecipe(ctx context.Context, recipeID, userID string)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipe(ctx, q.db, &generated2.ArchiveRecipeParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipe(ctx, q.db, &generated.ArchiveRecipeParams{
 		CreatedByUser: userID,
 		ID:            recipeID,
 	})

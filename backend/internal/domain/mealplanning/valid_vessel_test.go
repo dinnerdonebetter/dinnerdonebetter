@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -45,7 +44,7 @@ func TestValidVesselCreationRequestInput_Validate(T *testing.T) {
 			CapacityUnitID: pointer.To(t.Name()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -54,7 +53,7 @@ func TestValidVesselCreationRequestInput_Validate(T *testing.T) {
 
 		x := &ValidVesselCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -71,7 +70,7 @@ func TestValidVesselDatabaseCreationInput_Validate(T *testing.T) {
 			CapacityUnitID: pointer.To(t.Name()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -80,7 +79,7 @@ func TestValidVesselDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &ValidVesselDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -97,7 +96,7 @@ func TestValidVesselUpdateRequestInput_Validate(T *testing.T) {
 			IconPath:    pointer.To(t.Name()),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -106,7 +105,7 @@ func TestValidVesselUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &ValidVesselUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

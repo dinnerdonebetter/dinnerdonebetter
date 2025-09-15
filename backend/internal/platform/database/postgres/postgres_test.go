@@ -51,7 +51,7 @@ func TestQuerier_IsReady(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
@@ -63,7 +63,7 @@ func TestQuerier_IsReady(T *testing.T) {
 	T.Run("with error pinging database", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 		c.config = &databasecfg.Config{PingWaitPeriod: time.Second, MaxPingAttempts: 1}
 
@@ -93,7 +93,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleConfig := &databasecfg.Config{
 			Debug:           true,
@@ -143,7 +143,7 @@ func TestQuerier_rollbackTransaction(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin()

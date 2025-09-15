@@ -56,7 +56,7 @@ func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -118,7 +118,7 @@ func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		c := buildInertClientForTest(t)
@@ -135,7 +135,7 @@ func TestQuerier_fleshOutMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.fleshOutMealPlanGroceryListItem(ctx, nil)
@@ -150,7 +150,7 @@ func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		exampleMealPlan := fakes.BuildFakeMealPlan()
 		c := buildInertClientForTest(t)
 
@@ -166,7 +166,7 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateMealPlanGroceryListItem(ctx, nil)
@@ -181,7 +181,7 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateMealPlanGroceryListItem(ctx, nil))
@@ -194,7 +194,7 @@ func TestQuerier_ArchiveMealPlanGroceryListItem(T *testing.T) {
 	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveMealPlanGroceryListItem(ctx, ""))

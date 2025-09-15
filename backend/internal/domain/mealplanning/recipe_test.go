@@ -1,7 +1,6 @@
 package mealplanning
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -169,7 +168,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			EstimatedPortions: types.Float32RangeWithOptionalMax{Min: fake.Float32()},
 		}
 
-		assert.NoError(t, x.ValidateWithContext(context.Background()))
+		assert.NoError(t, x.ValidateWithContext(t.Context()))
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -177,7 +176,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeCreationRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 
@@ -213,7 +212,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			EstimatedPortions: types.Float32RangeWithOptionalMax{Min: fake.Float32()},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -294,7 +293,7 @@ func TestRecipeDatabaseCreationInput_Validate(T *testing.T) {
 			CreatedByUser: t.Name(),
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -303,7 +302,7 @@ func TestRecipeDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &RecipeDatabaseCreationInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }
@@ -323,7 +322,7 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 			EstimatedPortions:  types.Float32RangeWithOptionalMaxUpdateRequestInput{Min: pointer.To(fake.Float32())},
 		}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.NoError(t, actual)
 	})
 
@@ -332,7 +331,7 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeUpdateRequestInput{}
 
-		actual := x.ValidateWithContext(context.Background())
+		actual := x.ValidateWithContext(t.Context())
 		assert.Error(t, actual)
 	})
 }

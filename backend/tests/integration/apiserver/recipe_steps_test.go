@@ -3,14 +3,38 @@ package integration
 import (
 	"testing"
 
-	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func checkRecipeStepEquality(t *testing.T, index int, expected, actual *mealplanning.RecipeStep) {
+	t.Helper()
+
+	assert.NotZero(t, actual.CreatedAt, "expected recipe step %d", index)
+	assert.Equal(t, expected.EstimatedTimeInSeconds, actual.EstimatedTimeInSeconds, "expected recipe step %d", index)
+	assert.Equal(t, expected.TemperatureInCelsius, actual.TemperatureInCelsius, "expected recipe step %d", index)
+	assert.NotEmpty(t, actual.BelongsToRecipe, "expected recipe step %d", index)
+	assert.Equal(t, expected.ConditionExpression, actual.ConditionExpression, "expected recipe step %d", index)
+	assert.NotEmpty(t, actual.ID, "expected recipe step %d", index)
+	assert.Equal(t, expected.Notes, actual.Notes, "expected recipe step %d", index)
+	assert.Equal(t, expected.ExplicitInstructions, actual.ExplicitInstructions, "expected recipe step %d", index)
+	checkRecipeMediaSliceEquality(t, index, expected.Media, actual.Media)
+	checkRecipeStepProductSliceEquality(t, index, expected.Products, actual.Products)
+	checkRecipeStepInstrumentSliceEquality(t, index, expected.Instruments, actual.Instruments)
+	checkRecipeStepVesselSliceEquality(t, index, expected.Vessels, actual.Vessels)
+	checkRecipeStepCompletionConditionSliceEquality(t, index, expected.CompletionConditions, actual.CompletionConditions)
+	checkRecipeStepIngredientSliceEquality(t, index, expected.Ingredients, actual.Ingredients)
+	checkValidPreparationEquality(t, index, expected.Preparation, actual.Preparation)
+	assert.Equal(t, expected.Index, actual.Index, "expected recipe step %d", index)
+	assert.Equal(t, expected.Optional, actual.Optional, "expected recipe step %d", index)
+	assert.Equal(t, expected.StartTimerAutomatically, actual.StartTimerAutomatically, "expected recipe step %d", index)
+}
 
 func TestRecipeSteps_CompleteLifecycle(T *testing.T) {
 	T.Parallel()
@@ -22,7 +46,7 @@ func TestRecipeSteps_CompleteLifecycle(T *testing.T) {
 		createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(t, nil)
 
 		var (
-			createdRecipeStep *types.RecipeStep
+			createdRecipeStep *mealplanning.RecipeStep
 			stepIndex         int
 		)
 		for i, step := range createdRecipe.Steps {
@@ -47,23 +71,29 @@ func TestRecipeSteps_CompleteLifecycle(T *testing.T) {
 
 		updateInput := mpconverters.ConvertRecipeStepToRecipeStepUpdateRequestInput(newRecipeStep)
 		updateInput.Preparation = createdValidPreparation
+
 		createdRecipeStep.Update(updateInput)
 
-		_, err := adminClient.UpdateRecipeStep(ctx, &mealplanninggrpc.UpdateRecipeStepRequest{
+		updateResponse, err := adminClient.UpdateRecipeStep(ctx, &mealplanninggrpc.UpdateRecipeStepRequest{
 			RecipeID:     createdRecipe.ID,
 			RecipeStepID: createdRecipeStep.ID,
 			Input:        converters.ConvertRecipeStepUpdateRequestInputToGRPCRecipeStepUpdateRequestInput(updateInput),
 		})
 		require.NoError(t, err)
 
+		// Test the response from UpdateRecipeStep first
+		checkRecipeStepEquality(t, stepIndex, createdRecipeStep, converters.ConvertGRPCRecipeStepToRecipeStep(updateResponse.Updated))
+		assert.NotNil(t, updateResponse.Updated.LastUpdatedAt)
+
+		// Also test the separate GetRecipeStep call
 		actual, err := adminClient.GetRecipeStep(ctx, &mealplanninggrpc.GetRecipeStepRequest{
 			RecipeID:     createdRecipe.ID,
 			RecipeStepID: createdRecipeStep.ID,
 		})
 		require.NoError(t, err)
 
-		// assert recipe step equality
-		checkRecipeStepEquality(t, stepIndex, newRecipeStep, converters.ConvertGRPCRecipeStepToRecipeStep(actual.Result))
+		// assert recipe step equality for the separate get call
+		checkRecipeStepEquality(t, stepIndex, createdRecipeStep, converters.ConvertGRPCRecipeStepToRecipeStep(actual.Result))
 		assert.NotNil(t, actual.Result.LastUpdatedAt)
 
 		_, err = adminClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
@@ -78,7 +108,7 @@ func TestRecipeSteps_CompleteLifecycle(T *testing.T) {
 }
 
 func TestRecipeSteps_Listing(T *testing.T) {
-	T.SkipNow()
+	T.Parallel()
 
 	T.Run("should be readable in paginated form", func(t *testing.T) {
 		t.Parallel()
@@ -90,7 +120,7 @@ func TestRecipeSteps_Listing(T *testing.T) {
 		createdValidIngredientState := createValidIngredientStateForTest(t)
 		createdValidVessel := createValidVesselForTest(t)
 
-		var expected []*types.RecipeStep
+		var expected []*mealplanning.RecipeStep
 		for i := 0; i < 5; i++ {
 			t.Logf("creating recipe step #%d", i+1)
 
@@ -116,12 +146,16 @@ func TestRecipeSteps_Listing(T *testing.T) {
 			for j := range exampleRecipeStep.CompletionConditions {
 				exampleRecipeStep.CompletionConditions[j].IngredientState = *createdValidIngredientState
 				for k := range exampleRecipeStep.CompletionConditions[j].Ingredients {
-					exampleRecipeStep.CompletionConditions[j].Ingredients[k].RecipeStepIngredient = createdValidIngredients[0].ID
+					// Reference the first recipe step ingredient that will be created
+					exampleRecipeStep.CompletionConditions[j].Ingredients[k].RecipeStepIngredient = exampleRecipeStep.Ingredients[0].ID
 				}
 			}
 
 			exampleRecipeStepInput := mpconverters.ConvertRecipeStepToRecipeStepCreationRequestInput(exampleRecipeStep)
 			exampleRecipeStepInput.PreparationID = createdValidPreparation.ID
+
+			// Set the preparation on the example recipe step for comparison
+			exampleRecipeStep.Preparation = *createdValidPreparation
 
 			createdRecipeStep, createdRecipeStepErr := adminClient.CreateRecipeStep(ctx, &mealplanninggrpc.CreateRecipeStepRequest{
 				RecipeID: createdRecipe.ID,
@@ -129,7 +163,16 @@ func TestRecipeSteps_Listing(T *testing.T) {
 			})
 			require.NoError(t, createdRecipeStepErr)
 
-			checkRecipeStepEquality(t, -1, exampleRecipeStep, converters.ConvertGRPCRecipeStepToRecipeStep(createdRecipeStep.Created))
+			// Update the completion condition ingredient references to match the actual created recipe step
+			createdRecipeStepConverted := converters.ConvertGRPCRecipeStepToRecipeStep(createdRecipeStep.Created)
+			for j := range exampleRecipeStep.CompletionConditions {
+				for k := range exampleRecipeStep.CompletionConditions[j].Ingredients {
+					// Use the actual created recipe step ingredient ID
+					exampleRecipeStep.CompletionConditions[j].Ingredients[k].RecipeStepIngredient = createdRecipeStepConverted.Ingredients[k].ID
+				}
+			}
+
+			checkRecipeStepEquality(t, -1, exampleRecipeStep, createdRecipeStepConverted)
 
 			recipeStep, err := adminClient.GetRecipeStep(ctx, &mealplanninggrpc.GetRecipeStepRequest{
 				RecipeID:     createdRecipe.ID,
@@ -176,7 +219,7 @@ func TestRecipeSteps_Listing(T *testing.T) {
 //
 //			_, _, createdRecipe := createRecipeForTest(ctx, t, adminClient, adminClient, nil)
 //
-//			var createdRecipeStep *types.RecipeStep
+//			var createdRecipeStep *mealplanning.RecipeStep
 //			for _, step := range createdRecipe.Steps {
 //				createdRecipeStep = step
 //				break

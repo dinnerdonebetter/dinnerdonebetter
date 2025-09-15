@@ -44,7 +44,7 @@ func TestQuerier_Integration_RecipeMedia(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -97,7 +97,7 @@ func TestQuerier_RecipeMediaExists(T *testing.T) {
 	T.Run("with invalid recipe media ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 
 		c := buildInertClientForTest(t)
 
@@ -113,7 +113,7 @@ func TestQuerier_GetRecipeMedia(T *testing.T) {
 	T.Run("with invalid recipe media ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetRecipeMedia(ctx, "")
@@ -128,7 +128,7 @@ func TestQuerier_CreateRecipeMedia(T *testing.T) {
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateRecipeMedia(ctx, nil)
@@ -143,7 +143,7 @@ func TestQuerier_UpdateRecipeMedia(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.UpdateRecipeMedia(ctx, nil))
@@ -156,7 +156,7 @@ func TestQuerier_ArchiveRecipeMedia(T *testing.T) {
 	T.Run("with invalid recipe media ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveRecipeMedia(ctx, ""))

@@ -43,7 +43,7 @@ func TestQuerier_Integration_OAuth2Clients(t *testing.T) {
 		t.SkipNow()
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 	dbc, container := buildDatabaseClientForTest(t)
 
 	databaseURI, err := container.ConnectionString(ctx)
@@ -92,7 +92,7 @@ func TestQuerier_GetOAuth2ClientByClientID(T *testing.T) {
 	T.Run("with empty client ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetOAuth2ClientByClientID(ctx, "")
@@ -107,7 +107,7 @@ func TestQuerier_GetOAuth2ClientByDatabaseID(T *testing.T) {
 	T.Run("with invalid client ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.GetOAuth2ClientByDatabaseID(ctx, "")
@@ -122,7 +122,7 @@ func TestQuerier_CreateOAuth2Client(T *testing.T) {
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		actual, err := c.CreateOAuth2Client(ctx, nil)
@@ -137,7 +137,7 @@ func TestQuerier_ArchiveOAuth2Client(T *testing.T) {
 	T.Run("with invalid client ID", func(t *testing.T) {
 		t.Parallel()
 
-		ctx := context.Background()
+		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveOAuth2Client(ctx, ""))
