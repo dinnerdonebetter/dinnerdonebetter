@@ -507,6 +507,8 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 		require.NotNil(t, createdMealPlan)
 		require.NoError(t, err)
 
+		createdMealPlan = converters.ConvertGRPCMealPlanToMealPlan(createdMealPlanRes.Result)
+
 		assert.Equal(t, string(mealplanning.MealPlanStatusFinalized), createdMealPlan.Status)
 
 		for _, event := range createdMealPlan.Events {
