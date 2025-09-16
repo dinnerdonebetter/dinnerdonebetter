@@ -223,6 +223,25 @@ func ConvertAccountInvitationToGRPCAccountInvitation(input *identity.AccountInvi
 	}
 }
 
+func ConvertGRPCAccountInvitationToAccountInvitation(input *identitysvc.AccountInvitation) *identity.AccountInvitation {
+	return &identity.AccountInvitation{
+		CreatedAt:          grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt:      grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:         grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		ToUser:             input.ToUser,
+		Status:             input.Status,
+		ToEmail:            input.ToEmail,
+		StatusNote:         input.StatusNote,
+		Token:              input.Token,
+		ID:                 input.ID,
+		Note:               input.Note,
+		ToName:             input.ToName,
+		ExpiresAt:          grpcconverters.ConvertPBTimestampToTime(input.ExpiresAt),
+		DestinationAccount: *ConvertGRPCAccountToAccount(input.DestinationAccount),
+		FromUser:           *ConvertGRPCUserToUser(input.FromUser),
+	}
+}
+
 func ConvertGRPCUserRegistrationInputToUserRegistrationInput(input *identitysvc.UserRegistrationInput) *identity.UserRegistrationInput {
 	return &identity.UserRegistrationInput{
 		Birthday:              grpcconverters.ConvertPBTimestampToTimePointer(input.Birthday),

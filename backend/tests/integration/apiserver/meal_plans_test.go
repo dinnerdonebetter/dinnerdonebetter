@@ -315,184 +315,209 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 	})
 }
 
-/*
+func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
+	T.Parallel()
 
-func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
-	s.runTest("should resolve the meal plan status upon voting deadline expiry", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+	T.Run("should resolve the meal plan status upon receiving some votes", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+		// create a userClient for the meal plan account
+		_, accountAdminUserClient := createUserAndClientForTest(t)
 
-			// create a userClient for the meal plan account
-			_, accountAdminUserClient := createUserAndClientForTest(ctx, t, nil)
+		// create account members
+		currentStatus, statusErr := accountAdminUserClient.GetAuthStatus(ctx, &authgrpc.GetAuthStatusRequest{})
+		require.NotNil(t, currentStatus)
+		require.NoError(t, statusErr)
+		relevantAccountID := currentStatus.ActiveAccount
 
-			// create account members
-			currentStatus, statusErr := accountAdminUserClient.GetAuthStatus(s.ctx)
-				require.NotNil(t, currentStatus)
-				require.NoError(t, statusErr)
-			relevantAccountID := currentStatus.ActiveAccount
+		createdUsers := []*identity.User{}
+		createdClients := []client.Client{}
 
-			createdUsers := []*mealplanning.User{}
-			createdClients := []*apiclient.Client{}
+		for i := 0; i < 2; i++ {
+			u, c := createUserAndClientForTest(t)
 
-			for i := 0; i < 2; i++ {
-				u, c := createUserAndClientForTest(ctx, t, nil)
-
-				invitation, err := accountAdminUserClient.CreateAccountInvitation(ctx, relevantAccountID, &mealplanning.AccountInvitationCreationRequestInput{
+			invitation, err := accountAdminUserClient.CreateAccountInvitation(ctx, &identitygrpc.CreateAccountInvitationRequest{
+				Input: &identitygrpc.AccountInvitationCreationRequestInput{
 					Note:    t.Name(),
+					ToName:  t.Name(),
 					ToEmail: u.EmailAddress,
-				})
-				require.NoError(t, err)
+				},
+			})
+			require.NoError(t, err)
 
-				sentInvitations, err := accountAdminUserClient.GetSentAccountInvitations(ctx, nil)
-				require.NotNil(t, sentInvitations)
-				require.NoError(t, err)
-				assert.NotEmpty(t, sentInvitations.Data)
+			sentInvitations, err := accountAdminUserClient.GetSentAccountInvitations(ctx, &identitygrpc.GetSentAccountInvitationsRequest{})
+			require.NotNil(t, sentInvitations)
+			require.NoError(t, err)
+			assert.NotEmpty(t, sentInvitations.Result)
 
-				invitations, err := c.GetReceivedAccountInvitations(ctx, nil)
-				require.NotNil(t, invitations)
-				require.NoError(t, err)
-				assert.NotEmpty(t, invitations.Data)
+			invitations, err := c.GetReceivedAccountInvitations(ctx, &identitygrpc.GetReceivedAccountInvitationsRequest{})
+			require.NotNil(t, invitations)
+			require.NoError(t, err)
+			assert.NotEmpty(t, invitations.Result)
 
-				require.NoError(t, c.AcceptAccountInvitation(ctx, invitation.ID, &mealplanning.AccountInvitationUpdateRequestInput{
-					Token: invitation.Token,
+			_, err = c.AcceptAccountInvitation(ctx, &identitygrpc.AcceptAccountInvitationRequest{
+				AccountInvitationID: invitation.Created.ID,
+				Input: &identitygrpc.AccountInvitationUpdateRequestInput{
+					Token: invitation.Created.Token,
 					Note:  t.Name(),
-				}))
-				_, err = c.SetDefaultAccount(ctx, relevantAccountID)
-				require.NoError(t, err)
+				},
+			})
 
-				tokenResponse, err := c.LoginForToken(ctx, &mealplanning.UserLoginInput{Username: u.Username, Password: u.HashedPassword, TOTPToken: generateTOTPTokenForUser(t, u)})
-				require.NoError(t, err)
+			require.NoError(t, err)
+			_, err = c.SetDefaultAccount(ctx, &identitygrpc.SetDefaultAccountRequest{AccountID: relevantAccountID})
+			require.NoError(t, err)
 
-				require.NoError(t, c.SetOptions(apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, []string{"account_member"}, tokenResponse.Token)))
+			tokenResponse, err := c.LoginForToken(ctx, &authgrpc.LoginForTokenRequest{Input: &authgrpc.UserLoginInput{
+				Username:  u.Username,
+				Password:  u.HashedPassword,
+				TOTPToken: generateTOTPCodeForUserForTest(t, u),
+			}})
+			require.NoError(t, err)
+			assert.NotNil(t, tokenResponse)
 
-				createdUsers = append(createdUsers, u)
-				createdClients = append(createdClients, c)
-			}
+			createdUsers = append(createdUsers, u)
+			createdClients = append(createdClients, c)
+		}
 
-			// create meals for meal plan
-			createdMeals := []*mealplanning.Meal{}
-			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.adminClient, accountAdminUserClient, nil)
-				createdMeals = append(createdMeals, createdMeal)
-			}
+		// create recipes for meal plan
+		createdMeals := []*mealplanning.Meal{}
+		for i := 0; i < 3; i++ {
+			createdMeal := createMealForTest(t, accountAdminUserClient, nil)
+			createdMeals = append(createdMeals, createdMeal)
+		}
 
-			const baseDeadline = 10 * time.Second
-			now := time.Now()
+		const baseDeadline = 10 * time.Second
+		now := time.Now()
 
-			exampleMealPlan := &mealplanning.MealPlan{
-				Notes:          t.Name(),
-				Status:         string(mealplanning.MealPlanStatusAwaitingVotes),
-				VotingDeadline: now.Add(baseDeadline),
-				ElectionMethod: mealplanning.MealPlanElectionMethodSchulze,
-				Events: []*mealplanning.MealPlanEvent{
-					{
-						StartsAt: now.Add(24 * time.Hour),
-						EndsAt:   now.Add(72 * time.Hour),
-						MealName: mealplanning.BreakfastMealName,
-						Options: []*mealplanning.MealPlanOption{
-							{
-								Meal:  mealplanning.Meal{ID: createdMeals[0].ID},
-								Notes: "option A",
-							},
-							{
-								Meal:  mealplanning.Meal{ID: createdMeals[1].ID},
-								Notes: "option B",
-							},
-							{
-								Meal:  mealplanning.Meal{ID: createdMeals[2].ID},
-								Notes: "option C",
-							},
+		exampleMealPlan := &mealplanning.MealPlan{
+			Notes:          t.Name(),
+			Status:         string(mealplanning.MealPlanStatusAwaitingVotes),
+			VotingDeadline: now.Add(baseDeadline),
+			ElectionMethod: mealplanning.MealPlanElectionMethodSchulze,
+			Events: []*mealplanning.MealPlanEvent{
+				{
+					StartsAt: now.Add(24 * time.Hour),
+					EndsAt:   now.Add(72 * time.Hour),
+					MealName: mealplanning.BreakfastMealName,
+					Options: []*mealplanning.MealPlanOption{
+						{
+							Meal:  mealplanning.Meal{ID: createdMeals[0].ID},
+							Notes: "option A",
+						},
+						{
+							Meal:  mealplanning.Meal{ID: createdMeals[1].ID},
+							Notes: "option B",
+						},
+						{
+							Meal:  mealplanning.Meal{ID: createdMeals[2].ID},
+							Notes: "option C",
 						},
 					},
 				},
-			}
+			},
+		}
 
-			exampleMealPlanInput := mpconverters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
-			createdMealPlan, err := accountAdminUserClient.CreateMealPlan(ctx, exampleMealPlanInput)
-			require.NotEmpty(t, createdMealPlan.ID)
-			require.NoError(t, err)
+		exampleMealPlanInput := mpconverters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
+		createMealPlanRes, err := accountAdminUserClient.CreateMealPlan(ctx, &mealplanninggrpc.CreateMealPlanRequest{Input: converters.ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(exampleMealPlanInput)})
+		require.NotEmpty(t, createMealPlanRes.Created.ID)
+		require.NoError(t, err)
 
-			createdMealPlan, err = accountAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
-				require.NotNil(t, createdMealPlan)
-				require.NoError(t, err)
-			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
+		createdMealPlanRes, err := accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createMealPlanRes.Created.ID})
+		require.NotNil(t, createdMealPlanRes)
+		require.NoError(t, err)
 
-			createdMealPlanEvent := createdMealPlan.Events[0]
+		createdMealPlan := converters.ConvertGRPCMealPlanToMealPlan(createdMealPlanRes.Result)
 
-			userAVotes := &mealplanning.MealPlanOptionVoteCreationRequestInput{
-				Votes: []*mealplanning.MealPlanOptionVoteCreationInput{
-					{
-						BelongsToMealPlanOption: createdMealPlanEvent.Options[0].ID,
-						Rank:                    0,
-					},
-					{
-						BelongsToMealPlanOption: createdMealPlanEvent.Options[1].ID,
-						Rank:                    2,
-					},
-					{
-						BelongsToMealPlanOption: createdMealPlanEvent.Options[2].ID,
-						Rank:                    1,
-					},
+		checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
+
+		createdMealPlanEvent := createdMealPlan.Events[0]
+
+		userAVotes := &mealplanning.MealPlanOptionVoteCreationRequestInput{
+			Votes: []*mealplanning.MealPlanOptionVoteCreationInput{
+				{
+					BelongsToMealPlanOption: createdMealPlanEvent.Options[0].ID,
+					Rank:                    0,
 				},
-			}
-
-			userBVotes := &mealplanning.MealPlanOptionVoteCreationRequestInput{
-				Votes: []*mealplanning.MealPlanOptionVoteCreationInput{
-					{
-						BelongsToMealPlanOption: createdMealPlanEvent.Options[0].ID,
-						Rank:                    0,
-					},
-					{
-						BelongsToMealPlanOption: createdMealPlanEvent.Options[1].ID,
-						Rank:                    1,
-					},
-					{
-						BelongsToMealPlanOption: createdMealPlanEvent.Options[2].ID,
-						Rank:                    2,
-					},
+				{
+					BelongsToMealPlanOption: createdMealPlanEvent.Options[1].ID,
+					Rank:                    2,
 				},
-			}
+				{
+					BelongsToMealPlanOption: createdMealPlanEvent.Options[2].ID,
+					Rank:                    1,
+				},
+			},
+		}
 
-			createdMealPlanOptionVotesA, err := createdClients[0].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userAVotes)
-			require.NoError(t, err)
-			require.NotNil(t, createdMealPlanOptionVotesA)
+		userBVotes := &mealplanning.MealPlanOptionVoteCreationRequestInput{
+			Votes: []*mealplanning.MealPlanOptionVoteCreationInput{
+				{
+					BelongsToMealPlanOption: createdMealPlanEvent.Options[0].ID,
+					Rank:                    0,
+				},
+				{
+					BelongsToMealPlanOption: createdMealPlanEvent.Options[1].ID,
+					Rank:                    1,
+				},
+				{
+					BelongsToMealPlanOption: createdMealPlanEvent.Options[2].ID,
+					Rank:                    2,
+				},
+			},
+		}
 
-			createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userBVotes)
-			require.NoError(t, err)
-			require.NotNil(t, createdMealPlanOptionVotesB)
+		createdMealPlanOptionVotesA, err := createdClients[0].CreateMealPlanOptionVote(ctx, &mealplanninggrpc.CreateMealPlanOptionVoteRequest{
+			MealPlanID:      createdMealPlan.ID,
+			MealPlanEventID: createdMealPlanEvent.ID,
+			Input:           converters.ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreationRequestInput(userAVotes),
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createdMealPlanOptionVotesA)
 
-			createdMealPlan, err = accountAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
-				require.NotNil(t, createdMealPlan)
-				require.NoError(t, err)
-			assert.Equal(t, string(mealplanning.MealPlanStatusAwaitingVotes), createdMealPlan.Status)
+		createdMealPlanOptionVotesB, err := createdClients[1].CreateMealPlanOptionVote(ctx, &mealplanninggrpc.CreateMealPlanOptionVoteRequest{
+			MealPlanID:      createdMealPlan.ID,
+			MealPlanEventID: createdMealPlanEvent.ID,
+			Input:           converters.ConvertMealPlanOptionVoteCreationRequestInputToGRPCMealPlanOptionVoteCreationRequestInput(userBVotes),
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createdMealPlanOptionVotesB)
 
-			createdMealPlan.VotingDeadline = time.Now().Add(-10 * time.Hour)
-			require.NoError(t, dbManager.UpdateMealPlan(ctx, createdMealPlan))
+		createdMealPlanRes, err = accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		require.NotNil(t, createdMealPlan)
+		require.NoError(t, err)
+		assert.Equal(t, string(mealplanning.MealPlanStatusAwaitingVotes), createdMealPlan.Status)
 
-			runRes, err := testClients.adminClient.RunFinalizeMealPlanWorker(ctx, &mealplanning.FinalizeMealPlansRequest{ReturnCount: true})
-			require.NoError(t, err)
-			require.NotNil(t, runRes)
+		q := generated.New()
+		rowsAffected, err := q.UpdateMealPlan(ctx, databaseClient.DB(), &generated.UpdateMealPlanParams{
+			Notes:            createdMealPlan.Notes,
+			Status:           generated.MealPlanStatus(createdMealPlan.Status),
+			VotingDeadline:   time.Now().Add(-10 * time.Hour),
+			BelongsToAccount: relevantAccountID,
+			ID:               createdMealPlan.ID,
+		})
+		require.NoError(t, err)
+		require.NotZero(t, rowsAffected)
 
-			createdMealPlan, err = accountAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
-				require.NotNil(t, createdMealPlan)
-				require.NoError(t, err)
-			assert.Equal(t, string(mealplanning.MealPlanStatusFinalized), createdMealPlan.Status)
+		runRes, err := adminClient.RunFinalizeMealPlanWorker(ctx, &mealplanninggrpc.RunFinalizeMealPlanWorkerRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, runRes)
 
-			for _, event := range createdMealPlan.Events {
-				selectionMade := false
-				for _, opt := range event.Options {
-					if opt.Chosen {
-						selectionMade = true
-						break
-					}
+		createdMealPlanRes, err = accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createdMealPlan.ID})
+		require.NotNil(t, createdMealPlan)
+		require.NoError(t, err)
+
+		assert.Equal(t, string(mealplanning.MealPlanStatusFinalized), createdMealPlan.Status)
+
+		for _, event := range createdMealPlan.Events {
+			selectionMade := false
+			for _, opt := range event.Options {
+				if opt.Chosen {
+					selectionMade = true
+					break
 				}
-				require.True(t, selectionMade)
 			}
+			require.True(t, selectionMade)
 		}
 	})
 }
-
-*/
