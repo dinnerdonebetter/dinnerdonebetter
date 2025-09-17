@@ -652,32 +652,6 @@ func diffMaps(a, b map[string]string) map[string][2]string {
 
 // ===== Recipe step equality helpers =====
 
-func checkRecipeStepInstrumentSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepInstrument) {
-	t.Helper()
-	require.Equal(t, len(expected), len(actual), "expected recipe step %d instruments length", stepIndex)
-	for i := range expected {
-		checkRecipeStepInstrumentEquality(t, stepIndex, i, expected[i], actual[i])
-	}
-}
-
-func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, expected, actual *mealplanning.RecipeStepInstrument) {
-	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d instrument %d to have ID", stepIndex, instrIndex)
-	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d instrument %d to have CreatedAt", stepIndex, instrIndex)
-	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d instrument %d to have BelongsToRecipeStep", stepIndex, instrIndex)
-	assert.Equal(t, expected.Name, actual.Name, "expected step %d instrument %d Name", stepIndex, instrIndex)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d instrument %d Notes", stepIndex, instrIndex)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d instrument %d Quantity", stepIndex, instrIndex)
-	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d instrument %d OptionIndex", stepIndex, instrIndex)
-	assert.Equal(t, expected.PreferenceRank, actual.PreferenceRank, "expected step %d instrument %d PreferenceRank", stepIndex, instrIndex)
-	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d instrument %d Optional", stepIndex, instrIndex)
-	if expected.Instrument != nil {
-		require.NotNil(t, actual.Instrument, "expected step %d instrument %d Instrument non-nil", stepIndex, instrIndex)
-		assert.NotEmpty(t, actual.Instrument.ID, "expected step %d instrument %d Instrument.ID", stepIndex, instrIndex)
-		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected step %d instrument %d Instrument.ID", stepIndex, instrIndex)
-	}
-}
-
 func checkRecipeStepCompletionConditionSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepCompletionCondition) {
 	t.Helper()
 	require.Equal(t, len(expected), len(actual), "expected recipe step %d completion conditions length", stepIndex)

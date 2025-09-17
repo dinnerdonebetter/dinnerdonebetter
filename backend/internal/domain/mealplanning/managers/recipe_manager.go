@@ -782,6 +782,7 @@ func (m *recipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	convertedInput := converters.ConvertRecipeStepInstrumentCreationRequestInputToRecipeStepInstrumentDatabaseCreationInput(input)
+	convertedInput.BelongsToRecipeStep = recipeStepID
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, convertedInput.ID)
 
@@ -924,6 +925,7 @@ func (m *recipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	convertedInput := converters.ConvertRecipeStepIngredientCreationRequestInputToRecipeStepIngredientDatabaseCreationInput(input)
+	convertedInput.BelongsToRecipeStep = recipeStepID
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, convertedInput.ID)
 
@@ -1189,6 +1191,7 @@ func (m *recipeManager) CreateRecipeStepCompletionCondition(ctx context.Context,
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	convertedInput := converters.ConvertRecipeStepCompletionConditionForExistingRecipeCreationRequestInputToRecipeStepCompletionConditionDatabaseCreationInput(input)
+	convertedInput.BelongsToRecipeStep = recipeStepID
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, convertedInput.ID)
 
