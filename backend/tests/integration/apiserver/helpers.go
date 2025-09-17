@@ -722,30 +722,6 @@ func checkRecipeStepIngredientEquality(t *testing.T, stepIndex, ingIndex int, ex
 
 // ===== Recipe prep task equality helpers =====
 
-func checkRecipePrepTaskSliceEquality(t *testing.T, expected, actual []*mealplanning.RecipePrepTask) {
-	t.Helper()
-	require.Equal(t, len(expected), len(actual), "expected recipe prep tasks length")
-	for i := range expected {
-		checkRecipePrepTaskEquality(t, i, expected[i], actual[i])
-	}
-}
-
-func checkRecipePrepTaskEquality(t *testing.T, taskIndex int, expected, actual *mealplanning.RecipePrepTask) {
-	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected prep task %d to have ID", taskIndex)
-	assert.False(t, actual.CreatedAt.IsZero(), "expected prep task %d to have CreatedAt", taskIndex)
-	assert.NotEmpty(t, actual.BelongsToRecipe, "expected prep task %d to have BelongsToRecipe", taskIndex)
-	assert.Equal(t, expected.Name, actual.Name, "expected prep task %d Name", taskIndex)
-	assert.Equal(t, expected.Description, actual.Description, "expected prep task %d Description", taskIndex)
-	assert.Equal(t, expected.StorageType, actual.StorageType, "expected prep task %d StorageType", taskIndex)
-	assert.Equal(t, expected.ExplicitStorageInstructions, actual.ExplicitStorageInstructions, "expected prep task %d ExplicitStorageInstructions", taskIndex)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected prep task %d Notes", taskIndex)
-	assert.Equal(t, expected.Optional, actual.Optional, "expected prep task %d Optional", taskIndex)
-	assert.Equal(t, expected.StorageTemperatureInCelsius, actual.StorageTemperatureInCelsius, "expected prep task %d StorageTemperatureInCelsius", taskIndex)
-	assert.Equal(t, expected.TimeBufferBeforeRecipeInSeconds, actual.TimeBufferBeforeRecipeInSeconds, "expected prep task %d TimeBufferBeforeRecipeInSeconds", taskIndex)
-	checkRecipePrepTaskStepSliceEquality(t, taskIndex, expected.TaskSteps, actual.TaskSteps)
-}
-
 func checkRecipePrepTaskStepSliceEquality(t *testing.T, taskIndex int, expected, actual []*mealplanning.RecipePrepTaskStep) {
 	t.Helper()
 	require.Equal(t, len(expected), len(actual), "expected prep task %d steps length", taskIndex)

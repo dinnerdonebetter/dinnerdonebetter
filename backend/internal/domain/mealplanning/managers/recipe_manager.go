@@ -1059,6 +1059,7 @@ func (m *recipeManager) CreateRecipePrepTask(ctx context.Context, recipeID strin
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	convertedInput := converters.ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationInput(input)
+	convertedInput.BelongsToRecipe = recipeID
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, convertedInput.ID)
 

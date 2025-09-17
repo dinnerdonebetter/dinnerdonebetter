@@ -44,6 +44,7 @@ func ConvertRecipePrepTaskCreationRequestInputToRecipePrepTaskDatabaseCreationIn
 	taskSteps := []*mealplanning.RecipePrepTaskStepDatabaseCreationInput{}
 	for _, x := range input.RecipeSteps {
 		taskSteps = append(taskSteps, &mealplanning.RecipePrepTaskStepDatabaseCreationInput{
+			ID:                  identifiers.New(),
 			BelongsToRecipeStep: x.BelongsToRecipeStep,
 			SatisfiesRecipeStep: x.SatisfiesRecipeStep,
 		})

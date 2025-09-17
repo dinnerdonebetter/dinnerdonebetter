@@ -75,6 +75,13 @@ func (q *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrep
 
 	for _, result := range results {
 		if x == nil {
+			// Debug logging
+			logger.WithValue("db_storage_temp_min", result.MinimumStorageTemperatureInCelsius).
+				WithValue("db_storage_temp_max", result.MaximumStorageTemperatureInCelsius).
+				WithValue("db_time_buffer_min", result.MinimumTimeBufferBeforeRecipeInSeconds).
+				WithValue("db_time_buffer_max", result.MaximumTimeBufferBeforeRecipeInSeconds).
+				Info("debug: recipe prep task database values")
+
 			x = &mealplanning.RecipePrepTask{
 				CreatedAt: result.CreatedAt,
 				StorageTemperatureInCelsius: types.OptionalFloat32Range{
@@ -132,6 +139,13 @@ func (q *repository) createRecipePrepTask(ctx context.Context, querier database.
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, input.ID)
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
 
+	// Debug logging
+	logger.WithValue("storage_temp_min", input.StorageTemperatureInCelsius.Min).
+		WithValue("storage_temp_max", input.StorageTemperatureInCelsius.Max).
+		WithValue("time_buffer_min", input.TimeBufferBeforeRecipeInSeconds.Min).
+		WithValue("time_buffer_max", input.TimeBufferBeforeRecipeInSeconds.Max).
+		Info("debug: recipe prep task input values")
+
 	// create the recipe prep task.
 	if err := q.generatedQuerier.CreateRecipePrepTask(ctx, querier, &generated.CreateRecipePrepTaskParams{
 		ID:                                     input.ID,
@@ -172,6 +186,7 @@ func (q *repository) createRecipePrepTask(ctx context.Context, querier database.
 	}
 
 	for _, recipePrepTaskStep := range input.TaskSteps {
+		recipePrepTaskStep.BelongsToRecipePrepTask = input.ID
 		s, err := q.createRecipePrepTaskStep(ctx, querier, recipePrepTaskStep)
 		if err != nil {
 			q.RollbackTransaction(ctx, querier)
