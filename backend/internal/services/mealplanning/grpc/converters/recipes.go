@@ -775,8 +775,13 @@ func ConvertGRPCRecipeStepInstrumentToRecipeStepInstrument(input *mealplanningsv
 }
 
 func ConvertRecipeStepVesselToGRPCRecipeStepVessel(input *mealplanning.RecipeStepVessel) *mealplanningsvc.RecipeStepVessel {
+	var validVessel *mealplanningsvc.ValidVessel
+	if input.Vessel != nil {
+		validVessel = ConvertValidVesselToGRPCValidVessel(input.Vessel)
+	}
+
 	return &mealplanningsvc.RecipeStepVessel{
-		Vessel: ConvertValidVesselToGRPCValidVessel(input.Vessel),
+		Vessel: validVessel,
 		Quantity: &grpctypes.Uint16RangeWithOptionalMax{
 			Max: grpcconverters.ConvertUint16PointerToUint32Pointer(input.Quantity.Max),
 			Min: uint32(input.Quantity.Min),
@@ -795,8 +800,13 @@ func ConvertRecipeStepVesselToGRPCRecipeStepVessel(input *mealplanning.RecipeSte
 }
 
 func ConvertGRPCRecipeStepVesselToRecipeStepVessel(input *mealplanningsvc.RecipeStepVessel) *mealplanning.RecipeStepVessel {
+	var validVessel *mealplanning.ValidVessel
+	if input.Vessel != nil {
+		validVessel = ConvertGRPCValidVesselToValidVessel(input.Vessel)
+	}
+
 	return &mealplanning.RecipeStepVessel{
-		Vessel: ConvertGRPCValidVesselToValidVessel(input.Vessel),
+		Vessel: validVessel,
 		Quantity: types.Uint16RangeWithOptionalMax{
 			Max: grpcconverters.ConvertUint32PointerToUint16Pointer(input.Quantity.Max),
 			Min: uint16(input.Quantity.Min),

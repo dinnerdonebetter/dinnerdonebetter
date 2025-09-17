@@ -7,6 +7,8 @@ import (
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
+	"github.com/dinnerdonebetter/backend/internal/platform/types"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
@@ -124,168 +126,138 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 	})
 }
 
-/*
+func TestRecipeStepVessels_AsRecipeStepProducts(T *testing.T) {
+	T.Parallel()
 
-func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
-	s.runTest("should be able to use a recipe step vessel that was the product of a prior recipe step", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+	T.Run("should be able to use a recipe step vessel that was the product of a prior recipe step", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+		_, userClient := createUserAndClientForTest(t)
 
-			lineBase := fakes.BuildFakeValidPreparation()
-			lineInput := mpconverters.ConvertValidPreparationToValidPreparationCreationRequestInput(lineBase)
-			line, err := adminClient.CreateValidPreparation(ctx, lineInput)
-			require.NoError(t, err)
+		line := createValidPreparationForTest(t)
+		roast := createValidPreparationForTest(t)
+		bakingSheet := createValidVesselForTest(t)
+		sheets := createValidMeasurementUnitForTest(t)
+		head := createValidMeasurementUnitForTest(t)
+		unit := createValidMeasurementUnitForTest(t)
+		aluminumFoil := createValidIngredientForTest(t)
+		garlic := createValidIngredientForTest(t)
 
-			roastBase := fakes.BuildFakeValidPreparation()
-			roastInput := mpconverters.ConvertValidPreparationToValidPreparationCreationRequestInput(roastBase)
-			roast, err := adminClient.CreateValidPreparation(ctx, roastInput)
-			require.NoError(t, err)
+		linedBakingSheetName := "lined baking sheet"
 
-			bakingSheet := createValidVesselForTest(t, ctx, nil, adminClient)
-
-			sheetsBase := fakes.BuildFakeValidMeasurementUnit()
-			sheetsBaseInput := mpconverters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(sheetsBase)
-			sheets, err := adminClient.CreateValidMeasurementUnit(ctx, sheetsBaseInput)
-			require.NoError(t, err)
-			checkValidMeasurementUnitEquality(t, sheetsBase, sheets)
-
-			headsBase := fakes.BuildFakeValidMeasurementUnit()
-			headsBaseInput := mpconverters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(headsBase)
-			head, err := adminClient.CreateValidMeasurementUnit(ctx, headsBaseInput)
-			require.NoError(t, err)
-			checkValidMeasurementUnitEquality(t, headsBase, head)
-
-			exampleUnits := fakes.BuildFakeValidMeasurementUnit()
-			exampleUnitsInput := mpconverters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleUnits)
-			unit, err := adminClient.CreateValidMeasurementUnit(ctx, exampleUnitsInput)
-			require.NoError(t, err)
-			checkValidMeasurementUnitEquality(t, exampleUnits, unit)
-
-			aluminumFoilBase := fakes.BuildFakeValidIngredient()
-			aluminumFoilInput := mpconverters.ConvertValidIngredientToValidIngredientCreationRequestInput(aluminumFoilBase)
-			aluminumFoil, createdValidIngredientErr := adminClient.CreateValidIngredient(ctx, aluminumFoilInput)
-			require.NoError(t, createdValidIngredientErr)
-
-			garlic := fakes.BuildFakeValidIngredient()
-			garlicInput := mpconverters.ConvertValidIngredientToValidIngredientCreationRequestInput(garlic)
-			garlic, garlicErr := adminClient.CreateValidIngredient(ctx, garlicInput)
-			require.NoError(t, garlicErr)
-
-			linedBakingSheetName := "lined baking sheet"
-
-			expected := &mealplanning.Recipe{
-				Name:                t.Name(),
-				Slug:                "whatever-who-cares-yadda-yadda-vessels",
-				YieldsComponentType: mealplanning.MealComponentTypesMain,
-				PortionName:         t.Name(),
-				PluralPortionName:   t.Name(),
-				EstimatedPortions: mealplanning.Float32RangeWithOptionalMax{
-					Max: nil,
-					Min: 1,
-				},
-				Steps: []*mealplanning.RecipeStep{
-					{
-						Products: []*mealplanning.RecipeStepProduct{
-							{
-								Name:            linedBakingSheetName,
-								Type:            mealplanning.RecipeStepProductVesselType,
-								MeasurementUnit: unit,
-								QuantityNotes:   "",
-								Quantity: mealplanning.OptionalFloat32Range{
-									Max: nil,
-									Min: pointer.To(float32(1)),
-								},
+		expected := &mealplanning.Recipe{
+			Name:                t.Name(),
+			Slug:                "whatever-who-cares-yadda-yadda-vessels",
+			YieldsComponentType: mealplanning.MealComponentTypesMain,
+			PortionName:         t.Name(),
+			PluralPortionName:   t.Name(),
+			EstimatedPortions: types.Float32RangeWithOptionalMax{
+				Max: nil,
+				Min: 1,
+			},
+			Steps: []*mealplanning.RecipeStep{
+				{
+					Products: []*mealplanning.RecipeStepProduct{
+						{
+							Name:            linedBakingSheetName,
+							Type:            mealplanning.RecipeStepProductVesselType,
+							MeasurementUnit: unit,
+							QuantityNotes:   "",
+							Quantity: types.OptionalFloat32Range{
+								Max: nil,
+								Min: pointer.To(float32(1)),
 							},
 						},
-						Notes:       "first step",
-						Preparation: *line,
-						Ingredients: []*mealplanning.RecipeStepIngredient{
-							{
-								RecipeStepProductID: nil,
-								Ingredient:          aluminumFoil,
-								Name:                "aluminum foil",
-								MeasurementUnit:     *sheets,
-								Quantity: mealplanning.Float32RangeWithOptionalMax{
-									Max: nil,
-									Min: 3,
-								},
-							},
-						},
-						Vessels: []*mealplanning.RecipeStepVessel{
-							{
-								Vessel: bakingSheet,
-								Name:   "baking sheet",
-								Quantity: mealplanning.Uint16RangeWithOptionalMax{
-									Max: nil,
-									Min: 1,
-								},
-							},
-						},
-						Index: 0,
 					},
-					{
-						Preparation: *roast,
-						Vessels: []*mealplanning.RecipeStepVessel{
-							{
-								Name:   linedBakingSheetName,
-								Vessel: nil,
+					Notes:       "first step",
+					Preparation: *line,
+					Ingredients: []*mealplanning.RecipeStepIngredient{
+						{
+							RecipeStepProductID: nil,
+							Ingredient:          aluminumFoil,
+							Name:                "aluminum foil",
+							MeasurementUnit:     *sheets,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Max: nil,
+								Min: 3,
 							},
 						},
-						Products: []*mealplanning.RecipeStepProduct{
-							{
-								Name:            "roasted garlic",
-								Type:            mealplanning.RecipeStepProductIngredientType,
-								MeasurementUnit: head,
-								QuantityNotes:   "",
-								Quantity: mealplanning.OptionalFloat32Range{
-									Max: nil,
-									Min: pointer.To(float32(1)),
-								},
-							},
-						},
-						Notes: "second step",
-						Ingredients: []*mealplanning.RecipeStepIngredient{
-							{
-								Ingredient:      garlic,
-								Name:            "garlic",
-								MeasurementUnit: *head,
-								Quantity: mealplanning.Float32RangeWithOptionalMax{
-									Max: nil,
-									Min: 1,
-								},
-							},
-						},
-						Index: 1,
 					},
+					Vessels: []*mealplanning.RecipeStepVessel{
+						{
+							Vessel: bakingSheet,
+							Name:   "baking sheet",
+							Quantity: types.Uint16RangeWithOptionalMax{
+								Max: nil,
+								Min: 1,
+							},
+						},
+					},
+					Index: 0,
 				},
-			}
-
-			exampleRecipeInput := mpconverters.ConvertRecipeToRecipeCreationRequestInput(expected)
-			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointer.To(uint64(0))
-			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
-
-			created, err := adminClient.CreateRecipe(ctx, exampleRecipeInput)
-			require.NoError(t, err)
-			checkRecipeEquality(t, expected, created)
-
-			created, err = userClient.GetRecipe(ctx, created.ID)
-			requireNotNilAndNoProblems(t, created, err)
-			checkRecipeEquality(t, expected, created)
-
-			recipeStepProductIndex := -1
-			for i, vessel := range created.Steps[1].Vessels {
-				if vessel.RecipeStepProductID != nil {
-					recipeStepProductIndex = i
-				}
-			}
-
-			require.NotEqual(t, -1, recipeStepProductIndex)
-			require.NotNil(t, created.Steps[1].Vessels[recipeStepProductIndex].RecipeStepProductID)
-			assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Vessels[recipeStepProductIndex].RecipeStepProductID)
+				{
+					Preparation: *roast,
+					Vessels: []*mealplanning.RecipeStepVessel{
+						{
+							Name:   linedBakingSheetName,
+							Vessel: nil,
+						},
+					},
+					Products: []*mealplanning.RecipeStepProduct{
+						{
+							Name:            "roasted garlic",
+							Type:            mealplanning.RecipeStepProductIngredientType,
+							MeasurementUnit: head,
+							QuantityNotes:   "",
+							Quantity: types.OptionalFloat32Range{
+								Max: nil,
+								Min: pointer.To(float32(1)),
+							},
+						},
+					},
+					Notes: "second step",
+					Ingredients: []*mealplanning.RecipeStepIngredient{
+						{
+							Ingredient:      garlic,
+							Name:            "garlic",
+							MeasurementUnit: *head,
+							Quantity: types.Float32RangeWithOptionalMax{
+								Max: nil,
+								Min: 1,
+							},
+						},
+					},
+					Index: 1,
+				},
+			},
 		}
+
+		exampleRecipeInput := mpconverters.ConvertRecipeToRecipeCreationRequestInput(expected)
+		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointer.To(uint64(0))
+		exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
+
+		createdRes, err := adminClient.CreateRecipe(ctx, &mealplanninggrpc.CreateRecipeRequest{Input: converters.ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(exampleRecipeInput)})
+		require.NoError(t, err)
+
+		created := converters.ConvertGRPCRecipeToRecipe(createdRes.Created)
+		checkRecipeEquality(t, expected, created)
+
+		retrievedRes, err := userClient.GetRecipe(ctx, &mealplanninggrpc.GetRecipeRequest{RecipeID: created.ID})
+		require.NotNil(t, retrievedRes)
+		require.NoError(t, err)
+		checkRecipeEquality(t, expected, created)
+
+		recipeStepProductIndex := -1
+		for i, vessel := range created.Steps[1].Vessels {
+			if vessel.RecipeStepProductID != nil {
+				recipeStepProductIndex = i
+			}
+		}
+
+		require.NotEqual(t, -1, recipeStepProductIndex)
+		require.NotNil(t, created.Steps[1].Vessels[recipeStepProductIndex].RecipeStepProductID)
+		assert.Equal(t, created.Steps[0].Products[0].ID, *created.Steps[1].Vessels[recipeStepProductIndex].RecipeStepProductID)
 	})
 }
 
@@ -296,6 +268,7 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
 
+		_, userClient := createUserAndClientForTest(t)
 		_, _, createdRecipe := createRecipeForTest(t, nil)
 
 		var createdRecipeStepID string
@@ -312,38 +285,59 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 			exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepVessel.Vessel = &mealplanning.ValidVessel{ID: createdValidVessel.ID}
 			exampleRecipeStepVesselInput := mpconverters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
-			createdRecipeStepVessel, createdRecipeStepVesselErr := adminClient.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
-			require.NoError(t, createdRecipeStepVesselErr)
-			checkRecipeStepVesselEquality(t, exampleRecipeStepVessel, createdRecipeStepVessel, false)
+			createdRecipeStepVesselRes, err := adminClient.CreateRecipeStepVessel(ctx, &mealplanninggrpc.CreateRecipeStepVesselRequest{
+				RecipeID:     createdRecipe.ID,
+				RecipeStepID: createdRecipeStepID,
+				Input:        converters.ConvertRecipeStepVesselCreationRequestInputToGRPCRecipeStepVesselCreationRequestInput(exampleRecipeStepVesselInput),
+			})
+			require.NoError(t, err)
 
-			createdRecipeStepVessel, createdRecipeStepVesselErr = userClient.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
-			requireNotNilAndNoProblems(t, createdRecipeStepVessel, createdRecipeStepVesselErr)
+			createdRecipeStepVessel := converters.ConvertGRPCRecipeStepVesselToRecipeStepVessel(createdRecipeStepVesselRes.Created)
+			checkRecipeStepVesselEquality(t, i, i, exampleRecipeStepVessel, createdRecipeStepVessel)
+
+			retrievedRecipeStepVesselRes, err := userClient.GetRecipeStepVessel(ctx, &mealplanninggrpc.GetRecipeStepVesselRequest{
+				RecipeID:           createdRecipe.ID,
+				RecipeStepID:       createdRecipeStepID,
+				RecipeStepVesselID: createdRecipeStepVessel.ID,
+			})
+			require.NotNil(t, retrievedRecipeStepVesselRes)
+			require.NoError(t, err)
+
+			createdRecipeStepVessel = converters.ConvertGRPCRecipeStepVesselToRecipeStepVessel(retrievedRecipeStepVesselRes.Result)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepVessel.BelongsToRecipeStep)
 
 			expected = append(expected, createdRecipeStepVessel)
 		}
 
 		// assert recipe step vessel list equality
-		actual, err := userClient.GetRecipeStepVessels(ctx, createdRecipe.ID, createdRecipeStepID, nil)
+		actual, err := userClient.GetRecipeStepVessels(ctx, &mealplanninggrpc.GetRecipeStepVesselsRequest{
+			RecipeID:     createdRecipe.ID,
+			RecipeStepID: createdRecipeStepID,
+		})
 		require.NotNil(t, actual)
 		require.NoError(t, err)
 		assert.True(
 			t,
-			len(expected) <= len(actual.Data),
+			len(expected) <= len(actual.Results),
 			"expected %d to be <= %d",
 			len(expected),
-			len(actual.Data),
+			len(actual.Results),
 		)
 
 		for _, createdRecipeStepVessel := range expected {
-			assert.NoError(t, userClient.ArchiveRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID))
+			_, err = userClient.ArchiveRecipeStepVessel(ctx, &mealplanninggrpc.ArchiveRecipeStepVesselRequest{
+				RecipeID:           createdRecipe.ID,
+				RecipeStepID:       createdRecipeStepID,
+				RecipeStepVesselID: createdRecipeStepVessel.ID,
+			})
+			assert.NoError(t, err)
 		}
 
-		assert.NoError(t, userClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
+		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{RecipeID: createdRecipe.ID, RecipeStepID: createdRecipeStepID})
+		assert.NoError(t, err)
 
-		assert.NoError(t, adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		assert.NoError(t, err)
 
 	})
 }
-
-*/
