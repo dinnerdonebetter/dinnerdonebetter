@@ -733,9 +733,14 @@ func ConvertGRPCRecipeStepToRecipeStep(input *mealplanningsvc.RecipeStep) *mealp
 }
 
 func ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(input *mealplanning.RecipeStepInstrument) *mealplanningsvc.RecipeStepInstrument {
+	var convertedInstrument *mealplanningsvc.ValidInstrument
+	if input.Instrument != nil {
+		convertedInstrument = ConvertValidInstrumentToGRPCValidInstrument(input.Instrument)
+	}
+
 	return &mealplanningsvc.RecipeStepInstrument{
 		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
-		Instrument:    ConvertValidInstrumentToGRPCValidInstrument(input.Instrument),
+		Instrument:    convertedInstrument,
 		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
 		Quantity: &grpctypes.Uint32RangeWithOptionalMax{
 			Max: input.Quantity.Max,
@@ -754,9 +759,14 @@ func ConvertRecipeStepInstrumentToGRPCRecipeStepInstrument(input *mealplanning.R
 }
 
 func ConvertGRPCRecipeStepInstrumentToRecipeStepInstrument(input *mealplanningsvc.RecipeStepInstrument) *mealplanning.RecipeStepInstrument {
+	var convertedInstrument *mealplanning.ValidInstrument
+	if input.Instrument != nil {
+		convertedInstrument = ConvertGRPCValidInstrumentToValidInstrument(input.Instrument)
+	}
+
 	return &mealplanning.RecipeStepInstrument{
 		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
-		Instrument:    ConvertGRPCValidInstrumentToValidInstrument(input.Instrument),
+		Instrument:    convertedInstrument,
 		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
 		Quantity: types.Uint32RangeWithOptionalMax{
 			Max: input.Quantity.Max,
