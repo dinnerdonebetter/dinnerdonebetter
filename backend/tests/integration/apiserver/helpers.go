@@ -652,31 +652,6 @@ func diffMaps(a, b map[string]string) map[string][2]string {
 
 // ===== Recipe step equality helpers =====
 
-func checkRecipeStepProductSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepProduct) {
-	t.Helper()
-	require.Equal(t, len(expected), len(actual), "expected recipe step %d products length", stepIndex)
-	for i := range expected {
-		checkRecipeStepProductEquality(t, stepIndex, i, expected[i], actual[i])
-	}
-}
-
-func checkRecipeStepProductEquality(t *testing.T, stepIndex, productIndex int, expected, actual *mealplanning.RecipeStepProduct) {
-	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d product %d to have ID", stepIndex, productIndex)
-	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d product %d to have CreatedAt", stepIndex, productIndex)
-	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d product %d to have BelongsToRecipeStep", stepIndex, productIndex)
-	assert.Equal(t, expected.Name, actual.Name, "expected step %d product %d Name", stepIndex, productIndex)
-	assert.Equal(t, expected.Type, actual.Type, "expected step %d product %d Type", stepIndex, productIndex)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d product %d Quantity", stepIndex, productIndex)
-	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected step %d product %d QuantityNotes", stepIndex, productIndex)
-	assert.Equal(t, expected.Index, actual.Index, "expected step %d product %d Index", stepIndex, productIndex)
-	if expected.MeasurementUnit != nil {
-		require.NotNil(t, actual.MeasurementUnit, "expected step %d product %d MeasurementUnit non-nil", stepIndex, productIndex)
-		assert.NotEmpty(t, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.ID", stepIndex, productIndex)
-		assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.ID", stepIndex, productIndex)
-	}
-}
-
 func checkRecipeStepInstrumentSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepInstrument) {
 	t.Helper()
 	require.Equal(t, len(expected), len(actual), "expected recipe step %d instruments length", stepIndex)

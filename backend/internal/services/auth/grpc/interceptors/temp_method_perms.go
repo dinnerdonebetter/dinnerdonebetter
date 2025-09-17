@@ -414,6 +414,21 @@ var (
 		mealPlanningPerm("ArchiveRecipeStepVessel"): {
 			authorization.ArchiveRecipeStepVesselsPermission,
 		},
+		mealPlanningPerm("CreateRecipeStepProduct"): {
+			authorization.CreateRecipeStepProductsPermission,
+		},
+		mealPlanningPerm("GetRecipeStepProducts"): {
+			authorization.ReadRecipeStepProductsPermission,
+		},
+		mealPlanningPerm("GetRecipeStepProduct"): {
+			authorization.ReadRecipeStepProductsPermission,
+		},
+		mealPlanningPerm("UpdateRecipeStepProduct"): {
+			authorization.UpdateRecipeStepProductsPermission,
+		},
+		mealPlanningPerm("ArchiveRecipeStepProduct"): {
+			authorization.ArchiveRecipeStepProductsPermission,
+		},
 		mealPlanningPerm("CreateRecipeRating"): {
 			authorization.CreateRecipeRatingsPermission,
 		},
