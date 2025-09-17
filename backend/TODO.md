@@ -12,3 +12,6 @@ just a list of gripes and things I'd like to accomplish eventually
 - [ ] integration tests verify that query filtering works
 - [ ] all GRPC payload routes (creates/updates) reference an "input" field
 - [ ] better error handling (i.e. naming missing parameters)
+- [ ] add source ISBN to recipe 
+- [ ] users cannot edit any part of a recipe they did not create
+- [ ] too much logic lives in the repositories and not in managers that call repository methods

@@ -8,7 +8,6 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.26.0
 	github.com/GuiaBolso/darwin v0.0.0-20191218124601-fd6d2aa3d244
-	github.com/KimMachineGun/automemlimit v0.7.0
 	github.com/XSAM/otelsql v0.37.0
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/algolia/algoliasearch-client-go/v3 v3.31.4
@@ -21,10 +20,8 @@ require (
 	github.com/ccoveille/go-safecast v1.5.0
 	github.com/codemodus/kace v0.5.1
 	github.com/cristalhq/builq v0.15.0
-	github.com/donseba/go-htmx v1.12.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/elastic/go-elasticsearch/v8 v8.17.1
-	github.com/fatih/structtag v1.2.0
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-chi/cors v1.2.1
 	github.com/go-faker/faker/v4 v4.6.0
@@ -37,11 +34,8 @@ require (
 	github.com/gorilla/securecookie v1.1.2
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/heimdalr/dag v1.5.0
 	github.com/jackc/pgx/v5 v5.7.2
-	github.com/jellydator/ttlcache/v3 v3.3.0
-	github.com/jinzhu/copier v0.4.0
 	github.com/keith-turner/ecoji/v2 v2.0.1
 	github.com/klauspost/compress v1.18.0
 	github.com/launchdarkly/go-sdk-common/v3 v3.2.0
@@ -54,7 +48,6 @@ require (
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/mikespook/gorbac/v2 v2.3.3
 	github.com/mitchellh/go-server-timing v1.0.1
-	github.com/moul/http2curl v1.0.0
 	github.com/mssola/useragent v1.0.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/o1egl/paseto/v2 v2.1.1
@@ -75,7 +68,6 @@ require (
 	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
 	github.com/stripe/stripe-go/v75 v75.11.0
-	github.com/swaggest/openapi-go v0.2.57
 	github.com/testcontainers/testcontainers-go v0.34.0
 	github.com/testcontainers/testcontainers-go/modules/elasticsearch v0.34.0
 	github.com/testcontainers/testcontainers-go/modules/gcloud v0.34.0
@@ -108,8 +100,6 @@ require (
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.5
 	gopkg.in/matryer/try.v1 v1.0.0-20150601225556-312d2599e12e
-	maragu.dev/gomponents v1.0.0
-	maragu.dev/gomponents-htmx v0.6.1
 	resenje.org/schulze v0.6.1
 )
 
@@ -202,7 +192,6 @@ require (
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
-	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/huandu/xstrings v1.5.0 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -246,7 +235,6 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
-	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/peterbourgon/g2s v0.0.0-20170223122336-d4e7ad98afea // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
@@ -264,8 +252,6 @@ require (
 	github.com/smartystreets/assertions v1.0.1 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
-	github.com/swaggest/jsonschema-go v0.3.73 // indirect
-	github.com/swaggest/refl v1.3.1 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
@@ -292,6 +278,5 @@ require (
 	google.golang.org/genproto v0.0.0-20250219182151-9fdb1cabc7b2 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250219182151-9fdb1cabc7b2 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250219182151-9fdb1cabc7b2 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

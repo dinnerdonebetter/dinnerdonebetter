@@ -1330,6 +1330,7 @@ func (m *recipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, re
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	convertedInput := converters.ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input)
+	convertedInput.BelongsToRecipeStep = recipeStepID
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, convertedInput.ID)
 

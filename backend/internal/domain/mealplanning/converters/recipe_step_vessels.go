@@ -45,13 +45,13 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 
 // ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput builds a RecipeStepVesselCreationRequestInput from a RecipeStepVessel.
 func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselCreationRequestInput {
-	var instrumentID *string
+	var vesselID *string
 	if input.Vessel != nil {
-		instrumentID = &input.Vessel.ID
+		vesselID = &input.Vessel.ID
 	}
 
 	return &mealplanning.RecipeStepVesselCreationRequestInput{
-		VesselID:             instrumentID,
+		VesselID:             vesselID,
 		Name:                 input.Name,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		Notes:                input.Notes,
@@ -63,14 +63,14 @@ func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *mealpl
 
 // ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput builds a RecipeStepVesselDatabaseCreationInput from a RecipeStepVessel.
 func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(input *mealplanning.RecipeStepVessel) *mealplanning.RecipeStepVesselDatabaseCreationInput {
-	var instrumentID *string
+	var vesselID *string
 	if input.Vessel != nil {
-		instrumentID = &input.Vessel.ID
+		vesselID = &input.Vessel.ID
 	}
 
 	return &mealplanning.RecipeStepVesselDatabaseCreationInput{
 		ID:                   input.ID,
-		VesselID:             instrumentID,
+		VesselID:             vesselID,
 		Name:                 input.Name,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		Notes:                input.Notes,

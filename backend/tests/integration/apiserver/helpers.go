@@ -703,31 +703,6 @@ func checkRecipeStepInstrumentEquality(t *testing.T, stepIndex, instrIndex int, 
 	}
 }
 
-func checkRecipeStepVesselSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepVessel) {
-	t.Helper()
-	require.Equal(t, len(expected), len(actual), "expected recipe step %d vessels length", stepIndex)
-	for i := range expected {
-		checkRecipeStepVesselEquality(t, stepIndex, i, expected[i], actual[i])
-	}
-}
-
-func checkRecipeStepVesselEquality(t *testing.T, stepIndex, vesselIndex int, expected, actual *mealplanning.RecipeStepVessel) {
-	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d vessel %d to have ID", stepIndex, vesselIndex)
-	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d vessel %d to have CreatedAt", stepIndex, vesselIndex)
-	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d vessel %d to have BelongsToRecipeStep", stepIndex, vesselIndex)
-	assert.Equal(t, expected.Name, actual.Name, "expected step %d vessel %d Name", stepIndex, vesselIndex)
-	assert.Equal(t, expected.Notes, actual.Notes, "expected step %d vessel %d Notes", stepIndex, vesselIndex)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d vessel %d Quantity", stepIndex, vesselIndex)
-	assert.Equal(t, expected.VesselPreposition, actual.VesselPreposition, "expected step %d vessel %d VesselPreposition", stepIndex, vesselIndex)
-	assert.Equal(t, expected.UnavailableAfterStep, actual.UnavailableAfterStep, "expected step %d vessel %d UnavailableAfterStep", stepIndex, vesselIndex)
-	if expected.Vessel != nil {
-		require.NotNil(t, actual.Vessel, "expected step %d vessel %d Vessel non-nil", stepIndex, vesselIndex)
-		assert.NotEmpty(t, actual.Vessel.ID, "expected step %d vessel %d Vessel.ID", stepIndex, vesselIndex)
-		assert.Equal(t, expected.Vessel.ID, actual.Vessel.ID, "expected step %d vessel %d Vessel.ID", stepIndex, vesselIndex)
-	}
-}
-
 func checkRecipeStepCompletionConditionSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepCompletionCondition) {
 	t.Helper()
 	require.Equal(t, len(expected), len(actual), "expected recipe step %d completion conditions length", stepIndex)
