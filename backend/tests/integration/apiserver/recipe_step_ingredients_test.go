@@ -125,81 +125,90 @@ func TestRecipeStepIngredients_CompleteLifecycle(T *testing.T) {
 	})
 }
 
-/*
+func TestRecipeStepIngredients_Listing(T *testing.T) {
+	T.Parallel()
 
-func (s *TestSuite) TestRecipeStepIngredients_Listing() {
-	s.runTest("should be readable in paginated form", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
+	T.Run("should be readable in paginated form", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
 
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
+		_, userClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, adminClient, userClient, nil)
-
-			var (
-				createdRecipeStepID string
-			)
-			for _, step := range createdRecipe.Steps {
-				createdRecipeStepID = step.ID
-				break
-			}
-
-			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := mpconverters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-			createdValidMeasurementUnit, err := adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
-			require.NoError(t, err)
-			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
-
-			createdValidMeasurementUnit, err = adminClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
-require.NotNil(t, createdValidMeasurementUnit)
-require.NoError(t, err)
-			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
-
-			var expected []*mealplanning.RecipeStepIngredient
-			for i := 0; i < 5; i++ {
-				x, _, _ := createRecipeForTest(ctx, t, adminClient, userClient, nil)
-
-				exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-				exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
-				exampleRecipeStepIngredient.Ingredient = &mealplanning.ValidIngredient{ID: x[0].ID}
-				exampleRecipeStepIngredient.MeasurementUnit = mealplanning.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
-
-				exampleRecipeStepIngredientInput := mpconverters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredient)
-				createdRecipeStepIngredient, createdRecipeStepIngredientErr := adminClient.CreateRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepIngredientInput)
-				require.NoError(t, createdRecipeStepIngredientErr)
-
-				checkRecipeStepIngredientEquality(t, exampleRecipeStepIngredient, createdRecipeStepIngredient)
-
-				createdRecipeStepIngredient, createdRecipeStepIngredientErr = userClient.GetRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredient.ID)
-require.NotNil(t, createdRecipeStepIngredient)
-require.NoError(t, createdRecipeStepIngredientErr)
-				require.Equal(t, createdRecipeStepID, createdRecipeStepIngredient.BelongsToRecipeStep)
-
-				expected = append(expected, createdRecipeStepIngredient)
-			}
-
-			// assert recipe step ingredient list equality
-			actual, err := userClient.GetRecipeStepIngredients(ctx, createdRecipe.ID, createdRecipeStepID, nil)
-require.NotNil(t, actual)
-require.NoError(t, err)
-			assert.True(
-				t,
-				len(expected) <= len(actual.Data),
-				"expected %d to be <= %d",
-				len(expected),
-				len(actual.Data),
-			)
-
-			for _, createdRecipeStepIngredient := range expected {
-				assert.NoError(t, userClient.ArchiveRecipeStepIngredient(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepIngredient.ID))
-			}
-
-			assert.NoError(t, userClient.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
-
-			assert.NoError(t, adminClient.ArchiveRecipe(ctx, createdRecipe.ID))
+		var (
+			createdRecipeStepID string
+		)
+		for _, step := range createdRecipe.Steps {
+			createdRecipeStepID = step.ID
+			break
 		}
+
+		createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
+
+		var expected []*mealplanning.RecipeStepIngredient
+		for i := 0; i < 5; i++ {
+			x, _, _ := createRecipeForTest(t, nil)
+
+			exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+			exampleRecipeStepIngredient.BelongsToRecipeStep = createdRecipeStepID
+			exampleRecipeStepIngredient.Ingredient = &mealplanning.ValidIngredient{ID: x[0].ID}
+			exampleRecipeStepIngredient.MeasurementUnit = mealplanning.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
+
+			exampleRecipeStepIngredientInput := mpconverters.ConvertRecipeStepIngredientToRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredient)
+			createdRecipeStepIngredientRes, err := adminClient.CreateRecipeStepIngredient(ctx, &mealplanninggrpc.CreateRecipeStepIngredientRequest{
+				RecipeID:     createdRecipe.ID,
+				RecipeStepID: createdRecipeStepID,
+				Input:        converters.ConvertRecipeStepIngredientCreationRequestInputToGRPCRecipeStepIngredientCreationRequestInput(exampleRecipeStepIngredientInput),
+			})
+			require.NoError(t, err)
+
+			createdRecipeStepIngredient := converters.ConvertGRPCRecipeStepIngredientToRecipeStepIngredient(createdRecipeStepIngredientRes.Created)
+			checkRecipeStepIngredientEquality(t, -1, -1, exampleRecipeStepIngredient, createdRecipeStepIngredient)
+
+			retrievedRecipeStepIngredientRes, err := userClient.GetRecipeStepIngredient(ctx, &mealplanninggrpc.GetRecipeStepIngredientRequest{
+				RecipeID:               createdRecipe.ID,
+				RecipeStepID:           createdRecipeStepID,
+				RecipeStepIngredientID: createdRecipeStepIngredient.ID,
+			})
+			require.NotNil(t, retrievedRecipeStepIngredientRes.Result)
+			require.NoError(t, err)
+			require.Equal(t, createdRecipeStepID, createdRecipeStepIngredient.BelongsToRecipeStep)
+
+			expected = append(expected, createdRecipeStepIngredient)
+		}
+
+		// assert recipe step ingredient list equality
+		actual, err := userClient.GetRecipeStepIngredients(ctx, &mealplanninggrpc.GetRecipeStepIngredientsRequest{
+			RecipeID:     createdRecipe.ID,
+			RecipeStepID: createdRecipeStepID,
+		})
+		require.NotNil(t, actual)
+		require.NoError(t, err)
+		assert.True(
+			t,
+			len(expected) <= len(actual.Results),
+			"expected %d to be <= %d",
+			len(expected),
+			len(actual.Results),
+		)
+
+		for _, createdRecipeStepIngredient := range expected {
+			_, err = userClient.ArchiveRecipeStepIngredient(ctx, &mealplanninggrpc.ArchiveRecipeStepIngredientRequest{
+				RecipeID:               createdRecipe.ID,
+				RecipeStepID:           createdRecipeStepID,
+				RecipeStepIngredientID: createdRecipeStepIngredient.ID,
+			})
+			assert.NoError(t, err)
+		}
+
+		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
+			RecipeID:     createdRecipe.ID,
+			RecipeStepID: createdRecipeStepID,
+		})
+		assert.NoError(t, err)
+
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		assert.NoError(t, err)
+
 	})
 }
-
-*/
