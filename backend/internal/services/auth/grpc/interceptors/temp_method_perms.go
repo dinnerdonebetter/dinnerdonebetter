@@ -474,6 +474,21 @@ var (
 		mealPlanningPerm("ArchiveRecipeStepIngredient"): {
 			authorization.ArchiveRecipeStepIngredientsPermission,
 		},
+		mealPlanningPerm("CreateRecipeStepCompletionCondition"): {
+			authorization.CreateRecipeStepCompletionConditionsPermission,
+		},
+		mealPlanningPerm("GetRecipeStepCompletionConditions"): {
+			authorization.ReadRecipeStepCompletionConditionsPermission,
+		},
+		mealPlanningPerm("GetRecipeStepCompletionCondition"): {
+			authorization.ReadRecipeStepCompletionConditionsPermission,
+		},
+		mealPlanningPerm("UpdateRecipeStepCompletionCondition"): {
+			authorization.UpdateRecipeStepCompletionConditionsPermission,
+		},
+		mealPlanningPerm("ArchiveRecipeStepCompletionCondition"): {
+			authorization.ArchiveRecipeStepCompletionConditionsPermission,
+		},
 		mealPlanningPerm("CreateRecipeRating"): {
 			authorization.CreateRecipeRatingsPermission,
 		},

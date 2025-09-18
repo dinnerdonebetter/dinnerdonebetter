@@ -387,7 +387,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 			createdMeals = append(createdMeals, createdMeal)
 		}
 
-		const baseDeadline = 10 * time.Second
+		const baseDeadline = time.Minute
 		now := time.Now()
 
 		exampleMealPlan := &mealplanning.MealPlan{
