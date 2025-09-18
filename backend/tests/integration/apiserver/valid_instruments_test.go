@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -13,21 +14,46 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func checkValidInstrumentEquality(t *testing.T, expected, actual *mealplanning.ValidInstrument) {
+	t.Helper()
+
+	assert.NotEmpty(t, actual.ID, "expected ValidInstrument to have ID")
+	assert.NotZero(t, actual.CreatedAt, "expected ValidInstrument to have CreatedAt")
+
+	assert.Equal(t, expected.Name, actual.Name, "expected ValidInstrument Name")
+	assert.Equal(t, expected.Description, actual.Description, "expected ValidInstrument Description")
+	assert.Equal(t, expected.Slug, actual.Slug, "expected ValidInstrument Slug")
+	assert.Equal(t, expected.PluralName, actual.PluralName, "expected ValidInstrument PluralName")
+	assert.Equal(t, expected.IconPath, actual.IconPath, "expected ValidInstrument IconPath")
+	assert.Equal(t, expected.DisplayInSummaryLists, actual.DisplayInSummaryLists, "expected ValidInstrument DisplayInSummaryLists")
+	assert.Equal(t, expected.IncludeInGeneratedInstructions, actual.IncludeInGeneratedInstructions, "expected ValidInstrument IncludeInGeneratedInstructions")
+	assert.Equal(t, expected.UsableForStorage, actual.UsableForStorage, "expected ValidInstrument UsableForStorage")
+}
+
 func createValidInstrumentForTest(t *testing.T) *mealplanning.ValidInstrument {
 	t.Helper()
 
 	ctx := t.Context()
 
-	creationRequestInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
-	convertedInput := grpcconverters.ConvertValidInstrumentCreationRequestInputToGRPCValidInstrumentCreationRequestInput(creationRequestInput)
-
+	exampleValidInstrument := fakes.BuildFakeValidInstrument()
+	exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 	created, err := adminClient.CreateValidInstrument(ctx, &mealplanningsvc.CreateValidInstrumentRequest{
-		Input: convertedInput,
+		Input: grpcconverters.ConvertValidInstrumentCreationRequestInputToGRPCValidInstrumentCreationRequestInput(exampleValidInstrumentInput),
 	})
 	require.NoError(t, err)
-	assert.NotNil(t, created)
+	converted := grpcconverters.ConvertGRPCValidInstrumentToValidInstrument(created.Result)
+	checkValidInstrumentEquality(t, exampleValidInstrument, converted)
 
-	return grpcconverters.ConvertGRPCValidInstrumentToValidInstrument(created.Result)
+	retrieved, err := adminClient.GetValidInstrument(ctx, &mealplanningsvc.GetValidInstrumentRequest{
+		ValidInstrumentID: converted.ID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, retrieved)
+
+	validInstrument := grpcconverters.ConvertGRPCValidInstrumentToValidInstrument(retrieved.Result)
+	checkValidInstrumentEquality(t, converted, validInstrument)
+
+	return validInstrument
 }
 
 func TestValidInstruments_Creating(T *testing.T) {

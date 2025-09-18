@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -13,21 +14,47 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func checkValidMeasurementUnitEquality(t *testing.T, expected, actual *mealplanning.ValidMeasurementUnit) {
+	t.Helper()
+
+	assert.NotEmpty(t, actual.ID, "expected ValidMeasurementUnit to have ID")
+	assert.NotZero(t, actual.CreatedAt, "expected ValidMeasurementUnit to have CreatedAt")
+
+	assert.Equal(t, expected.Name, actual.Name, "expected ValidMeasurementUnit Name")
+	assert.Equal(t, expected.Description, actual.Description, "expected ValidMeasurementUnit Description")
+	assert.Equal(t, expected.Slug, actual.Slug, "expected ValidMeasurementUnit Slug")
+	assert.Equal(t, expected.PluralName, actual.PluralName, "expected ValidMeasurementUnit PluralName")
+	assert.Equal(t, expected.IconPath, actual.IconPath, "expected ValidMeasurementUnit IconPath")
+	assert.Equal(t, expected.Volumetric, actual.Volumetric, "expected ValidMeasurementUnit Volumetric")
+	assert.Equal(t, expected.Universal, actual.Universal, "expected ValidMeasurementUnit Universal")
+	assert.Equal(t, expected.Metric, actual.Metric, "expected ValidMeasurementUnit Metric")
+	assert.Equal(t, expected.Imperial, actual.Imperial, "expected ValidMeasurementUnit Imperial")
+}
+
 func createValidMeasurementUnitForTest(t *testing.T) *mealplanning.ValidMeasurementUnit {
 	t.Helper()
 
 	ctx := t.Context()
 
-	creationRequestInput := fakes.BuildFakeValidMeasurementUnitCreationRequestInput()
-	convertedInput := grpcconverters.ConvertValidMeasurementUnitCreationRequestInputToGRPCValidMeasurementUnitCreationRequestInput(creationRequestInput)
-
+	exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+	exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 	created, err := adminClient.CreateValidMeasurementUnit(ctx, &mealplanningsvc.CreateValidMeasurementUnitRequest{
-		Input: convertedInput,
+		Input: grpcconverters.ConvertValidMeasurementUnitCreationRequestInputToGRPCValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnitInput),
 	})
 	require.NoError(t, err)
-	assert.NotNil(t, created)
+	converted := grpcconverters.ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(created.Result)
+	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, converted)
 
-	return grpcconverters.ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(created.Result)
+	retrieved, err := adminClient.GetValidMeasurementUnit(ctx, &mealplanningsvc.GetValidMeasurementUnitRequest{
+		ValidMeasurementUnitID: converted.ID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, retrieved)
+
+	validMeasurementUnit := grpcconverters.ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(retrieved.Result)
+	checkValidMeasurementUnitEquality(t, converted, validMeasurementUnit)
+
+	return validMeasurementUnit
 }
 
 func TestValidMeasurementUnits_Creating(T *testing.T) {

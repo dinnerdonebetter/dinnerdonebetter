@@ -1,40 +1,65 @@
 package integration
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/webhooks/fakes"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
-	"github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/webhooks/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+func checkWebhookEquality(t *testing.T, expected, actual *webhooks.Webhook) {
+	t.Helper()
+
+	assert.NotEmpty(t, actual.ID, "expected Webhook to have ID")
+	assert.NotZero(t, actual.CreatedAt, "expected Webhook to have CreatedAt")
+
+	assert.Equal(t, expected.Name, actual.Name, "expected Webhook Name")
+	assert.Equal(t, expected.URL, actual.URL, "expected Webhook URL")
+	assert.Equal(t, expected.Method, actual.Method, "expected Webhook Method")
+	assert.Equal(t, expected.ContentType, actual.ContentType, "expected Webhook ContentType")
+	assert.NotEmpty(t, actual.BelongsToAccount, "expected Webhook to have BelongsToAccount")
+
+	require.Equal(t, len(expected.Events), len(actual.Events), "expected Webhook Events length")
+	for i, expectedEvent := range expected.Events {
+		if i < len(actual.Events) {
+			actualEvent := actual.Events[i]
+			assert.NotEmpty(t, actualEvent.ID, "expected Webhook Event %d to have ID", i)
+			assert.NotZero(t, actualEvent.CreatedAt, "expected Webhook Event %d to have CreatedAt", i)
+			assert.Equal(t, expectedEvent.TriggerEvent, actualEvent.TriggerEvent, "expected Webhook Event %d TriggerEvent", i)
+			assert.Equal(t, actual.ID, actualEvent.BelongsToWebhook, "expected Webhook Event %d BelongsToWebhook", i)
+		}
+	}
+}
+
 func createWebhookForTest(t *testing.T, testClient client.Client) *webhooks.Webhook {
 	t.Helper()
 	ctx := t.Context()
 
-	exampleWebhookInput := &webhooks.WebhookCreationRequestInput{
-		ContentType: "application/json",
-		Method:      http.MethodPost,
-		Name:        t.Name(),
-		URL:         "https://whatever.gov",
-		Events:      []string{webhooks.WebhookCreatedTriggerEvent},
-	}
+	exampleWebhook := fakes.BuildFakeWebhook()
+	exampleWebhookInput := converters.ConvertWebhookToWebhookCreationRequestInput(exampleWebhook)
 
-	input := converters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
+	input := grpcconverters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
 
 	createdWebhook, err := testClient.CreateWebhook(ctx, &webhookssvc.CreateWebhookRequest{Input: input})
 	require.NoError(t, err)
+	converted := grpcconverters.ConvertGRPCWebhookToWebhook(createdWebhook.Created)
+	checkWebhookEquality(t, exampleWebhook, converted)
 
 	retrievedWebhook, err := testClient.GetWebhook(ctx, &webhookssvc.GetWebhookRequest{WebhookID: createdWebhook.Created.ID})
 	require.NoError(t, err)
 	require.NotNil(t, retrievedWebhook)
 
-	return converters.ConvertGRPCWebhookToWebhook(retrievedWebhook.Result)
+	webhook := grpcconverters.ConvertGRPCWebhookToWebhook(retrievedWebhook.Result)
+	checkWebhookEquality(t, converted, webhook)
+
+	return webhook
 }
 
 func TestWebhooks_Creating(T *testing.T) {
@@ -71,7 +96,7 @@ func TestWebhooks_Creating(T *testing.T) {
 			Events:      []string{},
 		}
 
-		input := converters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
+		input := grpcconverters.ConvertWebhookCreationRequestInputToGRPCWebhookCreationRequestInput(exampleWebhookInput)
 
 		_, err := testClient.CreateWebhook(ctx, &webhookssvc.CreateWebhookRequest{Input: input})
 		assert.Error(t, err)

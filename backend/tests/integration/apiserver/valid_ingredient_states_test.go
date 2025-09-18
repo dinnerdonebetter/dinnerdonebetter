@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -13,21 +14,44 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func checkValidIngredientStateEquality(t *testing.T, expected, actual *mealplanning.ValidIngredientState) {
+	t.Helper()
+
+	assert.NotEmpty(t, actual.ID, "expected ValidIngredientState to have ID")
+	assert.NotZero(t, actual.CreatedAt, "expected ValidIngredientState to have CreatedAt")
+
+	assert.Equal(t, expected.Name, actual.Name, "expected ValidIngredientState Name")
+	assert.Equal(t, expected.Description, actual.Description, "expected ValidIngredientState Description")
+	assert.Equal(t, expected.Slug, actual.Slug, "expected ValidIngredientState Slug")
+	assert.Equal(t, expected.PastTense, actual.PastTense, "expected ValidIngredientState PastTense")
+	assert.Equal(t, expected.IconPath, actual.IconPath, "expected ValidIngredientState IconPath")
+	assert.Equal(t, expected.AttributeType, actual.AttributeType, "expected ValidIngredientState AttributeType")
+}
+
 func createValidIngredientStateForTest(t *testing.T) *mealplanning.ValidIngredientState {
 	t.Helper()
 
 	ctx := t.Context()
 
-	creationRequestInput := fakes.BuildFakeValidIngredientStateCreationRequestInput()
-	convertedInput := grpcconverters.ConvertValidIngredientStateCreationRequestInputToGRPCValidIngredientStateCreationRequestInput(creationRequestInput)
-
+	exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
+	exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
 	created, err := adminClient.CreateValidIngredientState(ctx, &mealplanningsvc.CreateValidIngredientStateRequest{
-		Input: convertedInput,
+		Input: grpcconverters.ConvertValidIngredientStateCreationRequestInputToGRPCValidIngredientStateCreationRequestInput(exampleValidIngredientStateInput),
 	})
 	require.NoError(t, err)
-	assert.NotNil(t, created)
+	converted := grpcconverters.ConvertGRPCValidIngredientStateToValidIngredientState(created.Result)
+	checkValidIngredientStateEquality(t, exampleValidIngredientState, converted)
 
-	return grpcconverters.ConvertGRPCValidIngredientStateToValidIngredientState(created.Result)
+	retrieved, err := adminClient.GetValidIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateRequest{
+		ValidIngredientStateID: converted.ID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, retrieved)
+
+	validIngredientState := grpcconverters.ConvertGRPCValidIngredientStateToValidIngredientState(retrieved.Result)
+	checkValidIngredientStateEquality(t, converted, validIngredientState)
+
+	return validIngredientState
 }
 
 func TestValidIngredientStates_Creating(T *testing.T) {

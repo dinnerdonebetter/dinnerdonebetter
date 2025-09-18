@@ -32,7 +32,9 @@ An array of recipes that make up this meal, each with specific metadata:
 - **`RecipeScale`** (float32): Multiplier to adjust the recipe's portion size for this specific meal context
 
 ### `EligibleForMealPlans` (bool)
-**Note: This field is currently unused and may be removed in future versions.** Originally intended to control whether meals could be used in meal planning workflows, but this filtering is not currently implemented.
+- **Purpose**: Whether this meal can be included in new meal plans
+- **Primary Use Case**: Intended as a soft deletion mechanism for meals currently in active meal plans. Allows admins to prevent new usage of a meal while keeping existing meal plans functional, giving time to replace the meal in active plans
+- **Note**: **This functionality is largely unimplemented** - the system doesn't currently enforce this flag when creating new meal plans or meal plan options
 
 ## Business Logic
 

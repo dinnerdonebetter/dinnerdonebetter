@@ -89,9 +89,9 @@ The `Recipe` object is the central entity in the meal planning system. It repres
 - **Note**: These values are defined as constants in [meal.go](../internal/domain/mealplanning/meal.go) and are used throughout the meal planning system
 
 ### `EligibleForMeals` (bool)
-- **Purpose**: Whether this recipe can be included in meal plans
-- **Usage**: Distinguishes between full dishes and sub-components (like sauces, aiolis, or prepared ingredients)
-- **Note**: Recipes for individual ingredients should be marked as ineligible for meals
+- **Purpose**: Whether this recipe can be included in new meals
+- **Use Case**: Intended as a soft deletion mechanism for recipes currently in use. Allows admins to prevent new usage of a recipe while keeping existing meals functional, giving time to replace the recipe in existing meal plans
+- **Note**: Recipes for individual ingredients should be marked as ineligible for meals. **This functionality is largely unimplemented** - the system doesn't currently enforce this flag when creating new meals
 
 ## Quality and Approval Fields
 

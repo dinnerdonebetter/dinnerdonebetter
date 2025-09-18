@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -13,21 +14,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func checkValidIngredientGroupEquality(t *testing.T, expected, actual *mealplanning.ValidIngredientGroup) {
+	t.Helper()
+
+	assert.NotEmpty(t, actual.ID, "expected ValidIngredientGroup to have ID")
+	assert.NotZero(t, actual.CreatedAt, "expected ValidIngredientGroup to have CreatedAt")
+
+	assert.Equal(t, expected.Name, actual.Name, "expected ValidIngredientGroup Name")
+	assert.Equal(t, expected.Description, actual.Description, "expected ValidIngredientGroup Description")
+	assert.Equal(t, expected.Slug, actual.Slug, "expected ValidIngredientGroup Slug")
+}
+
 func createValidIngredientGroupForTest(t *testing.T) *mealplanning.ValidIngredientGroup {
 	t.Helper()
 
 	ctx := t.Context()
 
-	creationRequestInput := fakes.BuildFakeValidIngredientGroupCreationRequestInput()
-	convertedInput := grpcconverters.ConvertValidIngredientGroupCreationRequestInputToGRPCValidIngredientGroupCreationRequestInput(creationRequestInput)
-
+	exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
+	exampleValidIngredientGroupInput := converters.ConvertValidIngredientGroupToValidIngredientGroupCreationRequestInput(exampleValidIngredientGroup)
 	created, err := adminClient.CreateValidIngredientGroup(ctx, &mealplanningsvc.CreateValidIngredientGroupRequest{
-		Input: convertedInput,
+		Input: grpcconverters.ConvertValidIngredientGroupCreationRequestInputToGRPCValidIngredientGroupCreationRequestInput(exampleValidIngredientGroupInput),
 	})
 	require.NoError(t, err)
-	assert.NotNil(t, created)
+	converted := grpcconverters.ConvertGRPCValidIngredientGroupToValidIngredientGroup(created.Result)
+	checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, converted)
 
-	return grpcconverters.ConvertGRPCValidIngredientGroupToValidIngredientGroup(created.Result)
+	retrieved, err := adminClient.GetValidIngredientGroup(ctx, &mealplanningsvc.GetValidIngredientGroupRequest{
+		ValidIngredientGroupID: converted.ID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, retrieved)
+
+	validIngredientGroup := grpcconverters.ConvertGRPCValidIngredientGroupToValidIngredientGroup(retrieved.Result)
+	checkValidIngredientGroupEquality(t, converted, validIngredientGroup)
+
+	return validIngredientGroup
 }
 
 func TestValidIngredientGroups_Creating(T *testing.T) {

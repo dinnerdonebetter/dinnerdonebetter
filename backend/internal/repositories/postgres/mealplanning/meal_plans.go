@@ -376,9 +376,8 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 		}
 
 		for userID, hasVoted := range userHasVoted {
-			if hasVoted {
+			if !hasVoted {
 				allVotesAreSubmitted = false
-			} else {
 				usersWhoHaveNotVoted = append(usersWhoHaveNotVoted, userID)
 			}
 		}

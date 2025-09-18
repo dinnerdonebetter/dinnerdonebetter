@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/fakes"
 	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/oauth/grpc/converters"
@@ -12,21 +13,40 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func checkOAuth2ClientEquality(t *testing.T, expected, actual *oauth.OAuth2Client) {
+	t.Helper()
+
+	assert.NotEmpty(t, actual.ID, "expected OAuth2Client to have ID")
+	assert.NotZero(t, actual.CreatedAt, "expected OAuth2Client to have CreatedAt")
+
+	assert.Equal(t, expected.Name, actual.Name, "expected OAuth2Client Name")
+	assert.Equal(t, expected.Description, actual.Description, "expected OAuth2Client Description")
+}
+
 func createOAuth2ClientForTest(t *testing.T) *oauth.OAuth2Client {
 	t.Helper()
 
 	ctx := t.Context()
 
-	creationRequestInput := fakes.BuildFakeOAuth2ClientCreationRequestInput()
-	convertedInput := grpcconverters.ConvertOAuth2ClientCreationRequestInputToGRPCOAuth2ClientCreationRequestInput(creationRequestInput)
-
+	exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
+	exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
 	created, err := adminClient.CreateOAuth2Client(ctx, &oauthsvc.CreateOAuth2ClientRequest{
-		Input: convertedInput,
+		Input: grpcconverters.ConvertOAuth2ClientCreationRequestInputToGRPCOAuth2ClientCreationRequestInput(exampleOAuth2ClientInput),
 	})
 	require.NoError(t, err)
-	assert.NotNil(t, created)
+	converted := grpcconverters.ConvertGRPCOAuth2ClientToOAuth2Client(created.Created)
+	checkOAuth2ClientEquality(t, exampleOAuth2Client, converted)
 
-	return grpcconverters.ConvertGRPCOAuth2ClientToOAuth2Client(created.Created)
+	retrieved, err := adminClient.GetOAuth2Client(ctx, &oauthsvc.GetOAuth2ClientRequest{
+		OAuth2ClientID: converted.ID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, retrieved)
+
+	oauth2Client := grpcconverters.ConvertGRPCOAuth2ClientToOAuth2Client(retrieved.Result)
+	checkOAuth2ClientEquality(t, converted, oauth2Client)
+
+	return oauth2Client
 }
 
 func TestOAuth2Clients_Creating(T *testing.T) {

@@ -114,11 +114,11 @@ func TestRecipePrepTasks_CompleteLifecycle(T *testing.T) {
 		})
 		require.NoError(t, err)
 
-		actual = converters.ConvertGRPCRecipePrepTaskToRecipePrepTask(retrievedRes.Result)
+		retrieved := converters.ConvertGRPCRecipePrepTaskToRecipePrepTask(retrievedRes.Result)
 
 		// assert recipe prep task equality
-		checkRecipePrepTaskEquality(t, -1, newRecipePrepTask, actual)
-		assert.NotNil(t, actual.LastUpdatedAt)
+		checkRecipePrepTaskEquality(t, -1, actual, retrieved)
+		assert.NotNil(t, retrieved.LastUpdatedAt)
 
 		_, err = userClient.ArchiveRecipePrepTask(ctx, &mealplanninggrpc.ArchiveRecipePrepTaskRequest{
 			RecipeID:         createdRecipe.ID,

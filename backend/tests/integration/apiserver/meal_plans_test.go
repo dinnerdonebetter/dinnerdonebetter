@@ -491,7 +491,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 		q := generated.New()
 		rowsAffected, err := q.UpdateMealPlan(ctx, databaseClient.DB(), &generated.UpdateMealPlanParams{
 			Notes:            createdMealPlan.Notes,
-			Status:           generated.MealPlanStatus(createdMealPlan.Status),
+			Status:           generated.MealPlanStatus(mealplanning.MealPlanStatusAwaitingVotes),
 			VotingDeadline:   time.Now().Add(-10 * time.Hour),
 			BelongsToAccount: relevantAccountID,
 			ID:               createdMealPlan.ID,

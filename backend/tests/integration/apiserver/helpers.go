@@ -21,7 +21,7 @@ import (
 	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
-	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
@@ -34,7 +34,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
+	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
 	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
@@ -208,7 +208,7 @@ func deriveServerConfig() (*config.APIServiceConfig, error) {
 
 func createOAuth2ClientForTests(ctx context.Context, pgc database.Client, dbCfg *databasecfg.Config) error {
 	auditRepo := auditlogentries.ProvideAuditLogRepository(nil, nil, pgc)
-	oauth2ClientManager := oauth.ProvideOAuthRepository(nil, nil, auditRepo, *dbCfg, pgc)
+	oauth2ClientManager := oauthrepo.ProvideOAuthRepository(nil, nil, auditRepo, *dbCfg, pgc)
 
 	clientID, err := random.GenerateHexEncodedString(ctx, 16)
 	if err != nil {
@@ -220,7 +220,7 @@ func createOAuth2ClientForTests(ctx context.Context, pgc database.Client, dbCfg 
 		return fmt.Errorf("failed to generate client secret: %w", err)
 	}
 
-	createdClient, err := oauth2ClientManager.CreateOAuth2Client(ctx, &types.OAuth2ClientDatabaseCreationInput{
+	createdClient, err := oauth2ClientManager.CreateOAuth2Client(ctx, &oauth.OAuth2ClientDatabaseCreationInput{
 		ID:           identifiers.New(),
 		Name:         "integration_client",
 		Description:  "integration test client",
@@ -680,43 +680,6 @@ func checkRecipeStepCompletionConditionIngredientSliceEquality(t *testing.T, ste
 		assert.False(t, a.CreatedAt.IsZero(), "expected step %d condition %d ingredient %d to have CreatedAt", stepIndex, condIndex, i)
 		assert.NotEmpty(t, a.BelongsToRecipeStepCompletionCondition, "expected step %d condition %d ingredient %d to have BelongsTo...", stepIndex, condIndex, i)
 		assert.Equal(t, e.RecipeStepIngredient, a.RecipeStepIngredient, "expected step %d condition %d ingredient %d RecipeStepIngredient", stepIndex, condIndex, i)
-	}
-}
-
-func checkRecipeStepIngredientSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepIngredient) {
-	t.Helper()
-	require.Equal(t, len(expected), len(actual), "expected recipe step %d ingredients length", stepIndex)
-	for i := range expected {
-		checkRecipeStepIngredientEquality(t, stepIndex, i, expected[i], actual[i])
-	}
-}
-
-func checkRecipeStepIngredientEquality(t *testing.T, stepIndex, ingIndex int, expected, actual *mealplanning.RecipeStepIngredient) {
-	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d ingredient %d to have ID", stepIndex, ingIndex)
-	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d ingredient %d to have CreatedAt", stepIndex, ingIndex)
-	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d ingredient %d to have BelongsToRecipeStep", stepIndex, ingIndex)
-	assert.Equal(t, expected.Name, actual.Name, "expected step %d ingredient %d Name", stepIndex, ingIndex)
-	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d ingredient %d Quantity", stepIndex, ingIndex)
-	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected step %d ingredient %d QuantityNotes", stepIndex, ingIndex)
-	assert.Equal(t, expected.IngredientNotes, actual.IngredientNotes, "expected step %d ingredient %d IngredientNotes", stepIndex, ingIndex)
-	assert.Equal(t, expected.OptionIndex, actual.OptionIndex, "expected step %d ingredient %d OptionIndex", stepIndex, ingIndex)
-	assert.Equal(t, expected.Optional, actual.Optional, "expected step %d ingredient %d Optional", stepIndex, ingIndex)
-	assert.Equal(t, expected.ToTaste, actual.ToTaste, "expected step %d ingredient %d ToTaste", stepIndex, ingIndex)
-	if expected.VesselIndex != nil {
-		require.NotNil(t, actual.VesselIndex, "expected step %d ingredient %d VesselIndex non-nil", stepIndex, ingIndex)
-		assert.Equal(t, *expected.VesselIndex, *actual.VesselIndex, "expected step %d ingredient %d VesselIndex", stepIndex, ingIndex)
-	}
-	if expected.ProductPercentageToUse != nil {
-		require.NotNil(t, actual.ProductPercentageToUse, "expected step %d ingredient %d ProductPercentageToUse non-nil", stepIndex, ingIndex)
-		assert.Equal(t, *expected.ProductPercentageToUse, *actual.ProductPercentageToUse, "expected step %d ingredient %d ProductPercentageToUse", stepIndex, ingIndex)
-	}
-	// MeasurementUnit comparison by ID (and ranges already compared above)
-	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected step %d ingredient %d MeasurementUnit.ID", stepIndex, ingIndex)
-	// Ingredient pointer may be nil if this ingredient refers to a product of a prior step
-	if expected.Ingredient != nil {
-		require.NotNil(t, actual.Ingredient, "expected step %d ingredient %d Ingredient non-nil", stepIndex, ingIndex)
-		assert.Equal(t, expected.Ingredient.ID, actual.Ingredient.ID, "expected step %d ingredient %d Ingredient.ID", stepIndex, ingIndex)
 	}
 }
 

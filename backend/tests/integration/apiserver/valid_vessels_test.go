@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -13,24 +14,55 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func checkValidVesselEquality(t *testing.T, expected, actual *mealplanning.ValidVessel) {
+	t.Helper()
+
+	assert.NotEmpty(t, actual.ID, "expected ValidVessel to have ID")
+	assert.NotZero(t, actual.CreatedAt, "expected ValidVessel to have CreatedAt")
+
+	assert.Equal(t, expected.Name, actual.Name, "expected ValidVessel Name")
+	assert.Equal(t, expected.Description, actual.Description, "expected ValidVessel Description")
+	assert.Equal(t, expected.Slug, actual.Slug, "expected ValidVessel Slug")
+	assert.Equal(t, expected.PluralName, actual.PluralName, "expected ValidVessel PluralName")
+	assert.Equal(t, expected.IconPath, actual.IconPath, "expected ValidVessel IconPath")
+	assert.Equal(t, expected.Shape, actual.Shape, "expected ValidVessel Shape")
+	assert.Equal(t, expected.WidthInMillimeters, actual.WidthInMillimeters, "expected ValidVessel WidthInMillimeters")
+	assert.Equal(t, expected.LengthInMillimeters, actual.LengthInMillimeters, "expected ValidVessel LengthInMillimeters")
+	assert.Equal(t, expected.HeightInMillimeters, actual.HeightInMillimeters, "expected ValidVessel HeightInMillimeters")
+	assert.Equal(t, expected.Capacity, actual.Capacity, "expected ValidVessel Capacity")
+	assert.Equal(t, expected.DisplayInSummaryLists, actual.DisplayInSummaryLists, "expected ValidVessel DisplayInSummaryLists")
+	assert.Equal(t, expected.IncludeInGeneratedInstructions, actual.IncludeInGeneratedInstructions, "expected ValidVessel IncludeInGeneratedInstructions")
+	assert.Equal(t, expected.UsableForStorage, actual.UsableForStorage, "expected ValidVessel UsableForStorage")
+}
+
 func createValidVesselForTest(t *testing.T) *mealplanning.ValidVessel {
 	t.Helper()
 
 	ctx := t.Context()
 
-	creationRequestInput := fakes.BuildFakeValidVesselCreationRequestInput()
-	convertedInput := grpcconverters.ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput(creationRequestInput)
+	exampleValidVessel := fakes.BuildFakeValidVessel()
+	exampleValidVesselInput := converters.ConvertValidVesselToValidVesselCreationRequestInput(exampleValidVessel)
 
 	measurementUnit := createValidMeasurementUnitForTest(t)
-	convertedInput.CapacityUnitID = &measurementUnit.ID
+	exampleValidVesselInput.CapacityUnitID = &measurementUnit.ID
 
 	created, err := adminClient.CreateValidVessel(ctx, &mealplanningsvc.CreateValidVesselRequest{
-		Input: convertedInput,
+		Input: grpcconverters.ConvertValidVesselCreationRequestInputToGRPCValidVesselCreationRequestInput(exampleValidVesselInput),
 	})
 	require.NoError(t, err)
-	assert.NotNil(t, created)
+	converted := grpcconverters.ConvertGRPCValidVesselToValidVessel(created.Result)
+	checkValidVesselEquality(t, exampleValidVessel, converted)
 
-	return grpcconverters.ConvertGRPCValidVesselToValidVessel(created.Result)
+	retrieved, err := adminClient.GetValidVessel(ctx, &mealplanningsvc.GetValidVesselRequest{
+		ValidVesselID: converted.ID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, retrieved)
+
+	validVessel := grpcconverters.ConvertGRPCValidVesselToValidVessel(retrieved.Result)
+	checkValidVesselEquality(t, converted, validVessel)
+
+	return validVessel
 }
 
 func TestValidVessels_Creating(T *testing.T) {

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -13,21 +14,58 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func checkValidIngredientEquality(t *testing.T, expected, actual *mealplanning.ValidIngredient) {
+	t.Helper()
+
+	assert.NotEmpty(t, actual.ID, "expected ValidIngredient to have ID")
+	assert.NotZero(t, actual.CreatedAt, "expected ValidIngredient to have CreatedAt")
+
+	assert.Equal(t, expected.Name, actual.Name, "expected ValidIngredient Name")
+	assert.Equal(t, expected.Description, actual.Description, "expected ValidIngredient Description")
+	assert.Equal(t, expected.Slug, actual.Slug, "expected ValidIngredient Slug")
+	assert.Equal(t, expected.PluralName, actual.PluralName, "expected ValidIngredient PluralName")
+	assert.Equal(t, expected.IconPath, actual.IconPath, "expected ValidIngredient IconPath")
+	assert.Equal(t, expected.Warning, actual.Warning, "expected ValidIngredient Warning")
+	assert.Equal(t, expected.StorageInstructions, actual.StorageInstructions, "expected ValidIngredient StorageInstructions")
+	assert.Equal(t, expected.ShoppingSuggestions, actual.ShoppingSuggestions, "expected ValidIngredient ShoppingSuggestions")
+	assert.Equal(t, expected.ContainsShellfish, actual.ContainsShellfish, "expected ValidIngredient ContainsShellfish")
+	assert.Equal(t, expected.IsLiquid, actual.IsLiquid, "expected ValidIngredient IsLiquid")
+	assert.Equal(t, expected.ContainsPeanut, actual.ContainsPeanut, "expected ValidIngredient ContainsPeanut")
+	assert.Equal(t, expected.ContainsTreeNut, actual.ContainsTreeNut, "expected ValidIngredient ContainsTreeNut")
+	assert.Equal(t, expected.ContainsEgg, actual.ContainsEgg, "expected ValidIngredient ContainsEgg")
+	assert.Equal(t, expected.ContainsWheat, actual.ContainsWheat, "expected ValidIngredient ContainsWheat")
+	assert.Equal(t, expected.ContainsSoy, actual.ContainsSoy, "expected ValidIngredient ContainsSoy")
+	assert.Equal(t, expected.AnimalDerived, actual.AnimalDerived, "expected ValidIngredient AnimalDerived")
+	assert.Equal(t, expected.RestrictToPreparations, actual.RestrictToPreparations, "expected ValidIngredient RestrictToPreparations")
+	assert.Equal(t, expected.ContainsSesame, actual.ContainsSesame, "expected ValidIngredient ContainsSesame")
+	assert.Equal(t, expected.ContainsFish, actual.ContainsFish, "expected ValidIngredient ContainsFish")
+	assert.Equal(t, expected.StorageTemperatureInCelsius, actual.StorageTemperatureInCelsius, "expected ValidIngredient StorageTemperatureInCelsius")
+}
+
 func createValidIngredientForTest(t *testing.T) *mealplanning.ValidIngredient {
 	t.Helper()
 
 	ctx := t.Context()
 
-	creationRequestInput := fakes.BuildFakeValidIngredientCreationRequestInput()
-	convertedInput := grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(creationRequestInput)
-
+	exampleValidIngredient := fakes.BuildFakeValidIngredient()
+	exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 	created, err := adminClient.CreateValidIngredient(ctx, &mealplanningsvc.CreateValidIngredientRequest{
-		Input: convertedInput,
+		Input: grpcconverters.ConvertValidIngredientCreationRequestInputToGRPCValidIngredientCreationRequestInput(exampleValidIngredientInput),
 	})
 	require.NoError(t, err)
-	assert.NotNil(t, created)
+	converted := grpcconverters.ConvertGRPCValidIngredientToValidIngredient(created.Result)
+	checkValidIngredientEquality(t, exampleValidIngredient, converted)
 
-	return grpcconverters.ConvertGRPCValidIngredientToValidIngredient(created.Result)
+	retrieved, err := adminClient.GetValidIngredient(ctx, &mealplanningsvc.GetValidIngredientRequest{
+		ValidIngredientID: converted.ID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, retrieved)
+
+	validIngredient := grpcconverters.ConvertGRPCValidIngredientToValidIngredient(retrieved.Result)
+	checkValidIngredientEquality(t, converted, validIngredient)
+
+	return validIngredient
 }
 
 func TestValidIngredients_Creating(T *testing.T) {

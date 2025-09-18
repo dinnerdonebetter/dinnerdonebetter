@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
@@ -18,16 +19,25 @@ func createValidPreparationForTest(t *testing.T) *mealplanning.ValidPreparation 
 
 	ctx := t.Context()
 
-	creationRequestInput := fakes.BuildFakeValidPreparationCreationRequestInput()
-	convertedInput := grpcconverters.ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRequestInput(creationRequestInput)
-
+	exampleValidPreparation := fakes.BuildFakeValidPreparation()
+	exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 	created, err := adminClient.CreateValidPreparation(ctx, &mealplanningsvc.CreateValidPreparationRequest{
-		Input: convertedInput,
+		Input: grpcconverters.ConvertValidPreparationCreationRequestInputToGRPCValidPreparationCreationRequestInput(exampleValidPreparationInput),
 	})
 	require.NoError(t, err)
-	assert.NotNil(t, created)
+	converted := grpcconverters.ConvertGRPCValidPreparationToValidPreparation(created.Result)
+	checkValidPreparationEquality(t, 0, *exampleValidPreparation, *converted)
 
-	return grpcconverters.ConvertGRPCValidPreparationToValidPreparation(created.Result)
+	retrieved, err := adminClient.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{
+		ValidPreparationID: converted.ID,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, retrieved)
+
+	validPreparation := grpcconverters.ConvertGRPCValidPreparationToValidPreparation(retrieved.Result)
+	checkValidPreparationEquality(t, 0, *converted, *validPreparation)
+
+	return validPreparation
 }
 
 func checkValidPreparationEquality(t *testing.T, i int, expected, actual mealplanning.ValidPreparation) {
