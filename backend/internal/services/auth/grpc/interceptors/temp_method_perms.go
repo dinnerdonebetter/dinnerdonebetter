@@ -357,6 +357,9 @@ var (
 		mealPlanningPerm("GetMealPlan"): {
 			authorization.ReadMealPlansPermission,
 		},
+		mealPlanningPerm("SearchForMealPlans"): {
+			authorization.ReadMealPlansPermission,
+		},
 		mealPlanningPerm("UpdateMealPlan"): {
 			authorization.UpdateMealPlansPermission,
 		},
@@ -405,8 +408,23 @@ var (
 		mealPlanningPerm("ArchiveMealPlanEvent"): {
 			authorization.ArchiveMealPlanEventsPermission,
 		},
-		mealPlanningPerm("SearchForMealPlans"): {
-			authorization.ReadMealPlansPermission,
+		mealPlanningPerm("CreateMealPlanGroceryListItem"): {
+			authorization.CreateMealPlanGroceryListItemsPermission,
+		},
+		mealPlanningPerm("GetMealPlanGroceryListItem"): {
+			authorization.ReadMealPlanGroceryListItemsPermission,
+		},
+		mealPlanningPerm("GetMealPlanGroceryListItemsForMealPlan"): {
+			authorization.ReadMealPlanGroceryListItemsPermission,
+		},
+		mealPlanningPerm("GetMealPlanGroceryListItems"): {
+			authorization.ReadMealPlanGroceryListItemsPermission,
+		},
+		mealPlanningPerm("UpdateMealPlanGroceryListItem"): {
+			authorization.UpdateMealPlanGroceryListItemsPermission,
+		},
+		mealPlanningPerm("ArchiveMealPlanGroceryListItem"): {
+			authorization.ArchiveMealPlanGroceryListItemsPermission,
 		},
 		mealPlanningPerm("CloneRecipe"): {
 			authorization.ReadRecipesPermission, // TODO: this should be its own perm

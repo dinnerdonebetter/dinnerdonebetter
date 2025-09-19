@@ -130,6 +130,11 @@ func ConvertGRPCMealComponentToMealComponent(input *mealplanningsvc.MealComponen
 }
 
 func ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(input *mealplanning.MealPlanGroceryListItem) *mealplanningsvc.MealPlanGroceryListItem {
+	var purchasedMeasurementUnit *mealplanningsvc.ValidMeasurementUnit
+	if input.PurchasedMeasurementUnit != nil {
+		purchasedMeasurementUnit = ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(input.PurchasedMeasurementUnit)
+	}
+
 	return &mealplanningsvc.MealPlanGroceryListItem{
 		CreatedAt:     grpcconverters.ConvertTimeToPBTimestamp(input.CreatedAt),
 		LastUpdatedAt: grpcconverters.ConvertTimePointerToPBTimestamp(input.LastUpdatedAt),
@@ -140,7 +145,34 @@ func ConvertMealPlanGroceryListItemToGRPCMealPlanGroceryListItem(input *mealplan
 		},
 		Ingredient:               ConvertValidIngredientToGRPCValidIngredient(&input.Ingredient),
 		MeasurementUnit:          ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(&input.MeasurementUnit),
-		PurchasedMeasurementUnit: ConvertValidMeasurementUnitToGRPCValidMeasurementUnit(input.PurchasedMeasurementUnit),
+		PurchasedMeasurementUnit: purchasedMeasurementUnit,
+		PurchasedUPC:             input.PurchasedUPC,
+		Status:                   input.Status,
+		StatusExplanation:        input.StatusExplanation,
+		ID:                       input.ID,
+		BelongsToMealPlan:        input.BelongsToMealPlan,
+		PurchasePrice:            input.PurchasePrice,
+		QuantityPurchased:        input.QuantityPurchased,
+	}
+}
+
+func ConvertGRPCMealPlanGroceryListItemToMealPlanGroceryListItem(input *mealplanningsvc.MealPlanGroceryListItem) *mealplanning.MealPlanGroceryListItem {
+	var purchasedMeasurementUnit *mealplanning.ValidMeasurementUnit
+	if input.PurchasedMeasurementUnit != nil {
+		purchasedMeasurementUnit = ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.PurchasedMeasurementUnit)
+	}
+
+	return &mealplanning.MealPlanGroceryListItem{
+		CreatedAt:     grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		LastUpdatedAt: grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		ArchivedAt:    grpcconverters.ConvertPBTimestampToTimePointer(input.ArchivedAt),
+		QuantityNeeded: types.Float32RangeWithOptionalMax{
+			Max: input.QuantityNeeded.Max,
+			Min: input.QuantityNeeded.Min,
+		},
+		Ingredient:               *ConvertGRPCValidIngredientToValidIngredient(input.Ingredient),
+		MeasurementUnit:          *ConvertGRPCValidMeasurementUnitToValidMeasurementUnit(input.MeasurementUnit),
+		PurchasedMeasurementUnit: purchasedMeasurementUnit,
 		PurchasedUPC:             input.PurchasedUPC,
 		Status:                   input.Status,
 		StatusExplanation:        input.StatusExplanation,
@@ -465,7 +497,28 @@ func ConvertGRPCMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryList
 		ValidIngredientID:          input.ValidIngredientID,
 		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
 		StatusExplanation:          input.StatusExplanation,
-		QuantityNeeded:             types.Float32RangeWithOptionalMax{},
+		QuantityNeeded: types.Float32RangeWithOptionalMax{
+			Max: input.QuantityNeeded.Max,
+			Min: input.QuantityNeeded.Min,
+		},
+	}
+}
+
+func ConvertMealPlanGroceryListItemCreationRequestInputToGRPCMealPlanGroceryListItemCreationRequestInput(input *mealplanning.MealPlanGroceryListItemCreationRequestInput) *mealplanningsvc.MealPlanGroceryListItemCreationRequestInput {
+	return &mealplanningsvc.MealPlanGroceryListItemCreationRequestInput{
+		PurchasedMeasurementUnitID: input.PurchasedMeasurementUnitID,
+		PurchasedUPC:               input.PurchasedUPC,
+		PurchasePrice:              input.PurchasePrice,
+		QuantityPurchased:          input.QuantityPurchased,
+		Status:                     input.Status,
+		BelongsToMealPlan:          input.BelongsToMealPlan,
+		ValidIngredientID:          input.ValidIngredientID,
+		ValidMeasurementUnitID:     input.ValidMeasurementUnitID,
+		StatusExplanation:          input.StatusExplanation,
+		QuantityNeeded: &grpctypes.Float32RangeWithOptionalMax{
+			Max: input.QuantityNeeded.Max,
+			Min: input.QuantityNeeded.Min,
+		},
 	}
 }
 
