@@ -659,3 +659,29 @@ func ConvertMealPlanOptionVoteCreationInputToGRPCMealPlanOptionVoteCreationInput
 		Abstain:                 input.Abstain,
 	}
 }
+
+func ConvertMealPlanTaskCreationRequestInputToGRPCMealPlanTaskCreationRequestInput(input *mealplanning.MealPlanTaskCreationRequestInput) *mealplanningsvc.MealPlanTaskCreationRequestInput {
+	return &mealplanningsvc.MealPlanTaskCreationRequestInput{
+		AssignedToUser:      input.AssignedToUser,
+		Status:              input.Status,
+		CreationExplanation: input.CreationExplanation,
+		StatusExplanation:   input.StatusExplanation,
+		MealPlanOptionID:    input.MealPlanOptionID,
+		RecipePrepTaskID:    input.RecipePrepTaskID,
+	}
+}
+
+func ConvertGRPCMealPlanTaskToMealPlanTask(input *mealplanningsvc.MealPlanTask) *mealplanning.MealPlanTask {
+	return &mealplanning.MealPlanTask{
+		RecipePrepTask:      *ConvertGRPCRecipePrepTaskToRecipePrepTask(input.RecipePrepTask),
+		CreatedAt:           grpcconverters.ConvertPBTimestampToTime(input.CreatedAt),
+		CompletedAt:         grpcconverters.ConvertPBTimestampToTimePointer(input.CompletedAt),
+		LastUpdatedAt:       grpcconverters.ConvertPBTimestampToTimePointer(input.LastUpdatedAt),
+		AssignedToUser:      input.AssignedToUser,
+		ID:                  input.ID,
+		Status:              input.Status,
+		CreationExplanation: input.CreationExplanation,
+		StatusExplanation:   input.StatusExplanation,
+		MealPlanOption:      *ConvertGRPCMealPlanOptionToMealPlanOption(input.MealPlanOption),
+	}
+}

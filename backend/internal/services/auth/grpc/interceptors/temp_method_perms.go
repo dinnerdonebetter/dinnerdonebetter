@@ -378,6 +378,18 @@ var (
 		mealPlanningPerm("ArchiveMealPlanOption"): {
 			authorization.ArchiveMealPlanOptionsPermission,
 		},
+		mealPlanningPerm("CreateMealPlanTask"): {
+			authorization.CreateMealPlanTasksPermission,
+		},
+		mealPlanningPerm("GetMealPlanTask"): {
+			authorization.ReadMealPlanTasksPermission,
+		},
+		mealPlanningPerm("GetMealPlanTasks"): {
+			authorization.ReadMealPlanTasksPermission,
+		},
+		mealPlanningPerm("UpdateMealPlanTask"): {
+			authorization.UpdateMealPlanTasksPermission,
+		},
 		mealPlanningPerm("CreateMealPlanEvent"): {
 			authorization.CreateMealPlanEventsPermission,
 		},
