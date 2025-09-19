@@ -363,6 +363,36 @@ var (
 		mealPlanningPerm("ArchiveMealPlan"): {
 			authorization.ArchiveMealPlansPermission,
 		},
+		mealPlanningPerm("CreateMealPlanOption"): {
+			authorization.CreateMealPlanOptionsPermission,
+		},
+		mealPlanningPerm("GetMealPlanOption"): {
+			authorization.ReadMealPlanOptionsPermission,
+		},
+		mealPlanningPerm("GetMealPlanOptions"): {
+			authorization.ReadMealPlanOptionsPermission,
+		},
+		mealPlanningPerm("UpdateMealPlanOption"): {
+			authorization.UpdateMealPlanOptionsPermission,
+		},
+		mealPlanningPerm("ArchiveMealPlanOption"): {
+			authorization.ArchiveMealPlanOptionsPermission,
+		},
+		mealPlanningPerm("CreateMealPlanEvent"): {
+			authorization.CreateMealPlanEventsPermission,
+		},
+		mealPlanningPerm("GetMealPlanEvent"): {
+			authorization.ReadMealPlanEventsPermission,
+		},
+		mealPlanningPerm("GetMealPlanEvents"): {
+			authorization.ReadMealPlanEventsPermission,
+		},
+		mealPlanningPerm("UpdateMealPlanEvent"): {
+			authorization.UpdateMealPlanEventsPermission,
+		},
+		mealPlanningPerm("ArchiveMealPlanEvent"): {
+			authorization.ArchiveMealPlanEventsPermission,
+		},
 		mealPlanningPerm("SearchForMealPlans"): {
 			authorization.ReadMealPlansPermission,
 		},

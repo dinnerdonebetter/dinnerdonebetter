@@ -121,6 +121,12 @@ func (m *MockMealPlanningManager) CreateMealPlanOption(ctx context.Context, inpu
 	return returnValues.Get(0).(*mealplanning.MealPlanOption), returnValues.Get(1).(error)
 }
 
+func (m *MockMealPlanningManager) CreateMealPlanOptionWithEventID(ctx context.Context, mealPlanEventID string, input *mealplanning.MealPlanOptionCreationRequestInput) (*mealplanning.MealPlanOption, error) {
+	returnValues := m.Called(ctx, mealPlanEventID, input)
+
+	return returnValues.Get(0).(*mealplanning.MealPlanOption), returnValues.Get(1).(error)
+}
+
 func (m *MockMealPlanningManager) ReadMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*mealplanning.MealPlanOption, error) {
 	returnValues := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID)
 

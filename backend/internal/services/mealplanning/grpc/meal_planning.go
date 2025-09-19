@@ -303,7 +303,7 @@ func (s *serviceImpl) CreateMealPlanOption(ctx context.Context, request *mealpla
 
 	input := converters.ConvertGRPCMealPlanOptionCreationRequestInputToMealPlanOptionCreationRequestInput(request.Input)
 
-	created, err := s.mealPlanningManager.CreateMealPlanOption(ctx, input)
+	created, err := s.mealPlanningManager.CreateMealPlanOptionWithEventID(ctx, request.MealPlanEventID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan option")
 	}

@@ -48,6 +48,7 @@ type (
 
 		ListMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) ([]*types.MealPlanOption, string, error)
 		CreateMealPlanOption(ctx context.Context, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error)
+		CreateMealPlanOptionWithEventID(ctx context.Context, mealPlanEventID string, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error)
 		ReadMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*types.MealPlanOption, error)
 		UpdateMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, input *types.MealPlanOptionUpdateRequestInput) error
 		ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error
@@ -548,6 +549,37 @@ func (m *mealPlanningManager) CreateMealPlanOption(ctx context.Context, input *t
 	}
 
 	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
+	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, convertedInput.ID)
+
+	created, err := m.db.CreateMealPlanOption(ctx, convertedInput)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "created meal plan option")
+	}
+
+	m.dataChangesPublisher.PublishAsync(ctx, audit.BuildDataChangeMessageFromContext(ctx, logger, types.MealPlanOptionCreatedServiceEventType, map[string]any{
+		keys.MealPlanOptionIDKey: convertedInput.ID,
+	}))
+
+	return created, nil
+}
+
+func (m *mealPlanningManager) CreateMealPlanOptionWithEventID(ctx context.Context, mealPlanEventID string, input *types.MealPlanOptionCreationRequestInput) (*types.MealPlanOption, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, internalerrors.ErrNilInputParameter
+	}
+
+	if mealPlanEventID == "" {
+		return nil, internalerrors.ErrEmptyInputParameter
+	}
+
+	convertedInput := converters.ConvertMealPlanOptionCreationRequestInputToMealPlanOptionDatabaseCreationInput(input)
+	// Set the meal plan event ID that was missing before
+	convertedInput.BelongsToMealPlanEvent = mealPlanEventID
+
 	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanOptionIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, convertedInput.ID)
 

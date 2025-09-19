@@ -547,6 +547,17 @@ func ConvertGRPCMealPlanOptionUpdateRequestInputToMealPlanOptionUpdateRequestInp
 	}
 }
 
+func ConvertMealPlanOptionUpdateRequestInputToGRPCMealPlanOptionUpdateRequestInput(input *mealplanning.MealPlanOptionUpdateRequestInput) *mealplanningsvc.MealPlanOptionUpdateRequestInput {
+	return &mealplanningsvc.MealPlanOptionUpdateRequestInput{
+		MealID:                 input.MealID,
+		Notes:                  input.Notes,
+		AssignedCook:           input.AssignedCook,
+		AssignedDishwasher:     input.AssignedDishwasher,
+		MealScale:              input.MealScale,
+		BelongsToMealPlanEvent: input.BelongsToMealPlanEvent,
+	}
+}
+
 func ConvertGRPCMealPlanOptionVoteUpdateRequestInputToMealPlanOptionVoteUpdateRequestInput(input *mealplanningsvc.MealPlanOptionVoteUpdateRequestInput) *mealplanning.MealPlanOptionVoteUpdateRequestInput {
 	return &mealplanning.MealPlanOptionVoteUpdateRequestInput{
 		Notes:                   input.Notes,
