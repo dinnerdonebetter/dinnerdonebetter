@@ -20,7 +20,7 @@ func fetchTypesForPackage(pkg string, nameFilter func(string) bool) map[string]*
 	fileset := token.NewFileSet()
 	astPkg, err := parser.ParseDir(fileset, pkg, noTestFiles, parser.AllErrors)
 	if err != nil {
-		log.Fatalf("failed to parse package: %p", err)
+		log.Fatalf("failed to parse package: %v", err)
 	}
 
 	if len(astPkg) != 1 {
@@ -67,13 +67,13 @@ func getFieldsForStruct(structType *ast.StructType) map[string]string {
 	return structFields
 }
 
-func main() {
-	paramTypes := fetchTypesForPackage("internal/database/postgres/generated", func(s string) bool {
+func comparePackages(sourcePkg, auxPackage string) error {
+	paramTypes := fetchTypesForPackage(sourcePkg, func(s string) bool {
 		return strings.HasSuffix(s, "Params")
 	})
 
 	fileset := token.NewFileSet()
-	astPkg, err := parser.ParseDir(fileset, "internal/database/postgres", noTestFiles, parser.AllErrors)
+	astPkg, err := parser.ParseDir(fileset, auxPackage, noTestFiles, parser.AllErrors)
 	if err != nil {
 		log.Fatalf("failed to parse package: %p", err)
 	}
@@ -138,6 +138,24 @@ func main() {
 				}
 				return true
 			})
+		}
+	}
+
+	return errors.ErrorOrNil()
+}
+
+func main() {
+	var errors *multierror.Error
+
+	packageMap := map[string][]string{
+		"internal/repositories/postgres/auditlogentries/generated": {"internal/repositories/postgres/auditlogentries"},
+	}
+
+	for pkg, subPkgs := range packageMap {
+		for _, subPkg := range subPkgs {
+			if err := comparePackages(pkg, subPkg); err != nil {
+				errors = multierror.Append(errors, err)
+			}
 		}
 	}
 

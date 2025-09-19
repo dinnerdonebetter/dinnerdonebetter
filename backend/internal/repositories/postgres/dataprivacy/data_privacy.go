@@ -7,7 +7,7 @@ import (
 )
 
 func (r *repository) FetchUserDataCollection(ctx context.Context, userID string) (*dataprivacy.UserDataCollectionResponse, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+	_, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	// TODO

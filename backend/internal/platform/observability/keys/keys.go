@@ -25,7 +25,7 @@ const (
 	UserIsServiceAdminKey = "user.is_admin"
 	// UsernameKey is the standard key for referring to a username.
 	UsernameKey = "user.username"
-	// UserEmailVerificationTokenKey is the standard key for referring to a username.
+	// #nosec G101 UserEmailVerificationTokenKey is the standard key for referring to a username.
 	UserEmailVerificationTokenKey = "user.email_verification_token"
 	// NameKey is the standard key for referring to a name.
 	NameKey = "name"

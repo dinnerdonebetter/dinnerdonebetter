@@ -443,7 +443,7 @@ func (l *AuthManager) RequestUsernameReminder(ctx context.Context, input *auth.U
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareError(err, span, "user not found")
 	} else if err != nil {
-		return observability.PrepareError(err, span, "fetching user")
+		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
 	dcm := &audit.DataChangeMessage{
@@ -548,7 +548,6 @@ func (l *AuthManager) PasswordResetTokenRedemption(ctx context.Context, input *a
 	// hash the new password.
 	newPasswordHash, err := l.authenticator.HashPassword(ctx, strings.TrimSpace(input.NewPassword))
 	if err != nil {
-
 		return observability.PrepareError(err, span, "hashing password")
 	}
 
@@ -597,7 +596,7 @@ func (l *AuthManager) RequestEmailVerificationEmail(ctx context.Context) error {
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareError(err, span, "email verification token not found")
 	} else if err != nil {
-		return observability.PrepareError(err, span, "fetching email verification token")
+		return observability.PrepareAndLogError(err, logger, span, "fetching email verification token")
 	}
 
 	l.dataChangesPublisher.PublishAsync(ctx, &audit.DataChangeMessage{
@@ -632,14 +631,14 @@ func (l *AuthManager) VerifyUserEmailAddress(ctx context.Context, input *auth.Em
 		if errors.Is(err, sql.ErrNoRows) {
 			return observability.PrepareError(err, span, "user not found")
 		}
-		return observability.PrepareError(err, span, "fetching user")
+		return observability.PrepareAndLogError(err, logger, span, "fetching user")
 	}
 
 	if err = l.userDataManager.MarkUserEmailAddressAsVerified(ctx, user.ID, input.Token); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return observability.PrepareError(err, span, "user not found")
 		}
-		return observability.PrepareError(err, span, "marking user email as verified")
+		return observability.PrepareAndLogError(err, logger, span, "marking user email as verified")
 	}
 
 	l.dataChangesPublisher.PublishAsync(ctx, &audit.DataChangeMessage{

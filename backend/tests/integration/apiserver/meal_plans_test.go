@@ -499,6 +499,8 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 		require.NoError(t, err)
 		require.NotZero(t, rowsAffected)
 
+		time.Sleep(10 * time.Second)
+
 		runRes, err := adminClient.RunFinalizeMealPlanWorker(ctx, &mealplanninggrpc.RunFinalizeMealPlanWorkerRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, runRes)

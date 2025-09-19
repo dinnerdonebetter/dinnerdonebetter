@@ -41,7 +41,7 @@ type (
 		FinalizeMealPlan(ctx context.Context, mealPlanID, ownerID string) (bool, error)
 
 		ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*types.MealPlanEvent, string, error)
-		CreateMealPlanEvent(ctx context.Context, input *types.MealPlanEventCreationRequestInput) (*types.MealPlanEvent, error)
+		CreateMealPlanEvent(ctx context.Context, mealPlanID string, input *types.MealPlanEventCreationRequestInput) (*types.MealPlanEvent, error)
 		ReadMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error)
 		UpdateMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string, input *types.MealPlanEventUpdateRequestInput) error
 		ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error
@@ -418,7 +418,7 @@ func (m *mealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID
 	return mealPlanEvents.Data, "", nil
 }
 
-func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, input *types.MealPlanEventCreationRequestInput) (*types.MealPlanEvent, error) {
+func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, mealPlanID string, input *types.MealPlanEventCreationRequestInput) (*types.MealPlanEvent, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -427,6 +427,7 @@ func (m *mealPlanningManager) CreateMealPlanEvent(ctx context.Context, input *ty
 	}
 
 	convertedInput := converters.ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(input)
+	convertedInput.BelongsToMealPlan = mealPlanID
 	logger := m.logger.WithSpan(span).WithValue(keys.MealPlanEventIDKey, convertedInput.ID)
 	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, convertedInput.ID)
 

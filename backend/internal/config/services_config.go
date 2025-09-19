@@ -18,11 +18,11 @@ type (
 	ServicesConfig struct {
 		_ struct{} `json:"-"`
 
-		Users         identitycfg.Config     `envPrefix:"USERS_"                          json:"users,omitempty"`
-		DataPrivacy   dataprivacycfg.Config  `envPrefix:"DATA_PRIVACY_"                   json:"dataPrivacy,omitempty"`
-		MealPlanning  mealplanningcfg.Config `envPrefix:"MEAL_PLANNING_"                  json:"mealPlanning,omitempty"`
-		Auth          authentication.Config  `envPrefix:"AUTH_"                           json:"auth,omitempty"`
-		OAuth2Clients oauthcfg.Config        `envPrefix:"OAUTH2_CLIENTS_"                 json:"oauth2Clients,omitempty"`
+		Users         identitycfg.Config     `envPrefix:"USERS_"          json:"users,omitempty"`
+		DataPrivacy   dataprivacycfg.Config  `envPrefix:"DATA_PRIVACY_"   json:"dataPrivacy,omitempty"`
+		MealPlanning  mealplanningcfg.Config `envPrefix:"MEAL_PLANNING_"  json:"mealPlanning,omitempty"`
+		Auth          authentication.Config  `envPrefix:"AUTH_"           json:"auth,omitempty"`
+		OAuth2Clients oauthcfg.Config        `envPrefix:"OAUTH2_CLIENTS_" json:"oauth2Clients,omitempty"`
 	}
 )
 

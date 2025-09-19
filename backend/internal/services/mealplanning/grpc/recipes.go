@@ -533,7 +533,7 @@ func (s *serviceImpl) GetRecipe(ctx context.Context, request *mealplanning.GetRe
 	return x, nil
 }
 
-// TODO: very aware that this basically just emits a list of strings, and that that isn't very useful
+// TODO: very aware that this basically just emits a list of strings, and that that isn't very useful.
 func (s *serviceImpl) EstimateRecipePrepTasks(ctx context.Context, request *mealplanning.EstimateRecipePrepTasksRequest) (*mealplanning.EstimateRecipePrepTasksResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

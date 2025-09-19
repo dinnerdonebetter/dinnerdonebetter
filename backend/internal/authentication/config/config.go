@@ -29,13 +29,14 @@ type (
 
 	// Config is our configuration.
 	Config struct {
-		_                     struct{}         `json:"-"`
-		SSO                   SSOConfigs       `envPrefix:"SSO_CONFIG_"          json:"sso,omitempty"`
-		Tokens                tokenscfg.Config `envPrefix:"TOKENS_"              json:"tokens"`
-		Debug                 bool             `env:"DEBUG"                      json:"debug,omitempty"`
-		EnableUserSignup      bool             `env:"ENABLE_USER_SIGNUP"         json:"enableUserSignup,omitempty"`
-		MinimumUsernameLength uint8            `env:"MINIMUM_USERNAME_LENGTH"    json:"minimumUsernameLength,omitempty"`
-		MinimumPasswordLength uint8            `env:"MINIMUM_PASSWORD_LENGTH"    json:"minimumPasswordLength,omitempty"`
+		_ struct{} `json:"-"`
+
+		SSO                   SSOConfigs       `envPrefix:"SSO_CONFIG_"       json:"sso,omitempty"`
+		Tokens                tokenscfg.Config `envPrefix:"TOKENS_"           json:"tokens"`
+		Debug                 bool             `env:"DEBUG"                   json:"debug,omitempty"`
+		EnableUserSignup      bool             `env:"ENABLE_USER_SIGNUP"      json:"enableUserSignup,omitempty"`
+		MinimumUsernameLength uint8            `env:"MINIMUM_USERNAME_LENGTH" json:"minimumUsernameLength,omitempty"`
+		MinimumPasswordLength uint8            `env:"MINIMUM_PASSWORD_LENGTH" json:"minimumPasswordLength,omitempty"`
 	}
 )
 

@@ -204,7 +204,7 @@ const (
 	// ArchiveMealsPermission is a permission.
 	ArchiveMealsPermission Permission = "archive.meals"
 
-	// TODO: clone.recipes permission
+	// TODO: clone.recipes permission.
 
 	// CreateRecipesPermission is a permission.
 	CreateRecipesPermission Permission = "create.recipes"

@@ -41,7 +41,7 @@ func (r *repository) DeleteUser(ctx context.Context, userID string) error {
 }
 
 func (r *repository) FetchUserDataCollection(ctx context.Context, userID string) (*dataprivacy.UserDataCollectionResponse, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+	_, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if userID == "" {
@@ -54,5 +54,5 @@ func (r *repository) FetchUserDataCollection(ctx context.Context, userID string)
 
 	logger.Info("TODO")
 
-	return nil, nil
+	return &dataprivacy.UserDataCollectionResponse{}, nil
 }

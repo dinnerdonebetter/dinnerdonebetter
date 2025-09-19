@@ -585,8 +585,17 @@ var (
 		mealPlanningPerm("CreateMealPlanOptionVote"): {
 			authorization.CreateMealPlanOptionVotesPermission,
 		},
+		mealPlanningPerm("UpdateMealPlanOptionVote"): {
+			authorization.UpdateMealPlanOptionVotesPermission,
+		},
 		mealPlanningPerm("GetMealPlanOptionVote"): {
 			authorization.ReadMealPlanOptionVotesPermission,
+		},
+		mealPlanningPerm("GetMealPlanOptionVotes"): {
+			authorization.ReadMealPlanOptionVotesPermission,
+		},
+		mealPlanningPerm("ArchiveMealPlanOptionVote"): {
+			authorization.ArchiveMealPlanOptionVotesPermission,
 		},
 		mealPlanningPerm("RunFinalizeMealPlanWorker"): {
 			authorization.UpdateMealPlansPermission, // TODO: this should be its own perm

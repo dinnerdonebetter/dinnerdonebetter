@@ -18,13 +18,16 @@ func ConvertMealPlanToMealPlanUpdateRequestInput(input *types.MealPlan) *types.M
 
 // ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput creates a MealPlanDatabaseCreationInput from a MealPlanCreationRequestInput.
 func ConvertMealPlanCreationRequestInputToMealPlanDatabaseCreationInput(input *types.MealPlanCreationRequestInput) *types.MealPlanDatabaseCreationInput {
+	mealPlanID := identifiers.New()
 	events := []*types.MealPlanEventDatabaseCreationInput{}
 	for _, e := range input.Events {
-		events = append(events, ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(e))
+		eventInput := ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(e)
+		eventInput.BelongsToMealPlan = mealPlanID
+		events = append(events, eventInput)
 	}
 
 	x := &types.MealPlanDatabaseCreationInput{
-		ID:             identifiers.New(),
+		ID:             mealPlanID,
 		Notes:          input.Notes,
 		CreatedByUser:  identifiers.New(),
 		VotingDeadline: input.VotingDeadline,

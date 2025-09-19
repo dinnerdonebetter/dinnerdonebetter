@@ -99,6 +99,7 @@ func ConvertRecipeToRecipeCreationRequestInput(input *mealplanning.Recipe) *meal
 			Max: input.EstimatedPortions.Max,
 			Min: input.EstimatedPortions.Min,
 		},
+		Media:               media,
 		PortionName:         input.PortionName,
 		PluralPortionName:   input.PluralPortionName,
 		Steps:               steps,

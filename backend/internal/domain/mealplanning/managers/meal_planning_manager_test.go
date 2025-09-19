@@ -432,7 +432,7 @@ func TestMealPlanningManager_CreateMealPlanEvent(T *testing.T) {
 			},
 		)
 
-		actual, err := mpm.CreateMealPlanEvent(ctx, fakeInput)
+		actual, err := mpm.CreateMealPlanEvent(ctx, expected.BelongsToMealPlan, fakeInput)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -1221,7 +1221,7 @@ func TestMealPlanningManager_ArchiveUserIngredientPreference(T *testing.T) {
 		expectations := setupExpectationsForMealPlanningManager(
 			mpm,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(mpm.db.ArchiveUserIngredientPreference), testutils.ContextMatcher, ownershipID, expected.ID).Return(nil)
+				db.On(testutils.GetMethodName(mpm.db.ArchiveUserIngredientPreference), testutils.ContextMatcher, expected.ID, ownershipID).Return(nil)
 			},
 			map[string][]string{
 				mealplanning.UserIngredientPreferenceArchivedServiceEventType: {

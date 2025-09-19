@@ -26,7 +26,6 @@ func (s *serviceImpl) GetAuthStatus(ctx context.Context, _ *authsvc.GetAuthStatu
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Unauthenticated, "failed to get session context data")
 	}
-	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
 
 	x := &authsvc.GetAuthStatusResponse{
 		ResponseDetails: &types.ResponseDetails{

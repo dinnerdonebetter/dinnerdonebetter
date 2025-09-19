@@ -88,12 +88,10 @@ func (m *manager) CreateOAuth2Client(ctx context.Context, input *oauth.OAuth2Cli
 
 	if dbInput.ClientID, err = m.secretGenerator.GenerateHexEncodedString(ctx, clientIDSize); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "generating client id")
-
 	}
 
 	if dbInput.ClientSecret, err = m.secretGenerator.GenerateHexEncodedString(ctx, clientSecretSize); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "generating client secret")
-
 	}
 
 	created, err := m.oauthRepository.CreateOAuth2Client(ctx, dbInput)

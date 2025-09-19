@@ -32,6 +32,7 @@ import (
 )
 
 const (
+	todoRes  = "TODO"
 	o11yName = "identity_data_manager"
 
 	totpIssuer             = "DinnerDoneBetter"
@@ -46,10 +47,10 @@ var (
 	// ErrInvalidIDProvided indicates a required ID was passed in empty.
 	ErrInvalidIDProvided = errors.New("required ID was empty")
 
-	// ErrNilInputProvided indicates that a required parameter was nil
+	// ErrNilInputProvided indicates that a required parameter was nil.
 	ErrNilInputProvided = errors.New("nil input provided")
 
-	// ErrEmptyInputProvided indicates that required input was empty
+	// ErrEmptyInputProvided indicates that the required input was empty.
 	ErrEmptyInputProvided = errors.New("empty input provided")
 )
 
@@ -537,7 +538,7 @@ func (m *manager) GetAccounts(ctx context.Context, userID string, filter *filter
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching accounts")
 	}
 
-	return accounts.Data, "TODO", nil
+	return accounts.Data, todoRes, nil
 }
 
 func (m *manager) GetReceivedAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
@@ -561,7 +562,7 @@ func (m *manager) GetReceivedAccountInvitations(ctx context.Context, userID stri
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching invites")
 	}
 
-	return invites.Data, "TODO", nil
+	return invites.Data, todoRes, nil
 }
 
 func (m *manager) GetSentAccountInvitations(ctx context.Context, userID string, filter *filtering.QueryFilter) ([]*identity.AccountInvitation, string, error) {
@@ -585,7 +586,7 @@ func (m *manager) GetSentAccountInvitations(ctx context.Context, userID string, 
 		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching invites")
 	}
 
-	return invites.Data, "TODO", nil
+	return invites.Data, todoRes, nil
 }
 
 func (m *manager) GetUser(ctx context.Context, userID string) (*identity.User, error) {
@@ -651,7 +652,7 @@ func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchSer
 			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
 
-		return users, "TODO", nil
+		return users, todoRes, nil
 	} else {
 		uss, err := m.userSearchIndex.Search(ctx, query)
 		if err != nil {
@@ -668,7 +669,7 @@ func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchSer
 			return nil, "", observability.PrepareAndLogError(err, logger, span, "searching for users")
 		}
 
-		return users, "TODO", nil
+		return users, todoRes, nil
 	}
 }
 

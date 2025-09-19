@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries/generated"
 )
 
@@ -21,7 +20,6 @@ type repository struct {
 	tracer           tracing.Tracer
 	logger           logging.Logger
 	generatedQuerier generated.Querier
-	secretGenerator  random.Generator
 	db               *sql.DB
 }
 
@@ -36,7 +34,6 @@ func ProvideAuditLogRepository(
 		db:               client.DB(),
 		tracer:           tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		generatedQuerier: generated.New(),
-		secretGenerator:  random.NewGenerator(logger, tracerProvider),
 		logger:           logging.EnsureLogger(logger).WithName(o11yName),
 	}
 

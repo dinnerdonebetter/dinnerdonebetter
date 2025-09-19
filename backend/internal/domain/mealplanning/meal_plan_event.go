@@ -179,7 +179,6 @@ func (x *MealPlanEventDatabaseCreationInput) ValidateWithContext(ctx context.Con
 			SupperMealName,
 			DinnerMealName,
 		)),
-		validation.Field(&x.BelongsToMealPlan, validation.Required),
 	)
 }
 

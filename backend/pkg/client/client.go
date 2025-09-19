@@ -56,7 +56,7 @@ type client struct {
 	webhooksgrpc.WebhooksServiceClient
 }
 
-// BuildClient builds a new Client
+// BuildClient builds a new Client.
 func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, error) {
 	conn, err := grpc.NewClient(grpcServerAddress, opts...)
 	if err != nil {

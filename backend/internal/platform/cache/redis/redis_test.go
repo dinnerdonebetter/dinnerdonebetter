@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -12,24 +13,31 @@ import (
 
 const (
 	exampleKey = "example"
+	redisImage = "docker.io/redis:7-bullseye"
 )
 
 type example struct {
 	Name string `json:"name"`
 }
 
-func buildContainerBackedRedisConfig(t *testing.T, ctx context.Context) (config *Config, shutdownFunction func(context.Context) error) {
+func buildContainerBackedRedisConfig(t *testing.T) (config *Config, shutdownFunction func(context.Context) error) {
 	t.Helper()
 
-	redisContainer, err := rediscontainers.Run(ctx,
-		"docker.io/redis:7-bullseye",
+	// Use a dedicated context that won't be cancelled for the container lifecycle
+	containerCtx := t.Context()
+
+	redisContainer, err := rediscontainers.Run(containerCtx,
+		redisImage,
 		rediscontainers.WithLogLevel(rediscontainers.LogLevelNotice),
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	redisAddress, err := redisContainer.ConnectionString(ctx)
+	// Wait a small amount to ensure container is fully ready
+	time.Sleep(100 * time.Millisecond)
+
+	redisAddress, err := redisContainer.ConnectionString(containerCtx)
 	require.NoError(t, err)
 
 	cfg := &Config{
@@ -38,7 +46,14 @@ func buildContainerBackedRedisConfig(t *testing.T, ctx context.Context) (config 
 		},
 	}
 
-	return cfg, redisContainer.Terminate
+	shutdownFunc := func(shutdownCtx context.Context) error {
+		// Use a reasonable timeout for shutdown
+		timeoutCtx, timeoutCancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer timeoutCancel()
+		return redisContainer.Terminate(timeoutCtx)
+	}
+
+	return cfg, shutdownFunc
 }
 
 func Test_redisCacheImpl_Get(T *testing.T) {
@@ -49,7 +64,7 @@ func Test_redisCacheImpl_Get(T *testing.T) {
 
 		ctx := t.Context()
 
-		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
+		cfg, containerShutdown := buildContainerBackedRedisConfig(t)
 		defer func() {
 			assert.NoError(t, containerShutdown(ctx))
 		}()
@@ -72,7 +87,7 @@ func Test_redisCacheImpl_Set(T *testing.T) {
 
 		ctx := t.Context()
 
-		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
+		cfg, containerShutdown := buildContainerBackedRedisConfig(t)
 		defer func() {
 			assert.NoError(t, containerShutdown(ctx))
 		}()
@@ -91,7 +106,7 @@ func Test_redisCacheImpl_Delete(T *testing.T) {
 
 		ctx := t.Context()
 
-		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
+		cfg, containerShutdown := buildContainerBackedRedisConfig(t)
 		defer func() {
 			assert.NoError(t, containerShutdown(ctx))
 		}()

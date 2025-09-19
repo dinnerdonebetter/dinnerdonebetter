@@ -488,9 +488,9 @@ func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 			}
 		}
 
-		recipeMedia, err := q.getRecipeMediaForRecipeStep(ctx, recipeID, step.ID)
-		if err != nil {
-			return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe media for recipe step")
+		recipeMedia, mediaErr := q.getRecipeMediaForRecipeStep(ctx, recipeID, step.ID)
+		if mediaErr != nil {
+			return nil, observability.PrepareAndLogError(mediaErr, logger, span, "fetching recipe media for recipe step")
 		}
 		x.Data[i].Media = recipeMedia
 	}

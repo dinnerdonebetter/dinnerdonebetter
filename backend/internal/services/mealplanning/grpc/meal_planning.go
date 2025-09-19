@@ -253,7 +253,7 @@ func (s *serviceImpl) CreateMealPlanEvent(ctx context.Context, request *mealplan
 
 	input := converters.ConvertGRPCMealPlanEventCreationRequestInputToMealPlanEventCreationRequestInput(request.Input)
 
-	created, err := s.mealPlanningManager.CreateMealPlanEvent(ctx, input)
+	created, err := s.mealPlanningManager.CreateMealPlanEvent(ctx, request.MealPlanID, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to create meal plan event")
 	}

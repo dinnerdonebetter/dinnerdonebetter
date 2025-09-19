@@ -47,6 +47,8 @@ func (s *serviceImpl) AggregateUserDataReport(ctx context.Context, request *data
 		},
 	}
 
+	s.logger.Info("TODO: AggregateUserDataReport")
+
 	return x, nil
 }
 
@@ -60,6 +62,8 @@ func (s *serviceImpl) DestroyAllUserData(ctx context.Context, request *datapriva
 		},
 	}
 
+	s.logger.Info("TODO: DestroyAllUserData")
+
 	return x, nil
 }
 
@@ -72,6 +76,8 @@ func (s *serviceImpl) FetchUserDataReport(ctx context.Context, request *datapriv
 			TraceID: span.SpanContext().TraceID().String(),
 		},
 	}
+
+	s.logger.Info("TODO: FetchUserDataReport")
 
 	return x, nil
 }

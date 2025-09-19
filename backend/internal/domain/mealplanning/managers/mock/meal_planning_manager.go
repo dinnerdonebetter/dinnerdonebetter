@@ -85,8 +85,8 @@ func (m *MockMealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPl
 	return returnValues.Get(0).([]*mealplanning.MealPlanEvent), returnValues.Get(1).(string), returnValues.Get(2).(error)
 }
 
-func (m *MockMealPlanningManager) CreateMealPlanEvent(ctx context.Context, input *mealplanning.MealPlanEventCreationRequestInput) (*mealplanning.MealPlanEvent, error) {
-	returnValues := m.Called(ctx, input)
+func (m *MockMealPlanningManager) CreateMealPlanEvent(ctx context.Context, mealPlanID string, input *mealplanning.MealPlanEventCreationRequestInput) (*mealplanning.MealPlanEvent, error) {
+	returnValues := m.Called(ctx, mealPlanID, input)
 
 	return returnValues.Get(0).(*mealplanning.MealPlanEvent), returnValues.Get(1).(error)
 }

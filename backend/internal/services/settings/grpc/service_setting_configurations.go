@@ -28,7 +28,7 @@ func (s *serviceImpl) CreateServiceSettingConfiguration(ctx context.Context, req
 	input.BelongsToUser = sessionContextData.GetUserID()
 	input.BelongsToAccount = sessionContextData.GetActiveAccountID()
 
-	if err := input.ValidateWithContext(ctx); err != nil {
+	if err = input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.InvalidArgument, "invalid service setting configuration")
 	}
 

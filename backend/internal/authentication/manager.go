@@ -56,7 +56,6 @@ func NewManager(
 	userAuthDataManager identity.Repository,
 	cfg *tokenscfg.Config,
 ) (Manager, error) {
-
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, observability.PrepareError(err, nil, "creating data changes publisher")

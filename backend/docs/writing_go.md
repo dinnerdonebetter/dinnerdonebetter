@@ -252,31 +252,97 @@ type Logger interface {
 The codebase follows a clean architecture approach with a framework-like platform layer:
 
 ```
-cmd/                 # All compiled binaries
-├── services/        # Main application services (API server, etc.)
-├── tools/           # Code generation and repository-specific tools
-└── workers/         # Background job processors
-
-internal/
-├── platform/        # Framework-like infrastructure toolkit
-│   ├── database/        # Database abstractions and implementations
-│   ├── observability/  # Logging, tracing, metrics
-│   ├── messagequeue/   # Queue abstractions and implementations
-│   ├── identifiers/    # ID generation utilities
-│   ├── cryptography/   # Encryption and hashing
-│   ├── search/         # Text and vector search indexing
-│   ├── uploads/        # File upload handling
-│   └── encoding/       # JSON/compression utilities
-├── domain/          # Business logic, entities, and domain services
-│   ├── mealplanning/   # Meal planning domain
-│   ├── identity/       # User and account management
-│   └── auth/          # Authentication domain
-├── repositories/    # Data access implementations
-│   └── postgres/      # PostgreSQL-specific implementations
-└── services/        # Application services and handlers
-    ├── auth/          # Authentication service
-    ├── mealplanning/  # Meal planning service
-    └── identity/      # Identity management service
+├── artifacts/           # Gitignored folder for temporary files and coverage output
+├── cmd/                 # All compiled binaries
+│   ├── functions/       # Cloud function implementations
+│   │   └── async_message_handler/  # Async message processing function
+│   ├── playground/      # Gitignored development sandbox for testing library interactions
+│   ├── services/        # Main application services
+│   │   └── api/         # Primary API server (HTTP + gRPC)
+│   ├── tools/           # Repository-specific development tools
+│   │   ├── codegen/     # Code generation utilities
+│   │   │   ├── configs/     # Configuration struct generation
+│   │   │   ├── queries/     # Database query generation  
+│   │   │   └── valid_env_vars/ # Environment variable validation
+│   │   ├── search_index_initializer/ # Search index setup (disabled)
+│   │   └── sqlc_struct_checker/      # Database struct validation
+│   └── workers/         # Background job processors
+│       ├── db_cleaner/  # Database cleanup jobs
+│       ├── meal_plan_finalizer/      # Meal plan processing
+│       ├── meal_plan_grocery_list_initializer/ # Grocery list generation
+│       ├── meal_plan_task_creator/   # Task creation from meal plans
+│       └── search_data_index_scheduler/ # Search indexing jobs
+├── deploy/              # Deployment configurations
+│   ├── dockerfiles/     # Container build definitions
+│   ├── environments/    # Environment-specific configs
+│   │   ├── dev/         # Development environment
+│   │   ├── localdev/    # Local development setup
+│   │   └── testing/     # Testing environment
+│   └── kustomize/       # Kubernetes customization configs
+├── internal/            # Private application code
+│   ├── authentication/ # Authentication utilities and implementations
+│   ├── authorization/   # Authorization and RBAC logic
+│   ├── build/           # Build-time dependency injection (Wire) and router construction
+│   ├── config/          # Configuration management
+│   ├── domain/          # Business logic, entities, and domain services
+│   │   ├── audit/           # Audit logging domain
+│   │   ├── auth/            # Authentication domain
+│   │   ├── dataprivacy/     # Data privacy and GDPR compliance
+│   │   ├── identity/        # User and account management
+│   │   ├── maintenance/     # System maintenance operations
+│   │   ├── mealplanning/    # Core meal planning business logic
+│   │   ├── notifications/   # Notification system
+│   │   ├── oauth/           # OAuth2 implementation
+│   │   ├── settings/        # User and system settings
+│   │   └── webhooks/        # Webhook management
+│   ├── functions/       # Cloud function implementations
+│   ├── grpc/            # gRPC service implementations and generated code
+│   ├── platform/        # Framework-like infrastructure toolkit
+│   │   ├── analytics/       # Analytics and metrics collection
+│   │   ├── cache/           # Caching abstractions and implementations
+│   │   ├── capitalism/      # Payment processing infrastructure (never fully implemented)
+│   │   ├── circuitbreaking/ # Circuit breaker patterns for resilience
+│   │   ├── compression/     # Data compression utilities
+│   │   ├── cryptography/    # Encryption, hashing, and crypto utilities
+│   │   ├── database/        # Database abstractions and implementations
+│   │   ├── email/           # Email sending abstractions
+│   │   ├── encoding/        # JSON/XML encoding and content negotiation
+│   │   ├── fake/            # Test data generation utilities
+│   │   ├── featureflags/    # Feature flag management
+│   │   ├── identifiers/     # ID generation (UUIDs, etc.)
+│   │   ├── internalerrors/  # Internal error handling utilities
+│   │   ├── messagequeue/    # Message queue abstractions
+│   │   ├── observability/   # Logging, tracing, and metrics
+│   │   ├── panicking/       # Panic recovery and testing utilities
+│   │   ├── pointer/         # Pointer utility functions
+│   │   ├── qrcodes/         # QR code generation
+│   │   ├── random/          # Secure random number generation
+│   │   ├── routing/         # HTTP routing abstractions
+│   │   ├── search/          # Text and vector search indexing
+│   │   ├── server/          # HTTP/gRPC server utilities
+│   │   ├── testutils/       # Testing utilities and helpers
+│   │   ├── types/           # Common type definitions
+│   │   └── uploads/         # File upload handling
+│   ├── repositories/    # Data access implementations
+│   │   └── postgres/        # PostgreSQL-specific implementations
+│   └── services/        # Application services and handlers
+│       ├── audit/           # Audit service
+│       ├── auth/            # Authentication service
+│       ├── dataprivacy/     # Data privacy service
+│       ├── identity/        # Identity management service
+│       ├── internalops/     # Internal operations service
+│       ├── mealplanning/    # Meal planning service
+│       ├── notifications/   # Notification service
+│       ├── oauth/           # OAuth2 service
+│       ├── settings/        # Settings service
+│       └── webhooks/        # Webhook service
+├── pkg/                 # Public API packages
+│   └── client/          # Public API client library for external consumers
+├── tests/               # Integration tests (should be renamed to integration_tests/)
+│   └── integration/
+│       └── apiserver/   # API server integration tests
+└── vendor/              # Go module dependencies (vendored)
+```
 
 ### Platform as Framework Philosophy
 

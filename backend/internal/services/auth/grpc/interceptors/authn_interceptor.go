@@ -93,8 +93,12 @@ func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metadata metada
 			return "", "", observability.PrepareError(err, span, "fetching user info")
 		}
 
-		if zuckAccountIDs := metadata.Get(zuckModeAccountHeader); len(zuckAccountIDs) > 0 {
+		zuckAccountIDs := metadata.Get(zuckModeAccountHeader)
+		if len(zuckAccountIDs) > 0 {
 			zuckAccountID = zuckAccountIDs[0]
+		}
+
+		if len(zuckAccountIDs) > 0 {
 			accountID, err = s.identityRepository.GetDefaultAccountIDForUser(ctx, zuckUserID)
 			if err != nil {
 				return "", "", observability.PrepareError(err, span, "fetching account info")

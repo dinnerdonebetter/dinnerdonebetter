@@ -14,7 +14,7 @@ type Config struct {
 
 	PublicMediaURLPrefix string            `env:"PUBLIC_MEDIA_URL_PREFIX" json:"mediaUploadPrefix"`
 	Uploads              uploadscfg.Config `envPrefix:"UPLOADS_"          json:"uploads"`
-	UseSearchService     bool              `env:"USE_SEARCH_SERVICE" json:"useSearchService"`
+	UseSearchService     bool              `env:"USE_SEARCH_SERVICE"      json:"useSearchService"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

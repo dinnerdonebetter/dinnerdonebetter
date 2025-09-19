@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// buildRedisBackedConsumer builds a Redis container-backed messagequeue.Consumer
+// buildRedisBackedConsumer builds a Redis container-backed messagequeue.Consumer.
 func buildRedisBackedConsumer(t *testing.T, cfg *Config, topic string, handlerFunc func(context.Context, []byte) error) messagequeue.Consumer {
 	t.Helper()
 
