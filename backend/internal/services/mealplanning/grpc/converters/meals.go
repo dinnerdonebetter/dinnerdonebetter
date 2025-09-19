@@ -7,6 +7,8 @@ import (
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func ConvertMealPlanTaskToGRPCMealPlanTask(input *mealplanning.MealPlanTask) *mealplanningsvc.MealPlanTask {
@@ -561,6 +563,25 @@ func ConvertGRPCMealPlanUpdateRequestInputToMealPlanUpdateRequestInput(input *me
 	}
 }
 
+func ConvertMealPlanEventUpdateRequestInputToGRPCMealPlanEventUpdateRequestInput(input *mealplanning.MealPlanEventUpdateRequestInput) *mealplanningsvc.MealPlanEventUpdateRequestInput {
+	var startsAt, endsAt *timestamppb.Timestamp
+	if input.StartsAt != nil {
+		startsAt = grpcconverters.ConvertTimeToPBTimestamp(*input.StartsAt)
+	}
+
+	if input.EndsAt != nil {
+		endsAt = grpcconverters.ConvertTimeToPBTimestamp(*input.EndsAt)
+	}
+
+	return &mealplanningsvc.MealPlanEventUpdateRequestInput{
+		Notes:             input.Notes,
+		StartsAt:          startsAt,
+		MealName:          input.MealName,
+		EndsAt:            endsAt,
+		BelongsToMealPlan: input.BelongsToMealPlan,
+	}
+}
+
 func ConvertGRPCMealPlanEventUpdateRequestInputToMealPlanEventUpdateRequestInput(input *mealplanningsvc.MealPlanEventUpdateRequestInput) *mealplanning.MealPlanEventUpdateRequestInput {
 	return &mealplanning.MealPlanEventUpdateRequestInput{
 		Notes:             input.Notes,
@@ -611,10 +632,19 @@ func ConvertMealPlanOptionUpdateRequestInputToGRPCMealPlanOptionUpdateRequestInp
 	}
 }
 
+func ConvertMealPlanOptionVoteUpdateRequestInputToGRPCMealPlanOptionVoteUpdateRequestInput(input *mealplanning.MealPlanOptionVoteUpdateRequestInput) *mealplanningsvc.MealPlanOptionVoteUpdateRequestInput {
+	return &mealplanningsvc.MealPlanOptionVoteUpdateRequestInput{
+		Notes:                   input.Notes,
+		Rank:                    grpcconverters.ConvertUint8PointerToUint32Pointer(input.Rank),
+		Abstain:                 input.Abstain,
+		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
+	}
+}
+
 func ConvertGRPCMealPlanOptionVoteUpdateRequestInputToMealPlanOptionVoteUpdateRequestInput(input *mealplanningsvc.MealPlanOptionVoteUpdateRequestInput) *mealplanning.MealPlanOptionVoteUpdateRequestInput {
 	return &mealplanning.MealPlanOptionVoteUpdateRequestInput{
 		Notes:                   input.Notes,
-		Rank:                    pointer.To(uint8(pointer.Dereference(input.Rank))),
+		Rank:                    grpcconverters.ConvertUint32PointerToUint8Pointer(input.Rank),
 		Abstain:                 input.Abstain,
 		BelongsToMealPlanOption: input.BelongsToMealPlanOption,
 	}

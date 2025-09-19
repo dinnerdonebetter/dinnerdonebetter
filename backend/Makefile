@@ -192,15 +192,6 @@ lint_terraform: terraformat
 .PHONY: lint
 lint: lint_containers queries_lint golang_lint
 
-.PHONY: clean_coverage
-clean_coverage:
-	@rm --force $(COVERAGE_OUT) profile.out;
-
-.PHONY: coverage
-coverage: clean_coverage $(ARTIFACTS_DIR)
-	@$(GO_TEST) -coverprofile=$(COVERAGE_OUT) -covermode=atomic $(TESTABLE_PACKAGE_LIST) > /dev/null
-	@go tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
-
 .PHONY: check_lib_for_types
 check_lib_for_types:
 	@! grep -r 'pkg/types"' internal/lib/
@@ -215,19 +206,6 @@ configs:
 .PHONY: queries
 queries:
 	go run $(THIS)/cmd/tools/codegen/queries
-
-.PHONY: codegen-ts
-codegen-ts:
-	go run $(THIS)/cmd/tools/codegen/openapi --typescript
-	@(cd ../frontend && $(MAKE) format)
-
-.PHONY: codegen-go
-codegen-go:
-	go run $(THIS)/cmd/tools/codegen/openapi --golang
-	@$(MAKE) format_golang
-
-.PHONY: codegen
-codegen: codegen-ts codegen-go
 
 .PHONY: querier
 querier: queries queries_lint

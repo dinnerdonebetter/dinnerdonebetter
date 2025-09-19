@@ -381,6 +381,21 @@ var (
 		mealPlanningPerm("ArchiveMealPlanOption"): {
 			authorization.ArchiveMealPlanOptionsPermission,
 		},
+		mealPlanningPerm("CreateMealPlanEvent"): {
+			authorization.CreateMealPlanEventsPermission,
+		},
+		mealPlanningPerm("GetMealPlanEvent"): {
+			authorization.ReadMealPlanEventsPermission,
+		},
+		mealPlanningPerm("GetMealPlanEvents"): {
+			authorization.ReadMealPlanEventsPermission,
+		},
+		mealPlanningPerm("UpdateMealPlanEvent"): {
+			authorization.UpdateMealPlanEventsPermission,
+		},
+		mealPlanningPerm("ArchiveMealPlanEvent"): {
+			authorization.ArchiveMealPlanEventsPermission,
+		},
 		mealPlanningPerm("CreateMealPlanTask"): {
 			authorization.CreateMealPlanTasksPermission,
 		},
@@ -569,6 +584,9 @@ var (
 		},
 		mealPlanningPerm("CreateMealPlanOptionVote"): {
 			authorization.CreateMealPlanOptionVotesPermission,
+		},
+		mealPlanningPerm("GetMealPlanOptionVote"): {
+			authorization.ReadMealPlanOptionVotesPermission,
 		},
 		mealPlanningPerm("RunFinalizeMealPlanWorker"): {
 			authorization.UpdateMealPlansPermission, // TODO: this should be its own perm

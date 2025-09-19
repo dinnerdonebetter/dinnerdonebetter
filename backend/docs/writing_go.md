@@ -35,17 +35,7 @@ Structure your subtests with the happy path (successful operation) as the first 
 
 ### Table Tests - Use Sparingly
 
-**Avoid using table tests.** Only use them when there's meaningful code savings or when testing multiple similar scenarios with different inputs. Simple iterations over a slice (like testing multiple algorithms) are often clearer than formal table test structures.
-
-**Prefer explicit subtests when:**
-- Each test case has significantly different setup
-- Error conditions require different assertions
-- The test logic differs meaningfully between cases
-
-**Consider table tests when:**
-- Testing the same function with many different input/output pairs
-- Validating input parsing with multiple formats
-- Testing mathematical operations across ranges
+**Avoid using table tests.** Only use them when there's meaningful code savings or when testing many similar scenarios with different inputs.
 
 ### Parallel Execution
 
@@ -54,25 +44,13 @@ Structure your subtests with the happy path (successful operation) as the first 
 - Add `t.Parallel()` to subtests
 - This significantly improves test suite performance
 
-### Test Helpers
-
-Mark test helper functions with `t.Helper()` to ensure proper error reporting:
-
-```go
-func checkEquality(t *testing.T, expected, actual *MyStruct) {
-    t.Helper()
-    
-    assert.NotZero(t, actual.ID)
-    assert.Equal(t, expected.Name, actual.Name)
-    // ... other assertions
-}
-```
-
 ### Test Organization
 
 - **Unit tests**: Place alongside the code they test (`*_test.go` files)
-- **Integration tests**: Located in `tests/integration/` directory
+- **Integration tests**: Located in `tests/` directory (should be renamed to `integration_tests/`)
 - **Test utilities**: Shared helpers in `internal/platform/testutils/`
+
+Note: The `tests/` directory contains only integration tests, not unit tests.
 
 ### Context Usage
 
@@ -133,37 +111,18 @@ The project uses `golangci-lint` with custom configuration:
 - **Circuit breakers**: Implement fault tolerance for external services
 - **Caching**: Strategic use of in-memory and distributed caching
 
-## Development Workflow
-
-### Before Submitting Code
-
-1. **Run the full test suite**: `make test`
-2. **Check linting**: `make lint`
-3. **Verify coverage**: `make coverage`
-4. **Run integration tests**: `make integration_tests`
-
-### Code Generation
-
-This project uses extensive code generation:
-- **Database queries**: `make querier` (using sqlc)
-- **API clients**: `make codegen`
-- **Configuration structs**: `make configs`
-
-Always regenerate code after schema changes.
-
 ## Naming Conventions
 
 ### Interfaces
 - Use descriptive suffixes that indicate purpose:
   - `Logger` - for logging abstractions
-  - `Manager` - for business logic coordinators  
-  - `Repository` - for data access abstractions
-  - `Router` - for routing abstractions
+  - `Manager` or `<Domain>Manager` - for business logic coordinators (e.g., `MealPlanningManager`, `RecipeManager`)
+  - `Repository` - for data access abstractions (consistently just `Repository` within each domain)
+  - `DataManager` - for data layer abstractions (e.g., `MealPlanDataManager`)
   - `Handler` - for request handlers
 
 ### Structs
 - **Configuration structs**: End with `Config` (e.g., `APIServiceConfig`, `DatabaseConfig`)
-- **Request/Response types**: Use descriptive names with purpose (e.g., `APIResponse[T]`, `UpdateRequestInput`)
 - **Domain entities**: Use clear business terms (e.g., `MealPlan`, `Recipe`, `ValidIngredient`)
 
 ### Constants and Variables
@@ -173,7 +132,7 @@ Always regenerate code after schema changes.
 
 ### Functions and Methods
 - **Constructors**: Use `New` prefix (e.g., `NewService`, `NewGenerator`)
-- **Wire providers**: Use `Provide` prefix with descriptive names (e.g., `ProvideDatabaseFromConfig`)
+- **Wire providers**: Many use `Provide` prefix but not universally enforced
 - **Converters**: Use `Convert` prefix describing the transformation
 
 ## Struct Design Patterns
@@ -201,26 +160,6 @@ type (
     // RequestIDFunc fetches a string ID from a request.
     RequestIDFunc func(*http.Request) string
 )
-```
-
-### Generics Usage
-Leverage Go generics for type safety and reusability:
-
-```go
-// APIResponse represents a response we might send to the user.
-APIResponse[T any] struct {
-    _ struct{} `json:"-"`
-    
-    Data       T                     `json:"data,omitempty"`
-    Pagination *filtering.Pagination `json:"pagination,omitempty"`
-    Details    ResponseDetails       `json:"details"`
-}
-
-// Range represents a min/max range constraint.
-Range[T comparable] struct {
-    Min T `json:"min"`
-    Max T `json:"max"`
-}
 ```
 
 ## Dependency Injection with Wire
@@ -310,40 +249,92 @@ type Logger interface {
 ## Project Structure Patterns
 
 ### Directory Organization
-The codebase follows a clean architecture approach:
+The codebase follows a clean architecture approach with a framework-like platform layer:
 
 ```
+cmd/                 # All compiled binaries
+├── services/        # Main application services (API server, etc.)
+├── tools/           # Code generation and repository-specific tools
+└── workers/         # Background job processors
+
 internal/
+├── platform/        # Framework-like infrastructure toolkit
+│   ├── database/        # Database abstractions and implementations
+│   ├── observability/  # Logging, tracing, metrics
+│   ├── messagequeue/   # Queue abstractions and implementations
+│   ├── identifiers/    # ID generation utilities
+│   ├── cryptography/   # Encryption and hashing
+│   ├── search/         # Text and vector search indexing
+│   ├── uploads/        # File upload handling
+│   └── encoding/       # JSON/compression utilities
 ├── domain/          # Business logic, entities, and domain services
-│   ├── mealplanning/    # Meal planning domain
-│   ├── identity/        # User and account management
-│   └── auth/           # Authentication domain
-├── platform/        # Infrastructure and shared utilities
-│   ├── database/       # Database abstractions and implementations
-│   ├── observability/ # Logging, tracing, metrics
-│   ├── messagequeue/  # Queue abstractions and implementations
-│   └── uploads/       # File upload handling
+│   ├── mealplanning/   # Meal planning domain
+│   ├── identity/       # User and account management
+│   └── auth/          # Authentication domain
 ├── repositories/    # Data access implementations
 │   └── postgres/      # PostgreSQL-specific implementations
 └── services/        # Application services and handlers
     ├── auth/          # Authentication service
     ├── mealplanning/  # Meal planning service
     └── identity/      # Identity management service
-```
+
+### Platform as Framework Philosophy
+
+**`internal/platform`** is designed as a complete, reusable toolkit that could theoretically support any application - not just meal planning. Think of it as an internal framework providing:
+
+- **Infrastructure abstractions**: Database clients, message queues, caching
+- **Utilities**: ID generation, encoding, compression, cryptography  
+- **Observability**: Logging, tracing, metrics collection
+- **Search capabilities**: Text indexing, vector search (future-ready)
+- **File handling**: Upload management and processing
+
+The goal is that everything needed to build the business logic exists in platform, but nothing meal-planning-specific lives there.
 
 ### Package Import Rules
-- **Domain packages** should not import platform packages
-- **Services** can import both domain and platform packages
-- **Repositories** implement domain interfaces but can use platform utilities
-- Keep dependencies flowing downward in the architecture
+
+The architecture treats `internal/platform` as an internal framework:
+
+- **Platform packages**: Should contain no business-logic or domain-specific code
+- **Domain packages**: Can freely import platform utilities (it's your framework)
+- **Services**: Can import both domain and platform packages  
+- **Repositories**: Implement domain interfaces using platform infrastructure
+- **cmd/ binaries**: Import whatever they need to compile and run
+
+**Current State vs. Intended:**
+- Some auth concepts currently exist in platform but will be moved to domain
+- The goal is complete separation where platform could support any business domain
 
 ### Generated Code
 Several directories contain generated code:
 - `internal/grpc/generated/` - gRPC service definitions
 - Database query files (via sqlc)
 - Configuration structs (via custom codegen)
+- Code generation tools live in `cmd/tools/codegen/`
 
-Never edit generated files directly; modify the generators instead.
+Never edit generated files directly; modify the generators in `cmd/tools/` instead.
+
+## Development Workflow
+
+### Before Submitting Code
+
+1. **Run the full test suite**: `make test`
+2. **Check linting**: `make lint`
+4. **Run integration tests**: `make integration_tests`
+
+### Code Generation
+
+This project uses extensive code generation via tools in `cmd/tools/`:
+- **Database queries**: `make querier` (using sqlc)
+- **Configuration structs**: `make configs`
+
+Always regenerate code after schema changes.
+
+### Binary Compilation
+
+Everything in `cmd/` compiles to a binary:
+- `cmd/services/api/` - Main API server
+- `cmd/tools/codegen/` - Code generation utilities  
+- `cmd/workers/` - Background job processors
 
 ## Getting Started
 
@@ -356,17 +347,6 @@ Never edit generated files directly; modify the generators instead.
 5. **Look at similar implementations** before writing new code
 6. **Run the full test suite** before submitting changes
 
-### Development Checklist
-
-Before submitting a pull request:
-- [ ] Tests follow the subtest conventions
-- [ ] Wire providers are properly defined if needed
-- [ ] Structs include privacy protection (`_ struct{}`)
-- [ ] Error handling follows project patterns
-- [ ] Linting passes (`make lint`)
-- [ ] Tests pass (`make test`)
-- [ ] Integration tests pass if relevant (`make integration_tests`)
-
 ### When to Ask Questions
 
 - If you see patterns that seem inconsistent
@@ -376,7 +356,7 @@ Before submitting a pull request:
 
 ## Conclusion
 
-These conventions represent years of learned experience maintaining a large Go codebase. They prioritize:
+These conventions represent years of learned experience maintaining a Go codebase. They prioritize:
 
 - **Consistency** over individual preference
 - **Testability** over brevity
