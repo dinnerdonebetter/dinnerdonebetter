@@ -21,9 +21,7 @@ export class MockArchiveAccountInstrumentOwnershipResponseConfig extends Respons
   }
 }
 
-export const mockArchiveAccountInstrumentOwnership = (
-  resCfg: MockArchiveAccountInstrumentOwnershipResponseConfig,
-) => {
+export const mockArchiveAccountInstrumentOwnership = (resCfg: MockArchiveAccountInstrumentOwnershipResponseConfig) => {
   return (page: Page) =>
     page.route(
       `**/api/v1/accounts/instruments/${resCfg.accountInstrumentOwnershipID}`,

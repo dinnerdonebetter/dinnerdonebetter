@@ -362,10 +362,7 @@ const findRecipeInMealPlan = (mealPlan: MealPlan, recipeID: string): Recipe | un
   return recipeToReturn;
 };
 
-const getUserFromAccountByID = (
-  account: Account,
-  userID: string,
-): AccountUserMembershipWithUser | undefined => {
+const getUserFromAccountByID = (account: Account, userID: string): AccountUserMembershipWithUser | undefined => {
   return account.members.find((member: AccountUserMembershipWithUser) => member.belongsToUser?.id === userID);
 };
 
