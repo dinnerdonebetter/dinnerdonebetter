@@ -48,7 +48,6 @@ import (
 
 const (
 	httpTestServerAddress = "http://localhost:8000"
-	grpcTestServerAddress = ":8001"
 
 	adminUserPassword = "integration-tests-are-cool"
 
@@ -81,7 +80,7 @@ func buildUnauthenticatedGRPCClient() (client.Client, error) {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	return client.BuildClient(grpcTestServerAddress, opts...)
+	return client.BuildClient(fmt.Sprintf(":%d", apiServiceConfig.GRPCServer.Port), opts...)
 }
 
 func buildAuthedGRPCClient(ctx context.Context, token string) client.Client {
@@ -161,7 +160,7 @@ func buildAuthedGRPCClient(ctx context.Context, token string) client.Client {
 		}),
 	}
 
-	c, err := client.BuildClient(grpcTestServerAddress, opts...)
+	c, err := client.BuildClient(fmt.Sprintf(":%d", apiServiceConfig.GRPCServer.Port), opts...)
 	if err != nil {
 		panic(err)
 	}

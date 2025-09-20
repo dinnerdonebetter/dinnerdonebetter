@@ -7,6 +7,7 @@ import (
 	"time"
 
 	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
+	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
@@ -15,7 +16,6 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
@@ -29,6 +29,7 @@ var (
 	dbConnStr                            string
 	createdClientID, createdClientSecret string
 	databaseClient                       database.Client
+	apiServiceConfig                     *config.APIServiceConfig
 	shutdownFunc                         func()
 	notifsRepo                           notifications.Repository
 )
@@ -41,13 +42,14 @@ func init() {
 		log.Fatal(err)
 	}
 
+	apiServiceConfig = cfg
+
 	logger, tracerProvider, _, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// setup Pubsub queue infra
-	redisConfig, redisShutdownFunc, err := redis.BuildContainerBackedRedisConfig(ctx)
+	redisConfig, _, err := redis.BuildContainerBackedRedisConfig(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,7 +58,7 @@ func init() {
 	cfg.Events.Consumer.Redis = *redisConfig
 
 	// set up a database container, migrate it, and build a connection client
-	dbContainer, db, dbCfg, err := pgtesting.BuildDatabaseContainer(ctx, "integration_testing")
+	_, db, dbCfg, err := pgtesting.BuildDatabaseContainer(ctx, "integration_testing")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -89,17 +91,13 @@ func init() {
 		log.Fatal(err)
 	}
 
-	shutdownFunc = func() {
-		databaseClient.Close()
-		redisShutdownFunc(context.Background())
-		dbContainer.Stop(context.Background(), pointer.To(10*time.Second))
-	}
-
 	go server.Run()
 
 	fmt.Printf("DB conn str: %s", dbCfg.ConnectionDetails.String())
 	dbConnStr = dbCfg.ConnectionDetails.String()
+	fmt.Println("db conn str: " + dbConnStr)
 
+	// accursed, but nevertheless we ball.
 	time.Sleep(1 * time.Second)
 
 	adminClient, err = createClientForUser(ctx, []string{"service_admin"}, adminUser)

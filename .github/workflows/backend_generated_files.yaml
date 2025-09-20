@@ -96,9 +96,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: generate client
+      - name: generate env vars file
         working-directory: backend
         run: make env_vars
 
-      - name: Check for changes
+      - name: Fail on changes
         run: git diff --exit-code
