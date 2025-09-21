@@ -8,19 +8,18 @@ package api
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
@@ -59,8 +58,10 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
-	config2 := cfg.Database
-	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
+	oauthRepository, err := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
+	if err != nil {
+		return nil, err
+	}
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
@@ -81,8 +82,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	config3 := &cfg.Routing
-	routeParamManager, err := routingcfg.ProvideRouteParamManager(config3)
+	config2 := &cfg.Routing
+	routeParamManager, err := routingcfg.ProvideRouteParamManager(config2)
 	if err != nil {
 		return nil, err
 	}

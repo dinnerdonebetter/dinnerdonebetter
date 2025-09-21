@@ -2,7 +2,6 @@ package identity
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math"
 	"net/http"
@@ -36,8 +35,6 @@ const (
 
 var (
 	totpTokenLengthRule = validation.Length(validTOTPTokenLength, validTOTPTokenLength)
-
-	errNewPasswordSameAsOld = errors.New("new password cannot be the same as the old password")
 )
 
 type (

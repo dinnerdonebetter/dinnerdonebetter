@@ -3,7 +3,7 @@ package dataprivacy
 import "github.com/google/wire"
 
 var (
-	Providers = wire.NewSet(
+	DataPrivRepoProviders = wire.NewSet(
 		ProvideDataPrivacyRepository,
 	)
 )

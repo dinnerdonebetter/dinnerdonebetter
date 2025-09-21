@@ -15,3 +15,4 @@ just a list of gripes and things I'd like to accomplish eventually
 - [ ] add source ISBN to recipe 
 - [ ] users cannot edit any part of a recipe they did not create
 - [ ] too much logic lives in the repositories and not in managers that call repository methods
+- [ ] all repository methods that do anything more than reading data also create audit log entries

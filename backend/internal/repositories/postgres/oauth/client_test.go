@@ -34,7 +34,7 @@ func buildDatabaseClientForTest(t *testing.T) (*repository, *pgcontainers.Postgr
 
 	auditLogEntryRepo := auditlogentries.ProvideAuditLogRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), pgc)
 
-	c := ProvideOAuthRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, *config, pgc)
+	c, err := ProvideOAuthRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), auditLogEntryRepo, config, pgc)
 	require.NoError(t, err)
 
 	return c.(*repository), container
@@ -54,7 +54,8 @@ func buildInertClientForTest(t *testing.T) *repository {
 		OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
 	}
 
-	c := ProvideOAuthRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, *config, &database.MockClient{})
+	c, err := ProvideOAuthRepository(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), nil, config, &database.MockClient{})
+	require.NoError(t, err)
 
 	return c.(*repository)
 }

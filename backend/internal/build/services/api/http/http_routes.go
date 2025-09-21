@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
@@ -11,10 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 )
-
-func buildURLVarChunk(key string) string {
-	return fmt.Sprintf("/{%s}", key)
-}
 
 func ProvideAPIRouter(
 	routingConfig routingcfg.Config,

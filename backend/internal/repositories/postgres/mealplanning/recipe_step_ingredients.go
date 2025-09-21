@@ -19,11 +19,11 @@ var (
 )
 
 // RecipeStepIngredientExists fetches whether a recipe step ingredient exists from the database.
-func (q *repository) RecipeStepIngredientExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (exists bool, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) RecipeStepIngredientExists(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (exists bool, err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -43,7 +43,7 @@ func (q *repository) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
-	result, err := q.generatedQuerier.CheckRecipeStepIngredientExistence(ctx, q.db, &generated.CheckRecipeStepIngredientExistenceParams{
+	result, err := r.generatedQuerier.CheckRecipeStepIngredientExistence(ctx, r.db, &generated.CheckRecipeStepIngredientExistenceParams{
 		RecipeStepID:           recipeStepID,
 		RecipeStepIngredientID: recipeStepIngredientID,
 		RecipeID:               recipeID,
@@ -56,11 +56,11 @@ func (q *repository) RecipeStepIngredientExists(ctx context.Context, recipeID, r
 }
 
 // GetRecipeStepIngredient fetches a recipe step ingredient from the database.
-func (q *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*mealplanning.RecipeStepIngredient, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*mealplanning.RecipeStepIngredient, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -80,7 +80,7 @@ func (q *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
-	result, err := q.generatedQuerier.GetRecipeStepIngredient(ctx, q.db, &generated.GetRecipeStepIngredientParams{
+	result, err := r.generatedQuerier.GetRecipeStepIngredient(ctx, r.db, &generated.GetRecipeStepIngredientParams{
 		RecipeStepID:           recipeStepID,
 		RecipeStepIngredientID: recipeStepIngredientID,
 		RecipeID:               recipeID,
@@ -174,11 +174,11 @@ func (q *repository) GetRecipeStepIngredient(ctx context.Context, recipeID, reci
 }
 
 // getRecipeStepIngredientsForRecipe fetches a list of recipe step ingredients from the database that meet a particular filter.
-func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipeStepIngredient, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipeStepIngredient, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -186,7 +186,7 @@ func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := q.generatedQuerier.GetAllRecipeStepIngredientsForRecipe(ctx, q.db, recipeID)
+	results, err := r.generatedQuerier.GetAllRecipeStepIngredientsForRecipe(ctx, r.db, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step ingredients list retrieval query")
 	}
@@ -281,11 +281,11 @@ func (q *repository) getRecipeStepIngredientsForRecipe(ctx context.Context, reci
 }
 
 // GetRecipeStepIngredients fetches a list of recipe step ingredients from the database that meet a particular filter.
-func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStepIngredient], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStepIngredient], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -309,7 +309,7 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetRecipeStepIngredients(ctx, q.db, &generated.GetRecipeStepIngredientsParams{
+	results, err := r.generatedQuerier.GetRecipeStepIngredients(ctx, r.db, &generated.GetRecipeStepIngredientsParams{
 		RecipeID:        recipeID,
 		RecipeStepID:    recipeStepID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -415,8 +415,8 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 }
 
 // createRecipeStepIngredient creates a recipe step ingredient in the database.
-func (q *repository) createRecipeStepIngredient(ctx context.Context, db database.SQLQueryExecutor, input *mealplanning.RecipeStepIngredientDatabaseCreationInput) (*mealplanning.RecipeStepIngredient, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) createRecipeStepIngredient(ctx context.Context, db database.SQLQueryExecutor, input *mealplanning.RecipeStepIngredientDatabaseCreationInput) (*mealplanning.RecipeStepIngredient, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -424,7 +424,7 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 	}
 
 	// create the recipe step ingredient.
-	if err := q.generatedQuerier.CreateRecipeStepIngredient(ctx, db, &generated.CreateRecipeStepIngredientParams{
+	if err := r.generatedQuerier.CreateRecipeStepIngredient(ctx, db, &generated.CreateRecipeStepIngredientParams{
 		QuantityNotes:             input.QuantityNotes,
 		Name:                      input.Name,
 		BelongsToRecipeStep:       input.BelongsToRecipeStep,
@@ -463,7 +463,7 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 		ProductPercentageToUse:    input.ProductPercentageToUse,
 		VesselIndex:               input.VesselIndex,
 		RecipeStepProductRecipeID: input.RecipeStepProductRecipeID,
-		CreatedAt:                 q.CurrentTime(),
+		CreatedAt:                 r.CurrentTime(),
 	}
 
 	if input.IngredientID != nil {
@@ -476,19 +476,19 @@ func (q *repository) createRecipeStepIngredient(ctx context.Context, db database
 }
 
 // CreateRecipeStepIngredient creates a recipe step ingredient in the database.
-func (q *repository) CreateRecipeStepIngredient(ctx context.Context, input *mealplanning.RecipeStepIngredientDatabaseCreationInput) (*mealplanning.RecipeStepIngredient, error) {
-	return q.createRecipeStepIngredient(ctx, q.db, input)
+func (r *repository) CreateRecipeStepIngredient(ctx context.Context, input *mealplanning.RecipeStepIngredientDatabaseCreationInput) (*mealplanning.RecipeStepIngredient, error) {
+	return r.createRecipeStepIngredient(ctx, r.db, input)
 }
 
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
-func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *mealplanning.RecipeStepIngredient) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *mealplanning.RecipeStepIngredient) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.RecipeStepIngredientIDKey, updated.ID)
+	logger := r.logger.WithValue(keys.RecipeStepIngredientIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, updated.ID)
 
 	var ingredientID *string
@@ -496,7 +496,7 @@ func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *me
 		ingredientID = &updated.Ingredient.ID
 	}
 
-	if _, err := q.generatedQuerier.UpdateRecipeStepIngredient(ctx, q.db, &generated.UpdateRecipeStepIngredientParams{
+	if _, err := r.generatedQuerier.UpdateRecipeStepIngredient(ctx, r.db, &generated.UpdateRecipeStepIngredientParams{
 		IngredientID:              database.NullStringFromStringPointer(ingredientID),
 		Name:                      updated.Name,
 		Optional:                  updated.Optional,
@@ -523,11 +523,11 @@ func (q *repository) UpdateRecipeStepIngredient(ctx context.Context, updated *me
 }
 
 // ArchiveRecipeStepIngredient archives a recipe step ingredient from the database by its ID.
-func (q *repository) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID, recipeStepIngredientID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID, recipeStepIngredientID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeStepID == "" {
 		return database.ErrInvalidIDProvided
@@ -541,7 +541,7 @@ func (q *repository) ArchiveRecipeStepIngredient(ctx context.Context, recipeStep
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepIngredient(ctx, q.db, &generated.ArchiveRecipeStepIngredientParams{
+	rowsAffected, err := r.generatedQuerier.ArchiveRecipeStepIngredient(ctx, r.db, &generated.ArchiveRecipeStepIngredientParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepIngredientID,
 	})

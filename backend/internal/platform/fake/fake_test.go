@@ -50,7 +50,7 @@ func TestBuildFake(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual, err := BuildFake[string](nil)
+		actual, err := BuildFake[string]()
 		assert.NoError(t, err)
 		assert.NotEmpty(t, actual)
 	})
@@ -58,7 +58,7 @@ func TestBuildFake(T *testing.T) {
 	T.Run("with error", func(t *testing.T) {
 		t.Parallel()
 
-		actual, err := BuildFake[any](nil)
+		actual, err := BuildFake[any]()
 		assert.Error(t, err)
 		assert.Empty(t, actual)
 	})

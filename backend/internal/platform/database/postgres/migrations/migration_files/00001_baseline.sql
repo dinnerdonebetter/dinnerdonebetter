@@ -207,12 +207,39 @@ CREATE TABLE IF NOT EXISTS sessions (
     UNIQUE(token)
 );
 
+-- Performance-critical indexes
+-- Authentication and user management (critical for login performance)
+CREATE INDEX IF NOT EXISTS users_email_address_idx ON users(email_address) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS users_email_verification_token_idx ON users(email_address_verification_token) WHERE email_address_verification_token != '';
+CREATE INDEX IF NOT EXISTS users_status_idx ON users(user_account_status) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS users_service_role_idx ON users(service_role) WHERE archived_at IS NULL;
+
+-- Account and membership performance
+CREATE INDEX IF NOT EXISTS accounts_billing_status_idx ON accounts(billing_status) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS account_memberships_user_default_idx ON account_user_memberships(belongs_to_user, default_account) WHERE archived_at IS NULL;
+
+-- Session management
 CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions USING btree (expiry);
-CREATE INDEX IF NOT EXISTS webhook_trigger_events_belongs_to_webhook_index ON webhook_trigger_events USING btree (belongs_to_webhook);
+CREATE INDEX IF NOT EXISTS sessions_cleanup_idx ON sessions(expiry) WHERE expiry < NOW();
+
+-- OAuth token management
+CREATE INDEX IF NOT EXISTS oauth2_tokens_user_client_idx ON oauth2_client_tokens(belongs_to_user, client_id);
+CREATE INDEX IF NOT EXISTS oauth2_tokens_expiry_idx ON oauth2_client_tokens(access_expires_at, refresh_expires_at);
+
+-- Password reset performance
+CREATE INDEX IF NOT EXISTS password_reset_token_belongs_to_user ON password_reset_tokens USING btree (belongs_to_user);
+CREATE INDEX IF NOT EXISTS password_reset_tokens_token_idx ON password_reset_tokens(token) WHERE redeemed_at IS NULL;
+
+-- Account invitations
 CREATE INDEX IF NOT EXISTS account_invitations_destination_account ON account_invitations USING btree (destination_account);
 CREATE INDEX IF NOT EXISTS account_invitations_from_user ON account_invitations USING btree (from_user);
 CREATE INDEX IF NOT EXISTS account_invitations_to_user ON account_invitations USING btree (to_user);
+CREATE INDEX IF NOT EXISTS account_invitations_status_expires_idx ON account_invitations(status, expires_at) WHERE archived_at IS NULL;
+
+-- Account memberships
 CREATE INDEX IF NOT EXISTS account_user_memberships_belongs_to_account ON account_user_memberships USING btree (belongs_to_account);
 CREATE INDEX IF NOT EXISTS account_user_memberships_belongs_to_user ON account_user_memberships USING btree (belongs_to_user);
+
+-- Other indexes
 CREATE INDEX IF NOT EXISTS accounts_belongs_to_user ON accounts USING btree (belongs_to_user);
-CREATE INDEX IF NOT EXISTS password_reset_token_belongs_to_user ON password_reset_tokens USING btree (belongs_to_user);
+CREATE INDEX IF NOT EXISTS webhook_trigger_events_belongs_to_webhook_index ON webhook_trigger_events USING btree (belongs_to_webhook);

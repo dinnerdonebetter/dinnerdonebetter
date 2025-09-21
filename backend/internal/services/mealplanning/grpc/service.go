@@ -16,8 +16,6 @@ import (
 var _ mealplanningsvc.MealPlanningServiceServer = (*serviceImpl)(nil)
 
 const (
-	authHeaderName = "Authorization"
-
 	o11yName = "mealplanning_service"
 )
 

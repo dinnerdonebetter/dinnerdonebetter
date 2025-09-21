@@ -47,10 +47,7 @@ func buildContainerBackedRedisConfig(t *testing.T) (config *Config, shutdownFunc
 	}
 
 	shutdownFunc := func(shutdownCtx context.Context) error {
-		// Use a reasonable timeout for shutdown
-		timeoutCtx, timeoutCancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer timeoutCancel()
-		return redisContainer.Terminate(timeoutCtx)
+		return redisContainer.Terminate(shutdownCtx)
 	}
 
 	return cfg, shutdownFunc

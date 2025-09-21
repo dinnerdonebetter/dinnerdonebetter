@@ -130,7 +130,7 @@ func (r *repository) markAccountAsUserDefault(ctx context.Context, querier datab
 		ResourceType:     resourceTypeAccountUserMemberships,
 		EventType:        audit.AuditLogEventTypeUpdated,
 		BelongsToUser:    userID,
-		Changes: map[string]audit.ChangeLog{
+		Changes: map[string]*audit.ChangeLog{
 			"default_account": {
 				OldValue: "false",
 				NewValue: "true",
@@ -234,7 +234,7 @@ func (r *repository) ModifyUserPermissions(ctx context.Context, accountID, userI
 		ResourceType:     resourceTypeAccountUserMemberships,
 		EventType:        audit.AuditLogEventTypeUpdated,
 		BelongsToUser:    userID,
-		Changes: map[string]audit.ChangeLog{
+		Changes: map[string]*audit.ChangeLog{
 			"account_role": {
 				OldValue: existingRole,
 				NewValue: input.NewRole,
@@ -297,7 +297,7 @@ func (r *repository) TransferAccountOwnership(ctx context.Context, accountID str
 		ResourceType:     resourceTypeAccountUserMemberships,
 		EventType:        audit.AuditLogEventTypeUpdated,
 		BelongsToUser:    input.NewOwner,
-		Changes: map[string]audit.ChangeLog{
+		Changes: map[string]*audit.ChangeLog{
 			"belongs_to_user": {
 				OldValue: input.CurrentOwner,
 				NewValue: input.NewOwner,

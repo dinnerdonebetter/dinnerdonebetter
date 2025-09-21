@@ -1,9 +1,7 @@
 package datachangemessagehandler
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -18,7 +16,7 @@ func (a *AsyncDataChangeMessageHandler) OutboundEmailsEventHandler(ctx context.C
 	start := time.Now()
 
 	var emailMessage email.OutboundEmailMessage
-	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&emailMessage); err != nil {
+	if err := a.decoder.DecodeBytes(ctx, rawMsg, &emailMessage); err != nil {
 		return fmt.Errorf("decoding JSON body: %w", err)
 	}
 

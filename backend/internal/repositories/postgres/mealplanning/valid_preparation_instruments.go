@@ -19,8 +19,8 @@ var (
 )
 
 // ValidPreparationInstrumentExists fetches whether a valid preparation instrument exists from the database.
-func (q *repository) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (exists bool, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (exists bool, err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if validPreparationInstrumentID == "" {
@@ -28,7 +28,7 @@ func (q *repository) ValidPreparationInstrumentExists(ctx context.Context, valid
 	}
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
-	result, err := q.generatedQuerier.CheckValidPreparationInstrumentExistence(ctx, q.db, validPreparationInstrumentID)
+	result, err := r.generatedQuerier.CheckValidPreparationInstrumentExistence(ctx, r.db, validPreparationInstrumentID)
 	if err != nil {
 		return false, observability.PrepareError(err, span, "checking valid preparation instrument existence")
 	}
@@ -37,8 +37,8 @@ func (q *repository) ValidPreparationInstrumentExists(ctx context.Context, valid
 }
 
 // GetValidPreparationInstrument fetches a valid preparation instrument from the database.
-func (q *repository) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*mealplanning.ValidPreparationInstrument, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*mealplanning.ValidPreparationInstrument, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if validPreparationInstrumentID == "" {
@@ -46,7 +46,7 @@ func (q *repository) GetValidPreparationInstrument(ctx context.Context, validPre
 	}
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
-	result, err := q.generatedQuerier.GetValidPreparationInstrument(ctx, q.db, validPreparationInstrumentID)
+	result, err := r.generatedQuerier.GetValidPreparationInstrument(ctx, r.db, validPreparationInstrumentID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "getting valid preparation instrument")
 	}
@@ -107,11 +107,11 @@ func (q *repository) GetValidPreparationInstrument(ctx context.Context, validPre
 }
 
 // GetValidPreparationInstruments fetches a list of valid preparation instruments from the database that meet a particular filter.
-func (q *repository) GetValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidPreparationInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -123,7 +123,7 @@ func (q *repository) GetValidPreparationInstruments(ctx context.Context, filter 
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetValidPreparationInstruments(ctx, q.db, &generated.GetValidPreparationInstrumentsParams{
+	results, err := r.generatedQuerier.GetValidPreparationInstruments(ctx, r.db, &generated.GetValidPreparationInstrumentsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -198,11 +198,11 @@ func (q *repository) GetValidPreparationInstruments(ctx context.Context, filter 
 }
 
 // GetValidPreparationInstrumentsForPreparation fetches a list of valid preparation instruments from the database that meet a particular filter.
-func (q *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if preparationID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -219,7 +219,7 @@ func (q *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetValidPreparationInstrumentsForPreparation(ctx, q.db, &generated.GetValidPreparationInstrumentsForPreparationParams{
+	results, err := r.generatedQuerier.GetValidPreparationInstrumentsForPreparation(ctx, r.db, &generated.GetValidPreparationInstrumentsForPreparationParams{
 		ID:              preparationID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -295,11 +295,11 @@ func (q *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 }
 
 // GetValidPreparationInstrumentsForInstrument fetches a list of valid preparation instruments from the database that meet a particular filter.
-func (q *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if instrumentID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -317,7 +317,7 @@ func (q *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := q.generatedQuerier.GetValidPreparationInstrumentsForInstrument(ctx, q.db, &generated.GetValidPreparationInstrumentsForInstrumentParams{
+	results, err := r.generatedQuerier.GetValidPreparationInstrumentsForInstrument(ctx, r.db, &generated.GetValidPreparationInstrumentsForInstrumentParams{
 		ID:              instrumentID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -393,18 +393,18 @@ func (q *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 }
 
 // CreateValidPreparationInstrument creates a valid preparation instrument in the database.
-func (q *repository) CreateValidPreparationInstrument(ctx context.Context, input *mealplanning.ValidPreparationInstrumentDatabaseCreationInput) (*mealplanning.ValidPreparationInstrument, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) CreateValidPreparationInstrument(ctx context.Context, input *mealplanning.ValidPreparationInstrumentDatabaseCreationInput) (*mealplanning.ValidPreparationInstrument, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, input.ID)
-	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, input.ID)
+	logger := r.logger.WithValue(keys.ValidPreparationInstrumentIDKey, input.ID)
 
 	// create the valid preparation instrument.
-	if err := q.generatedQuerier.CreateValidPreparationInstrument(ctx, q.db, &generated.CreateValidPreparationInstrumentParams{
+	if err := r.generatedQuerier.CreateValidPreparationInstrument(ctx, r.db, &generated.CreateValidPreparationInstrumentParams{
 		ID:                 input.ID,
 		Notes:              input.Notes,
 		ValidPreparationID: input.ValidPreparationID,
@@ -418,10 +418,10 @@ func (q *repository) CreateValidPreparationInstrument(ctx context.Context, input
 		Notes:       input.Notes,
 		Preparation: mealplanning.ValidPreparation{ID: input.ValidPreparationID},
 		Instrument:  mealplanning.ValidInstrument{ID: input.ValidInstrumentID},
-		CreatedAt:   q.CurrentTime(),
+		CreatedAt:   r.CurrentTime(),
 	}
 
-	preparation, err := q.GetValidPreparation(ctx, input.ValidPreparationID)
+	preparation, err := r.GetValidPreparation(ctx, input.ValidPreparationID)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation for valid preparation instrument")
@@ -430,7 +430,7 @@ func (q *repository) CreateValidPreparationInstrument(ctx context.Context, input
 		x.Preparation = *preparation
 	}
 
-	instrument, err := q.GetValidInstrument(ctx, input.ValidInstrumentID)
+	instrument, err := r.GetValidInstrument(ctx, input.ValidInstrumentID)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid instrument for valid preparation instrument")
@@ -445,18 +445,18 @@ func (q *repository) CreateValidPreparationInstrument(ctx context.Context, input
 }
 
 // UpdateValidPreparationInstrument updates a particular valid preparation instrument.
-func (q *repository) UpdateValidPreparationInstrument(ctx context.Context, updated *mealplanning.ValidPreparationInstrument) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateValidPreparationInstrument(ctx context.Context, updated *mealplanning.ValidPreparationInstrument) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, updated.ID)
+	logger := r.logger.WithValue(keys.ValidPreparationInstrumentIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateValidPreparationInstrument(ctx, q.db, &generated.UpdateValidPreparationInstrumentParams{
+	if _, err := r.generatedQuerier.UpdateValidPreparationInstrument(ctx, r.db, &generated.UpdateValidPreparationInstrumentParams{
 		Notes:              updated.Notes,
 		ValidPreparationID: updated.Preparation.ID,
 		ValidInstrumentID:  updated.Instrument.ID,
@@ -471,17 +471,17 @@ func (q *repository) UpdateValidPreparationInstrument(ctx context.Context, updat
 }
 
 // ArchiveValidPreparationInstrument archives a valid preparation instrument from the database by its ID.
-func (q *repository) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if validPreparationInstrumentID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	logger := r.logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveValidPreparationInstrument(ctx, q.db, validPreparationInstrumentID)
+	rowsAffected, err := r.generatedQuerier.ArchiveValidPreparationInstrument(ctx, r.db, validPreparationInstrumentID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation instrument")
 	}

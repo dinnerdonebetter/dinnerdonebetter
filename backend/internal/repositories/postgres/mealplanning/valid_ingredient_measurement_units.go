@@ -19,11 +19,11 @@ var (
 )
 
 // ValidIngredientMeasurementUnitExists fetches whether a valid ingredient measurement unit exists from the database.
-func (q *repository) ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (exists bool, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ValidIngredientMeasurementUnitExists(ctx context.Context, validIngredientMeasurementUnitID string) (exists bool, err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if validIngredientMeasurementUnitID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -31,7 +31,7 @@ func (q *repository) ValidIngredientMeasurementUnitExists(ctx context.Context, v
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
-	result, err := q.generatedQuerier.CheckValidIngredientMeasurementUnitExistence(ctx, q.db, validIngredientMeasurementUnitID)
+	result, err := r.generatedQuerier.CheckValidIngredientMeasurementUnitExistence(ctx, r.db, validIngredientMeasurementUnitID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient measurement unit existence check")
 	}
@@ -40,11 +40,11 @@ func (q *repository) ValidIngredientMeasurementUnitExists(ctx context.Context, v
 }
 
 // GetValidIngredientMeasurementUnit fetches a valid ingredient measurement unit from the database.
-func (q *repository) GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*mealplanning.ValidIngredientMeasurementUnit, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) (*mealplanning.ValidIngredientMeasurementUnit, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if validIngredientMeasurementUnitID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -52,7 +52,7 @@ func (q *repository) GetValidIngredientMeasurementUnit(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
-	result, err := q.generatedQuerier.GetValidIngredientMeasurementUnit(ctx, q.db, validIngredientMeasurementUnitID)
+	result, err := r.generatedQuerier.GetValidIngredientMeasurementUnit(ctx, r.db, validIngredientMeasurementUnitID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validIngredientMeasurementUnit")
 	}
@@ -129,11 +129,11 @@ func (q *repository) GetValidIngredientMeasurementUnit(ctx context.Context, vali
 }
 
 // GetValidIngredientMeasurementUnitsForIngredient fetches a list of valid measurement units from the database that belong to a given ingredient ID.
-func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if ingredientID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -152,7 +152,7 @@ func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 		Data:       []*mealplanning.ValidIngredientMeasurementUnit{},
 	}
 
-	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnitsForIngredient(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsForIngredientParams{
+	results, err := r.generatedQuerier.GetValidIngredientMeasurementUnitsForIngredient(ctx, r.db, &generated.GetValidIngredientMeasurementUnitsForIngredientParams{
 		ValidIngredientID: ingredientID,
 		CreatedBefore:     database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:      database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -243,11 +243,11 @@ func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 }
 
 // GetValidIngredientMeasurementUnitsForMeasurementUnit fetches a list of valid measurement units from the database that belong to a given ingredient ID.
-func (q *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, validMeasurementUnitID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if validMeasurementUnitID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -266,7 +266,7 @@ func (q *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 		Data:       []*mealplanning.ValidIngredientMeasurementUnit{},
 	}
 
-	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsForMeasurementUnitParams{
+	results, err := r.generatedQuerier.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, r.db, &generated.GetValidIngredientMeasurementUnitsForMeasurementUnitParams{
 		ValidMeasurementUnitID: validMeasurementUnitID,
 		CreatedBefore:          database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:           database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -357,11 +357,11 @@ func (q *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 }
 
 // GetValidIngredientMeasurementUnits fetches a list of valid ingredient measurement units from the database that meet a particular filter.
-func (q *repository) GetValidIngredientMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidIngredientMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.ValidIngredientMeasurementUnit], error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -374,7 +374,7 @@ func (q *repository) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 		Data:       []*mealplanning.ValidIngredientMeasurementUnit{},
 	}
 
-	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnits(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsParams{
+	results, err := r.generatedQuerier.GetValidIngredientMeasurementUnits(ctx, r.db, &generated.GetValidIngredientMeasurementUnitsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -464,18 +464,18 @@ func (q *repository) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 }
 
 // CreateValidIngredientMeasurementUnit creates a valid ingredient measurement unit in the database.
-func (q *repository) CreateValidIngredientMeasurementUnit(ctx context.Context, input *mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput) (*mealplanning.ValidIngredientMeasurementUnit, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) CreateValidIngredientMeasurementUnit(ctx context.Context, input *mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput) (*mealplanning.ValidIngredientMeasurementUnit, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, input.ID)
-	logger := q.logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, input.ID)
+	logger := r.logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, input.ID)
 
 	// create the valid ingredient measurement unit.
-	if err := q.generatedQuerier.CreateValidIngredientMeasurementUnit(ctx, q.db, &generated.CreateValidIngredientMeasurementUnitParams{
+	if err := r.generatedQuerier.CreateValidIngredientMeasurementUnit(ctx, r.db, &generated.CreateValidIngredientMeasurementUnitParams{
 		ID:                       input.ID,
 		Notes:                    input.Notes,
 		ValidMeasurementUnitID:   input.ValidMeasurementUnitID,
@@ -495,10 +495,10 @@ func (q *repository) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 			Max: input.AllowableQuantity.Max,
 			Min: input.AllowableQuantity.Min,
 		},
-		CreatedAt: q.CurrentTime(),
+		CreatedAt: r.CurrentTime(),
 	}
 
-	ingredient, err := q.GetValidIngredient(ctx, input.ValidIngredientID)
+	ingredient, err := r.GetValidIngredient(ctx, input.ValidIngredientID)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient for valid ingredient measurement unit")
@@ -507,7 +507,7 @@ func (q *repository) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 		x.Ingredient = *ingredient
 	}
 
-	measurementUnit, err := q.GetValidMeasurementUnit(ctx, input.ValidMeasurementUnitID)
+	measurementUnit, err := r.GetValidMeasurementUnit(ctx, input.ValidMeasurementUnitID)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid measurement unit for valid ingredient measurement unit")
@@ -522,17 +522,17 @@ func (q *repository) CreateValidIngredientMeasurementUnit(ctx context.Context, i
 }
 
 // UpdateValidIngredientMeasurementUnit updates a particular valid ingredient measurement unit.
-func (q *repository) UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *mealplanning.ValidIngredientMeasurementUnit) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateValidIngredientMeasurementUnit(ctx context.Context, updated *mealplanning.ValidIngredientMeasurementUnit) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, updated.ID)
+	logger := r.logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateValidIngredientMeasurementUnit(ctx, q.db, &generated.UpdateValidIngredientMeasurementUnitParams{
+	if _, err := r.generatedQuerier.UpdateValidIngredientMeasurementUnit(ctx, r.db, &generated.UpdateValidIngredientMeasurementUnitParams{
 		Notes:                    updated.Notes,
 		ValidMeasurementUnitID:   updated.MeasurementUnit.ID,
 		ValidIngredientID:        updated.Ingredient.ID,
@@ -549,11 +549,11 @@ func (q *repository) UpdateValidIngredientMeasurementUnit(ctx context.Context, u
 }
 
 // ArchiveValidIngredientMeasurementUnit archives a valid ingredient measurement unit from the database by its ID.
-func (q *repository) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if validIngredientMeasurementUnitID == "" {
 		return database.ErrInvalidIDProvided
@@ -561,7 +561,7 @@ func (q *repository) ArchiveValidIngredientMeasurementUnit(ctx context.Context, 
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveValidIngredientMeasurementUnit(ctx, q.db, validIngredientMeasurementUnitID)
+	rowsAffected, err := r.generatedQuerier.ArchiveValidIngredientMeasurementUnit(ctx, r.db, validIngredientMeasurementUnitID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient measurement unit")
 	}

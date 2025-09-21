@@ -653,41 +653,86 @@ CREATE TABLE IF NOT EXISTS meal_plan_tasks (
     completed_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE INDEX IF NOT EXISTS meal_plan_events_belongs_to_meal_pla_index ON meal_plan_events USING btree (belongs_to_meal_plan);
+-- Enable trigram extension for fallback search functionality
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- Performance-critical indexes for core domain
+
+-- Recipe performance (soft delete patterns and browsing)
+CREATE INDEX IF NOT EXISTS recipes_active_idx ON recipes(created_by_user, created_at) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS recipes_eligible_idx ON recipes(eligible_for_meals, yields_component_type) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS recipes_browse_idx ON recipes(created_by_user, seal_of_approval, created_at) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS recipes_name_search_idx ON recipes USING gin(name gin_trgm_ops) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS recipes_created_by_user ON recipes USING btree (created_by_user);
+
+-- Recipe step and ingredient lookups
+CREATE INDEX IF NOT EXISTS recipe_steps_belongs_to_recipe ON recipe_steps USING btree (belongs_to_recipe);
+CREATE INDEX IF NOT EXISTS recipe_steps_recipe_index_idx ON recipe_steps(belongs_to_recipe, index) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS recipe_step_ingredients_step_idx ON recipe_step_ingredients(belongs_to_recipe_step, ingredient_id) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS recipe_step_ingredients_measurement_unit_index ON recipe_step_ingredients USING btree (measurement_unit);
+CREATE INDEX IF NOT EXISTS recipe_step_ingredients_product_of_recipe_step ON recipe_step_ingredients USING btree (recipe_step_product_id);
+
+-- Recipe ratings for recommendations
+CREATE INDEX IF NOT EXISTS recipe_ratings_recipe_overall_idx ON recipe_ratings(recipe_id, overall) WHERE archived_at IS NULL;
+
+-- Meal performance
+CREATE INDEX IF NOT EXISTS meals_active_idx ON meals(created_by_user, eligible_for_meal_plans) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS meals_created_by_user ON meals USING btree (created_by_user);
+
+-- Meal components
+CREATE INDEX IF NOT EXISTS meal_recipes_meal_id ON meal_components USING btree (meal_id);
+CREATE INDEX IF NOT EXISTS meal_recipes_recipe_id ON meal_components USING btree (recipe_id);
+
+-- Meal planning workflow performance (enhanced)
+CREATE INDEX IF NOT EXISTS meal_plans_account_status_voting_idx ON meal_plans(belongs_to_account, status, voting_deadline) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS meal_plan_events_comprehensive_idx ON meal_plan_events(belongs_to_meal_plan, starts_at, meal_name);
+CREATE INDEX IF NOT EXISTS meal_plan_options_voting_idx ON meal_plan_options(belongs_to_meal_plan_event, chosen) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS meal_plan_options_assigned_cook_index ON meal_plan_options USING btree (assigned_cook);
+CREATE INDEX IF NOT EXISTS meal_plan_options_assigned_dishwasher_index ON meal_plan_options USING btree (assigned_dishwasher);
+CREATE INDEX IF NOT EXISTS meal_plan_votes_user_option_idx ON meal_plan_option_votes(by_user, belongs_to_meal_plan_option) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS meal_plan_options_belongs_to_meal_plan_option ON meal_plan_option_votes USING btree (belongs_to_meal_plan_option);
+
+-- Grocery list performance
+CREATE INDEX IF NOT EXISTS grocery_items_plan_status_idx ON meal_plan_grocery_list_items(belongs_to_meal_plan, status);
 CREATE INDEX IF NOT EXISTS meal_plan_grocery_list_items_belongs_to_meal_pla_index ON meal_plan_grocery_list_items USING btree (belongs_to_meal_plan);
 CREATE INDEX IF NOT EXISTS meal_plan_grocery_list_items_purchased_measurement_unit_index ON meal_plan_grocery_list_items USING btree (purchased_measurement_unit);
 CREATE INDEX IF NOT EXISTS meal_plan_grocery_list_items_valid_ingredient_index ON meal_plan_grocery_list_items USING btree (valid_ingredient);
 CREATE INDEX IF NOT EXISTS meal_plan_grocery_list_items_valid_measurement_unit_index ON meal_plan_grocery_list_items USING btree (valid_measurement_unit);
-CREATE INDEX IF NOT EXISTS meal_plan_options_assigned_cook_index ON meal_plan_options USING btree (assigned_cook);
-CREATE INDEX IF NOT EXISTS meal_plan_options_assigned_dishwasher_index ON meal_plan_options USING btree (assigned_dishwasher);
-CREATE INDEX IF NOT EXISTS meal_plan_options_belongs_to_meal_plan_even_index ON meal_plan_options USING btree (belongs_to_meal_plan_event);
-CREATE INDEX IF NOT EXISTS meal_plan_options_belongs_to_meal_plan_option ON meal_plan_option_votes USING btree (belongs_to_meal_plan_option);
+
+-- Meal plan tasks
 CREATE INDEX IF NOT EXISTS meal_plan_tasks_assigned_to_user_index ON meal_plan_tasks USING btree (assigned_to_user);
 CREATE INDEX IF NOT EXISTS meal_plan_tasks_belongs_to_meal_plan_option_index ON meal_plan_tasks USING btree (belongs_to_meal_plan_option);
 CREATE INDEX IF NOT EXISTS meal_plan_tasks_belongs_to_recipe_prep_task_index ON meal_plan_tasks USING btree (belongs_to_recipe_prep_task);
-CREATE INDEX IF NOT EXISTS meal_plans_belongs_to_account ON meal_plans USING btree (belongs_to_account);
-CREATE INDEX IF NOT EXISTS meal_recipes_meal_id ON meal_components USING btree (meal_id);
-CREATE INDEX IF NOT EXISTS meal_recipes_recipe_id ON meal_components USING btree (recipe_id);
-CREATE INDEX IF NOT EXISTS meals_created_by_user ON meals USING btree (created_by_user);
-CREATE INDEX IF NOT EXISTS recipe_media_belongs_to_recipe_index ON recipe_media USING btree (belongs_to_recipe);
-CREATE INDEX IF NOT EXISTS recipe_media_belongs_to_recipe_step_index ON recipe_media USING btree (belongs_to_recipe_step);
+
+-- Recipe prep tasks
+CREATE INDEX IF NOT EXISTS recipe_prep_tasks_belongs_to_recipe_index ON recipe_prep_tasks USING btree (belongs_to_recipe);
 CREATE INDEX IF NOT EXISTS recipe_prep_task_steps_belongs_to_recipe_prep_task_index ON recipe_prep_task_steps USING btree (belongs_to_recipe_prep_task);
 CREATE INDEX IF NOT EXISTS recipe_prep_task_steps_belongs_to_recipe_step_index ON recipe_prep_task_steps USING btree (belongs_to_recipe_step);
-CREATE INDEX IF NOT EXISTS recipe_prep_tasks_belongs_to_recipe_index ON recipe_prep_tasks USING btree (belongs_to_recipe);
-CREATE INDEX IF NOT EXISTS recipe_step_ingredients_measurement_unit_index ON recipe_step_ingredients USING btree (measurement_unit);
-CREATE INDEX IF NOT EXISTS recipe_step_ingredients_product_of_recipe_step ON recipe_step_ingredients USING btree (recipe_step_product_id);
-CREATE INDEX IF NOT EXISTS recipe_step_instruments_instrument_id_index ON recipe_step_instruments USING btree (instrument_id);
-CREATE INDEX IF NOT EXISTS recipe_step_instruments_recipe_step_product_id_index ON recipe_step_instruments USING btree (recipe_step_product_id);
+
+-- Recipe step products and instruments
 CREATE INDEX IF NOT EXISTS recipe_step_products_belongs_to_recipe_step ON recipe_step_products USING btree (belongs_to_recipe_step);
 CREATE INDEX IF NOT EXISTS recipe_step_products_measurement_unit_index ON recipe_step_products USING btree (measurement_unit);
-CREATE INDEX IF NOT EXISTS recipe_steps_belongs_to_recipe ON recipe_steps USING btree (belongs_to_recipe);
-CREATE INDEX IF NOT EXISTS recipes_created_by_user ON recipes USING btree (created_by_user);
+CREATE INDEX IF NOT EXISTS recipe_step_instruments_instrument_id_index ON recipe_step_instruments USING btree (instrument_id);
+CREATE INDEX IF NOT EXISTS recipe_step_instruments_recipe_step_product_id_index ON recipe_step_instruments USING btree (recipe_step_product_id);
+
+-- Recipe media
+CREATE INDEX IF NOT EXISTS recipe_media_belongs_to_recipe_index ON recipe_media USING btree (belongs_to_recipe);
+CREATE INDEX IF NOT EXISTS recipe_media_belongs_to_recipe_step_index ON recipe_media USING btree (belongs_to_recipe_step);
+
+-- Valid data lookups (reference tables) - fallback search only
+CREATE INDEX IF NOT EXISTS valid_ingredients_search_idx ON valid_ingredients USING gin(name gin_trgm_ops) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS valid_preparations_search_idx ON valid_preparations USING gin(name gin_trgm_ops) WHERE archived_at IS NULL;
+CREATE INDEX IF NOT EXISTS valid_instruments_search_idx ON valid_instruments USING gin(name gin_trgm_ops) WHERE archived_at IS NULL;
+
+-- Valid measurement units and conversions
 CREATE INDEX IF NOT EXISTS valid_ingredient_measurement_units_valid_ingredient_id_index ON valid_ingredient_measurement_units USING btree (valid_ingredient_id);
 CREATE INDEX IF NOT EXISTS valid_ingredient_measurement_units_valid_measurement_unit_id_in ON valid_ingredient_measurement_units USING btree (valid_measurement_unit_id);
 CREATE INDEX IF NOT EXISTS valid_ingredient_state_ingredients_referncing_valid_ingredient_ ON valid_ingredient_state_ingredients USING btree (valid_ingredient);
 CREATE INDEX IF NOT EXISTS valid_measurement_conversions_from_unit_index ON valid_measurement_unit_conversions USING btree (from_unit);
 CREATE INDEX IF NOT EXISTS valid_measurement_conversions_only_for_ingredient_index ON valid_measurement_unit_conversions USING btree (only_for_ingredient);
 CREATE INDEX IF NOT EXISTS valid_measurement_conversions_to_unit_index ON valid_measurement_unit_conversions USING btree (to_unit);
+
+-- Valid preparation relationships
 CREATE INDEX IF NOT EXISTS valid_preparation_instruments_valid_instrument_index ON valid_preparation_instruments USING btree (valid_instrument_id);
 CREATE INDEX IF NOT EXISTS valid_preparation_instruments_valid_preparation_index ON valid_preparation_instruments USING btree (valid_preparation_id);
 CREATE INDEX IF NOT EXISTS valid_preparation_vessels_referencing_valid_preparations_idx ON valid_preparation_vessels USING btree (valid_preparation_id);

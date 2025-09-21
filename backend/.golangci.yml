@@ -179,7 +179,7 @@ linters:
     - staticcheck # Staticcheck is a go vet on steroids, applying a ton of static analysis checks
     - unused # Checks Go code for unused constants, variables, functions and types
     - typecheck # Like the front-end of a Go compiler, parses and type-checks Go code
-    - bodyclose # checks whether HTTP response body is closed successfully  # NOTE: disabled because of go 1.18
+    - bodyclose # checks whether the HTTP response body is closed successfully  # NOTE: disabled because of go 1.18
     - nilerr # Finds the code that returns nil even if it checks that the error is not nil.
     - asciicheck # Simple linter to check that your code does not contain non-ASCII identifiers
     - dogsled # Checks assignments with too many blank identifiers (e.g. x, , , _, := f())
@@ -191,10 +191,10 @@ linters:
     - goconst # Finds repeated strings that could be replaced by a constant
     - gocritic # Provides diagnostics that check for bugs, performance and style issues.
     - godot # Check if comments end in a period
-    - gofmt # Gofmt checks whether code was gofmt-ed. This tool runs by default with the -s flag to check for code simplification
-    - goheader # Checks is file header matches to pattern
+    - gofmt # Gofmt checks whether the code was gofmt-ed. This tool runs by default with the -s flag to check for code simplification
+    - goheader # Checks is file header matches to the pattern
     - gomoddirectives # Manage the use of 'replace', 'retract', and 'excludes' directives in go.mod.
-    - gomodguard # Allow and block list linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations.
+    - gomodguard # Allow and blocklist linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations.
     - goprintffuncname # Checks that printf-like functions are named with f at the end
     - gosec # Inspects source code for security problems
     - importas # Enforces consistent import aliases
@@ -202,7 +202,7 @@ linters:
     - nakedret # Finds naked returns in functions greater than a specified function length
     - noctx # noctx finds sending http request without context.Context
     - nolintlint # Reports ill-formed or insufficient nolint directives
-    - paralleltest # paralleltest detects missing usage of t.Parallel() method in your Go test
+    # - paralleltest # paralleltest detects missing usage of t.Parallel() method in your Go test # TODO: temporarily disabling because I'm not sure I want to use this in database tests
     - predeclared # find code that shadows one of Go's predeclared identifiers
     - promlinter # Check Prometheus metrics naming via promlint
     - sqlclosecheck # Checks that sql.Rows and sql.Stmt are closed.
@@ -214,10 +214,9 @@ linters:
     - whitespace # Tool for detection of leading and trailing whitespace
     - gci # Gci control golang package import order and make it always deterministic.
     - asasalint # check for pass []any as any in variadic func(...any)
-    - bidichk # Checks for dangerous unicode character sequences
-    - contextcheck # check whether the function uses a non-inherited context
+    - bidichk # Checks for dangerous Unicode character sequences
     - decorder # check declaration order and count of types, constants, variables and functions
-    - errchkjson # Checks types passed to the json encoding functions. Reports unsupported types and optionally reports occasions, where the check for the returned error can be omitted.
+    - errchkjson # Checks types passed to the JSON encoding functions. Reports unsupported types and optionally reports occasions, where the check for the returned error can be omitted.
     - errname # Checks that sentinel errors are prefixed with the Err and error types are suffixed with the Error.
     - grouper # An analyzer to analyze expression groups.
     - loggercheck # Checks key value pairs for common logger libraries (kitlog,klog,logr,zap).
@@ -225,7 +224,7 @@ linters:
     - nosprintfhostport # Checks for misuse of Sprintf to construct a host with port in a URL.
     - reassign # Checks that package variables are not reassigned
     - testableexamples # linter checks if examples are testable (have an expected output)
-    - usestdlibvars # A linter that detect the possibility to use variables/constants from the Go standard library.
+    - usestdlibvars # A linter that detects the possibility to use variables/constants from the Go standard library.
     - gocheckcompilerdirectives # Checks that go compiler directive comments (//go:) are valid.
     - mirror # reports wrong mirror patterns of bytes/strings usage
     - tagalign # check that struct tags are well aligned
@@ -233,6 +232,7 @@ linters:
     - testableexamples # linter checks if examples are testable (have an expected output)
     - gosmopolitan # Report certain i18n/l10n anti-patterns in your Go codebase.
     - mirror # Reports wrong mirror patterns of bytes/strings usage.
+    # - contextcheck # check whether the function uses a non-inherited context # this thing cannot recognize t.Context() for some reason
 
   disable:
     - cyclop # checks function and package cyclomatic complexity
@@ -265,11 +265,11 @@ linters:
     - depguard # Go linter that checks if package imports are in a list of acceptable packages
     - nonamedreturns # Reports all named returns
     - musttag # enforce field tags in (un)marshaled structs
-    - containedctx # detects struct contained context.Context field
+    - containedctx # detects structs contained context.Context field
     - ireturn # Accept Interfaces, Return Concrete Types
     - wsl # Whitespace Linter - Forces you to use empty lines!
     - tagliatelle # Checks the struct tags. Disabled because it expects the `Id` form instead of `ID`.
-    - tenv # tenv is analyzer that detects using os.Setenv instead of t.Setenv since Go1.17
+    - tenv # tenv is am analyzer that detects using os.Setenv instead of t.Setenv since Go1.17
 
 issues:
   # List of regexps of issue texts to exclude, empty list by default.

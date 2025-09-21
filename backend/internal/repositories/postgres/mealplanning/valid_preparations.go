@@ -19,11 +19,11 @@ var (
 )
 
 // ValidPreparationExists fetches whether a valid preparation exists from the database.
-func (q *repository) ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if validPreparationID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -31,7 +31,7 @@ func (q *repository) ValidPreparationExists(ctx context.Context, validPreparatio
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
-	exists, err := q.generatedQuerier.CheckValidPreparationExistence(ctx, q.db, validPreparationID)
+	exists, err := r.generatedQuerier.CheckValidPreparationExistence(ctx, r.db, validPreparationID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "checking valid preparation existence")
 	}
@@ -40,11 +40,11 @@ func (q *repository) ValidPreparationExists(ctx context.Context, validPreparatio
 }
 
 // GetValidPreparation fetches a valid preparation from the database.
-func (q *repository) GetValidPreparation(ctx context.Context, validPreparationID string) (*mealplanning.ValidPreparation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidPreparation(ctx context.Context, validPreparationID string) (*mealplanning.ValidPreparation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if validPreparationID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -52,7 +52,7 @@ func (q *repository) GetValidPreparation(ctx context.Context, validPreparationID
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
-	result, err := q.generatedQuerier.GetValidPreparation(ctx, q.db, validPreparationID)
+	result, err := r.generatedQuerier.GetValidPreparation(ctx, r.db, validPreparationID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting random valid preparation")
 	}
@@ -92,11 +92,11 @@ func (q *repository) GetValidPreparation(ctx context.Context, validPreparationID
 }
 
 // GetRandomValidPreparation fetches a valid preparation from the database.
-func (q *repository) GetRandomValidPreparation(ctx context.Context) (*mealplanning.ValidPreparation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetRandomValidPreparation(ctx context.Context) (*mealplanning.ValidPreparation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	result, err := q.generatedQuerier.GetRandomValidPreparation(ctx, q.db)
+	result, err := r.generatedQuerier.GetRandomValidPreparation(ctx, r.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "getting random valid preparation")
 	}
@@ -136,11 +136,11 @@ func (q *repository) GetRandomValidPreparation(ctx context.Context) (*mealplanni
 }
 
 // SearchForValidPreparations fetches a valid preparation from the database.
-func (q *repository) SearchForValidPreparations(ctx context.Context, query string) ([]*mealplanning.ValidPreparation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) SearchForValidPreparations(ctx context.Context, query string) ([]*mealplanning.ValidPreparation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if query == "" {
 		return nil, database.ErrEmptyInputProvided
@@ -148,7 +148,7 @@ func (q *repository) SearchForValidPreparations(ctx context.Context, query strin
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
-	results, err := q.generatedQuerier.SearchForValidPreparations(ctx, q.db, query)
+	results, err := r.generatedQuerier.SearchForValidPreparations(ctx, r.db, query)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid preparations search")
 	}
@@ -191,11 +191,11 @@ func (q *repository) SearchForValidPreparations(ctx context.Context, query strin
 }
 
 // GetValidPreparations fetches a list of valid preparations from the database that meet a particular filter.
-func (q *repository) GetValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparation], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidPreparations(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparation], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -207,7 +207,7 @@ func (q *repository) GetValidPreparations(ctx context.Context, filter *filtering
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetValidPreparations(ctx, q.db, &generated.GetValidPreparationsParams{
+	results, err := r.generatedQuerier.GetValidPreparations(ctx, r.db, &generated.GetValidPreparationsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -259,16 +259,16 @@ func (q *repository) GetValidPreparations(ctx context.Context, filter *filtering
 }
 
 // GetValidPreparationsWithIDs fetches a list of valid preparations from the database that meet a particular filter.
-func (q *repository) GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*mealplanning.ValidPreparation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidPreparationsWithIDs(ctx context.Context, ids []string) ([]*mealplanning.ValidPreparation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if len(ids) == 0 {
 		return nil, sql.ErrNoRows
 	}
-	logger := q.logger.WithValue("ids_count", len(ids))
+	logger := r.logger.WithValue("ids_count", len(ids))
 
-	results, err := q.generatedQuerier.GetValidPreparationsWithIDs(ctx, q.db, ids)
+	results, err := r.generatedQuerier.GetValidPreparationsWithIDs(ctx, r.db, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid preparations by ID")
 	}
@@ -311,11 +311,11 @@ func (q *repository) GetValidPreparationsWithIDs(ctx context.Context, ids []stri
 }
 
 // GetValidPreparationIDsThatNeedSearchIndexing fetches a list of valid preparations from the database that meet a particular filter.
-func (q *repository) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetValidPreparationsNeedingIndexing(ctx, q.db)
+	results, err := r.generatedQuerier.GetValidPreparationsNeedingIndexing(ctx, r.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid preparations list retrieval query")
 	}
@@ -324,18 +324,18 @@ func (q *repository) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Co
 }
 
 // CreateValidPreparation creates a valid preparation in the database.
-func (q *repository) CreateValidPreparation(ctx context.Context, input *mealplanning.ValidPreparationDatabaseCreationInput) (*mealplanning.ValidPreparation, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) CreateValidPreparation(ctx context.Context, input *mealplanning.ValidPreparationDatabaseCreationInput) (*mealplanning.ValidPreparation, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidPreparationIDKey, input.ID)
+	logger := r.logger.WithValue(keys.ValidPreparationIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, input.ID)
 
 	// create the valid preparation.
-	if err := q.generatedQuerier.CreateValidPreparation(ctx, q.db, &generated.CreateValidPreparationParams{
+	if err := r.generatedQuerier.CreateValidPreparation(ctx, r.db, &generated.CreateValidPreparationParams{
 		ID:                          input.ID,
 		Name:                        input.Name,
 		Description:                 input.Description,
@@ -385,7 +385,7 @@ func (q *repository) CreateValidPreparation(ctx context.Context, input *mealplan
 		ConditionExpressionRequired: input.ConditionExpressionRequired,
 		ConsumesVessel:              input.ConsumesVessel,
 		OnlyForVessels:              input.OnlyForVessels,
-		CreatedAt:                   q.CurrentTime(),
+		CreatedAt:                   r.CurrentTime(),
 	}
 
 	logger.Info("valid preparation created")
@@ -394,17 +394,17 @@ func (q *repository) CreateValidPreparation(ctx context.Context, input *mealplan
 }
 
 // UpdateValidPreparation updates a particular valid preparation.
-func (q *repository) UpdateValidPreparation(ctx context.Context, updated *mealplanning.ValidPreparation) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateValidPreparation(ctx context.Context, updated *mealplanning.ValidPreparation) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.ValidPreparationIDKey, updated.ID)
+	logger := r.logger.WithValue(keys.ValidPreparationIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateValidPreparation(ctx, q.db, &generated.UpdateValidPreparationParams{
+	if _, err := r.generatedQuerier.UpdateValidPreparation(ctx, r.db, &generated.UpdateValidPreparationParams{
 		Description:                 updated.Description,
 		IconPath:                    updated.IconPath,
 		ID:                          updated.ID,
@@ -434,11 +434,11 @@ func (q *repository) UpdateValidPreparation(ctx context.Context, updated *mealpl
 }
 
 // MarkValidPreparationAsIndexed updates a particular valid preparation's last_indexed_at value.
-func (q *repository) MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) MarkValidPreparationAsIndexed(ctx context.Context, validPreparationID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if validPreparationID == "" {
 		return database.ErrInvalidIDProvided
@@ -446,7 +446,7 @@ func (q *repository) MarkValidPreparationAsIndexed(ctx context.Context, validPre
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
-	if _, err := q.generatedQuerier.UpdateValidPreparationLastIndexedAt(ctx, q.db, validPreparationID); err != nil {
+	if _, err := r.generatedQuerier.UpdateValidPreparationLastIndexedAt(ctx, r.db, validPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid preparation as indexed")
 	}
 
@@ -456,11 +456,11 @@ func (q *repository) MarkValidPreparationAsIndexed(ctx context.Context, validPre
 }
 
 // ArchiveValidPreparation archives a valid preparation from the database by its ID.
-func (q *repository) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if validPreparationID == "" {
 		return database.ErrInvalidIDProvided
@@ -468,7 +468,7 @@ func (q *repository) ArchiveValidPreparation(ctx context.Context, validPreparati
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveValidPreparation(ctx, q.db, validPreparationID)
+	rowsAffected, err := r.generatedQuerier.ArchiveValidPreparation(ctx, r.db, validPreparationID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}

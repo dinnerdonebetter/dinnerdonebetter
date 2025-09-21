@@ -22,11 +22,11 @@ var (
 )
 
 // MealPlanExists fetches whether a meal plan exists from the database.
-func (q *repository) MealPlanExists(ctx context.Context, mealPlanID, accountID string) (exists bool, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) MealPlanExists(ctx context.Context, mealPlanID, accountID string) (exists bool, err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if mealPlanID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -40,7 +40,7 @@ func (q *repository) MealPlanExists(ctx context.Context, mealPlanID, accountID s
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.CheckMealPlanExistence(ctx, q.db, &generated.CheckMealPlanExistenceParams{
+	result, err := r.generatedQuerier.CheckMealPlanExistence(ctx, r.db, &generated.CheckMealPlanExistenceParams{
 		MealPlanID:       mealPlanID,
 		BelongsToAccount: accountID,
 	})
@@ -52,11 +52,11 @@ func (q *repository) MealPlanExists(ctx context.Context, mealPlanID, accountID s
 }
 
 // GetMealPlan fetches a meal plan from the database.
-func (q *repository) getMealPlan(ctx context.Context, mealPlanID, accountID string) (*types.MealPlan, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) getMealPlan(ctx context.Context, mealPlanID, accountID string) (*types.MealPlan, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -70,7 +70,7 @@ func (q *repository) getMealPlan(ctx context.Context, mealPlanID, accountID stri
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.GetMealPlan(ctx, q.db, &generated.GetMealPlanParams{
+	result, err := r.generatedQuerier.GetMealPlan(ctx, r.db, &generated.GetMealPlanParams{
 		ID:               mealPlanID,
 		BelongsToAccount: accountID,
 	})
@@ -93,7 +93,7 @@ func (q *repository) getMealPlan(ctx context.Context, mealPlanID, accountID stri
 		TasksCreated:           result.TasksCreated,
 	}
 
-	events, err := q.getMealPlanEventsForMealPlan(ctx, mealPlanID)
+	events, err := r.getMealPlanEventsForMealPlan(ctx, mealPlanID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "populating meal plan events")
 	}
@@ -106,16 +106,16 @@ func (q *repository) getMealPlan(ctx context.Context, mealPlanID, accountID stri
 }
 
 // GetMealPlan fetches a meal plan from the database.
-func (q *repository) GetMealPlan(ctx context.Context, mealPlanID, accountID string) (*types.MealPlan, error) {
-	return q.getMealPlan(ctx, mealPlanID, accountID)
+func (r *repository) GetMealPlan(ctx context.Context, mealPlanID, accountID string) (*types.MealPlan, error) {
+	return r.getMealPlan(ctx, mealPlanID, accountID)
 }
 
 // GetMealPlansForAccount fetches a list of meal plans from the database that meet a particular filter.
-func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.MealPlan], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetMealPlansForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.MealPlan], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -127,7 +127,7 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetMealPlansForAccount(ctx, q.db, &generated.GetMealPlansForAccountParams{
+	results, err := r.generatedQuerier.GetMealPlansForAccount(ctx, r.db, &generated.GetMealPlansForAccountParams{
 		BelongsToAccount: accountID,
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -161,7 +161,7 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 
 	fullMealPlans := []*types.MealPlan{}
 	for _, mp := range x.Data {
-		fmp, mealPlanFetchErr := q.getMealPlan(ctx, mp.ID, accountID)
+		fmp, mealPlanFetchErr := r.getMealPlan(ctx, mp.ID, accountID)
 		if mealPlanFetchErr != nil {
 			return nil, observability.PrepareError(mealPlanFetchErr, span, "scanning meal plans")
 		}
@@ -174,15 +174,15 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 }
 
 // CreateMealPlan creates a meal plan in the database.
-func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.MealPlanIDKey, input.ID)
+	logger := r.logger.WithValue(keys.MealPlanIDKey, input.ID)
 
 	status := types.MealPlanStatusFinalized
 	for _, event := range input.Events {
@@ -191,13 +191,13 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 		}
 	}
 
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	// create the meal plan.
-	if err = q.generatedQuerier.CreateMealPlan(ctx, q.db, &generated.CreateMealPlanParams{
+	if err = r.generatedQuerier.CreateMealPlan(ctx, r.db, &generated.CreateMealPlanParams{
 		ID:               input.ID,
 		Notes:            input.Notes,
 		Status:           generated.MealPlanStatus(status),
@@ -205,7 +205,7 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 		BelongsToAccount: input.BelongsToAccount,
 		CreatedByUser:    input.CreatedByUser,
 	}); err != nil {
-		q.RollbackTransaction(ctx, tx)
+		r.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan")
 	}
 
@@ -216,16 +216,16 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 		VotingDeadline:   input.VotingDeadline,
 		BelongsToAccount: input.BelongsToAccount,
 		ElectionMethod:   input.ElectionMethod,
-		CreatedAt:        q.CurrentTime(),
+		CreatedAt:        r.CurrentTime(),
 		CreatedByUser:    input.CreatedByUser,
 	}
 
 	logger.WithValue("quantity", len(input.Events)).Info("creating events for meal plan")
 	for _, event := range input.Events {
 		event.BelongsToMealPlan = x.ID
-		opt, createErr := q.createMealPlanEvent(ctx, tx, event)
+		opt, createErr := r.createMealPlanEvent(ctx, tx, event)
 		if createErr != nil {
-			q.RollbackTransaction(ctx, tx)
+			r.RollbackTransaction(ctx, tx)
 			return nil, observability.PrepareError(createErr, span, "creating meal plan event for meal plan")
 		}
 		x.Events = append(x.Events, opt)
@@ -242,18 +242,18 @@ func (q *repository) CreateMealPlan(ctx context.Context, input *types.MealPlanDa
 }
 
 // UpdateMealPlan updates a particular meal plan.
-func (q *repository) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.MealPlanIDKey, updated.ID)
+	logger := r.logger.WithValue(keys.MealPlanIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, updated.BelongsToAccount)
 
-	if _, err := q.generatedQuerier.UpdateMealPlan(ctx, q.db, &generated.UpdateMealPlanParams{
+	if _, err := r.generatedQuerier.UpdateMealPlan(ctx, r.db, &generated.UpdateMealPlanParams{
 		Notes:            updated.Notes,
 		Status:           generated.MealPlanStatus(updated.Status),
 		VotingDeadline:   updated.VotingDeadline,
@@ -269,11 +269,11 @@ func (q *repository) UpdateMealPlan(ctx context.Context, updated *types.MealPlan
 }
 
 // ArchiveMealPlan archives a meal plan from the database by its ID.
-func (q *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if mealPlanID == "" {
 		return database.ErrInvalidIDProvided
@@ -287,7 +287,7 @@ func (q *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID 
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated.ArchiveMealPlanParams{
+	rowsAffected, err := r.generatedQuerier.ArchiveMealPlan(ctx, r.db, &generated.ArchiveMealPlanParams{
 		BelongsToAccount: accountID,
 		ID:               mealPlanID,
 	})
@@ -303,11 +303,11 @@ func (q *repository) ArchiveMealPlan(ctx context.Context, mealPlanID, accountID 
 }
 
 // AttemptToFinalizeMealPlan finalizes a meal plan if all of its options have a selection.
-func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, accountID string) (finalized bool, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, accountID string) (finalized bool, err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if mealPlanID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -323,24 +323,24 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 
 	logger.Info("attempting to finalize meal plan")
 
-	account, err := q.identityRepo.GetAccount(ctx, accountID)
+	account, err := r.identityRepo.GetAccount(ctx, accountID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "fetching account")
 	}
 
 	// fetch meal plan
-	mealPlan, err := q.getMealPlan(ctx, mealPlanID, accountID)
+	mealPlan, err := r.getMealPlan(ctx, mealPlanID, accountID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "fetching meal plan")
 	}
 
-	votingDeadlineHasPassed := mealPlan.VotingDeadline.Before(q.CurrentTime())
+	votingDeadlineHasPassed := mealPlan.VotingDeadline.Before(r.CurrentTime())
 	if strings.EqualFold(mealPlan.Status, string(types.MealPlanStatusFinalized)) {
 		return false, ErrAlreadyFinalized
 	}
 
 	usersWhoHaveNotVoted := []string{}
-	tx, err := q.db.BeginTx(ctx, nil)
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
@@ -389,11 +389,11 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 		}
 
 		// the ballot is ready to be tallied for this event
-		winner, tiebroken, chosen := q.decideOptionWinner(ctx, event.Options)
+		winner, tiebroken, chosen := r.decideOptionWinner(ctx, event.Options)
 		if chosen {
 			logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
 
-			if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
+			if err = r.generatedQuerier.FinalizeMealPlanOption(ctx, r.db, &generated.FinalizeMealPlanOptionParams{
 				MealPlanEventID: database.NullStringFromString(event.ID),
 				ID:              winner,
 				Tiebroken:       tiebroken,
@@ -410,7 +410,7 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 	if allVotesAreSubmitted || (!allVotesAreSubmitted && votingDeadlineHasPassed) {
 		logger.Info("finalizing meal plan")
 
-		if err = q.generatedQuerier.FinalizeMealPlan(ctx, q.db, &generated.FinalizeMealPlanParams{
+		if err = r.generatedQuerier.FinalizeMealPlan(ctx, r.db, &generated.FinalizeMealPlanParams{
 			Status: generated.MealPlanStatus(types.MealPlanStatusFinalized),
 			ID:     mealPlanID,
 		}); err != nil {
@@ -434,11 +434,11 @@ func (q *repository) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, 
 }
 
 // GetUnfinalizedMealPlansWithExpiredVotingPeriods gets unfinalized meal plans with expired voting deadlines.
-func (q *repository) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetExpiredAndUnresolvedMealPlans(ctx, q.db)
+	results, err := r.generatedQuerier.GetExpiredAndUnresolvedMealPlans(ctx, r.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with expired voting periods retrieval query")
 	}
@@ -466,11 +466,11 @@ func (q *repository) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context
 }
 
 // GetFinalizedMealPlanIDsForTheNextWeek gets finalized meal plans for a given duration.
-func (q *repository) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*types.FinalizedMealPlanDatabaseResult, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*types.FinalizedMealPlanDatabaseResult, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetFinalizedMealPlansForPlanning(ctx, q.db)
+	results, err := r.generatedQuerier.GetFinalizedMealPlansForPlanning(ctx, r.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing finalized meal plan IDs for the week retrieval query")
 	}
@@ -508,11 +508,11 @@ func (q *repository) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) 
 	return output, nil
 }
 
-func (q *repository) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*types.MealPlan, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*types.MealPlan, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := q.generatedQuerier.GetFinalizedMealPlansWithoutGroceryListInit(ctx, q.db)
+	results, err := r.generatedQuerier.GetFinalizedMealPlansWithoutGroceryListInit(ctx, r.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing finalized meal plans without grocery list initialization query")
 	}
@@ -524,7 +524,7 @@ func (q *repository) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx cont
 
 	mealPlans := []*types.MealPlan{}
 	for mealPlanID, accountID := range mealPlanDetails {
-		mealPlan, getMealPlanErr := q.GetMealPlan(ctx, mealPlanID, accountID)
+		mealPlan, getMealPlanErr := r.GetMealPlan(ctx, mealPlanID, accountID)
 		if getMealPlanErr != nil {
 			return nil, observability.PrepareError(getMealPlanErr, span, "getting meal plan")
 		}
@@ -536,11 +536,11 @@ func (q *repository) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx cont
 }
 
 // FetchMissingVotesForMealPlan determines the missing votes for a given meal plan.
-func (q *repository) FetchMissingVotesForMealPlan(ctx context.Context, mealPlanID, accountID string) ([]*types.MissingVote, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) FetchMissingVotesForMealPlan(ctx context.Context, mealPlanID, accountID string) ([]*types.MissingVote, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -554,12 +554,12 @@ func (q *repository) FetchMissingVotesForMealPlan(ctx context.Context, mealPlanI
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	account, err := q.identityRepo.GetAccount(ctx, accountID)
+	account, err := r.identityRepo.GetAccount(ctx, accountID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account to determine missing votes")
 	}
 
-	mealPlan, err := q.GetMealPlan(ctx, mealPlanID, accountID)
+	mealPlan, err := r.GetMealPlan(ctx, mealPlanID, accountID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan to determine missing votes")
 	}

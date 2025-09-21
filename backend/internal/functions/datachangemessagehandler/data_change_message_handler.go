@@ -8,7 +8,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
@@ -41,9 +40,7 @@ type AsyncDataChangeMessageHandler struct {
 	userDataAggregationExecutionTimeHistogram metrics.Float64Histogram
 	outboundEmailsPublisher                   messagequeue.Publisher
 	webhookRepo                               webhooks.Repository
-	mealPlanningRepo                          mealplanning.Repository
 	consumerProvider                          messagequeue.ConsumerProvider
-	tracerProvider                            tracing.TracerProvider
 	analyticsEventReporter                    analytics.EventReporter
 	dataChangesExecutionTimeHistogram         metrics.Float64Histogram
 	webhookExecutionRequestPublisher          messagequeue.Publisher
@@ -71,7 +68,6 @@ func NewAsyncDataChangeMessageHandler(
 	cfg *config.AsyncMessageHandlerConfig,
 	identityRepo identity.Repository,
 	webhookRepo webhooks.Repository,
-	mealplanningRepo mealplanning.Repository,
 	consumerProvider messagequeue.ConsumerProvider,
 	publisherProvider messagequeue.PublisherProvider,
 	analyticsEventReporter analytics.EventReporter,
@@ -128,7 +124,6 @@ func NewAsyncDataChangeMessageHandler(
 		nonWebhookEventTypes:                 []string{},
 		identityRepo:                         identityRepo,
 		webhookRepo:                          webhookRepo,
-		mealPlanningRepo:                     mealplanningRepo,
 		consumerProvider:                     consumerProvider,
 		analyticsEventReporter:               analyticsEventReporter,
 		outboundEmailsPublisher:              outboundEmailsPublisher,
@@ -194,26 +189,20 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring webhook execution requests consumer")
 	}
 
-	//userDataAggregationConsumer, err := a.consumerProvider.ProvideConsumer(
-	//	ctx,
-	//	a.queuesConfig.UserDataAggregationTopicName,
-	//	a.buildUserDataAggregationEventHandler(
-	//		logger,
-	//		tracer,
-	//		dataManager,
-	//		uploadManager,
-	//		userDataAggregationExecutionTimeHistogram,
-	//	),
-	//)
-	//if err != nil {
-	//	return observability.PrepareAndLogError(err, a.logger, span, "configuring user data aggregation consumer")
-	//}
+	userDataAggregationConsumer, err := a.consumerProvider.ProvideConsumer(
+		ctx,
+		a.queuesConfig.UserDataAggregationTopicName,
+		a.UserDataAggregationEventHandler,
+	)
+	if err != nil {
+		return observability.PrepareAndLogError(err, a.logger, span, "configuring user data aggregation consumer")
+	}
 
 	go dataChangesConsumer.Consume(stopChan, errorsChan)
 	go outboundEmailsConsumer.Consume(stopChan, errorsChan)
 	go searchIndexRequestsConsumer.Consume(stopChan, errorsChan)
 	go webhookExecutionRequestsConsumer.Consume(stopChan, errorsChan)
-	//go userDataAggregationConsumer.Consume(stopChan, errorsChan)
+	go userDataAggregationConsumer.Consume(stopChan, errorsChan)
 
 	go func() {
 		for e := range errorsChan {

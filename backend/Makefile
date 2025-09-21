@@ -183,7 +183,10 @@ queries_lint:
 .PHONY: golang_lint
 golang_lint: sqlc_struct_check
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
+	date +%s
 	$(LINTER) run --config=.golangci.yml --timeout 30m ./...
+	date +%s
+
 
 .PHONY: lint_terraform
 lint_terraform: terraformat

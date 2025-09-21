@@ -18,11 +18,11 @@ var (
 )
 
 // AccountInstrumentOwnershipExists fetches whether an account instrument ownership exists from the database.
-func (q *repository) AccountInstrumentOwnershipExists(ctx context.Context, accountInstrumentOwnershipID, accountID string) (exists bool, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) AccountInstrumentOwnershipExists(ctx context.Context, accountInstrumentOwnershipID, accountID string) (exists bool, err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if accountInstrumentOwnershipID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -36,7 +36,7 @@ func (q *repository) AccountInstrumentOwnershipExists(ctx context.Context, accou
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.CheckAccountInstrumentOwnershipExistence(ctx, q.db, &generated.CheckAccountInstrumentOwnershipExistenceParams{
+	result, err := r.generatedQuerier.CheckAccountInstrumentOwnershipExistence(ctx, r.db, &generated.CheckAccountInstrumentOwnershipExistenceParams{
 		ID:               accountInstrumentOwnershipID,
 		BelongsToAccount: accountID,
 	})
@@ -48,11 +48,11 @@ func (q *repository) AccountInstrumentOwnershipExists(ctx context.Context, accou
 }
 
 // GetAccountInstrumentOwnership fetches an account instrument ownership from the database.
-func (q *repository) GetAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) (*types.AccountInstrumentOwnership, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) (*types.AccountInstrumentOwnership, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if accountInstrumentOwnershipID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -66,7 +66,7 @@ func (q *repository) GetAccountInstrumentOwnership(ctx context.Context, accountI
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	result, err := q.generatedQuerier.GetAccountInstrumentOwnership(ctx, q.db, &generated.GetAccountInstrumentOwnershipParams{
+	result, err := r.generatedQuerier.GetAccountInstrumentOwnership(ctx, r.db, &generated.GetAccountInstrumentOwnershipParams{
 		ID:               accountInstrumentOwnershipID,
 		BelongsToAccount: accountID,
 	})
@@ -102,11 +102,11 @@ func (q *repository) GetAccountInstrumentOwnership(ctx context.Context, accountI
 }
 
 // GetAccountInstrumentOwnerships fetches a list of account instrument ownerships from the database that meet a particular filter.
-func (q *repository) GetAccountInstrumentOwnerships(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.AccountInstrumentOwnership], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetAccountInstrumentOwnerships(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.AccountInstrumentOwnership], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -124,7 +124,7 @@ func (q *repository) GetAccountInstrumentOwnerships(ctx context.Context, account
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	results, err := q.generatedQuerier.GetAccountInstrumentOwnerships(ctx, q.db, &generated.GetAccountInstrumentOwnershipsParams{
+	results, err := r.generatedQuerier.GetAccountInstrumentOwnerships(ctx, r.db, &generated.GetAccountInstrumentOwnershipsParams{
 		AccountID:       accountID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -172,18 +172,18 @@ func (q *repository) GetAccountInstrumentOwnerships(ctx context.Context, account
 }
 
 // CreateAccountInstrumentOwnership creates an account instrument ownership in the database.
-func (q *repository) CreateAccountInstrumentOwnership(ctx context.Context, input *types.AccountInstrumentOwnershipDatabaseCreationInput) (*types.AccountInstrumentOwnership, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) CreateAccountInstrumentOwnership(ctx context.Context, input *types.AccountInstrumentOwnershipDatabaseCreationInput) (*types.AccountInstrumentOwnership, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, input.ID)
-	logger := q.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, input.ID)
+	logger := r.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, input.ID)
 
 	// create the account instrument ownership.
-	if err := q.generatedQuerier.CreateAccountInstrumentOwnership(ctx, q.db, &generated.CreateAccountInstrumentOwnershipParams{
+	if err := r.generatedQuerier.CreateAccountInstrumentOwnership(ctx, r.db, &generated.CreateAccountInstrumentOwnershipParams{
 		ID:                input.ID,
 		Notes:             input.Notes,
 		ValidInstrumentID: input.ValidInstrumentID,
@@ -199,7 +199,7 @@ func (q *repository) CreateAccountInstrumentOwnership(ctx context.Context, input
 		Quantity:         input.Quantity,
 		Instrument:       types.ValidInstrument{ID: input.ValidInstrumentID},
 		BelongsToAccount: input.BelongsToAccount,
-		CreatedAt:        q.CurrentTime(),
+		CreatedAt:        r.CurrentTime(),
 	}
 
 	logger.Info("account instrument ownership created")
@@ -208,17 +208,17 @@ func (q *repository) CreateAccountInstrumentOwnership(ctx context.Context, input
 }
 
 // UpdateAccountInstrumentOwnership updates a particular account instrument ownership.
-func (q *repository) UpdateAccountInstrumentOwnership(ctx context.Context, updated *types.AccountInstrumentOwnership) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateAccountInstrumentOwnership(ctx context.Context, updated *types.AccountInstrumentOwnership) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, updated.ID)
+	logger := r.logger.WithValue(keys.AccountInstrumentOwnershipIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.AccountInstrumentOwnershipIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateAccountInstrumentOwnership(ctx, q.db, &generated.UpdateAccountInstrumentOwnershipParams{
+	if _, err := r.generatedQuerier.UpdateAccountInstrumentOwnership(ctx, r.db, &generated.UpdateAccountInstrumentOwnershipParams{
 		Notes:             updated.Notes,
 		ValidInstrumentID: updated.Instrument.ID,
 		ID:                updated.ID,
@@ -234,11 +234,11 @@ func (q *repository) UpdateAccountInstrumentOwnership(ctx context.Context, updat
 }
 
 // ArchiveAccountInstrumentOwnership archives an account instrument ownership from the database by its ID.
-func (q *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, accountInstrumentOwnershipID, accountID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if accountInstrumentOwnershipID == "" {
 		return database.ErrInvalidIDProvided
@@ -252,7 +252,7 @@ func (q *repository) ArchiveAccountInstrumentOwnership(ctx context.Context, acco
 	logger = logger.WithValue(keys.AccountIDKey, accountID)
 	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveAccountInstrumentOwnership(ctx, q.db, &generated.ArchiveAccountInstrumentOwnershipParams{
+	rowsAffected, err := r.generatedQuerier.ArchiveAccountInstrumentOwnership(ctx, r.db, &generated.ArchiveAccountInstrumentOwnershipParams{
 		ID:               accountInstrumentOwnershipID,
 		BelongsToAccount: accountID,
 	})

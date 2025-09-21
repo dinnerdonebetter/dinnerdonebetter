@@ -18,11 +18,11 @@ var (
 )
 
 // RecipeStepCompletionConditionExists fetches whether a recipe step completion condition exists from the database.
-func (q *repository) RecipeStepCompletionConditionExists(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) (exists bool, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) RecipeStepCompletionConditionExists(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) (exists bool, err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -42,7 +42,7 @@ func (q *repository) RecipeStepCompletionConditionExists(ctx context.Context, re
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
-	result, err := q.generatedQuerier.CheckRecipeStepCompletionConditionExistence(ctx, q.db, &generated.CheckRecipeStepCompletionConditionExistenceParams{
+	result, err := r.generatedQuerier.CheckRecipeStepCompletionConditionExistence(ctx, r.db, &generated.CheckRecipeStepCompletionConditionExistenceParams{
 		RecipeStepID:                    recipeStepID,
 		RecipeStepCompletionConditionID: recipeStepCompletionConditionID,
 		RecipeID:                        recipeID,
@@ -55,11 +55,11 @@ func (q *repository) RecipeStepCompletionConditionExists(ctx context.Context, re
 }
 
 // GetRecipeStepCompletionCondition fetches a recipe step completion condition from the database.
-func (q *repository) GetRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) (*types.RecipeStepCompletionCondition, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) (*types.RecipeStepCompletionCondition, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -79,7 +79,7 @@ func (q *repository) GetRecipeStepCompletionCondition(ctx context.Context, recip
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
-	results, err := q.generatedQuerier.GetRecipeStepCompletionConditionWithIngredients(ctx, q.db, &generated.GetRecipeStepCompletionConditionWithIngredientsParams{
+	results, err := r.generatedQuerier.GetRecipeStepCompletionConditionWithIngredients(ctx, r.db, &generated.GetRecipeStepCompletionConditionWithIngredientsParams{
 		RecipeID:                        recipeID,
 		RecipeStepID:                    recipeStepID,
 		RecipeStepCompletionConditionID: recipeStepCompletionConditionID,
@@ -133,11 +133,11 @@ func (q *repository) GetRecipeStepCompletionCondition(ctx context.Context, recip
 }
 
 // getRecipeStepCompletionConditionsForRecipe fetches a recipe step completion condition from the database.
-func (q *repository) getRecipeStepCompletionConditionsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepCompletionCondition, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) getRecipeStepCompletionConditionsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepCompletionCondition, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -145,7 +145,7 @@ func (q *repository) getRecipeStepCompletionConditionsForRecipe(ctx context.Cont
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := q.generatedQuerier.GetAllRecipeStepCompletionConditionsForRecipe(ctx, q.db, recipeID)
+	results, err := r.generatedQuerier.GetAllRecipeStepCompletionConditionsForRecipe(ctx, r.db, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "querying for recipe step completion condition")
 	}
@@ -198,11 +198,11 @@ func (q *repository) getRecipeStepCompletionConditionsForRecipe(ctx context.Cont
 }
 
 // GetRecipeStepCompletionConditions fetches a list of recipe step completion conditions from the database that meet a particular filter.
-func (q *repository) GetRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.RecipeStepCompletionCondition], err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) GetRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.RecipeStepCompletionCondition], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -226,7 +226,7 @@ func (q *repository) GetRecipeStepCompletionConditions(ctx context.Context, reci
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetRecipeStepCompletionConditions(ctx, q.db, &generated.GetRecipeStepCompletionConditionsParams{
+	results, err := r.generatedQuerier.GetRecipeStepCompletionConditions(ctx, r.db, &generated.GetRecipeStepCompletionConditionsParams{
 		RecipeStepID:    recipeStepID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -290,8 +290,8 @@ func (q *repository) GetRecipeStepCompletionConditions(ctx context.Context, reci
 }
 
 // createRecipeStepCompletionCondition creates a recipe step completion condition in the database.
-func (q *repository) createRecipeStepCompletionCondition(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepCompletionConditionDatabaseCreationInput) (*types.RecipeStepCompletionCondition, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) createRecipeStepCompletionCondition(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepCompletionConditionDatabaseCreationInput) (*types.RecipeStepCompletionCondition, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -299,7 +299,7 @@ func (q *repository) createRecipeStepCompletionCondition(ctx context.Context, db
 	}
 
 	// create the recipe step completion condition.
-	if err := q.generatedQuerier.CreateRecipeStepCompletionCondition(ctx, db, &generated.CreateRecipeStepCompletionConditionParams{
+	if err := r.generatedQuerier.CreateRecipeStepCompletionCondition(ctx, db, &generated.CreateRecipeStepCompletionConditionParams{
 		ID:                  input.ID,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		IngredientState:     input.IngredientStateID,
@@ -315,14 +315,14 @@ func (q *repository) createRecipeStepCompletionCondition(ctx context.Context, db
 		Optional:            input.Optional,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
 		IngredientState:     types.ValidIngredientState{ID: input.IngredientStateID},
-		CreatedAt:           q.CurrentTime(),
+		CreatedAt:           r.CurrentTime(),
 	}
 
 	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, x.ID)
 
 	for _, ingredient := range input.Ingredients {
 		ingredient.BelongsToRecipeStepCompletionCondition = x.ID
-		completionConditionIngredient, err := q.createRecipeStepCompletionConditionIngredient(ctx, db, ingredient)
+		completionConditionIngredient, err := r.createRecipeStepCompletionConditionIngredient(ctx, db, ingredient)
 		if err != nil {
 			return nil, observability.PrepareError(err, span, "creating ingredient for recipe step completion condition")
 		}
@@ -330,14 +330,14 @@ func (q *repository) createRecipeStepCompletionCondition(ctx context.Context, db
 		x.Ingredients = append(x.Ingredients, completionConditionIngredient)
 	}
 
-	q.logger.WithValue(keys.RecipeStepCompletionConditionIDKey, x.ID).Info("completion condition created")
+	r.logger.WithValue(keys.RecipeStepCompletionConditionIDKey, x.ID).Info("completion condition created")
 
 	return x, nil
 }
 
 // createRecipeStepCompletionConditionIngredient creates a recipe step completion condition ingredient in the database.
-func (q *repository) createRecipeStepCompletionConditionIngredient(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepCompletionConditionIngredientDatabaseCreationInput) (*types.RecipeStepCompletionConditionIngredient, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) createRecipeStepCompletionConditionIngredient(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepCompletionConditionIngredientDatabaseCreationInput) (*types.RecipeStepCompletionConditionIngredient, error) {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -345,7 +345,7 @@ func (q *repository) createRecipeStepCompletionConditionIngredient(ctx context.C
 	}
 
 	// create the recipe step completion condition.
-	if err := q.generatedQuerier.CreateRecipeStepCompletionConditionIngredient(ctx, db, &generated.CreateRecipeStepCompletionConditionIngredientParams{
+	if err := r.generatedQuerier.CreateRecipeStepCompletionConditionIngredient(ctx, db, &generated.CreateRecipeStepCompletionConditionIngredientParams{
 		ID:                                     input.ID,
 		BelongsToRecipeStepCompletionCondition: input.BelongsToRecipeStepCompletionCondition,
 		RecipeStepIngredient:                   input.RecipeStepIngredient,
@@ -357,7 +357,7 @@ func (q *repository) createRecipeStepCompletionConditionIngredient(ctx context.C
 		ID:                                     input.ID,
 		BelongsToRecipeStepCompletionCondition: input.BelongsToRecipeStepCompletionCondition,
 		RecipeStepIngredient:                   input.RecipeStepIngredient,
-		CreatedAt:                              q.CurrentTime(),
+		CreatedAt:                              r.CurrentTime(),
 	}
 
 	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, x.ID)
@@ -366,22 +366,22 @@ func (q *repository) createRecipeStepCompletionConditionIngredient(ctx context.C
 }
 
 // CreateRecipeStepCompletionCondition creates a recipe step completion condition in the database.
-func (q *repository) CreateRecipeStepCompletionCondition(ctx context.Context, input *types.RecipeStepCompletionConditionDatabaseCreationInput) (*types.RecipeStepCompletionCondition, error) {
-	return q.createRecipeStepCompletionCondition(ctx, q.db, input)
+func (r *repository) CreateRecipeStepCompletionCondition(ctx context.Context, input *types.RecipeStepCompletionConditionDatabaseCreationInput) (*types.RecipeStepCompletionCondition, error) {
+	return r.createRecipeStepCompletionCondition(ctx, r.db, input)
 }
 
 // UpdateRecipeStepCompletionCondition updates a particular recipe step completion condition.
-func (q *repository) UpdateRecipeStepCompletionCondition(ctx context.Context, updated *types.RecipeStepCompletionCondition) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) UpdateRecipeStepCompletionCondition(ctx context.Context, updated *types.RecipeStepCompletionCondition) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := q.logger.WithValue(keys.RecipeStepCompletionConditionIDKey, updated.ID)
+	logger := r.logger.WithValue(keys.RecipeStepCompletionConditionIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateRecipeStepCompletionCondition(ctx, q.db, &generated.UpdateRecipeStepCompletionConditionParams{
+	if _, err := r.generatedQuerier.UpdateRecipeStepCompletionCondition(ctx, r.db, &generated.UpdateRecipeStepCompletionConditionParams{
 		Optional:            updated.Optional,
 		Notes:               updated.Notes,
 		BelongsToRecipeStep: updated.BelongsToRecipeStep,
@@ -397,11 +397,11 @@ func (q *repository) UpdateRecipeStepCompletionCondition(ctx context.Context, up
 }
 
 // ArchiveRecipeStepCompletionCondition archives a recipe step completion condition from the database by its ID.
-func (q *repository) ArchiveRecipeStepCompletionCondition(ctx context.Context, recipeStepID, recipeStepCompletionConditionID string) error {
-	ctx, span := q.tracer.StartSpan(ctx)
+func (r *repository) ArchiveRecipeStepCompletionCondition(ctx context.Context, recipeStepID, recipeStepCompletionConditionID string) error {
+	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := q.logger.Clone()
+	logger := r.logger.Clone()
 
 	if recipeStepID == "" {
 		return database.ErrInvalidIDProvided
@@ -415,7 +415,7 @@ func (q *repository) ArchiveRecipeStepCompletionCondition(ctx context.Context, r
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 
-	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepCompletionCondition(ctx, q.db, &generated.ArchiveRecipeStepCompletionConditionParams{
+	rowsAffected, err := r.generatedQuerier.ArchiveRecipeStepCompletionCondition(ctx, r.db, &generated.ArchiveRecipeStepCompletionConditionParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepCompletionConditionID,
 	})

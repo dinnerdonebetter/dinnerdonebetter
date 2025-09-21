@@ -9,7 +9,7 @@ import (
 var (
 	noPerms = []authorization.Permission{}
 
-	// TODO: ensure this map doesn't end up with configs for methods that don't exist
+	// TODO: ensure this map doesn't end up with configs for methods that don't exist.
 
 	methodPermissions = map[string][]authorization.Permission{
 		mealPlanningPerm("CreateValidIngredient"): {

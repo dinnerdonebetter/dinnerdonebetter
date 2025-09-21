@@ -8,18 +8,17 @@ package datachangemessagehandler
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/functions/datachangemessagehandler"
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
@@ -53,7 +52,6 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
 	webhooksRepository := webhooks.ProvideWebhooksRepository(logger, tracerProvider, repository, client)
-	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	msgconfigConfig := &cfg.Events
 	consumerProvider, err := msgconfig.ProvideConsumerProvider(ctx, logger, msgconfigConfig)
 	if err != nil {
@@ -95,6 +93,7 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	userDataIndexer := indexing.NewCoreDataIndexer(logger, tracerProvider, identityRepository, userTextSearcher)
+	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	recipeTextSearcher, err := ProvideRecipeTextSearcher(ctx, logger, tracerProvider, provider, textsearchcfgConfig)
 	if err != nil {
 		return nil, err
@@ -128,7 +127,7 @@ func Build(ctx context.Context, cfg *config.AsyncMessageHandlerConfig) (*datacha
 		return nil, err
 	}
 	mealPlanningDataIndexer := indexing2.NewMealPlanningDataIndexer(logger, tracerProvider, mealplanningRepository, recipeTextSearcher, mealTextSearcher, validIngredientTextSearcher, validInstrumentTextSearcher, validMeasurementUnitTextSearcher, validPreparationTextSearcher, validIngredientStateTextSearcher, validVesselTextSearcher)
-	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(logger, tracerProvider, cfg, identityRepository, webhooksRepository, mealplanningRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer)
+	asyncDataChangeMessageHandler, err := datachangemessagehandler.NewAsyncDataChangeMessageHandler(logger, tracerProvider, cfg, identityRepository, webhooksRepository, consumerProvider, publisherProvider, eventReporter, emailer, uploadManager, provider, serverEncoderDecoder, userDataIndexer, mealPlanningDataIndexer)
 	if err != nil {
 		return nil, err
 	}
