@@ -75,11 +75,11 @@ func Unauthenticated(msg string) error {
 	return status.Error(codes.Unauthenticated, msg)
 }
 
-func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metadata metadata.MD, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {
+func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metaData metadata.MD, sessionContextData *sessions.ContextData) (userID, accountID string, err error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if zuckUserHeaders := metadata.Get(zuckModeUserHeader); len(zuckUserHeaders) > 0 {
+	if zuckUserHeaders := metaData.Get(zuckModeUserHeader); len(zuckUserHeaders) > 0 {
 		var (
 			zuckUserID    = zuckUserHeaders[0]
 			zuckAccountID string
@@ -93,7 +93,7 @@ func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metadata metada
 			return "", "", observability.PrepareError(err, span, "fetching user info")
 		}
 
-		zuckAccountIDs := metadata.Get(zuckModeAccountHeader)
+		zuckAccountIDs := metaData.Get(zuckModeAccountHeader)
 		if len(zuckAccountIDs) > 0 {
 			zuckAccountID = zuckAccountIDs[0]
 		}
@@ -113,13 +113,13 @@ func (s *AuthInterceptor) determineZuckMode(ctx context.Context, metadata metada
 	return "", "", nil
 }
 
-func (s *AuthInterceptor) extractSessionContextDataFromOAuth2(ctx context.Context, metadata metadata.MD) (*sessions.ContextData, error) {
+func (s *AuthInterceptor) extractSessionContextDataFromOAuth2(ctx context.Context, metaData metadata.MD) (*sessions.ContextData, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := s.logger.WithSpan(span)
 
-	authHeader := metadata.Get("authorization")
+	authHeader := metaData.Get("authorization")
 	if len(authHeader) == 0 {
 		return nil, observability.PrepareAndLogGRPCStatus(status.Error(codes.Unauthenticated, "missing authorization header"), logger, span, codes.Unauthenticated, "missing authorization header")
 	}
@@ -136,7 +136,7 @@ func (s *AuthInterceptor) extractSessionContextDataFromOAuth2(ctx context.Contex
 			return nil, observability.PrepareAndLogError(seshErr, logger, span, "fetching user info for cookie")
 		}
 
-		zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metadata, sessionCtxData)
+		zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metaData, sessionCtxData)
 		if zuckErr != nil {
 			return nil, observability.PrepareAndLogError(zuckErr, logger, span, "fetching user info for zuck mode")
 		}

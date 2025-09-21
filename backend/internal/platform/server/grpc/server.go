@@ -103,7 +103,9 @@ func (s *Server) Shutdown() {
 // Serve serves HTTP traffic.
 func (s *Server) Serve() {
 	s.logger.Info("serve invoked, setting up listener")
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.config.Port))
+
+	var lc net.ListenConfig
+	lis, err := lc.Listen(context.Background(), "tcp", fmt.Sprintf(":%d", s.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
