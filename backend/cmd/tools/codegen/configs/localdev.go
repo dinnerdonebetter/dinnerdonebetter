@@ -27,7 +27,10 @@ import (
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	uploadscfg "github.com/dinnerdonebetter/backend/internal/platform/uploads/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
 )
 
 const (
@@ -154,6 +157,18 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 			},
 		},
 		Services: config.ServicesConfig{
+			DataPrivacy: dataprivacycfg.Config{
+				Uploads: uploadscfg.Config{
+					Storage: objectstorage.Config{
+						FilesystemConfig:  &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
+						BucketPrefix:      "",
+						BucketName:        "artifacts",
+						UploadFilenameKey: "",
+						Provider:          objectstorage.FilesystemProvider,
+					},
+					Debug: false,
+				},
+			},
 			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "http://localhost:9000",

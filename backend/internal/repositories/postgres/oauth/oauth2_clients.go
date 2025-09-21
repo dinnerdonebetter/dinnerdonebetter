@@ -39,7 +39,7 @@ func (r *repository) GetOAuth2ClientByClientID(ctx context.Context, clientID str
 
 	result, err := r.generatedQuerier.GetOAuth2ClientByClientID(ctx, r.db, clientID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching oauth2 client")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching oauth2 client by client ID")
 	}
 
 	client := &types.OAuth2Client{
@@ -70,7 +70,7 @@ func (r *repository) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID s
 
 	result, err := r.generatedQuerier.GetOAuth2ClientByDatabaseID(ctx, r.db, clientID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching oauth2 client")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching oauth2 client by database ID")
 	}
 
 	client := &types.OAuth2Client{
@@ -149,13 +149,13 @@ func (r *repository) CreateOAuth2Client(ctx context.Context, input *types.OAuth2
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if writeErr := r.generatedQuerier.CreateOAuth2Client(ctx, tx, &generated.CreateOAuth2ClientParams{
+	if err = r.generatedQuerier.CreateOAuth2Client(ctx, tx, &generated.CreateOAuth2ClientParams{
 		ID:           input.ID,
 		Name:         input.Name,
 		ClientID:     input.ClientID,
 		ClientSecret: input.ClientSecret,
-	}); writeErr != nil {
-		return nil, observability.PrepareError(writeErr, span, "creating OAuth2 client")
+	}); err != nil {
+		return nil, observability.PrepareError(err, span, "creating OAuth2 client")
 	}
 
 	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, input.ID)
@@ -169,6 +169,10 @@ func (r *repository) CreateOAuth2Client(ctx context.Context, input *types.OAuth2
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	client := &types.OAuth2Client{

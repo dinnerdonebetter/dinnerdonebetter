@@ -1,4 +1,16 @@
 {
+	"auth": {
+		"sso": {
+			"google": {}
+		},
+		"tokens": {
+			"provider": "",
+			"audience": "",
+			"base64EncodedSigningKey": "",
+			"maxAccessTokenLifetime": 0,
+			"maxRefreshTokenLifetime": 0
+		}
+	},
 	"queues": {
 		"dataChangesTopicName": "",
 		"outboundEmailsTopicName": "",
@@ -130,14 +142,17 @@
 		},
 		"provider": "chi"
 	},
-	"server": {
+	"http": {
 		"startupDeadline": 60000000000,
 		"httpPort": 8000,
 		"debug": true
 	},
+	"grpc": {
+		"port": 0
+	},
 	"database": {
-		"provider": "",
 		"oauth2TokenEncryptionKey": "",
+		"provider": "",
 		"connectionDetails": {
 			"username": "api_db_user",
 			"password": "",
@@ -146,66 +161,42 @@
 			"port": 5432,
 			"disableSSL": false
 		},
+		"migrations": null,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000,
 		"debug": true,
 		"logQueries": true,
-		"runMigrations": true,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000
+		"runMigrations": true
 	},
 	"services": {
-		"auditLogEntries": {},
-		"serviceSettingConfigurations": {},
-		"userNotifications": {},
-		"accounts": {},
-		"serviceSettings": {},
 		"users": {
-			"publicMediaURLPrefix": "https://media.dinnerdonebetter.dev/avatars",
+			"publicMediaURLPrefix": "",
 			"uploads": {
-				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "media.dinnerdonebetter.dev"
-					},
-					"bucketPrefix": "avatars/",
-					"bucketName": "media.dinnerdonebetter.dev",
-					"uploadFilenameKey": "avatar",
-					"provider": "gcp"
-				},
-				"debug": true
+				"storageConfig": {},
+				"debug": false
 			}
 		},
 		"dataPrivacy": {
 			"uploads": {
-				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "userdata.dinnerdonebetter.dev"
-					},
-					"bucketName": "userdata.dinnerdonebetter.dev",
-					"provider": "gcp"
-				},
+				"storageConfig": {},
 				"debug": false
 			}
 		},
-		"recipes": {
-			"mediaUploadPrefix": "https://media.dinnerdonebetter.dev/recipe_media",
+		"mealPlanning": {
+			"mediaUploadPrefix": "",
 			"uploads": {
-				"storageConfig": {
-					"gcpConfig": {
-						"bucketName": "media.dinnerdonebetter.dev"
-					},
-					"bucketPrefix": "recipe_media/",
-					"bucketName": "media.dinnerdonebetter.dev",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "gcp"
-				},
-				"debug": true
+				"storageConfig": {},
+				"debug": false
 			},
-			"searchFromDatabase": true
+			"useSearchService": false
 		},
 		"auth": {
 			"tokens": {
 				"provider": "paseto",
 				"audience": "https://api.dinnerdonebetter.dev",
-				"base64EncodedSigningKey": ""
+				"base64EncodedSigningKey": "",
+				"maxAccessTokenLifetime": 0,
+				"maxRefreshTokenLifetime": 0
 			},
 			"sso": {
 				"google": {}
@@ -224,18 +215,6 @@
 		},
 		"oauth2Clients": {
 			"creationEnabled": false
-		},
-		"meals": {
-			"searchFromDatabase": true
-		},
-		"webhooks": {
-			"debug": false
-		},
-		"accountInvitations": {
-			"debug": false
-		},
-		"validEnumerations": {
-			"useSearchService": false
 		}
 	}
 }
