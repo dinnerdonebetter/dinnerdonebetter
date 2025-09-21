@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Lint
         working-directory: backend
@@ -51,7 +51,7 @@ jobs:
     name: ${{ matrix.node }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -74,7 +74,7 @@ jobs:
     name: ${{ matrix.node }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: stoplightio/spectral-action@latest
         with:
