@@ -29,34 +29,29 @@ jobs:
             openapi:
               - openapi_spec.yaml
   golang:
-    needs: [ changes ]
+    needs: [changes]
     if: ${{ needs.changes.outputs.backend == 'true' }}
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
-        with:
-          go-version: stable
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Lint
         working-directory: backend
-        uses: golangci/golangci-lint-action@v8
-        with:
-          version: v2.4.0
-          args: --config=.golangci.yml --timeout 30m ./...
+        run: make lint
 
   typescript:
-    needs: [ changes ]
+    needs: [changes]
     if: ${{ needs.changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ 'lts/*' ]
+        node: ['lts/*']
     name: ${{ matrix.node }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -70,16 +65,16 @@ jobs:
         working-directory: frontend
 
   openapi:
-    needs: [ changes ]
+    needs: [changes]
     if: ${{ needs.changes.outputs.openapi == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ 'lts/*' ]
+        node: ['lts/*']
     name: ${{ matrix.node }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - uses: stoplightio/spectral-action@latest
         with:
