@@ -65,15 +65,6 @@ test:
 	(cd backend && $(MAKE) test)
 	(cd frontend && $(MAKE) test)
 
-.PHONY: openapi-clients
-openapi-clients:
-	(cd backend && $(MAKE) openapi-client)
-	(cd frontend && $(MAKE) openapi-client)
-
-.PHONY: openapi-lint
-openapi-lint:
-	npx @stoplight/spectral-cli@v6.13.1 lint openapi_spec.yamls
-
 .PHONY: regit
 regit:
 	cd ../

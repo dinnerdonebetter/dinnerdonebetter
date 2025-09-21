@@ -14,7 +14,6 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
-      openapi: ${{ steps.filter.outputs.openapi }}
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v3
@@ -26,8 +25,6 @@ jobs:
             frontend:
               - frontend/**/*.ts
               - frontend/**/*.tsx
-            openapi:
-              - openapi_spec.yaml
   golang:
     needs: [changes]
     if: ${{ needs.changes.outputs.backend == 'true' }}
@@ -63,19 +60,3 @@ jobs:
 
       - run: yarn run lint
         working-directory: frontend
-
-  openapi:
-    needs: [changes]
-    if: ${{ needs.changes.outputs.openapi == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ['lts/*']
-    name: ${{ matrix.node }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - uses: stoplightio/spectral-action@latest
-        with:
-          file_glob: 'openapi_spec.yaml'
