@@ -8,14 +8,13 @@ package mealplangrocerylistinitializer
 
 import (
 	"context"
-
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
-	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 )
 
 // Injectors from build.go:
