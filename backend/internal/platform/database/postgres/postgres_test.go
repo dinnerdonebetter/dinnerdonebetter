@@ -21,7 +21,7 @@ type sqlmockExpecterWrapper struct {
 }
 
 func (e *sqlmockExpecterWrapper) AssertExpectations(t mock.TestingT) bool {
-	return assert.NoError(t, e.ExpectationsWereMet(), "not all database expectations were met")
+	return assert.NoError(t, e.Sqlmock.ExpectationsWereMet(), "not all database expectations were met")
 }
 
 func buildTestClient(t *testing.T) (*Client, *sqlmockExpecterWrapper) {

@@ -10,8 +10,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
-
 	"github.com/stretchr/testify/require"
+
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
 )
 
