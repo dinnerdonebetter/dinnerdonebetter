@@ -30,7 +30,6 @@ var (
 	createdClientID, createdClientSecret string
 	databaseClient                       database.Client
 	apiServiceConfig                     *config.APIServiceConfig
-	shutdownFunc                         func()
 	notifsRepo                           notifications.Repository
 )
 

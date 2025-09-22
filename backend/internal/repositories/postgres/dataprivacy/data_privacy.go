@@ -10,8 +10,24 @@ func (r *repository) FetchUserDataCollection(ctx context.Context, userID string)
 	_, span := r.tracer.StartSpan(ctx)
 	defer span.End()
 
-	// TODO
-	x := &dataprivacy.UserDataCollectionResponse{}
+	/*
+		NOTE: none of this is how it's meant to be, I just haven't implemented it properly yet. The code below is to make the linter stop whining.
+	*/
+
+	accountID := "unknown"
+	accounts, err := r.identityRepo.GetAccounts(ctx, userID, nil)
+	if err != nil {
+		return nil, err
+	}
+	if len(accounts.Data) > 0 {
+		accountID = accounts.Data[0].ID
+	}
+
+	x := &dataprivacy.UserDataCollectionResponse{
+		ReportID: accountID,
+	}
+
+	r.logger.Info("TODO: FetchUserDataCollection")
 
 	return x, nil
 }

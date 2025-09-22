@@ -42,7 +42,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
-		c.client.Request.BaseURL = ts.URL
+		c.client.BaseURL = ts.URL
 
 		ctx := t.Context()
 		details := &email.OutboundEmailMessage{
@@ -70,7 +70,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
-		c.client.Request.BaseURL = ts.URL
+		c.client.BaseURL = ts.URL
 
 		ctx := t.Context()
 		details := &email.OutboundEmailMessage{
@@ -97,7 +97,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
-		c.client.Request.BaseURL = ts.URL
+		c.client.BaseURL = ts.URL
 
 		ctx := t.Context()
 		details := &email.OutboundEmailMessage{
@@ -126,7 +126,7 @@ func TestSendGridEmailer_sendDynamicTemplateEmail(T *testing.T) {
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
-		c.client.Request.BaseURL = ts.URL
+		c.client.BaseURL = ts.URL
 
 		ctx := t.Context()
 		to := mail.NewEmail("sender", "sender@fake.com")

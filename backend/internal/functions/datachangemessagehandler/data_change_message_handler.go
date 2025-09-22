@@ -8,7 +8,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/analytics"
 	"github.com/dinnerdonebetter/backend/internal/platform/email"
@@ -41,9 +40,7 @@ type AsyncDataChangeMessageHandler struct {
 	userDataAggregationExecutionTimeHistogram metrics.Float64Histogram
 	outboundEmailsPublisher                   messagequeue.Publisher
 	webhookRepo                               webhooks.Repository
-	mealPlanningRepo                          mealplanning.Repository
 	consumerProvider                          messagequeue.ConsumerProvider
-	tracerProvider                            tracing.TracerProvider
 	analyticsEventReporter                    analytics.EventReporter
 	dataChangesExecutionTimeHistogram         metrics.Float64Histogram
 	webhookExecutionRequestPublisher          messagequeue.Publisher
@@ -71,7 +68,6 @@ func NewAsyncDataChangeMessageHandler(
 	cfg *config.AsyncMessageHandlerConfig,
 	identityRepo identity.Repository,
 	webhookRepo webhooks.Repository,
-	mealplanningRepo mealplanning.Repository,
 	consumerProvider messagequeue.ConsumerProvider,
 	publisherProvider messagequeue.PublisherProvider,
 	analyticsEventReporter analytics.EventReporter,
@@ -128,7 +124,6 @@ func NewAsyncDataChangeMessageHandler(
 		nonWebhookEventTypes:                 []string{},
 		identityRepo:                         identityRepo,
 		webhookRepo:                          webhookRepo,
-		mealPlanningRepo:                     mealplanningRepo,
 		consumerProvider:                     consumerProvider,
 		analyticsEventReporter:               analyticsEventReporter,
 		outboundEmailsPublisher:              outboundEmailsPublisher,
