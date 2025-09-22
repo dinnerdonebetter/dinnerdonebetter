@@ -130,7 +130,7 @@ jobs:
         container-registry: ['us-central1-docker.pkg.dev']
     steps:
       - name: Install Go
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -378,7 +378,7 @@ jobs:
         container-registry: ['us-central1-docker.pkg.dev']
     steps:
       - name: Install Go
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
         with:
           go-version: ${{ matrix.go-version }}
 
