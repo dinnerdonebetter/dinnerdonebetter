@@ -207,7 +207,7 @@ func deriveServerConfig() (*config.APIServiceConfig, error) {
 
 func createOAuth2ClientForTests(ctx context.Context, pgc database.Client, dbCfg *databasecfg.Config) error {
 	auditRepo := auditlogentries.ProvideAuditLogRepository(nil, nil, pgc)
-	oauth2ClientManager := oauthrepo.ProvideOAuthRepository(nil, nil, auditRepo, *dbCfg, pgc)
+	oauth2ClientManager := oauthrepo.ProvideOAuthRepository(nil, nil, auditRepo, dbCfg, pgc)
 
 	clientID, err := random.GenerateHexEncodedString(ctx, 16)
 	if err != nil {

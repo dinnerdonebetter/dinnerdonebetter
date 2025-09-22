@@ -34,7 +34,7 @@ func ProvideOAuthRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,
-	cfg databasecfg.Config,
+	cfg *databasecfg.Config,
 	client database.Client,
 ) oauth.Repository {
 	encDec, err := salsa20.NewEncryptorDecryptor(tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))

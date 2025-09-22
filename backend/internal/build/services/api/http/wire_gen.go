@@ -59,8 +59,7 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 		return nil, err
 	}
 	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
-	config2 := cfg.Database
-	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, config2, client)
+	oauthRepository := oauth.ProvideOAuthRepository(logger, tracerProvider, repository, databasecfgConfig, client)
 	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
 	encodingConfig := cfg.Encoding
 	contentType := encoding.ProvideContentType(encodingConfig)
@@ -81,8 +80,8 @@ func Build(ctx context.Context, cfg *config.APIServiceConfig) (http.Server, erro
 	if err != nil {
 		return nil, err
 	}
-	config3 := &cfg.Routing
-	routeParamManager, err := routingcfg.ProvideRouteParamManager(config3)
+	config2 := &cfg.Routing
+	routeParamManager, err := routingcfg.ProvideRouteParamManager(config2)
 	if err != nil {
 		return nil, err
 	}

@@ -37,13 +37,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 				ContentType: "application/json",
 			},
 			Observability: observability.Config{},
-			Services:      ServicesConfig{
-				//Auth: authservice.Config{
-				//	MinimumUsernameLength: 4,
-				//	MinimumPasswordLength: 8,
-				//	EnableUserSignup:      true,
-				//},
-			},
+			Services:      ServicesConfig{},
 			Database: databasecfg.Config{
 				Debug:         true,
 				RunMigrations: true,

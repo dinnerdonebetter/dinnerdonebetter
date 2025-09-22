@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -57,8 +58,12 @@ func ProvideAuthManager(
 	publisherProvider messagequeue.PublisherProvider,
 	secretGenerator random.Generator,
 	qrCodeBuilder qrcodes.Builder,
-	queueConfig msgconfig.QueuesConfig,
+	queueConfig *msgconfig.QueuesConfig,
 ) (*AuthManager, error) {
+	if queueConfig == nil {
+		return nil, internalerrors.NilConfigError("queues config for auth manager")
+	}
+
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to provide data changes publisher: %w", err)

@@ -189,26 +189,20 @@ func (a *AsyncDataChangeMessageHandler) ConsumeMessages(
 		return observability.PrepareAndLogError(err, a.logger, span, "configuring webhook execution requests consumer")
 	}
 
-	//userDataAggregationConsumer, err := a.consumerProvider.ProvideConsumer(
-	//	ctx,
-	//	a.queuesConfig.UserDataAggregationTopicName,
-	//	a.buildUserDataAggregationEventHandler(
-	//		logger,
-	//		tracer,
-	//		dataManager,
-	//		uploadManager,
-	//		userDataAggregationExecutionTimeHistogram,
-	//	),
-	//)
-	//if err != nil {
-	//	return observability.PrepareAndLogError(err, a.logger, span, "configuring user data aggregation consumer")
-	//}
+	userDataAggregationConsumer, err := a.consumerProvider.ProvideConsumer(
+		ctx,
+		a.queuesConfig.WebhookExecutionRequestsTopicName,
+		a.UserDataAggregationEventHandler,
+	)
+	if err != nil {
+		return observability.PrepareAndLogError(err, a.logger, span, "configuring user data aggregation requests consumer")
+	}
 
 	go dataChangesConsumer.Consume(stopChan, errorsChan)
 	go outboundEmailsConsumer.Consume(stopChan, errorsChan)
 	go searchIndexRequestsConsumer.Consume(stopChan, errorsChan)
 	go webhookExecutionRequestsConsumer.Consume(stopChan, errorsChan)
-	//go userDataAggregationConsumer.Consume(stopChan, errorsChan)
+	go userDataAggregationConsumer.Consume(stopChan, errorsChan)
 
 	go func() {
 		for e := range errorsChan {

@@ -33,6 +33,6 @@ func (r *repository) FetchUserDataCollection(ctx context.Context, userID string)
 }
 
 func (r *repository) DeleteUser(ctx context.Context, userID string) error {
-	// TODO
+	// TODO: implement
 	return nil
 }

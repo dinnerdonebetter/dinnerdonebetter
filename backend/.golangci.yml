@@ -259,7 +259,8 @@ linters:
         text: 'G115:'
       - linters:
           - cyclop
-        path: (.+)_test\.go
+          - contextcheck
+        path: (.+)_test\.go # test files
     paths:
       - cmd/playground
       - tests/integration
