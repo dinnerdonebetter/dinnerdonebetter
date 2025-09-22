@@ -233,8 +233,6 @@ func createOAuth2ClientForTests(ctx context.Context, pgc database.Client, dbCfg 
 		return fmt.Errorf("failed to create oauth2 client: %w", err)
 	}
 
-	log.Printf("created oauth2 client: %+v", createdClient.ClientID)
-
 	createdClientID, createdClientSecret = createdClient.ClientID, createdClient.ClientSecret
 
 	return nil

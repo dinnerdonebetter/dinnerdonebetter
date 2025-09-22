@@ -80,8 +80,8 @@
 		}
 	},
 	"database": {
-		"oauth2TokenEncryptionKey": "",
 		"provider": "",
+		"oauth2TokenEncryptionKey": "",
 		"connectionDetails": {
 			"username": "api_db_user",
 			"password": "",
@@ -90,11 +90,10 @@
 			"port": 5432,
 			"disableSSL": false
 		},
-		"migrations": null,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000,
 		"debug": true,
 		"logQueries": true,
-		"runMigrations": true
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000
 	}
 }

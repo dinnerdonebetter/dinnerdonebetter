@@ -220,10 +220,9 @@ CREATE INDEX IF NOT EXISTS account_memberships_user_default_idx ON account_user_
 
 -- Session management
 CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions USING btree (expiry);
-CREATE INDEX IF NOT EXISTS sessions_cleanup_idx ON sessions(expiry);
+CREATE INDEX IF NOT EXISTS sessions_cleanup_idx ON sessions(expiry) WHERE expiry < NOW();
 
 -- OAuth token management
-CREATE INDEX IF NOT EXISTS oauth2_clients_active_idx ON oauth2_clients(client_id) WHERE archived_at IS NULL;
 CREATE INDEX IF NOT EXISTS oauth2_tokens_user_client_idx ON oauth2_client_tokens(belongs_to_user, client_id);
 CREATE INDEX IF NOT EXISTS oauth2_tokens_expiry_idx ON oauth2_client_tokens(access_expires_at, refresh_expires_at);
 
@@ -240,14 +239,6 @@ CREATE INDEX IF NOT EXISTS account_invitations_status_expires_idx ON account_inv
 -- Account memberships
 CREATE INDEX IF NOT EXISTS account_user_memberships_belongs_to_account ON account_user_memberships USING btree (belongs_to_account);
 CREATE INDEX IF NOT EXISTS account_user_memberships_belongs_to_user ON account_user_memberships USING btree (belongs_to_user);
-
--- Service settings and configurations
-CREATE INDEX IF NOT EXISTS service_settings_active_idx ON service_settings(name) WHERE archived_at IS NULL;
-CREATE INDEX IF NOT EXISTS service_setting_configurations_active_idx ON service_setting_configurations(belongs_to_user, belongs_to_account) WHERE archived_at IS NULL;
-
--- Webhooks
-CREATE INDEX IF NOT EXISTS webhooks_active_idx ON webhooks(belongs_to_account) WHERE archived_at IS NULL;
-CREATE INDEX IF NOT EXISTS webhook_trigger_events_active_idx ON webhook_trigger_events(belongs_to_webhook) WHERE archived_at IS NULL;
 
 -- Other indexes
 CREATE INDEX IF NOT EXISTS accounts_belongs_to_user ON accounts USING btree (belongs_to_user);

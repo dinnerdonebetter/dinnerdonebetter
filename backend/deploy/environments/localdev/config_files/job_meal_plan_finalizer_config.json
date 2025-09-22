@@ -71,8 +71,8 @@
 		}
 	},
 	"database": {
-		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 		"provider": "",
+		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 		"connectionDetails": {
 			"username": "dbuser",
 			"password": "hunter2",
@@ -81,11 +81,10 @@
 			"port": 5432,
 			"disableSSL": true
 		},
-		"migrations": null,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000,
 		"debug": true,
 		"logQueries": true,
-		"runMigrations": true
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000
 	}
 }

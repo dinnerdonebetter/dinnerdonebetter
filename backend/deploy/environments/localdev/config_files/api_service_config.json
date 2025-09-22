@@ -1,16 +1,4 @@
 {
-	"auth": {
-		"sso": {
-			"google": {}
-		},
-		"tokens": {
-			"provider": "",
-			"audience": "",
-			"base64EncodedSigningKey": "",
-			"maxAccessTokenLifetime": 0,
-			"maxRefreshTokenLifetime": 0
-		}
-	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -142,17 +130,14 @@
 		},
 		"provider": "chi"
 	},
-	"http": {
+	"server": {
 		"startupDeadline": 60000000000,
 		"httpPort": 8000,
 		"debug": true
 	},
-	"grpc": {
-		"port": 0
-	},
 	"database": {
-		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 		"provider": "",
+		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 		"connectionDetails": {
 			"username": "dbuser",
 			"password": "hunter2",
@@ -161,19 +146,30 @@
 			"port": 5432,
 			"disableSSL": true
 		},
-		"migrations": null,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000,
 		"debug": true,
 		"logQueries": true,
-		"runMigrations": true
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000
 	},
 	"services": {
+		"auditLogEntries": {},
+		"serviceSettingConfigurations": {},
+		"userNotifications": {},
+		"accounts": {},
+		"serviceSettings": {},
 		"users": {
 			"publicMediaURLPrefix": "",
 			"uploads": {
-				"storageConfig": {},
-				"debug": false
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/uploads"
+					},
+					"bucketName": "avatars",
+					"uploadFilenameKey": "avatar",
+					"provider": "filesystem"
+				},
+				"debug": true
 			}
 		},
 		"dataPrivacy": {
@@ -182,27 +178,32 @@
 					"filesystem": {
 						"rootDirectory": "/tmp"
 					},
-					"bucketName": "artifacts",
+					"bucketName": "userdata",
 					"provider": "filesystem"
 				},
 				"debug": false
 			}
 		},
-		"mealPlanning": {
-			"mediaUploadPrefix": "",
+		"recipes": {
+			"mediaUploadPrefix": "https://example.website.lol",
 			"uploads": {
-				"storageConfig": {},
-				"debug": false
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/uploads"
+					},
+					"bucketName": "recipe_media",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "filesystem"
+				},
+				"debug": true
 			},
-			"useSearchService": false
+			"searchFromDatabase": false
 		},
 		"auth": {
 			"tokens": {
 				"provider": "paseto",
 				"audience": "https://api.dinnerdonebetter.dev",
-				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
-				"maxAccessTokenLifetime": 0,
-				"maxRefreshTokenLifetime": 0
+				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA="
 			},
 			"sso": {
 				"google": {
@@ -223,6 +224,18 @@
 		},
 		"oauth2Clients": {
 			"creationEnabled": false
+		},
+		"meals": {
+			"searchFromDatabase": false
+		},
+		"webhooks": {
+			"debug": false
+		},
+		"accountInvitations": {
+			"debug": false
+		},
+		"validEnumerations": {
+			"useSearchService": false
 		}
 	}
 }
