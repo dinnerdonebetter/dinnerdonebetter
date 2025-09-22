@@ -25,11 +25,11 @@ func Build(
 ) (*mealplangrocerylistinitializer.Worker, error) {
 	wire.Build(
 		mealplangrocerylistinitializer.ProvidersMealPlanGroceryListInitializer,
-		tracingcfg.ProvidersTracingConfig,
-		observability.Providers,
+		tracingcfg.TracingConfigProviders,
+		observability.O11yProviders,
 		msgconfig.MessageQueueProviders,
-		loggingcfg.ProvidersLogConfig,
-		metricscfg.Providers,
+		loggingcfg.LogConfigProviders,
+		metricscfg.MetricsConfigProviders,
 		grocerylistpreparation.ProvidersGroceryListPreparation,
 		ConfigProviders,
 	)

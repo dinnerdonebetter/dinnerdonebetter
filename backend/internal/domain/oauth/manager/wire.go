@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	Providers = wire.NewSet(
+	OAuthManagerProviders = wire.NewSet(
 		NewOAuth2Manager,
 	)
 )

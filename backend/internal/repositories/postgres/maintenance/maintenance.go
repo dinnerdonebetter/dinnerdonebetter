@@ -16,5 +16,7 @@ func (q *repository) DeleteExpiredOAuth2ClientTokens(ctx context.Context) (int64
 		return 0, observability.PrepareError(err, span, "deleting expired oauth2 client tokens")
 	}
 
+	q.logger.Info("deleted expired oauth2 client tokens")
+
 	return deleted, nil
 }

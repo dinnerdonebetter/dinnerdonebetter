@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	Providers = wire.NewSet(
+	MPSvcProviders = wire.NewSet(
 		NewService,
 	)
 )

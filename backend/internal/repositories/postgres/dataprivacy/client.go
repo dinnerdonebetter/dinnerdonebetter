@@ -1,8 +1,6 @@
 package dataprivacy
 
 import (
-	"database/sql"
-
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
@@ -22,7 +20,6 @@ type repository struct {
 	logger            logging.Logger
 	auditLogEntryRepo audit.Repository
 	identityRepo      identity.Repository
-	db                *sql.DB
 }
 
 // ProvideDataPrivacyRepository provides a new repository.
@@ -35,7 +32,6 @@ func ProvideDataPrivacyRepository(
 ) dataprivacy.Repository {
 	c := &repository{
 		Client:            client,
-		db:                client.DB(),
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		auditLogEntryRepo: auditLogEntryRepo,
 		identityRepo:      identityRepo,

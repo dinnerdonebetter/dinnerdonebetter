@@ -25,11 +25,11 @@ func Build(
 ) (*dbcleaner.Job, error) {
 	wire.Build(
 		dbcleaner.ProvidersDBCleaner,
-		tracingcfg.ProvidersTracingConfig,
-		observability.Providers,
-		postgres.Providers,
-		loggingcfg.ProvidersLogConfig,
-		metricscfg.Providers,
+		tracingcfg.TracingConfigProviders,
+		observability.O11yProviders,
+		postgres.PGProviders,
+		loggingcfg.LogConfigProviders,
+		metricscfg.MetricsConfigProviders,
 		maintenance.Providers,
 		ConfigProviders,
 	)

@@ -28,17 +28,17 @@ func Build(
 	cfg *config.MealPlanTaskCreatorConfig,
 ) (*mealplantaskcreator.Worker, error) {
 	wire.Build(
-		postgres.Providers,
+		postgres.PGProviders,
 		recipeanalysis.ProvidersRecipeAnalysis,
 		mealplantaskcreator.ProvidersMealPlanTaskCreator,
-		tracingcfg.ProvidersTracingConfig,
-		observability.Providers,
+		tracingcfg.TracingConfigProviders,
+		observability.O11yProviders,
 		msgconfig.MessageQueueProviders,
-		loggingcfg.ProvidersLogConfig,
-		metricscfg.Providers,
-		auditlogentries.Providers,
-		identity.Providers,
-		mealplanning.Providers,
+		loggingcfg.LogConfigProviders,
+		metricscfg.MetricsConfigProviders,
+		auditlogentries.AuditRepoProviders,
+		identity.IDRepoProviders,
+		mealplanning.MPRepoProviders,
 		ConfigProviders,
 	)
 

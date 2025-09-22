@@ -28,15 +28,15 @@ func Build(
 ) (*mealplanfinalizer.Worker, error) {
 	wire.Build(
 		mealplanfinalizer.ProvidersMealPlanFinalizer,
-		tracingcfg.ProvidersTracingConfig,
-		observability.Providers,
-		postgres.Providers,
+		tracingcfg.TracingConfigProviders,
+		observability.O11yProviders,
+		postgres.PGProviders,
 		msgconfig.MessageQueueProviders,
-		loggingcfg.ProvidersLogConfig,
-		metricscfg.Providers,
-		auditlogentries.Providers,
-		identity.Providers,
-		mealplanning.Providers,
+		loggingcfg.LogConfigProviders,
+		metricscfg.MetricsConfigProviders,
+		auditlogentries.AuditRepoProviders,
+		identity.IDRepoProviders,
+		mealplanning.MPRepoProviders,
 		ConfigProviders,
 	)
 

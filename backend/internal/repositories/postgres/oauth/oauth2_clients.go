@@ -5,13 +5,19 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
+)
+
+const (
+	resourceTypeOAuth2Clients = "oauth2_clients"
 )
 
 var (
@@ -138,16 +144,36 @@ func (q *repository) CreateOAuth2Client(ctx context.Context, input *types.OAuth2
 		keys.OAuth2ClientClientIDKey: input.ClientID,
 	})
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
 	if writeErr := q.generatedQuerier.CreateOAuth2Client(ctx, q.db, &generated.CreateOAuth2ClientParams{
 		ID:           input.ID,
 		Name:         input.Name,
 		ClientID:     input.ClientID,
 		ClientSecret: input.ClientSecret,
 	}); writeErr != nil {
+		q.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(writeErr, span, "creating OAuth2 client")
 	}
 
 	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, input.ID)
+
+	if _, err = q.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeOAuth2Clients,
+		RelevantID:   input.ID,
+		EventType:    audit.AuditLogEventTypeCreated,
+	}); err != nil {
+		q.RollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
 
 	client := &types.OAuth2Client{
 		ID:           input.ID,

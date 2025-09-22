@@ -4,13 +4,19 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning/generated"
+)
+
+const (
+	resourceTypeMealPlanEvents = "meal_plan_events"
 )
 
 var (
@@ -269,6 +275,16 @@ func (q *repository) createMealPlanEvent(ctx context.Context, querier database.S
 			return nil, observability.PrepareError(createErr, span, "creating meal plan option for meal plan event")
 		}
 		x.Options = append(x.Options, opt)
+	}
+
+	if _, err := q.auditLogEntryRepo.CreateAuditLogEntry(ctx, querier, &audit.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeMealPlanEvents,
+		RelevantID:   input.ID,
+		EventType:    audit.AuditLogEventTypeCreated,
+	}); err != nil {
+		q.RollbackTransaction(ctx, querier)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, x.ID)

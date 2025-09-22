@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	Providers = wire.NewSet(
+	AuthRepoProviders = wire.NewSet(
 		ProvideAuthRepository,
 		ProvidePasswordResetTokenDataManager,
 	)

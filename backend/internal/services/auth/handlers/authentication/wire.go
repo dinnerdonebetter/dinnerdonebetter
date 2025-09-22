@@ -4,8 +4,8 @@ import (
 	"github.com/google/wire"
 )
 
-// Providers are our collection of what we provide to other services.
-var Providers = wire.NewSet(
+// AuthHTTPServiceProviders are our collection of what we provide to other services.
+var AuthHTTPServiceProviders = wire.NewSet(
 	ProvideService,
 	ProvideOAuth2ClientManager,
 	ProvideOAuth2ServerImplementation,

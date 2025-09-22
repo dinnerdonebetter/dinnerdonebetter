@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/dataprivacy"
 	dataprivacysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/dataprivacy"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
@@ -19,21 +18,18 @@ var _ dataprivacysvc.DataPrivacyServiceServer = (*serviceImpl)(nil)
 type (
 	serviceImpl struct {
 		dataprivacysvc.UnimplementedDataPrivacyServiceServer
-		tracer                tracing.Tracer
-		logger                logging.Logger
-		dataPrivacyRepository dataprivacy.Repository
+		tracer tracing.Tracer
+		logger logging.Logger
 	}
 )
 
-func NewService(
+func NewDataPrivacyService(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
-	dataPrivacyRepository dataprivacy.Repository,
 ) dataprivacysvc.DataPrivacyServiceServer {
 	return &serviceImpl{
-		logger:                logging.EnsureLogger(logger).WithName(o11yName),
-		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		dataPrivacyRepository: dataPrivacyRepository,
+		logger: logging.EnsureLogger(logger).WithName(o11yName),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 	}
 }
 

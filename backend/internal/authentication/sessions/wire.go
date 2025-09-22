@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	Providers = wire.NewSet(
+	SessionProviders = wire.NewSet(
 		ProvideContextDataFetcherFromContext,
 	)
 )

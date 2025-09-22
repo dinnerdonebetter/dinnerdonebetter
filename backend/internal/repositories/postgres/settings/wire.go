@@ -3,7 +3,7 @@ package settings
 import "github.com/google/wire"
 
 var (
-	Providers = wire.NewSet(
+	SettingsRepoProviders = wire.NewSet(
 		ProvideSettingsRepository,
 	)
 )

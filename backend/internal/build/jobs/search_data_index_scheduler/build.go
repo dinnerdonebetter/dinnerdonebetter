@@ -28,15 +28,15 @@ func Build(
 ) (*indexing.IndexScheduler, error) {
 	wire.Build(
 		indexing.ProvidersIndexing,
-		tracingcfg.ProvidersTracingConfig,
-		observability.Providers,
+		tracingcfg.TracingConfigProviders,
+		observability.O11yProviders,
 		msgconfig.MessageQueueProviders,
-		postgres.Providers,
-		loggingcfg.ProvidersLogConfig,
-		metricscfg.Providers,
-		auditlogentries.Providers,
-		identity.Providers,
-		mealplanning.Providers,
+		postgres.PGProviders,
+		loggingcfg.LogConfigProviders,
+		metricscfg.MetricsConfigProviders,
+		auditlogentries.AuditRepoProviders,
+		identity.IDRepoProviders,
+		mealplanning.MPRepoProviders,
 		ProvideIndexFunctions,
 		ConfigProviders,
 	)

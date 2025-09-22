@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// ProvidersTokenIssuers are what we provide to dependency injection.
-	ProvidersTokenIssuers = wire.NewSet(
+	// TokenIssuerProviders are what we provide to dependency injection.
+	TokenIssuerProviders = wire.NewSet(
 		ProvideTokenIssuer,
 	)
 )
