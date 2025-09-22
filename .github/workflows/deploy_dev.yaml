@@ -21,7 +21,7 @@ jobs:
       frontend_admin: ${{ steps.filter.outputs.frontend_admin }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - uses: dorny/paths-filter@v3
         id: filter
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v2
@@ -130,12 +130,12 @@ jobs:
         container-registry: ['us-central1-docker.pkg.dev']
     steps:
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v2
@@ -201,7 +201,7 @@ jobs:
             container-name: 'admin_app_server'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - id: auth
         uses: google-github-actions/auth@v2
@@ -265,7 +265,7 @@ jobs:
             container-name: 'landing_server'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - id: auth
         uses: google-github-actions/auth@v2
@@ -315,7 +315,7 @@ jobs:
             container-name: 'webapp_server'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - id: auth
         uses: google-github-actions/auth@v2
@@ -378,12 +378,12 @@ jobs:
         container-registry: ['us-central1-docker.pkg.dev']
     steps:
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v2

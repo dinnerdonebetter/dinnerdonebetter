@@ -28,7 +28,7 @@ TESTABLE_PACKAGE_LIST := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|
 # CONTAINER VERSIONS
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
-LINTER_IMAGE           := golangci/golangci-lint:v1.64.5
+LINTER_IMAGE           := golangci/golangci-lint:v2.4.0
 
 # COMMANDS
 GO_FORMAT             := gofmt -s -w
@@ -215,11 +215,6 @@ querier: queries queries_lint
 .PHONY: sqlc_struct_check
 sqlc_struct_check:
 	go run $(THIS)/cmd/tools/sqlc_struct_checker
-
-.PHONY: openapi
-openapi:
-	go run $(THIS)/cmd/tools/codegen/openapi_spec
-	(cd .. && $(MAKE) format_yaml)
 
 .PHONY: env_vars
 env_vars:
