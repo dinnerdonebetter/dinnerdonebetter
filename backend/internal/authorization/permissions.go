@@ -22,326 +22,332 @@ const (
 	ReadUserPermission Permission = "read.user"
 	// SearchUserPermission is a service admin permission.
 	SearchUserPermission Permission = "search.user"
+	// ArchiveUserPermission is a service admin permission.
+	ArchiveUserPermission Permission = "archive.user"
 
-	// UpdateHouseholdPermission is a household admin permission.
-	UpdateHouseholdPermission Permission = "update.household"
-	// ArchiveHouseholdPermission is a household admin permission.
-	ArchiveHouseholdPermission Permission = "archive.household"
-	// InviteUserToHouseholdPermission is a household admin permission.
-	InviteUserToHouseholdPermission Permission = "household.add.member"
-	// ModifyMemberPermissionsForHouseholdPermission is a household admin permission.
-	ModifyMemberPermissionsForHouseholdPermission Permission = "household.membership.modify"
-	// RemoveMemberHouseholdPermission is a household admin permission.
-	RemoveMemberHouseholdPermission Permission = "remove_member.household"
-	// TransferHouseholdPermission is a household admin permission.
-	TransferHouseholdPermission Permission = "transfer.household"
+	// UpdateAccountPermission is an account admin permission.
+	UpdateAccountPermission Permission = "update.account"
+	// ArchiveAccountPermission is an account admin permission.
+	ArchiveAccountPermission Permission = "archive.account"
+	// InviteUserToAccountPermission is an account admin permission.
+	InviteUserToAccountPermission Permission = "account.add.member"
+	// ModifyMemberPermissionsForAccountPermission is an account admin permission.
+	ModifyMemberPermissionsForAccountPermission Permission = "account.membership.modify"
+	// PublishArbitraryQueueMessagePermission is a service admin permission.
+	PublishArbitraryQueueMessagePermission Permission = "queues.publish.message"
+	// RemoveMemberAccountPermission is an account admin permission.
+	RemoveMemberAccountPermission Permission = "remove_member.account"
+	// TransferAccountPermission is an account admin permission.
+	TransferAccountPermission Permission = "transfer.account"
 
-	// CreateWebhooksPermission is a household admin permission.
+	// CreateWebhooksPermission is an account admin permission.
 	CreateWebhooksPermission Permission = "create.webhooks"
-	// ReadWebhooksPermission is a household admin permission.
+	// ReadWebhooksPermission is an account admin permission.
 	ReadWebhooksPermission Permission = "read.webhooks"
-	// UpdateWebhooksPermission is a household admin permission.
+	// UpdateWebhooksPermission is an account admin permission.
 	UpdateWebhooksPermission Permission = "update.webhooks"
-	// ArchiveWebhooksPermission is a household admin permission.
+	// ArchiveWebhooksPermission is an account admin permission.
 	ArchiveWebhooksPermission Permission = "archive.webhooks"
-	// CreateWebhookTriggerEventsPermission is a household admin permission.
+	// CreateWebhookTriggerEventsPermission is an account admin permission.
 	CreateWebhookTriggerEventsPermission Permission = "create.webhook_trigger_events"
-	// ArchiveWebhookTriggerEventsPermission is a household admin permission.
+	// ArchiveWebhookTriggerEventsPermission is an account admin permission.
 	ArchiveWebhookTriggerEventsPermission Permission = "archive.webhook_trigger_events"
 
 	// ReadAuditLogEntriesPermission is a service permission.
 	ReadAuditLogEntriesPermission Permission = "read.audit_log_entries"
 
-	// CreateValidInstrumentsPermission is a household user permission.
+	// CreateValidInstrumentsPermission is a permission.
 	CreateValidInstrumentsPermission Permission = "create.valid_instruments"
-	// ReadValidInstrumentsPermission is a household user permission.
+	// ReadValidInstrumentsPermission is a permission.
 	ReadValidInstrumentsPermission Permission = "read.valid_instruments"
-	// SearchValidInstrumentsPermission is a household user permission.
+	// SearchValidInstrumentsPermission is a permission.
 	SearchValidInstrumentsPermission Permission = "search.valid_instruments"
-	// UpdateValidInstrumentsPermission is a household user permission.
+	// UpdateValidInstrumentsPermission is a permission.
 	UpdateValidInstrumentsPermission Permission = "update.valid_instruments"
-	// ArchiveValidInstrumentsPermission is a household user permission.
+	// ArchiveValidInstrumentsPermission is a permission.
 	ArchiveValidInstrumentsPermission Permission = "archive.valid_instruments"
 
-	// CreateValidVesselsPermission is a household user permission.
+	// CreateValidVesselsPermission is a permission.
 	CreateValidVesselsPermission Permission = "create.valid_vessels"
-	// ReadValidVesselsPermission is a household user permission.
+	// ReadValidVesselsPermission is a permission.
 	ReadValidVesselsPermission Permission = "read.valid_vessels"
-	// SearchValidVesselsPermission is a household user permission.
+	// SearchValidVesselsPermission is a permission.
 	SearchValidVesselsPermission Permission = "search.valid_vessels"
-	// UpdateValidVesselsPermission is a household user permission.
+	// UpdateValidVesselsPermission is a permission.
 	UpdateValidVesselsPermission Permission = "update.valid_vessels"
-	// ArchiveValidVesselsPermission is a household user permission.
+	// ArchiveValidVesselsPermission is a permission.
 	ArchiveValidVesselsPermission Permission = "archive.valid_vessels"
 
-	// CreateValidIngredientsPermission is a household user permission.
+	// CreateValidIngredientsPermission is a permission.
 	CreateValidIngredientsPermission Permission = "create.valid_ingredients"
-	// ReadValidIngredientsPermission is a household user permission.
+	// ReadValidIngredientsPermission is a permission.
 	ReadValidIngredientsPermission Permission = "read.valid_ingredients"
-	// SearchValidIngredientsPermission is a household user permission.
+	// SearchValidIngredientsPermission is a permission.
 	SearchValidIngredientsPermission Permission = "search.valid_ingredients"
-	// UpdateValidIngredientsPermission is a household user permission.
+	// UpdateValidIngredientsPermission is a permission.
 	UpdateValidIngredientsPermission Permission = "update.valid_ingredients"
-	// ArchiveValidIngredientsPermission is a household user permission.
+	// ArchiveValidIngredientsPermission is a permission.
 	ArchiveValidIngredientsPermission Permission = "archive.valid_ingredients"
 
-	// CreateValidIngredientGroupsPermission is a household user permission.
+	// CreateValidIngredientGroupsPermission is a permission.
 	CreateValidIngredientGroupsPermission Permission = "create.valid_ingredient_groups"
-	// ReadValidIngredientGroupsPermission is a household user permission.
+	// ReadValidIngredientGroupsPermission is a permission.
 	ReadValidIngredientGroupsPermission Permission = "read.valid_ingredient_groups"
-	// SearchValidIngredientGroupsPermission is a household user permission.
+	// SearchValidIngredientGroupsPermission is a permission.
 	SearchValidIngredientGroupsPermission Permission = "search.valid_ingredient_groups"
-	// UpdateValidIngredientGroupsPermission is a household user permission.
+	// UpdateValidIngredientGroupsPermission is a permission.
 	UpdateValidIngredientGroupsPermission Permission = "update.valid_ingredient_groups"
-	// ArchiveValidIngredientGroupsPermission is a household user permission.
+	// ArchiveValidIngredientGroupsPermission is a permission.
 	ArchiveValidIngredientGroupsPermission Permission = "archive.valid_ingredient_groups"
 
-	// CreateValidPreparationsPermission is a household user permission.
+	// CreateValidPreparationsPermission is a permission.
 	CreateValidPreparationsPermission Permission = "create.valid_preparations"
-	// ReadValidPreparationsPermission is a household user permission.
+	// ReadValidPreparationsPermission is a permission.
 	ReadValidPreparationsPermission Permission = "read.valid_preparations"
-	// SearchValidPreparationsPermission is a household user permission.
+	// SearchValidPreparationsPermission is a permission.
 	SearchValidPreparationsPermission Permission = "search.valid_preparations"
-	// UpdateValidPreparationsPermission is a household user permission.
+	// UpdateValidPreparationsPermission is a permission.
 	UpdateValidPreparationsPermission Permission = "update.valid_preparations"
-	// ArchiveValidPreparationsPermission is a household user permission.
+	// ArchiveValidPreparationsPermission is a permission.
 	ArchiveValidPreparationsPermission Permission = "archive.valid_preparations"
 
-	// CreateValidMeasurementUnitsPermission is a household user permission.
+	// CreateValidMeasurementUnitsPermission is a permission.
 	CreateValidMeasurementUnitsPermission Permission = "create.measurement_units"
-	// ReadValidMeasurementUnitsPermission is a household user permission.
+	// ReadValidMeasurementUnitsPermission is a permission.
 	ReadValidMeasurementUnitsPermission Permission = "read.measurement_units"
-	// SearchValidMeasurementUnitsPermission is a household user permission.
+	// SearchValidMeasurementUnitsPermission is a permission.
 	SearchValidMeasurementUnitsPermission Permission = "search.measurement_units"
-	// UpdateValidMeasurementUnitsPermission is a household user permission.
+	// UpdateValidMeasurementUnitsPermission is a permission.
 	UpdateValidMeasurementUnitsPermission Permission = "update.measurement_units"
-	// ArchiveValidMeasurementUnitsPermission is a household user permission.
+	// ArchiveValidMeasurementUnitsPermission is a permission.
 	ArchiveValidMeasurementUnitsPermission Permission = "archive.measurement_units"
 
-	// CreateValidIngredientStatesPermission is a household user permission.
+	// CreateValidIngredientStatesPermission is a permission.
 	CreateValidIngredientStatesPermission Permission = "create.valid_ingredient_states"
-	// ReadValidIngredientStatesPermission is a household user permission.
+	// ReadValidIngredientStatesPermission is a permission.
 	ReadValidIngredientStatesPermission Permission = "read.valid_ingredient_states"
-	// UpdateValidIngredientStatesPermission is a household user permission.
+	// UpdateValidIngredientStatesPermission is a permission.
 	UpdateValidIngredientStatesPermission Permission = "update.valid_ingredient_states"
-	// ArchiveValidIngredientStatesPermission is a household user permission.
+	// ArchiveValidIngredientStatesPermission is a permission.
 	ArchiveValidIngredientStatesPermission Permission = "archive.valid_ingredient_states"
 
-	// CreateValidMeasurementUnitConversionsPermission is a household user permission.
+	// CreateValidMeasurementUnitConversionsPermission is a permission.
 	CreateValidMeasurementUnitConversionsPermission Permission = "create.measurement_conversions"
-	// ReadValidMeasurementUnitConversionsPermission is a household user permission.
+	// ReadValidMeasurementUnitConversionsPermission is a permission.
 	ReadValidMeasurementUnitConversionsPermission Permission = "read.measurement_conversions"
-	// UpdateValidMeasurementUnitConversionsPermission is a household user permission.
+	// UpdateValidMeasurementUnitConversionsPermission is a permission.
 	UpdateValidMeasurementUnitConversionsPermission Permission = "update.measurement_conversions"
-	// ArchiveValidMeasurementUnitConversionsPermission is a household user permission.
+	// ArchiveValidMeasurementUnitConversionsPermission is a permission.
 	ArchiveValidMeasurementUnitConversionsPermission Permission = "archive.measurement_conversions"
 
-	// CreateValidIngredientPreparationsPermission is a household user permission.
+	// CreateValidIngredientPreparationsPermission is a permission.
 	CreateValidIngredientPreparationsPermission Permission = "create.valid_ingredient_preparations"
-	// ReadValidIngredientPreparationsPermission is a household user permission.
+	// ReadValidIngredientPreparationsPermission is a permission.
 	ReadValidIngredientPreparationsPermission Permission = "read.valid_ingredient_preparations"
-	// SearchValidIngredientPreparationsPermission is a household user permission.
+	// SearchValidIngredientPreparationsPermission is a permission.
 	SearchValidIngredientPreparationsPermission Permission = "search.valid_ingredient_preparations"
-	// UpdateValidIngredientPreparationsPermission is a household user permission.
+	// UpdateValidIngredientPreparationsPermission is a permission.
 	UpdateValidIngredientPreparationsPermission Permission = "update.valid_ingredient_preparations"
-	// ArchiveValidIngredientPreparationsPermission is a household user permission.
+	// ArchiveValidIngredientPreparationsPermission is a permission.
 	ArchiveValidIngredientPreparationsPermission Permission = "archive.valid_ingredient_preparations"
 
-	// CreateValidIngredientStateIngredientsPermission is a household user permission.
+	// CreateValidIngredientStateIngredientsPermission is a permission.
 	CreateValidIngredientStateIngredientsPermission Permission = "create.valid_ingredient_state_ingredients"
-	// ReadValidIngredientStateIngredientsPermission is a household user permission.
+	// ReadValidIngredientStateIngredientsPermission is a permission.
 	ReadValidIngredientStateIngredientsPermission Permission = "read.valid_ingredient_state_ingredients"
-	// SearchValidIngredientStateIngredientsPermission is a household user permission.
+	// SearchValidIngredientStateIngredientsPermission is a permission.
 	SearchValidIngredientStateIngredientsPermission Permission = "search.valid_ingredient_state_ingredients"
-	// UpdateValidIngredientStateIngredientsPermission is a household user permission.
+	// UpdateValidIngredientStateIngredientsPermission is a permission.
 	UpdateValidIngredientStateIngredientsPermission Permission = "update.valid_ingredient_state_ingredients"
-	// ArchiveValidIngredientStateIngredientsPermission is a household user permission.
+	// ArchiveValidIngredientStateIngredientsPermission is a permission.
 	ArchiveValidIngredientStateIngredientsPermission Permission = "archive.valid_ingredient_state_ingredients"
 
-	// CreateValidPreparationInstrumentsPermission is a household user permission.
+	// CreateValidPreparationInstrumentsPermission is a permission.
 	CreateValidPreparationInstrumentsPermission Permission = "create.valid_preparation_instruments"
-	// ReadValidPreparationInstrumentsPermission is a household user permission.
+	// ReadValidPreparationInstrumentsPermission is a permission.
 	ReadValidPreparationInstrumentsPermission Permission = "read.valid_preparation_instruments"
-	// SearchValidPreparationInstrumentsPermission is a household user permission.
+	// SearchValidPreparationInstrumentsPermission is a permission.
 	SearchValidPreparationInstrumentsPermission Permission = "search.valid_preparation_instruments"
-	// UpdateValidPreparationInstrumentsPermission is a household user permission.
+	// UpdateValidPreparationInstrumentsPermission is a permission.
 	UpdateValidPreparationInstrumentsPermission Permission = "update.valid_preparation_instruments"
-	// ArchiveValidPreparationInstrumentsPermission is a household user permission.
+	// ArchiveValidPreparationInstrumentsPermission is a permission.
 	ArchiveValidPreparationInstrumentsPermission Permission = "archive.valid_preparation_instruments"
 
-	// CreateValidPreparationVesselsPermission is a household user permission.
+	// CreateValidPreparationVesselsPermission is a permission.
 	CreateValidPreparationVesselsPermission Permission = "create.valid_preparation_vessels"
-	// ReadValidPreparationVesselsPermission is a household user permission.
+	// ReadValidPreparationVesselsPermission is a permission.
 	ReadValidPreparationVesselsPermission Permission = "read.valid_preparation_vessels"
-	// SearchValidPreparationVesselsPermission is a household user permission.
+	// SearchValidPreparationVesselsPermission is a permission.
 	SearchValidPreparationVesselsPermission Permission = "search.valid_preparation_vessels"
-	// UpdateValidPreparationVesselsPermission is a household user permission.
+	// UpdateValidPreparationVesselsPermission is a permission.
 	UpdateValidPreparationVesselsPermission Permission = "update.valid_preparation_vessels"
-	// ArchiveValidPreparationVesselsPermission is a household user permission.
+	// ArchiveValidPreparationVesselsPermission is a permission.
 	ArchiveValidPreparationVesselsPermission Permission = "archive.valid_preparation_vessels"
 
-	// CreateValidIngredientMeasurementUnitsPermission is a household user permission.
+	// CreateValidIngredientMeasurementUnitsPermission is a permission.
 	CreateValidIngredientMeasurementUnitsPermission Permission = "create.valid_ingredient_measurement_units"
-	// ReadValidIngredientMeasurementUnitsPermission is a household user permission.
+	// ReadValidIngredientMeasurementUnitsPermission is a permission.
 	ReadValidIngredientMeasurementUnitsPermission Permission = "read.valid_ingredient_measurement_units"
-	// SearchValidIngredientMeasurementUnitsPermission is a household user permission.
+	// SearchValidIngredientMeasurementUnitsPermission is a permission.
 	SearchValidIngredientMeasurementUnitsPermission Permission = "search.valid_ingredient_measurement_units"
-	// UpdateValidIngredientMeasurementUnitsPermission is a household user permission.
+	// UpdateValidIngredientMeasurementUnitsPermission is a permission.
 	UpdateValidIngredientMeasurementUnitsPermission Permission = "update.valid_ingredient_measurement_units"
-	// ArchiveValidIngredientMeasurementUnitsPermission is a household user permission.
+	// ArchiveValidIngredientMeasurementUnitsPermission is a permission.
 	ArchiveValidIngredientMeasurementUnitsPermission Permission = "archive.valid_ingredient_measurement_units"
 
-	// CreateMealsPermission is a household user permission.
+	// CreateMealsPermission is a permission.
 	CreateMealsPermission Permission = "create.meals"
-	// ReadMealsPermission is a household user permission.
+	// ReadMealsPermission is a permission.
 	ReadMealsPermission Permission = "read.meals"
-	// UpdateMealsPermission is a household user permission.
+	// UpdateMealsPermission is a permission.
 	UpdateMealsPermission Permission = "update.meals"
-	// ArchiveMealsPermission is a household user permission.
+	// ArchiveMealsPermission is a permission.
 	ArchiveMealsPermission Permission = "archive.meals"
 
-	// CreateRecipesPermission is a household user permission.
+	// TODO: clone.recipes permission.
+
+	// CreateRecipesPermission is a permission.
 	CreateRecipesPermission Permission = "create.recipes"
-	// ReadRecipesPermission is a household user permission.
+	// ReadRecipesPermission is a permission.
 	ReadRecipesPermission Permission = "read.recipes"
-	// SearchRecipesPermission is a household user permission.
+	// SearchRecipesPermission is a permission.
 	SearchRecipesPermission Permission = "search.recipes"
-	// UpdateRecipesPermission is a household user permission.
+	// UpdateRecipesPermission is a permission.
 	UpdateRecipesPermission Permission = "update.recipes"
-	// ArchiveRecipesPermission is a household user permission.
+	// ArchiveRecipesPermission is a permission.
 	ArchiveRecipesPermission Permission = "archive.recipes"
 
-	// CreateRecipePrepTasksPermission is a household user permission.
+	// CreateRecipePrepTasksPermission is a permission.
 	CreateRecipePrepTasksPermission Permission = "create.recipe_prep_tasks"
-	// ReadRecipePrepTasksPermission is a household user permission.
+	// ReadRecipePrepTasksPermission is a permission.
 	ReadRecipePrepTasksPermission Permission = "read.recipe_prep_tasks"
-	// UpdateRecipePrepTasksPermission is a household user permission.
+	// UpdateRecipePrepTasksPermission is a permission.
 	UpdateRecipePrepTasksPermission Permission = "update.recipe_prep_tasks"
-	// ArchiveRecipePrepTasksPermission is a household user permission.
+	// ArchiveRecipePrepTasksPermission is a permission.
 	ArchiveRecipePrepTasksPermission Permission = "archive.recipe_prep_tasks"
 
-	// CreateRecipeStepsPermission is a household user permission.
+	// CreateRecipeStepsPermission is a permission.
 	CreateRecipeStepsPermission Permission = "create.recipe_steps"
-	// ReadRecipeStepsPermission is a household user permission.
+	// ReadRecipeStepsPermission is a permission.
 	ReadRecipeStepsPermission Permission = "read.recipe_steps"
-	// SearchRecipeStepsPermission is a household user permission.
+	// SearchRecipeStepsPermission is a permission.
 	SearchRecipeStepsPermission Permission = "search.recipe_steps"
-	// UpdateRecipeStepsPermission is a household user permission.
+	// UpdateRecipeStepsPermission is a permission.
 	UpdateRecipeStepsPermission Permission = "update.recipe_steps"
-	// ArchiveRecipeStepsPermission is a household user permission.
+	// ArchiveRecipeStepsPermission is a permission.
 	ArchiveRecipeStepsPermission Permission = "archive.recipe_steps"
 
-	// CreateRecipeStepInstrumentsPermission is a household user permission.
+	// CreateRecipeStepInstrumentsPermission is a permission.
 	CreateRecipeStepInstrumentsPermission Permission = "create.recipe_step_instruments"
-	// ReadRecipeStepInstrumentsPermission is a household user permission.
+	// ReadRecipeStepInstrumentsPermission is a permission.
 	ReadRecipeStepInstrumentsPermission Permission = "read.recipe_step_instruments"
-	// SearchRecipeStepInstrumentsPermission is a household user permission.
+	// SearchRecipeStepInstrumentsPermission is a permission.
 	SearchRecipeStepInstrumentsPermission Permission = "search.recipe_step_instruments"
-	// UpdateRecipeStepInstrumentsPermission is a household user permission.
+	// UpdateRecipeStepInstrumentsPermission is a permission.
 	UpdateRecipeStepInstrumentsPermission Permission = "update.recipe_step_instruments"
-	// ArchiveRecipeStepInstrumentsPermission is a household user permission.
+	// ArchiveRecipeStepInstrumentsPermission is a permission.
 	ArchiveRecipeStepInstrumentsPermission Permission = "archive.recipe_step_instruments"
 
-	// CreateRecipeStepVesselsPermission is a household user permission.
+	// CreateRecipeStepVesselsPermission is a permission.
 	CreateRecipeStepVesselsPermission Permission = "create.recipe_step_vessels"
-	// ReadRecipeStepVesselsPermission is a household user permission.
+	// ReadRecipeStepVesselsPermission is a permission.
 	ReadRecipeStepVesselsPermission Permission = "read.recipe_step_vessels"
-	// SearchRecipeStepVesselsPermission is a household user permission.
+	// SearchRecipeStepVesselsPermission is a permission.
 	SearchRecipeStepVesselsPermission Permission = "search.recipe_step_vessels"
-	// UpdateRecipeStepVesselsPermission is a household user permission.
+	// UpdateRecipeStepVesselsPermission is a permission.
 	UpdateRecipeStepVesselsPermission Permission = "update.recipe_step_vessels"
-	// ArchiveRecipeStepVesselsPermission is a household user permission.
+	// ArchiveRecipeStepVesselsPermission is a permission.
 	ArchiveRecipeStepVesselsPermission Permission = "archive.recipe_step_vessels"
 
-	// CreateRecipeStepIngredientsPermission is a household user permission.
+	// CreateRecipeStepIngredientsPermission is a permission.
 	CreateRecipeStepIngredientsPermission Permission = "create.recipe_step_ingredients"
-	// ReadRecipeStepIngredientsPermission is a household user permission.
+	// ReadRecipeStepIngredientsPermission is a permission.
 	ReadRecipeStepIngredientsPermission Permission = "read.recipe_step_ingredients"
-	// SearchRecipeStepIngredientsPermission is a household user permission.
+	// SearchRecipeStepIngredientsPermission is a permission.
 	SearchRecipeStepIngredientsPermission Permission = "search.recipe_step_ingredients"
-	// UpdateRecipeStepIngredientsPermission is a household user permission.
+	// UpdateRecipeStepIngredientsPermission is a permission.
 	UpdateRecipeStepIngredientsPermission Permission = "update.recipe_step_ingredients"
-	// ArchiveRecipeStepIngredientsPermission is a household user permission.
+	// ArchiveRecipeStepIngredientsPermission is a permission.
 	ArchiveRecipeStepIngredientsPermission Permission = "archive.recipe_step_ingredients"
 
-	// CreateRecipeStepCompletionConditionsPermission is a household user permission.
+	// CreateRecipeStepCompletionConditionsPermission is a permission.
 	CreateRecipeStepCompletionConditionsPermission Permission = "create.recipe_step_completion_conditions"
-	// ReadRecipeStepCompletionConditionsPermission is a household user permission.
+	// ReadRecipeStepCompletionConditionsPermission is a permission.
 	ReadRecipeStepCompletionConditionsPermission Permission = "read.recipe_step_completion_conditions"
-	// SearchRecipeStepCompletionConditionsPermission is a household user permission.
+	// SearchRecipeStepCompletionConditionsPermission is a permission.
 	SearchRecipeStepCompletionConditionsPermission Permission = "search.recipe_step_completion_conditions"
-	// UpdateRecipeStepCompletionConditionsPermission is a household user permission.
+	// UpdateRecipeStepCompletionConditionsPermission is a permission.
 	UpdateRecipeStepCompletionConditionsPermission Permission = "update.recipe_step_completion_conditions"
-	// ArchiveRecipeStepCompletionConditionsPermission is a household user permission.
+	// ArchiveRecipeStepCompletionConditionsPermission is a permission.
 	ArchiveRecipeStepCompletionConditionsPermission Permission = "archive.recipe_step_completion_conditions"
 
-	// CreateRecipeStepProductsPermission is a household user permission.
+	// CreateRecipeStepProductsPermission is a permission.
 	CreateRecipeStepProductsPermission Permission = "create.recipe_step_products"
-	// ReadRecipeStepProductsPermission is a household user permission.
+	// ReadRecipeStepProductsPermission is a permission.
 	ReadRecipeStepProductsPermission Permission = "read.recipe_step_products"
-	// SearchRecipeStepProductsPermission is a household user permission.
+	// SearchRecipeStepProductsPermission is a permission.
 	SearchRecipeStepProductsPermission Permission = "search.recipe_step_products"
-	// UpdateRecipeStepProductsPermission is a household user permission.
+	// UpdateRecipeStepProductsPermission is a permission.
 	UpdateRecipeStepProductsPermission Permission = "update.recipe_step_products"
-	// ArchiveRecipeStepProductsPermission is a household user permission.
+	// ArchiveRecipeStepProductsPermission is a permission.
 	ArchiveRecipeStepProductsPermission Permission = "archive.recipe_step_products"
 
-	// CreateMealPlansPermission is a household user permission.
+	// CreateMealPlansPermission is a permission.
 	CreateMealPlansPermission Permission = "create.meal_plans"
-	// ReadMealPlansPermission is a household user permission.
+	// ReadMealPlansPermission is a permission.
 	ReadMealPlansPermission Permission = "read.meal_plans"
-	// SearchMealPlansPermission is a household user permission.
+	// SearchMealPlansPermission is a permission.
 	SearchMealPlansPermission Permission = "search.meal_plans"
-	// UpdateMealPlansPermission is a household user permission.
+	// UpdateMealPlansPermission is a permission.
 	UpdateMealPlansPermission Permission = "update.meal_plans"
-	// ArchiveMealPlansPermission is a household user permission.
+	// ArchiveMealPlansPermission is a permission.
 	ArchiveMealPlansPermission Permission = "archive.meal_plans"
 
-	// CreateMealPlanEventsPermission is a household user permission.
+	// CreateMealPlanEventsPermission is a permission.
 	CreateMealPlanEventsPermission Permission = "create.meal_plan_events"
-	// ReadMealPlanEventsPermission is a household user permission.
+	// ReadMealPlanEventsPermission is a permission.
 	ReadMealPlanEventsPermission Permission = "read.meal_plan_events"
-	// UpdateMealPlanEventsPermission is a household user permission.
+	// UpdateMealPlanEventsPermission is a permission.
 	UpdateMealPlanEventsPermission Permission = "update.meal_plan_events"
-	// ArchiveMealPlanEventsPermission is a household user permission.
+	// ArchiveMealPlanEventsPermission is a permission.
 	ArchiveMealPlanEventsPermission Permission = "archive.meal_plan_events"
 
-	// CreateMealPlanOptionsPermission is a household user permission.
+	// CreateMealPlanOptionsPermission is a permission.
 	CreateMealPlanOptionsPermission Permission = "create.meal_plan_options"
-	// ReadMealPlanOptionsPermission is a household user permission.
+	// ReadMealPlanOptionsPermission is a permission.
 	ReadMealPlanOptionsPermission Permission = "read.meal_plan_options"
-	// SearchMealPlanOptionsPermission is a household user permission.
+	// SearchMealPlanOptionsPermission is a permission.
 	SearchMealPlanOptionsPermission Permission = "search.meal_plan_options"
-	// UpdateMealPlanOptionsPermission is a household user permission.
+	// UpdateMealPlanOptionsPermission is a permission.
 	UpdateMealPlanOptionsPermission Permission = "update.meal_plan_options"
-	// ArchiveMealPlanOptionsPermission is a household user permission.
+	// ArchiveMealPlanOptionsPermission is a permission.
 	ArchiveMealPlanOptionsPermission Permission = "archive.meal_plan_options"
 
-	// CreateMealPlanGroceryListItemsPermission is a household user permission.
+	// CreateMealPlanGroceryListItemsPermission is a permission.
 	CreateMealPlanGroceryListItemsPermission Permission = "create.meal_plan_grocery_list_items"
-	// ReadMealPlanGroceryListItemsPermission is a household user permission.
+	// ReadMealPlanGroceryListItemsPermission is a permission.
 	ReadMealPlanGroceryListItemsPermission Permission = "read.meal_plan_grocery_list_items"
-	// UpdateMealPlanGroceryListItemsPermission is a household user permission.
+	// UpdateMealPlanGroceryListItemsPermission is a permission.
 	UpdateMealPlanGroceryListItemsPermission Permission = "update.meal_plan_grocery_list_items"
-	// ArchiveMealPlanGroceryListItemsPermission is a household user permission.
+	// ArchiveMealPlanGroceryListItemsPermission is a permission.
 	ArchiveMealPlanGroceryListItemsPermission Permission = "archive.meal_plan_grocery_list_items"
 
-	// CreateMealPlanOptionVotesPermission is a household user permission.
+	// CreateMealPlanOptionVotesPermission is a permission.
 	CreateMealPlanOptionVotesPermission Permission = "create.meal_plan_option_votes"
-	// ReadMealPlanOptionVotesPermission is a household user permission.
+	// ReadMealPlanOptionVotesPermission is a permission.
 	ReadMealPlanOptionVotesPermission Permission = "read.meal_plan_option_votes"
-	// SearchMealPlanOptionVotesPermission is a household user permission.
+	// SearchMealPlanOptionVotesPermission is a permission.
 	SearchMealPlanOptionVotesPermission Permission = "search.meal_plan_option_votes"
-	// UpdateMealPlanOptionVotesPermission is a household user permission.
+	// UpdateMealPlanOptionVotesPermission is a permission.
 	UpdateMealPlanOptionVotesPermission Permission = "update.meal_plan_option_votes"
-	// ArchiveMealPlanOptionVotesPermission is a household user permission.
+	// ArchiveMealPlanOptionVotesPermission is a permission.
 	ArchiveMealPlanOptionVotesPermission Permission = "archive.meal_plan_option_votes"
 
-	// ReadMealPlanTasksPermission is a household user permission.
+	// ReadMealPlanTasksPermission is a permission.
 	ReadMealPlanTasksPermission Permission = "read.meal_plan_tasks"
-	// CreateMealPlanTasksPermission is a household user permission.
+	// CreateMealPlanTasksPermission is a permission.
 	CreateMealPlanTasksPermission Permission = "create.meal_plan_tasks"
-	// UpdateMealPlanTasksPermission is a household user permission.
+	// UpdateMealPlanTasksPermission is a permission.
 	UpdateMealPlanTasksPermission Permission = "update.meal_plan_tasks"
 
 	// CreateServiceSettingsPermission is an admin user permission.
@@ -362,45 +368,45 @@ const (
 	// ArchiveServiceSettingConfigurationsPermission is an admin user permission.
 	ArchiveServiceSettingConfigurationsPermission Permission = "archive.service_setting_configurations"
 
-	// CreateUserIngredientPreferencesPermission is a household user permission.
+	// CreateUserIngredientPreferencesPermission is a permission.
 	CreateUserIngredientPreferencesPermission Permission = "create.user_ingredient_preferences"
-	// ReadUserIngredientPreferencesPermission is a household user permission.
+	// ReadUserIngredientPreferencesPermission is a permission.
 	ReadUserIngredientPreferencesPermission Permission = "read.user_ingredient_preferences"
-	// UpdateUserIngredientPreferencesPermission is a household user permission.
+	// UpdateUserIngredientPreferencesPermission is a permission.
 	UpdateUserIngredientPreferencesPermission Permission = "update.user_ingredient_preferences"
-	// ArchiveUserIngredientPreferencesPermission is a household user permission.
+	// ArchiveUserIngredientPreferencesPermission is a permission.
 	ArchiveUserIngredientPreferencesPermission Permission = "archive.user_ingredient_preferences"
 
-	// CreateHouseholdInstrumentOwnershipsPermission is a household user permission.
-	CreateHouseholdInstrumentOwnershipsPermission Permission = "create.household_instrument_ownerships"
-	// ReadHouseholdInstrumentOwnershipsPermission is a household user permission.
-	ReadHouseholdInstrumentOwnershipsPermission Permission = "read.household_instrument_ownerships"
-	// UpdateHouseholdInstrumentOwnershipsPermission is a household user permission.
-	UpdateHouseholdInstrumentOwnershipsPermission Permission = "update.household_instrument_ownerships"
-	// ArchiveHouseholdInstrumentOwnershipsPermission is a household user permission.
-	ArchiveHouseholdInstrumentOwnershipsPermission Permission = "archive.household_instrument_ownerships"
+	// CreateAccountInstrumentOwnershipsPermission is a permission.
+	CreateAccountInstrumentOwnershipsPermission Permission = "create.account_instrument_ownerships"
+	// ReadAccountInstrumentOwnershipsPermission is a permission.
+	ReadAccountInstrumentOwnershipsPermission Permission = "read.account_instrument_ownerships"
+	// UpdateAccountInstrumentOwnershipsPermission is a permission.
+	UpdateAccountInstrumentOwnershipsPermission Permission = "update.account_instrument_ownerships"
+	// ArchiveAccountInstrumentOwnershipsPermission is a permission.
+	ArchiveAccountInstrumentOwnershipsPermission Permission = "archive.account_instrument_ownerships"
 
-	// CreateRecipeRatingsPermission is a household user permission.
+	// CreateRecipeRatingsPermission is a permission.
 	CreateRecipeRatingsPermission Permission = "create.recipe_ratings"
-	// ReadRecipeRatingsPermission is a household user permission.
+	// ReadRecipeRatingsPermission is a permission.
 	ReadRecipeRatingsPermission Permission = "read.recipe_ratings"
-	// UpdateRecipeRatingsPermission is a household user permission.
+	// UpdateRecipeRatingsPermission is a permission.
 	UpdateRecipeRatingsPermission Permission = "update.recipe_ratings"
-	// ArchiveRecipeRatingsPermission is a household user permission.
+	// ArchiveRecipeRatingsPermission is a permission.
 	ArchiveRecipeRatingsPermission Permission = "archive.recipe_ratings"
 
-	// CreateOAuth2ClientsPermission is a household admin permission.
+	// CreateOAuth2ClientsPermission is an account admin permission.
 	CreateOAuth2ClientsPermission Permission = "create.oauth2_clients"
-	// ReadOAuth2ClientsPermission is a household admin permission.
+	// ReadOAuth2ClientsPermission is an account admin permission.
 	ReadOAuth2ClientsPermission Permission = "read.oauth2_clients"
-	// ArchiveOAuth2ClientsPermission is a household admin permission.
+	// ArchiveOAuth2ClientsPermission is an account admin permission.
 	ArchiveOAuth2ClientsPermission Permission = "archive.oauth2_clients"
 
 	// CreateUserNotificationsPermission is an admin user permission.
 	CreateUserNotificationsPermission Permission = "create.user_notifications"
-	// ReadUserNotificationsPermission is a household user permission.
+	// ReadUserNotificationsPermission is a permission.
 	ReadUserNotificationsPermission Permission = "read.user_notifications"
-	// UpdateUserNotificationsPermission is a household user permission.
+	// UpdateUserNotificationsPermission is a permission.
 	UpdateUserNotificationsPermission Permission = "update.user_notifications"
 )
 
@@ -421,12 +427,14 @@ var (
 		UpdateUserStatusPermission,
 		ReadUserPermission,
 		SearchUserPermission,
+		ArchiveUserPermission,
 		CreateOAuth2ClientsPermission,
 		ArchiveOAuth2ClientsPermission,
 		ArchiveServiceSettingsPermission,
 		CreateRecipesPermission,
 		CreateUserNotificationsPermission,
 		ImpersonateUserPermission,
+		PublishArbitraryQueueMessagePermission,
 		// only admins can arbitrarily create these via the API, this is exclusively for integration test purposes.
 		CreateServiceSettingsPermission,
 		CreateMealPlanTasksPermission,
@@ -476,14 +484,14 @@ var (
 		ArchiveValidIngredientStatesPermission,
 	}
 
-	// HouseholdAdminPermissions is every household admin permission.
-	HouseholdAdminPermissions = []gorbac.Permission{
-		UpdateHouseholdPermission,
-		ArchiveHouseholdPermission,
-		TransferHouseholdPermission,
-		InviteUserToHouseholdPermission,
-		ModifyMemberPermissionsForHouseholdPermission,
-		RemoveMemberHouseholdPermission,
+	// AccountAdminPermissions is every account admin permission.
+	AccountAdminPermissions = []gorbac.Permission{
+		UpdateAccountPermission,
+		ArchiveAccountPermission,
+		TransferAccountPermission,
+		InviteUserToAccountPermission,
+		ModifyMemberPermissionsForAccountPermission,
+		RemoveMemberAccountPermission,
 		CreateWebhooksPermission,
 		UpdateWebhooksPermission,
 		ArchiveWebhooksPermission,
@@ -496,15 +504,15 @@ var (
 		CreateMealPlanOptionsPermission,
 		UpdateMealPlanOptionsPermission,
 		ArchiveMealPlanOptionsPermission,
-		CreateHouseholdInstrumentOwnershipsPermission,
-		UpdateHouseholdInstrumentOwnershipsPermission,
-		ArchiveHouseholdInstrumentOwnershipsPermission,
+		CreateAccountInstrumentOwnershipsPermission,
+		UpdateAccountInstrumentOwnershipsPermission,
+		ArchiveAccountInstrumentOwnershipsPermission,
 		CreateWebhookTriggerEventsPermission,
 		ArchiveWebhookTriggerEventsPermission,
 	}
 
-	// HouseholdMemberPermissions is every household member permission.
-	HouseholdMemberPermissions = []gorbac.Permission{
+	// AccountMemberPermissions is every account member permission.
+	AccountMemberPermissions = []gorbac.Permission{
 		ReadWebhooksPermission,
 		ReadAuditLogEntriesPermission,
 		ReadOAuth2ClientsPermission,
@@ -599,7 +607,7 @@ var (
 		ReadUserIngredientPreferencesPermission,
 		UpdateUserIngredientPreferencesPermission,
 		ArchiveUserIngredientPreferencesPermission,
-		ReadHouseholdInstrumentOwnershipsPermission,
+		ReadAccountInstrumentOwnershipsPermission,
 		CreateRecipeRatingsPermission,
 		ReadRecipeRatingsPermission,
 		UpdateRecipeRatingsPermission,
@@ -621,13 +629,13 @@ func init() {
 		must(serviceAdmin.Assign(perm)) // these aren't separate things yet
 	}
 
-	// assign household admin permissions.
-	for _, perm := range HouseholdAdminPermissions {
-		must(householdAdmin.Assign(perm))
+	// assign account admin permissions.
+	for _, perm := range AccountAdminPermissions {
+		must(accountAdmin.Assign(perm))
 	}
 
-	// assign household member permissions.
-	for _, perm := range HouseholdMemberPermissions {
-		must(householdMember.Assign(perm))
+	// assign account member permissions.
+	for _, perm := range AccountMemberPermissions {
+		must(accountMember.Assign(perm))
 	}
 }

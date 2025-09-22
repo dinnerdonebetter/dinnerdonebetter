@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 
 	"github.com/google/wire"
 )
@@ -11,6 +11,7 @@ var (
 	ServiceConfigProviders = wire.NewSet(
 		wire.FieldsOf(
 			new(*APIServiceConfig),
+			"Auth",
 			"Observability",
 			"Email",
 			"Analytics",
@@ -30,23 +31,10 @@ var (
 		),
 		wire.FieldsOf(
 			new(*ServicesConfig),
-			// Core
-			"AuditLogEntries",
-			"Auth",
-			"Households",
-			"HouseholdInvitations",
-			"ServiceSettings",
-			"ServiceSettingConfigurations",
 			"Users",
-			"UserNotifications",
-			"Webhooks",
-			"Workers",
 			"DataPrivacy",
-			"OAuth2Clients",
-			// Data
-			"ValidEnumerations",
 			"MealPlanning",
-			"Recipes",
+			"OAuth2Clients",
 		),
 		ProvideHTTPServerConfigFromAPIServiceConfig,
 		ProvideHTTPServerConfigFromAdminWebappConfig,

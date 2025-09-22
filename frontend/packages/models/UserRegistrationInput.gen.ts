@@ -6,7 +6,7 @@ export interface IUserRegistrationInput {
   birthday: string;
   emailAddress: string;
   firstName: string;
-  householdName: string;
+  accountName: string;
   invitationID: string;
   invitationToken: string;
   lastName: string;
@@ -20,7 +20,7 @@ export class UserRegistrationInput implements IUserRegistrationInput {
   birthday: string;
   emailAddress: string;
   firstName: string;
-  householdName: string;
+  accountName: string;
   invitationID: string;
   invitationToken: string;
   lastName: string;
@@ -32,7 +32,7 @@ export class UserRegistrationInput implements IUserRegistrationInput {
     this.birthday = input.birthday || '';
     this.emailAddress = input.emailAddress || '';
     this.firstName = input.firstName || '';
-    this.householdName = input.householdName || '';
+    this.accountName = input.accountName || '';
     this.invitationID = input.invitationID || '';
     this.invitationToken = input.invitationToken || '';
     this.lastName = input.lastName || '';

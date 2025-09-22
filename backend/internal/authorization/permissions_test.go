@@ -9,20 +9,20 @@ import (
 func TestPermissions(T *testing.T) {
 	T.Parallel()
 
-	T.Run("household admin", func(t *testing.T) {
+	T.Run("account admin", func(t *testing.T) {
 		t.Parallel()
 
-		permissionChecker := NewHouseholdRolePermissionChecker(HouseholdAdminRoleName)
+		permissionChecker := NewAccountRolePermissionChecker(AccountAdminRoleName)
 
 		assert.False(t, permissionChecker.HasPermission(UpdateUserStatusPermission))
 		assert.False(t, permissionChecker.HasPermission(ReadUserPermission))
 		assert.False(t, permissionChecker.HasPermission(SearchUserPermission))
-		assert.True(t, permissionChecker.HasPermission(UpdateHouseholdPermission))
-		assert.True(t, permissionChecker.HasPermission(ArchiveHouseholdPermission))
-		assert.True(t, permissionChecker.HasPermission(InviteUserToHouseholdPermission))
-		assert.True(t, permissionChecker.HasPermission(ModifyMemberPermissionsForHouseholdPermission))
-		assert.True(t, permissionChecker.HasPermission(RemoveMemberHouseholdPermission))
-		assert.True(t, permissionChecker.HasPermission(TransferHouseholdPermission))
+		assert.True(t, permissionChecker.HasPermission(UpdateAccountPermission))
+		assert.True(t, permissionChecker.HasPermission(ArchiveAccountPermission))
+		assert.True(t, permissionChecker.HasPermission(InviteUserToAccountPermission))
+		assert.True(t, permissionChecker.HasPermission(ModifyMemberPermissionsForAccountPermission))
+		assert.True(t, permissionChecker.HasPermission(RemoveMemberAccountPermission))
+		assert.True(t, permissionChecker.HasPermission(TransferAccountPermission))
 		assert.True(t, permissionChecker.HasPermission(CreateWebhooksPermission))
 		assert.True(t, permissionChecker.HasPermission(ReadWebhooksPermission))
 		assert.True(t, permissionChecker.HasPermission(UpdateWebhooksPermission))
@@ -136,20 +136,20 @@ func TestPermissions(T *testing.T) {
 		assert.True(t, permissionChecker.HasPermission(UpdateMealPlanTasksPermission))
 	})
 
-	T.Run("household member", func(t *testing.T) {
+	T.Run("account member", func(t *testing.T) {
 		t.Parallel()
 
-		permissionChecker := NewHouseholdRolePermissionChecker(HouseholdMemberRoleName)
+		permissionChecker := NewAccountRolePermissionChecker(AccountMemberRoleName)
 
 		assert.False(t, permissionChecker.HasPermission(UpdateUserStatusPermission))
 		assert.False(t, permissionChecker.HasPermission(ReadUserPermission))
 		assert.False(t, permissionChecker.HasPermission(SearchUserPermission))
-		assert.False(t, permissionChecker.HasPermission(UpdateHouseholdPermission))
-		assert.False(t, permissionChecker.HasPermission(ArchiveHouseholdPermission))
-		assert.False(t, permissionChecker.HasPermission(InviteUserToHouseholdPermission))
-		assert.False(t, permissionChecker.HasPermission(ModifyMemberPermissionsForHouseholdPermission))
-		assert.False(t, permissionChecker.HasPermission(RemoveMemberHouseholdPermission))
-		assert.False(t, permissionChecker.HasPermission(TransferHouseholdPermission))
+		assert.False(t, permissionChecker.HasPermission(UpdateAccountPermission))
+		assert.False(t, permissionChecker.HasPermission(ArchiveAccountPermission))
+		assert.False(t, permissionChecker.HasPermission(InviteUserToAccountPermission))
+		assert.False(t, permissionChecker.HasPermission(ModifyMemberPermissionsForAccountPermission))
+		assert.False(t, permissionChecker.HasPermission(RemoveMemberAccountPermission))
+		assert.False(t, permissionChecker.HasPermission(TransferAccountPermission))
 		assert.False(t, permissionChecker.HasPermission(CreateWebhooksPermission))
 		assert.True(t, permissionChecker.HasPermission(ReadWebhooksPermission))
 		assert.False(t, permissionChecker.HasPermission(UpdateWebhooksPermission))

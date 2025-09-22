@@ -4,31 +4,31 @@ import (
 	"encoding/base64"
 	"time"
 
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/lib/authentication/tokens/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/circuitbreaking"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	featureflagscfg "github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/redis"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/oteltrace"
-	"github.com/dinnerdonebetter/backend/internal/lib/routing/chi"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
-	"github.com/dinnerdonebetter/backend/internal/lib/testutils"
-	"github.com/dinnerdonebetter/backend/internal/lib/uploads"
-	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
-	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/dataprivacy"
-	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/users"
-	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/oteltrace"
+	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
+	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
+	uploadscfg "github.com/dinnerdonebetter/backend/internal/platform/uploads/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
+	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
 )
 
 func buildIntegrationTestsConfig() *config.APIServiceConfig {
@@ -71,8 +71,11 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 		},
 		HTTPServer: http.Config{
 			Debug:           false,
-			HTTPPort:        defaultPort,
+			HTTPPort:        defaultHTTPPort,
 			StartupDeadline: time.Minute,
+		},
+		GRPCServer: grpc.Config{
+			Port: defaultGRPCPort,
 		},
 		Database: databasecfg.Config{
 			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
@@ -141,8 +144,8 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 					Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				},
 			},
-			DataPrivacy: dataprivacyservice.Config{
-				Uploads: uploads.Config{
+			DataPrivacy: dataprivacycfg.Config{
+				Uploads: uploadscfg.Config{
 					Storage: objectstorage.Config{
 						FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
 						BucketName:       "userdata",
@@ -151,23 +154,12 @@ func buildIntegrationTestsConfig() *config.APIServiceConfig {
 					Debug: false,
 				},
 			},
-			Users: usersservice.Config{
-				Uploads: uploads.Config{
+			Users: identitycfg.Config{
+				Uploads: uploadscfg.Config{
 					Debug: false,
 					Storage: objectstorage.Config{
 						Provider:   "memory",
 						BucketName: "avatars",
-						S3Config:   nil,
-					},
-				},
-			},
-			Recipes: recipemanagement.Config{
-				PublicMediaURLPrefix: "https://media.example.website/lol",
-				Uploads: uploads.Config{
-					Debug: false,
-					Storage: objectstorage.Config{
-						Provider:   "memory",
-						BucketName: "recipes",
 						S3Config:   nil,
 					},
 				},

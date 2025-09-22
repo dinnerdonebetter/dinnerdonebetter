@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package filtering;
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering";
+
+message QueryFilter {
+  optional uint32 PageSize = 1;
+  optional string NextCursor = 2;
+  optional bool IncludeArchived = 3;
+}

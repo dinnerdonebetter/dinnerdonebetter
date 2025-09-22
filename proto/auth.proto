@@ -1,0 +1,260 @@
+syntax = "proto3";
+
+package auth;
+
+import "common.proto";
+import "google/protobuf/timestamp.proto";
+import "identity.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth";
+
+// LoginForToken
+message LoginForTokenRequest {
+  UserLoginInput Input = 1;
+}
+
+message LoginForTokenResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  TokenResponse Result = 2;
+}
+
+// AdminLoginForToken
+message AdminLoginForTokenRequest {
+  UserLoginInput Input = 1;
+}
+
+message AdminLoginForTokenResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  TokenResponse Result = 2;
+}
+
+// ExchangeToken
+message ExchangeTokenRequest {
+  string RefreshToken = 1;
+}
+
+message ExchangeTokenResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  string UserID = 2;
+  string AccountID = 3;
+  string AccessToken = 4;
+  string RefreshToken = 5;
+  google.protobuf.Timestamp ExpiresUTC = 6;
+}
+
+// GetActiveAccount
+message GetActiveAccountRequest {}
+
+message GetActiveAccountResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  identity.Account Result = 2;
+}
+
+// GetAuthStatus
+message GetAuthStatusRequest {}
+
+message GetAuthStatusResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  string UserID = 2;
+  string AccountStatus = 3;
+  string AccountStatusExplanation = 4;
+  string ActiveAccount = 5;
+}
+
+// RedeemPasswordResetToken
+message RedeemPasswordResetTokenRequest {
+  string Token = 1;
+  string NewPassword = 2;
+}
+
+message RedeemPasswordResetTokenResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
+
+// RefreshTOTPSecret
+message RefreshTOTPSecretRequest {
+  string CurrentPassword = 1;
+  string TOTPToken = 2;
+}
+
+message RefreshTOTPSecretResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  TOTPSecretRefreshResponse Result = 2;
+}
+
+// RequestEmailVerificationEmail
+message RequestEmailVerificationEmailRequest {
+  string EmailAddress = 1;
+}
+
+message RequestEmailVerificationEmailResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  bool Submitted = 2;
+}
+
+// RequestPasswordResetToken
+message RequestPasswordResetTokenRequest {
+  string EmailAddress = 1;
+}
+
+message RequestPasswordResetTokenResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  bool Accepted = 2;
+}
+
+// RequestUsernameReminder
+message RequestUsernameReminderRequest {
+  string EmailAddress = 1;
+}
+
+message RequestUsernameReminderResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  bool Submitted = 2;
+}
+
+// UpdatePassword
+message UpdatePasswordRequest {
+  string NewPassword = 1;
+  string CurrentPassword = 2;
+  string TOTPToken = 3;
+}
+
+message UpdatePasswordResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
+
+// VerifyEmailAddress
+message VerifyEmailAddressRequest {
+  string Token = 1;
+}
+
+message VerifyEmailAddressResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  bool Verified = 2;
+}
+
+// VerifyTOTPSecret
+message VerifyTOTPSecretRequest {
+  string TOTPToken = 1;
+  string UserID = 2;
+}
+
+message VerifyTOTPSecretResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  bool Accepted = 2;
+}
+
+message ChangeActiveAccountInput {
+  string AccountID = 1;
+}
+
+message EmailAddressVerificationRequest {
+  string Token = 1;
+}
+
+message EmailAddressVerificationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+}
+
+message PasswordResetResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  bool Successful = 2;
+}
+
+message PasswordResetToken {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp ExpiresAt = 2;
+  google.protobuf.Timestamp RedeemedAt = 3;
+  google.protobuf.Timestamp LastUpdatedAt = 4;
+  string ID = 5;
+  string Token = 6;
+  string BelongsToUser = 7;
+}
+
+message PasswordResetTokenCreationRequestInput {
+  string EmailAddress = 1;
+}
+
+message PasswordResetTokenRedemptionRequestInput {
+  string Token = 1;
+  string NewPassword = 2;
+}
+
+message PasswordUpdateInput {
+  string NewPassword = 1;
+  string CurrentPassword = 2;
+  string TOTPToken = 3;
+}
+
+message TOTPSecretRefreshInput {
+  string CurrentPassword = 1;
+  string TOTPToken = 2;
+}
+
+message TOTPSecretRefreshResponse {
+  string TwoFactorQRCode = 2;
+  string TwoFactorSecret = 3;
+}
+
+message TOTPSecretVerificationInput {
+  string TOTPToken = 1;
+  string UserID = 2;
+}
+
+message TOTPSecretVerificationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  bool Accepted = 2;
+}
+
+message TokenResponse {
+  string UserID = 2;
+  string AccountID = 3;
+  string AccessToken = 4;
+  string RefreshToken = 5;
+  google.protobuf.Timestamp ExpiresUTC = 6;
+}
+
+message UserLoginInput {
+  string Username = 1;
+  string Password = 2;
+  string TOTPToken = 3;
+}
+
+message UserPermissionsRequestInput {
+  repeated string Permissions = 1;
+}
+
+message UserPermissionsResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  map<string, bool> Permissions = 2;
+}
+
+message UsernameReminderRequestInput {
+  string EmailAddress = 1;
+}
+
+// GetSelf
+message GetSelfRequest {}
+
+message GetSelfResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  identity.User Result = 2;
+}
+
+service AuthService {
+  rpc GetAuthStatus(GetAuthStatusRequest) returns (GetAuthStatusResponse);
+  rpc ExchangeToken(ExchangeTokenRequest) returns (ExchangeTokenResponse);
+  rpc AdminLoginForToken(AdminLoginForTokenRequest) returns (AdminLoginForTokenResponse);
+  rpc CheckPermissions(UserPermissionsRequestInput) returns (UserPermissionsResponse);
+  rpc GetActiveAccount(GetActiveAccountRequest) returns (GetActiveAccountResponse);
+  rpc GetSelf(GetSelfRequest) returns (GetSelfResponse);
+  rpc LoginForToken(LoginForTokenRequest) returns (LoginForTokenResponse);
+  rpc RedeemPasswordResetToken(RedeemPasswordResetTokenRequest) returns (RedeemPasswordResetTokenResponse);
+  rpc RefreshTOTPSecret(RefreshTOTPSecretRequest) returns (RefreshTOTPSecretResponse);
+  rpc RequestEmailVerificationEmail(RequestEmailVerificationEmailRequest) returns (RequestEmailVerificationEmailResponse);
+  rpc RequestPasswordResetToken(RequestPasswordResetTokenRequest) returns (RequestPasswordResetTokenResponse);
+  rpc RequestUsernameReminder(RequestUsernameReminderRequest) returns (RequestUsernameReminderResponse);
+  rpc VerifyEmailAddress(VerifyEmailAddressRequest) returns (VerifyEmailAddressResponse);
+  rpc VerifyTOTPSecret(VerifyTOTPSecretRequest) returns (VerifyTOTPSecretResponse);
+  rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse);
+}

@@ -25,7 +25,7 @@ var (
 		createdAtColumn,
 		lastUpdatedAtColumn,
 		archivedAtColumn,
-		belongsToHouseholdColumn,
+		belongsToAccountColumn,
 	}
 )
 
@@ -59,7 +59,7 @@ WHERE %s IS NULL
 					archivedAtColumn, currentTimeExpression,
 					archivedAtColumn,
 					idColumn, idColumn,
-					belongsToHouseholdColumn, belongsToHouseholdColumn,
+					belongsToAccountColumn, belongsToAccountColumn,
 				)),
 			},
 			{
@@ -95,12 +95,12 @@ WHERE %s IS NULL
 					webhooksTableName,
 					webhooksTableName, archivedAtColumn,
 					webhooksTableName, idColumn, idColumn,
-					webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+					webhooksTableName, belongsToAccountColumn, belongsToAccountColumn,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetWebhooksForHousehold",
+					Name: "GetWebhooksForAccount",
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -108,29 +108,29 @@ WHERE %s IS NULL
 	%s,
 	%s
 FROM %s
-	JOIN %s ON %s.%s = %s.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
 	%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
-					buildFilterCountSelect(webhooksTableName, true, true, []string{}, "webhooks.belongs_to_household = sqlc.arg(belongs_to_household)"),
+					buildFilterCountSelect(webhooksTableName, true, true, []string{}, "webhooks.belongs_to_account = sqlc.arg(belongs_to_account)"),
 					buildTotalCountSelect(
 						webhooksTableName,
 						true,
 						nil,
-						fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn),
+						fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToAccountColumn, belongsToAccountColumn),
 						fmt.Sprintf("%s.%s IS NULL", webhookTriggerEventsTableName, archivedAtColumn),
 					),
 					webhooksTableName,
 					webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
 					webhooksTableName, archivedAtColumn,
-					buildFilterConditions(webhooksTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn), fmt.Sprintf("%s.%s IS NULL", webhookTriggerEventsTableName, archivedAtColumn)),
+					buildFilterConditions(webhooksTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", webhooksTableName, belongsToAccountColumn, belongsToAccountColumn), fmt.Sprintf("%s.%s IS NULL", webhookTriggerEventsTableName, archivedAtColumn)),
 					offsetLimitAddendum,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetWebhooksForHouseholdAndEvent",
+					Name: "GetWebhooksForAccountAndEvent",
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
@@ -148,7 +148,7 @@ WHERE %s.%s IS NULL
 					webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
 					webhookTriggerEventsTableName, archivedAtColumn,
 					webhookTriggerEventsTableName, triggerEventColumn, triggerEventColumn,
-					webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+					webhooksTableName, belongsToAccountColumn, belongsToAccountColumn,
 					webhooksTableName, archivedAtColumn,
 				)),
 			},
@@ -160,7 +160,7 @@ WHERE %s.%s IS NULL
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
 	%s
 FROM %s
-	JOIN %s ON %s.%s = %s.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
@@ -175,7 +175,7 @@ WHERE %s.%s IS NULL
 					webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
 					webhookTriggerEventsTableName, archivedAtColumn,
 					webhooksTableName, archivedAtColumn,
-					webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+					webhooksTableName, belongsToAccountColumn, belongsToAccountColumn,
 					webhooksTableName, idColumn, idColumn,
 				)),
 			},

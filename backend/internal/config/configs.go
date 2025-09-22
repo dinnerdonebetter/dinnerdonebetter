@@ -6,23 +6,24 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
 	"os"
 	"runtime/debug"
 	"time"
 
-	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/lib/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/authentication/cookies"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/lib/email/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	featureflagscfg "github.com/dinnerdonebetter/backend/internal/lib/featureflags/config"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	routingcfg "github.com/dinnerdonebetter/backend/internal/lib/routing/config"
-	textsearchcfg "github.com/dinnerdonebetter/backend/internal/lib/search/text/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
-	"github.com/dinnerdonebetter/backend/internal/lib/uploads/objectstorage"
+	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
+	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	emailcfg "github.com/dinnerdonebetter/backend/internal/platform/email/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
+	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
+	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/hashicorp/go-multierror"
@@ -64,6 +65,7 @@ type (
 	APIServiceConfig struct {
 		_ struct{} `json:"-"`
 
+		Auth          authcfg.Config         `envPrefix:"AUTH_"          json:"auth"`
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
 		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
 		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
@@ -74,7 +76,8 @@ type (
 		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Meta          MetaSettings           `envPrefix:"META_"          json:"meta"`
 		Routing       routingcfg.Config      `envPrefix:"ROUTING_"       json:"routing"`
-		HTTPServer    http.Config            `envPrefix:"SERVER_"        json:"server"`
+		HTTPServer    http.Config            `envPrefix:"HTTP_"          json:"http"`
+		GRPCServer    grpc.Config            `envPrefix:"GRPC_"          json:"grpc"`
 		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 		Services      ServicesConfig         `envPrefix:"SERVICE_"       json:"services"`
 
@@ -133,15 +136,15 @@ type (
 
 	// AsyncMessageHandlerConfig configures an instance of the search data index scheduler job.
 	AsyncMessageHandlerConfig struct {
-		_ struct{} `json:"-"`
-
+		_             struct{}               `json:"-"`
 		Storage       objectstorage.Config   `envPrefix:"STORAGE_"       json:"storage"`
 		Queues        msgconfig.QueuesConfig `envPrefix:"QUEUES_"        json:"queues"`
+		Encoding      encoding.Config        `envPrefix:"ENCODING_"      json:"encoding"`
+		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
+		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Email         emailcfg.Config        `envPrefix:"EMAIL_"         json:"email"`
 		Analytics     analyticscfg.Config    `envPrefix:"ANALYTICS_"     json:"analytics"`
 		Search        textsearchcfg.Config   `envPrefix:"SEARCH_"        json:"search"`
-		Events        msgconfig.Config       `envPrefix:"EVENTS_"        json:"events"`
-		Observability observability.Config   `envPrefix:"OBSERVABILITY_" json:"observability"`
 		Database      databasecfg.Config     `envPrefix:"DATABASE_"      json:"database"`
 	}
 
@@ -388,14 +391,6 @@ func (cfg *AdminWebappConfig) ValidateWithContext(ctx context.Context) error {
 	}
 
 	return result.ErrorOrNil()
-}
-
-func envVarOnSetFunc(tag string, value any, isDefault bool) {
-	slog.Info("env var set",
-		slog.String("tag", tag),
-		slog.String("value", fmt.Sprintf("%+v", value)),
-		slog.Bool("isDefault", isDefault),
-	)
 }
 
 func LoadConfigFromEnvironment[T configurations]() (*T, error) {

@@ -1,0 +1,83 @@
+package converters
+
+import (
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
+	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+)
+
+func ConvertGRPCUpdatePasswordRequestToPasswordUpdateInput(request *authsvc.UpdatePasswordRequest) *auth.PasswordUpdateInput {
+	return &auth.PasswordUpdateInput{
+		NewPassword:     request.NewPassword,
+		CurrentPassword: request.CurrentPassword,
+		TOTPToken:       request.TOTPToken,
+	}
+}
+
+func ConvertGRPCVerifyTOTPSecretRequestToTOTPSecretVerificationInput(request *authsvc.VerifyTOTPSecretRequest) *auth.TOTPSecretVerificationInput {
+	return &auth.TOTPSecretVerificationInput{
+		TOTPToken: request.TOTPToken,
+		UserID:    request.UserID,
+	}
+}
+
+func ConvertGRPCVerifyEmailAddressRequestToEmailAddressVerificationRequestInput(request *authsvc.VerifyEmailAddressRequest) *auth.EmailAddressVerificationRequestInput {
+	return &auth.EmailAddressVerificationRequestInput{
+		Token: request.Token,
+	}
+}
+
+func ConvertGRPCRequestUsernameReminderRequestToUsernameReminderRequestInput(request *authsvc.RequestUsernameReminderRequest) *auth.UsernameReminderRequestInput {
+	return &auth.UsernameReminderRequestInput{
+		EmailAddress: request.EmailAddress,
+	}
+}
+
+func ConvertGRPCRequestPasswordResetTokenRequestToPasswordResetTokenCreationRequestInput(request *authsvc.RequestPasswordResetTokenRequest) *auth.PasswordResetTokenCreationRequestInput {
+	return &auth.PasswordResetTokenCreationRequestInput{EmailAddress: request.EmailAddress}
+}
+
+func ConvertGRPCRefreshTOTPSecretRequestToTOTPSecretRefreshInput(request *authsvc.RefreshTOTPSecretRequest) *auth.TOTPSecretRefreshInput {
+	return &auth.TOTPSecretRefreshInput{
+		CurrentPassword: request.CurrentPassword,
+		TOTPToken:       request.TOTPToken,
+	}
+}
+
+func ConvertTOTPSecretRefreshResponseToGRPCTOTPSecretRefreshResponse(input *auth.TOTPSecretRefreshResponse) *authsvc.TOTPSecretRefreshResponse {
+	return &authsvc.TOTPSecretRefreshResponse{
+		TwoFactorQRCode: input.TwoFactorQRCode,
+		TwoFactorSecret: input.TwoFactorSecret,
+	}
+}
+
+func ConvertGRPCRedeemPasswordResetTokenRequestToPasswordResetTokenRedemptionRequestInput(request *authsvc.RedeemPasswordResetTokenRequest) *auth.PasswordResetTokenRedemptionRequestInput {
+	return &auth.PasswordResetTokenRedemptionRequestInput{
+		Token:       request.Token,
+		NewPassword: request.NewPassword,
+	}
+}
+
+func ConvertGRPCCheckPermissionsRequestToUserPermissionsRequestInput(request *authsvc.UserPermissionsRequestInput) *auth.UserPermissionsRequestInput {
+	return &auth.UserPermissionsRequestInput{
+		Permissions: request.Permissions,
+	}
+}
+
+func ConvertGRPCAdminLoginForTokenRequestToUserLoginInput(request *authsvc.UserLoginInput) *auth.UserLoginInput {
+	return &auth.UserLoginInput{
+		Username:  request.Username,
+		Password:  request.Password,
+		TOTPToken: request.TOTPToken,
+	}
+}
+
+func ConvertTokenResponseToGRPCTokenResponse(input *auth.TokenResponse) *authsvc.TokenResponse {
+	return &authsvc.TokenResponse{
+		UserID:       input.UserID,
+		AccountID:    input.AccountID,
+		AccessToken:  input.AccessToken,
+		RefreshToken: input.RefreshToken,
+		ExpiresUTC:   grpcconverters.ConvertTimeToPBTimestamp(input.ExpiresUTC),
+	}
+}

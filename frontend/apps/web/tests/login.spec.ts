@@ -8,7 +8,7 @@ export const fakeLogin = (username: string, password: string, totpToken: string)
       const authState = new UserStatusResponse({
         accountStatus: 'good',
         accountStatusExplanation: '',
-        activeHousehold: '',
+        activeAccount: '',
         isAuthenticated: true,
       });
 

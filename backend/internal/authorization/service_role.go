@@ -2,7 +2,6 @@ package authorization
 
 import (
 	"encoding/gob"
-	"slices"
 
 	"github.com/mikespook/gorbac/v2"
 )
@@ -40,7 +39,7 @@ type (
 	ServiceRolePermissionChecker interface {
 		HasPermission(Permission) bool
 
-		AsHouseholdRolePermissionChecker() HouseholdRolePermissionsChecker
+		AsAccountRolePermissionChecker() AccountRolePermissionsChecker
 		IsServiceAdmin() bool
 		CanUpdateUserAccountStatuses() bool
 		CanImpersonateUsers() bool
@@ -71,8 +70,8 @@ func NewServiceRolePermissionChecker(roles ...string) ServiceRolePermissionCheck
 	}
 }
 
-func (r serviceRoleCollection) AsHouseholdRolePermissionChecker() HouseholdRolePermissionsChecker {
-	return NewHouseholdRolePermissionChecker(r.Roles...)
+func (r serviceRoleCollection) AsAccountRolePermissionChecker() AccountRolePermissionsChecker {
+	return NewAccountRolePermissionChecker(r.Roles...)
 }
 
 // HasPermission returns whether a user can do something or not.
@@ -82,7 +81,13 @@ func (r serviceRoleCollection) HasPermission(p Permission) bool {
 
 // IsServiceAdmin returns if a role is an admin.
 func (r serviceRoleCollection) IsServiceAdmin() bool {
-	return slices.Contains(r.Roles, ServiceAdminRole.String())
+	for _, x := range r.Roles {
+		if x == ServiceAdminRole.String() {
+			return true
+		}
+	}
+
+	return false
 }
 
 // CanUpdateUserAccountStatuses returns whether a user can update user account statuses.

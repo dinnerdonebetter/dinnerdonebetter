@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package notifications;
+
+import "common.proto";
+import "filtering.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/notifications";
+
+// GetUserNotification
+message GetUserNotificationRequest {
+  string userNotificationID = 1;
+}
+
+message GetUserNotificationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  UserNotification Result = 2;
+}
+
+// GetUserNotifications
+message GetUserNotificationsRequest {
+  filtering.QueryFilter Filter = 1;
+}
+
+message GetUserNotificationsResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated UserNotification Results = 3;
+}
+
+// UpdateUserNotification
+message UpdateUserNotificationRequest {
+  string userNotificationID = 1;
+  UserNotificationUpdateRequestInput input = 2;
+}
+
+message UpdateUserNotificationResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  UserNotification Updated = 2;
+}
+
+message UserNotification {
+  google.protobuf.Timestamp CreatedAt = 1;
+  google.protobuf.Timestamp LastUpdatedAt = 2;
+  string ID = 3;
+  string Content = 4;
+  string Status = 5;
+  string BelongsToUser = 6;
+}
+
+message UserNotificationCreationRequestInput {
+  string Content = 1;
+  string Status = 2;
+  string BelongsToUser = 3;
+}
+
+message UserNotificationUpdateRequestInput {
+  optional string Status = 1;
+}
+
+service UserNotificationsService {
+  rpc GetUserNotification(GetUserNotificationRequest) returns (GetUserNotificationResponse);
+  rpc GetUserNotifications(GetUserNotificationsRequest) returns (GetUserNotificationsResponse);
+  rpc UpdateUserNotification(UpdateUserNotificationRequest) returns (UpdateUserNotificationResponse);
+}

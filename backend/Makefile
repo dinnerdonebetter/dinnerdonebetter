@@ -12,12 +12,14 @@ TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
 PROTO_FILES_PATH       := proto/*.proto
 PROTO_OUTPUT_PATH      := internal/grpc
-DI_TARGETS             := internal/build/services/api \
-	internal/build/jobs/db_cleaner \
-	internal/build/jobs/search_data_index_scheduler \
-	internal/build/jobs/meal_plan_finalizer \
-	internal/build/jobs/meal_plan_grocery_list_initializer \
-	internal/build/jobs/meal_plan_task_creator
+WIRE_TARGETS           := internal/build/services/api/grpc \
+	 internal/build/services/api/http \
+	 internal/build/functions/data_change_message_handler \
+	 internal/build/jobs/db_cleaner \
+	 internal/build/jobs/search_data_index_scheduler \
+	 internal/build/jobs/meal_plan_finalizer \
+	 internal/build/jobs/meal_plan_grocery_list_initializer \
+	 internal/build/jobs/meal_plan_task_creator
 
 # COMPUTED
 TOTAL_PACKAGE_LIST    := `go list $(THIS)/...`
@@ -26,7 +28,7 @@ TESTABLE_PACKAGE_LIST := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|
 # CONTAINER VERSIONS
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
-LINTER_IMAGE           := golangci/golangci-lint:v1.64.5
+LINTER_IMAGE           := golangci/golangci-lint:v2.4.0
 
 # COMMANDS
 GO_FORMAT             := gofmt -s -w
@@ -43,7 +45,7 @@ clean:
 	rm -rf $(ARTIFACTS_DIR)
 
 $(ARTIFACTS_DIR):
-	@mkdir --parents $(ARTIFACTS_DIR)
+	@mkdir -p $(ARTIFACTS_DIR)
 
 clean-$(ARTIFACTS_DIR):
 	@rm -rf $(ARTIFACTS_DIR)
@@ -129,7 +131,7 @@ revendor: clean_vendor vendor
 
 .PHONY: rewire
 rewire: ensure_wire_installed
-	for tgt in $(DI_TARGETS); do \
+	for tgt in $(WIRE_TARGETS); do \
 		rm -f $(THIS)/$$tgt/wire_gen.go && wire gen $(THIS)/$$tgt; \
 	done
 
@@ -148,7 +150,7 @@ format_go_tag_alignment: ensure_tagalign_installed
 	@until tagalign -fix -sort -order "env,envDefault,envPrefix,json,mapstructure,toml,yaml" ./...; do true; done > /dev/null
 
 .PHONY: format_golang
-format_golang: format_imports format_go_fieldalignment # format_go_tag_alignment
+format_golang: goimports format_imports format_go_fieldalignment # format_go_tag_alignment
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: terraformat
@@ -179,9 +181,9 @@ queries_lint:
 	$(SQL_GENERATOR) vet --no-remote
 
 .PHONY: golang_lint
-golang_lint: check_lib_for_types sqlc_struct_check
+golang_lint: sqlc_struct_check
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
-	$(LINTER) run --config=.golangci.yml --timeout 15m ./...
+	$(LINTER) run --config=.golangci.yml --timeout 30m ./...
 
 .PHONY: lint_terraform
 lint_terraform: terraformat
@@ -189,15 +191,6 @@ lint_terraform: terraformat
 
 .PHONY: lint
 lint: lint_containers queries_lint golang_lint
-
-.PHONY: clean_coverage
-clean_coverage:
-	@rm --force $(COVERAGE_OUT) profile.out;
-
-.PHONY: coverage
-coverage: clean_coverage $(ARTIFACTS_DIR)
-	@$(GO_TEST) -coverprofile=$(COVERAGE_OUT) -covermode=atomic $(TESTABLE_PACKAGE_LIST) > /dev/null
-	@go tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
 
 .PHONY: check_lib_for_types
 check_lib_for_types:
@@ -214,49 +207,19 @@ configs:
 queries:
 	go run $(THIS)/cmd/tools/codegen/queries
 
-.PHONY: codegen-ts
-codegen-ts:
-	go run $(THIS)/cmd/tools/codegen/openapi --typescript
-	@(cd ../frontend && $(MAKE) format)
-
-.PHONY: codegen-go
-codegen-go:
-	go run $(THIS)/cmd/tools/codegen/openapi --golang
-	@$(MAKE) format_golang
-
-.PHONY: codegen
-codegen: codegen-ts codegen-go
-
 .PHONY: querier
 querier: queries queries_lint
-	rm --recursive --force internal/database/postgres/generated/*.go
+	rm -rf internal/database/postgres/generated/*.go
 	$(SQL_GENERATOR) generate --no-remote
 
 .PHONY: sqlc_struct_check
 sqlc_struct_check:
 	go run $(THIS)/cmd/tools/sqlc_struct_checker
 
-.PHONY: openapi
-openapi:
-	go run $(THIS)/cmd/tools/codegen/openapi_spec
-	(cd .. && $(MAKE) format_yaml)
-
 .PHONY: env_vars
 env_vars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars
 	gofmt -s -w internal/config/envvars/*.go
-
-.PHONY: proto
-proto: ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
-	rm -rf $(PROTO_OUTPUT_PATH)
-	mkdir -p $(PROTO_OUTPUT_PATH)
-	protoc --go_out=. \
-		--go-grpc_out=. \
-		--go_opt=module=$(THIS) \
-		--go-grpc_opt=module=$(THIS) \
-		-I internal/services/ \
-		$(PROTO_FILES_PATH)
-	$(MAKE) format_golang
 
 ## INTEGRATION TESTING
 
@@ -264,7 +227,8 @@ proto: ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed
 integration-tests: integration_tests
 
 .PHONY: integration_tests
-integration_tests: integration_tests_postgres
+integration_tests:
+	go test -v -count=1 $(THIS)/tests_integration/apiserver
 
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
@@ -321,6 +285,18 @@ run_admin_app: ensure_air_installed
 .PHONY: line_count
 line_count: ensure_scc_installed
 	@scc --include-ext go --exclude-dir vendor
+
+disable:
+	find "$(DIR)" -maxdepth 1 -type f -name '*.go' -exec bash -c 'mv -- "$$1" "$$1.disabled"' _ {} \;
+
+enable:
+	@if [ -z "$(DIR)" ]; then echo "Error: FOLDER must be specified"; exit 1; fi
+	for file in "$(DIR)"/*.disabled; do \
+		if [ -f "$$file" ]; then \
+			newfile="$${file%.disabled}"; \
+			mv -- "$$file" "$$newfile"; \
+		fi; \
+	done
 
 # OPERATIONS
 

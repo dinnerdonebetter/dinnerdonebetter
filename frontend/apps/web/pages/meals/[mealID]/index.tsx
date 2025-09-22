@@ -63,7 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (
     const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'MEAL_PAGE', context, {
       mealID,
-      householdID: userSessionData.householdID,
+      accountID: userSessionData.accountID,
     });
     analyticsTimer.end();
   }

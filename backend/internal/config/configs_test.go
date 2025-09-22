@@ -9,11 +9,10 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config/envvars"
-	databasecfg "github.com/dinnerdonebetter/backend/internal/database/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/encoding"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	"github.com/dinnerdonebetter/backend/internal/lib/server/http"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -38,13 +37,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 				ContentType: "application/json",
 			},
 			Observability: observability.Config{},
-			Services: ServicesConfig{
-				Auth: authservice.Config{
-					MinimumUsernameLength: 4,
-					MinimumPasswordLength: 8,
-					EnableUserSignup:      true,
-				},
-			},
+			Services:      ServicesConfig{},
 			Database: databasecfg.Config{
 				Debug:         true,
 				RunMigrations: true,

@@ -4,7 +4,7 @@ import { ServiceSetting } from './ServiceSetting.gen';
 
 export interface IServiceSettingConfiguration {
   archivedAt: string;
-  belongsToHousehold: string;
+  belongsToAccount: string;
   belongsToUser: string;
   createdAt: string;
   id: string;
@@ -16,7 +16,7 @@ export interface IServiceSettingConfiguration {
 
 export class ServiceSettingConfiguration implements IServiceSettingConfiguration {
   archivedAt: string;
-  belongsToHousehold: string;
+  belongsToAccount: string;
   belongsToUser: string;
   createdAt: string;
   id: string;
@@ -26,7 +26,7 @@ export class ServiceSettingConfiguration implements IServiceSettingConfiguration
   value: string;
   constructor(input: Partial<ServiceSettingConfiguration> = {}) {
     this.archivedAt = input.archivedAt || '';
-    this.belongsToHousehold = input.belongsToHousehold || '';
+    this.belongsToAccount = input.belongsToAccount || '';
     this.belongsToUser = input.belongsToUser || '';
     this.createdAt = input.createdAt || '';
     this.id = input.id || '';

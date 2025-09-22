@@ -3,7 +3,7 @@
 import { ChangeLog } from './ChangeLog.gen';
 
 export interface IAuditLogEntry {
-  belongsToHousehold: string;
+  belongsToAccount: string;
   belongsToUser: string;
   changes: ChangeLog;
   createdAt: string;
@@ -14,7 +14,7 @@ export interface IAuditLogEntry {
 }
 
 export class AuditLogEntry implements IAuditLogEntry {
-  belongsToHousehold: string;
+  belongsToAccount: string;
   belongsToUser: string;
   changes: ChangeLog;
   createdAt: string;
@@ -23,7 +23,7 @@ export class AuditLogEntry implements IAuditLogEntry {
   relevantID: string;
   resourceType: string;
   constructor(input: Partial<AuditLogEntry> = {}) {
-    this.belongsToHousehold = input.belongsToHousehold || '';
+    this.belongsToAccount = input.belongsToAccount || '';
     this.belongsToUser = input.belongsToUser || '';
     this.changes = input.changes || new ChangeLog();
     this.createdAt = input.createdAt || '';

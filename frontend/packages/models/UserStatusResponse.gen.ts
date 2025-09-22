@@ -3,7 +3,7 @@
 export interface IUserStatusResponse {
   accountStatus: string;
   accountStatusExplanation: string;
-  activeHousehold: string;
+  activeAccount: string;
   isAuthenticated: boolean;
   userID: string;
 }
@@ -11,13 +11,13 @@ export interface IUserStatusResponse {
 export class UserStatusResponse implements IUserStatusResponse {
   accountStatus: string;
   accountStatusExplanation: string;
-  activeHousehold: string;
+  activeAccount: string;
   isAuthenticated: boolean;
   userID: string;
   constructor(input: Partial<UserStatusResponse> = {}) {
     this.accountStatus = input.accountStatus || '';
     this.accountStatusExplanation = input.accountStatusExplanation || '';
-    this.activeHousehold = input.activeHousehold || '';
+    this.activeAccount = input.activeAccount || '';
     this.isAuthenticated = input.isAuthenticated || false;
     this.userID = input.userID || '';
   }

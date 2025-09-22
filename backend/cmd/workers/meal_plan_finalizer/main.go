@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"log/slog"
-	"os"
 
 	mealplanfinalizer "github.com/dinnerdonebetter/backend/internal/build/jobs/meal_plan_finalizer"
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -14,10 +12,7 @@ import (
 )
 
 func doTheThing(ctx context.Context) error {
-	if config.ShouldCeaseOperation() {
-		slog.Info("CEASE_OPERATION is set to true, exiting")
-		os.Exit(0)
-	}
+	config.ConditionallyCease()
 
 	cfg, err := config.LoadConfigFromEnvironment[config.MealPlanFinalizerConfig]()
 	if err != nil {

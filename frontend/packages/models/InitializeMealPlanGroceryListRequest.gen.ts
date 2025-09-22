@@ -1,12 +1,12 @@
 // GENERATED CODE, DO NOT EDIT MANUALLY
 
 export interface IInitializeMealPlanGroceryListRequest {
-  householdID: string;
+  accountID: string;
 }
 
 export class InitializeMealPlanGroceryListRequest implements IInitializeMealPlanGroceryListRequest {
-  householdID: string;
+  accountID: string;
   constructor(input: Partial<InitializeMealPlanGroceryListRequest> = {}) {
-    this.householdID = input.householdID || '';
+    this.accountID = input.accountID || '';
   }
 }

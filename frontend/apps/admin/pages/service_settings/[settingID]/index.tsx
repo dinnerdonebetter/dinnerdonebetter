@@ -103,7 +103,7 @@ function ServiceSettingPage(props: ServiceSettingPageProps) {
                 updateForm.setFieldValue('type', item);
               }}
               {...updateForm.getInputProps('type')}
-              data={['user', 'household', 'membership']}
+              data={['user', 'account', 'membership']}
             />
 
             <TextInput label="Default Value" placeholder="thing" {...updateForm.getInputProps('defaultValue')} />

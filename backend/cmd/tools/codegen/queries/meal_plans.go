@@ -33,7 +33,7 @@ var mealPlansColumns = []string{
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
-	belongsToHouseholdColumn,
+	belongsToAccountColumn,
 	createdByUserColumn,
 }
 
@@ -54,8 +54,8 @@ func buildMealPlansQueries(database string) []*Query {
 					archivedAtColumn,
 					currentTimeExpression,
 					archivedAtColumn,
-					belongsToHouseholdColumn,
-					belongsToHouseholdColumn,
+					belongsToAccountColumn,
+					belongsToAccountColumn,
 					idColumn,
 					idColumn,
 				)),
@@ -93,7 +93,7 @@ func buildMealPlansQueries(database string) []*Query {
 					mealPlansTableName,
 					mealPlansTableName, archivedAtColumn,
 					mealPlansTableName, idColumn, mealPlanIDColumn,
-					mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+					mealPlansTableName, belongsToAccountColumn, belongsToAccountColumn,
 				)),
 			},
 			{
@@ -200,7 +200,7 @@ WHERE %s.%s IS NULL
 	AND %s.%s = 'finalized'
 	AND %s.%s IS FALSE;`,
 					mealPlansTableName, idColumn,
-					mealPlansTableName, belongsToHouseholdColumn,
+					mealPlansTableName, belongsToAccountColumn,
 					mealPlansTableName,
 					mealPlansTableName, archivedAtColumn,
 					mealPlansTableName, mealPlanStatusColumn,
@@ -224,12 +224,12 @@ WHERE %s.%s IS NULL
 					mealPlansTableName,
 					mealPlansTableName, archivedAtColumn,
 					mealPlansTableName, idColumn, idColumn,
-					mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+					mealPlansTableName, belongsToAccountColumn, belongsToAccountColumn,
 				)),
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetMealPlansForHousehold",
+					Name: "GetMealPlansForAccount",
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -243,11 +243,11 @@ WHERE %s.%s IS NULL
 					strings.Join(applyToEach(mealPlansColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", mealPlansTableName, s)
 					}), ",\n\t"),
-					buildFilterCountSelect(mealPlansTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)),
-					buildTotalCountSelect(mealPlansTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)),
+					buildFilterCountSelect(mealPlansTableName, true, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToAccountColumn, belongsToAccountColumn)),
+					buildTotalCountSelect(mealPlansTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToAccountColumn, belongsToAccountColumn)),
 					mealPlansTableName,
 					mealPlansTableName, archivedAtColumn,
-					buildFilterConditions(mealPlansTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToHouseholdColumn, belongsToHouseholdColumn)),
+					buildFilterConditions(mealPlansTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlansTableName, belongsToAccountColumn, belongsToAccountColumn)),
 					offsetLimitAddendum,
 				)),
 			},
@@ -261,7 +261,7 @@ WHERE %s.%s IS NULL
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(meal_plan_id)
-	AND %s.%s = sqlc.arg(household_id)
+	AND %s.%s = sqlc.arg(account_id)
 	AND %s.%s = 'awaiting_votes'
 	AND %s > %s.%s;`,
 					strings.Join(applyToEach(mealPlansColumns, func(i int, s string) string {
@@ -270,7 +270,7 @@ WHERE %s.%s IS NULL
 					mealPlansTableName,
 					mealPlansTableName, archivedAtColumn,
 					mealPlansTableName, idColumn,
-					mealPlansTableName, belongsToHouseholdColumn,
+					mealPlansTableName, belongsToAccountColumn,
 					mealPlansTableName, mealPlanStatusColumn,
 					currentTimeExpression, mealPlansTableName, mealPlanVotingDeadlineColumn,
 				)),
@@ -321,12 +321,12 @@ WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
 					mealPlansTableName,
-					strings.Join(applyToEach(filterForUpdate(mealPlansColumns, mealPlanGroceryListInitializedColumn, mealPlanTasksCreatedColumn, electionMethodColumn, belongsToHouseholdColumn, createdByUserColumn), func(i int, s string) string {
+					strings.Join(applyToEach(filterForUpdate(mealPlansColumns, mealPlanGroceryListInitializedColumn, mealPlanTasksCreatedColumn, electionMethodColumn, belongsToAccountColumn, createdByUserColumn), func(i int, s string) string {
 						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 					}), ",\n\t"),
 					lastUpdatedAtColumn, currentTimeExpression,
 					archivedAtColumn,
-					belongsToHouseholdColumn, belongsToHouseholdColumn,
+					belongsToAccountColumn, belongsToAccountColumn,
 					idColumn, idColumn,
 				)),
 			},

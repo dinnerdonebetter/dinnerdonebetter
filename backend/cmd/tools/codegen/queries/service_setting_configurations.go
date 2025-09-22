@@ -24,7 +24,7 @@ var serviceSettingConfigurationsColumns = []string{
 	notesColumn,
 	serviceSettingIDColumn,
 	belongsToUserColumn,
-	belongsToHouseholdColumn,
+	belongsToAccountColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -120,7 +120,7 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetServiceSettingConfigurationForHouseholdBySettingName",
+					Name: "GetServiceSettingConfigurationForAccountBySettingName",
 					Type: OneType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -137,7 +137,7 @@ WHERE %s.%s IS NULL
 					serviceSettingsTableName, archivedAtColumn,
 					serviceSettingConfigurationsTableName, archivedAtColumn,
 					serviceSettingsTableName, nameColumn, nameColumn,
-					serviceSettingConfigurationsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+					serviceSettingConfigurationsTableName, belongsToAccountColumn, belongsToAccountColumn,
 				)),
 			},
 			{
@@ -164,7 +164,7 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
-					Name: "GetServiceSettingConfigurationsForHousehold",
+					Name: "GetServiceSettingConfigurationsForAccount",
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -179,7 +179,7 @@ WHERE %s.%s IS NULL
 					serviceSettingsTableName, serviceSettingConfigurationsTableName, serviceSettingIDColumn, serviceSettingsTableName, idColumn,
 					serviceSettingsTableName, archivedAtColumn,
 					serviceSettingConfigurationsTableName, archivedAtColumn,
-					serviceSettingConfigurationsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+					serviceSettingConfigurationsTableName, belongsToAccountColumn, belongsToAccountColumn,
 				)),
 			},
 			{

@@ -1,0 +1,211 @@
+package integration
+
+import (
+	"testing"
+
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func checkRecipeStepProductSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeStepProduct) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected recipe step %d products length", stepIndex)
+	for i := range expected {
+		checkRecipeStepProductEquality(t, stepIndex, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipeStepProductEquality(t *testing.T, stepIndex, productIndex int, expected, actual *mealplanning.RecipeStepProduct) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected step %d product %d to have ID", stepIndex, productIndex)
+	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d product %d to have CreatedAt", stepIndex, productIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected step %d product %d to have BelongsToRecipeStep", stepIndex, productIndex)
+	assert.Equal(t, expected.Name, actual.Name, "expected step %d product %d Name", stepIndex, productIndex)
+	assert.Equal(t, expected.Type, actual.Type, "expected step %d product %d Type", stepIndex, productIndex)
+	assert.Equal(t, expected.Quantity, actual.Quantity, "expected step %d product %d Quantity", stepIndex, productIndex)
+	assert.Equal(t, expected.QuantityNotes, actual.QuantityNotes, "expected step %d product %d QuantityNotes", stepIndex, productIndex)
+	assert.Equal(t, expected.Index, actual.Index, "expected step %d product %d Index", stepIndex, productIndex)
+	if expected.MeasurementUnit != nil {
+		require.NotNil(t, actual.MeasurementUnit, "expected step %d product %d MeasurementUnit non-nil", stepIndex, productIndex)
+		assert.NotEmpty(t, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.ID", stepIndex, productIndex)
+		assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected step %d product %d MeasurementUnit.ID", stepIndex, productIndex)
+	}
+}
+
+func TestRecipeStepProducts_CompleteLifecycle(T *testing.T) {
+	T.Parallel()
+
+	T.Run("should update", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		var (
+			createdRecipeStepID string
+		)
+		for _, step := range createdRecipe.Steps {
+			createdRecipeStepID = step.ID
+			break
+		}
+
+		createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
+
+		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
+		exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
+		exampleRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
+		exampleRecipeStepProductInput := mpconverters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
+		createdRecipeStepProductRes, err := adminClient.CreateRecipeStepProduct(ctx, &mealplanninggrpc.CreateRecipeStepProductRequest{
+			RecipeID:     createdRecipe.ID,
+			RecipeStepID: createdRecipeStepID,
+			Input:        converters.ConvertRecipeStepProductCreationRequestInputToGRPCRecipeStepProductCreationRequestInput(exampleRecipeStepProductInput),
+		})
+		require.NoError(t, err)
+
+		createdRecipeStepProduct := converters.ConvertGRPCRecipeStepProductToRecipeStepProduct(createdRecipeStepProductRes.Created)
+		checkRecipeStepProductEquality(t, -1, -1, exampleRecipeStepProduct, createdRecipeStepProduct)
+
+		retrievedRecipeStepProductRes, err := userClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
+			RecipeID:            createdRecipe.ID,
+			RecipeStepID:        createdRecipeStepID,
+			RecipeStepProductID: createdRecipeStepProduct.ID,
+		})
+		require.NoError(t, err)
+		require.Equal(t, createdRecipeStepID, createdRecipeStepProduct.BelongsToRecipeStep)
+
+		createdRecipeStepProduct = converters.ConvertGRPCRecipeStepProductToRecipeStepProduct(retrievedRecipeStepProductRes.Result)
+		checkRecipeStepProductEquality(t, -1, -1, exampleRecipeStepProduct, createdRecipeStepProduct)
+
+		newRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
+		newRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
+		updateInput := mpconverters.ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(newRecipeStepProduct)
+		createdRecipeStepProduct.Update(updateInput)
+
+		_, err = adminClient.UpdateRecipeStepProduct(ctx, &mealplanninggrpc.UpdateRecipeStepProductRequest{
+			RecipeID:            createdRecipe.ID,
+			RecipeStepID:        createdRecipeStepID,
+			RecipeStepProductID: createdRecipeStepProduct.ID,
+			Input:               converters.ConvertRecipeStepProductUpdateRequestInputToGRPCRecipeStepProductUpdateRequestInput(updateInput),
+		})
+		require.NoError(t, err)
+
+		retrievedRecipeStepProductRes, err = userClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
+			RecipeID:            createdRecipe.ID,
+			RecipeStepID:        createdRecipeStepID,
+			RecipeStepProductID: createdRecipeStepProduct.ID,
+		})
+		require.NoError(t, err)
+
+		actual := converters.ConvertGRPCRecipeStepProductToRecipeStepProduct(retrievedRecipeStepProductRes.Result)
+
+		// assert recipe step product equality
+		checkRecipeStepProductEquality(t, -1, -1, newRecipeStepProduct, actual)
+		assert.NotNil(t, actual.LastUpdatedAt)
+
+		_, err = userClient.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
+			RecipeID:            createdRecipe.ID,
+			RecipeStepID:        createdRecipeStepID,
+			RecipeStepProductID: createdRecipeStepProduct.ID,
+		})
+		assert.NoError(t, err)
+
+		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
+			RecipeID:     createdRecipe.ID,
+			RecipeStepID: createdRecipeStepID,
+		})
+		assert.NoError(t, err)
+
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		assert.NoError(t, err)
+	})
+}
+
+func TestRecipeStepProducts_Listing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("should be readable in paginated form", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		_, userClient := createUserAndClientForTest(t)
+		_, _, createdRecipe := createRecipeForTest(t, nil)
+
+		var (
+			createdRecipeStepID string
+		)
+		for _, step := range createdRecipe.Steps {
+			createdRecipeStepID = step.ID
+			break
+		}
+
+		createdValidMeasurementUnit := createValidMeasurementUnitForTest(t)
+
+		var expected []*mealplanning.RecipeStepProduct
+		for i := 0; i < 5; i++ {
+			exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
+			exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
+			exampleRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
+			exampleRecipeStepProductInput := mpconverters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
+			createdRecipeStepProductRes, err := adminClient.CreateRecipeStepProduct(ctx, &mealplanninggrpc.CreateRecipeStepProductRequest{
+				RecipeID:     createdRecipe.ID,
+				RecipeStepID: createdRecipeStepID,
+				Input:        converters.ConvertRecipeStepProductCreationRequestInputToGRPCRecipeStepProductCreationRequestInput(exampleRecipeStepProductInput),
+			})
+			require.NoError(t, err)
+
+			createdRecipeStepProduct := converters.ConvertGRPCRecipeStepProductToRecipeStepProduct(createdRecipeStepProductRes.Created)
+			checkRecipeStepProductEquality(t, -1, -1, exampleRecipeStepProduct, createdRecipeStepProduct)
+
+			retrievedRecipeStepProductRes, err := userClient.GetRecipeStepProduct(ctx, &mealplanninggrpc.GetRecipeStepProductRequest{
+				RecipeID:            createdRecipe.ID,
+				RecipeStepID:        createdRecipeStepID,
+				RecipeStepProductID: createdRecipeStepProduct.ID,
+			})
+			require.NoError(t, err)
+
+			createdRecipeStepProduct = converters.ConvertGRPCRecipeStepProductToRecipeStepProduct(retrievedRecipeStepProductRes.Result)
+			require.Equal(t, createdRecipeStepID, createdRecipeStepProduct.BelongsToRecipeStep)
+
+			expected = append(expected, createdRecipeStepProduct)
+		}
+
+		// assert recipe step product list equality
+		actual, err := userClient.GetRecipeStepProducts(ctx, &mealplanninggrpc.GetRecipeStepProductsRequest{
+			RecipeID:     createdRecipe.ID,
+			RecipeStepID: createdRecipeStepID,
+		})
+		require.NoError(t, err)
+		assert.True(
+			t,
+			len(expected) <= len(actual.Results),
+			"expected %d to be <= %d",
+			len(expected),
+			len(actual.Results),
+		)
+
+		for _, createdRecipeStepProduct := range expected {
+			_, err = userClient.ArchiveRecipeStepProduct(ctx, &mealplanninggrpc.ArchiveRecipeStepProductRequest{
+				RecipeID:            createdRecipe.ID,
+				RecipeStepID:        createdRecipeStepID,
+				RecipeStepProductID: createdRecipeStepProduct.ID,
+			})
+			assert.NoError(t, err)
+		}
+
+		_, err = userClient.ArchiveRecipeStep(ctx, &mealplanninggrpc.ArchiveRecipeStepRequest{
+			RecipeID:     createdRecipe.ID,
+			RecipeStepID: createdRecipeStepID,
+		})
+		assert.NoError(t, err)
+
+		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
+		assert.NoError(t, err)
+	})
+}

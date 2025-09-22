@@ -10,12 +10,12 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/services/core/workers/db_cleaner"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/maintenance"
+	dbcleaner "github.com/dinnerdonebetter/backend/internal/services/oauth/workers/db_cleaner"
 )
 
 // Injectors from build.go:
@@ -39,11 +39,11 @@ func Build(ctx context.Context, cfg *config.DBCleanerConfig) (*dbcleaner.Job, er
 		return nil, err
 	}
 	databasecfgConfig := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
 	if err != nil {
 		return nil, err
 	}
-	maintenanceDataManager := database.ProvideMaintenanceDataManager(dataManager)
+	maintenanceDataManager := maintenance.ProvideMaintenanceRepository(logger, tracerProvider, client)
 	job, err := dbcleaner.NewDBCleaner(logger, tracerProvider, provider, maintenanceDataManager)
 	if err != nil {
 		return nil, err

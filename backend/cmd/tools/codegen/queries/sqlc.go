@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type QueryType string
 
@@ -22,5 +25,10 @@ type Query struct {
 }
 
 func (q *Query) Render() string {
-	return fmt.Sprintf("-- name: %s %s\n%s\n", q.Annotation.Name, q.Annotation.Type, q.Content)
+	content := q.Content
+	if !strings.HasSuffix(content, ";") {
+		content += ";"
+	}
+
+	return fmt.Sprintf("-- name: %s %s\n%s\n", q.Annotation.Name, q.Annotation.Type, content)
 }

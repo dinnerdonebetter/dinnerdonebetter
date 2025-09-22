@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package audit;
+
+import "common.proto";
+import "filtering.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit";
+
+message DataCollection {
+  map<string, AuditLogEntry> AccountAuditLogEntries = 5;
+  repeated AuditLogEntry UserAuditLogEntries = 9;
+}
+
+message ChangeLog {
+  string OldValue = 1;
+  string NewValue = 2;
+}
+
+message AuditLogEntry {
+  google.protobuf.Timestamp CreatedAt = 1;
+  map<string, ChangeLog> Changes = 2;
+  string BelongsToAccount = 3;
+  string ID = 4;
+  string ResourceType = 5;
+  string RelevantID = 6;
+  string EventType = 7;
+  string BelongsToUser = 8;
+}
+
+// GetAuditLogEntriesForAccount
+message GetAuditLogEntriesForAccountRequest {
+  filtering.QueryFilter Filter = 1;
+}
+
+message GetAuditLogEntriesForAccountResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated AuditLogEntry Results = 3;
+}
+
+// GetAuditLogEntriesForUser
+message GetAuditLogEntriesForUserRequest {
+  filtering.QueryFilter Filter = 1;
+}
+
+message GetAuditLogEntriesForUserResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  filtering.QueryFilter Filter = 2;
+  repeated AuditLogEntry Results = 3;
+}
+
+// GetAuditLogEntryByID
+message GetAuditLogEntryByIDRequest {
+  string AuditLogEntryID = 1;
+}
+
+message GetAuditLogEntryByIDResponse {
+  common.ResponseDetails ResponseDetails = 1;
+  AuditLogEntry Result = 2;
+}
+
+service AuditService {
+  rpc GetAuditLogEntriesForAccount(GetAuditLogEntriesForAccountRequest) returns (GetAuditLogEntriesForAccountResponse);
+  rpc GetAuditLogEntriesForUser(GetAuditLogEntriesForUserRequest) returns (GetAuditLogEntriesForUserResponse);
+  rpc GetAuditLogEntryByID(GetAuditLogEntryByIDRequest) returns (GetAuditLogEntryByIDResponse);
+}

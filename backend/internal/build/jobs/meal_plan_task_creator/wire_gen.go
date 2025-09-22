@@ -10,13 +10,16 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_task_creator"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 )
 
 // Injectors from build.go:
@@ -36,10 +39,13 @@ func Build(ctx context.Context, cfg *config.MealPlanTaskCreatorConfig) (*mealpla
 	}
 	recipeAnalyzer := recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider)
 	databasecfgConfig := &cfg.Database
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
+	client, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, databasecfgConfig)
 	if err != nil {
 		return nil, err
 	}
+	repository := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, client)
+	identityRepository := identity.ProvideIdentityRepository(logger, tracerProvider, repository, client)
+	mealplanningRepository := mealplanning.ProvideMealPlanningRepository(logger, tracerProvider, repository, identityRepository, client)
 	msgconfigConfig := &cfg.Events
 	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, msgconfigConfig)
 	if err != nil {
@@ -51,7 +57,7 @@ func Build(ctx context.Context, cfg *config.MealPlanTaskCreatorConfig) (*mealpla
 		return nil, err
 	}
 	queuesConfig := &cfg.Queues
-	worker, err := mealplantaskcreator.NewMealPlanTaskCreator(logger, tracerProvider, recipeAnalyzer, dataManager, publisherProvider, provider, queuesConfig)
+	worker, err := mealplantaskcreator.NewMealPlanTaskCreator(logger, tracerProvider, recipeAnalyzer, mealplanningRepository, publisherProvider, provider, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

@@ -17,17 +17,17 @@ import {
   EmailAddressVerificationRequestInput,
   FinalizeMealPlansRequest,
   FinalizeMealPlansResponse,
-  Household,
-  HouseholdCreationRequestInput,
-  HouseholdInstrumentOwnership,
-  HouseholdInstrumentOwnershipCreationRequestInput,
-  HouseholdInstrumentOwnershipUpdateRequestInput,
-  HouseholdInvitation,
-  HouseholdInvitationCreationRequestInput,
-  HouseholdInvitationUpdateRequestInput,
-  HouseholdOwnershipTransferInput,
-  HouseholdUpdateRequestInput,
-  HouseholdUserMembership,
+  Account,
+  AccountCreationRequestInput,
+  AccountInstrumentOwnership,
+  AccountInstrumentOwnershipCreationRequestInput,
+  AccountInstrumentOwnershipUpdateRequestInput,
+  AccountInvitation,
+  AccountInvitationCreationRequestInput,
+  AccountInvitationUpdateRequestInput,
+  AccountOwnershipTransferInput,
+  AccountUpdateRequestInput,
+  AccountUserMembership,
   InitializeMealPlanGroceryListRequest,
   InitializeMealPlanGroceryListResponse,
   Meal,
@@ -180,7 +180,7 @@ type responsePartial = {
 function buildObligatoryError(msg: string): responsePartial {
   return {
     details: {
-      currentHouseholdID: 'test',
+      currentAccountID: 'test',
       traceID: 'test',
     },
     error: {
@@ -202,17 +202,17 @@ function fakeID(): string {
 }
 
 describe('basic', () => {
-  it('should Accepts a received household invitation', () => {
-    let householdInvitationID = fakeID();
+  it('should Accepts a received account invitation', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleInput = new HouseholdInvitationUpdateRequestInput();
+    const exampleInput = new AccountInvitationUpdateRequestInput();
 
-    const exampleResponse = new APIResponse<HouseholdInvitation>();
-    mock.onPut(`${baseURL}/api/v1/household_invitations/${householdInvitationID}/accept`).reply(200, exampleResponse);
+    const exampleResponse = new APIResponse<AccountInvitation>();
+    mock.onPut(`${baseURL}/api/v1/account_invitations/${accountInvitationID}/accept`).reply(200, exampleResponse);
 
     client
-      .acceptHouseholdInvitation(householdInvitationID, exampleInput)
-      .then((response: APIResponse<HouseholdInvitation>) => {
+      .acceptAccountInvitation(accountInvitationID, exampleInput)
+      .then((response: APIResponse<AccountInvitation>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -223,28 +223,28 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during Accepts a received household invitation', () => {
-    let householdInvitationID = fakeID();
+  it('should appropriately raise errors when they occur during Accepts a received account invitation', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleInput = new HouseholdInvitationUpdateRequestInput();
+    const exampleInput = new AccountInvitationUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('acceptHouseholdInvitation user error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onPut(`${baseURL}/api/v1/household_invitations/${householdInvitationID}/accept`).reply(200, exampleResponse);
+    const expectedError = buildObligatoryError('acceptAccountInvitation user error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/account_invitations/${accountInvitationID}/accept`).reply(200, exampleResponse);
 
-    expect(client.acceptHouseholdInvitation(householdInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.acceptAccountInvitation(accountInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during Accepts a received household invitation', () => {
-    let householdInvitationID = fakeID();
+  it('should appropriately raise service errors when they occur during Accepts a received account invitation', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleInput = new HouseholdInvitationUpdateRequestInput();
+    const exampleInput = new AccountInvitationUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('acceptHouseholdInvitation service error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onPut(`${baseURL}/api/v1/household_invitations/${householdInvitationID}/accept`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('acceptAccountInvitation service error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/account_invitations/${accountInvitationID}/accept`).reply(500, exampleResponse);
 
-    expect(client.acceptHouseholdInvitation(householdInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.acceptAccountInvitation(accountInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it("should Aggregates a user's data into a big disclosure blob", () => {
@@ -280,16 +280,16 @@ describe('basic', () => {
     expect(client.aggregateUserDataReport()).rejects.toEqual(expectedError.error);
   });
 
-  it('should Archive a household user membership', () => {
-    let householdID = fakeID();
+  it('should Archive an account user membership', () => {
+    let accountID = fakeID();
     let userID = fakeID();
 
-    const exampleResponse = new APIResponse<HouseholdUserMembership>();
-    mock.onDelete(`${baseURL}/api/v1/households/${householdID}/members/${userID}`).reply(202, exampleResponse);
+    const exampleResponse = new APIResponse<AccountUserMembership>();
+    mock.onDelete(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}`).reply(202, exampleResponse);
 
     client
-      .archiveUserMembership(householdID, userID)
-      .then((response: APIResponse<HouseholdUserMembership>) => {
+      .archiveUserMembership(accountID, userID)
+      .then((response: APIResponse<AccountUserMembership>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -299,26 +299,26 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to Archive a household user membership', () => {
-    let householdID = fakeID();
+  it('should raise errors appropriately when trying to Archive an account user membership', () => {
+    let accountID = fakeID();
     let userID = fakeID();
 
     const expectedError = buildObligatoryError('archiveUserMembership user error');
-    const exampleResponse = new APIResponse<HouseholdUserMembership>(expectedError);
-    mock.onDelete(`${baseURL}/api/v1/households/${householdID}/members/${userID}`).reply(202, exampleResponse);
+    const exampleResponse = new APIResponse<AccountUserMembership>(expectedError);
+    mock.onDelete(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}`).reply(202, exampleResponse);
 
-    expect(client.archiveUserMembership(householdID, userID)).rejects.toEqual(expectedError.error);
+    expect(client.archiveUserMembership(accountID, userID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to Archive a household user membership', () => {
-    let householdID = fakeID();
+  it('should raise service errors appropriately when trying to Archive an account user membership', () => {
+    let accountID = fakeID();
     let userID = fakeID();
 
     const expectedError = buildObligatoryError('archiveUserMembership service error');
-    const exampleResponse = new APIResponse<HouseholdUserMembership>(expectedError);
-    mock.onDelete(`${baseURL}/api/v1/households/${householdID}/members/${userID}`).reply(500, exampleResponse);
+    const exampleResponse = new APIResponse<AccountUserMembership>(expectedError);
+    mock.onDelete(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}`).reply(500, exampleResponse);
 
-    expect(client.archiveUserMembership(householdID, userID)).rejects.toEqual(expectedError.error);
+    expect(client.archiveUserMembership(accountID, userID)).rejects.toEqual(expectedError.error);
   });
 
   it("should Checks a user's permissions", () => {
@@ -399,17 +399,17 @@ describe('basic', () => {
     expect(client.cloneRecipe(recipeID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should Create a household invitation', () => {
-    let householdID = fakeID();
+  it('should Create an account invitation', () => {
+    let accountID = fakeID();
 
-    const exampleInput = new HouseholdInvitationCreationRequestInput();
+    const exampleInput = new AccountInvitationCreationRequestInput();
 
-    const exampleResponse = new APIResponse<HouseholdInvitation>();
-    mock.onPost(`${baseURL}/api/v1/households/${householdID}/invite`).reply(201, exampleResponse);
+    const exampleResponse = new APIResponse<AccountInvitation>();
+    mock.onPost(`${baseURL}/api/v1/accounts/${accountID}/invite`).reply(201, exampleResponse);
 
     client
-      .createHouseholdInvitation(householdID, exampleInput)
-      .then((response: APIResponse<HouseholdInvitation>) => {
+      .createAccountInvitation(accountID, exampleInput)
+      .then((response: APIResponse<AccountInvitation>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -420,28 +420,28 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during Create a household invitation', () => {
-    let householdID = fakeID();
+  it('should appropriately raise errors when they occur during Create an account invitation', () => {
+    let accountID = fakeID();
 
-    const exampleInput = new HouseholdInvitationCreationRequestInput();
+    const exampleInput = new AccountInvitationCreationRequestInput();
 
-    const expectedError = buildObligatoryError('createHouseholdInvitation user error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households/${householdID}/invite`).reply(201, exampleResponse);
+    const expectedError = buildObligatoryError('createAccountInvitation user error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts/${accountID}/invite`).reply(201, exampleResponse);
 
-    expect(client.createHouseholdInvitation(householdID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.createAccountInvitation(accountID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during Create a household invitation', () => {
-    let householdID = fakeID();
+  it('should appropriately raise service errors when they occur during Create an account invitation', () => {
+    let accountID = fakeID();
 
-    const exampleInput = new HouseholdInvitationCreationRequestInput();
+    const exampleInput = new AccountInvitationCreationRequestInput();
 
-    const expectedError = buildObligatoryError('createHouseholdInvitation service error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households/${householdID}/invite`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('createAccountInvitation service error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts/${accountID}/invite`).reply(500, exampleResponse);
 
-    expect(client.createHouseholdInvitation(householdID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.createAccountInvitation(accountID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it("should Destroys a user's data", () => {
@@ -975,19 +975,19 @@ describe('basic', () => {
     expect(client.getAuditLogEntryByID(auditLogEntryID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should Retrieves audit log entries for a household', () => {
+  it('should Retrieves audit log entries for an account', () => {
     const exampleResponse = new APIResponse<Array<AuditLogEntry>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
       data: [new AuditLogEntry()],
     });
-    mock.onGet(`${baseURL}/api/v1/audit_log_entries/for_household`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/audit_log_entries/for_account`).reply(200, exampleResponse);
 
     client
-      .getAuditLogEntriesForHousehold()
+      .getAuditLogEntriesForAccount()
       .then((response: QueryFilteredResult<AuditLogEntry>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
@@ -1000,26 +1000,26 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to Retrieves audit log entries for a household', () => {
-    const expectedError = buildObligatoryError('getAuditLogEntriesForHousehold user error');
+  it('should raise errors appropriately when trying to Retrieves audit log entries for an account', () => {
+    const expectedError = buildObligatoryError('getAuditLogEntriesForAccount user error');
     const exampleResponse = new APIResponse<Array<AuditLogEntry>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/audit_log_entries/for_household`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/audit_log_entries/for_account`).reply(200, exampleResponse);
 
-    expect(client.getAuditLogEntriesForHousehold()).rejects.toEqual(expectedError.error);
+    expect(client.getAuditLogEntriesForAccount()).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to Retrieves audit log entries for a household', () => {
-    const expectedError = buildObligatoryError('getAuditLogEntriesForHousehold service error');
+  it('should raise service errors appropriately when trying to Retrieves audit log entries for an account', () => {
+    const expectedError = buildObligatoryError('getAuditLogEntriesForAccount service error');
     const exampleResponse = new APIResponse<Array<AuditLogEntry>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/audit_log_entries/for_household`).reply(500, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/audit_log_entries/for_account`).reply(500, exampleResponse);
 
-    expect(client.getAuditLogEntriesForHousehold()).rejects.toEqual(expectedError.error);
+    expect(client.getAuditLogEntriesForAccount()).rejects.toEqual(expectedError.error);
   });
 
   it('should Retrieves audit log entries for a user', () => {
     const exampleResponse = new APIResponse<Array<AuditLogEntry>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1179,7 +1179,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<Meal>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1226,7 +1226,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<Recipe>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1273,7 +1273,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ServiceSetting>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1320,7 +1320,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<User>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1367,7 +1367,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredientGroup>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1414,7 +1414,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredientState>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1462,7 +1462,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredient>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1511,7 +1511,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredient>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1558,7 +1558,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidInstrument>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1606,7 +1606,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidMeasurementUnit>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1661,7 +1661,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidMeasurementUnit>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1708,7 +1708,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidPreparation>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1755,7 +1755,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidVessel>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -1797,17 +1797,17 @@ describe('basic', () => {
     expect(client.searchForValidVessels(q)).rejects.toEqual(expectedError.error);
   });
 
-  it('should Transfer household ownership to another user', () => {
-    let householdID = fakeID();
+  it('should Transfer account ownership to another user', () => {
+    let accountID = fakeID();
 
-    const exampleInput = new HouseholdOwnershipTransferInput();
+    const exampleInput = new AccountOwnershipTransferInput();
 
-    const exampleResponse = new APIResponse<Household>();
-    mock.onPost(`${baseURL}/api/v1/households/${householdID}/transfer`).reply(201, exampleResponse);
+    const exampleResponse = new APIResponse<Account>();
+    mock.onPost(`${baseURL}/api/v1/accounts/${accountID}/transfer`).reply(201, exampleResponse);
 
     client
-      .transferHouseholdOwnership(householdID, exampleInput)
-      .then((response: APIResponse<Household>) => {
+      .transferAccountOwnership(accountID, exampleInput)
+      .then((response: APIResponse<Account>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -1818,43 +1818,41 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during Transfer household ownership to another user', () => {
-    let householdID = fakeID();
+  it('should appropriately raise errors when they occur during Transfer account ownership to another user', () => {
+    let accountID = fakeID();
 
-    const exampleInput = new HouseholdOwnershipTransferInput();
+    const exampleInput = new AccountOwnershipTransferInput();
 
-    const expectedError = buildObligatoryError('transferHouseholdOwnership user error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households/${householdID}/transfer`).reply(201, exampleResponse);
+    const expectedError = buildObligatoryError('transferAccountOwnership user error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts/${accountID}/transfer`).reply(201, exampleResponse);
 
-    expect(client.transferHouseholdOwnership(householdID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.transferAccountOwnership(accountID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during Transfer household ownership to another user', () => {
-    let householdID = fakeID();
+  it('should appropriately raise service errors when they occur during Transfer account ownership to another user', () => {
+    let accountID = fakeID();
 
-    const exampleInput = new HouseholdOwnershipTransferInput();
+    const exampleInput = new AccountOwnershipTransferInput();
 
-    const expectedError = buildObligatoryError('transferHouseholdOwnership service error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households/${householdID}/transfer`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('transferAccountOwnership service error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts/${accountID}/transfer`).reply(500, exampleResponse);
 
-    expect(client.transferHouseholdOwnership(householdID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.transferAccountOwnership(accountID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it("should Update a household member's household permissions", () => {
-    let householdID = fakeID();
+  it("should Update an account member's account permissions", () => {
+    let accountID = fakeID();
     let userID = fakeID();
 
     const exampleInput = new ModifyUserPermissionsInput();
 
     const exampleResponse = new APIResponse<UserPermissionsResponse>();
-    mock
-      .onPatch(`${baseURL}/api/v1/households/${householdID}/members/${userID}/permissions`)
-      .reply(200, exampleResponse);
+    mock.onPatch(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}/permissions`).reply(200, exampleResponse);
 
     client
-      .updateHouseholdMemberPermissions(householdID, userID, exampleInput)
+      .updateAccountMemberPermissions(accountID, userID, exampleInput)
       .then((response: APIResponse<UserPermissionsResponse>) => {
         expect(response).toEqual(exampleResponse);
       })
@@ -1866,38 +1864,30 @@ describe('basic', () => {
       });
   });
 
-  it("should appropriately raise errors when they occur during Update a household member's household permissions", () => {
-    let householdID = fakeID();
+  it("should appropriately raise errors when they occur during Update an account member's account permissions", () => {
+    let accountID = fakeID();
     let userID = fakeID();
 
     const exampleInput = new ModifyUserPermissionsInput();
 
-    const expectedError = buildObligatoryError('updateHouseholdMemberPermissions user error');
+    const expectedError = buildObligatoryError('updateAccountMemberPermissions user error');
     const exampleResponse = new APIResponse<UserPermissionsResponse>(expectedError);
-    mock
-      .onPatch(`${baseURL}/api/v1/households/${householdID}/members/${userID}/permissions`)
-      .reply(200, exampleResponse);
+    mock.onPatch(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}/permissions`).reply(200, exampleResponse);
 
-    expect(client.updateHouseholdMemberPermissions(householdID, userID, exampleInput)).rejects.toEqual(
-      expectedError.error,
-    );
+    expect(client.updateAccountMemberPermissions(accountID, userID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it("should appropriately raise service errors when they occur during Update a household member's household permissions", () => {
-    let householdID = fakeID();
+  it("should appropriately raise service errors when they occur during Update an account member's account permissions", () => {
+    let accountID = fakeID();
     let userID = fakeID();
 
     const exampleInput = new ModifyUserPermissionsInput();
 
-    const expectedError = buildObligatoryError('updateHouseholdMemberPermissions service error');
+    const expectedError = buildObligatoryError('updateAccountMemberPermissions service error');
     const exampleResponse = new APIResponse<UserPermissionsResponse>(expectedError);
-    mock
-      .onPatch(`${baseURL}/api/v1/households/${householdID}/members/${userID}/permissions`)
-      .reply(500, exampleResponse);
+    mock.onPatch(`${baseURL}/api/v1/accounts/${accountID}/members/${userID}/permissions`).reply(500, exampleResponse);
 
-    expect(client.updateHouseholdMemberPermissions(householdID, userID, exampleInput)).rejects.toEqual(
-      expectedError.error,
-    );
+    expect(client.updateAccountMemberPermissions(accountID, userID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should Uploads a new user avatar', () => {
@@ -3431,17 +3421,15 @@ describe('basic', () => {
     expect(client.archiveWebhookTriggerEvent(webhookID, webhookTriggerEventID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should archive a household instrument ownership', () => {
-    let householdInstrumentOwnershipID = fakeID();
+  it('should archive an account instrument ownership', () => {
+    let accountInstrumentOwnershipID = fakeID();
 
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>();
-    mock
-      .onDelete(`${baseURL}/api/v1/households/instruments/${householdInstrumentOwnershipID}`)
-      .reply(202, exampleResponse);
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
+    mock.onDelete(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(202, exampleResponse);
 
     client
-      .archiveHouseholdInstrumentOwnership(householdInstrumentOwnershipID)
-      .then((response: APIResponse<HouseholdInstrumentOwnership>) => {
+      .archiveAccountInstrumentOwnership(accountInstrumentOwnershipID)
+      .then((response: APIResponse<AccountInstrumentOwnership>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -3451,43 +3439,35 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to archive a household instrument ownership', () => {
-    let householdInstrumentOwnershipID = fakeID();
+  it('should raise errors appropriately when trying to archive an account instrument ownership', () => {
+    let accountInstrumentOwnershipID = fakeID();
 
-    const expectedError = buildObligatoryError('archiveHouseholdInstrumentOwnership user error');
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>(expectedError);
-    mock
-      .onDelete(`${baseURL}/api/v1/households/instruments/${householdInstrumentOwnershipID}`)
-      .reply(202, exampleResponse);
+    const expectedError = buildObligatoryError('archiveAccountInstrumentOwnership user error');
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
+    mock.onDelete(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(202, exampleResponse);
 
-    expect(client.archiveHouseholdInstrumentOwnership(householdInstrumentOwnershipID)).rejects.toEqual(
-      expectedError.error,
-    );
+    expect(client.archiveAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to archive a household instrument ownership', () => {
-    let householdInstrumentOwnershipID = fakeID();
+  it('should raise service errors appropriately when trying to archive an account instrument ownership', () => {
+    let accountInstrumentOwnershipID = fakeID();
 
-    const expectedError = buildObligatoryError('archiveHouseholdInstrumentOwnership service error');
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>(expectedError);
-    mock
-      .onDelete(`${baseURL}/api/v1/households/instruments/${householdInstrumentOwnershipID}`)
-      .reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('archiveAccountInstrumentOwnership service error');
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
+    mock.onDelete(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(500, exampleResponse);
 
-    expect(client.archiveHouseholdInstrumentOwnership(householdInstrumentOwnershipID)).rejects.toEqual(
-      expectedError.error,
-    );
+    expect(client.archiveAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should archive a household', () => {
-    let householdID = fakeID();
+  it('should archive an account', () => {
+    let accountID = fakeID();
 
-    const exampleResponse = new APIResponse<Household>();
-    mock.onDelete(`${baseURL}/api/v1/households/${householdID}`).reply(202, exampleResponse);
+    const exampleResponse = new APIResponse<Account>();
+    mock.onDelete(`${baseURL}/api/v1/accounts/${accountID}`).reply(202, exampleResponse);
 
     client
-      .archiveHousehold(householdID)
-      .then((response: APIResponse<Household>) => {
+      .archiveAccount(accountID)
+      .then((response: APIResponse<Account>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -3497,24 +3477,24 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to archive a household', () => {
-    let householdID = fakeID();
+  it('should raise errors appropriately when trying to archive an account', () => {
+    let accountID = fakeID();
 
-    const expectedError = buildObligatoryError('archiveHousehold user error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onDelete(`${baseURL}/api/v1/households/${householdID}`).reply(202, exampleResponse);
+    const expectedError = buildObligatoryError('archiveAccount user error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onDelete(`${baseURL}/api/v1/accounts/${accountID}`).reply(202, exampleResponse);
 
-    expect(client.archiveHousehold(householdID)).rejects.toEqual(expectedError.error);
+    expect(client.archiveAccount(accountID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to archive a household', () => {
-    let householdID = fakeID();
+  it('should raise service errors appropriately when trying to archive an account', () => {
+    let accountID = fakeID();
 
-    const expectedError = buildObligatoryError('archiveHousehold service error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onDelete(`${baseURL}/api/v1/households/${householdID}`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('archiveAccount service error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onDelete(`${baseURL}/api/v1/accounts/${accountID}`).reply(500, exampleResponse);
 
-    expect(client.archiveHousehold(householdID)).rejects.toEqual(expectedError.error);
+    expect(client.archiveAccount(accountID)).rejects.toEqual(expectedError.error);
   });
 
   it('should archive a meal plan option vote', () => {
@@ -3580,17 +3560,17 @@ describe('basic', () => {
     ).rejects.toEqual(expectedError.error);
   });
 
-  it('should cancel a sent household invitation', () => {
-    let householdInvitationID = fakeID();
+  it('should cancel a sent account invitation', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleInput = new HouseholdInvitationUpdateRequestInput();
+    const exampleInput = new AccountInvitationUpdateRequestInput();
 
-    const exampleResponse = new APIResponse<HouseholdInvitation>();
-    mock.onPut(`${baseURL}/api/v1/household_invitations/${householdInvitationID}/cancel`).reply(200, exampleResponse);
+    const exampleResponse = new APIResponse<AccountInvitation>();
+    mock.onPut(`${baseURL}/api/v1/account_invitations/${accountInvitationID}/cancel`).reply(200, exampleResponse);
 
     client
-      .cancelHouseholdInvitation(householdInvitationID, exampleInput)
-      .then((response: APIResponse<HouseholdInvitation>) => {
+      .cancelAccountInvitation(accountInvitationID, exampleInput)
+      .then((response: APIResponse<AccountInvitation>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -3601,28 +3581,28 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during cancel a sent household invitation', () => {
-    let householdInvitationID = fakeID();
+  it('should appropriately raise errors when they occur during cancel a sent account invitation', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleInput = new HouseholdInvitationUpdateRequestInput();
+    const exampleInput = new AccountInvitationUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('cancelHouseholdInvitation user error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onPut(`${baseURL}/api/v1/household_invitations/${householdInvitationID}/cancel`).reply(200, exampleResponse);
+    const expectedError = buildObligatoryError('cancelAccountInvitation user error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/account_invitations/${accountInvitationID}/cancel`).reply(200, exampleResponse);
 
-    expect(client.cancelHouseholdInvitation(householdInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.cancelAccountInvitation(accountInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during cancel a sent household invitation', () => {
-    let householdInvitationID = fakeID();
+  it('should appropriately raise service errors when they occur during cancel a sent account invitation', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleInput = new HouseholdInvitationUpdateRequestInput();
+    const exampleInput = new AccountInvitationUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('cancelHouseholdInvitation service error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onPut(`${baseURL}/api/v1/household_invitations/${householdInvitationID}/cancel`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('cancelAccountInvitation service error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/account_invitations/${accountInvitationID}/cancel`).reply(500, exampleResponse);
 
-    expect(client.cancelHouseholdInvitation(householdInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.cancelAccountInvitation(accountInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should create a Meal', () => {
@@ -5114,15 +5094,15 @@ describe('basic', () => {
     expect(client.createWebhookTriggerEvent(webhookID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should create a household instrument ownership', () => {
-    const exampleInput = new HouseholdInstrumentOwnershipCreationRequestInput();
+  it('should create an account instrument ownership', () => {
+    const exampleInput = new AccountInstrumentOwnershipCreationRequestInput();
 
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>();
-    mock.onPost(`${baseURL}/api/v1/households/instruments`).reply(201, exampleResponse);
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
+    mock.onPost(`${baseURL}/api/v1/accounts/instruments`).reply(201, exampleResponse);
 
     client
-      .createHouseholdInstrumentOwnership(exampleInput)
-      .then((response: APIResponse<HouseholdInstrumentOwnership>) => {
+      .createAccountInstrumentOwnership(exampleInput)
+      .then((response: APIResponse<AccountInstrumentOwnership>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -5133,35 +5113,35 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during create a household instrument ownership', () => {
-    const exampleInput = new HouseholdInstrumentOwnershipCreationRequestInput();
+  it('should appropriately raise errors when they occur during create an account instrument ownership', () => {
+    const exampleInput = new AccountInstrumentOwnershipCreationRequestInput();
 
-    const expectedError = buildObligatoryError('createHouseholdInstrumentOwnership user error');
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households/instruments`).reply(201, exampleResponse);
+    const expectedError = buildObligatoryError('createAccountInstrumentOwnership user error');
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts/instruments`).reply(201, exampleResponse);
 
-    expect(client.createHouseholdInstrumentOwnership(exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.createAccountInstrumentOwnership(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during create a household instrument ownership', () => {
-    const exampleInput = new HouseholdInstrumentOwnershipCreationRequestInput();
+  it('should appropriately raise service errors when they occur during create an account instrument ownership', () => {
+    const exampleInput = new AccountInstrumentOwnershipCreationRequestInput();
 
-    const expectedError = buildObligatoryError('createHouseholdInstrumentOwnership service error');
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households/instruments`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('createAccountInstrumentOwnership service error');
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts/instruments`).reply(500, exampleResponse);
 
-    expect(client.createHouseholdInstrumentOwnership(exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.createAccountInstrumentOwnership(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should create a household', () => {
-    const exampleInput = new HouseholdCreationRequestInput();
+  it('should create an account', () => {
+    const exampleInput = new AccountCreationRequestInput();
 
-    const exampleResponse = new APIResponse<Household>();
-    mock.onPost(`${baseURL}/api/v1/households`).reply(201, exampleResponse);
+    const exampleResponse = new APIResponse<Account>();
+    mock.onPost(`${baseURL}/api/v1/accounts`).reply(201, exampleResponse);
 
     client
-      .createHousehold(exampleInput)
-      .then((response: APIResponse<Household>) => {
+      .createAccount(exampleInput)
+      .then((response: APIResponse<Account>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -5172,24 +5152,24 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during create a household', () => {
-    const exampleInput = new HouseholdCreationRequestInput();
+  it('should appropriately raise errors when they occur during create an account', () => {
+    const exampleInput = new AccountCreationRequestInput();
 
-    const expectedError = buildObligatoryError('createHousehold user error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households`).reply(201, exampleResponse);
+    const expectedError = buildObligatoryError('createAccount user error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts`).reply(201, exampleResponse);
 
-    expect(client.createHousehold(exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.createAccount(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during create a household', () => {
-    const exampleInput = new HouseholdCreationRequestInput();
+  it('should appropriately raise service errors when they occur during create an account', () => {
+    const exampleInput = new AccountCreationRequestInput();
 
-    const expectedError = buildObligatoryError('createHousehold service error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('createAccount service error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts`).reply(500, exampleResponse);
 
-    expect(client.createHousehold(exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.createAccount(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should create a meal plan option', () => {
@@ -5285,20 +5265,20 @@ describe('basic', () => {
     expect(client.createUser(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should creates a household instrument', () => {
-    const exampleResponse = new APIResponse<Array<HouseholdInstrumentOwnership>>({
+  it('should creates an account instrument', () => {
+    const exampleResponse = new APIResponse<Array<AccountInstrumentOwnership>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
-      data: [new HouseholdInstrumentOwnership()],
+      data: [new AccountInstrumentOwnership()],
     });
-    mock.onGet(`${baseURL}/api/v1/households/instruments`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/accounts/instruments`).reply(200, exampleResponse);
 
     client
-      .getHouseholdInstrumentOwnerships()
-      .then((response: QueryFilteredResult<HouseholdInstrumentOwnership>) => {
+      .getAccountInstrumentOwnerships()
+      .then((response: QueryFilteredResult<AccountInstrumentOwnership>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
         expect(response.limit).toEqual(exampleResponse.pagination?.limit);
@@ -5310,20 +5290,20 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to creates a household instrument', () => {
-    const expectedError = buildObligatoryError('getHouseholdInstrumentOwnerships user error');
-    const exampleResponse = new APIResponse<Array<HouseholdInstrumentOwnership>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/households/instruments`).reply(200, exampleResponse);
+  it('should raise errors appropriately when trying to creates an account instrument', () => {
+    const expectedError = buildObligatoryError('getAccountInstrumentOwnerships user error');
+    const exampleResponse = new APIResponse<Array<AccountInstrumentOwnership>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts/instruments`).reply(200, exampleResponse);
 
-    expect(client.getHouseholdInstrumentOwnerships()).rejects.toEqual(expectedError.error);
+    expect(client.getAccountInstrumentOwnerships()).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to creates a household instrument', () => {
-    const expectedError = buildObligatoryError('getHouseholdInstrumentOwnerships service error');
-    const exampleResponse = new APIResponse<Array<HouseholdInstrumentOwnership>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/households/instruments`).reply(500, exampleResponse);
+  it('should raise service errors appropriately when trying to creates an account instrument', () => {
+    const expectedError = buildObligatoryError('getAccountInstrumentOwnerships service error');
+    const exampleResponse = new APIResponse<Array<AccountInstrumentOwnership>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts/instruments`).reply(500, exampleResponse);
 
-    expect(client.getHouseholdInstrumentOwnerships()).rejects.toEqual(expectedError.error);
+    expect(client.getAccountInstrumentOwnerships()).rejects.toEqual(expectedError.error);
   });
 
   it('should fetch a AuthStatus', () => {
@@ -5480,7 +5460,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<MealPlanEvent>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -5578,7 +5558,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<MealPlanGroceryListItem>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -5666,7 +5646,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<MealPlanTask>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -5711,7 +5691,7 @@ describe('basic', () => {
   it('should fetch a MealPlanning', () => {
     const exampleResponse = new APIResponse<Array<Meal>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -5752,7 +5732,7 @@ describe('basic', () => {
   it('should fetch a MealPlans', () => {
     const exampleResponse = new APIResponse<Array<MealPlan>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -5761,7 +5741,7 @@ describe('basic', () => {
     mock.onGet(`${baseURL}/api/v1/meal_plans`).reply(200, exampleResponse);
 
     client
-      .getMealPlansForHousehold()
+      .getMealPlansForAccount()
       .then((response: QueryFilteredResult<MealPlan>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
@@ -5775,19 +5755,19 @@ describe('basic', () => {
   });
 
   it('should raise errors appropriately when trying to fetch a MealPlans', () => {
-    const expectedError = buildObligatoryError('getMealPlansForHousehold user error');
+    const expectedError = buildObligatoryError('getMealPlansForAccount user error');
     const exampleResponse = new APIResponse<Array<MealPlan>>(expectedError);
     mock.onGet(`${baseURL}/api/v1/meal_plans`).reply(200, exampleResponse);
 
-    expect(client.getMealPlansForHousehold()).rejects.toEqual(expectedError.error);
+    expect(client.getMealPlansForAccount()).rejects.toEqual(expectedError.error);
   });
 
   it('should raise service errors appropriately when trying to fetch a MealPlans', () => {
-    const expectedError = buildObligatoryError('getMealPlansForHousehold service error');
+    const expectedError = buildObligatoryError('getMealPlansForAccount service error');
     const exampleResponse = new APIResponse<Array<MealPlan>>(expectedError);
     mock.onGet(`${baseURL}/api/v1/meal_plans`).reply(500, exampleResponse);
 
-    expect(client.getMealPlansForHousehold()).rejects.toEqual(expectedError.error);
+    expect(client.getMealPlansForAccount()).rejects.toEqual(expectedError.error);
   });
 
   it('should fetch a MermaidDiagramForRecipe', () => {
@@ -5869,7 +5849,7 @@ describe('basic', () => {
   it('should fetch a OAuth2Clients', () => {
     const exampleResponse = new APIResponse<Array<OAuth2Client>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -6157,7 +6137,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<RecipePrepTask>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -6245,7 +6225,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<RecipeRating>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -6394,7 +6374,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<RecipeStepCompletionCondition>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -6504,7 +6484,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<RecipeStepIngredient>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -6608,7 +6588,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<RecipeStepInstrument>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -6712,7 +6692,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<RecipeStepProduct>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -6812,7 +6792,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<RecipeStepVessel>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -6861,7 +6841,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<RecipeStep>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -6906,7 +6886,7 @@ describe('basic', () => {
   it('should fetch a Recipes', () => {
     const exampleResponse = new APIResponse<Array<Recipe>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7019,7 +6999,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ServiceSettingConfiguration>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7071,19 +7051,19 @@ describe('basic', () => {
     );
   });
 
-  it('should fetch a ServiceSettingConfigurationsForHousehold', () => {
+  it('should fetch a ServiceSettingConfigurationsForAccount', () => {
     const exampleResponse = new APIResponse<Array<ServiceSettingConfiguration>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
       data: [new ServiceSettingConfiguration()],
     });
-    mock.onGet(`${baseURL}/api/v1/settings/configurations/household`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/settings/configurations/account`).reply(200, exampleResponse);
 
     client
-      .getServiceSettingConfigurationsForHousehold()
+      .getServiceSettingConfigurationsForAccount()
       .then((response: QueryFilteredResult<ServiceSettingConfiguration>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
@@ -7096,26 +7076,26 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch a ServiceSettingConfigurationsForHousehold', () => {
-    const expectedError = buildObligatoryError('getServiceSettingConfigurationsForHousehold user error');
+  it('should raise errors appropriately when trying to fetch a ServiceSettingConfigurationsForAccount', () => {
+    const expectedError = buildObligatoryError('getServiceSettingConfigurationsForAccount user error');
     const exampleResponse = new APIResponse<Array<ServiceSettingConfiguration>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/settings/configurations/household`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/settings/configurations/account`).reply(200, exampleResponse);
 
-    expect(client.getServiceSettingConfigurationsForHousehold()).rejects.toEqual(expectedError.error);
+    expect(client.getServiceSettingConfigurationsForAccount()).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch a ServiceSettingConfigurationsForHousehold', () => {
-    const expectedError = buildObligatoryError('getServiceSettingConfigurationsForHousehold service error');
+  it('should raise service errors appropriately when trying to fetch a ServiceSettingConfigurationsForAccount', () => {
+    const expectedError = buildObligatoryError('getServiceSettingConfigurationsForAccount service error');
     const exampleResponse = new APIResponse<Array<ServiceSettingConfiguration>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/settings/configurations/household`).reply(500, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/settings/configurations/account`).reply(500, exampleResponse);
 
-    expect(client.getServiceSettingConfigurationsForHousehold()).rejects.toEqual(expectedError.error);
+    expect(client.getServiceSettingConfigurationsForAccount()).rejects.toEqual(expectedError.error);
   });
 
   it('should fetch a ServiceSettingConfigurationsForUser', () => {
     const exampleResponse = new APIResponse<Array<ServiceSettingConfiguration>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7156,7 +7136,7 @@ describe('basic', () => {
   it('should fetch a ServiceSettings', () => {
     const exampleResponse = new APIResponse<Array<ServiceSetting>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7235,7 +7215,7 @@ describe('basic', () => {
   it('should fetch a UserIngredientPreferences', () => {
     const exampleResponse = new APIResponse<Array<UserIngredientPreference>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7314,7 +7294,7 @@ describe('basic', () => {
   it('should fetch a UserNotifications', () => {
     const exampleResponse = new APIResponse<Array<UserNotification>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7355,7 +7335,7 @@ describe('basic', () => {
   it('should fetch a Users', () => {
     const exampleResponse = new APIResponse<Array<User>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7472,7 +7452,7 @@ describe('basic', () => {
   it('should fetch a ValidIngredientGroups', () => {
     const exampleResponse = new APIResponse<Array<ValidIngredientGroup>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7561,7 +7541,7 @@ describe('basic', () => {
   it('should fetch a ValidIngredientMeasurementUnits', () => {
     const exampleResponse = new APIResponse<Array<ValidIngredientMeasurementUnit>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7604,7 +7584,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredientMeasurementUnit>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7661,7 +7641,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredientMeasurementUnit>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7760,7 +7740,7 @@ describe('basic', () => {
   it('should fetch a ValidIngredientPreparations', () => {
     const exampleResponse = new APIResponse<Array<ValidIngredientPreparation>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7803,7 +7783,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredientPreparation>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7856,7 +7836,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredientPreparation>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -7993,7 +7973,7 @@ describe('basic', () => {
   it('should fetch a ValidIngredientStateIngredients', () => {
     const exampleResponse = new APIResponse<Array<ValidIngredientStateIngredient>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8036,7 +8016,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredientStateIngredient>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8093,7 +8073,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidIngredientStateIngredient>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8148,7 +8128,7 @@ describe('basic', () => {
   it('should fetch a ValidIngredientStates', () => {
     const exampleResponse = new APIResponse<Array<ValidIngredientState>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8189,7 +8169,7 @@ describe('basic', () => {
   it('should fetch a ValidIngredients', () => {
     const exampleResponse = new APIResponse<Array<ValidIngredient>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8268,7 +8248,7 @@ describe('basic', () => {
   it('should fetch a ValidInstruments', () => {
     const exampleResponse = new APIResponse<Array<ValidInstrument>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8397,7 +8377,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidMeasurementUnitConversion>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8454,7 +8434,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidMeasurementUnitConversion>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8509,7 +8489,7 @@ describe('basic', () => {
   it('should fetch a ValidMeasurementUnits', () => {
     const exampleResponse = new APIResponse<Array<ValidMeasurementUnit>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8632,7 +8612,7 @@ describe('basic', () => {
   it('should fetch a ValidPreparationInstruments', () => {
     const exampleResponse = new APIResponse<Array<ValidPreparationInstrument>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8675,7 +8655,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidPreparationInstrument>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8728,7 +8708,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidPreparationInstrument>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8817,7 +8797,7 @@ describe('basic', () => {
   it('should fetch a ValidPreparationVessels', () => {
     const exampleResponse = new APIResponse<Array<ValidPreparationVessel>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8860,7 +8840,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidPreparationVessel>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8913,7 +8893,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<ValidPreparationVessel>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -8958,7 +8938,7 @@ describe('basic', () => {
   it('should fetch a ValidPreparations', () => {
     const exampleResponse = new APIResponse<Array<ValidPreparation>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -9037,7 +9017,7 @@ describe('basic', () => {
   it('should fetch a ValidVessels', () => {
     const exampleResponse = new APIResponse<Array<ValidVessel>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -9116,7 +9096,7 @@ describe('basic', () => {
   it('should fetch a Webhooks', () => {
     const exampleResponse = new APIResponse<Array<Webhook>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -9154,17 +9134,15 @@ describe('basic', () => {
     expect(client.getWebhooks()).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch a household instrument ownership', () => {
-    let householdInstrumentOwnershipID = fakeID();
+  it('should fetch an account instrument ownership', () => {
+    let accountInstrumentOwnershipID = fakeID();
 
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>();
-    mock
-      .onGet(`${baseURL}/api/v1/households/instruments/${householdInstrumentOwnershipID}`)
-      .reply(200, exampleResponse);
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
+    mock.onGet(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(200, exampleResponse);
 
     client
-      .getHouseholdInstrumentOwnership(householdInstrumentOwnershipID)
-      .then((response: APIResponse<HouseholdInstrumentOwnership>) => {
+      .getAccountInstrumentOwnership(accountInstrumentOwnershipID)
+      .then((response: APIResponse<AccountInstrumentOwnership>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -9174,42 +9152,82 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch a household instrument ownership', () => {
-    let householdInstrumentOwnershipID = fakeID();
+  it('should raise errors appropriately when trying to fetch an account instrument ownership', () => {
+    let accountInstrumentOwnershipID = fakeID();
 
-    const expectedError = buildObligatoryError('getHouseholdInstrumentOwnership user error');
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>(expectedError);
-    mock
-      .onGet(`${baseURL}/api/v1/households/instruments/${householdInstrumentOwnershipID}`)
-      .reply(200, exampleResponse);
+    const expectedError = buildObligatoryError('getAccountInstrumentOwnership user error');
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(200, exampleResponse);
 
-    expect(client.getHouseholdInstrumentOwnership(householdInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
+    expect(client.getAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch a household instrument ownership', () => {
-    let householdInstrumentOwnershipID = fakeID();
+  it('should raise service errors appropriately when trying to fetch an account instrument ownership', () => {
+    let accountInstrumentOwnershipID = fakeID();
 
-    const expectedError = buildObligatoryError('getHouseholdInstrumentOwnership service error');
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>(expectedError);
+    const expectedError = buildObligatoryError('getAccountInstrumentOwnership service error');
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(500, exampleResponse);
+
+    expect(client.getAccountInstrumentOwnership(accountInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
+  });
+
+  it('should fetch an account invitation by its ID', () => {
+    let accountID = fakeID();
+    let accountInvitationID = fakeID();
+
+    const exampleResponse = new APIResponse<AccountInvitation>();
     mock
-      .onGet(`${baseURL}/api/v1/households/instruments/${householdInstrumentOwnershipID}`)
+      .onGet(`${baseURL}/api/v1/accounts/${accountID}/invitations/${accountInvitationID}`)
+      .reply(200, exampleResponse);
+
+    client
+      .getAccountInvitationByID(accountID, accountInvitationID)
+      .then((response: APIResponse<AccountInvitation>) => {
+        expect(response).toEqual(exampleResponse);
+      })
+      .then(() => {
+        expect(mock.history.get.length).toBe(1);
+        expect(mock.history.get[0].headers).toHaveProperty('Authorization');
+        expect((mock.history.get[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
+      });
+  });
+
+  it('should raise errors appropriately when trying to fetch an account invitation by its ID', () => {
+    let accountID = fakeID();
+    let accountInvitationID = fakeID();
+
+    const expectedError = buildObligatoryError('getAccountInvitationByID user error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock
+      .onGet(`${baseURL}/api/v1/accounts/${accountID}/invitations/${accountInvitationID}`)
+      .reply(200, exampleResponse);
+
+    expect(client.getAccountInvitationByID(accountID, accountInvitationID)).rejects.toEqual(expectedError.error);
+  });
+
+  it('should raise service errors appropriately when trying to fetch an account invitation by its ID', () => {
+    let accountID = fakeID();
+    let accountInvitationID = fakeID();
+
+    const expectedError = buildObligatoryError('getAccountInvitationByID service error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock
+      .onGet(`${baseURL}/api/v1/accounts/${accountID}/invitations/${accountInvitationID}`)
       .reply(500, exampleResponse);
 
-    expect(client.getHouseholdInstrumentOwnership(householdInstrumentOwnershipID)).rejects.toEqual(expectedError.error);
+    expect(client.getAccountInvitationByID(accountID, accountInvitationID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch a household invitation by its ID', () => {
-    let householdID = fakeID();
-    let householdInvitationID = fakeID();
+  it('should fetch an account', () => {
+    let accountID = fakeID();
 
-    const exampleResponse = new APIResponse<HouseholdInvitation>();
-    mock
-      .onGet(`${baseURL}/api/v1/households/${householdID}/invitations/${householdInvitationID}`)
-      .reply(200, exampleResponse);
+    const exampleResponse = new APIResponse<Account>();
+    mock.onGet(`${baseURL}/api/v1/accounts/${accountID}`).reply(200, exampleResponse);
 
     client
-      .getHouseholdInvitationByID(householdID, householdInvitationID)
-      .then((response: APIResponse<HouseholdInvitation>) => {
+      .getAccount(accountID)
+      .then((response: APIResponse<Account>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -9219,84 +9237,40 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch a household invitation by its ID', () => {
-    let householdID = fakeID();
-    let householdInvitationID = fakeID();
+  it('should raise errors appropriately when trying to fetch an account', () => {
+    let accountID = fakeID();
 
-    const expectedError = buildObligatoryError('getHouseholdInvitationByID user error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock
-      .onGet(`${baseURL}/api/v1/households/${householdID}/invitations/${householdInvitationID}`)
-      .reply(200, exampleResponse);
+    const expectedError = buildObligatoryError('getAccount user error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts/${accountID}`).reply(200, exampleResponse);
 
-    expect(client.getHouseholdInvitationByID(householdID, householdInvitationID)).rejects.toEqual(expectedError.error);
+    expect(client.getAccount(accountID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch a household invitation by its ID', () => {
-    let householdID = fakeID();
-    let householdInvitationID = fakeID();
+  it('should raise service errors appropriately when trying to fetch an account', () => {
+    let accountID = fakeID();
 
-    const expectedError = buildObligatoryError('getHouseholdInvitationByID service error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock
-      .onGet(`${baseURL}/api/v1/households/${householdID}/invitations/${householdInvitationID}`)
-      .reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('getAccount service error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts/${accountID}`).reply(500, exampleResponse);
 
-    expect(client.getHouseholdInvitationByID(householdID, householdInvitationID)).rejects.toEqual(expectedError.error);
+    expect(client.getAccount(accountID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch a household', () => {
-    let householdID = fakeID();
-
-    const exampleResponse = new APIResponse<Household>();
-    mock.onGet(`${baseURL}/api/v1/households/${householdID}`).reply(200, exampleResponse);
-
-    client
-      .getHousehold(householdID)
-      .then((response: APIResponse<Household>) => {
-        expect(response).toEqual(exampleResponse);
-      })
-      .then(() => {
-        expect(mock.history.get.length).toBe(1);
-        expect(mock.history.get[0].headers).toHaveProperty('Authorization');
-        expect((mock.history.get[0].headers || {})['Authorization']).toBe(`Bearer test-token`);
-      });
-  });
-
-  it('should raise errors appropriately when trying to fetch a household', () => {
-    let householdID = fakeID();
-
-    const expectedError = buildObligatoryError('getHousehold user error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/households/${householdID}`).reply(200, exampleResponse);
-
-    expect(client.getHousehold(householdID)).rejects.toEqual(expectedError.error);
-  });
-
-  it('should raise service errors appropriately when trying to fetch a household', () => {
-    let householdID = fakeID();
-
-    const expectedError = buildObligatoryError('getHousehold service error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/households/${householdID}`).reply(500, exampleResponse);
-
-    expect(client.getHousehold(householdID)).rejects.toEqual(expectedError.error);
-  });
-
-  it('should fetch a list of households', () => {
-    const exampleResponse = new APIResponse<Array<Household>>({
+  it('should fetch a list of accounts', () => {
+    const exampleResponse = new APIResponse<Array<Account>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
-      data: [new Household()],
+      data: [new Account()],
     });
-    mock.onGet(`${baseURL}/api/v1/households`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/accounts`).reply(200, exampleResponse);
 
     client
-      .getHouseholds()
-      .then((response: QueryFilteredResult<Household>) => {
+      .getAccounts()
+      .then((response: QueryFilteredResult<Account>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
         expect(response.limit).toEqual(exampleResponse.pagination?.limit);
@@ -9308,20 +9282,20 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch a list of households', () => {
-    const expectedError = buildObligatoryError('getHouseholds user error');
-    const exampleResponse = new APIResponse<Array<Household>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/households`).reply(200, exampleResponse);
+  it('should raise errors appropriately when trying to fetch a list of accounts', () => {
+    const expectedError = buildObligatoryError('getAccounts user error');
+    const exampleResponse = new APIResponse<Array<Account>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts`).reply(200, exampleResponse);
 
-    expect(client.getHouseholds()).rejects.toEqual(expectedError.error);
+    expect(client.getAccounts()).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch a list of households', () => {
-    const expectedError = buildObligatoryError('getHouseholds service error');
-    const exampleResponse = new APIResponse<Array<Household>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/households`).reply(500, exampleResponse);
+  it('should raise service errors appropriately when trying to fetch a list of accounts', () => {
+    const expectedError = buildObligatoryError('getAccounts service error');
+    const exampleResponse = new APIResponse<Array<Account>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts`).reply(500, exampleResponse);
 
-    expect(client.getHouseholds()).rejects.toEqual(expectedError.error);
+    expect(client.getAccounts()).rejects.toEqual(expectedError.error);
   });
 
   it('should fetch a meal plan option by its ID', () => {
@@ -9448,7 +9422,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<MealPlanOptionVote>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -9510,7 +9484,7 @@ describe('basic', () => {
 
     const exampleResponse = new APIResponse<Array<MealPlanOption>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
@@ -9560,15 +9534,15 @@ describe('basic', () => {
     expect(client.getMealPlanOptions(mealPlanID, mealPlanEventID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch household invitations for a given household', () => {
-    let householdInvitationID = fakeID();
+  it('should fetch account invitations for a given account', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleResponse = new APIResponse<HouseholdInvitation>();
-    mock.onGet(`${baseURL}/api/v1/household_invitations/${householdInvitationID}`).reply(200, exampleResponse);
+    const exampleResponse = new APIResponse<AccountInvitation>();
+    mock.onGet(`${baseURL}/api/v1/account_invitations/${accountInvitationID}`).reply(200, exampleResponse);
 
     client
-      .getHouseholdInvitation(householdInvitationID)
-      .then((response: APIResponse<HouseholdInvitation>) => {
+      .getAccountInvitation(accountInvitationID)
+      .then((response: APIResponse<AccountInvitation>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -9578,40 +9552,40 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch household invitations for a given household', () => {
-    let householdInvitationID = fakeID();
+  it('should raise errors appropriately when trying to fetch account invitations for a given account', () => {
+    let accountInvitationID = fakeID();
 
-    const expectedError = buildObligatoryError('getHouseholdInvitation user error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/household_invitations/${householdInvitationID}`).reply(200, exampleResponse);
+    const expectedError = buildObligatoryError('getAccountInvitation user error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/account_invitations/${accountInvitationID}`).reply(200, exampleResponse);
 
-    expect(client.getHouseholdInvitation(householdInvitationID)).rejects.toEqual(expectedError.error);
+    expect(client.getAccountInvitation(accountInvitationID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch household invitations for a given household', () => {
-    let householdInvitationID = fakeID();
+  it('should raise service errors appropriately when trying to fetch account invitations for a given account', () => {
+    let accountInvitationID = fakeID();
 
-    const expectedError = buildObligatoryError('getHouseholdInvitation service error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/household_invitations/${householdInvitationID}`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('getAccountInvitation service error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/account_invitations/${accountInvitationID}`).reply(500, exampleResponse);
 
-    expect(client.getHouseholdInvitation(householdInvitationID)).rejects.toEqual(expectedError.error);
+    expect(client.getAccountInvitation(accountInvitationID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch received household invitations', () => {
-    const exampleResponse = new APIResponse<Array<HouseholdInvitation>>({
+  it('should fetch received account invitations', () => {
+    const exampleResponse = new APIResponse<Array<AccountInvitation>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
-      data: [new HouseholdInvitation()],
+      data: [new AccountInvitation()],
     });
-    mock.onGet(`${baseURL}/api/v1/household_invitations/received`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/account_invitations/received`).reply(200, exampleResponse);
 
     client
-      .getReceivedHouseholdInvitations()
-      .then((response: QueryFilteredResult<HouseholdInvitation>) => {
+      .getReceivedAccountInvitations()
+      .then((response: QueryFilteredResult<AccountInvitation>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
         expect(response.limit).toEqual(exampleResponse.pagination?.limit);
@@ -9623,36 +9597,36 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch received household invitations', () => {
-    const expectedError = buildObligatoryError('getReceivedHouseholdInvitations user error');
-    const exampleResponse = new APIResponse<Array<HouseholdInvitation>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/household_invitations/received`).reply(200, exampleResponse);
+  it('should raise errors appropriately when trying to fetch received account invitations', () => {
+    const expectedError = buildObligatoryError('getReceivedAccountInvitations user error');
+    const exampleResponse = new APIResponse<Array<AccountInvitation>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/account_invitations/received`).reply(200, exampleResponse);
 
-    expect(client.getReceivedHouseholdInvitations()).rejects.toEqual(expectedError.error);
+    expect(client.getReceivedAccountInvitations()).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch received household invitations', () => {
-    const expectedError = buildObligatoryError('getReceivedHouseholdInvitations service error');
-    const exampleResponse = new APIResponse<Array<HouseholdInvitation>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/household_invitations/received`).reply(500, exampleResponse);
+  it('should raise service errors appropriately when trying to fetch received account invitations', () => {
+    const expectedError = buildObligatoryError('getReceivedAccountInvitations service error');
+    const exampleResponse = new APIResponse<Array<AccountInvitation>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/account_invitations/received`).reply(500, exampleResponse);
 
-    expect(client.getReceivedHouseholdInvitations()).rejects.toEqual(expectedError.error);
+    expect(client.getReceivedAccountInvitations()).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch sent household invitations', () => {
-    const exampleResponse = new APIResponse<Array<HouseholdInvitation>>({
+  it('should fetch sent account invitations', () => {
+    const exampleResponse = new APIResponse<Array<AccountInvitation>>({
       details: {
-        currentHouseholdID: 'test',
+        currentAccountID: 'test',
         traceID: 'test',
       },
       pagination: QueryFilter.Default().toPagination(),
-      data: [new HouseholdInvitation()],
+      data: [new AccountInvitation()],
     });
-    mock.onGet(`${baseURL}/api/v1/household_invitations/sent`).reply(200, exampleResponse);
+    mock.onGet(`${baseURL}/api/v1/account_invitations/sent`).reply(200, exampleResponse);
 
     client
-      .getSentHouseholdInvitations()
-      .then((response: QueryFilteredResult<HouseholdInvitation>) => {
+      .getSentAccountInvitations()
+      .then((response: QueryFilteredResult<AccountInvitation>) => {
         expect(response.data).toEqual(exampleResponse.data);
         expect(response.page).toEqual(exampleResponse.pagination?.page);
         expect(response.limit).toEqual(exampleResponse.pagination?.limit);
@@ -9664,29 +9638,29 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch sent household invitations', () => {
-    const expectedError = buildObligatoryError('getSentHouseholdInvitations user error');
-    const exampleResponse = new APIResponse<Array<HouseholdInvitation>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/household_invitations/sent`).reply(200, exampleResponse);
+  it('should raise errors appropriately when trying to fetch sent account invitations', () => {
+    const expectedError = buildObligatoryError('getSentAccountInvitations user error');
+    const exampleResponse = new APIResponse<Array<AccountInvitation>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/account_invitations/sent`).reply(200, exampleResponse);
 
-    expect(client.getSentHouseholdInvitations()).rejects.toEqual(expectedError.error);
+    expect(client.getSentAccountInvitations()).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch sent household invitations', () => {
-    const expectedError = buildObligatoryError('getSentHouseholdInvitations service error');
-    const exampleResponse = new APIResponse<Array<HouseholdInvitation>>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/household_invitations/sent`).reply(500, exampleResponse);
+  it('should raise service errors appropriately when trying to fetch sent account invitations', () => {
+    const expectedError = buildObligatoryError('getSentAccountInvitations service error');
+    const exampleResponse = new APIResponse<Array<AccountInvitation>>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/account_invitations/sent`).reply(500, exampleResponse);
 
-    expect(client.getSentHouseholdInvitations()).rejects.toEqual(expectedError.error);
+    expect(client.getSentAccountInvitations()).rejects.toEqual(expectedError.error);
   });
 
-  it('should fetch the currently active household', () => {
-    const exampleResponse = new APIResponse<Household>();
-    mock.onGet(`${baseURL}/api/v1/households/current`).reply(200, exampleResponse);
+  it('should fetch the currently active account', () => {
+    const exampleResponse = new APIResponse<Account>();
+    mock.onGet(`${baseURL}/api/v1/accounts/current`).reply(200, exampleResponse);
 
     client
-      .getActiveHousehold()
-      .then((response: APIResponse<Household>) => {
+      .getActiveAccount()
+      .then((response: APIResponse<Account>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -9696,33 +9670,33 @@ describe('basic', () => {
       });
   });
 
-  it('should raise errors appropriately when trying to fetch the currently active household', () => {
-    const expectedError = buildObligatoryError('getActiveHousehold user error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/households/current`).reply(200, exampleResponse);
+  it('should raise errors appropriately when trying to fetch the currently active account', () => {
+    const expectedError = buildObligatoryError('getActiveAccount user error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts/current`).reply(200, exampleResponse);
 
-    expect(client.getActiveHousehold()).rejects.toEqual(expectedError.error);
+    expect(client.getActiveAccount()).rejects.toEqual(expectedError.error);
   });
 
-  it('should raise service errors appropriately when trying to fetch the currently active household', () => {
-    const expectedError = buildObligatoryError('getActiveHousehold service error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onGet(`${baseURL}/api/v1/households/current`).reply(500, exampleResponse);
+  it('should raise service errors appropriately when trying to fetch the currently active account', () => {
+    const expectedError = buildObligatoryError('getActiveAccount service error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onGet(`${baseURL}/api/v1/accounts/current`).reply(500, exampleResponse);
 
-    expect(client.getActiveHousehold()).rejects.toEqual(expectedError.error);
+    expect(client.getActiveAccount()).rejects.toEqual(expectedError.error);
   });
 
-  it('should reject a received household invitation', () => {
-    let householdInvitationID = fakeID();
+  it('should reject a received account invitation', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleInput = new HouseholdInvitationUpdateRequestInput();
+    const exampleInput = new AccountInvitationUpdateRequestInput();
 
-    const exampleResponse = new APIResponse<HouseholdInvitation>();
-    mock.onPut(`${baseURL}/api/v1/household_invitations/${householdInvitationID}/reject`).reply(200, exampleResponse);
+    const exampleResponse = new APIResponse<AccountInvitation>();
+    mock.onPut(`${baseURL}/api/v1/account_invitations/${accountInvitationID}/reject`).reply(200, exampleResponse);
 
     client
-      .rejectHouseholdInvitation(householdInvitationID, exampleInput)
-      .then((response: APIResponse<HouseholdInvitation>) => {
+      .rejectAccountInvitation(accountInvitationID, exampleInput)
+      .then((response: APIResponse<AccountInvitation>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -9733,28 +9707,28 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during reject a received household invitation', () => {
-    let householdInvitationID = fakeID();
+  it('should appropriately raise errors when they occur during reject a received account invitation', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleInput = new HouseholdInvitationUpdateRequestInput();
+    const exampleInput = new AccountInvitationUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('rejectHouseholdInvitation user error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onPut(`${baseURL}/api/v1/household_invitations/${householdInvitationID}/reject`).reply(200, exampleResponse);
+    const expectedError = buildObligatoryError('rejectAccountInvitation user error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/account_invitations/${accountInvitationID}/reject`).reply(200, exampleResponse);
 
-    expect(client.rejectHouseholdInvitation(householdInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.rejectAccountInvitation(accountInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during reject a received household invitation', () => {
-    let householdInvitationID = fakeID();
+  it('should appropriately raise service errors when they occur during reject a received account invitation', () => {
+    let accountInvitationID = fakeID();
 
-    const exampleInput = new HouseholdInvitationUpdateRequestInput();
+    const exampleInput = new AccountInvitationUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('rejectHouseholdInvitation service error');
-    const exampleResponse = new APIResponse<HouseholdInvitation>(expectedError);
-    mock.onPut(`${baseURL}/api/v1/household_invitations/${householdInvitationID}/reject`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('rejectAccountInvitation service error');
+    const exampleResponse = new APIResponse<AccountInvitation>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/account_invitations/${accountInvitationID}/reject`).reply(500, exampleResponse);
 
-    expect(client.rejectHouseholdInvitation(householdInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.rejectAccountInvitation(accountInvitationID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should update a MealPlan', () => {
@@ -11422,19 +11396,17 @@ describe('basic', () => {
     expect(client.updateValidVessel(validVesselID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should update a household instrument ownership', () => {
-    let householdInstrumentOwnershipID = fakeID();
+  it('should update an account instrument ownership', () => {
+    let accountInstrumentOwnershipID = fakeID();
 
-    const exampleInput = new HouseholdInstrumentOwnershipUpdateRequestInput();
+    const exampleInput = new AccountInstrumentOwnershipUpdateRequestInput();
 
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>();
-    mock
-      .onPut(`${baseURL}/api/v1/households/instruments/${householdInstrumentOwnershipID}`)
-      .reply(200, exampleResponse);
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>();
+    mock.onPut(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(200, exampleResponse);
 
     client
-      .updateHouseholdInstrumentOwnership(householdInstrumentOwnershipID, exampleInput)
-      .then((response: APIResponse<HouseholdInstrumentOwnership>) => {
+      .updateAccountInstrumentOwnership(accountInstrumentOwnershipID, exampleInput)
+      .then((response: APIResponse<AccountInstrumentOwnership>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -11445,49 +11417,45 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during update a household instrument ownership', () => {
-    let householdInstrumentOwnershipID = fakeID();
+  it('should appropriately raise errors when they occur during update an account instrument ownership', () => {
+    let accountInstrumentOwnershipID = fakeID();
 
-    const exampleInput = new HouseholdInstrumentOwnershipUpdateRequestInput();
+    const exampleInput = new AccountInstrumentOwnershipUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('updateHouseholdInstrumentOwnership user error');
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>(expectedError);
-    mock
-      .onPut(`${baseURL}/api/v1/households/instruments/${householdInstrumentOwnershipID}`)
-      .reply(200, exampleResponse);
+    const expectedError = buildObligatoryError('updateAccountInstrumentOwnership user error');
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(200, exampleResponse);
 
-    expect(client.updateHouseholdInstrumentOwnership(householdInstrumentOwnershipID, exampleInput)).rejects.toEqual(
+    expect(client.updateAccountInstrumentOwnership(accountInstrumentOwnershipID, exampleInput)).rejects.toEqual(
       expectedError.error,
     );
   });
 
-  it('should appropriately raise service errors when they occur during update a household instrument ownership', () => {
-    let householdInstrumentOwnershipID = fakeID();
+  it('should appropriately raise service errors when they occur during update an account instrument ownership', () => {
+    let accountInstrumentOwnershipID = fakeID();
 
-    const exampleInput = new HouseholdInstrumentOwnershipUpdateRequestInput();
+    const exampleInput = new AccountInstrumentOwnershipUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('updateHouseholdInstrumentOwnership service error');
-    const exampleResponse = new APIResponse<HouseholdInstrumentOwnership>(expectedError);
-    mock
-      .onPut(`${baseURL}/api/v1/households/instruments/${householdInstrumentOwnershipID}`)
-      .reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('updateAccountInstrumentOwnership service error');
+    const exampleResponse = new APIResponse<AccountInstrumentOwnership>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/accounts/instruments/${accountInstrumentOwnershipID}`).reply(500, exampleResponse);
 
-    expect(client.updateHouseholdInstrumentOwnership(householdInstrumentOwnershipID, exampleInput)).rejects.toEqual(
+    expect(client.updateAccountInstrumentOwnership(accountInstrumentOwnershipID, exampleInput)).rejects.toEqual(
       expectedError.error,
     );
   });
 
-  it('should update a household', () => {
-    let householdID = fakeID();
+  it('should update an account', () => {
+    let accountID = fakeID();
 
-    const exampleInput = new HouseholdUpdateRequestInput();
+    const exampleInput = new AccountUpdateRequestInput();
 
-    const exampleResponse = new APIResponse<Household>();
-    mock.onPut(`${baseURL}/api/v1/households/${householdID}`).reply(200, exampleResponse);
+    const exampleResponse = new APIResponse<Account>();
+    mock.onPut(`${baseURL}/api/v1/accounts/${accountID}`).reply(200, exampleResponse);
 
     client
-      .updateHousehold(householdID, exampleInput)
-      .then((response: APIResponse<Household>) => {
+      .updateAccount(accountID, exampleInput)
+      .then((response: APIResponse<Account>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -11498,28 +11466,28 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during update a household', () => {
-    let householdID = fakeID();
+  it('should appropriately raise errors when they occur during update an account', () => {
+    let accountID = fakeID();
 
-    const exampleInput = new HouseholdUpdateRequestInput();
+    const exampleInput = new AccountUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('updateHousehold user error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onPut(`${baseURL}/api/v1/households/${householdID}`).reply(200, exampleResponse);
+    const expectedError = buildObligatoryError('updateAccount user error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/accounts/${accountID}`).reply(200, exampleResponse);
 
-    expect(client.updateHousehold(householdID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.updateAccount(accountID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during update a household', () => {
-    let householdID = fakeID();
+  it('should appropriately raise service errors when they occur during update an account', () => {
+    let accountID = fakeID();
 
-    const exampleInput = new HouseholdUpdateRequestInput();
+    const exampleInput = new AccountUpdateRequestInput();
 
-    const expectedError = buildObligatoryError('updateHousehold service error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onPut(`${baseURL}/api/v1/households/${householdID}`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('updateAccount service error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onPut(`${baseURL}/api/v1/accounts/${accountID}`).reply(500, exampleResponse);
 
-    expect(client.updateHousehold(householdID, exampleInput)).rejects.toEqual(expectedError.error);
+    expect(client.updateAccount(accountID, exampleInput)).rejects.toEqual(expectedError.error);
   });
 
   it('should update a meal plan option vote', () => {
@@ -11704,15 +11672,15 @@ describe('basic', () => {
     expect(client.adminUpdateUserStatus(exampleInput)).rejects.toEqual(expectedError.error);
   });
 
-  it('should update the default household assigned at login', () => {
-    let householdID = fakeID();
+  it('should update the default account assigned at login', () => {
+    let accountID = fakeID();
 
-    const exampleResponse = new APIResponse<Household>();
-    mock.onPost(`${baseURL}/api/v1/households/${householdID}/default`).reply(201, exampleResponse);
+    const exampleResponse = new APIResponse<Account>();
+    mock.onPost(`${baseURL}/api/v1/accounts/${accountID}/default`).reply(201, exampleResponse);
 
     client
-      .setDefaultHousehold(householdID)
-      .then((response: APIResponse<Household>) => {
+      .setDefaultAccount(accountID)
+      .then((response: APIResponse<Account>) => {
         expect(response).toEqual(exampleResponse);
       })
       .then(() => {
@@ -11723,23 +11691,23 @@ describe('basic', () => {
       });
   });
 
-  it('should appropriately raise errors when they occur during update the default household assigned at login', () => {
-    let householdID = fakeID();
+  it('should appropriately raise errors when they occur during update the default account assigned at login', () => {
+    let accountID = fakeID();
 
-    const expectedError = buildObligatoryError('setDefaultHousehold user error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households/${householdID}/default`).reply(201, exampleResponse);
+    const expectedError = buildObligatoryError('setDefaultAccount user error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts/${accountID}/default`).reply(201, exampleResponse);
 
-    expect(client.setDefaultHousehold(householdID)).rejects.toEqual(expectedError.error);
+    expect(client.setDefaultAccount(accountID)).rejects.toEqual(expectedError.error);
   });
 
-  it('should appropriately raise service errors when they occur during update the default household assigned at login', () => {
-    let householdID = fakeID();
+  it('should appropriately raise service errors when they occur during update the default account assigned at login', () => {
+    let accountID = fakeID();
 
-    const expectedError = buildObligatoryError('setDefaultHousehold service error');
-    const exampleResponse = new APIResponse<Household>(expectedError);
-    mock.onPost(`${baseURL}/api/v1/households/${householdID}/default`).reply(500, exampleResponse);
+    const expectedError = buildObligatoryError('setDefaultAccount service error');
+    const exampleResponse = new APIResponse<Account>(expectedError);
+    mock.onPost(`${baseURL}/api/v1/accounts/${accountID}/default`).reply(500, exampleResponse);
 
-    expect(client.setDefaultHousehold(householdID)).rejects.toEqual(expectedError.error);
+    expect(client.setDefaultAccount(accountID)).rejects.toEqual(expectedError.error);
   });
 });

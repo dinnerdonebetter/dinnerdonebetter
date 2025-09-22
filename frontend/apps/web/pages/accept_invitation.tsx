@@ -2,7 +2,7 @@ import { Grid, Button, Stack, Space } from '@mantine/core';
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next';
 import { useRouter } from 'next/router';
 
-import { HouseholdInvitationUpdateRequestInput } from '@dinnerdonebetter/models';
+import { AccountInvitationUpdateRequestInput } from '@dinnerdonebetter/models';
 import { ServerTimingHeaderName, ServerTiming } from '@dinnerdonebetter/server-timing';
 import { buildBrowserSideClient } from '@dinnerdonebetter/api-client';
 
@@ -65,9 +65,9 @@ function AcceptInvitationPage(props: AcceptInvitationPageProps) {
     const proceed = confirm('Are you sure you want to accept this invite?');
     if (proceed) {
       await apiClient
-        .acceptHouseholdInvitation(
+        .acceptAccountInvitation(
           invitationID,
-          new HouseholdInvitationUpdateRequestInput({
+          new AccountInvitationUpdateRequestInput({
             token: invitationToken,
           }),
         )
@@ -84,9 +84,9 @@ function AcceptInvitationPage(props: AcceptInvitationPageProps) {
     const proceed = confirm('Are you sure you want to reject this invite?');
     if (proceed) {
       await apiClient
-        .rejectHouseholdInvitation(
+        .rejectAccountInvitation(
           invitationID,
-          new HouseholdInvitationUpdateRequestInput({
+          new AccountInvitationUpdateRequestInput({
             token: invitationToken,
           }),
         )

@@ -11,10 +11,10 @@ import { encryptorDecryptor } from '../encryption';
 
 export interface sessionAuth {
   userID: string;
-  householdID: string;
+  accountID: string;
 }
 
-export function processWebappCookieHeader(result: AxiosResponse, userID: string, householdID: string): string[] {
+export function processWebappCookieHeader(result: AxiosResponse, userID: string, accountID: string): string[] {
   const span = serverSideTracer.startSpan('processWebappCookieHeader');
 
   let modifiedAPICookie = result.headers['set-cookie']?.[0] ?? '';
@@ -39,7 +39,7 @@ export function processWebappCookieHeader(result: AxiosResponse, userID: string,
 
   const webappCookie = serialize(
     webappCookieName,
-    Buffer.from(JSON.stringify({ userID, householdID } as sessionAuth), 'ascii').toString('base64'),
+    Buffer.from(JSON.stringify({ userID, accountID } as sessionAuth), 'ascii').toString('base64'),
     { path: '/', expires: new Date(parsedCookie['Expires']), httpOnly: true },
   );
 

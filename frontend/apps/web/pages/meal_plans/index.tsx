@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (
   if (userSessionData?.userID) {
     const analyticsTimer = timing.addEvent('analytics');
     serverSideAnalytics.page(userSessionData.userID, 'MEAL_PLANS_PAGE', context, {
-      householdID: userSessionData.householdID,
+      accountID: userSessionData.accountID,
     });
     analyticsTimer.end();
   } else {
@@ -67,7 +67,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const fetchMealPlansTimer = timing.addEvent('fetch meal plans');
   const mealPlans = await apiClient
-    .getMealPlansForHousehold(qf)
+    .getMealPlansForAccount(qf)
     .then((result) => {
       span.addEvent('meal plan list retrieved');
       return { data: result };

@@ -7,13 +7,16 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/search/text/indexing"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/search/text/indexing"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 
 	"github.com/google/wire"
 )
@@ -25,12 +28,15 @@ func Build(
 ) (*indexing.IndexScheduler, error) {
 	wire.Build(
 		indexing.ProvidersIndexing,
-		tracingcfg.ProvidersTracingConfig,
-		observability.ProvidersObservability,
+		tracingcfg.TracingConfigProviders,
+		observability.O11yProviders,
 		msgconfig.MessageQueueProviders,
-		postgres.ProvidersPostgres,
-		loggingcfg.ProvidersLogConfig,
-		metricscfg.ProvidersMetrics,
+		postgres.PGProviders,
+		loggingcfg.LogConfigProviders,
+		metricscfg.MetricsConfigProviders,
+		auditlogentries.AuditRepoProviders,
+		identity.IDRepoProviders,
+		mealplanning.MPRepoProviders,
 		ProvideIndexFunctions,
 		ConfigProviders,
 	)

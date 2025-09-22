@@ -10,11 +10,12 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_grocery_list_initializer"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/grocerylistpreparation"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	mealplangrocerylistinitializer "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_grocery_list_initializer"
 )
 
 // Injectors from build.go:
@@ -42,8 +43,9 @@ func Build(ctx context.Context, cfg *config.MealPlanGroceryListInitializerConfig
 	if err != nil {
 		return nil, err
 	}
+	groceryListCreator := grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider)
 	queuesConfig := &cfg.Queues
-	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, queuesConfig)
+	worker, err := mealplangrocerylistinitializer.NewMealPlanGroceryListInitializer(logger, tracerProvider, provider, publisherProvider, groceryListCreator, queuesConfig)
 	if err != nil {
 		return nil, err
 	}

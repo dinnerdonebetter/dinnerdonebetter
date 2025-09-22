@@ -28,7 +28,6 @@ var oauth2ClientTokensColumns = []string{
 	"client_id",
 	belongsToUserColumn,
 	"redirect_uri",
-	"scope",
 	codeColumn,
 	"code_challenge",
 	"code_challenge_method",

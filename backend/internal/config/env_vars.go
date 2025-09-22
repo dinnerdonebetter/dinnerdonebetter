@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -13,6 +15,13 @@ const (
 	// RunningInKubernetesEnvVarKey is the env var key we use to indicate we're running in Kubernetes.
 	RunningInKubernetesEnvVarKey = "RUNNING_IN_KUBERNETES"
 )
+
+func ConditionallyCease() {
+	if ShouldCeaseOperation() {
+		slog.Info("CEASE_OPERATION is set to true, exiting")
+		os.Exit(0)
+	}
+}
 
 // ShouldCeaseOperation returns whether a job should just quit without trying.
 func ShouldCeaseOperation() bool {
@@ -27,6 +36,12 @@ func RunningInKubernetes() bool {
 func ApplyEnvironmentVariables(cfg any) error {
 	return env.ParseWithOptions(cfg, env.Options{
 		Prefix: EnvVarPrefix,
-		OnSet:  envVarOnSetFunc,
+		OnSet: func(tag string, value any, isDefault bool) {
+			slog.Info("env var set",
+				slog.String("tag", tag),
+				slog.String("value", fmt.Sprintf("%+v", value)),
+				slog.Bool("isDefault", isDefault),
+			)
+		},
 	})
 }

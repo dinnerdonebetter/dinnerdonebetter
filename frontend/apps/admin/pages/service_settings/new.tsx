@@ -67,7 +67,7 @@ export default function ServiceSettingCreator(): JSX.Element {
               creationForm.setFieldValue('type', item);
             }}
             value={creationForm.getInputProps('type').value}
-            data={['user', 'household', 'membership']}
+            data={['user', 'account', 'membership']}
           />
 
           <TextInput label="Description" placeholder="thing" {...creationForm.getInputProps('description')} />

@@ -5,7 +5,7 @@ import { ValidMealPlanElectionMethod, ValidMealPlanStatus } from './enums.gen';
 
 export interface IMealPlan {
   archivedAt: string;
-  belongsToHousehold: string;
+  belongsToAccount: string;
   createdAt: string;
   createdBy: string;
   electionMethod: ValidMealPlanElectionMethod;
@@ -21,7 +21,7 @@ export interface IMealPlan {
 
 export class MealPlan implements IMealPlan {
   archivedAt: string;
-  belongsToHousehold: string;
+  belongsToAccount: string;
   createdAt: string;
   createdBy: string;
   electionMethod: ValidMealPlanElectionMethod;
@@ -35,7 +35,7 @@ export class MealPlan implements IMealPlan {
   votingDeadline: string;
   constructor(input: Partial<MealPlan> = {}) {
     this.archivedAt = input.archivedAt || '';
-    this.belongsToHousehold = input.belongsToHousehold || '';
+    this.belongsToAccount = input.belongsToAccount || '';
     this.createdAt = input.createdAt || '';
     this.createdBy = input.createdBy || '';
     this.electionMethod = input.electionMethod || 'schulze';

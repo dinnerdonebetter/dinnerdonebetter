@@ -7,14 +7,17 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
-	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/lib/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/lib/observability"
-	loggingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/lib/observability/metrics/config"
-	tracingcfg "github.com/dinnerdonebetter/backend/internal/lib/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/services/eating/businesslogic/recipeanalysis"
-	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/eating/workers/meal_plan_task_creator"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/recipeanalysis"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/logging/config"
+	metricscfg "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/config"
+	tracingcfg "github.com/dinnerdonebetter/backend/internal/platform/observability/tracing/config"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
+	mealplantaskcreator "github.com/dinnerdonebetter/backend/internal/services/mealplanning/workers/meal_plan_task_creator"
 
 	"github.com/google/wire"
 )
@@ -25,14 +28,17 @@ func Build(
 	cfg *config.MealPlanTaskCreatorConfig,
 ) (*mealplantaskcreator.Worker, error) {
 	wire.Build(
-		postgres.ProvidersPostgres,
+		postgres.PGProviders,
 		recipeanalysis.ProvidersRecipeAnalysis,
 		mealplantaskcreator.ProvidersMealPlanTaskCreator,
-		tracingcfg.ProvidersTracingConfig,
-		observability.ProvidersObservability,
+		tracingcfg.TracingConfigProviders,
+		observability.O11yProviders,
 		msgconfig.MessageQueueProviders,
-		loggingcfg.ProvidersLogConfig,
-		metricscfg.ProvidersMetrics,
+		loggingcfg.LogConfigProviders,
+		metricscfg.MetricsConfigProviders,
+		auditlogentries.AuditRepoProviders,
+		identity.IDRepoProviders,
+		mealplanning.MPRepoProviders,
 		ConfigProviders,
 	)
 

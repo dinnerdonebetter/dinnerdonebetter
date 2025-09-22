@@ -1,0 +1,38 @@
+package mealplanning
+
+type Repository interface {
+	MealDataManager
+	MealPlanDataManager
+	MealPlanEventDataManager
+	MealPlanGroceryListItemDataManager
+	MealPlanOptionDataManager
+	MealPlanOptionVoteDataManager
+	MealPlanTaskDataManager
+	MealPlanningDataManager
+	RecipeDataManager
+	RecipeManagementDataManager
+	RecipeMediaDataManager
+	RecipePrepTaskDataManager
+	RecipeRatingDataManager
+	RecipeStepDataManager
+	RecipeStepCompletionConditionDataManager
+	ValidIngredientPreparationDataManager
+	RecipeStepIngredientDataManager
+	RecipeStepVesselDataManager
+	ValidIngredientDataManager
+	RecipeStepProductDataManager
+	RecipeStepInstrumentDataManager
+	ValidEnumerationDataManager
+	UserIngredientPreferenceDataManager
+	ValidIngredientMeasurementUnitDataManager
+	ValidIngredientGroupDataManager
+	ValidIngredientStateDataManager
+	ValidIngredientStateIngredientDataManager
+	ValidInstrumentDataManager
+	ValidMeasurementUnitDataManager
+	ValidMeasurementUnitConversionDataManager
+	ValidPreparationDataManager
+	ValidPreparationInstrumentDataManager
+	ValidPreparationVesselDataManager
+	ValidVesselDataManager
+}

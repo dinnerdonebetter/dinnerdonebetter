@@ -3,33 +3,16 @@ package main
 import (
 	"context"
 	"log"
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/build/services/api"
+	api "github.com/dinnerdonebetter/backend/internal/build/services/api/http"
 	"github.com/dinnerdonebetter/backend/internal/config"
 
-	"github.com/KimMachineGun/automemlimit/memlimit"
 	_ "go.uber.org/automaxprocs"
 )
-
-func init() {
-	if _, err := memlimit.SetGoMemLimitWithOpts(
-		memlimit.WithRatio(0.9),
-		memlimit.WithProvider(
-			memlimit.ApplyFallback(
-				memlimit.FromCgroup,
-				memlimit.FromSystem,
-			),
-		),
-		memlimit.WithLogger(nil),
-	); err != nil {
-		slog.Error("failed to set go mem limit provider")
-	}
-}
 
 func main() {
 	rootCtx := context.Background()
