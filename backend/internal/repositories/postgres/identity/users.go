@@ -698,7 +698,7 @@ func (r *repository) UpdateUserUsername(ctx context.Context, userID, newUsername
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]*audit.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"username": {
 				OldValue: user.Username,
 				NewValue: newUsername,
@@ -758,7 +758,7 @@ func (r *repository) UpdateUserEmailAddress(ctx context.Context, userID, newEmai
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]*audit.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"email_address": {
 				OldValue: user.EmailAddress,
 				NewValue: newEmailAddress,
@@ -813,17 +813,17 @@ func (r *repository) UpdateUserDetails(ctx context.Context, userID string, input
 		return observability.PrepareAndLogError(err, logger, span, "updating user details")
 	}
 
-	changes := map[string]*audit.ChangeLog{}
+	changes := map[string]audit.ChangeLog{}
 	if input.FirstName != user.FirstName {
-		changes["first_name"] = &audit.ChangeLog{NewValue: input.FirstName, OldValue: user.FirstName}
+		changes["first_name"] = audit.ChangeLog{NewValue: input.FirstName, OldValue: user.FirstName}
 	}
 
 	if input.LastName != user.LastName {
-		changes["last_name"] = &audit.ChangeLog{NewValue: input.LastName, OldValue: user.LastName}
+		changes["last_name"] = audit.ChangeLog{NewValue: input.LastName, OldValue: user.LastName}
 	}
 
 	if input.Birthday.Format(time.Kitchen) != user.Birthday.Format(time.Kitchen) {
-		changes["birthday"] = &audit.ChangeLog{NewValue: input.Birthday.Format(time.Kitchen), OldValue: user.Birthday.Format(time.Kitchen)}
+		changes["birthday"] = audit.ChangeLog{NewValue: input.Birthday.Format(time.Kitchen), OldValue: user.Birthday.Format(time.Kitchen)}
 	}
 
 	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
@@ -881,7 +881,7 @@ func (r *repository) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc 
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]*audit.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"avatar": {},
 		},
 	}); err != nil {
@@ -932,7 +932,7 @@ func (r *repository) UpdateUserPassword(ctx context.Context, userID, newHash str
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]*audit.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"password": {},
 		},
 	}); err != nil {
@@ -983,7 +983,7 @@ func (r *repository) UpdateUserTwoFactorSecret(ctx context.Context, userID, newS
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]*audit.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"two_factor_secret": {},
 		},
 	}); err != nil {
@@ -1026,7 +1026,7 @@ func (r *repository) MarkUserTwoFactorSecretAsVerified(ctx context.Context, user
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]*audit.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"two_factor_secret": {
 				OldValue: "unverified",
 				NewValue: "verified",
@@ -1090,7 +1090,7 @@ func (r *repository) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, us
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeCreated,
 		BelongsToUser: userID,
-		Changes: map[string]*audit.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"two_factor_secret": {
 				OldValue: "verified",
 				NewValue: "unverified",
@@ -1255,7 +1255,7 @@ func (r *repository) MarkUserEmailAddressAsVerified(ctx context.Context, userID,
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]*audit.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"email_address_verification": {
 				OldValue: "unverified",
 				NewValue: "verified",
@@ -1314,7 +1314,7 @@ func (r *repository) MarkUserEmailAddressAsUnverified(ctx context.Context, userI
 		RelevantID:    userID,
 		EventType:     audit.AuditLogEventTypeUpdated,
 		BelongsToUser: userID,
-		Changes: map[string]*audit.ChangeLog{
+		Changes: map[string]audit.ChangeLog{
 			"email_address_verification": {
 				OldValue: "verified",
 				NewValue: "unverified",

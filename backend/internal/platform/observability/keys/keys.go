@@ -122,7 +122,7 @@ const (
 	// ValidIngredientStateIDKey is the standard key for referring to a valid ingredient state's ID.
 	ValidIngredientStateIDKey = ValidIngredientStateKey + idSuffix
 
-	// ValidIngredientStateIngredientKey is the standard key for referring to a valid ingredient state ingredient.
+	// ValidIngredientStateIngredientKey is the standard key for referring to a valid ingredient state ingredient
 	ValidIngredientStateIngredientKey = "valid_ingredient_state_ingredient"
 	// ValidIngredientStateIngredientIDKey is the standard key for referring to a valid ingredient state ingredient's ID.
 	ValidIngredientStateIngredientIDKey = ValidIngredientStateIngredientKey + idSuffix

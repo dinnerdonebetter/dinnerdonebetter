@@ -19,11 +19,11 @@ var (
 )
 
 // RecipeStepInstrumentExists fetches whether a recipe step instrument exists from the database.
-func (r *repository) RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -43,7 +43,7 @@ func (r *repository) RecipeStepInstrumentExists(ctx context.Context, recipeID, r
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
-	result, err := r.generatedQuerier.CheckRecipeStepInstrumentExistence(ctx, r.db, &generated.CheckRecipeStepInstrumentExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipeStepInstrumentExistence(ctx, q.db, &generated.CheckRecipeStepInstrumentExistenceParams{
 		RecipeStepID:           recipeStepID,
 		RecipeStepInstrumentID: recipeStepInstrumentID,
 		RecipeID:               recipeID,
@@ -56,11 +56,11 @@ func (r *repository) RecipeStepInstrumentExists(ctx context.Context, recipeID, r
 }
 
 // GetRecipeStepInstrument fetches a recipe step instrument from the database.
-func (r *repository) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*mealplanning.RecipeStepInstrument, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*mealplanning.RecipeStepInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -80,7 +80,7 @@ func (r *repository) GetRecipeStepInstrument(ctx context.Context, recipeID, reci
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
-	result, err := r.generatedQuerier.GetRecipeStepInstrument(ctx, r.db, &generated.GetRecipeStepInstrumentParams{
+	result, err := q.generatedQuerier.GetRecipeStepInstrument(ctx, q.db, &generated.GetRecipeStepInstrumentParams{
 		RecipeStepID:           recipeStepID,
 		RecipeStepInstrumentID: recipeStepInstrumentID,
 		RecipeID:               recipeID,
@@ -129,11 +129,11 @@ func (r *repository) GetRecipeStepInstrument(ctx context.Context, recipeID, reci
 }
 
 // GetRecipeStepInstruments fetches a list of recipe step instruments from the database that meet a particular filter.
-func (r *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStepInstrument], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStepInstrument], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -157,7 +157,7 @@ func (r *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetRecipeStepInstruments(ctx, r.db, &generated.GetRecipeStepInstrumentsParams{
+	results, err := q.generatedQuerier.GetRecipeStepInstruments(ctx, q.db, &generated.GetRecipeStepInstrumentsParams{
 		RecipeStepID:    recipeStepID,
 		RecipeID:        recipeID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -218,11 +218,11 @@ func (r *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 }
 
 // getRecipeStepInstrumentsForRecipe fetches a list of recipe step instruments from the database that meet a particular filter.
-func (r *repository) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipeStepInstrument, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipeStepInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -230,7 +230,7 @@ func (r *repository) getRecipeStepInstrumentsForRecipe(ctx context.Context, reci
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := r.generatedQuerier.GetRecipeStepInstrumentsForRecipe(ctx, r.db, recipeID)
+	results, err := q.generatedQuerier.GetRecipeStepInstrumentsForRecipe(ctx, q.db, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step instruments list retrieval")
 	}
@@ -280,8 +280,8 @@ func (r *repository) getRecipeStepInstrumentsForRecipe(ctx context.Context, reci
 }
 
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
-func (r *repository) createRecipeStepInstrument(ctx context.Context, querier database.SQLQueryExecutor, input *mealplanning.RecipeStepInstrumentDatabaseCreationInput) (*mealplanning.RecipeStepInstrument, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) createRecipeStepInstrument(ctx context.Context, querier database.SQLQueryExecutor, input *mealplanning.RecipeStepInstrumentDatabaseCreationInput) (*mealplanning.RecipeStepInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -289,10 +289,10 @@ func (r *repository) createRecipeStepInstrument(ctx context.Context, querier dat
 	}
 
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, input.ID)
-	logger := r.logger.WithValue(keys.RecipeStepIDKey, input.BelongsToRecipeStep).WithValue(keys.RecipeStepInstrumentIDKey, input.ID)
+	logger := q.logger.WithValue(keys.RecipeStepIDKey, input.BelongsToRecipeStep).WithValue(keys.RecipeStepInstrumentIDKey, input.ID)
 
 	// create the recipe step instrument.
-	if err := r.generatedQuerier.CreateRecipeStepInstrument(ctx, querier, &generated.CreateRecipeStepInstrumentParams{
+	if err := q.generatedQuerier.CreateRecipeStepInstrument(ctx, querier, &generated.CreateRecipeStepInstrumentParams{
 		ID:                  input.ID,
 		Name:                input.Name,
 		Notes:               input.Notes,
@@ -319,7 +319,7 @@ func (r *repository) createRecipeStepInstrument(ctx context.Context, querier dat
 		Optional:            input.Optional,
 		OptionIndex:         input.OptionIndex,
 		Quantity:            input.Quantity,
-		CreatedAt:           r.CurrentTime(),
+		CreatedAt:           q.CurrentTime(),
 	}
 
 	if input.InstrumentID != nil {
@@ -332,19 +332,19 @@ func (r *repository) createRecipeStepInstrument(ctx context.Context, querier dat
 }
 
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
-func (r *repository) CreateRecipeStepInstrument(ctx context.Context, input *mealplanning.RecipeStepInstrumentDatabaseCreationInput) (*mealplanning.RecipeStepInstrument, error) {
-	return r.createRecipeStepInstrument(ctx, r.db, input)
+func (q *repository) CreateRecipeStepInstrument(ctx context.Context, input *mealplanning.RecipeStepInstrumentDatabaseCreationInput) (*mealplanning.RecipeStepInstrument, error) {
+	return q.createRecipeStepInstrument(ctx, q.db, input)
 }
 
 // UpdateRecipeStepInstrument updates a particular recipe step instrument.
-func (r *repository) UpdateRecipeStepInstrument(ctx context.Context, updated *mealplanning.RecipeStepInstrument) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateRecipeStepInstrument(ctx context.Context, updated *mealplanning.RecipeStepInstrument) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.RecipeStepInstrumentIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.RecipeStepInstrumentIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, updated.ID)
 
 	var instrumentID *string
@@ -352,7 +352,7 @@ func (r *repository) UpdateRecipeStepInstrument(ctx context.Context, updated *me
 		instrumentID = &updated.Instrument.ID
 	}
 
-	if _, err := r.generatedQuerier.UpdateRecipeStepInstrument(ctx, r.db, &generated.UpdateRecipeStepInstrumentParams{
+	if _, err := q.generatedQuerier.UpdateRecipeStepInstrument(ctx, q.db, &generated.UpdateRecipeStepInstrumentParams{
 		InstrumentID:        database.NullStringFromStringPointer(instrumentID),
 		RecipeStepProductID: database.NullStringFromStringPointer(updated.RecipeStepProductID),
 		Name:                updated.Name,
@@ -374,11 +374,11 @@ func (r *repository) UpdateRecipeStepInstrument(ctx context.Context, updated *me
 }
 
 // ArchiveRecipeStepInstrument archives a recipe step instrument from the database by its ID.
-func (r *repository) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeStepID == "" {
 		return database.ErrInvalidIDProvided
@@ -392,7 +392,7 @@ func (r *repository) ArchiveRecipeStepInstrument(ctx context.Context, recipeStep
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveRecipeStepInstrument(ctx, r.db, &generated.ArchiveRecipeStepInstrumentParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStepInstrument(ctx, q.db, &generated.ArchiveRecipeStepInstrumentParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepInstrumentID,
 	})

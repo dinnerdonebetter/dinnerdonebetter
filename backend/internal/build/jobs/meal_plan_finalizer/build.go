@@ -29,14 +29,14 @@ func Build(
 	wire.Build(
 		mealplanfinalizer.ProvidersMealPlanFinalizer,
 		tracingcfg.ProvidersTracingConfig,
-		observability.O11yProviders,
-		postgres.ProvidersPostgres,
+		observability.Providers,
+		postgres.Providers,
 		msgconfig.MessageQueueProviders,
 		loggingcfg.ProvidersLogConfig,
-		metricscfg.MetricsProviders,
-		auditlogentries.AuditRepoProviders,
-		identity.IDRepoProviders,
-		mealplanning.MPRepoProviders,
+		metricscfg.Providers,
+		auditlogentries.Providers,
+		identity.Providers,
+		mealplanning.Providers,
 		ConfigProviders,
 	)
 

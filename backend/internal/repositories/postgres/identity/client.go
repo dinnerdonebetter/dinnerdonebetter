@@ -2,6 +2,7 @@ package identity
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
@@ -26,6 +27,7 @@ type repository struct {
 	generatedQuerier  generated.Querier
 	auditLogEntryRepo audit.Repository
 	secretGenerator   random.Generator
+	timeFunc          func() time.Time
 	db                *sql.DB
 }
 

@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	O11yProviders = wire.NewSet(
+	Providers = wire.NewSet(
 		wire.FieldsOf(
 			new(*Config),
 			"Logging",

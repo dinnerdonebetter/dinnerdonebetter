@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications/generated"
 )
 
@@ -22,6 +23,7 @@ type repository struct {
 	logger            logging.Logger
 	generatedQuerier  generated.Querier
 	auditLogEntryRepo audit.Repository
+	secretGenerator   random.Generator
 	db                *sql.DB
 }
 
@@ -38,6 +40,7 @@ func ProvideNotificationsRepository(
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		generatedQuerier:  generated.New(),
 		auditLogEntryRepo: auditLogEntryRepo,
+		secretGenerator:   random.NewGenerator(logger, tracerProvider),
 		logger:            logging.EnsureLogger(logger).WithName(o11yName),
 	}
 

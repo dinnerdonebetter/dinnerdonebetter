@@ -3,7 +3,7 @@ package notifications
 import "github.com/google/wire"
 
 var (
-	NotifsRepoProviders = wire.NewSet(
+	Providers = wire.NewSet(
 		ProvideNotificationsRepository,
 	)
 )

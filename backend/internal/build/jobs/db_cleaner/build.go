@@ -26,10 +26,10 @@ func Build(
 	wire.Build(
 		dbcleaner.ProvidersDBCleaner,
 		tracingcfg.ProvidersTracingConfig,
-		observability.O11yProviders,
-		postgres.ProvidersPostgres,
+		observability.Providers,
+		postgres.Providers,
 		loggingcfg.ProvidersLogConfig,
-		metricscfg.MetricsProviders,
+		metricscfg.Providers,
 		maintenance.Providers,
 		ConfigProviders,
 	)

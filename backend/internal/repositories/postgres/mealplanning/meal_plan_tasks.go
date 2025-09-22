@@ -18,11 +18,11 @@ var (
 )
 
 // MealPlanTaskExists checks if a meal plan task exists.
-func (r *repository) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -36,7 +36,7 @@ func (r *repository) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 
-	result, err := r.generatedQuerier.CheckMealPlanTaskExistence(ctx, r.db, &generated.CheckMealPlanTaskExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanTaskExistence(ctx, q.db, &generated.CheckMealPlanTaskExistenceParams{
 		MealPlanID:     mealPlanID,
 		MealPlanTaskID: mealPlanTaskID,
 	})
@@ -50,11 +50,11 @@ func (r *repository) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPla
 }
 
 // GetMealPlanTask fetches a meal plan task.
-func (r *repository) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTask, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTask, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanTaskID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -62,7 +62,7 @@ func (r *repository) GetMealPlanTask(ctx context.Context, mealPlanTaskID string)
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 
-	result, err := r.generatedQuerier.GetMealPlanTask(ctx, r.db, mealPlanTaskID)
+	result, err := q.generatedQuerier.GetMealPlanTask(ctx, q.db, mealPlanTaskID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan task")
 	}
@@ -100,11 +100,11 @@ func (r *repository) GetMealPlanTask(ctx context.Context, mealPlanTaskID string)
 }
 
 // createMealPlanTask creates a meal plan task.
-func (r *repository) createMealPlanTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) createMealPlanTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
@@ -112,7 +112,7 @@ func (r *repository) createMealPlanTask(ctx context.Context, querier database.SQ
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 
 	// create the meal plan task.
-	if err := r.generatedQuerier.CreateMealPlanTask(ctx, querier, &generated.CreateMealPlanTaskParams{
+	if err := q.generatedQuerier.CreateMealPlanTask(ctx, querier, &generated.CreateMealPlanTaskParams{
 		ID:                      input.ID,
 		Status:                  types.MealPlanTaskStatusUnfinished,
 		StatusExplanation:       input.StatusExplanation,
@@ -121,12 +121,12 @@ func (r *repository) createMealPlanTask(ctx context.Context, querier database.SQ
 		BelongsToRecipePrepTask: input.RecipePrepTaskID,
 		AssignedToUser:          database.NullStringFromStringPointer(input.AssignedToUser),
 	}); err != nil {
-		r.RollbackTransaction(ctx, querier)
+		q.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
 
 	x := &types.MealPlanTask{
-		CreatedAt:           r.CurrentTime(),
+		CreatedAt:           q.CurrentTime(),
 		ID:                  input.ID,
 		AssignedToUser:      input.AssignedToUser,
 		Status:              types.MealPlanTaskStatusUnfinished,
@@ -147,25 +147,25 @@ func (r *repository) createMealPlanTask(ctx context.Context, querier database.SQ
 }
 
 // CreateMealPlanTask creates a meal plan task.
-func (r *repository) CreateMealPlanTask(ctx context.Context, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateMealPlanTask(ctx context.Context, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	x, err := r.createMealPlanTask(ctx, tx, input)
+	x, err := q.createMealPlanTask(ctx, tx, input)
 	if err != nil {
-		r.RollbackTransaction(ctx, tx)
+		q.RollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
 
@@ -179,11 +179,11 @@ func (r *repository) CreateMealPlanTask(ctx context.Context, input *types.MealPl
 }
 
 // GetMealPlanTasksForMealPlan fetches a list of meal plan tasks.
-func (r *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanTask, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanTask, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -191,7 +191,7 @@ func (r *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	results, err := r.generatedQuerier.ListAllMealPlanTasksByMealPlan(ctx, r.db, mealPlanID)
+	results, err := q.generatedQuerier.ListAllMealPlanTasksByMealPlan(ctx, q.db, mealPlanID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan tasks list retrieval query")
 	}
@@ -236,22 +236,22 @@ func (r *repository) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID
 }
 
 // CreateMealPlanTasksForMealPlanOption creates meal plan tasks.
-func (r *repository) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inputs []*types.MealPlanTaskDatabaseCreationInput) ([]*types.MealPlanTask, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	outputs := []*types.MealPlanTask{}
 	for _, input := range inputs {
-		mealPlanTask, createMealPlanTaskErr := r.createMealPlanTask(ctx, tx, input)
+		mealPlanTask, createMealPlanTaskErr := q.createMealPlanTask(ctx, tx, input)
 		if createMealPlanTaskErr != nil {
-			r.RollbackTransaction(ctx, tx)
+			q.RollbackTransaction(ctx, tx)
 			return nil, observability.PrepareAndLogError(createMealPlanTaskErr, logger, span, "creating meal plan task")
 		}
 
@@ -268,11 +268,11 @@ func (r *repository) CreateMealPlanTasksForMealPlanOption(ctx context.Context, i
 }
 
 // MarkMealPlanAsHavingTasksCreated marks a meal plan as having all its tasks created.
-func (r *repository) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return database.ErrInvalidIDProvided
@@ -280,7 +280,7 @@ func (r *repository) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealP
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	if err := r.generatedQuerier.MarkMealPlanAsPrepTasksCreated(ctx, r.db, mealPlanID); err != nil {
+	if err := q.generatedQuerier.MarkMealPlanAsPrepTasksCreated(ctx, q.db, mealPlanID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
 	}
 
@@ -290,11 +290,11 @@ func (r *repository) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealP
 }
 
 // MarkMealPlanAsHavingGroceryListInitialized marks a meal plan as having all its tasks created.
-func (r *repository) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context, mealPlanID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context, mealPlanID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return database.ErrInvalidIDProvided
@@ -302,7 +302,7 @@ func (r *repository) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Cont
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	if err := r.generatedQuerier.MarkMealPlanAsGroceryListInitialized(ctx, r.db, mealPlanID); err != nil {
+	if err := q.generatedQuerier.MarkMealPlanAsGroceryListInitialized(ctx, q.db, mealPlanID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
 	}
 
@@ -312,11 +312,11 @@ func (r *repository) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Cont
 }
 
 // ChangeMealPlanTaskStatus changes a meal plan task's status.
-func (r *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if input == nil {
 		return database.ErrNilInputProvided
@@ -326,7 +326,7 @@ func (r *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.
 
 	var settledAt *time.Time
 	if input.Status != nil && *input.Status == types.MealPlanTaskStatusFinished {
-		settledAt = pointer.To(r.CurrentTime())
+		settledAt = pointer.To(q.CurrentTime())
 	}
 
 	var newStatus string
@@ -334,7 +334,7 @@ func (r *repository) ChangeMealPlanTaskStatus(ctx context.Context, input *types.
 		newStatus = *input.Status
 	}
 
-	if err := r.generatedQuerier.ChangeMealPlanTaskStatus(ctx, r.db, &generated.ChangeMealPlanTaskStatusParams{
+	if err := q.generatedQuerier.ChangeMealPlanTaskStatus(ctx, q.db, &generated.ChangeMealPlanTaskStatusParams{
 		ID:                input.ID,
 		Status:            generated.PrepStepStatus(newStatus),
 		StatusExplanation: input.StatusExplanation,

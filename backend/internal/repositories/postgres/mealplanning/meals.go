@@ -20,11 +20,11 @@ var (
 )
 
 // MealExists fetches whether a meal exists from the database.
-func (r *repository) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -32,7 +32,7 @@ func (r *repository) MealExists(ctx context.Context, mealID string) (exists bool
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
-	result, err := r.generatedQuerier.CheckMealExistence(ctx, r.db, mealID)
+	result, err := q.generatedQuerier.CheckMealExistence(ctx, q.db, mealID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal existence check")
 	}
@@ -41,11 +41,11 @@ func (r *repository) MealExists(ctx context.Context, mealID string) (exists bool
 }
 
 // GetMeal fetches a meal from the database.
-func (r *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.Meal, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.Meal, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -53,7 +53,7 @@ func (r *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
-	results, err := r.generatedQuerier.GetMeal(ctx, r.db, mealID)
+	results, err := q.generatedQuerier.GetMeal(ctx, q.db, mealID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal retrieval query")
 	}
@@ -92,24 +92,24 @@ func (r *repository) GetMeal(ctx context.Context, mealID string) (*mealplanning.
 	}
 
 	for i, mealComponent := range meal.Components {
-		var recipe *mealplanning.Recipe
-		recipe, err = r.getRecipe(ctx, mealComponent.Recipe.ID)
+		var r *mealplanning.Recipe
+		r, err = q.getRecipe(ctx, mealComponent.Recipe.ID)
 		if err != nil {
 			return nil, observability.PrepareError(err, span, "fetching recipe for meal")
 		}
 
-		meal.Components[i].Recipe = *recipe
+		meal.Components[i].Recipe = *r
 	}
 
 	return meal, nil
 }
 
 // GetMeals fetches a list of meals from the database that meet a particular filter.
-func (r *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -121,7 +121,7 @@ func (r *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetMeals(ctx, r.db, &generated.GetMealsParams{
+	results, err := q.generatedQuerier.GetMeals(ctx, q.db, &generated.GetMealsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -159,11 +159,11 @@ func (r *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 }
 
 // GetMealsCreatedByUser fetches a list of meals from the database that meet a particular filter.
-func (r *repository) GetMealsCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -181,7 +181,7 @@ func (r *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	results, err := r.generatedQuerier.GetMealsCreatedByUser(ctx, r.db, &generated.GetMealsCreatedByUserParams{
+	results, err := q.generatedQuerier.GetMealsCreatedByUser(ctx, q.db, &generated.GetMealsCreatedByUserParams{
 		CreatedByUser:   userID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -220,15 +220,15 @@ func (r *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 }
 
 // GetMealsWithIDs fetches a list of meals from the database that have IDs within a given set.
-func (r *repository) GetMealsWithIDs(ctx context.Context, ids []string) ([]*mealplanning.Meal, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetMealsWithIDs(ctx context.Context, ids []string) ([]*mealplanning.Meal, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	meals := []*mealplanning.Meal{}
 	for _, id := range ids {
-		r, err := r.GetMeal(ctx, id)
+		r, err := q.GetMeal(ctx, id)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "getting meal")
 		}
@@ -240,11 +240,11 @@ func (r *repository) GetMealsWithIDs(ctx context.Context, ids []string) ([]*meal
 }
 
 // GetMealIDsThatNeedSearchIndexing fetches a list of meal IDs from the database that meet a particular filter.
-func (r *repository) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := r.generatedQuerier.GetMealsNeedingIndexing(ctx, r.db)
+	results, err := q.generatedQuerier.GetMealsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing meals list retrieval query")
 	}
@@ -253,11 +253,11 @@ func (r *repository) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]st
 }
 
 // SearchForMeals fetches a list of recipes from the database that match a query.
-func (r *repository) SearchForMeals(ctx context.Context, mealNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.Meal], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -269,7 +269,7 @@ func (r *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.SearchForMeals(ctx, r.db, &generated.SearchForMealsParams{
+	results, err := q.generatedQuerier.SearchForMeals(ctx, q.db, &generated.SearchForMealsParams{
 		Query:           mealNameQuery,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -328,17 +328,17 @@ func (r *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 }
 
 // CreateMeal creates a meal in the database.
-func (r *repository) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
+	logger := q.logger.WithValue(keys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
 
 	// create the meal.
-	if err := r.generatedQuerier.CreateMeal(ctx, querier, &generated.CreateMealParams{
+	if err := q.generatedQuerier.CreateMeal(ctx, querier, &generated.CreateMealParams{
 		ID:                   input.ID,
 		Name:                 input.Name,
 		Description:          input.Description,
@@ -347,7 +347,7 @@ func (r *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(input.EstimatedPortions.Max),
 		EligibleForMealPlans: input.EligibleForMealPlans,
 	}); err != nil {
-		r.RollbackTransaction(ctx, querier)
+		q.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal creation query")
 	}
 
@@ -361,12 +361,12 @@ func (r *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 		},
 		EligibleForMealPlans: input.EligibleForMealPlans,
 		CreatedByUser:        input.CreatedByUser,
-		CreatedAt:            r.CurrentTime(),
+		CreatedAt:            q.CurrentTime(),
 	}
 
 	for _, recipeID := range input.Components {
-		if err := r.CreateMealComponent(ctx, querier, x.ID, recipeID); err != nil {
-			r.RollbackTransaction(ctx, querier)
+		if err := q.CreateMealComponent(ctx, querier, x.ID, recipeID); err != nil {
+			q.RollbackTransaction(ctx, querier)
 			return nil, observability.PrepareAndLogError(err, logger, span, "creating meal recipe")
 		}
 	}
@@ -378,20 +378,20 @@ func (r *repository) createMeal(ctx context.Context, querier database.SQLQueryEx
 }
 
 // CreateMeal creates a meal in the database.
-func (r *repository) CreateMeal(ctx context.Context, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateMeal(ctx context.Context, input *mealplanning.MealDatabaseCreationInput) (*mealplanning.Meal, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "beginning transaction")
 	}
 
-	x, err := r.createMeal(ctx, tx, input)
+	x, err := q.createMeal(ctx, tx, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "creating meal")
 	}
@@ -404,11 +404,11 @@ func (r *repository) CreateMeal(ctx context.Context, input *mealplanning.MealDat
 }
 
 // CreateMealComponent creates a meal component in the database.
-func (r *repository) CreateMealComponent(ctx context.Context, querier database.SQLQueryExecutor, mealID string, input *mealplanning.MealComponentDatabaseCreationInput) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateMealComponent(ctx context.Context, querier database.SQLQueryExecutor, mealID string, input *mealplanning.MealComponentDatabaseCreationInput) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if input == nil {
 		return database.ErrNilInputProvided
@@ -421,7 +421,7 @@ func (r *repository) CreateMealComponent(ctx context.Context, querier database.S
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	// create the meal.
-	if err := r.generatedQuerier.CreateMealComponent(ctx, querier, &generated.CreateMealComponentParams{
+	if err := q.generatedQuerier.CreateMealComponent(ctx, querier, &generated.CreateMealComponentParams{
 		ID:                identifiers.New(),
 		MealID:            mealID,
 		RecipeID:          input.RecipeID,
@@ -435,11 +435,11 @@ func (r *repository) CreateMealComponent(ctx context.Context, querier database.S
 }
 
 // MarkMealAsIndexed updates a particular meal's last_indexed_at value.
-func (r *repository) MarkMealAsIndexed(ctx context.Context, mealID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) MarkMealAsIndexed(ctx context.Context, mealID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealID == "" {
 		return database.ErrInvalidIDProvided
@@ -447,7 +447,7 @@ func (r *repository) MarkMealAsIndexed(ctx context.Context, mealID string) error
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
-	if _, err := r.generatedQuerier.UpdateMealLastIndexedAt(ctx, r.db, mealID); err != nil {
+	if _, err := q.generatedQuerier.UpdateMealLastIndexedAt(ctx, q.db, mealID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal as indexed")
 	}
 
@@ -457,11 +457,11 @@ func (r *repository) MarkMealAsIndexed(ctx context.Context, mealID string) error
 }
 
 // ArchiveMeal archives a meal from the database by its ID.
-func (r *repository) ArchiveMeal(ctx context.Context, mealID, userID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveMeal(ctx context.Context, mealID, userID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealID == "" {
 		return database.ErrInvalidIDProvided
@@ -475,7 +475,7 @@ func (r *repository) ArchiveMeal(ctx context.Context, mealID, userID string) err
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveMeal(ctx, r.db, &generated.ArchiveMealParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveMeal(ctx, q.db, &generated.ArchiveMealParams{
 		CreatedByUser: userID,
 		ID:            mealID,
 	})

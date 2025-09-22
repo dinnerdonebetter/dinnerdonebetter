@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	IDRepoProviders = wire.NewSet(
+	Providers = wire.NewSet(
 		ProvideIdentityRepository,
 		ProvideUserDataManager,
 	)

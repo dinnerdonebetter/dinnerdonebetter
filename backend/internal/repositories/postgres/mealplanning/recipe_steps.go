@@ -19,11 +19,11 @@ var (
 )
 
 // RecipeStepExists fetches whether a recipe step exists from the database.
-func (r *repository) RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -37,7 +37,7 @@ func (r *repository) RecipeStepExists(ctx context.Context, recipeID, recipeStepI
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	result, err := r.generatedQuerier.CheckRecipeStepExistence(ctx, r.db, &generated.CheckRecipeStepExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipeStepExistence(ctx, q.db, &generated.CheckRecipeStepExistenceParams{
 		RecipeID:     recipeID,
 		RecipeStepID: recipeStepID,
 	})
@@ -49,11 +49,11 @@ func (r *repository) RecipeStepExists(ctx context.Context, recipeID, recipeStepI
 }
 
 // GetRecipeStep fetches a recipe step from the database.
-func (r *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*mealplanning.RecipeStep, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*mealplanning.RecipeStep, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -67,7 +67,7 @@ func (r *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	result, err := r.generatedQuerier.GetRecipeStep(ctx, r.db, &generated.GetRecipeStepParams{
+	result, err := q.generatedQuerier.GetRecipeStep(ctx, q.db, &generated.GetRecipeStepParams{
 		RecipeID:     recipeID,
 		RecipeStepID: recipeStepID,
 	})
@@ -134,7 +134,7 @@ func (r *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	}
 
 	// Fetch related data for this recipe step
-	ingredients, err := r.getRecipeStepIngredientsForRecipe(ctx, recipeID)
+	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step ingredients for recipe step")
 	}
@@ -144,7 +144,7 @@ func (r *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 		}
 	}
 
-	products, err := r.getRecipeStepProductsForRecipe(ctx, recipeID)
+	products, err := q.getRecipeStepProductsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step products for recipe step")
 	}
@@ -154,7 +154,7 @@ func (r *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 		}
 	}
 
-	instruments, err := r.getRecipeStepInstrumentsForRecipe(ctx, recipeID)
+	instruments, err := q.getRecipeStepInstrumentsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step instruments for recipe step")
 	}
@@ -164,7 +164,7 @@ func (r *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 		}
 	}
 
-	vessels, err := r.getRecipeStepVesselsForRecipe(ctx, recipeID)
+	vessels, err := q.getRecipeStepVesselsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step vessels for recipe step")
 	}
@@ -174,7 +174,7 @@ func (r *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 		}
 	}
 
-	completionConditions, err := r.getRecipeStepCompletionConditionsForRecipe(ctx, recipeID)
+	completionConditions, err := q.getRecipeStepCompletionConditionsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step completion conditions for recipe step")
 	}
@@ -184,7 +184,7 @@ func (r *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 		}
 	}
 
-	recipeMedia, err := r.getRecipeMediaForRecipeStep(ctx, recipeID, recipeStep.ID)
+	recipeMedia, err := q.getRecipeMediaForRecipeStep(ctx, recipeID, recipeStep.ID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe media for recipe step")
 	}
@@ -194,11 +194,11 @@ func (r *repository) GetRecipeStep(ctx context.Context, recipeID, recipeStepID s
 }
 
 // getRecipeStepByID fetches a recipe step from the database.
-func (r *repository) getRecipeStepByID(ctx context.Context, querier database.SQLQueryExecutor, recipeStepID string) (*mealplanning.RecipeStep, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) getRecipeStepByID(ctx context.Context, querier database.SQLQueryExecutor, recipeStepID string) (*mealplanning.RecipeStep, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeStepID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -206,7 +206,7 @@ func (r *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	result, err := r.generatedQuerier.GetRecipeStepByRecipeID(ctx, querier, recipeStepID)
+	result, err := q.generatedQuerier.GetRecipeStepByRecipeID(ctx, querier, recipeStepID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step")
 	}
@@ -270,7 +270,7 @@ func (r *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 	}
 
 	// Fetch related data for this recipe step
-	ingredients, err := r.getRecipeStepIngredientsForRecipe(ctx, result.BelongsToRecipe)
+	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, result.BelongsToRecipe)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step ingredients for recipe step")
 	}
@@ -280,7 +280,7 @@ func (r *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 		}
 	}
 
-	products, err := r.getRecipeStepProductsForRecipe(ctx, result.BelongsToRecipe)
+	products, err := q.getRecipeStepProductsForRecipe(ctx, result.BelongsToRecipe)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step products for recipe step")
 	}
@@ -290,7 +290,7 @@ func (r *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 		}
 	}
 
-	instruments, err := r.getRecipeStepInstrumentsForRecipe(ctx, result.BelongsToRecipe)
+	instruments, err := q.getRecipeStepInstrumentsForRecipe(ctx, result.BelongsToRecipe)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step instruments for recipe step")
 	}
@@ -300,7 +300,7 @@ func (r *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 		}
 	}
 
-	vessels, err := r.getRecipeStepVesselsForRecipe(ctx, result.BelongsToRecipe)
+	vessels, err := q.getRecipeStepVesselsForRecipe(ctx, result.BelongsToRecipe)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step vessels for recipe step")
 	}
@@ -310,7 +310,7 @@ func (r *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 		}
 	}
 
-	completionConditions, err := r.getRecipeStepCompletionConditionsForRecipe(ctx, result.BelongsToRecipe)
+	completionConditions, err := q.getRecipeStepCompletionConditionsForRecipe(ctx, result.BelongsToRecipe)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step completion conditions for recipe step")
 	}
@@ -320,7 +320,7 @@ func (r *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 		}
 	}
 
-	recipeMedia, err := r.getRecipeMediaForRecipeStep(ctx, result.BelongsToRecipe, recipeStep.ID)
+	recipeMedia, err := q.getRecipeMediaForRecipeStep(ctx, result.BelongsToRecipe, recipeStep.ID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe media for recipe step")
 	}
@@ -330,11 +330,11 @@ func (r *repository) getRecipeStepByID(ctx context.Context, querier database.SQL
 }
 
 // GetRecipeSteps fetches a list of recipe steps from the database that meet a particular filter.
-func (r *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStep], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.RecipeStep], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -352,7 +352,7 @@ func (r *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetRecipeSteps(ctx, r.db, &generated.GetRecipeStepsParams{
+	results, err := q.generatedQuerier.GetRecipeSteps(ctx, q.db, &generated.GetRecipeStepsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -431,27 +431,27 @@ func (r *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 	}
 
 	// Fetch all related data for all recipe steps
-	ingredients, err := r.getRecipeStepIngredientsForRecipe(ctx, recipeID)
+	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step ingredients for recipe steps")
 	}
 
-	products, err := r.getRecipeStepProductsForRecipe(ctx, recipeID)
+	products, err := q.getRecipeStepProductsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step products for recipe steps")
 	}
 
-	instruments, err := r.getRecipeStepInstrumentsForRecipe(ctx, recipeID)
+	instruments, err := q.getRecipeStepInstrumentsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step instruments for recipe steps")
 	}
 
-	vessels, err := r.getRecipeStepVesselsForRecipe(ctx, recipeID)
+	vessels, err := q.getRecipeStepVesselsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step vessels for recipe steps")
 	}
 
-	completionConditions, err := r.getRecipeStepCompletionConditionsForRecipe(ctx, recipeID)
+	completionConditions, err := q.getRecipeStepCompletionConditionsForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step completion conditions for recipe steps")
 	}
@@ -488,7 +488,7 @@ func (r *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 			}
 		}
 
-		recipeMedia, mediaErr := r.getRecipeMediaForRecipeStep(ctx, recipeID, step.ID)
+		recipeMedia, mediaErr := q.getRecipeMediaForRecipeStep(ctx, recipeID, step.ID)
 		if mediaErr != nil {
 			return nil, observability.PrepareAndLogError(mediaErr, logger, span, "fetching recipe media for recipe step")
 		}
@@ -499,8 +499,8 @@ func (r *repository) GetRecipeSteps(ctx context.Context, recipeID string, filter
 }
 
 // CreateRecipeStep creates a recipe step in the database.
-func (r *repository) createRecipeStep(ctx context.Context, db database.SQLQueryExecutor, input *mealplanning.RecipeStepDatabaseCreationInput) (*mealplanning.RecipeStep, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) createRecipeStep(ctx context.Context, db database.SQLQueryExecutor, input *mealplanning.RecipeStepDatabaseCreationInput) (*mealplanning.RecipeStep, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
@@ -508,7 +508,7 @@ func (r *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 	}
 
 	// create the recipe step.
-	if err := r.generatedQuerier.CreateRecipeStep(ctx, db, &generated.CreateRecipeStepParams{
+	if err := q.generatedQuerier.CreateRecipeStep(ctx, db, &generated.CreateRecipeStepParams{
 		ID:                            input.ID,
 		BelongsToRecipe:               input.BelongsToRecipe,
 		PreparationID:                 input.PreparationID,
@@ -527,7 +527,7 @@ func (r *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 	}
 
 	// Fetch the preparation data
-	preparation, err := r.GetValidPreparation(ctx, input.PreparationID)
+	preparation, err := q.GetValidPreparation(ctx, input.PreparationID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching preparation data")
 	}
@@ -544,13 +544,13 @@ func (r *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 		Optional:                input.Optional,
 		BelongsToRecipe:         input.BelongsToRecipe,
 		StartTimerAutomatically: input.StartTimerAutomatically,
-		CreatedAt:               r.CurrentTime(),
+		CreatedAt:               q.CurrentTime(),
 	}
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, x.ID)
 
 	for i, ingredientInput := range input.Ingredients {
 		ingredientInput.BelongsToRecipeStep = x.ID
-		ingredient, createErr := r.createRecipeStepIngredient(ctx, db, ingredientInput)
+		ingredient, createErr := q.createRecipeStepIngredient(ctx, db, ingredientInput)
 		if createErr != nil {
 			return nil, observability.PrepareError(createErr, span, "creating recipe step ingredient #%d", i+1)
 		}
@@ -560,7 +560,7 @@ func (r *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 
 	for i, productInput := range input.Products {
 		productInput.BelongsToRecipeStep = x.ID
-		product, createErr := r.createRecipeStepProduct(ctx, db, productInput)
+		product, createErr := q.createRecipeStepProduct(ctx, db, productInput)
 		if createErr != nil {
 			return nil, observability.PrepareError(createErr, span, "creating recipe step product #%d", i+1)
 		}
@@ -570,7 +570,7 @@ func (r *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 
 	for i, instrumentInput := range input.Instruments {
 		instrumentInput.BelongsToRecipeStep = x.ID
-		instrument, createErr := r.createRecipeStepInstrument(ctx, db, instrumentInput)
+		instrument, createErr := q.createRecipeStepInstrument(ctx, db, instrumentInput)
 		if createErr != nil {
 			return nil, observability.PrepareError(createErr, span, "creating recipe step instrument #%d", i+1)
 		}
@@ -580,7 +580,7 @@ func (r *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 
 	for i, vesselInput := range input.Vessels {
 		vesselInput.BelongsToRecipeStep = x.ID
-		vessel, createErr := r.createRecipeStepVessel(ctx, db, vesselInput)
+		vessel, createErr := q.createRecipeStepVessel(ctx, db, vesselInput)
 		if createErr != nil {
 			return nil, observability.PrepareError(createErr, span, "creating recipe step vessel #%d", i+1)
 		}
@@ -590,7 +590,7 @@ func (r *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 
 	for i, conditionInput := range input.CompletionConditions {
 		conditionInput.BelongsToRecipeStep = x.ID
-		condition, createErr := r.createRecipeStepCompletionCondition(ctx, db, conditionInput)
+		condition, createErr := q.createRecipeStepCompletionCondition(ctx, db, conditionInput)
 		if createErr != nil {
 			return nil, observability.PrepareError(createErr, span, "creating recipe step completion condition #%d", i+1)
 		}
@@ -602,22 +602,22 @@ func (r *repository) createRecipeStep(ctx context.Context, db database.SQLQueryE
 }
 
 // CreateRecipeStep creates a recipe step in the database.
-func (r *repository) CreateRecipeStep(ctx context.Context, input *mealplanning.RecipeStepDatabaseCreationInput) (*mealplanning.RecipeStep, error) {
-	return r.createRecipeStep(ctx, r.db, input)
+func (q *repository) CreateRecipeStep(ctx context.Context, input *mealplanning.RecipeStepDatabaseCreationInput) (*mealplanning.RecipeStep, error) {
+	return q.createRecipeStep(ctx, q.db, input)
 }
 
 // UpdateRecipeStep updates a particular recipe step.
-func (r *repository) UpdateRecipeStep(ctx context.Context, updated *mealplanning.RecipeStep) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateRecipeStep(ctx context.Context, updated *mealplanning.RecipeStep) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.RecipeStepIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.RecipeStepIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, updated.ID)
 
-	if _, err := r.generatedQuerier.UpdateRecipeStep(ctx, r.db, &generated.UpdateRecipeStepParams{
+	if _, err := q.generatedQuerier.UpdateRecipeStep(ctx, q.db, &generated.UpdateRecipeStepParams{
 		ConditionExpression:           updated.ConditionExpression,
 		PreparationID:                 updated.Preparation.ID,
 		ID:                            updated.ID,
@@ -639,11 +639,11 @@ func (r *repository) UpdateRecipeStep(ctx context.Context, updated *mealplanning
 }
 
 // ArchiveRecipeStep archives a recipe step from the database by its ID.
-func (r *repository) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return database.ErrInvalidIDProvided
@@ -657,7 +657,7 @@ func (r *repository) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStep
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveRecipeStep(ctx, r.db, &generated.ArchiveRecipeStepParams{
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipeStep(ctx, q.db, &generated.ArchiveRecipeStepParams{
 		BelongsToRecipe: recipeID,
 		ID:              recipeStepID,
 	})

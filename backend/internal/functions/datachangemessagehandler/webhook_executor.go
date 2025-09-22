@@ -25,7 +25,7 @@ func (a *AsyncDataChangeMessageHandler) WebhookExecutionRequestsEventHandler(ctx
 	start := time.Now()
 
 	var webhookExecutionRequest webhooks.WebhookExecutionRequest
-	if err := a.decoder.DecodeBytes(ctx, rawMsg, &webhookExecutionRequest); err != nil {
+	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&webhookExecutionRequest); err != nil {
 		return fmt.Errorf("decoding JSON body: %w", err)
 	}
 

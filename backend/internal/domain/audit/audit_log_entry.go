@@ -25,26 +25,26 @@ type (
 	AuditLogEntry struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt        time.Time             `json:"createdAt"`
-		Changes          map[string]*ChangeLog `json:"changes"`
-		BelongsToAccount *string               `json:"belongsToAccount"`
-		ID               string                `json:"id"`
-		ResourceType     string                `json:"resourceType"`
-		RelevantID       string                `json:"relevantID"`
-		EventType        string                `json:"eventType"`
-		BelongsToUser    string                `json:"belongsToUser"`
+		CreatedAt        time.Time            `json:"createdAt"`
+		Changes          map[string]ChangeLog `json:"changes"`
+		BelongsToAccount *string              `json:"belongsToAccount"`
+		ID               string               `json:"id"`
+		ResourceType     string               `json:"resourceType"`
+		RelevantID       string               `json:"relevantID"`
+		EventType        string               `json:"eventType"`
+		BelongsToUser    string               `json:"belongsToUser"`
 	}
 
 	AuditLogEntryDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		Changes          map[string]*ChangeLog `json:"-"`
-		BelongsToAccount *string               `json:"-"`
-		ID               string                `json:"-"`
-		ResourceType     string                `json:"-"`
-		RelevantID       string                `json:"-"`
-		EventType        string                `json:"-"`
-		BelongsToUser    string                `json:"-"`
+		Changes          map[string]ChangeLog `json:"-"`
+		BelongsToAccount *string              `json:"-"`
+		ID               string               `json:"-"`
+		ResourceType     string               `json:"-"`
+		RelevantID       string               `json:"-"`
+		EventType        string               `json:"-"`
+		BelongsToUser    string               `json:"-"`
 	}
 
 	// AuditLogEntryDataManager describes a structure capable of storing audit log entries.

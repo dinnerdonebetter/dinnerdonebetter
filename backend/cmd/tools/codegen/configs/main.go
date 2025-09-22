@@ -33,12 +33,12 @@ func main() {
 	devOutputPath := "deploy/environments/dev/kustomize/configs"
 
 	envConfigs := map[string]*config.EnvironmentConfigSet{
-		devOutputPath: {
-			RootConfig: buildDevEnvironmentServerConfig(),
-		},
-		"deploy/environments/localdev/config_files": {
-			RootConfig: buildLocalDevConfig(),
-		},
+		//devOutputPath: {
+		//	RootConfig: buildDevEnvironmentServerConfig(),
+		//},
+		//"deploy/environments/localdev/config_files": {
+		//	RootConfig: buildLocalDevConfig(),
+		//},
 		"deploy/environments/testing/config_files": {
 			APIServiceConfigPath: "integration-tests-config.json",
 			RootConfig:           buildIntegrationTestsConfig(),

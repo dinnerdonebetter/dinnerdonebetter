@@ -2,12 +2,14 @@ package auth
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth/generated"
 )
 
@@ -24,6 +26,8 @@ type repository struct {
 	logger            logging.Logger
 	generatedQuerier  generated.Querier
 	auditLogEntryRepo audit.Repository
+	secretGenerator   random.Generator
+	timeFunc          func() time.Time
 	db                *sql.DB
 }
 
@@ -40,6 +44,7 @@ func ProvideAuthRepository(
 		tracer:            tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		generatedQuerier:  generated.New(),
 		auditLogEntryRepo: auditLogEntryRepo,
+		secretGenerator:   random.NewGenerator(logger, tracerProvider),
 		logger:            logging.EnsureLogger(logger).WithName(o11yName),
 	}
 

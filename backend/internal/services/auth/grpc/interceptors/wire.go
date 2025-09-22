@@ -3,7 +3,7 @@ package interceptors
 import "github.com/google/wire"
 
 var (
-	InterceptorProviders = wire.NewSet(
+	Providers = wire.NewSet(
 		ProvideAuthInterceptor,
 	)
 )

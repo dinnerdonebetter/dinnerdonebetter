@@ -18,11 +18,11 @@ var (
 )
 
 // ValidInstrumentExists fetches whether a valid instrument exists from the database.
-func (r *repository) ValidInstrumentExists(ctx context.Context, validInstrumentID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ValidInstrumentExists(ctx context.Context, validInstrumentID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validInstrumentID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -30,7 +30,7 @@ func (r *repository) ValidInstrumentExists(ctx context.Context, validInstrumentI
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
-	result, err := r.generatedQuerier.CheckValidInstrumentExistence(ctx, r.db, validInstrumentID)
+	result, err := q.generatedQuerier.CheckValidInstrumentExistence(ctx, q.db, validInstrumentID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid instrument existence check")
 	}
@@ -39,11 +39,11 @@ func (r *repository) ValidInstrumentExists(ctx context.Context, validInstrumentI
 }
 
 // GetValidInstrument fetches a valid instrument from the database.
-func (r *repository) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validInstrumentID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -51,7 +51,7 @@ func (r *repository) GetValidInstrument(ctx context.Context, validInstrumentID s
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
-	result, err := r.generatedQuerier.GetValidInstrument(ctx, r.db, validInstrumentID)
+	result, err := q.generatedQuerier.GetValidInstrument(ctx, q.db, validInstrumentID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid instrument")
 	}
@@ -75,11 +75,11 @@ func (r *repository) GetValidInstrument(ctx context.Context, validInstrumentID s
 }
 
 // GetRandomValidInstrument fetches a valid instrument from the database.
-func (r *repository) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetRandomValidInstrument(ctx context.Context) (*types.ValidInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	result, err := r.generatedQuerier.GetRandomValidInstrument(ctx, r.db)
+	result, err := q.generatedQuerier.GetRandomValidInstrument(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning validInstrument")
 	}
@@ -103,11 +103,11 @@ func (r *repository) GetRandomValidInstrument(ctx context.Context) (*types.Valid
 }
 
 // SearchForValidInstruments fetches a valid instrument from the database.
-func (r *repository) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if query == "" {
 		return nil, database.ErrEmptyInputProvided
@@ -115,7 +115,7 @@ func (r *repository) SearchForValidInstruments(ctx context.Context, query string
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, query)
 
-	results, err := r.generatedQuerier.SearchForValidInstruments(ctx, r.db, query)
+	results, err := q.generatedQuerier.SearchForValidInstruments(ctx, q.db, query)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
 	}
@@ -143,11 +143,11 @@ func (r *repository) SearchForValidInstruments(ctx context.Context, query string
 }
 
 // GetValidInstruments fetches a list of valid instruments from the database that meet a particular filter.
-func (r *repository) GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidInstrument], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidInstruments(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidInstrument], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -159,7 +159,7 @@ func (r *repository) GetValidInstruments(ctx context.Context, filter *filtering.
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetValidInstruments(ctx, r.db, &generated.GetValidInstrumentsParams{
+	results, err := q.generatedQuerier.GetValidInstruments(ctx, q.db, &generated.GetValidInstrumentsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -195,13 +195,13 @@ func (r *repository) GetValidInstruments(ctx context.Context, filter *filtering.
 }
 
 // GetValidInstrumentsWithIDs fetches a list of valid instruments from the database that meet a particular filter.
-func (r *repository) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
-	results, err := r.generatedQuerier.GetValidInstrumentsWithIDs(ctx, r.db, ids)
+	results, err := q.generatedQuerier.GetValidInstrumentsWithIDs(ctx, q.db, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments id list retrieval query")
 	}
@@ -228,11 +228,11 @@ func (r *repository) GetValidInstrumentsWithIDs(ctx context.Context, ids []strin
 }
 
 // GetValidInstrumentIDsThatNeedSearchIndexing fetches a list of valid instruments from the database that meet a particular filter.
-func (r *repository) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := r.generatedQuerier.GetValidInstrumentsNeedingIndexing(ctx, r.db)
+	results, err := q.generatedQuerier.GetValidInstrumentsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid instruments list retrieval query")
 	}
@@ -241,18 +241,18 @@ func (r *repository) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Con
 }
 
 // CreateValidInstrument creates a valid instrument in the database.
-func (r *repository) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, input.ID)
-	logger := r.logger.WithValue(keys.ValidInstrumentIDKey, input.ID)
+	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, input.ID)
 
 	// create the valid instrument.
-	if err := r.generatedQuerier.CreateValidInstrument(ctx, r.db, &generated.CreateValidInstrumentParams{
+	if err := q.generatedQuerier.CreateValidInstrument(ctx, q.db, &generated.CreateValidInstrumentParams{
 		ID:                             input.ID,
 		Name:                           input.Name,
 		PluralName:                     input.PluralName,
@@ -276,7 +276,7 @@ func (r *repository) CreateValidInstrument(ctx context.Context, input *types.Val
 		Slug:                           input.Slug,
 		DisplayInSummaryLists:          input.DisplayInSummaryLists,
 		IncludeInGeneratedInstructions: input.IncludeInGeneratedInstructions,
-		CreatedAt:                      r.CurrentTime(),
+		CreatedAt:                      q.CurrentTime(),
 	}
 
 	logger.Info("valid instrument created")
@@ -285,17 +285,17 @@ func (r *repository) CreateValidInstrument(ctx context.Context, input *types.Val
 }
 
 // UpdateValidInstrument updates a particular valid instrument.
-func (r *repository) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateValidInstrument(ctx context.Context, updated *types.ValidInstrument) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.ValidInstrumentIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, updated.ID)
 
-	if _, err := r.generatedQuerier.UpdateValidInstrument(ctx, r.db, &generated.UpdateValidInstrumentParams{
+	if _, err := q.generatedQuerier.UpdateValidInstrument(ctx, q.db, &generated.UpdateValidInstrumentParams{
 		Name:                           updated.Name,
 		PluralName:                     updated.PluralName,
 		Description:                    updated.Description,
@@ -315,11 +315,11 @@ func (r *repository) UpdateValidInstrument(ctx context.Context, updated *types.V
 }
 
 // MarkValidInstrumentAsIndexed updates a particular valid instrument's last_indexed_at value.
-func (r *repository) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validInstrumentID == "" {
 		return database.ErrInvalidIDProvided
@@ -327,7 +327,7 @@ func (r *repository) MarkValidInstrumentAsIndexed(ctx context.Context, validInst
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
-	if _, err := r.generatedQuerier.UpdateValidInstrumentLastIndexedAt(ctx, r.db, validInstrumentID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidInstrumentLastIndexedAt(ctx, q.db, validInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid instrument as indexed")
 	}
 
@@ -337,11 +337,11 @@ func (r *repository) MarkValidInstrumentAsIndexed(ctx context.Context, validInst
 }
 
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
-func (r *repository) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validInstrumentID == "" {
 		return database.ErrInvalidIDProvided
@@ -349,7 +349,7 @@ func (r *repository) ArchiveValidInstrument(ctx context.Context, validInstrument
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveValidInstrument(ctx, r.db, validInstrumentID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidInstrument(ctx, q.db, validInstrumentID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")
 	}

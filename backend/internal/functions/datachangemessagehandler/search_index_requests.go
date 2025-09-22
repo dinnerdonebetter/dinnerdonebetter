@@ -1,7 +1,9 @@
 package datachangemessagehandler
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -17,7 +19,7 @@ func (a *AsyncDataChangeMessageHandler) SearchIndexRequestsEventHandler(ctx cont
 	start := time.Now()
 
 	var searchIndexRequest textsearch.IndexRequest
-	if err := a.decoder.DecodeBytes(ctx, rawMsg, &searchIndexRequest); err != nil {
+	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&searchIndexRequest); err != nil {
 		return fmt.Errorf("decoding JSON body: %w", err)
 	}
 

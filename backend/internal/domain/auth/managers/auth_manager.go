@@ -15,7 +15,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -58,13 +57,9 @@ func ProvideAuthManager(
 	publisherProvider messagequeue.PublisherProvider,
 	secretGenerator random.Generator,
 	qrCodeBuilder qrcodes.Builder,
-	queuesConfig *msgconfig.QueuesConfig,
+	queueConfig msgconfig.QueuesConfig,
 ) (*AuthManager, error) {
-	if queuesConfig == nil {
-		return nil, internalerrors.NilConfigError("OAuth2 manager queues")
-	}
-
-	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)
+	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queueConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to provide data changes publisher: %w", err)
 	}
@@ -114,10 +109,13 @@ func (l *AuthManager) CheckUserPermissions(ctx context.Context, input *auth.User
 	ctx, span := l.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := l.logger.WithSpan(span)
+
 	sessionContextData, err := l.sessionContextDataFetcher(ctx)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "failed to get session context data")
 	}
+	logger = logger.WithValue(keys.UserIDKey, sessionContextData.GetUserID())
 
 	body := &auth.UserPermissionsResponse{
 		Permissions: make(map[string]bool),
@@ -140,6 +138,7 @@ func (l *AuthManager) TOTPSecretVerification(ctx context.Context, input *auth.TO
 	logger := l.logger.WithSpan(span)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
+		logger = logger.WithValue(keys.ValidationErrorKey, err)
 		return observability.PrepareError(err, span, "provided input was invalid")
 	}
 
@@ -165,7 +164,7 @@ func (l *AuthManager) TOTPSecretVerification(ctx context.Context, input *auth.TO
 	}
 
 	if err = l.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "verifying user two factor secret")
+		return observability.PrepareError(err, span, "verifying user two factor secret")
 	}
 
 	dcm := &audit.DataChangeMessage{
@@ -231,12 +230,12 @@ func (l *AuthManager) NewTOTPSecret(ctx context.Context, input *auth.TOTPSecretR
 	// set the two factor secret.
 	tfs, err := l.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "generating 2FA secret")
+		return nil, observability.PrepareError(err, span, "generating 2FA secret")
 	}
 
 	// update the user in the database.
 	if err = l.userDataManager.MarkUserTwoFactorSecretAsUnverified(ctx, user.ID, tfs); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "updating 2FA secret")
+		return nil, observability.PrepareError(err, span, "updating 2FA secret")
 	}
 
 	user.TwoFactorSecret = tfs
@@ -302,12 +301,12 @@ func (l *AuthManager) UpdatePassword(ctx context.Context, input *auth.PasswordUp
 	// hash the new password.
 	newPasswordHash, err := l.authenticator.HashPassword(ctx, strings.TrimSpace(input.NewPassword))
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "hashing password")
+		return observability.PrepareError(err, span, "hashing password")
 	}
 
 	// update the user.
 	if err = l.userDataManager.UpdateUserPassword(ctx, user.ID, newPasswordHash); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating user")
+		return observability.PrepareError(err, span, "updating user")
 	}
 
 	dcm := &audit.DataChangeMessage{
@@ -346,6 +345,7 @@ func (l *AuthManager) UpdateUserEmailAddress(ctx context.Context, input *auth.Us
 	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	// make sure everything'l on the up-and-up
 	user, err := l.validateCredentialsForUpdateRequest(
 		ctx,
 		sessionCtxData.Requester.UserID,
@@ -358,7 +358,7 @@ func (l *AuthManager) UpdateUserEmailAddress(ctx context.Context, input *auth.Us
 
 	// update the user.
 	if err = l.userDataManager.UpdateUserEmailAddress(ctx, user.ID, input.NewEmailAddress); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating user")
+		return observability.PrepareError(err, span, "updating user")
 	}
 
 	dcm := &audit.DataChangeMessage{
@@ -397,6 +397,7 @@ func (l *AuthManager) UpdateUserUsername(ctx context.Context, input *auth.Userna
 	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	// make sure everything'l on the up-and-up
 	user, err := l.validateCredentialsForUpdateRequest(
 		ctx,
 		sessionCtxData.Requester.UserID,
@@ -409,7 +410,7 @@ func (l *AuthManager) UpdateUserUsername(ctx context.Context, input *auth.Userna
 
 	// update the user.
 	if err = l.userDataManager.UpdateUserUsername(ctx, user.ID, input.NewUsername); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating user")
+		return observability.PrepareError(err, span, "updating user")
 	}
 
 	dcm := &audit.DataChangeMessage{
@@ -480,7 +481,7 @@ func (l *AuthManager) CreatePasswordResetToken(ctx context.Context, input *auth.
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareError(err, span, "user not found")
 	} else if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "fetching user")
+		return observability.PrepareError(err, span, "fetching user")
 	}
 
 	dbInput := &auth.PasswordResetTokenDatabaseCreationInput{

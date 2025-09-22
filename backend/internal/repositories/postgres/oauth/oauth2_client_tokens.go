@@ -14,11 +14,11 @@ import (
 var _ types.OAuth2ClientTokenDataManager = (*repository)(nil)
 
 // GetOAuth2ClientTokenByCode fetches an OAuth2 client token from the database.
-func (r *repository) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*types.OAuth2ClientToken, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*types.OAuth2ClientToken, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if code == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -26,12 +26,12 @@ func (r *repository) GetOAuth2ClientTokenByCode(ctx context.Context, code string
 	logger = logger.WithValue(keys.OAuth2ClientTokenCodeKey, code)
 	tracing.AttachToSpan(span, keys.OAuth2ClientTokenCodeKey, code)
 
-	encryptedCode, err := r.oauth2ClientTokenEncDec.Encrypt(ctx, code)
+	encryptedCode, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, code)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "encrypting oauth2 token code")
 	}
 
-	result, err := r.generatedQuerier.GetOAuth2ClientTokenByCode(ctx, r.db, encryptedCode)
+	result, err := q.generatedQuerier.GetOAuth2ClientTokenByCode(ctx, q.db, encryptedCode)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client token by code")
 	}
@@ -58,19 +58,19 @@ func (r *repository) GetOAuth2ClientTokenByCode(ctx context.Context, code string
 	oauth2ClientToken.AccessExpiresAt = result.AccessExpiresAt.Sub(result.AccessCreatedAt)
 	oauth2ClientToken.RefreshExpiresAt = result.RefreshExpiresAt.Sub(result.RefreshCreatedAt)
 
-	decryptedCode, err := r.oauth2ClientTokenEncDec.Decrypt(ctx, result.Code)
+	decryptedCode, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Code)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
 	}
 	oauth2ClientToken.Code = decryptedCode
 
-	decryptedAccess, err := r.oauth2ClientTokenEncDec.Decrypt(ctx, result.Access)
+	decryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Access)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 	oauth2ClientToken.Access = decryptedAccess
 
-	decryptedRefresh, err := r.oauth2ClientTokenEncDec.Decrypt(ctx, result.Refresh)
+	decryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Refresh)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token refresh")
 	}
@@ -80,11 +80,11 @@ func (r *repository) GetOAuth2ClientTokenByCode(ctx context.Context, code string
 }
 
 // GetOAuth2ClientTokenByAccess fetches an OAuth2 client token from the database.
-func (r *repository) GetOAuth2ClientTokenByAccess(ctx context.Context, access string) (*types.OAuth2ClientToken, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetOAuth2ClientTokenByAccess(ctx context.Context, access string) (*types.OAuth2ClientToken, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if access == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -92,12 +92,12 @@ func (r *repository) GetOAuth2ClientTokenByAccess(ctx context.Context, access st
 	logger = logger.WithValue(keys.OAuth2ClientTokenAccessKey, access)
 	tracing.AttachToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
 
-	encryptedAccess, err := r.oauth2ClientTokenEncDec.Encrypt(ctx, access)
+	encryptedAccess, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, access)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "encrypting oauth2 token access")
 	}
 
-	result, err := r.generatedQuerier.GetOAuth2ClientTokenByAccess(ctx, r.db, encryptedAccess)
+	result, err := q.generatedQuerier.GetOAuth2ClientTokenByAccess(ctx, q.db, encryptedAccess)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client token by access")
 	}
@@ -124,19 +124,19 @@ func (r *repository) GetOAuth2ClientTokenByAccess(ctx context.Context, access st
 	oauth2ClientToken.AccessExpiresAt = result.AccessExpiresAt.Sub(result.AccessCreatedAt)
 	oauth2ClientToken.RefreshExpiresAt = result.RefreshExpiresAt.Sub(result.RefreshCreatedAt)
 
-	decryptedCode, err := r.oauth2ClientTokenEncDec.Decrypt(ctx, result.Code)
+	decryptedCode, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Code)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
 	}
 	oauth2ClientToken.Code = decryptedCode
 
-	decryptedAccess, err := r.oauth2ClientTokenEncDec.Decrypt(ctx, result.Access)
+	decryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Access)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 	oauth2ClientToken.Access = decryptedAccess
 
-	decryptedRefresh, err := r.oauth2ClientTokenEncDec.Decrypt(ctx, result.Refresh)
+	decryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Refresh)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token refresh")
 	}
@@ -146,11 +146,11 @@ func (r *repository) GetOAuth2ClientTokenByAccess(ctx context.Context, access st
 }
 
 // GetOAuth2ClientTokenByRefresh fetches an OAuth2 client token from the database.
-func (r *repository) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) (*types.OAuth2ClientToken, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) (*types.OAuth2ClientToken, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if refresh == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -158,12 +158,12 @@ func (r *repository) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh 
 	logger = logger.WithValue(keys.OAuth2ClientTokenRefreshKey, refresh)
 	tracing.AttachToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
 
-	encryptedRefresh, err := r.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
+	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "encrypting oauth2 token refresh")
 	}
 
-	result, err := r.generatedQuerier.GetOAuth2ClientTokenByRefresh(ctx, r.db, encryptedRefresh)
+	result, err := q.generatedQuerier.GetOAuth2ClientTokenByRefresh(ctx, q.db, encryptedRefresh)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client token by refresh")
 	}
@@ -190,19 +190,19 @@ func (r *repository) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh 
 	oauth2ClientToken.AccessExpiresAt = result.AccessExpiresAt.Sub(result.AccessCreatedAt)
 	oauth2ClientToken.RefreshExpiresAt = result.RefreshExpiresAt.Sub(result.RefreshCreatedAt)
 
-	decryptedCode, err := r.oauth2ClientTokenEncDec.Decrypt(ctx, result.Code)
+	decryptedCode, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Code)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
 	}
 	oauth2ClientToken.Code = decryptedCode
 
-	decryptedAccess, err := r.oauth2ClientTokenEncDec.Decrypt(ctx, result.Access)
+	decryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Access)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 	oauth2ClientToken.Access = decryptedAccess
 
-	decryptedRefresh, err := r.oauth2ClientTokenEncDec.Decrypt(ctx, result.Refresh)
+	decryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Refresh)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token refresh")
 	}
@@ -212,34 +212,34 @@ func (r *repository) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh 
 }
 
 // CreateOAuth2ClientToken creates an OAuth2 client token in the database.
-func (r *repository) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) (*types.OAuth2ClientToken, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) (*types.OAuth2ClientToken, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := r.logger.WithValue(keys.OAuth2ClientTokenIDKey, input.ID)
-	now := r.CurrentTime()
+	logger := q.logger.WithValue(keys.OAuth2ClientTokenIDKey, input.ID)
+	now := q.CurrentTime()
 
-	encryptedCode, err := r.oauth2ClientTokenEncDec.Encrypt(ctx, input.Code)
+	encryptedCode, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, input.Code)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "encrypting oauth2 token code")
 	}
 
-	encryptedAccess, err := r.oauth2ClientTokenEncDec.Encrypt(ctx, input.Access)
+	encryptedAccess, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, input.Access)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "encrypting oauth2 token access")
 	}
 
-	encryptedRefresh, err := r.oauth2ClientTokenEncDec.Encrypt(ctx, input.Refresh)
+	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, input.Refresh)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "encrypting oauth2 token refresh")
 	}
 
 	// create the oauth2 client token.
-	if err = r.generatedQuerier.CreateOAuth2ClientToken(ctx, r.db, &generated.CreateOAuth2ClientTokenParams{
+	if err = q.generatedQuerier.CreateOAuth2ClientToken(ctx, q.db, &generated.CreateOAuth2ClientTokenParams{
 		AccessExpiresAt:     now.Add(input.AccessExpiresIn),
 		CodeExpiresAt:       now.Add(input.CodeExpiresIn),
 		RefreshExpiresAt:    now.Add(input.RefreshExpiresIn),
@@ -283,11 +283,11 @@ func (r *repository) CreateOAuth2ClientToken(ctx context.Context, input *types.O
 }
 
 // DeleteOAuth2ClientTokenByAccess archives an OAuth2 client token from the database by its ID.
-func (r *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if access == "" {
 		return database.ErrInvalidIDProvided
@@ -295,12 +295,12 @@ func (r *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access
 	logger = logger.WithValue(keys.OAuth2ClientTokenAccessKey, access)
 	tracing.AttachToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
 
-	encryptedAccess, err := r.oauth2ClientTokenEncDec.Encrypt(ctx, access)
+	encryptedAccess, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, access)
 	if err != nil {
 		return observability.PrepareError(err, span, "encrypting oauth2 token access")
 	}
 
-	if _, err = r.generatedQuerier.DeleteOAuth2ClientTokenByAccess(ctx, r.db, encryptedAccess); err != nil {
+	if _, err = q.generatedQuerier.DeleteOAuth2ClientTokenByAccess(ctx, q.db, encryptedAccess); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by access")
 	}
 
@@ -310,11 +310,11 @@ func (r *repository) DeleteOAuth2ClientTokenByAccess(ctx context.Context, access
 }
 
 // DeleteOAuth2ClientTokenByCode archives an OAuth2 client token from the database by its access code.
-func (r *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if code == "" {
 		return database.ErrInvalidIDProvided
@@ -322,12 +322,12 @@ func (r *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code str
 	logger = logger.WithValue(keys.OAuth2ClientTokenCodeKey, code)
 	tracing.AttachToSpan(span, keys.OAuth2ClientTokenCodeKey, code)
 
-	encryptedCode, err := r.oauth2ClientTokenEncDec.Encrypt(ctx, code)
+	encryptedCode, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, code)
 	if err != nil {
 		return observability.PrepareError(err, span, "encrypting oauth2 token code")
 	}
 
-	if _, err = r.generatedQuerier.DeleteOAuth2ClientTokenByCode(ctx, r.db, encryptedCode); err != nil {
+	if _, err = q.generatedQuerier.DeleteOAuth2ClientTokenByCode(ctx, q.db, encryptedCode); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by code")
 	}
 
@@ -337,11 +337,11 @@ func (r *repository) DeleteOAuth2ClientTokenByCode(ctx context.Context, code str
 }
 
 // DeleteOAuth2ClientTokenByRefresh archives an OAuth2 client token from the database by its refresh token.
-func (r *repository) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if refresh == "" {
 		return database.ErrInvalidIDProvided
@@ -349,12 +349,12 @@ func (r *repository) DeleteOAuth2ClientTokenByRefresh(ctx context.Context, refre
 	logger = logger.WithValue(keys.OAuth2ClientTokenRefreshKey, refresh)
 	tracing.AttachToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
 
-	encryptedRefresh, err := r.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
+	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
 	if err != nil {
 		return observability.PrepareError(err, span, "encrypting oauth2 token refresh")
 	}
 
-	if _, err = r.generatedQuerier.DeleteOAuth2ClientTokenByRefresh(ctx, r.db, encryptedRefresh); err != nil {
+	if _, err = q.generatedQuerier.DeleteOAuth2ClientTokenByRefresh(ctx, q.db, encryptedRefresh); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 

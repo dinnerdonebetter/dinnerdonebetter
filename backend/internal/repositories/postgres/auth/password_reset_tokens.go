@@ -3,18 +3,12 @@ package auth
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth/generated"
-)
-
-const (
-	resourceTypePasswordResetTokens = "password_reset_tokens"
 )
 
 var (
@@ -62,13 +56,8 @@ func (r *repository) CreatePasswordResetToken(ctx context.Context, input *auth.P
 	logger := r.logger.WithValue(keys.PasswordResetTokenIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, input.ID)
 
-	tx, err := r.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "beginning transaction")
-	}
-
 	// create the password reset token.
-	if err = r.generatedQuerier.CreatePasswordResetToken(ctx, tx, &generated.CreatePasswordResetTokenParams{
+	if err := r.generatedQuerier.CreatePasswordResetToken(ctx, r.db, &generated.CreatePasswordResetTokenParams{
 		ID:            input.ID,
 		Token:         input.Token,
 		BelongsToUser: input.BelongsToUser,
@@ -82,19 +71,6 @@ func (r *repository) CreatePasswordResetToken(ctx context.Context, input *auth.P
 		ExpiresAt:     input.ExpiresAt,
 		CreatedAt:     r.CurrentTime(),
 		BelongsToUser: input.BelongsToUser,
-	}
-
-	if _, err = r.auditLogEntryRepo.CreateAuditLogEntry(ctx, tx, &audit.AuditLogEntryDatabaseCreationInput{
-		ID:           identifiers.New(),
-		ResourceType: resourceTypePasswordResetTokens,
-		RelevantID:   input.ID,
-		EventType:    audit.AuditLogEventTypeCreated,
-	}); err != nil {
-		return nil, observability.PrepareError(err, span, "creating audit log entry")
-	}
-
-	if err = tx.Commit(); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("password reset token created")

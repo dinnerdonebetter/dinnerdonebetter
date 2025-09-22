@@ -343,74 +343,74 @@ func (r *repository) UpdateAccount(ctx context.Context, updated *identity.Accoun
 	return nil
 }
 
-func buildChangesForAccount(account, updated *identity.Account) map[string]*audit.ChangeLog {
-	changes := map[string]*audit.ChangeLog{}
+func buildChangesForAccount(account, updated *identity.Account) map[string]audit.ChangeLog {
+	changes := map[string]audit.ChangeLog{}
 
 	if account.Name != updated.Name {
-		changes["name"] = &audit.ChangeLog{
+		changes["name"] = audit.ChangeLog{
 			OldValue: account.Name,
 			NewValue: updated.Name,
 		}
 	}
 
 	if account.ContactPhone != updated.ContactPhone {
-		changes["contact_phone"] = &audit.ChangeLog{
+		changes["contact_phone"] = audit.ChangeLog{
 			OldValue: account.ContactPhone,
 			NewValue: updated.ContactPhone,
 		}
 	}
 
 	if account.AddressLine1 != updated.AddressLine1 {
-		changes["address_line_1"] = &audit.ChangeLog{
+		changes["address_line_1"] = audit.ChangeLog{
 			OldValue: account.AddressLine1,
 			NewValue: updated.AddressLine1,
 		}
 	}
 
 	if account.AddressLine2 != updated.AddressLine2 {
-		changes["address_line_2"] = &audit.ChangeLog{
+		changes["address_line_2"] = audit.ChangeLog{
 			OldValue: account.AddressLine2,
 			NewValue: updated.AddressLine2,
 		}
 	}
 
 	if account.City != updated.City {
-		changes["city"] = &audit.ChangeLog{
+		changes["city"] = audit.ChangeLog{
 			OldValue: account.City,
 			NewValue: updated.City,
 		}
 	}
 
 	if account.State != updated.State {
-		changes["state"] = &audit.ChangeLog{
+		changes["state"] = audit.ChangeLog{
 			OldValue: account.State,
 			NewValue: updated.State,
 		}
 	}
 
 	if account.ZipCode != updated.ZipCode {
-		changes["zip_code"] = &audit.ChangeLog{
+		changes["zip_code"] = audit.ChangeLog{
 			OldValue: account.ZipCode,
 			NewValue: updated.ZipCode,
 		}
 	}
 
 	if account.Country != updated.Country {
-		changes["country"] = &audit.ChangeLog{
+		changes["country"] = audit.ChangeLog{
 			OldValue: account.Country,
 			NewValue: updated.Country,
 		}
 	}
 
 	if account.Latitude != updated.Latitude {
-		changes["latitude"] = &audit.ChangeLog{
+		changes["latitude"] = audit.ChangeLog{
 			OldValue: fmt.Sprintf("%v", account.Latitude),
 			NewValue: fmt.Sprintf("%v", updated.Latitude),
 		}
 	}
 
 	if account.Longitude != updated.Longitude {
-		changes["longitude"] = &audit.ChangeLog{
+		changes["longitude"] = audit.ChangeLog{
 			OldValue: fmt.Sprintf("%v", account.Longitude),
 			NewValue: fmt.Sprintf("%v", updated.Longitude),
 		}

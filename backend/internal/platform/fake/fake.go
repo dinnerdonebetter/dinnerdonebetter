@@ -24,7 +24,7 @@ func BuildFakeForTest[X any](t *testing.T) (x *X) {
 
 // MustBuildFake builds a fake instance of insert-struct-here for a test.
 func MustBuildFake[X any]() X {
-	x, err := BuildFake[X]()
+	x, err := BuildFake[X](nil)
 	if err != nil {
 		panic(err)
 	}
@@ -33,7 +33,11 @@ func MustBuildFake[X any]() X {
 }
 
 // BuildFake builds a fake instance of insert-struct-here for a test.
-func BuildFake[X any]() (x *X, err error) {
+func BuildFake[X any](t *testing.T) (x *X, err error) {
+	if t != nil {
+		t.Helper()
+	}
+
 	if err = faker.FakeData(&x); err != nil {
 		return nil, err
 	}

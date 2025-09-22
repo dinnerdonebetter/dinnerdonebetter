@@ -1,7 +1,9 @@
 package datachangemessagehandler
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -32,7 +34,7 @@ func (a *AsyncDataChangeMessageHandler) DataChangesEventHandler(ctx context.Cont
 	start := time.Now()
 
 	var dataChangeMessage audit.DataChangeMessage
-	if err := a.decoder.DecodeBytes(ctx, rawMsg, &dataChangeMessage); err != nil {
+	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&dataChangeMessage); err != nil {
 		return fmt.Errorf("decoding JSON body: %w", err)
 	}
 

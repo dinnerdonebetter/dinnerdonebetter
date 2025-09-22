@@ -19,11 +19,11 @@ var (
 )
 
 // ValidIngredientStateIngredientExists fetches whether a valid ingredient state ingredient exists from the database.
-func (r *repository) ValidIngredientStateIngredientExists(ctx context.Context, validIngredientStateIngredientID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ValidIngredientStateIngredientExists(ctx context.Context, validIngredientStateIngredientID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validIngredientStateIngredientID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -31,7 +31,7 @@ func (r *repository) ValidIngredientStateIngredientExists(ctx context.Context, v
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
-	result, err := r.generatedQuerier.CheckValidIngredientStateIngredientExistence(ctx, r.db, validIngredientStateIngredientID)
+	result, err := q.generatedQuerier.CheckValidIngredientStateIngredientExistence(ctx, q.db, validIngredientStateIngredientID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient state ingredient existence check")
 	}
@@ -40,11 +40,11 @@ func (r *repository) ValidIngredientStateIngredientExists(ctx context.Context, v
 }
 
 // GetValidIngredientStateIngredient fetches a valid ingredient state ingredient from the database.
-func (r *repository) GetValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) (*mealplanning.ValidIngredientStateIngredient, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) (*mealplanning.ValidIngredientStateIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validIngredientStateIngredientID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -52,7 +52,7 @@ func (r *repository) GetValidIngredientStateIngredient(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
-	result, err := r.generatedQuerier.GetValidIngredientStateIngredient(ctx, r.db, validIngredientStateIngredientID)
+	result, err := q.generatedQuerier.GetValidIngredientStateIngredient(ctx, q.db, validIngredientStateIngredientID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state ingredient")
 	}
@@ -122,11 +122,11 @@ func (r *repository) GetValidIngredientStateIngredient(ctx context.Context, vali
 }
 
 // GetValidIngredientStateIngredients fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
-func (r *repository) GetValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidIngredientStateIngredients(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -138,7 +138,7 @@ func (r *repository) GetValidIngredientStateIngredients(ctx context.Context, fil
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetValidIngredientStateIngredients(ctx, r.db, &generated.GetValidIngredientStateIngredientsParams{
+	results, err := q.generatedQuerier.GetValidIngredientStateIngredients(ctx, q.db, &generated.GetValidIngredientStateIngredientsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -222,11 +222,11 @@ func (r *repository) GetValidIngredientStateIngredients(ctx context.Context, fil
 }
 
 // GetValidIngredientStateIngredientsForIngredientState fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
-func (r *repository) GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidIngredientStateIngredientsForIngredientState(ctx context.Context, ingredientStateID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if ingredientStateID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -244,7 +244,7 @@ func (r *repository) GetValidIngredientStateIngredientsForIngredientState(ctx co
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetValidIngredientStateIngredientsForIngredientState(ctx, r.db, &generated.GetValidIngredientStateIngredientsForIngredientStateParams{
+	results, err := q.generatedQuerier.GetValidIngredientStateIngredientsForIngredientState(ctx, q.db, &generated.GetValidIngredientStateIngredientsForIngredientStateParams{
 		CreatedBefore:        database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:         database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:        database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -329,11 +329,11 @@ func (r *repository) GetValidIngredientStateIngredientsForIngredientState(ctx co
 }
 
 // GetValidIngredientStateIngredientsForIngredient fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
-func (r *repository) GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidIngredientStateIngredientsForIngredient(ctx context.Context, ingredientID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if ingredientID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -351,7 +351,7 @@ func (r *repository) GetValidIngredientStateIngredientsForIngredient(ctx context
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetValidIngredientStateIngredientsForIngredient(ctx, r.db, &generated.GetValidIngredientStateIngredientsForIngredientParams{
+	results, err := q.generatedQuerier.GetValidIngredientStateIngredientsForIngredient(ctx, q.db, &generated.GetValidIngredientStateIngredientsForIngredientParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -436,18 +436,18 @@ func (r *repository) GetValidIngredientStateIngredientsForIngredient(ctx context
 }
 
 // CreateValidIngredientStateIngredient creates a valid ingredient state ingredient in the database.
-func (r *repository) CreateValidIngredientStateIngredient(ctx context.Context, input *mealplanning.ValidIngredientStateIngredientDatabaseCreationInput) (*mealplanning.ValidIngredientStateIngredient, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateValidIngredientStateIngredient(ctx context.Context, input *mealplanning.ValidIngredientStateIngredientDatabaseCreationInput) (*mealplanning.ValidIngredientStateIngredient, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, input.ID)
-	logger := r.logger.WithValue(keys.ValidIngredientStateIngredientIDKey, input.ID)
+	logger := q.logger.WithValue(keys.ValidIngredientStateIngredientIDKey, input.ID)
 
 	// create the valid ingredient state ingredient.
-	if err := r.generatedQuerier.CreateValidIngredientStateIngredient(ctx, r.db, &generated.CreateValidIngredientStateIngredientParams{
+	if err := q.generatedQuerier.CreateValidIngredientStateIngredient(ctx, q.db, &generated.CreateValidIngredientStateIngredientParams{
 		ID:                   input.ID,
 		Notes:                input.Notes,
 		ValidIngredientState: input.ValidIngredientStateID,
@@ -461,10 +461,10 @@ func (r *repository) CreateValidIngredientStateIngredient(ctx context.Context, i
 		Notes:           input.Notes,
 		IngredientState: mealplanning.ValidIngredientState{ID: input.ValidIngredientStateID},
 		Ingredient:      mealplanning.ValidIngredient{ID: input.ValidIngredientID},
-		CreatedAt:       r.CurrentTime(),
+		CreatedAt:       q.CurrentTime(),
 	}
 
-	ingredientState, err := r.GetValidIngredientState(ctx, input.ValidIngredientStateID)
+	ingredientState, err := q.GetValidIngredientState(ctx, input.ValidIngredientStateID)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient state for valid ingredient state ingredient")
@@ -473,7 +473,7 @@ func (r *repository) CreateValidIngredientStateIngredient(ctx context.Context, i
 		x.IngredientState = *ingredientState
 	}
 
-	vessel, err := r.GetValidIngredient(ctx, input.ValidIngredientID)
+	vessel, err := q.GetValidIngredient(ctx, input.ValidIngredientID)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient for valid ingredient state ingredient")
@@ -489,17 +489,17 @@ func (r *repository) CreateValidIngredientStateIngredient(ctx context.Context, i
 }
 
 // UpdateValidIngredientStateIngredient updates a particular valid ingredient state ingredient.
-func (r *repository) UpdateValidIngredientStateIngredient(ctx context.Context, updated *mealplanning.ValidIngredientStateIngredient) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateValidIngredientStateIngredient(ctx context.Context, updated *mealplanning.ValidIngredientStateIngredient) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.ValidIngredientStateIngredientIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.ValidIngredientStateIngredientIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, updated.ID)
 
-	if _, err := r.generatedQuerier.UpdateValidIngredientStateIngredient(ctx, r.db, &generated.UpdateValidIngredientStateIngredientParams{
+	if _, err := q.generatedQuerier.UpdateValidIngredientStateIngredient(ctx, q.db, &generated.UpdateValidIngredientStateIngredientParams{
 		Notes:                updated.Notes,
 		ValidIngredientState: updated.IngredientState.ID,
 		ValidIngredient:      updated.Ingredient.ID,
@@ -514,11 +514,11 @@ func (r *repository) UpdateValidIngredientStateIngredient(ctx context.Context, u
 }
 
 // ArchiveValidIngredientStateIngredient archives a valid ingredient state ingredient from the database by its ID.
-func (r *repository) ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validIngredientStateIngredientID == "" {
 		return database.ErrInvalidIDProvided
@@ -526,7 +526,7 @@ func (r *repository) ArchiveValidIngredientStateIngredient(ctx context.Context, 
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveValidIngredientStateIngredient(ctx, r.db, validIngredientStateIngredientID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidIngredientStateIngredient(ctx, q.db, validIngredientStateIngredientID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient")
 	}

@@ -2,7 +2,6 @@ package oauth
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/audit"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
@@ -10,7 +9,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/cryptography/encryption/salsa20"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth/generated"
@@ -36,16 +34,12 @@ func ProvideOAuthRepository(
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	auditLogEntryRepo audit.Repository,
-	cfg *databasecfg.Config,
+	cfg databasecfg.Config,
 	client database.Client,
-) (oauth.Repository, error) {
-	if cfg == nil {
-		return nil, internalerrors.NilConfigError("OAuth repository database")
-	}
-
+) oauth.Repository {
 	encDec, err := salsa20.NewEncryptorDecryptor(tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))
 	if err != nil {
-		return nil, fmt.Errorf("creating encryptor decryptor: %w", err)
+		return nil
 	}
 
 	c := &repository{
@@ -58,5 +52,5 @@ func ProvideOAuthRepository(
 		logger:                  logging.EnsureLogger(logger).WithName(o11yName),
 	}
 
-	return c, nil
+	return c
 }

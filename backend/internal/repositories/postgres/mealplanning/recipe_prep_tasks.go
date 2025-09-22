@@ -18,11 +18,11 @@ var (
 )
 
 // RecipePrepTaskExists checks if a recipe prep task exists.
-func (r *repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -36,7 +36,7 @@ func (r *repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipeP
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	result, err := r.generatedQuerier.CheckRecipePrepTaskExistence(ctx, r.db, &generated.CheckRecipePrepTaskExistenceParams{
+	result, err := q.generatedQuerier.CheckRecipePrepTaskExistence(ctx, q.db, &generated.CheckRecipePrepTaskExistenceParams{
 		RecipeID:         recipeID,
 		RecipePrepTaskID: recipePrepTaskID,
 	})
@@ -50,11 +50,11 @@ func (r *repository) RecipePrepTaskExists(ctx context.Context, recipeID, recipeP
 }
 
 // GetRecipePrepTask fetches a recipe prep task.
-func (r *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (x *mealplanning.RecipePrepTask, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (x *mealplanning.RecipePrepTask, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -68,7 +68,7 @@ func (r *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrep
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	results, err := r.generatedQuerier.GetRecipePrepTask(ctx, r.db, recipePrepTaskID)
+	results, err := q.generatedQuerier.GetRecipePrepTask(ctx, q.db, recipePrepTaskID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe prep task")
 	}
@@ -120,11 +120,11 @@ func (r *repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrep
 }
 
 // createRecipePrepTask creates a recipe prep task.
-func (r *repository) createRecipePrepTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.RecipePrepTaskDatabaseCreationInput) (*mealplanning.RecipePrepTask, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) createRecipePrepTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.RecipePrepTaskDatabaseCreationInput) (*mealplanning.RecipePrepTask, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
@@ -133,7 +133,7 @@ func (r *repository) createRecipePrepTask(ctx context.Context, querier database.
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
 
 	// create the recipe prep task.
-	if err := r.generatedQuerier.CreateRecipePrepTask(ctx, querier, &generated.CreateRecipePrepTaskParams{
+	if err := q.generatedQuerier.CreateRecipePrepTask(ctx, querier, &generated.CreateRecipePrepTaskParams{
 		ID:                                     input.ID,
 		Name:                                   input.Name,
 		Description:                            input.Description,
@@ -147,12 +147,12 @@ func (r *repository) createRecipePrepTask(ctx context.Context, querier database.
 		MinimumTimeBufferBeforeRecipeInSeconds: int32(input.TimeBufferBeforeRecipeInSeconds.Min),
 		Optional:                               input.Optional,
 	}); err != nil {
-		r.RollbackTransaction(ctx, querier)
+		q.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
 	}
 
 	x := &mealplanning.RecipePrepTask{
-		CreatedAt:                   r.CurrentTime(),
+		CreatedAt:                   q.CurrentTime(),
 		ID:                          input.ID,
 		Name:                        input.Name,
 		Description:                 input.Description,
@@ -173,9 +173,9 @@ func (r *repository) createRecipePrepTask(ctx context.Context, querier database.
 
 	for _, recipePrepTaskStep := range input.TaskSteps {
 		recipePrepTaskStep.BelongsToRecipePrepTask = input.ID
-		s, err := r.createRecipePrepTaskStep(ctx, querier, recipePrepTaskStep)
+		s, err := q.createRecipePrepTaskStep(ctx, querier, recipePrepTaskStep)
 		if err != nil {
-			r.RollbackTransaction(ctx, querier)
+			q.RollbackTransaction(ctx, querier)
 			return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
 		}
 
@@ -188,23 +188,23 @@ func (r *repository) createRecipePrepTask(ctx context.Context, querier database.
 }
 
 // CreateRecipePrepTask creates a recipe prep task.
-func (r *repository) CreateRecipePrepTask(ctx context.Context, input *mealplanning.RecipePrepTaskDatabaseCreationInput) (*mealplanning.RecipePrepTask, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateRecipePrepTask(ctx context.Context, input *mealplanning.RecipePrepTaskDatabaseCreationInput) (*mealplanning.RecipePrepTask, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
 
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	x, err := r.createRecipePrepTask(ctx, tx, input)
+	x, err := q.createRecipePrepTask(ctx, tx, input)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
 	}
@@ -219,11 +219,11 @@ func (r *repository) CreateRecipePrepTask(ctx context.Context, input *mealplanni
 }
 
 // createRecipePrepTaskStep creates a recipe prep task step.
-func (r *repository) createRecipePrepTaskStep(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.RecipePrepTaskStepDatabaseCreationInput) (*mealplanning.RecipePrepTaskStep, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) createRecipePrepTaskStep(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *mealplanning.RecipePrepTaskStepDatabaseCreationInput) (*mealplanning.RecipePrepTaskStep, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
@@ -232,13 +232,13 @@ func (r *repository) createRecipePrepTaskStep(ctx context.Context, querier datab
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, input.BelongsToRecipePrepTask)
 
 	// create the meal plan.
-	if err := r.generatedQuerier.CreateRecipePrepTaskStep(ctx, querier, &generated.CreateRecipePrepTaskStepParams{
+	if err := q.generatedQuerier.CreateRecipePrepTaskStep(ctx, querier, &generated.CreateRecipePrepTaskStepParams{
 		ID:                      input.ID,
 		BelongsToRecipePrepTask: input.BelongsToRecipePrepTask,
 		BelongsToRecipeStep:     input.BelongsToRecipeStep,
 		SatisfiesRecipeStep:     input.SatisfiesRecipeStep,
 	}); err != nil {
-		r.RollbackTransaction(ctx, querier)
+		q.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task step")
 	}
 
@@ -255,11 +255,11 @@ func (r *repository) createRecipePrepTaskStep(ctx context.Context, querier datab
 }
 
 // getRecipePrepTasksForRecipe gets a recipe prep task.
-func (r *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipePrepTask, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipePrepTask, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -267,7 +267,7 @@ func (r *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID s
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := r.generatedQuerier.ListAllRecipePrepTasksByRecipe(ctx, r.db, recipeID)
+	results, err := q.generatedQuerier.ListAllRecipePrepTasksByRecipe(ctx, q.db, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe prep tasks list retrieval query")
 	}
@@ -323,22 +323,22 @@ func (r *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID s
 }
 
 // GetRecipePrepTasksForRecipe gets a recipe prep task.
-func (r *repository) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) (x []*mealplanning.RecipePrepTask, err error) {
-	return r.getRecipePrepTasksForRecipe(ctx, recipeID)
+func (q *repository) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) (x []*mealplanning.RecipePrepTask, err error) {
+	return q.getRecipePrepTasksForRecipe(ctx, recipeID)
 }
 
 // UpdateRecipePrepTask updates a recipe prep task.
-func (r *repository) UpdateRecipePrepTask(ctx context.Context, updated *mealplanning.RecipePrepTask) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateRecipePrepTask(ctx context.Context, updated *mealplanning.RecipePrepTask) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, updated.ID)
 
-	if _, err := r.generatedQuerier.UpdateRecipePrepTask(ctx, r.db, &generated.UpdateRecipePrepTaskParams{
+	if _, err := q.generatedQuerier.UpdateRecipePrepTask(ctx, q.db, &generated.UpdateRecipePrepTaskParams{
 		Name:                                   updated.Name,
 		Description:                            updated.Description,
 		Notes:                                  updated.Notes,
@@ -361,11 +361,11 @@ func (r *repository) UpdateRecipePrepTask(ctx context.Context, updated *mealplan
 }
 
 // ArchiveRecipePrepTask marks a recipe prep task as archived.
-func (r *repository) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if recipeID == "" {
 		return database.ErrInvalidIDProvided
@@ -379,7 +379,7 @@ func (r *repository) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipe
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveRecipePrepTask(ctx, r.db, recipePrepTaskID)
+	rowsAffected, err := q.generatedQuerier.ArchiveRecipePrepTask(ctx, q.db, recipePrepTaskID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task")
 	}

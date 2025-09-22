@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth/converters"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/platform/internalerrors"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -52,12 +51,8 @@ func NewOAuth2Manager(
 	sessionContextDataFetcher func(context.Context) (*sessions.ContextData, error),
 	publisherProvider messagequeue.PublisherProvider,
 	oauthRepository oauth.Repository,
-	queuesConfig *msgconfig.QueuesConfig,
+	queuesConfig msgconfig.QueuesConfig,
 ) (OAuth2Manager, error) {
-	if queuesConfig == nil {
-		return nil, internalerrors.NilConfigError("OAuth2 manager queues")
-	}
-
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(queuesConfig.DataChangesTopicName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to provide publisher for data changes topic: %w", err)

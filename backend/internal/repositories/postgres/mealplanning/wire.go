@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	MPRepoProviders = wire.NewSet(
+	Providers = wire.NewSet(
 		ProvideMealPlanningRepository,
 		ProvideValidEnumerationDataManager,
 	)

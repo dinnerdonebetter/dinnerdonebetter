@@ -19,11 +19,11 @@ var (
 )
 
 // ValidVesselExists fetches whether a valid vessel exists from the database.
-func (r *repository) ValidVesselExists(ctx context.Context, validVesselID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ValidVesselExists(ctx context.Context, validVesselID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validVesselID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -31,7 +31,7 @@ func (r *repository) ValidVesselExists(ctx context.Context, validVesselID string
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	result, err := r.generatedQuerier.CheckValidVesselExistence(ctx, r.db, validVesselID)
+	result, err := q.generatedQuerier.CheckValidVesselExistence(ctx, q.db, validVesselID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid vessel existence check")
 	}
@@ -40,11 +40,11 @@ func (r *repository) ValidVesselExists(ctx context.Context, validVesselID string
 }
 
 // GetValidVessel fetches a valid vessel from the database.
-func (r *repository) GetValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validVesselID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -52,7 +52,7 @@ func (r *repository) GetValidVessel(ctx context.Context, validVesselID string) (
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	result, err := r.generatedQuerier.GetValidVessel(ctx, r.db, validVesselID)
+	result, err := q.generatedQuerier.GetValidVessel(ctx, q.db, validVesselID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid vessels")
 	}
@@ -96,11 +96,11 @@ func (r *repository) GetValidVessel(ctx context.Context, validVesselID string) (
 }
 
 // GetRandomValidVessel fetches a valid vessel from the database.
-func (r *repository) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	result, err := r.generatedQuerier.GetRandomValidVessel(ctx, r.db)
+	result, err := q.generatedQuerier.GetRandomValidVessel(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "querying for random valid vessel")
 	}
@@ -144,11 +144,11 @@ func (r *repository) GetRandomValidVessel(ctx context.Context) (*types.ValidVess
 }
 
 // SearchForValidVessels fetches a valid vessel from the database.
-func (r *repository) SearchForValidVessels(ctx context.Context, query string) ([]*types.ValidVessel, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) SearchForValidVessels(ctx context.Context, query string) ([]*types.ValidVessel, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if query == "" {
 		return nil, database.ErrEmptyInputProvided
@@ -156,7 +156,7 @@ func (r *repository) SearchForValidVessels(ctx context.Context, query string) ([
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, query)
 
-	results, err := r.generatedQuerier.SearchForValidVessels(ctx, r.db, query)
+	results, err := q.generatedQuerier.SearchForValidVessels(ctx, q.db, query)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "querying for valid vessel")
 	}
@@ -184,7 +184,7 @@ func (r *repository) SearchForValidVessels(ctx context.Context, query string) ([
 		}
 
 		if result.CapacityUnit.Valid && result.CapacityUnit.String != "" {
-			validVessel.CapacityUnit, err = r.GetValidMeasurementUnit(ctx, result.CapacityUnit.String)
+			validVessel.CapacityUnit, err = q.GetValidMeasurementUnit(ctx, result.CapacityUnit.String)
 			if err != nil {
 				return nil, observability.PrepareAndLogError(err, logger, span, "getting valid measurement unit")
 			}
@@ -201,11 +201,11 @@ func (r *repository) SearchForValidVessels(ctx context.Context, query string) ([
 }
 
 // GetValidVessels fetches a list of valid vessels from the database that meet a particular filter.
-func (r *repository) GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidVessel], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidVessels(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidVessel], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -217,7 +217,7 @@ func (r *repository) GetValidVessels(ctx context.Context, filter *filtering.Quer
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetValidVessels(ctx, r.db, &generated.GetValidVesselsParams{
+	results, err := q.generatedQuerier.GetValidVessels(ctx, q.db, &generated.GetValidVesselsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -254,7 +254,7 @@ func (r *repository) GetValidVessels(ctx context.Context, filter *filtering.Quer
 		}
 
 		if result.CapacityUnit.Valid && result.CapacityUnit.String != "" {
-			validVessel.CapacityUnit, err = r.GetValidMeasurementUnit(ctx, result.CapacityUnit.String)
+			validVessel.CapacityUnit, err = q.GetValidMeasurementUnit(ctx, result.CapacityUnit.String)
 			if err != nil {
 				return nil, observability.PrepareAndLogError(err, logger, span, "getting valid measurement unit")
 			}
@@ -267,17 +267,17 @@ func (r *repository) GetValidVessels(ctx context.Context, filter *filtering.Quer
 }
 
 // GetValidVesselsWithIDs fetches a list of valid vessels from the database that meet a particular filter.
-func (r *repository) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*types.ValidVessel, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*types.ValidVessel, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if len(ids) == 0 {
 		return nil, sql.ErrNoRows
 	}
 
-	results, err := r.generatedQuerier.GetValidVesselsWithIDs(ctx, r.db, ids)
+	results, err := q.generatedQuerier.GetValidVesselsWithIDs(ctx, q.db, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid vessels id list retrieval query")
 	}
@@ -324,11 +324,11 @@ func (r *repository) GetValidVesselsWithIDs(ctx context.Context, ids []string) (
 }
 
 // GetValidVesselIDsThatNeedSearchIndexing fetches a list of valid vessels from the database that meet a particular filter.
-func (r *repository) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := r.generatedQuerier.GetValidVesselIDsNeedingIndexing(ctx, r.db)
+	results, err := q.generatedQuerier.GetValidVesselIDsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid vessels list retrieval query")
 	}
@@ -337,17 +337,17 @@ func (r *repository) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context
 }
 
 // CreateValidVessel creates a valid vessel in the database.
-func (r *repository) CreateValidVessel(ctx context.Context, input *types.ValidVesselDatabaseCreationInput) (*types.ValidVessel, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateValidVessel(ctx context.Context, input *types.ValidVesselDatabaseCreationInput) (*types.ValidVessel, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.ValidVesselIDKey, input.ID)
+	logger := q.logger.WithValue(keys.ValidVesselIDKey, input.ID)
 
 	// create the valid vessel.
-	if err := r.generatedQuerier.CreateValidVessel(ctx, r.db, &generated.CreateValidVesselParams{
+	if err := q.generatedQuerier.CreateValidVessel(ctx, q.db, &generated.CreateValidVesselParams{
 		Slug:                           input.Slug,
 		ID:                             input.ID,
 		PluralName:                     input.PluralName,
@@ -382,7 +382,7 @@ func (r *repository) CreateValidVessel(ctx context.Context, input *types.ValidVe
 		IncludeInGeneratedInstructions: input.IncludeInGeneratedInstructions,
 		DisplayInSummaryLists:          input.DisplayInSummaryLists,
 		UsableForStorage:               input.UsableForStorage,
-		CreatedAt:                      r.CurrentTime(),
+		CreatedAt:                      q.CurrentTime(),
 	}
 
 	if input.CapacityUnitID != nil {
@@ -396,21 +396,21 @@ func (r *repository) CreateValidVessel(ctx context.Context, input *types.ValidVe
 }
 
 // UpdateValidVessel updates a particular valid vessel.
-func (r *repository) UpdateValidVessel(ctx context.Context, updated *types.ValidVessel) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateValidVessel(ctx context.Context, updated *types.ValidVessel) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.ValidVesselIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.ValidVesselIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, updated.ID)
 
 	if updated.CapacityUnit == nil {
 		return fmt.Errorf("capacity unit: %w", database.ErrNilInputProvided)
 	}
 
-	if _, err := r.generatedQuerier.UpdateValidVessel(ctx, r.db, &generated.UpdateValidVesselParams{
+	if _, err := q.generatedQuerier.UpdateValidVessel(ctx, q.db, &generated.UpdateValidVesselParams{
 		Name:                           updated.Name,
 		PluralName:                     updated.PluralName,
 		Description:                    updated.Description,
@@ -436,11 +436,11 @@ func (r *repository) UpdateValidVessel(ctx context.Context, updated *types.Valid
 }
 
 // MarkValidVesselAsIndexed updates a particular valid vessel's last_indexed_at value.
-func (r *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validVesselID == "" {
 		return database.ErrInvalidIDProvided
@@ -448,7 +448,7 @@ func (r *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	if _, err := r.generatedQuerier.UpdateValidVesselLastIndexedAt(ctx, r.db, validVesselID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidVesselLastIndexedAt(ctx, q.db, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid vessel as indexed")
 	}
 
@@ -458,11 +458,11 @@ func (r *repository) MarkValidVesselAsIndexed(ctx context.Context, validVesselID
 }
 
 // ArchiveValidVessel archives a valid vessel from the database by its ID.
-func (r *repository) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validVesselID == "" {
 		return database.ErrInvalidIDProvided
@@ -470,7 +470,7 @@ func (r *repository) ArchiveValidVessel(ctx context.Context, validVesselID strin
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveValidVessel(ctx, r.db, validVesselID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidVessel(ctx, q.db, validVesselID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}

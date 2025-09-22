@@ -19,8 +19,8 @@ var (
 )
 
 // ValidPreparationVesselExists fetches whether a valid preparation vessel exists from the database.
-func (r *repository) ValidPreparationVesselExists(ctx context.Context, validPreparationVesselID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ValidPreparationVesselExists(ctx context.Context, validPreparationVesselID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if validPreparationVesselID == "" {
@@ -28,7 +28,7 @@ func (r *repository) ValidPreparationVesselExists(ctx context.Context, validPrep
 	}
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
-	exists, err = r.generatedQuerier.CheckValidPreparationVesselExistence(ctx, r.db, validPreparationVesselID)
+	exists, err = q.generatedQuerier.CheckValidPreparationVesselExistence(ctx, q.db, validPreparationVesselID)
 	if err != nil {
 		return false, observability.PrepareError(err, span, "performing valid preparation vessel existence check")
 	}
@@ -37,8 +37,8 @@ func (r *repository) ValidPreparationVesselExists(ctx context.Context, validPrep
 }
 
 // GetValidPreparationVessel fetches a valid preparation vessel from the database.
-func (r *repository) GetValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*mealplanning.ValidPreparationVessel, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*mealplanning.ValidPreparationVessel, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if validPreparationVesselID == "" {
@@ -46,7 +46,7 @@ func (r *repository) GetValidPreparationVessel(ctx context.Context, validPrepara
 	}
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
-	result, err := r.generatedQuerier.GetValidPreparationVessel(ctx, r.db, validPreparationVesselID)
+	result, err := q.generatedQuerier.GetValidPreparationVessel(ctx, q.db, validPreparationVesselID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "reading valid preparation vessel from database")
 	}
@@ -127,11 +127,11 @@ func (r *repository) GetValidPreparationVessel(ctx context.Context, validPrepara
 }
 
 // GetValidPreparationVessels fetches a list of valid preparation vessels from the database that meet a particular filter.
-func (r *repository) GetValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidPreparationVessels(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -144,7 +144,7 @@ func (r *repository) GetValidPreparationVessels(ctx context.Context, filter *fil
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := r.generatedQuerier.GetValidPreparationVessels(ctx, r.db, &generated.GetValidPreparationVesselsParams{
+	results, err := q.generatedQuerier.GetValidPreparationVessels(ctx, q.db, &generated.GetValidPreparationVesselsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -246,11 +246,11 @@ func (r *repository) GetValidPreparationVessels(ctx context.Context, filter *fil
 }
 
 // GetValidPreparationVesselsForPreparation fetches a list of valid preparation vessels from the database that meet a particular filter.
-func (r *repository) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if preparationID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -269,7 +269,7 @@ func (r *repository) GetValidPreparationVesselsForPreparation(ctx context.Contex
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	results, err := r.generatedQuerier.GetValidPreparationVesselsForPreparation(ctx, r.db, &generated.GetValidPreparationVesselsForPreparationParams{
+	results, err := q.generatedQuerier.GetValidPreparationVesselsForPreparation(ctx, q.db, &generated.GetValidPreparationVesselsForPreparationParams{
 		ID:              preparationID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -372,11 +372,11 @@ func (r *repository) GetValidPreparationVesselsForPreparation(ctx context.Contex
 }
 
 // GetValidPreparationVesselsForVessel fetches a list of valid preparation vessels from the database that meet a particular filter.
-func (r *repository) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[mealplanning.ValidPreparationVessel], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if vesselID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -394,7 +394,7 @@ func (r *repository) GetValidPreparationVesselsForVessel(ctx context.Context, ve
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetValidPreparationVesselsForVessel(ctx, r.db, &generated.GetValidPreparationVesselsForVesselParams{
+	results, err := q.generatedQuerier.GetValidPreparationVesselsForVessel(ctx, q.db, &generated.GetValidPreparationVesselsForVesselParams{
 		ID:              vesselID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -497,18 +497,18 @@ func (r *repository) GetValidPreparationVesselsForVessel(ctx context.Context, ve
 }
 
 // CreateValidPreparationVessel creates a valid preparation vessel in the database.
-func (r *repository) CreateValidPreparationVessel(ctx context.Context, input *mealplanning.ValidPreparationVesselDatabaseCreationInput) (*mealplanning.ValidPreparationVessel, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateValidPreparationVessel(ctx context.Context, input *mealplanning.ValidPreparationVesselDatabaseCreationInput) (*mealplanning.ValidPreparationVessel, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.ValidPreparationVesselIDKey, input.ID)
+	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, input.ID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, input.ID)
 
 	// create the valid preparation vessel.
-	if err := r.generatedQuerier.CreateValidPreparationVessel(ctx, r.db, &generated.CreateValidPreparationVesselParams{
+	if err := q.generatedQuerier.CreateValidPreparationVessel(ctx, q.db, &generated.CreateValidPreparationVesselParams{
 		ID:                 input.ID,
 		Notes:              input.Notes,
 		ValidPreparationID: input.ValidPreparationID,
@@ -522,10 +522,10 @@ func (r *repository) CreateValidPreparationVessel(ctx context.Context, input *me
 		Notes:       input.Notes,
 		Preparation: mealplanning.ValidPreparation{ID: input.ValidPreparationID},
 		Vessel:      mealplanning.ValidVessel{ID: input.ValidVesselID},
-		CreatedAt:   r.CurrentTime(),
+		CreatedAt:   q.CurrentTime(),
 	}
 
-	preparation, err := r.GetValidPreparation(ctx, input.ValidPreparationID)
+	preparation, err := q.GetValidPreparation(ctx, input.ValidPreparationID)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation for valid preparation vessel")
@@ -534,7 +534,7 @@ func (r *repository) CreateValidPreparationVessel(ctx context.Context, input *me
 		x.Preparation = *preparation
 	}
 
-	vessel, err := r.GetValidVessel(ctx, input.ValidVesselID)
+	vessel, err := q.GetValidVessel(ctx, input.ValidVesselID)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid vessel for valid preparation vessel")
@@ -549,17 +549,17 @@ func (r *repository) CreateValidPreparationVessel(ctx context.Context, input *me
 }
 
 // UpdateValidPreparationVessel updates a particular valid preparation vessel.
-func (r *repository) UpdateValidPreparationVessel(ctx context.Context, updated *mealplanning.ValidPreparationVessel) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateValidPreparationVessel(ctx context.Context, updated *mealplanning.ValidPreparationVessel) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.ValidPreparationVesselIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, updated.ID)
 
-	if _, err := r.generatedQuerier.UpdateValidPreparationVessel(ctx, r.db, &generated.UpdateValidPreparationVesselParams{
+	if _, err := q.generatedQuerier.UpdateValidPreparationVessel(ctx, q.db, &generated.UpdateValidPreparationVesselParams{
 		Notes:              updated.Notes,
 		ValidPreparationID: updated.Preparation.ID,
 		ValidVesselID:      updated.Vessel.ID,
@@ -574,17 +574,17 @@ func (r *repository) UpdateValidPreparationVessel(ctx context.Context, updated *
 }
 
 // ArchiveValidPreparationVessel archives a valid preparation vessel from the database by its ID.
-func (r *repository) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if validPreparationVesselID == "" {
 		return database.ErrInvalidIDProvided
 	}
-	logger := r.logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
+	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveValidPreparationVessel(ctx, r.db, validPreparationVesselID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidPreparationVessel(ctx, q.db, validPreparationVesselID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}

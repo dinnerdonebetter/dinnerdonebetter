@@ -28,7 +28,7 @@ const (
 	authHeaderName = "Authorization"
 	tokenPrefix    = "Bearer "
 
-	// TODO: organize this so that the API client gets the same source.
+	// TODO: organize this so that the API client gets the same source
 	zuckModeUserHeader    = "X-Zuck-Mode-User"
 	zuckModeAccountHeader = "X-Zuck-Mode-Account"
 )
@@ -131,9 +131,9 @@ func (s *AuthInterceptor) extractSessionContextDataFromOAuth2(ctx context.Contex
 		return nil, fmt.Errorf("loading access token: %w", err)
 	}
 	if userID := token.GetUserID(); userID != "" {
-		sessionCtxData, seshErr := s.identityRepository.BuildSessionContextDataForUser(ctx, userID)
-		if seshErr != nil {
-			return nil, observability.PrepareAndLogError(seshErr, logger, span, "fetching user info for cookie")
+		sessionCtxData, err := s.identityRepository.BuildSessionContextDataForUser(ctx, userID)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "fetching user info for cookie")
 		}
 
 		zuckUserID, zuckAccountID, zuckErr := s.determineZuckMode(ctx, metadata, sessionCtxData)

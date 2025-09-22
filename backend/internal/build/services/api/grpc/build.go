@@ -27,6 +27,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
 	auditrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
+	dataprivacysrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/dataprivacy"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
@@ -59,28 +60,29 @@ func Build(
 ) (*GRPCService, error) {
 	wire.Build(ConfigProviders,
 		// core
-		metricscfg.MetricsProviders,
+		metricscfg.Providers,
 		loggingcfg.ProvidersLogConfig,
 		tracingcfg.ProvidersTracingConfig,
 		msgconfig.MessageQueueProviders,
 		authentication.AuthProviders,
-		sessions.SessionProviders,
-		observability.O11yProviders,
+		sessions.Providers,
+		observability.Providers,
 		random.ProvidersRandom,
-		postgres.ProvidersPostgres,
+		postgres.Providers,
 		grpc.ProvidersGRPC,
-		qrcodes.QRCodeProviders,
+		qrcodes.Providers,
 		tokenscfg.ProvidersTokenIssuers,
-		interceptors.InterceptorProviders,
+		interceptors.Providers,
 		// repos
-		auditrepo.AuditRepoProviders,
-		authrepo.AuthRepoProviders,
-		identityrepo.IDRepoProviders,
-		notificationsrepo.NotifsRepoProviders,
-		settingsrepo.SettingRepoProviders,
-		webhooksrepo.WebhookRepoProviders,
-		oauthrepo.OAuthRepoProviders,
-		mealplanningrepo.MPRepoProviders,
+		auditrepo.Providers,
+		authrepo.Providers,
+		dataprivacysrepo.Providers,
+		identityrepo.Providers,
+		notificationsrepo.Providers,
+		settingsrepo.Providers,
+		webhooksrepo.Providers,
+		oauthrepo.Providers,
+		mealplanningrepo.Providers,
 		// services
 		authhttpsvc.Providers,
 		auditsvc.Providers,

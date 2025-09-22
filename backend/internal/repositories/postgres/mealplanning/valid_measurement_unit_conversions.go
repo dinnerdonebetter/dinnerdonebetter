@@ -18,11 +18,11 @@ var (
 )
 
 // ValidMeasurementUnitConversionExists fetches whether a valid measurement conversion exists from the database.
-func (r *repository) ValidMeasurementUnitConversionExists(ctx context.Context, validMeasurementUnitConversionID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ValidMeasurementUnitConversionExists(ctx context.Context, validMeasurementUnitConversionID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validMeasurementUnitConversionID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -30,7 +30,7 @@ func (r *repository) ValidMeasurementUnitConversionExists(ctx context.Context, v
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
-	result, err := r.generatedQuerier.CheckValidMeasurementUnitConversionExistence(ctx, r.db, validMeasurementUnitConversionID)
+	result, err := q.generatedQuerier.CheckValidMeasurementUnitConversionExistence(ctx, q.db, validMeasurementUnitConversionID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid measurement conversion existence check")
 	}
@@ -39,11 +39,11 @@ func (r *repository) ValidMeasurementUnitConversionExists(ctx context.Context, v
 }
 
 // GetValidMeasurementUnitConversion fetches a valid measurement conversion from the database.
-func (r *repository) GetValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) (*mealplanning.ValidMeasurementUnitConversion, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) (*mealplanning.ValidMeasurementUnitConversion, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validMeasurementUnitConversionID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -51,7 +51,7 @@ func (r *repository) GetValidMeasurementUnitConversion(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
-	result, err := r.generatedQuerier.GetValidMeasurementUnitConversion(ctx, r.db, validMeasurementUnitConversionID)
+	result, err := q.generatedQuerier.GetValidMeasurementUnitConversion(ctx, q.db, validMeasurementUnitConversionID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement conversion")
 	}
@@ -143,11 +143,11 @@ func (r *repository) GetValidMeasurementUnitConversion(ctx context.Context, vali
 }
 
 // GetValidMeasurementUnitConversionsFromUnit fetches a valid measurement conversions from a given measurement unit.
-func (r *repository) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -155,7 +155,7 @@ func (r *repository) GetValidMeasurementUnitConversionsFromUnit(ctx context.Cont
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	results, err := r.generatedQuerier.GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx, r.db, validMeasurementUnitID)
+	results, err := q.generatedQuerier.GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx, q.db, validMeasurementUnitID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "querying for valid measurement conversions")
 	}
@@ -248,11 +248,11 @@ func (r *repository) GetValidMeasurementUnitConversionsFromUnit(ctx context.Cont
 }
 
 // GetValidMeasurementUnitConversionsToUnit fetches a valid measurement conversions to a given measurement unit.
-func (r *repository) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*mealplanning.ValidMeasurementUnitConversion, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -260,7 +260,7 @@ func (r *repository) GetValidMeasurementUnitConversionsToUnit(ctx context.Contex
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	results, err := r.generatedQuerier.GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx, r.db, validMeasurementUnitID)
+	results, err := q.generatedQuerier.GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx, q.db, validMeasurementUnitID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "querying for valid measurement conversions")
 	}
@@ -353,18 +353,18 @@ func (r *repository) GetValidMeasurementUnitConversionsToUnit(ctx context.Contex
 }
 
 // CreateValidMeasurementUnitConversion creates a valid measurement conversion in the database.
-func (r *repository) CreateValidMeasurementUnitConversion(ctx context.Context, input *mealplanning.ValidMeasurementUnitConversionDatabaseCreationInput) (*mealplanning.ValidMeasurementUnitConversion, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, input *mealplanning.ValidMeasurementUnitConversionDatabaseCreationInput) (*mealplanning.ValidMeasurementUnitConversion, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := r.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, input.ID)
+	logger := q.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, input.ID)
 
 	// create the valid measurement conversion.
-	if err := r.generatedQuerier.CreateValidMeasurementUnitConversion(ctx, r.db, &generated.CreateValidMeasurementUnitConversionParams{
+	if err := q.generatedQuerier.CreateValidMeasurementUnitConversion(ctx, q.db, &generated.CreateValidMeasurementUnitConversionParams{
 		ID:                input.ID,
 		FromUnit:          input.From,
 		ToUnit:            input.To,
@@ -381,11 +381,11 @@ func (r *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 		To:        mealplanning.ValidMeasurementUnit{ID: input.To},
 		Modifier:  input.Modifier,
 		Notes:     input.Notes,
-		CreatedAt: r.CurrentTime(),
+		CreatedAt: q.CurrentTime(),
 	}
 
 	if input.OnlyForIngredient != nil {
-		ingredient, err := r.GetValidIngredient(ctx, *input.OnlyForIngredient)
+		ingredient, err := q.GetValidIngredient(ctx, *input.OnlyForIngredient)
 		if err != nil {
 			// basically impossible for this ingredient happen and not error out earlier
 			return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid preparation for valid preparation instrument")
@@ -395,7 +395,7 @@ func (r *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 		}
 	}
 
-	to, err := r.GetValidMeasurementUnit(ctx, input.To)
+	to, err := q.GetValidMeasurementUnit(ctx, input.To)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching to valid measurement unit for valid measurement unit conversion")
@@ -404,7 +404,7 @@ func (r *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 		x.To = *to
 	}
 
-	from, err := r.GetValidMeasurementUnit(ctx, input.From)
+	from, err := q.GetValidMeasurementUnit(ctx, input.From)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching from valid measurement unit for valid measurement unit conversion")
@@ -420,15 +420,15 @@ func (r *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 }
 
 // UpdateValidMeasurementUnitConversion updates a particular valid measurement conversion.
-func (r *repository) UpdateValidMeasurementUnitConversion(ctx context.Context, updated *mealplanning.ValidMeasurementUnitConversion) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateValidMeasurementUnitConversion(ctx context.Context, updated *mealplanning.ValidMeasurementUnitConversion) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
 
-	logger := r.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, updated.ID)
 
 	var ingredientID *string
@@ -436,7 +436,7 @@ func (r *repository) UpdateValidMeasurementUnitConversion(ctx context.Context, u
 		ingredientID = &updated.OnlyForIngredient.ID
 	}
 
-	if _, err := r.generatedQuerier.UpdateValidMeasurementUnitConversion(ctx, r.db, &generated.UpdateValidMeasurementUnitConversionParams{
+	if _, err := q.generatedQuerier.UpdateValidMeasurementUnitConversion(ctx, q.db, &generated.UpdateValidMeasurementUnitConversionParams{
 		FromUnit:          updated.From.ID,
 		ToUnit:            updated.To.ID,
 		OnlyForIngredient: database.NullStringFromStringPointer(ingredientID),
@@ -453,11 +453,11 @@ func (r *repository) UpdateValidMeasurementUnitConversion(ctx context.Context, u
 }
 
 // ArchiveValidMeasurementUnitConversion archives a valid measurement conversion from the database by its ID.
-func (r *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validMeasurementUnitConversionID == "" {
 		return database.ErrInvalidIDProvided
@@ -465,7 +465,7 @@ func (r *repository) ArchiveValidMeasurementUnitConversion(ctx context.Context, 
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveValidMeasurementUnitConversion(ctx, r.db, validMeasurementUnitConversionID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidMeasurementUnitConversion(ctx, q.db, validMeasurementUnitConversionID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion")
 	}

@@ -18,11 +18,11 @@ var (
 )
 
 // MealPlanGroceryListItemExists fetches whether a meal plan grocery list exists from the database.
-func (r *repository) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -36,7 +36,7 @@ func (r *repository) MealPlanGroceryListItemExists(ctx context.Context, mealPlan
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
-	result, err := r.generatedQuerier.CheckMealPlanGroceryListItemExistence(ctx, r.db, &generated.CheckMealPlanGroceryListItemExistenceParams{
+	result, err := q.generatedQuerier.CheckMealPlanGroceryListItemExistence(ctx, q.db, &generated.CheckMealPlanGroceryListItemExistenceParams{
 		MealPlanID:                mealPlanID,
 		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
 	})
@@ -47,11 +47,11 @@ func (r *repository) MealPlanGroceryListItemExists(ctx context.Context, mealPlan
 	return result, nil
 }
 
-func (r *repository) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItem *mealplanning.MealPlanGroceryListItem) (*mealplanning.MealPlanGroceryListItem, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItem *mealplanning.MealPlanGroceryListItem) (*mealplanning.MealPlanGroceryListItem, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanGroceryListItem == nil {
 		return nil, database.ErrNilInputProvided
@@ -59,20 +59,20 @@ func (r *repository) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPl
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItem.ID)
 
-	validIngredient, err := r.GetValidIngredient(ctx, mealPlanGroceryListItem.Ingredient.ID)
+	validIngredient, err := q.GetValidIngredient(ctx, mealPlanGroceryListItem.Ingredient.ID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching grocery list item ingredient")
 	}
 	mealPlanGroceryListItem.Ingredient = *validIngredient
 
-	validMeasurementUnit, err := r.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.MeasurementUnit.ID)
+	validMeasurementUnit, err := q.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.MeasurementUnit.ID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching grocery list item measurement unit")
 	}
 	mealPlanGroceryListItem.MeasurementUnit = *validMeasurementUnit
 
 	if mealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
-		purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := r.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
+		purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
 		if getPurchasedMeasurementUnitErr != nil {
 			return nil, observability.PrepareAndLogError(getPurchasedMeasurementUnitErr, logger, span, "fetching grocery list item purchased measurement unit")
 		}
@@ -83,11 +83,11 @@ func (r *repository) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPl
 }
 
 // GetMealPlanGroceryListItem fetches a meal plan grocery list from the database.
-func (r *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*mealplanning.MealPlanGroceryListItem, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*mealplanning.MealPlanGroceryListItem, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -101,7 +101,7 @@ func (r *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
-	result, err := r.generatedQuerier.GetMealPlanGroceryListItem(ctx, r.db, &generated.GetMealPlanGroceryListItemParams{
+	result, err := q.generatedQuerier.GetMealPlanGroceryListItem(ctx, q.db, &generated.GetMealPlanGroceryListItemParams{
 		MealPlanID:                mealPlanID,
 		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
 	})
@@ -190,7 +190,7 @@ func (r *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 	}
 
 	if mealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
-		purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := r.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
+		purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
 		if getPurchasedMeasurementUnitErr != nil {
 			return nil, observability.PrepareAndLogError(getPurchasedMeasurementUnitErr, logger, span, "fetching grocery list item purchased measurement unit")
 		}
@@ -201,11 +201,11 @@ func (r *repository) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 }
 
 // GetMealPlanGroceryListItemsForMealPlan fetches a list of meal plan grocery lists from the database that meet a particular filter.
-func (r *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) ([]*mealplanning.MealPlanGroceryListItem, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) ([]*mealplanning.MealPlanGroceryListItem, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -213,7 +213,7 @@ func (r *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
-	results, err := r.generatedQuerier.GetMealPlanGroceryListItemsForMealPlan(ctx, r.db, mealPlanID)
+	results, err := q.generatedQuerier.GetMealPlanGroceryListItemsForMealPlan(ctx, q.db, mealPlanID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan grocery list items list retrieval query")
 	}
@@ -300,7 +300,7 @@ func (r *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 		}
 
 		if mealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
-			purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := r.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
+			purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
 			if getPurchasedMeasurementUnitErr != nil {
 				return nil, observability.PrepareAndLogError(getPurchasedMeasurementUnitErr, logger, span, "fetching grocery list item purchased measurement unit")
 			}
@@ -311,7 +311,7 @@ func (r *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 	}
 
 	for i := range x {
-		x[i], err = r.fleshOutMealPlanGroceryListItem(ctx, x[i])
+		x[i], err = q.fleshOutMealPlanGroceryListItem(ctx, x[i])
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "augmenting grocery list item data")
 		}
@@ -321,18 +321,18 @@ func (r *repository) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 }
 
 // createMealPlanGroceryListItem creates a meal plan grocery list in the database.
-func (r *repository) createMealPlanGroceryListItem(ctx context.Context, querier database.SQLQueryExecutor, input *mealplanning.MealPlanGroceryListItemDatabaseCreationInput) (*mealplanning.MealPlanGroceryListItem, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) createMealPlanGroceryListItem(ctx context.Context, querier database.SQLQueryExecutor, input *mealplanning.MealPlanGroceryListItemDatabaseCreationInput) (*mealplanning.MealPlanGroceryListItem, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 
-	logger := r.logger.WithValue(keys.MealPlanGroceryListItemIDKey, input.ID)
+	logger := q.logger.WithValue(keys.MealPlanGroceryListItemIDKey, input.ID)
 
 	// create the meal plan grocery list.
-	if err := r.generatedQuerier.CreateMealPlanGroceryListItem(ctx, querier, &generated.CreateMealPlanGroceryListItemParams{
+	if err := q.generatedQuerier.CreateMealPlanGroceryListItem(ctx, querier, &generated.CreateMealPlanGroceryListItemParams{
 		ID:                       input.ID,
 		BelongsToMealPlan:        input.BelongsToMealPlan,
 		ValidIngredient:          input.ValidIngredientID,
@@ -363,7 +363,7 @@ func (r *repository) createMealPlanGroceryListItem(ctx context.Context, querier 
 		PurchasePrice:     input.PurchasePrice,
 		StatusExplanation: input.StatusExplanation,
 		Status:            input.Status,
-		CreatedAt:         r.CurrentTime(),
+		CreatedAt:         q.CurrentTime(),
 	}
 
 	if input.PurchasedMeasurementUnitID != nil {
@@ -377,19 +377,19 @@ func (r *repository) createMealPlanGroceryListItem(ctx context.Context, querier 
 }
 
 // CreateMealPlanGroceryListItem creates a meal plan grocery list in the database.
-func (r *repository) CreateMealPlanGroceryListItem(ctx context.Context, input *mealplanning.MealPlanGroceryListItemDatabaseCreationInput) (*mealplanning.MealPlanGroceryListItem, error) {
-	return r.createMealPlanGroceryListItem(ctx, r.db, input)
+func (q *repository) CreateMealPlanGroceryListItem(ctx context.Context, input *mealplanning.MealPlanGroceryListItemDatabaseCreationInput) (*mealplanning.MealPlanGroceryListItem, error) {
+	return q.createMealPlanGroceryListItem(ctx, q.db, input)
 }
 
 // UpdateMealPlanGroceryListItem updates a particular meal plan grocery list.
-func (r *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated *mealplanning.MealPlanGroceryListItem) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated *mealplanning.MealPlanGroceryListItem) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.MealPlanGroceryListItemIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.MealPlanGroceryListItemIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, updated.ID)
 
 	var purchasedMeasurementUnitID *string
@@ -397,7 +397,7 @@ func (r *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated 
 		purchasedMeasurementUnitID = &updated.PurchasedMeasurementUnit.ID
 	}
 
-	if _, err := r.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, r.db, &generated.UpdateMealPlanGroceryListItemParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, q.db, &generated.UpdateMealPlanGroceryListItemParams{
 		BelongsToMealPlan:        updated.BelongsToMealPlan,
 		ValidIngredient:          updated.Ingredient.ID,
 		ValidMeasurementUnit:     updated.MeasurementUnit.ID,
@@ -420,11 +420,11 @@ func (r *repository) UpdateMealPlanGroceryListItem(ctx context.Context, updated 
 }
 
 // ArchiveMealPlanGroceryListItem archives a meal plan grocery list from the database by its ID.
-func (r *repository) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if mealPlanGroceryListItemID == "" {
 		return database.ErrInvalidIDProvided
@@ -432,7 +432,7 @@ func (r *repository) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPla
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveMealPlanGroceryListItem(ctx, r.db, mealPlanGroceryListItemID)
+	rowsAffected, err := q.generatedQuerier.ArchiveMealPlanGroceryListItem(ctx, q.db, mealPlanGroceryListItemID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan grocery list")
 	}

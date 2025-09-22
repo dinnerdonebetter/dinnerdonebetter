@@ -18,11 +18,11 @@ var (
 )
 
 // ValidMeasurementUnitExists fetches whether a valid measurement unit exists from the database.
-func (r *repository) ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (exists bool, err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (exists bool, err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
 		return false, database.ErrInvalidIDProvided
@@ -30,7 +30,7 @@ func (r *repository) ValidMeasurementUnitExists(ctx context.Context, validMeasur
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	result, err := r.generatedQuerier.CheckValidMeasurementUnitExistence(ctx, r.db, validMeasurementUnitID)
+	result, err := q.generatedQuerier.CheckValidMeasurementUnitExistence(ctx, q.db, validMeasurementUnitID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid measurement unit existence check")
 	}
@@ -39,11 +39,11 @@ func (r *repository) ValidMeasurementUnitExists(ctx context.Context, validMeasur
 }
 
 // GetValidMeasurementUnit fetches a valid measurement unit from the database.
-func (r *repository) GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
 		return nil, database.ErrInvalidIDProvided
@@ -51,7 +51,7 @@ func (r *repository) GetValidMeasurementUnit(ctx context.Context, validMeasureme
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	result, err := r.generatedQuerier.GetValidMeasurementUnit(ctx, r.db, validMeasurementUnitID)
+	result, err := q.generatedQuerier.GetValidMeasurementUnit(ctx, q.db, validMeasurementUnitID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid measurement unit")
 	}
@@ -76,11 +76,11 @@ func (r *repository) GetValidMeasurementUnit(ctx context.Context, validMeasureme
 }
 
 // GetRandomValidMeasurementUnit fetches a valid measurement unit from the database.
-func (r *repository) GetRandomValidMeasurementUnit(ctx context.Context) (*types.ValidMeasurementUnit, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetRandomValidMeasurementUnit(ctx context.Context) (*types.ValidMeasurementUnit, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	result, err := r.generatedQuerier.GetRandomValidMeasurementUnit(ctx, r.db)
+	result, err := q.generatedQuerier.GetRandomValidMeasurementUnit(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning valid measurement unit")
 	}
@@ -105,11 +105,11 @@ func (r *repository) GetRandomValidMeasurementUnit(ctx context.Context) (*types.
 }
 
 // SearchForValidMeasurementUnits fetches a valid measurement unit from the database.
-func (r *repository) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if query == "" {
 		return nil, database.ErrEmptyInputProvided
@@ -117,7 +117,7 @@ func (r *repository) SearchForValidMeasurementUnits(ctx context.Context, query s
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, query)
 
-	results, err := r.generatedQuerier.SearchForValidMeasurementUnits(ctx, r.db, query)
+	results, err := q.generatedQuerier.SearchForValidMeasurementUnits(ctx, q.db, query)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}
@@ -145,11 +145,11 @@ func (r *repository) SearchForValidMeasurementUnits(ctx context.Context, query s
 }
 
 // ValidMeasurementUnitsForIngredientID fetches a valid measurement unit from the database.
-func (r *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidMeasurementUnit], error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -167,7 +167,7 @@ func (r *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, v
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
-	results, err := r.generatedQuerier.SearchValidMeasurementUnitsByIngredientID(ctx, r.db, &generated.SearchValidMeasurementUnitsByIngredientIDParams{
+	results, err := q.generatedQuerier.SearchValidMeasurementUnitsByIngredientID(ctx, q.db, &generated.SearchValidMeasurementUnitsByIngredientIDParams{
 		CreatedBefore:     database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:      database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:     database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -207,11 +207,11 @@ func (r *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, v
 }
 
 // GetValidMeasurementUnits fetches a list of valid measurement units from the database that meet a particular filter.
-func (r *repository) GetValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidMeasurementUnit], err error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidMeasurementUnits(ctx context.Context, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[types.ValidMeasurementUnit], err error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
@@ -223,7 +223,7 @@ func (r *repository) GetValidMeasurementUnits(ctx context.Context, filter *filte
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := r.generatedQuerier.GetValidMeasurementUnits(ctx, r.db, &generated.GetValidMeasurementUnitsParams{
+	results, err := q.generatedQuerier.GetValidMeasurementUnits(ctx, q.db, &generated.GetValidMeasurementUnitsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -262,13 +262,13 @@ func (r *repository) GetValidMeasurementUnits(ctx context.Context, filter *filte
 }
 
 // GetValidMeasurementUnitsWithIDs fetches a list of valid measurement unit from the database that meet a particular filter.
-func (r *repository) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*types.ValidMeasurementUnit, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*types.ValidMeasurementUnit, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
-	results, err := r.generatedQuerier.GetValidMeasurementUnitsWithIDs(ctx, r.db, ids)
+	results, err := q.generatedQuerier.GetValidMeasurementUnitsWithIDs(ctx, q.db, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement unit id list retrieval query")
 	}
@@ -296,11 +296,11 @@ func (r *repository) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []
 }
 
 // GetValidMeasurementUnitIDsThatNeedSearchIndexing fetches a list of valid measurement units from the database that meet a particular filter.
-func (r *repository) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	results, err := r.generatedQuerier.GetValidMeasurementUnitsNeedingIndexing(ctx, r.db)
+	results, err := q.generatedQuerier.GetValidMeasurementUnitsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid measurement units list retrieval query")
 	}
@@ -309,18 +309,18 @@ func (r *repository) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx contex
 }
 
 // CreateValidMeasurementUnit creates a valid measurement unit in the database.
-func (r *repository) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if input == nil {
 		return nil, database.ErrNilInputProvided
 	}
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, input.ID)
-	logger := r.logger.WithValue(keys.ValidMeasurementUnitIDKey, input.ID)
+	logger := q.logger.WithValue(keys.ValidMeasurementUnitIDKey, input.ID)
 
 	// create the valid measurement unit.
-	if err := r.generatedQuerier.CreateValidMeasurementUnit(ctx, r.db, &generated.CreateValidMeasurementUnitParams{
+	if err := q.generatedQuerier.CreateValidMeasurementUnit(ctx, q.db, &generated.CreateValidMeasurementUnitParams{
 		Name:        input.Name,
 		Description: input.Description,
 		IconPath:    input.IconPath,
@@ -346,7 +346,7 @@ func (r *repository) CreateValidMeasurementUnit(ctx context.Context, input *type
 		Imperial:    input.Imperial,
 		Slug:        input.Slug,
 		PluralName:  input.PluralName,
-		CreatedAt:   r.CurrentTime(),
+		CreatedAt:   q.CurrentTime(),
 	}
 
 	logger.Info("valid measurement unit created")
@@ -355,17 +355,17 @@ func (r *repository) CreateValidMeasurementUnit(ctx context.Context, input *type
 }
 
 // UpdateValidMeasurementUnit updates a particular valid measurement unit.
-func (r *repository) UpdateValidMeasurementUnit(ctx context.Context, updated *types.ValidMeasurementUnit) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) UpdateValidMeasurementUnit(ctx context.Context, updated *types.ValidMeasurementUnit) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if updated == nil {
 		return database.ErrNilInputProvided
 	}
-	logger := r.logger.WithValue(keys.ValidMeasurementUnitIDKey, updated.ID)
+	logger := q.logger.WithValue(keys.ValidMeasurementUnitIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, updated.ID)
 
-	if _, err := r.generatedQuerier.UpdateValidMeasurementUnit(ctx, r.db, &generated.UpdateValidMeasurementUnitParams{
+	if _, err := q.generatedQuerier.UpdateValidMeasurementUnit(ctx, q.db, &generated.UpdateValidMeasurementUnitParams{
 		Name:        updated.Name,
 		Description: updated.Description,
 		IconPath:    updated.IconPath,
@@ -386,11 +386,11 @@ func (r *repository) UpdateValidMeasurementUnit(ctx context.Context, updated *ty
 }
 
 // MarkValidMeasurementUnitAsIndexed updates a particular valid measurement unit's last_indexed_at value.
-func (r *repository) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
 		return database.ErrInvalidIDProvided
@@ -398,7 +398,7 @@ func (r *repository) MarkValidMeasurementUnitAsIndexed(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	if _, err := r.generatedQuerier.UpdateValidMeasurementUnitLastIndexedAt(ctx, r.db, validMeasurementUnitID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidMeasurementUnitLastIndexedAt(ctx, q.db, validMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid measurement unit as indexed")
 	}
 
@@ -408,11 +408,11 @@ func (r *repository) MarkValidMeasurementUnitAsIndexed(ctx context.Context, vali
 }
 
 // ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its ID.
-func (r *repository) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
-	ctx, span := r.tracer.StartSpan(ctx)
+func (q *repository) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
 		return database.ErrInvalidIDProvided
@@ -420,7 +420,7 @@ func (r *repository) ArchiveValidMeasurementUnit(ctx context.Context, validMeasu
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
-	rowsAffected, err := r.generatedQuerier.ArchiveValidMeasurementUnit(ctx, r.db, validMeasurementUnitID)
+	rowsAffected, err := q.generatedQuerier.ArchiveValidMeasurementUnit(ctx, q.db, validMeasurementUnitID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
 	}

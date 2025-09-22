@@ -26,10 +26,10 @@ func Build(
 	wire.Build(
 		mealplangrocerylistinitializer.ProvidersMealPlanGroceryListInitializer,
 		tracingcfg.ProvidersTracingConfig,
-		observability.O11yProviders,
+		observability.Providers,
 		msgconfig.MessageQueueProviders,
 		loggingcfg.ProvidersLogConfig,
-		metricscfg.MetricsProviders,
+		metricscfg.Providers,
 		grocerylistpreparation.ProvidersGroceryListPreparation,
 		ConfigProviders,
 	)
