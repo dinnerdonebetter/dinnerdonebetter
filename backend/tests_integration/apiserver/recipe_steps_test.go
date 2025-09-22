@@ -30,7 +30,7 @@ func checkRecipeStepEquality(t *testing.T, index int, expected, actual *mealplan
 	checkRecipeStepVesselSliceEquality(t, index, expected.Vessels, actual.Vessels)
 	checkRecipeStepCompletionConditionSliceEquality(t, index, expected.CompletionConditions, actual.CompletionConditions)
 	checkRecipeStepIngredientSliceEquality(t, index, expected.Ingredients, actual.Ingredients)
-	checkValidPreparationEquality(t, index, expected.Preparation, actual.Preparation)
+	checkValidPreparationEquality(t, index, &expected.Preparation, &actual.Preparation)
 	assert.Equal(t, expected.Index, actual.Index, "expected recipe step %d", index)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected recipe step %d", index)
 	assert.Equal(t, expected.StartTimerAutomatically, actual.StartTimerAutomatically, "expected recipe step %d", index)

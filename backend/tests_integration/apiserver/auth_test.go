@@ -347,24 +347,19 @@ func TestAuth_RequestingPasswordReset(T *testing.T) {
 // TODO section below this line
 
 /*
-
 somewhere here we should validate that a user can't just pretend to be an admin via OAuth somehow?
 I feel like that's now how it presently works anyway, but the whole thing is haphazard and fucked up, so
 just shore all of it iup.
-
 */
 
 func TestAuth_InvalidateToken(T *testing.T) {
 	T.Parallel()
 
 	T.Run("happy path", func(t *testing.T) {
-
+		t.Parallel()
 		/*
-
 			there's currently no logout mechanism surfaced in the client, but there should be, and it should be tested
-
 		*/
-
 		t.Skipf("TODO")
 	})
 }

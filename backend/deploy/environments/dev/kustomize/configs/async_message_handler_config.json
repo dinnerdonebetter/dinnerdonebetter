@@ -13,45 +13,8 @@
 		"userDataAggregationTopicName": "",
 		"webhookExecutionRequestsTopicName": ""
 	},
-	"email": {
-		"sendgrid": {
-			"apiToken": ""
-		},
-		"mailgun": null,
-		"mailjet": null,
-		"provider": "sendgrid",
-		"circuitBreakerConfig": {
-			"name": "dev_emailer",
-			"circuitBreakerErrorPercentage": 0.5,
-			"circuitBreakerMinimumOccurrenceThreshold": 100
-		}
-	},
-	"analytics": {
-		"segment": {
-			"apiToken": ""
-		},
-		"posthog": null,
-		"rudderstack": null,
-		"provider": "segment",
-		"circuitBreaker": {
-			"name": "dev_analytics",
-			"circuitBreakerErrorPercentage": 0.5,
-			"circuitBreakerMinimumOccurrenceThreshold": 100
-		}
-	},
-	"search": {
-		"algolia": {
-			"appID": "",
-			"writeAPIKey": "",
-			"timeout": 0
-		},
-		"elasticsearch": null,
-		"provider": "algolia",
-		"circuitBreakerConfig": {
-			"name": "dev_text_searcher",
-			"circuitBreakerErrorPercentage": 0.5,
-			"circuitBreakerMinimumOccurrenceThreshold": 100
-		}
+	"encoding": {
+		"contentType": ""
 	},
 	"events": {
 		"consumers": {
@@ -113,9 +76,49 @@
 			"spanCollectionProbability": 1
 		}
 	},
+	"email": {
+		"sendgrid": {
+			"apiToken": ""
+		},
+		"mailgun": null,
+		"mailjet": null,
+		"provider": "sendgrid",
+		"circuitBreakerConfig": {
+			"name": "dev_emailer",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
+	},
+	"analytics": {
+		"segment": {
+			"apiToken": ""
+		},
+		"posthog": null,
+		"rudderstack": null,
+		"provider": "segment",
+		"circuitBreaker": {
+			"name": "dev_analytics",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
+	},
+	"search": {
+		"algolia": {
+			"appID": "",
+			"writeAPIKey": "",
+			"timeout": 0
+		},
+		"elasticsearch": null,
+		"provider": "algolia",
+		"circuitBreakerConfig": {
+			"name": "dev_text_searcher",
+			"circuitBreakerErrorPercentage": 0.5,
+			"circuitBreakerMinimumOccurrenceThreshold": 100
+		}
+	},
 	"database": {
-		"provider": "",
 		"oauth2TokenEncryptionKey": "",
+		"provider": "",
 		"connectionDetails": {
 			"username": "api_db_user",
 			"password": "",
@@ -124,10 +127,11 @@
 			"port": 5432,
 			"disableSSL": false
 		},
+		"migrations": null,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000,
 		"debug": true,
 		"logQueries": true,
-		"runMigrations": true,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000
+		"runMigrations": true
 	}
 }

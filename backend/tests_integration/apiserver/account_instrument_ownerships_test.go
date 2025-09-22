@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 	mealplanningconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
@@ -56,7 +55,7 @@ func TestAccountInstrumentOwnerships_Creating(T *testing.T) {
 		ctx := t.Context()
 
 		creationRequestInput := fakes.BuildFakeAccountInstrumentOwnershipCreationRequestInput()
-		convertedInput := grpcconverters.ConvertAccountInstrumentOwnershipCreationRequestInputToGRPCAccountInstrumentOwnershipCreationRequestInput(creationRequestInput)
+		convertedInput := mealplanningconverters.ConvertAccountInstrumentOwnershipCreationRequestInputToGRPCAccountInstrumentOwnershipCreationRequestInput(creationRequestInput)
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		created, err := c.CreateAccountInstrumentOwnership(ctx, &settingssvc.CreateAccountInstrumentOwnershipRequest{
@@ -73,7 +72,7 @@ func TestAccountInstrumentOwnerships_Creating(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		creationRequestInput := fakes.BuildFakeAccountInstrumentOwnershipCreationRequestInput()
-		convertedInput := grpcconverters.ConvertAccountInstrumentOwnershipCreationRequestInputToGRPCAccountInstrumentOwnershipCreationRequestInput(creationRequestInput)
+		convertedInput := mealplanningconverters.ConvertAccountInstrumentOwnershipCreationRequestInputToGRPCAccountInstrumentOwnershipCreationRequestInput(creationRequestInput)
 		// this is not allowed
 		convertedInput.ValidInstrumentID = ""
 
@@ -100,7 +99,7 @@ func TestAccountInstrumentOwnerships_Reading(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, retrieved)
 
-		converted := grpcconverters.ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(retrieved.Result)
+		converted := mealplanningconverters.ConvertGRPCAccountInstrumentOwnershipToAccountInstrumentOwnership(retrieved.Result)
 
 		assertRoughEquality(t, created, converted, defaultIgnoredFields("ID", "BelongsToAccount", "Instrument")...)
 	})

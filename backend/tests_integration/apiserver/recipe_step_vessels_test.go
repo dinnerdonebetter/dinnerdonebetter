@@ -78,6 +78,7 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 			RecipeStepID:       createdRecipeStepID,
 			RecipeStepVesselID: createdRecipeStepVessel.ID,
 		})
+		require.NoError(t, err)
 
 		createdRecipeStepVessel = converters.ConvertGRPCRecipeStepVesselToRecipeStepVessel(retrievedRecipeStepVesselRes.Result)
 		checkRecipeStepVesselEquality(t, -1, -1, exampleRecipeStepVessel, createdRecipeStepVessel)
@@ -104,6 +105,7 @@ func TestRecipeStepVessels_CompleteLifecycle(T *testing.T) {
 			RecipeStepID:       createdRecipeStepID,
 			RecipeStepVesselID: createdRecipeStepVessel.ID,
 		})
+		require.NoError(t, err)
 
 		createdRecipeStepVessel = converters.ConvertGRPCRecipeStepVesselToRecipeStepVessel(retrievedRecipeStepVesselRes.Result)
 		checkRecipeStepVesselEquality(t, -1, -1, exampleRecipeStepVessel, createdRecipeStepVessel)
@@ -338,6 +340,5 @@ func TestRecipeStepVessels_Listing(T *testing.T) {
 
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
 		assert.NoError(t, err)
-
 	})
 }

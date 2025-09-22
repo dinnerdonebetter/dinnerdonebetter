@@ -209,6 +209,5 @@ func TestRecipeStepIngredients_Listing(T *testing.T) {
 
 		_, err = adminClient.ArchiveRecipe(ctx, &mealplanninggrpc.ArchiveRecipeRequest{RecipeID: createdRecipe.ID})
 		assert.NoError(t, err)
-
 	})
 }

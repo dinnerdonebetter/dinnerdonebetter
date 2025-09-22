@@ -41,6 +41,7 @@ func checkRecipePrepTaskEquality(t *testing.T, taskIndex int, expected, actual *
 }
 
 func createRecipePrepTaskForTest(t *testing.T, userClient client.Client) (*mealplanning.Recipe, *mealplanning.RecipePrepTask) {
+	t.Helper()
 	ctx := t.Context()
 
 	_, _, createdRecipe := createRecipeForTest(t, nil)

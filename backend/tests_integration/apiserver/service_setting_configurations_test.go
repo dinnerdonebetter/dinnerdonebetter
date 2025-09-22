@@ -4,11 +4,9 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/settings"
-	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/settings"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/settings/grpc/converters"
 	settingsconverters "github.com/dinnerdonebetter/backend/internal/services/settings/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
@@ -16,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createServiceSettingConfigurationForTest(t *testing.T, clientToUse client.Client) *types.ServiceSettingConfiguration {
+func createServiceSettingConfigurationForTest(t *testing.T, clientToUse client.Client) *settings.ServiceSettingConfiguration {
 	t.Helper()
 	ctx := t.Context()
 
@@ -57,7 +55,7 @@ func TestServiceSettingConfigurations_Creating(T *testing.T) {
 		ctx := t.Context()
 
 		creationRequestInput := fakes.BuildFakeServiceSettingConfigurationCreationRequestInput()
-		convertedInput := grpcconverters.ConvertServiceSettingConfigurationCreationRequestInputToGRPCServiceSettingConfigurationCreationRequestInput(creationRequestInput)
+		convertedInput := settingsconverters.ConvertServiceSettingConfigurationCreationRequestInputToGRPCServiceSettingConfigurationCreationRequestInput(creationRequestInput)
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		created, err := c.CreateServiceSettingConfiguration(ctx, &settingssvc.CreateServiceSettingConfigurationRequest{
@@ -72,7 +70,7 @@ func TestServiceSettingConfigurations_Creating(T *testing.T) {
 		ctx := t.Context()
 
 		creationRequestInput := fakes.BuildFakeServiceSettingConfigurationCreationRequestInput()
-		convertedInput := grpcconverters.ConvertServiceSettingConfigurationCreationRequestInputToGRPCServiceSettingConfigurationCreationRequestInput(creationRequestInput)
+		convertedInput := settingsconverters.ConvertServiceSettingConfigurationCreationRequestInputToGRPCServiceSettingConfigurationCreationRequestInput(creationRequestInput)
 		// this is not allowed
 		convertedInput.Value = ""
 
@@ -90,7 +88,7 @@ func TestServiceSettingConfigurations_Creating(T *testing.T) {
 		_, testClient := createUserAndClientForTest(T)
 
 		creationRequestInput := fakes.BuildFakeServiceSettingConfigurationCreationRequestInput()
-		convertedInput := grpcconverters.ConvertServiceSettingConfigurationCreationRequestInputToGRPCServiceSettingConfigurationCreationRequestInput(creationRequestInput)
+		convertedInput := settingsconverters.ConvertServiceSettingConfigurationCreationRequestInputToGRPCServiceSettingConfigurationCreationRequestInput(creationRequestInput)
 
 		created, err := testClient.CreateServiceSettingConfiguration(ctx, &settingssvc.CreateServiceSettingConfigurationRequest{
 			Input: convertedInput,
@@ -114,7 +112,7 @@ func TestServiceSettingConfigurations_Reading_ByName(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, retrieved)
 
-		converted := grpcconverters.ConvertGRPCServiceSettingConfigurationToServiceSettingConfiguration(retrieved.Result)
+		converted := settingsconverters.ConvertGRPCServiceSettingConfigurationToServiceSettingConfiguration(retrieved.Result)
 
 		assertRoughEquality(t, created, converted, defaultIgnoredFields()...)
 	})

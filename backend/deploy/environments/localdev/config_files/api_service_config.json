@@ -1,4 +1,16 @@
 {
+	"auth": {
+		"sso": {
+			"google": {}
+		},
+		"tokens": {
+			"provider": "",
+			"audience": "",
+			"base64EncodedSigningKey": "",
+			"maxAccessTokenLifetime": 0,
+			"maxRefreshTokenLifetime": 0
+		}
+	},
 	"queues": {
 		"dataChangesTopicName": "data_changes",
 		"outboundEmailsTopicName": "outbound_emails",
@@ -130,14 +142,17 @@
 		},
 		"provider": "chi"
 	},
-	"server": {
+	"http": {
 		"startupDeadline": 60000000000,
 		"httpPort": 8000,
 		"debug": true
 	},
+	"grpc": {
+		"port": 0
+	},
 	"database": {
-		"provider": "",
 		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"provider": "",
 		"connectionDetails": {
 			"username": "dbuser",
 			"password": "hunter2",
@@ -146,18 +161,14 @@
 			"port": 5432,
 			"disableSSL": true
 		},
+		"migrations": null,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000,
 		"debug": true,
 		"logQueries": true,
-		"runMigrations": true,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000
+		"runMigrations": true
 	},
 	"services": {
-		"auditLogEntries": {},
-		"serviceSettingConfigurations": {},
-		"userNotifications": {},
-		"accounts": {},
-		"serviceSettings": {},
 		"users": {
 			"publicMediaURLPrefix": "",
 			"uploads": {
@@ -184,26 +195,21 @@
 				"debug": false
 			}
 		},
-		"recipes": {
-			"mediaUploadPrefix": "https://example.website.lol",
+		"mealPlanning": {
+			"mediaUploadPrefix": "",
 			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/uploads"
-					},
-					"bucketName": "recipe_media",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "filesystem"
-				},
-				"debug": true
+				"storageConfig": {},
+				"debug": false
 			},
-			"searchFromDatabase": false
+			"useSearchService": false
 		},
 		"auth": {
 			"tokens": {
 				"provider": "paseto",
 				"audience": "https://api.dinnerdonebetter.dev",
-				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA="
+				"base64EncodedSigningKey": "SEVSRUlTQTMyQ0hBUlNFQ1JFVFdISUNISVNNQURFVVA=",
+				"maxAccessTokenLifetime": 0,
+				"maxRefreshTokenLifetime": 0
 			},
 			"sso": {
 				"google": {
@@ -224,18 +230,6 @@
 		},
 		"oauth2Clients": {
 			"creationEnabled": false
-		},
-		"meals": {
-			"searchFromDatabase": false
-		},
-		"webhooks": {
-			"debug": false
-		},
-		"accountInvitations": {
-			"debug": false
-		},
-		"validEnumerations": {
-			"useSearchService": false
 		}
 	}
 }

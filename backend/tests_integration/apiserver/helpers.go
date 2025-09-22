@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"hash/fnv"
 	"log"
@@ -168,7 +167,7 @@ func buildAuthedGRPCClient(ctx context.Context, token string) client.Client {
 	return c
 }
 
-// Custom insecure OAuth2 credentials that skip security checks
+// Custom insecure OAuth2 credentials that skip security checks.
 type insecureOAuth struct {
 	TokenSource oauth2.TokenSource
 }
@@ -187,9 +186,6 @@ func (i *insecureOAuth) RequireTransportSecurity() bool {
 }
 
 func deriveServerConfig() (*config.APIServiceConfig, error) {
-	wd, _ := os.Getwd()
-	fmt.Println(wd)
-
 	content, err := os.ReadFile(apiConfigurationFilepath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read api configuration file: %w", err)
@@ -346,7 +342,7 @@ func verifyTOTPSecretForUser(ctx context.Context, c client.Client, userID, twoFa
 	return nil
 }
 
-func createClientForUser(ctx context.Context, scopes []string, user *identity.User) (client.Client, error) {
+func createClientForUser(ctx context.Context, user *identity.User) (client.Client, error) {
 	token, err := fetchLoginTokenForUser(ctx, user)
 	if err != nil {
 		return nil, fmt.Errorf("fetching token for user %s: %w", user.Username, err)
@@ -358,6 +354,8 @@ func createClientForUser(ctx context.Context, scopes []string, user *identity.Us
 }
 
 func buildUserRegistrationInputForTest(t *testing.T) *identity.UserRegistrationInput {
+	t.Helper()
+
 	return &identity.UserRegistrationInput{
 		Birthday:              pointer.To(time.Now()),
 		EmailAddress:          fmt.Sprintf("test+%d@whatever.com", hashStringToNumber(t.Name()+time.Now().Format(time.RFC3339Nano))),
@@ -448,16 +446,11 @@ func fetchLoginTokenForUser(ctx context.Context, user *identity.User) (string, e
 	return tokenRes.Result.AccessToken, nil
 }
 
-func dumpToJSON(x any) string {
-	b, err := json.MarshalIndent(x, "", "  ")
-	if err != nil {
-		panic(err)
-	}
-
-	return string(b)
-}
-
 //////// ChatGPT Zone
+
+const (
+	nilStr = "nil"
+)
 
 type compareOptions struct {
 	// Ignore any field with these names at any depth (e.g., "LastUpdatedAt").
@@ -541,14 +534,14 @@ func flattenComparable(v any, opts compareOptions) map[string]string {
 
 	walk = func(rv reflect.Value, path []string) {
 		if !rv.IsValid() {
-			out[join(path)] = "nil"
+			out[join(path)] = nilStr
 			return
 		}
 
 		// Unwrap interfaces
 		if rv.Kind() == reflect.Interface {
 			if rv.IsNil() {
-				out[join(path)] = "nil"
+				out[join(path)] = nilStr
 				return
 			}
 			rv = rv.Elem()
@@ -557,7 +550,7 @@ func flattenComparable(v any, opts compareOptions) map[string]string {
 		// Follow pointers with cycle detection
 		if rv.Kind() == reflect.Ptr {
 			if rv.IsNil() {
-				out[join(path)] = "nil"
+				out[join(path)] = nilStr
 				return
 			}
 			ptr := rv.Pointer()
@@ -602,7 +595,7 @@ func flattenComparable(v any, opts compareOptions) map[string]string {
 
 		case reflect.Map:
 			if rv.IsNil() {
-				out[join(path)] = "nil"
+				out[join(path)] = nilStr
 				return
 			}
 			keys := rv.MapKeys()

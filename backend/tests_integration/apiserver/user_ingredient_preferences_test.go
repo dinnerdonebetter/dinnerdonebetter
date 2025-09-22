@@ -7,7 +7,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
-	grpcconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 	settingsconverters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
@@ -56,7 +55,7 @@ func TestUserIngredientPreferences_Creating(T *testing.T) {
 		ctx := t.Context()
 
 		creationRequestInput := fakes.BuildFakeUserIngredientPreferenceCreationRequestInput()
-		convertedInput := grpcconverters.ConvertUserIngredientPreferenceCreationRequestInputToGRPCUserIngredientPreferenceCreationRequestInput(creationRequestInput)
+		convertedInput := settingsconverters.ConvertUserIngredientPreferenceCreationRequestInputToGRPCUserIngredientPreferenceCreationRequestInput(creationRequestInput)
 
 		c := buildUnauthenticatedGRPCClientForTest(t)
 		created, err := c.CreateUserIngredientPreference(ctx, &settingssvc.CreateUserIngredientPreferenceRequest{
@@ -73,7 +72,7 @@ func TestUserIngredientPreferences_Creating(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		creationRequestInput := fakes.BuildFakeUserIngredientPreferenceCreationRequestInput()
-		convertedInput := grpcconverters.ConvertUserIngredientPreferenceCreationRequestInputToGRPCUserIngredientPreferenceCreationRequestInput(creationRequestInput)
+		convertedInput := settingsconverters.ConvertUserIngredientPreferenceCreationRequestInputToGRPCUserIngredientPreferenceCreationRequestInput(creationRequestInput)
 		// this is not allowed
 		convertedInput.ValidIngredientID = ""
 		convertedInput.ValidIngredientGroupID = ""
@@ -92,7 +91,7 @@ func TestUserIngredientPreferences_Creating(T *testing.T) {
 		_, testClient := createUserAndClientForTest(T)
 
 		creationRequestInput := fakes.BuildFakeUserIngredientPreferenceCreationRequestInput()
-		convertedInput := grpcconverters.ConvertUserIngredientPreferenceCreationRequestInputToGRPCUserIngredientPreferenceCreationRequestInput(creationRequestInput)
+		convertedInput := settingsconverters.ConvertUserIngredientPreferenceCreationRequestInputToGRPCUserIngredientPreferenceCreationRequestInput(creationRequestInput)
 
 		created, err := testClient.CreateUserIngredientPreference(ctx, &settingssvc.CreateUserIngredientPreferenceRequest{
 			Input: convertedInput,
@@ -117,7 +116,7 @@ func TestUserIngredientPreferences_Reading(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, retrieved)
 
-		converted := grpcconverters.ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(retrieved.Result)
+		converted := settingsconverters.ConvertGRPCUserIngredientPreferenceToUserIngredientPreference(retrieved.Result)
 
 		assertRoughEquality(t, created, converted, defaultIgnoredFields("ID", "BelongsToUser", "Ingredient")...)
 	})

@@ -1,34 +1,12 @@
 package main
 
 import (
-	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
-)
-
-const (
-	dockerComposeWorkerQueueAddress = "worker_queue:6379"
-	localOAuth2TokenEncryptionKey   = debugCookieHashKey
-)
-
-var (
-	localdevPostgresDBConnectionDetails = databasecfg.ConnectionDetails{
-		Username:   "dbuser",
-		Password:   "hunter2",
-		Database:   "dinner-done-better",
-		Host:       "pgdatabase",
-		Port:       5432,
-		DisableSSL: true,
-	}
-)
-
-/*
-
-import (
 	"encoding/base64"
 	"time"
 
+	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/platform/analytics/config"
-	tokenscfg "github.com/dinnerdonebetter/backend/internal/authentication/tokens/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
@@ -49,12 +27,11 @@ import (
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
-	"github.com/dinnerdonebetter/backend/internal/platform/uploads"
+	uploadscfg "github.com/dinnerdonebetter/backend/internal/platform/uploads/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/uploads/objectstorage"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/authentication"
-	dataprivacyservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/dataprivacy"
-	usersservice "github.com/dinnerdonebetter/backend/internal/services/core/handlers/users"
-	recipemanagement "github.com/dinnerdonebetter/backend/internal/services/eating/handlers/recipe_management"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/auth/handlers/authentication"
+	dataprivacycfg "github.com/dinnerdonebetter/backend/internal/services/dataprivacy/config"
+	identitycfg "github.com/dinnerdonebetter/backend/internal/services/identity/config"
 )
 
 const (
@@ -204,8 +181,8 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 					Base64EncodedSigningKey: base64.URLEncoding.EncodeToString([]byte(testutils.Example32ByteKey)),
 				},
 			},
-			DataPrivacy: dataprivacyservice.Config{
-				Uploads: uploads.Config{
+			DataPrivacy: dataprivacycfg.Config{
+				Uploads: uploadscfg.Config{
 					Storage: objectstorage.Config{
 						FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: "/tmp"},
 						BucketName:       "userdata",
@@ -214,8 +191,8 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 					Debug: false,
 				},
 			},
-			Users: usersservice.Config{
-				Uploads: uploads.Config{
+			Users: identitycfg.Config{
+				Uploads: uploadscfg.Config{
 					Debug: true,
 					Storage: objectstorage.Config{
 						UploadFilenameKey: "avatar",
@@ -227,21 +204,6 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 					},
 				},
 			},
-			Recipes: recipemanagement.Config{
-				PublicMediaURLPrefix: "https://example.website.lol",
-				Uploads: uploads.Config{
-					Debug: true,
-					Storage: objectstorage.Config{
-						UploadFilenameKey: "recipe_media",
-						Provider:          objectstorage.FilesystemProvider,
-						BucketName:        "recipe_media",
-						FilesystemConfig: &objectstorage.FilesystemConfig{
-							RootDirectory: "/uploads",
-						},
-					},
-				},
-			},
 		},
 	}
 }
-*/

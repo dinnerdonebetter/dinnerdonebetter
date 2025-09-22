@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	apiConfigurationFilepath = "../../../deploy/environments/testing/config_files/integration-tests-config.json"
+	apiConfigurationFilepath = "../../deploy/environments/testing/config_files/integration-tests-config.json"
 )
 
 var (
@@ -99,7 +99,7 @@ func init() {
 	// accursed, but nevertheless we ball.
 	time.Sleep(1 * time.Second)
 
-	adminClient, err = createClientForUser(ctx, []string{"service_admin"}, adminUser)
+	adminClient, err = createClientForUser(ctx, adminUser)
 	if err != nil {
 		log.Fatal(err)
 	}

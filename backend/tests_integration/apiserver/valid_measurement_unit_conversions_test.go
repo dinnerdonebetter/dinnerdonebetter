@@ -13,12 +13,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createValidMeasurementUnitConversionForTest(t *testing.T) (*types.ValidMeasurementUnit, *types.ValidMeasurementUnit, *types.ValidMeasurementUnitConversion) {
+func createValidMeasurementUnitConversionForTest(t *testing.T) (unit1, unit2 *types.ValidMeasurementUnit, conversion *types.ValidMeasurementUnitConversion) {
 	t.Helper()
 	ctx := t.Context()
 
-	unit1 := createValidMeasurementUnitForTest(t)
-	unit2 := createValidMeasurementUnitForTest(t)
+	unit1 = createValidMeasurementUnitForTest(t)
+	unit2 = createValidMeasurementUnitForTest(t)
 
 	exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 	exampleValidMeasurementUnitConversion.To = *unit1

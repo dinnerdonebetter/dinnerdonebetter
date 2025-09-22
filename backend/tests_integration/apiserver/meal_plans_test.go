@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	mpconverters "github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
@@ -32,7 +31,7 @@ func checkMealPlanEquality(t *testing.T, expected, actual *mealplanning.MealPlan
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createMealPlanForTest(t *testing.T, client client.Client, mealPlan *mealplanning.MealPlan) *mealplanning.MealPlan {
+func createMealPlanForTest(t *testing.T, clientToUse client.Client, mealPlan *mealplanning.MealPlan) *mealplanning.MealPlan {
 	t.Helper()
 	ctx := t.Context()
 
@@ -40,7 +39,7 @@ func createMealPlanForTest(t *testing.T, client client.Client, mealPlan *mealpla
 		mealPlan = fakes.BuildFakeMealPlan()
 		for i, evt := range mealPlan.Events {
 			for j := range evt.Options {
-				createdMeal := createMealForTest(t, client, nil)
+				createdMeal := createMealForTest(t, clientToUse, nil)
 				mealPlan.Events[i].Options[j].Meal.ID = createdMeal.ID
 				mealPlan.Events[i].Options[j].AssignedCook = nil
 			}
@@ -48,13 +47,13 @@ func createMealPlanForTest(t *testing.T, client client.Client, mealPlan *mealpla
 	}
 
 	exampleMealPlanInput := mpconverters.ConvertMealPlanToMealPlanCreationRequestInput(mealPlan)
-	createdMealPlanRes, err := client.CreateMealPlan(ctx, &mealplanninggrpc.CreateMealPlanRequest{
+	createdMealPlanRes, err := clientToUse.CreateMealPlan(ctx, &mealplanninggrpc.CreateMealPlanRequest{
 		Input: converters.ConvertMealPlanCreationRequestInputToGRPCMealPlanCreationRequestInput(exampleMealPlanInput),
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, createdMealPlanRes.Created.ID)
 
-	mealPlanRes, err := client.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createdMealPlanRes.Created.ID})
+	mealPlanRes, err := clientToUse.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createdMealPlanRes.Created.ID})
 	require.NoError(t, err)
 
 	actual := converters.ConvertGRPCMealPlanToMealPlan(mealPlanRes.Result)
@@ -112,9 +111,7 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 		require.NoError(t, statusErr)
 		relevantAccountID := currentStatus.ActiveAccount
 
-		createdUsers := []*identity.User{}
 		createdClients := []client.Client{}
-
 		for i := 0; i < 2; i++ {
 			u, c := createUserAndClientForTest(t)
 
@@ -157,7 +154,6 @@ func TestMealPlans_CompleteLifecycleForAllVotesReceived(T *testing.T) {
 			require.NoError(t, err)
 			assert.NotNil(t, tokenResponse)
 
-			createdUsers = append(createdUsers, u)
 			createdClients = append(createdClients, c)
 		}
 
@@ -331,9 +327,7 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 		require.NoError(t, statusErr)
 		relevantAccountID := currentStatus.ActiveAccount
 
-		createdUsers := []*identity.User{}
 		createdClients := []client.Client{}
-
 		for i := 0; i < 2; i++ {
 			u, c := createUserAndClientForTest(t)
 
@@ -376,7 +370,6 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 			require.NoError(t, err)
 			assert.NotNil(t, tokenResponse)
 
-			createdUsers = append(createdUsers, u)
 			createdClients = append(createdClients, c)
 		}
 
@@ -484,8 +477,10 @@ func TestMealPlans_CompleteLifecycleForSomeVotesReceived(T *testing.T) {
 		require.NotNil(t, createdMealPlanOptionVotesB)
 
 		createdMealPlanRes, err = accountAdminUserClient.GetMealPlan(ctx, &mealplanninggrpc.GetMealPlanRequest{MealPlanID: createdMealPlan.ID})
-		require.NotNil(t, createdMealPlan)
+		require.NotNil(t, createdMealPlanRes)
 		require.NoError(t, err)
+
+		createdMealPlan = converters.ConvertGRPCMealPlanToMealPlan(createdMealPlanRes.Result)
 		assert.Equal(t, string(mealplanning.MealPlanStatusAwaitingVotes), createdMealPlan.Status)
 
 		q := generated.New()

@@ -12,7 +12,6 @@ import (
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	webhookssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
-	"github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 	identitygrpcconverters "github.com/dinnerdonebetter/backend/internal/services/identity/grpc/converters"
 
 	"github.com/stretchr/testify/assert"
@@ -33,7 +32,7 @@ func TestAccounts_Creating(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
-		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+		exampleAccountInput := identitygrpcconverters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
 
 		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
 		assert.NoError(t, err)
@@ -47,7 +46,7 @@ func TestAccounts_Creating(T *testing.T) {
 		testClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
-		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+		exampleAccountInput := identitygrpcconverters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
 
 		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
 		assert.Error(t, err)
@@ -61,7 +60,7 @@ func TestAccounts_Creating(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
-		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+		exampleAccountInput := identitygrpcconverters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
 		// not allowed
 		exampleAccountInput.Name = ""
 
@@ -83,7 +82,7 @@ func TestAccounts_Listing(T *testing.T) {
 		var createdAccounts []*identitysvc.Account
 		for range 5 {
 			exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
-			exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+			exampleAccountInput := identitygrpcconverters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
 
 			createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
 			require.NoError(t, err)
@@ -103,9 +102,8 @@ func TestAccounts_Listing(T *testing.T) {
 		ctx := t.Context()
 
 		// create a user so that the account actually exists
-		_, testClient := createUserAndClientForTest(t)
-
-		testClient = buildUnauthenticatedGRPCClientForTest(t)
+		_, _ = createUserAndClientForTest(t)
+		testClient := buildUnauthenticatedGRPCClientForTest(t)
 
 		_, err := testClient.GetAccounts(ctx, &identitysvc.GetAccountsRequest{})
 		assert.Error(t, err)
@@ -122,7 +120,7 @@ func TestAccounts_Reading(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
-		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+		exampleAccountInput := identitygrpcconverters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
 
 		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
 		require.NoError(t, err)
@@ -177,7 +175,7 @@ func TestAccounts_Updating(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
-		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+		exampleAccountInput := identitygrpcconverters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
 
 		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
 		require.NoError(t, err)
@@ -259,7 +257,7 @@ func TestAccounts_Archiving(T *testing.T) {
 		_, testClient := createUserAndClientForTest(t)
 
 		exampleAccount := fakes.BuildFakeAccountCreationRequestInput()
-		exampleAccountInput := converters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
+		exampleAccountInput := identitygrpcconverters.ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(exampleAccount)
 
 		createdAccount, err := testClient.CreateAccount(ctx, &identitysvc.CreateAccountRequest{Input: exampleAccountInput})
 		require.NoError(t, err)
@@ -556,7 +554,6 @@ func TestAccounts_Inviting(T *testing.T) {
 	})
 
 	T.Run("invites can be rejected", func(t *testing.T) {
-
 		t.Parallel()
 		ctx := t.Context()
 
@@ -647,7 +644,7 @@ func TestAccounts_OwnershipTransfer(T *testing.T) {
 			AcceptedPrivacyPolicy: true,
 			AcceptedTOS:           true,
 		}
-		invitee, inviteeClient := createUserAndClientForTestWithRegistrationInput(t, input)
+		invitee, _ := createUserAndClientForTestWithRegistrationInput(t, input)
 
 		// create the invitation for the user
 		_, err = testClient.TransferAccountOwnership(ctx, &identitysvc.TransferAccountOwnershipRequest{
@@ -661,7 +658,7 @@ func TestAccounts_OwnershipTransfer(T *testing.T) {
 		require.NoError(t, err)
 
 		// the invited user needs a new token that indicates they're a member of this account
-		inviteeClient = buildAuthedGRPCClient(ctx, fetchLoginTokenForUserForTest(t, invitee))
+		inviteeClient := buildAuthedGRPCClient(ctx, fetchLoginTokenForUserForTest(t, invitee))
 
 		// change to the new account
 		_, err = inviteeClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountID: accountID})

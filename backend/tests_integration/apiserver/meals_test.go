@@ -28,7 +28,7 @@ func checkMealEquality(t *testing.T, expected, actual *types.Meal) {
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createMealForTest(t *testing.T, client client.Client, mealInput *types.Meal) *types.Meal {
+func createMealForTest(t *testing.T, clientToUse client.Client, mealInput *types.Meal) *types.Meal {
 	t.Helper()
 
 	ctx := t.Context()
@@ -53,10 +53,10 @@ func createMealForTest(t *testing.T, client client.Client, mealInput *types.Meal
 	exampleMealInput := mpconverters.ConvertMealToMealCreationRequestInput(exampleMeal)
 	exampleMealInput.Components = createdComponents
 
-	createdMealRes, err := client.CreateMeal(ctx, &mealplanninggrpc.CreateMealRequest{Input: converters.ConvertMealCreationRequestInputToGRPCMealCreationRequestInput(exampleMealInput)})
+	createdMealRes, err := clientToUse.CreateMeal(ctx, &mealplanninggrpc.CreateMealRequest{Input: converters.ConvertMealCreationRequestInputToGRPCMealCreationRequestInput(exampleMealInput)})
 	require.NoError(t, err)
 
-	fetchedMealRes, err := client.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealID: createdMealRes.Created.ID})
+	fetchedMealRes, err := clientToUse.GetMeal(ctx, &mealplanninggrpc.GetMealRequest{MealID: createdMealRes.Created.ID})
 	require.NoError(t, err)
 
 	createdMeal := converters.ConvertGRPCMealToMeal(fetchedMealRes.Result)

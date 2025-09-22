@@ -555,6 +555,8 @@ func TestRecipes_Searching(T *testing.T) {
 }
 
 func TestRecipes_Cloning(T *testing.T) {
+	T.Parallel()
+
 	T.Run("should CRUD", func(t *testing.T) {
 		t.Parallel()
 		ctx := t.Context()
@@ -609,6 +611,7 @@ func TestRecipes_GetMealPlanTasksForRecipe(T *testing.T) {
 	T.Parallel()
 
 	T.Run("meal plan tasks with frozen chicken breast", func(t *testing.T) {
+		t.Parallel()
 
 		dice := createValidPreparationForTest(t)
 		grams := createValidMeasurementUnitForTest(t)

@@ -26,7 +26,7 @@ func createValidPreparationForTest(t *testing.T) *mealplanning.ValidPreparation 
 	})
 	require.NoError(t, err)
 	converted := grpcconverters.ConvertGRPCValidPreparationToValidPreparation(created.Result)
-	checkValidPreparationEquality(t, 0, *exampleValidPreparation, *converted)
+	checkValidPreparationEquality(t, 0, exampleValidPreparation, converted)
 
 	retrieved, err := adminClient.GetValidPreparation(ctx, &mealplanningsvc.GetValidPreparationRequest{
 		ValidPreparationID: converted.ID,
@@ -35,12 +35,12 @@ func createValidPreparationForTest(t *testing.T) *mealplanning.ValidPreparation 
 	require.NotNil(t, retrieved)
 
 	validPreparation := grpcconverters.ConvertGRPCValidPreparationToValidPreparation(retrieved.Result)
-	checkValidPreparationEquality(t, 0, *converted, *validPreparation)
+	checkValidPreparationEquality(t, 0, converted, validPreparation)
 
 	return validPreparation
 }
 
-func checkValidPreparationEquality(t *testing.T, i int, expected, actual mealplanning.ValidPreparation) {
+func checkValidPreparationEquality(t *testing.T, i int, expected, actual *mealplanning.ValidPreparation) {
 	t.Helper()
 
 	assert.NotEmpty(t, expected.CreatedAt, actual.CreatedAt, "expected recipe step %d preparation CreatedAt to be %v, but it was %v", i, expected.CreatedAt, actual.CreatedAt)
