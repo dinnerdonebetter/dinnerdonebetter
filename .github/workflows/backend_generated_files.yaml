@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           go-version: '${{ matrix.go-version }}'
 
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           go-version: '${{ matrix.go-version }}'
 
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           go-version: '${{ matrix.go-version }}'
 
@@ -89,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           go-version: '${{ matrix.go-version }}'
 
