@@ -219,50 +219,60 @@ func createRecipeStepForTest(t *testing.T, ctx context.Context, recipeID string,
 	// Compare nested collections by checking their lengths and non-timestamp fields
 	assert.Equal(t, len(exampleRecipeStep.Ingredients), len(recipeStep.Ingredients))
 	for i := range recipeStep.Ingredients {
-		if i < len(exampleRecipeStep.Ingredients) {
-			assert.Equal(t, exampleRecipeStep.Ingredients[i].ID, recipeStep.Ingredients[i].ID)
-			assert.Equal(t, exampleRecipeStep.Ingredients[i].BelongsToRecipeStep, recipeStep.Ingredients[i].BelongsToRecipeStep)
-			assert.Equal(t, exampleRecipeStep.Ingredients[i].Name, recipeStep.Ingredients[i].Name)
-			assert.Equal(t, exampleRecipeStep.Ingredients[i].MeasurementUnit.ID, recipeStep.Ingredients[i].MeasurementUnit.ID)
-			assert.WithinDuration(t, exampleRecipeStep.Ingredients[i].CreatedAt, recipeStep.Ingredients[i].CreatedAt, 5*time.Second)
+		if i > len(exampleRecipeStep.Ingredients) {
+			continue
 		}
+
+		assert.Equal(t, exampleRecipeStep.Ingredients[i].ID, recipeStep.Ingredients[i].ID)
+		assert.Equal(t, exampleRecipeStep.Ingredients[i].BelongsToRecipeStep, recipeStep.Ingredients[i].BelongsToRecipeStep)
+		assert.Equal(t, exampleRecipeStep.Ingredients[i].Name, recipeStep.Ingredients[i].Name)
+		assert.Equal(t, exampleRecipeStep.Ingredients[i].MeasurementUnit.ID, recipeStep.Ingredients[i].MeasurementUnit.ID)
+		assert.WithinDuration(t, exampleRecipeStep.Ingredients[i].CreatedAt, recipeStep.Ingredients[i].CreatedAt, 5*time.Second)
 	}
 
 	assert.Equal(t, len(exampleRecipeStep.Instruments), len(recipeStep.Instruments))
 	for i := range recipeStep.Instruments {
-		if i < len(exampleRecipeStep.Instruments) {
-			assert.Equal(t, exampleRecipeStep.Instruments[i].ID, recipeStep.Instruments[i].ID)
-			assert.Equal(t, exampleRecipeStep.Instruments[i].BelongsToRecipeStep, recipeStep.Instruments[i].BelongsToRecipeStep)
-			assert.WithinDuration(t, exampleRecipeStep.Instruments[i].CreatedAt, recipeStep.Instruments[i].CreatedAt, 5*time.Second)
+		if i > len(exampleRecipeStep.Instruments) {
+			continue
 		}
+
+		assert.Equal(t, exampleRecipeStep.Instruments[i].ID, recipeStep.Instruments[i].ID)
+		assert.Equal(t, exampleRecipeStep.Instruments[i].BelongsToRecipeStep, recipeStep.Instruments[i].BelongsToRecipeStep)
+		assert.WithinDuration(t, exampleRecipeStep.Instruments[i].CreatedAt, recipeStep.Instruments[i].CreatedAt, 5*time.Second)
 	}
 
 	assert.Equal(t, len(exampleRecipeStep.Vessels), len(recipeStep.Vessels))
 	for i := range recipeStep.Vessels {
-		if i < len(exampleRecipeStep.Vessels) {
-			assert.Equal(t, exampleRecipeStep.Vessels[i].ID, recipeStep.Vessels[i].ID)
-			assert.Equal(t, exampleRecipeStep.Vessels[i].BelongsToRecipeStep, recipeStep.Vessels[i].BelongsToRecipeStep)
-			assert.WithinDuration(t, exampleRecipeStep.Vessels[i].CreatedAt, recipeStep.Vessels[i].CreatedAt, 5*time.Second)
+		if i > len(exampleRecipeStep.Vessels) {
+			continue
 		}
+
+		assert.Equal(t, exampleRecipeStep.Vessels[i].ID, recipeStep.Vessels[i].ID)
+		assert.Equal(t, exampleRecipeStep.Vessels[i].BelongsToRecipeStep, recipeStep.Vessels[i].BelongsToRecipeStep)
+		assert.WithinDuration(t, exampleRecipeStep.Vessels[i].CreatedAt, recipeStep.Vessels[i].CreatedAt, 5*time.Second)
 	}
 
 	assert.Equal(t, len(exampleRecipeStep.Products), len(recipeStep.Products))
 	for i := range recipeStep.Products {
-		if i < len(exampleRecipeStep.Products) {
-			assert.Equal(t, exampleRecipeStep.Products[i].ID, recipeStep.Products[i].ID)
-			assert.Equal(t, exampleRecipeStep.Products[i].BelongsToRecipeStep, recipeStep.Products[i].BelongsToRecipeStep)
-			assert.Equal(t, exampleRecipeStep.Products[i].Name, recipeStep.Products[i].Name)
-			assert.WithinDuration(t, exampleRecipeStep.Products[i].CreatedAt, recipeStep.Products[i].CreatedAt, 5*time.Second)
+		if i > len(exampleRecipeStep.Products) {
+			continue
 		}
+
+		assert.Equal(t, exampleRecipeStep.Products[i].ID, recipeStep.Products[i].ID)
+		assert.Equal(t, exampleRecipeStep.Products[i].BelongsToRecipeStep, recipeStep.Products[i].BelongsToRecipeStep)
+		assert.Equal(t, exampleRecipeStep.Products[i].Name, recipeStep.Products[i].Name)
+		assert.WithinDuration(t, exampleRecipeStep.Products[i].CreatedAt, recipeStep.Products[i].CreatedAt, 5*time.Second)
 	}
 
 	assert.Equal(t, len(exampleRecipeStep.CompletionConditions), len(recipeStep.CompletionConditions))
 	for i := range recipeStep.CompletionConditions {
-		if i < len(exampleRecipeStep.CompletionConditions) {
-			assert.Equal(t, exampleRecipeStep.CompletionConditions[i].ID, recipeStep.CompletionConditions[i].ID)
-			assert.Equal(t, exampleRecipeStep.CompletionConditions[i].BelongsToRecipeStep, recipeStep.CompletionConditions[i].BelongsToRecipeStep)
-			assert.WithinDuration(t, exampleRecipeStep.CompletionConditions[i].CreatedAt, recipeStep.CompletionConditions[i].CreatedAt, 5*time.Second)
+		if i > len(exampleRecipeStep.CompletionConditions) {
+			continue
 		}
+
+		assert.Equal(t, exampleRecipeStep.CompletionConditions[i].ID, recipeStep.CompletionConditions[i].ID)
+		assert.Equal(t, exampleRecipeStep.CompletionConditions[i].BelongsToRecipeStep, recipeStep.CompletionConditions[i].BelongsToRecipeStep)
+		assert.WithinDuration(t, exampleRecipeStep.CompletionConditions[i].CreatedAt, recipeStep.CompletionConditions[i].CreatedAt, 5*time.Second)
 	}
 
 	assert.NoError(t, err)

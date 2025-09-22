@@ -14,6 +14,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func checkRecipePrepTaskStepSliceEquality(t *testing.T, taskIndex int, expected, actual []*mealplanning.RecipePrepTaskStep) {
+	t.Helper()
+	require.Equal(t, len(expected), len(actual), "expected prep task %d steps length", taskIndex)
+	for i := range expected {
+		checkRecipePrepTaskStepEquality(t, taskIndex, i, expected[i], actual[i])
+	}
+}
+
+func checkRecipePrepTaskStepEquality(t *testing.T, taskIndex, stepIndex int, expected, actual *mealplanning.RecipePrepTaskStep) {
+	t.Helper()
+	assert.NotEmpty(t, actual.ID, "expected prep task %d step %d to have ID", taskIndex, stepIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected prep task %d step %d to have BelongsToRecipeStep", taskIndex, stepIndex)
+	assert.NotEmpty(t, actual.BelongsToRecipePrepTask, "expected prep task %d step %d to have BelongsToRecipePrepTask", taskIndex, stepIndex)
+	assert.Equal(t, expected.SatisfiesRecipeStep, actual.SatisfiesRecipeStep, "expected prep task %d step %d SatisfiesRecipeStep", taskIndex, stepIndex)
+}
+
 func checkRecipePrepTaskSliceEquality(t *testing.T, expected, actual []*mealplanning.RecipePrepTask) {
 	t.Helper()
 

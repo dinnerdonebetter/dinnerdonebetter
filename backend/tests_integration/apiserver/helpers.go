@@ -19,7 +19,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
 	identityfakes "github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
-	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
@@ -504,7 +503,7 @@ func flattenComparable(v any, opts compareOptions) map[string]string {
 		return strings.Join(path, ".")
 	}
 
-	// Handle time.Time specially for stable representation.
+	// Handle time.Time especially for stable representation.
 	writeTime := func(tv time.Time, path []string) {
 		// Use RFC3339Nano for human-readable + stable, or UnixNano if you prefer strict numeric
 		out[join(path)] = tv.UTC().Format(time.RFC3339Nano)
@@ -568,7 +567,9 @@ func flattenComparable(v any, opts compareOptions) map[string]string {
 
 		// time.Time special case
 		if rv.Type() == reflect.TypeOf(time.Time{}) {
-			writeTime(rv.Interface().(time.Time), path)
+			if x, ok := rv.Interface().(time.Time); ok {
+				writeTime(x, path)
+			}
 			return
 		}
 
@@ -640,77 +641,4 @@ func diffMaps(a, b map[string]string) map[string][2]string {
 		}
 	}
 	return diff
-}
-
-// ===== Recipe prep task equality helpers =====
-
-func checkRecipePrepTaskStepSliceEquality(t *testing.T, taskIndex int, expected, actual []*mealplanning.RecipePrepTaskStep) {
-	t.Helper()
-	require.Equal(t, len(expected), len(actual), "expected prep task %d steps length", taskIndex)
-	for i := range expected {
-		checkRecipePrepTaskStepEquality(t, taskIndex, i, expected[i], actual[i])
-	}
-}
-
-func checkRecipePrepTaskStepEquality(t *testing.T, taskIndex, stepIndex int, expected, actual *mealplanning.RecipePrepTaskStep) {
-	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected prep task %d step %d to have ID", taskIndex, stepIndex)
-	assert.NotEmpty(t, actual.BelongsToRecipeStep, "expected prep task %d step %d to have BelongsToRecipeStep", taskIndex, stepIndex)
-	assert.NotEmpty(t, actual.BelongsToRecipePrepTask, "expected prep task %d step %d to have BelongsToRecipePrepTask", taskIndex, stepIndex)
-	assert.Equal(t, expected.SatisfiesRecipeStep, actual.SatisfiesRecipeStep, "expected prep task %d step %d SatisfiesRecipeStep", taskIndex, stepIndex)
-}
-
-// ===== Recipe media equality helpers =====
-
-func checkRecipeMediaSliceEquality(t *testing.T, stepIndex int, expected, actual []*mealplanning.RecipeMedia) {
-	t.Helper()
-	require.Equal(t, len(expected), len(actual), "expected recipe step %d media length", stepIndex)
-	for i := range expected {
-		e, a := expected[i], actual[i]
-		checkRecipeMediaEquality(t, stepIndex, i, e, a)
-	}
-}
-
-func checkRecipeMediaEquality(t *testing.T, stepIndex, mediaIndex int, expected, actual *mealplanning.RecipeMedia) {
-	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected step %d media %d to have ID", stepIndex, mediaIndex)
-	assert.False(t, actual.CreatedAt.IsZero(), "expected step %d media %d to have CreatedAt", stepIndex, mediaIndex)
-	assert.Equal(t, expected.MimeType, actual.MimeType, "expected step %d media %d MimeType", stepIndex, mediaIndex)
-	assert.Equal(t, expected.InternalPath, actual.InternalPath, "expected step %d media %d InternalPath", stepIndex, mediaIndex)
-	assert.Equal(t, expected.ExternalPath, actual.ExternalPath, "expected step %d media %d ExternalPath", stepIndex, mediaIndex)
-	assert.Equal(t, expected.Index, actual.Index, "expected step %d media %d Index", stepIndex, mediaIndex)
-	if expected.BelongsToRecipe != nil {
-		require.NotNil(t, actual.BelongsToRecipe, "expected step %d media %d BelongsToRecipe non-nil", stepIndex, mediaIndex)
-		assert.Equal(t, *expected.BelongsToRecipe, *actual.BelongsToRecipe, "expected step %d media %d BelongsToRecipe", stepIndex, mediaIndex)
-	}
-	if expected.BelongsToRecipeStep != nil {
-		require.NotNil(t, actual.BelongsToRecipeStep, "expected step %d media %d BelongsToRecipeStep non-nil", stepIndex, mediaIndex)
-		assert.Equal(t, *expected.BelongsToRecipeStep, *actual.BelongsToRecipeStep, "expected step %d media %d BelongsToRecipeStep", stepIndex, mediaIndex)
-	}
-}
-
-func checkRecipeLevelMediaSliceEquality(t *testing.T, expected, actual []*mealplanning.RecipeMedia) {
-	t.Helper()
-	require.Equal(t, len(expected), len(actual), "expected recipe media length")
-	for i := range expected {
-		checkRecipeLevelMediaEquality(t, i, expected[i], actual[i])
-	}
-}
-
-func checkRecipeLevelMediaEquality(t *testing.T, mediaIndex int, expected, actual *mealplanning.RecipeMedia) {
-	t.Helper()
-	assert.NotEmpty(t, actual.ID, "expected recipe media %d to have ID", mediaIndex)
-	assert.False(t, actual.CreatedAt.IsZero(), "expected recipe media %d to have CreatedAt", mediaIndex)
-	assert.Equal(t, expected.MimeType, actual.MimeType, "expected recipe media %d MimeType", mediaIndex)
-	assert.Equal(t, expected.InternalPath, actual.InternalPath, "expected recipe media %d InternalPath", mediaIndex)
-	assert.Equal(t, expected.ExternalPath, actual.ExternalPath, "expected recipe media %d ExternalPath", mediaIndex)
-	assert.Equal(t, expected.Index, actual.Index, "expected recipe media %d Index", mediaIndex)
-	if expected.BelongsToRecipe != nil {
-		require.NotNil(t, actual.BelongsToRecipe, "expected recipe media %d BelongsToRecipe non-nil", mediaIndex)
-		assert.Equal(t, *expected.BelongsToRecipe, *actual.BelongsToRecipe, "expected recipe media %d BelongsToRecipe", mediaIndex)
-	}
-	if expected.BelongsToRecipeStep != nil {
-		require.NotNil(t, actual.BelongsToRecipeStep, "expected recipe media %d BelongsToRecipeStep non-nil", mediaIndex)
-		assert.Equal(t, *expected.BelongsToRecipeStep, *actual.BelongsToRecipeStep, "expected recipe media %d BelongsToRecipeStep", mediaIndex)
-	}
 }
