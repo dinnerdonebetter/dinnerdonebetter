@@ -11,6 +11,7 @@ _PR description goes here_
 
 <!-- delete this section if what is being completed is not part of a new feature --> 
 ## Backend Feature Checklist
+  - [ ] OpenAPI Spec
   - [ ] Migration
   - [ ] Queries
   - [ ] Observability keys

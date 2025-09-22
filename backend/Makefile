@@ -219,6 +219,11 @@ querier: queries queries_lint
 sqlc_struct_check:
 	go run $(THIS)/cmd/tools/sqlc_struct_checker
 
+.PHONY: openapi
+openapi:
+	go run $(THIS)/cmd/tools/codegen/openapi_spec
+	(cd .. && $(MAKE) format_yaml)
+
 .PHONY: env_vars
 env_vars:
 	go run $(THIS)/cmd/tools/codegen/valid_env_vars

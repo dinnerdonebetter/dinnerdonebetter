@@ -219,6 +219,13 @@ linters:
           - paralleltest
         path: internal/database/postgres
       - linters:
+          - bodyclose
+          - unused
+        path: cmd/tools/codegen/openapi/golang/statics
+      - linters:
+          - gocritic
+        path: cmd/tools/codegen/openapi/golang
+      - linters:
           - gocritic
         path: cmd/tools/codegen
         text: 'rangeValCopy: each iteration copies'
