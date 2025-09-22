@@ -231,7 +231,7 @@ integration-tests: integration_tests
 
 .PHONY: integration_tests
 integration_tests:
-	$(GO_TEST) -v -count=1 $(THIS)/tests/integration/apiserver
+	go test -v -count=1 $(THIS)/tests/integration/apiserver
 
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
