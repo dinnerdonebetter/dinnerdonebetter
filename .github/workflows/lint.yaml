@@ -1,5 +1,5 @@
 ---
-on: [pull_request]
+on: [ pull_request ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -26,7 +26,7 @@ jobs:
               - frontend/**/*.ts
               - frontend/**/*.tsx
   golang:
-    needs: [changes]
+    needs: [ changes ]
     if: ${{ needs.changes.outputs.backend == 'true' }}
     timeout-minutes: 30
     runs-on: ubuntu-latest
@@ -39,18 +39,18 @@ jobs:
           go-version: stable
 
       - name: golangci-lint
-        working-directory: backend
         uses: golangci/golangci-lint-action@v8
         with:
           version: v2.4.0
+          working-directory: backend
 
   typescript:
-    needs: [changes]
+    needs: [ changes ]
     if: ${{ needs.changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['lts/*']
+        node: [ 'lts/*' ]
     name: ${{ matrix.node }}
     steps:
       - name: Checkout code
