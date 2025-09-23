@@ -4,15 +4,16 @@ import (
 	"testing"
 
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
-	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAuditLogEntries_Listing(T *testing.T) {
 	T.Parallel()
 
 	T.Run("should be able to be read in a list", func(t *testing.T) {
+		t.Parallel()
 		t.SkipNow()
 		ctx := t.Context()
 
