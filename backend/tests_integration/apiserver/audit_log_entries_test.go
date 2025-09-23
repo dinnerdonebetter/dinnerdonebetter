@@ -1,11 +1,9 @@
 package integration
 
 import (
-	"context"
 	"testing"
 
 	auditgrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/audit"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
