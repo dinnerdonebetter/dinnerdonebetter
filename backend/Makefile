@@ -52,22 +52,16 @@ clean-$(ARTIFACTS_DIR):
 
 ## PREREQUISITES
 
-.PHONY: ensure_scc_installed
-ensure_scc_installed:
-ifeq (, $(shell which scc))
-	$(shell go install github.com/boyter/scc@v3.4.0)
-endif
-
 .PHONY: ensure_wire_installed
 ensure_wire_installed:
 ifeq (, $(shell which wire))
-	$(shell go install github.com/google/wire/cmd/wire@v0.6.0)
+	$(shell go install github.com/google/wire/cmd/wire@v0.7.0)
 endif
 
 .PHONY: ensure_fieldalignment_installed
 ensure_fieldalignment_installed:
 ifeq (, $(shell which fieldalignment))
-	$(shell go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@v0.29.0)
+	$(shell go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@v0.37.0)
 endif
 
 .PHONY: ensure_tagalign_installed
@@ -80,12 +74,6 @@ endif
 ensure_gci_installed:
 ifeq (, $(shell which gci))
 	$(shell go install github.com/daixiang0/gci@v0.13.5)
-endif
-
-.PHONY: ensure_sqlc_installed
-ensure_sqlc_installed:
-ifeq (, $(shell which sqlc))
-	$(shell go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0)
 endif
 
 .PHONY: ensure_air_installed
@@ -113,7 +101,7 @@ ifeq (, $(shell which protoc-gen-go-grpc))
 endif
 
 .PHONY: setup
-setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_scc_installed ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed ensure_sqlc_installed ensure_scc_installed
+setup: $(ARTIFACTS_DIR) revendor rewire configs ensure_wire_installed ensure_fieldalignment_installed ensure_tagalign_installed ensure_gci_installed
 
 .PHONY: clean_vendor
 clean_vendor:
@@ -279,24 +267,6 @@ dev: $(ARTIFACTS_DIR)
 .PHONY: run_admin_app
 run_admin_app: ensure_air_installed
 	(cd cmd/services/admin_webapp && CONFIGURATION_FILEPATH="../../../$(ENVIRONMENTS_DIR)/localdev/config_files/admin_webapp_config.json" air -c .air.toml)
-
-## MISC
-
-.PHONY: line_count
-line_count: ensure_scc_installed
-	@scc --include-ext go --exclude-dir vendor
-
-disable:
-	find "$(DIR)" -maxdepth 1 -type f -name '*.go' -exec bash -c 'mv -- "$$1" "$$1.disabled"' _ {} \;
-
-enable:
-	@if [ -z "$(DIR)" ]; then echo "Error: FOLDER must be specified"; exit 1; fi
-	for file in "$(DIR)"/*.disabled; do \
-		if [ -f "$$file" ]; then \
-			newfile="$${file%.disabled}"; \
-			mv -- "$$file" "$$newfile"; \
-		fi; \
-	done
 
 # OPERATIONS
 
