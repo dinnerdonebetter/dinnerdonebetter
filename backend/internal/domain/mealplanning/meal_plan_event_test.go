@@ -20,7 +20,7 @@ func TestMealPlanEventCreationRequestInput_ValidateWithContext(T *testing.T) {
 		x := &MealPlanEventCreationRequestInput{
 			MealName: SecondBreakfastMealName,
 			StartsAt: time.Now(),
-			EndsAt:   time.Now(),
+			EndsAt:   time.Now().Add(time.Hour),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

@@ -1,23 +1,81 @@
 package circuitbreaking
 
 import (
+	"errors"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/metrics"
+	mockmetrics "github.com/dinnerdonebetter/backend/internal/platform/observability/metrics/mock"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"go.opentelemetry.io/otel/metric"
 )
 
 //nolint:paralleltest // race condition in the core circuit breaker library, I think?
-func TestProvideCircuitBreaker(t *testing.T) {
-	cfg := &Config{}
-	cfg.EnsureDefaults()
+func TestProvideCircuitBreaker(T *testing.T) {
+	T.Run("standard", func(t *testing.T) {
+		cfg := &Config{}
+		cfg.EnsureDefaults()
 
-	cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
-	assert.NotNil(t, cb)
-	assert.NoError(t, err)
+		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), metrics.NewNoopMetricsProvider())
+		assert.NotNil(t, cb)
+		assert.NoError(t, err)
+	})
+
+	T.Run("with error providing first metric", func(t *testing.T) {
+		cfg := &Config{}
+		cfg.EnsureDefaults()
+
+		i64Counter := &mockmetrics.Int64Counter{}
+
+		mp := &mockmetrics.MetricsProvider{}
+		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
+
+		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), mp)
+		assert.Nil(t, cb)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, mp)
+	})
+
+	T.Run("with error providing second metric", func(t *testing.T) {
+		cfg := &Config{}
+		cfg.EnsureDefaults()
+
+		i64Counter := &mockmetrics.Int64Counter{}
+
+		mp := &mockmetrics.MetricsProvider{}
+		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
+		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_failed", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
+
+		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), mp)
+		assert.Nil(t, cb)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, mp)
+	})
+
+	T.Run("with error providing third metric", func(t *testing.T) {
+		cfg := &Config{}
+		cfg.EnsureDefaults()
+
+		i64Counter := &mockmetrics.Int64Counter{}
+
+		mp := &mockmetrics.MetricsProvider{}
+		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
+		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_failed", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, nil)
+		mp.On("NewInt64Counter", fmt.Sprintf("%s_circuit_breaker_reset", cfg.Name), []metric.Int64CounterOption(nil)).Return(i64Counter, errors.New("arbitrary"))
+
+		cb, err := ProvideCircuitBreaker(cfg, logging.NewNoopLogger(), mp)
+		assert.Nil(t, cb)
+		assert.Error(t, err)
+
+		mock.AssertExpectationsForObjects(t, mp)
+	})
 }
 
 //nolint:paralleltest // race condition in the core circuit breaker library, I think?
@@ -27,9 +85,6 @@ func TestEnsureCircuitBreaker(t *testing.T) {
 
 //nolint:paralleltest // race condition in the core circuit breaker library, I think?
 func TestCircuitBreaker_Integration(t *testing.T) {
-	// there is a data race bug in the circuit breaker library that prevents this from not tripping the data race detector.
-	t.SkipNow()
-
 	cfg := &Config{
 		Name:                   t.Name(),
 		ErrorRate:              1,

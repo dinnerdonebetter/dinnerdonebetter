@@ -30,6 +30,6 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
 		validation.Field(&cfg.Name, validation.Required),
 		validation.Field(&cfg.ErrorRate, validation.Min(0.01), validation.Max(0.99)),
-		validation.Field(&cfg.MinimumSampleThreshold, validation.Min(0.01), validation.Max(0.99)),
+		validation.Field(&cfg.MinimumSampleThreshold),
 	)
 }

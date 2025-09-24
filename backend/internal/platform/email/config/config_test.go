@@ -1,10 +1,13 @@
 package emailcfg
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/mailgun"
+	"github.com/dinnerdonebetter/backend/internal/platform/email/mailjet"
 	"github.com/dinnerdonebetter/backend/internal/platform/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -42,19 +45,29 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 func TestConfig_ProvideEmailer(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with SendGrid", func(t *testing.T) {
-		t.Parallel()
+	providers := []string{
+		ProviderSendgrid,
+		ProviderMailgun,
+		ProviderMailjet,
+	}
 
-		logger := logging.NewNoopLogger()
-		cfg := &Config{
-			Provider: ProviderSendgrid,
-			Sendgrid: &sendgrid.Config{APIToken: t.Name()},
-		}
+	for _, provider := range providers {
+		T.Run(fmt.Sprintf("with %s", provider), func(t *testing.T) {
+			t.Parallel()
 
-		actual, err := cfg.ProvideEmailer(logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
-		assert.NotNil(t, actual)
-		assert.NoError(t, err)
-	})
+			logger := logging.NewNoopLogger()
+			cfg := &Config{
+				Provider: provider,
+				Sendgrid: &sendgrid.Config{APIToken: t.Name()},
+				Mailgun:  &mailgun.Config{PrivateAPIKey: t.Name(), Domain: t.Name()},
+				Mailjet:  &mailjet.Config{APIKey: t.Name(), SecretKey: t.Name()},
+			}
+
+			actual, err := cfg.ProvideEmailer(logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
+			assert.NotNil(t, actual)
+			assert.NoError(t, err)
+		})
+	}
 
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
