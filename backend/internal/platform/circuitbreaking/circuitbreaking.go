@@ -54,6 +54,14 @@ func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider 
 	if cfg == nil {
 		return nil, internalerrors.NilConfigError("circuit breaker")
 	}
+
+	logger = logging.EnsureLogger(logger).WithValue("circuit_breaker", cfg.Name)
+
+	if err := cfg.ValidateWithContext(context.Background()); err != nil {
+		logger.Error("invalid config passed, providing noop circuit breaker", err)
+		return NewNoopCircuitBreaker(), nil
+	}
+
 	cfg.EnsureDefaults()
 
 	brokenCounter, err := metricsProvider.NewInt64Counter(fmt.Sprintf("%s_circuit_breaker_tripped", cfg.Name))
@@ -70,8 +78,6 @@ func (cfg *Config) ProvideCircuitBreaker(logger logging.Logger, metricsProvider 
 	if err != nil {
 		return nil, err
 	}
-
-	logger = logging.EnsureLogger(logger).WithValue("circuit_breaker", cfg.Name)
 
 	cb := circuit.NewBreakerWithOptions(&circuit.Options{
 		ShouldTrip: func(cb *circuit.Breaker) bool {

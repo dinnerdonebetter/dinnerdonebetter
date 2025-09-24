@@ -5,8 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"hash/fnv"
-	"io"
-	"log"
 	"net"
 	"testing"
 	"time"
@@ -84,7 +82,6 @@ func buildDatabaseConnectionForTest(t *testing.T, ctx context.Context) (*sql.DB,
 	t.Helper()
 
 	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t.Name()))
-	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
 
 	var container *postgres.PostgresContainer
 	err := try.Do(func(attempt int) (bool, error) {

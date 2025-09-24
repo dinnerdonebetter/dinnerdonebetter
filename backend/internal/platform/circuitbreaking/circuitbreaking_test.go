@@ -85,6 +85,8 @@ func TestEnsureCircuitBreaker(t *testing.T) {
 
 //nolint:paralleltest // race condition in the core circuit breaker library, I think?
 func TestCircuitBreaker_Integration(t *testing.T) {
+	t.SkipNow() // cannot run this with the race detector on
+
 	cfg := &Config{
 		Name:                   t.Name(),
 		ErrorRate:              1,
