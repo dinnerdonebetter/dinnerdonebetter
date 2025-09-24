@@ -1,0 +1,40 @@
+package grpc
+
+import (
+	"testing"
+
+	managermock "github.com/dinnerdonebetter/backend/internal/domain/oauth/manager/mock"
+	oauthsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/oauth"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestNewService(t *testing.T) {
+	t.Parallel()
+
+	t.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		logger := logging.NewNoopLogger()
+		tracerProvider := tracing.NewNoopTracerProvider()
+		oauthDataManager := &managermock.OAuth2Manager{}
+
+		service := NewService(
+			logger,
+			tracerProvider,
+			oauthDataManager,
+		)
+
+		assert.NotNil(t, service)
+		assert.Implements(t, (*oauthsvc.OAuthServiceServer)(nil), service)
+
+		// Type assertion to ensure we get the correct implementation
+		impl, ok := service.(*serviceImpl)
+		assert.True(t, ok)
+		assert.NotNil(t, impl.logger)
+		assert.NotNil(t, impl.tracer)
+		assert.Equal(t, oauthDataManager, impl.oauthDataManager)
+	})
+}
