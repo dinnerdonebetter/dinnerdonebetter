@@ -8,7 +8,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func buildTestService(t *testing.T) *serviceImpl {
@@ -34,10 +33,7 @@ func TestNewDataPrivacyService(t *testing.T) {
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
 
-		service := NewDataPrivacyService(
-			logger,
-			tracerProvider,
-		)
+		service := NewDataPrivacyService(logger, tracerProvider)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*dataprivacysvc.DataPrivacyServiceServer)(nil), service)
@@ -53,7 +49,7 @@ func TestNewDataPrivacyService(t *testing.T) {
 func TestServiceImpl_AggregateUserDataReport(t *testing.T) {
 	t.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -63,8 +59,8 @@ func TestServiceImpl_AggregateUserDataReport(t *testing.T) {
 
 		response, err := service.AggregateUserDataReport(ctx, request)
 
-		require.NotNil(t, response)
 		assert.NoError(t, err)
+		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotEmpty(t, response.ResponseDetails.TraceID)
 	})
@@ -73,7 +69,7 @@ func TestServiceImpl_AggregateUserDataReport(t *testing.T) {
 func TestServiceImpl_DestroyAllUserData(t *testing.T) {
 	t.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -83,8 +79,8 @@ func TestServiceImpl_DestroyAllUserData(t *testing.T) {
 
 		response, err := service.DestroyAllUserData(ctx, request)
 
-		require.NotNil(t, response)
 		assert.NoError(t, err)
+		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotEmpty(t, response.ResponseDetails.TraceID)
 	})
@@ -93,7 +89,7 @@ func TestServiceImpl_DestroyAllUserData(t *testing.T) {
 func TestServiceImpl_FetchUserDataReport(t *testing.T) {
 	t.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -103,8 +99,8 @@ func TestServiceImpl_FetchUserDataReport(t *testing.T) {
 
 		response, err := service.FetchUserDataReport(ctx, request)
 
-		require.NotNil(t, response)
 		assert.NoError(t, err)
+		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
 		assert.NotEmpty(t, response.ResponseDetails.TraceID)
 	})

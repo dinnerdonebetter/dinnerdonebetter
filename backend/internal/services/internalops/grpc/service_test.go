@@ -6,14 +6,12 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication/sessions"
-	"github.com/dinnerdonebetter/backend/internal/authorization"
 	settingssvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/internalops"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -23,16 +21,16 @@ func buildTestService(t *testing.T) *serviceImpl {
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	msgCfg := &msgconfig.Config{}
+	msgConfig := &msgconfig.Config{}
 
 	service := &serviceImpl{
 		tracer:    tracer,
 		logger:    logger,
-		msgConfig: msgCfg,
+		msgConfig: msgConfig,
 		sessionContextDataFetcher: func(ctx context.Context) (sessions.ContextData, error) {
 			return sessions.ContextData{
 				Requester: sessions.RequesterInfo{
-					ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceAdminRole.String()),
+					ServicePermissions: nil,
 				},
 			}, nil
 		},
@@ -46,12 +44,12 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	msgCfg := &msgconfig.Config{}
+	msgConfig := &msgconfig.Config{}
 
 	service := &serviceImpl{
 		tracer:    tracer,
 		logger:    logger,
-		msgConfig: msgCfg,
+		msgConfig: msgConfig,
 		sessionContextDataFetcher: func(ctx context.Context) (sessions.ContextData, error) {
 			return sessions.ContextData{}, errors.New("session error")
 		},
@@ -60,21 +58,21 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 	return service
 }
 
-func buildTestServiceWithoutPermission(t *testing.T) *serviceImpl {
+func buildTestServiceWithInsufficientPermissions(t *testing.T) *serviceImpl {
 	t.Helper()
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	msgCfg := &msgconfig.Config{}
+	msgConfig := &msgconfig.Config{}
 
 	service := &serviceImpl{
 		tracer:    tracer,
 		logger:    logger,
-		msgConfig: msgCfg,
+		msgConfig: msgConfig,
 		sessionContextDataFetcher: func(ctx context.Context) (sessions.ContextData, error) {
 			return sessions.ContextData{
 				Requester: sessions.RequesterInfo{
-					ServicePermissions: authorization.NewServiceRolePermissionChecker(authorization.ServiceUserRole.String()),
+					ServicePermissions: nil, // No permissions
 				},
 			}, nil
 		},
@@ -93,11 +91,7 @@ func TestNewService(t *testing.T) {
 		tracerProvider := tracing.NewNoopTracerProvider()
 		msgConfig := &msgconfig.Config{}
 
-		service := NewService(
-			logger,
-			tracerProvider,
-			msgConfig,
-		)
+		service := NewService(logger, tracerProvider, msgConfig)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*settingssvc.InternalOperationsServer)(nil), service)
@@ -114,11 +108,7 @@ func TestNewService(t *testing.T) {
 func TestServiceImpl_PublishArbitraryQueueMessage(t *testing.T) {
 	t.Parallel()
 
-	// Note: This test cannot easily test the full flow since it involves
-	// creating actual message queue publishers, which would require complex
-	// infrastructure setup. We test the validation and error paths instead.
-
-	t.Run("with session error", func(t *testing.T) {
+	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -126,16 +116,13 @@ func TestServiceImpl_PublishArbitraryQueueMessage(t *testing.T) {
 
 		request := &settingssvc.PublishArbitraryQueueMessageRequest{
 			QueueName: "test-queue",
-			Body:      "test message body",
+			Body:      "test message",
 		}
 
 		response, err := service.PublishArbitraryQueueMessage(ctx, request)
 
-		assert.Nil(t, response)
 		assert.Error(t, err)
-
-		grpcStatus, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Unauthenticated, grpcStatus.Code())
+		assert.Nil(t, response)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
 	})
 }

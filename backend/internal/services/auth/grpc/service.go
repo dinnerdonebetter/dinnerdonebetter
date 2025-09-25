@@ -26,7 +26,7 @@ type (
 		logger                logging.Logger
 		identityRepository    identity.Repository
 		authenticationManager authentication2.Manager
-		authManager           *managers.AuthManager
+		authManager           managers.AuthManagerInterface
 	}
 )
 
@@ -35,7 +35,7 @@ func NewAuthService(
 	tracerProvider tracing.TracerProvider,
 	identityRepository identity.Repository,
 	// bruh what the actual fuck are we even doing here
-	authManager *managers.AuthManager,
+	authManager managers.AuthManagerInterface,
 	authenticationManager authentication2.Manager,
 ) authsvc.AuthServiceServer {
 	return &serviceImpl{

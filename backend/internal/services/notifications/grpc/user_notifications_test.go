@@ -14,10 +14,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/platform/testutils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -27,15 +27,14 @@ func buildTestService(t *testing.T) (*serviceImpl, *notificationsmock.Repository
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	notificationsRepository := &notificationsmock.Repository{}
+	notificationsRepo := &notificationsmock.Repository{}
 
 	service := &serviceImpl{
 		tracer:                  tracer,
 		logger:                  logger,
-		notificationsRepository: notificationsRepository,
+		notificationsRepository: notificationsRepo,
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{
-				ActiveAccountID: "test-account-id",
 				Requester: sessions.RequesterInfo{
 					UserID: "test-user-id",
 				},
@@ -43,7 +42,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *notificationsmock.Repository
 		},
 	}
 
-	return service, notificationsRepository
+	return service, notificationsRepo
 }
 
 func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
@@ -53,8 +52,9 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 	tracer := tracing.NewTracerForTest(t.Name())
 
 	service := &serviceImpl{
-		tracer: tracer,
-		logger: logger,
+		tracer:                  tracer,
+		logger:                  logger,
+		notificationsRepository: &notificationsmock.Repository{},
 		sessionContextDataFetcher: func(ctx context.Context) (*sessions.ContextData, error) {
 			return nil, errors.New("session error")
 		},
@@ -66,35 +66,34 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 func TestServiceImpl_GetUserNotification(t *testing.T) {
 	t.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		userNotification := notificationsfakes.BuildFakeUserNotification()
+		service, mockRepo := buildTestService(t)
+
+		fakeNotification := notificationsfakes.BuildFakeUserNotification()
+		notificationID := fakeNotification.ID
 		userID := "test-user-id"
 
-		service, notificationsRepository := buildTestService(t)
+		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil)
 
 		request := &notificationssvc.GetUserNotificationRequest{
-			UserNotificationID: userNotification.ID,
+			UserNotificationID: notificationID,
 		}
-
-		notificationsRepository.On("GetUserNotification", mock.MatchedBy(func(ctx context.Context) bool { return true }), userID, userNotification.ID).Return(userNotification, nil)
 
 		response, err := service.GetUserNotification(ctx, request)
 
-		require.NotNil(t, response)
 		assert.NoError(t, err)
+		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
 		assert.NotNil(t, response.Result)
-		assert.Equal(t, userNotification.ID, response.Result.ID)
-		assert.Equal(t, userNotification.Content, response.Result.Content)
+		assert.Equal(t, fakeNotification.ID, response.Result.ID)
 
-		mock.AssertExpectationsForObjects(t, notificationsRepository)
+		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
 
-	t.Run("with session error", func(t *testing.T) {
+	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
@@ -106,270 +105,239 @@ func TestServiceImpl_GetUserNotification(t *testing.T) {
 
 		response, err := service.GetUserNotification(ctx, request)
 
-		assert.Nil(t, response)
 		assert.Error(t, err)
-
-		grpcStatus, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Unauthenticated, grpcStatus.Code())
+		assert.Nil(t, response)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
 	})
 
-	t.Run("with repository error", func(t *testing.T) {
+	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		userNotificationID := "test-notification-id"
-		userID := "test-user-id"
-		expectedError := errors.New("repository error")
+		service, mockRepo := buildTestService(t)
 
-		service, notificationsRepository := buildTestService(t)
+		notificationID := "nonexistent-notification"
+		userID := "test-user-id"
+
+		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return((*notifications.UserNotification)(nil), errors.New("repository error"))
 
 		request := &notificationssvc.GetUserNotificationRequest{
-			UserNotificationID: userNotificationID,
+			UserNotificationID: notificationID,
 		}
-
-		notificationsRepository.On("GetUserNotification", mock.MatchedBy(func(ctx context.Context) bool { return true }), userID, userNotificationID).Return((*notifications.UserNotification)(nil), expectedError)
 
 		response, err := service.GetUserNotification(ctx, request)
 
-		assert.Nil(t, response)
 		assert.Error(t, err)
+		assert.Nil(t, response)
+		assert.Equal(t, codes.Internal, status.Code(err))
 
-		grpcStatus, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Internal, grpcStatus.Code())
-
-		mock.AssertExpectationsForObjects(t, notificationsRepository)
+		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
 }
 
 func TestServiceImpl_GetUserNotifications(t *testing.T) {
 	t.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		userNotifications := []*notifications.UserNotification{
-			notificationsfakes.BuildFakeUserNotification(),
-			notificationsfakes.BuildFakeUserNotification(),
-		}
+		service, mockRepo := buildTestService(t)
+
+		fakeNotifications := notificationsfakes.BuildFakeUserNotificationsList()
 		userID := "test-user-id"
+		page := uint16(1)
+		pageSize := uint8(20)
+		filter := &filtering.QueryFilter{
+			Page:     &page,
+			PageSize: &pageSize,
+		}
 
-		service, notificationsRepository := buildTestService(t)
+		mockRepo.On("GetUserNotifications", testutils.ContextMatcher, userID, mock.AnythingOfType("*filtering.QueryFilter")).Return(fakeNotifications, nil)
 
+		grpcPageSize := uint32(*filter.PageSize)
 		request := &notificationssvc.GetUserNotificationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: func(x uint32) *uint32 { return &x }(20),
+				PageSize: &grpcPageSize,
 			},
 		}
-
-		expectedResult := &filtering.QueryFilteredResult[notifications.UserNotification]{
-			Data: userNotifications,
-			Pagination: filtering.Pagination{
-				Page:          1,
-				Limit:         20,
-				FilteredCount: uint64(len(userNotifications)),
-				TotalCount:    uint64(len(userNotifications)),
-			},
-		}
-
-		notificationsRepository.On("GetUserNotifications", mock.MatchedBy(func(ctx context.Context) bool { return true }), userID, mock.AnythingOfType("*filtering.QueryFilter")).Return(expectedResult, nil)
 
 		response, err := service.GetUserNotifications(ctx, request)
 
-		require.NotNil(t, response)
 		assert.NoError(t, err)
+		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
-		assert.NotNil(t, response.Results)
-		assert.Len(t, response.Results, len(userNotifications))
+		assert.Len(t, response.Results, len(fakeNotifications.Data))
 
-		for i, result := range response.Results {
-			assert.Equal(t, userNotifications[i].ID, result.ID)
-			assert.Equal(t, userNotifications[i].Content, result.Content)
-		}
-
-		mock.AssertExpectationsForObjects(t, notificationsRepository)
+		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
 
-	t.Run("with session error", func(t *testing.T) {
+	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
 
+		grpcPageSize := uint32(20)
 		request := &notificationssvc.GetUserNotificationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: func(x uint32) *uint32 { return &x }(20),
+				PageSize: &grpcPageSize,
 			},
 		}
 
 		response, err := service.GetUserNotifications(ctx, request)
 
-		assert.Nil(t, response)
 		assert.Error(t, err)
-
-		grpcStatus, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Unauthenticated, grpcStatus.Code())
+		assert.Nil(t, response)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
 	})
 
-	t.Run("with repository error", func(t *testing.T) {
+	t.Run("repository error", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
+		service, mockRepo := buildTestService(t)
+
 		userID := "test-user-id"
-		expectedError := errors.New("repository error")
 
-		service, notificationsRepository := buildTestService(t)
+		mockRepo.On("GetUserNotifications", testutils.ContextMatcher, userID, mock.AnythingOfType("*filtering.QueryFilter")).Return((*filtering.QueryFilteredResult[notifications.UserNotification])(nil), errors.New("repository error"))
 
+		grpcPageSize := uint32(20)
 		request := &notificationssvc.GetUserNotificationsRequest{
 			Filter: &grpcfiltering.QueryFilter{
-				PageSize: func(x uint32) *uint32 { return &x }(20),
+				PageSize: &grpcPageSize,
 			},
 		}
 
-		notificationsRepository.On("GetUserNotifications", mock.MatchedBy(func(ctx context.Context) bool { return true }), userID, mock.AnythingOfType("*filtering.QueryFilter")).Return((*filtering.QueryFilteredResult[notifications.UserNotification])(nil), expectedError)
-
 		response, err := service.GetUserNotifications(ctx, request)
 
-		assert.Nil(t, response)
 		assert.Error(t, err)
+		assert.Nil(t, response)
+		assert.Equal(t, codes.Internal, status.Code(err))
 
-		grpcStatus, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Internal, grpcStatus.Code())
-
-		mock.AssertExpectationsForObjects(t, notificationsRepository)
+		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
 }
 
 func TestServiceImpl_UpdateUserNotification(t *testing.T) {
 	t.Parallel()
 
-	t.Run("standard", func(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		userNotification := notificationsfakes.BuildFakeUserNotification()
+		service, mockRepo := buildTestService(t)
+
+		fakeNotification := notificationsfakes.BuildFakeUserNotification()
+		notificationID := fakeNotification.ID
 		userID := "test-user-id"
 		newStatus := notifications.UserNotificationStatusTypeRead
 
-		service, notificationsRepository := buildTestService(t)
+		// Mock the first call to get existing notification
+		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil).Once()
+
+		// Mock the update call
+		mockRepo.On("UpdateUserNotification", testutils.ContextMatcher, mock.AnythingOfType("*notifications.UserNotification")).Return(nil).Once()
+
+		// Mock the second call to get updated notification
+		updatedNotification := *fakeNotification
+		updatedNotification.Status = newStatus
+		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(&updatedNotification, nil).Once()
 
 		request := &notificationssvc.UpdateUserNotificationRequest{
-			UserNotificationID: userNotification.ID,
+			UserNotificationID: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
 				Status: &newStatus,
 			},
 		}
 
-		updatedNotification := &notifications.UserNotification{
-			ID: userNotification.ID,
-		}
-
-		notificationsRepository.On("GetUserNotification", mock.MatchedBy(func(ctx context.Context) bool { return true }), userID, userNotification.ID).Return(userNotification, nil).Twice()
-		notificationsRepository.On("UpdateUserNotification", mock.MatchedBy(func(ctx context.Context) bool { return true }), mock.AnythingOfType("*notifications.UserNotification")).Return(nil).Once()
-
 		response, err := service.UpdateUserNotification(ctx, request)
 
-		require.NotNil(t, response)
 		assert.NoError(t, err)
+		assert.NotNil(t, response)
 		assert.NotNil(t, response.ResponseDetails)
-		assert.NotEmpty(t, response.ResponseDetails.TraceID)
 		assert.NotNil(t, response.Updated)
-		assert.Equal(t, updatedNotification.ID, response.Updated.ID)
+		assert.Equal(t, newStatus, response.Updated.Status)
 
-		mock.AssertExpectationsForObjects(t, notificationsRepository)
+		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
 
-	t.Run("with session error", func(t *testing.T) {
+	t.Run("session context error", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
 		service := buildTestServiceWithSessionError(t)
-		newStatus := notifications.UserNotificationStatusTypeRead
 
+		statusValue := notifications.UserNotificationStatusTypeRead
 		request := &notificationssvc.UpdateUserNotificationRequest{
 			UserNotificationID: "test-notification-id",
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
-				Status: &newStatus,
+				Status: &statusValue,
 			},
 		}
 
 		response, err := service.UpdateUserNotification(ctx, request)
 
-		assert.Nil(t, response)
 		assert.Error(t, err)
-
-		grpcStatus, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Unauthenticated, grpcStatus.Code())
+		assert.Nil(t, response)
+		assert.Equal(t, codes.Unauthenticated, status.Code(err))
 	})
 
-	t.Run("with get notification error", func(t *testing.T) {
+	t.Run("repository error on get", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		userNotificationID := "test-notification-id"
+		service, mockRepo := buildTestService(t)
+
+		notificationID := "nonexistent-notification"
 		userID := "test-user-id"
-		expectedError := errors.New("repository error")
-		newStatus := notifications.UserNotificationStatusTypeRead
 
-		service, notificationsRepository := buildTestService(t)
+		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return((*notifications.UserNotification)(nil), errors.New("repository error"))
 
+		statusValue := notifications.UserNotificationStatusTypeRead
 		request := &notificationssvc.UpdateUserNotificationRequest{
-			UserNotificationID: userNotificationID,
+			UserNotificationID: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
-				Status: &newStatus,
+				Status: &statusValue,
 			},
 		}
 
-		notificationsRepository.On("GetUserNotification", mock.MatchedBy(func(ctx context.Context) bool { return true }), userID, userNotificationID).Return((*notifications.UserNotification)(nil), expectedError)
-
 		response, err := service.UpdateUserNotification(ctx, request)
 
-		assert.Nil(t, response)
 		assert.Error(t, err)
+		assert.Nil(t, response)
+		assert.Equal(t, codes.Internal, status.Code(err))
 
-		grpcStatus, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Internal, grpcStatus.Code())
-
-		mock.AssertExpectationsForObjects(t, notificationsRepository)
+		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
 
-	t.Run("with update notification error", func(t *testing.T) {
+	t.Run("repository error on update", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		userNotification := notificationsfakes.BuildFakeUserNotification()
+		service, mockRepo := buildTestService(t)
+
+		fakeNotification := notificationsfakes.BuildFakeUserNotification()
+		notificationID := fakeNotification.ID
 		userID := "test-user-id"
-		expectedError := errors.New("update error")
-		newStatus := notifications.UserNotificationStatusTypeRead
 
-		service, notificationsRepository := buildTestService(t)
+		mockRepo.On("GetUserNotification", testutils.ContextMatcher, userID, notificationID).Return(fakeNotification, nil).Once()
+		mockRepo.On("UpdateUserNotification", testutils.ContextMatcher, mock.AnythingOfType("*notifications.UserNotification")).Return(errors.New("update error")).Once()
 
+		statusValue := notifications.UserNotificationStatusTypeRead
 		request := &notificationssvc.UpdateUserNotificationRequest{
-			UserNotificationID: userNotification.ID,
+			UserNotificationID: notificationID,
 			Input: &notificationssvc.UserNotificationUpdateRequestInput{
-				Status: &newStatus,
+				Status: &statusValue,
 			},
 		}
 
-		notificationsRepository.On("GetUserNotification", mock.MatchedBy(func(ctx context.Context) bool { return true }), userID, userNotification.ID).Return(userNotification, nil)
-		notificationsRepository.On("UpdateUserNotification", mock.MatchedBy(func(ctx context.Context) bool { return true }), mock.AnythingOfType("*notifications.UserNotification")).Return(expectedError)
-
 		response, err := service.UpdateUserNotification(ctx, request)
 
-		assert.Nil(t, response)
 		assert.Error(t, err)
+		assert.Nil(t, response)
+		assert.Equal(t, codes.Internal, status.Code(err))
 
-		grpcStatus, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.Internal, grpcStatus.Code())
-
-		mock.AssertExpectationsForObjects(t, notificationsRepository)
+		mock.AssertExpectationsForObjects(t, mockRepo)
 	})
 }

@@ -19,13 +19,9 @@ func TestNewService(t *testing.T) {
 
 		logger := logging.NewNoopLogger()
 		tracerProvider := tracing.NewNoopTracerProvider()
-		oauthDataManager := &managermock.OAuth2Manager{}
+		oauthManager := &managermock.OAuth2Manager{}
 
-		service := NewService(
-			logger,
-			tracerProvider,
-			oauthDataManager,
-		)
+		service := NewService(logger, tracerProvider, oauthManager)
 
 		assert.NotNil(t, service)
 		assert.Implements(t, (*oauthsvc.OAuthServiceServer)(nil), service)
@@ -35,6 +31,6 @@ func TestNewService(t *testing.T) {
 		assert.True(t, ok)
 		assert.NotNil(t, impl.logger)
 		assert.NotNil(t, impl.tracer)
-		assert.Equal(t, oauthDataManager, impl.oauthDataManager)
+		assert.Equal(t, oauthManager, impl.oauthDataManager)
 	})
 }
