@@ -36,6 +36,7 @@ func buildFakeSessionContextData() *sessions.ContextData {
 }
 
 func buildContextWithSessionData(t *testing.T) context.Context {
+	t.Helper()
 	sessionData := buildFakeSessionContextData()
 	sessionData.AccountPermissions[sessionData.ActiveAccountID] = authorization.NewAccountRolePermissionChecker("account_member")
 	return context.WithValue(t.Context(), sessions.SessionContextDataKey, sessionData)

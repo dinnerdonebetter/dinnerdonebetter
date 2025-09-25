@@ -70,10 +70,8 @@ func TestServiceImpl_GetAuditLogEntriesForAccount(t *testing.T) {
 		service, mockRepo := buildTestService(t)
 
 		fakeAuditLogEntries := auditfakes.BuildFakeAuditLogEntriesList()
-		page := uint16(1)
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Page:     &page,
 			PageSize: &pageSize,
 		}
 
@@ -103,10 +101,8 @@ func TestServiceImpl_GetAuditLogEntriesForAccount(t *testing.T) {
 		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
-		page := uint16(1)
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Page:     &page,
 			PageSize: &pageSize,
 		}
 
@@ -139,10 +135,8 @@ func TestServiceImpl_GetAuditLogEntriesForUser(t *testing.T) {
 		service, mockRepo := buildTestService(t)
 
 		fakeAuditLogEntries := auditfakes.BuildFakeAuditLogEntriesList()
-		page := uint16(1)
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Page:     &page,
 			PageSize: &pageSize,
 		}
 
@@ -172,10 +166,8 @@ func TestServiceImpl_GetAuditLogEntriesForUser(t *testing.T) {
 		ctx := t.Context()
 		service, mockRepo := buildTestService(t)
 
-		page := uint16(1)
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Page:     &page,
 			PageSize: &pageSize,
 		}
 

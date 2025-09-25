@@ -6,6 +6,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 )
 
+var (
+	_ AuthManagerInterface = (*AuthManager)(nil)
+)
+
 // AuthManagerInterface defines the methods that the auth manager must implement.
 type AuthManagerInterface interface {
 	CheckUserPermissions(ctx context.Context, input *auth.UserPermissionsRequestInput) (*auth.UserPermissionsResponse, error)
@@ -18,6 +22,3 @@ type AuthManagerInterface interface {
 	TOTPSecretVerification(ctx context.Context, input *auth.TOTPSecretVerificationInput) error
 	UpdatePassword(ctx context.Context, input *auth.PasswordUpdateInput) error
 }
-
-// Ensure AuthManager implements the interface
-var _ AuthManagerInterface = (*AuthManager)(nil)

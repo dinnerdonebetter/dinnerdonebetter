@@ -146,10 +146,8 @@ func TestServiceImpl_GetUserNotifications(t *testing.T) {
 
 		fakeNotifications := notificationsfakes.BuildFakeUserNotificationsList()
 		userID := "test-user-id"
-		page := uint16(1)
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Page:     &page,
 			PageSize: &pageSize,
 		}
 

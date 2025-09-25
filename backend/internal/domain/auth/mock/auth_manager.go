@@ -9,13 +9,14 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var (
+	_ managers.AuthManagerInterface = (*AuthManager)(nil)
+)
+
 // AuthManager is a mock implementation of the auth manager.
 type AuthManager struct {
 	mock.Mock
 }
-
-// Ensure AuthManager implements the interface
-var _ managers.AuthManagerInterface = (*AuthManager)(nil)
 
 // CheckUserPermissions is a mock method.
 func (m *AuthManager) CheckUserPermissions(ctx context.Context, input *auth.UserPermissionsRequestInput) (*auth.UserPermissionsResponse, error) {

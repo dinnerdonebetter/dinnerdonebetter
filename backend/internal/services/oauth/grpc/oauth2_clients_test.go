@@ -157,10 +157,8 @@ func TestServiceImpl_GetOAuth2Clients(t *testing.T) {
 		service, mockManager := buildTestService(t)
 
 		fakeClients := oauthfakes.BuildFakeOAuth2ClientsList()
-		page := uint16(1)
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Page:     &page,
 			PageSize: &pageSize,
 		}
 
@@ -189,10 +187,8 @@ func TestServiceImpl_GetOAuth2Clients(t *testing.T) {
 		ctx := t.Context()
 		service, mockManager := buildTestService(t)
 
-		page := uint16(1)
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			Page:     &page,
 			PageSize: &pageSize,
 		}
 
