@@ -1,4 +1,9 @@
--- Begin enumerated types
+-- Meal Planning Domain Migration
+-- All recipe, meal, and meal planning functionality
+
+-- =============================================================================
+-- ENUMERATED TYPES
+-- =============================================================================
 
 CREATE TYPE component_type AS ENUM (
     'unspecified',
@@ -21,7 +26,7 @@ CREATE TYPE grocery_list_item_status AS ENUM (
 );
 
 CREATE TYPE ingredient_attribute_type AS ENUM (
-    'TEXTure',
+    'texture',
     'consistency',
     'color',
     'appearance',
@@ -88,6 +93,10 @@ CREATE TYPE vessel_shape AS ENUM (
     'cube',
     'other'
 );
+
+-- =============================================================================
+-- VALID ENTITY TABLES
+-- =============================================================================
 
 CREATE TABLE IF NOT EXISTS valid_ingredient_states (
     id TEXT NOT NULL PRIMARY KEY,
@@ -317,7 +326,9 @@ CREATE TABLE IF NOT EXISTS valid_preparation_vessels (
     UNIQUE(valid_preparation_id, valid_vessel_id, archived_at)
 );
 
--- Begin non-enumerated types
+-- =============================================================================
+-- USER PREFERENCES AND ACCOUNT OWNERSHIPS
+-- =============================================================================
 
 CREATE TABLE IF NOT EXISTS user_ingredient_preferences (
     id TEXT NOT NULL PRIMARY KEY,
@@ -343,6 +354,10 @@ CREATE TABLE IF NOT EXISTS account_instrument_ownerships (
     archived_at TIMESTAMP WITH TIME ZONE,
     UNIQUE(valid_instrument_id, belongs_to_account, archived_at)
 );
+
+-- =============================================================================
+-- RECIPE TABLES
+-- =============================================================================
 
 CREATE TABLE IF NOT EXISTS recipes (
     id TEXT NOT NULL PRIMARY KEY,
@@ -541,6 +556,10 @@ CREATE TABLE IF NOT EXISTS recipe_ratings (
     UNIQUE(by_user, recipe_id)
 );
 
+-- =============================================================================
+-- MEAL TABLES
+-- =============================================================================
+
 CREATE TABLE IF NOT EXISTS meals (
     id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
@@ -565,6 +584,10 @@ CREATE TABLE IF NOT EXISTS meal_components (
     meal_component_type component_type DEFAULT 'unspecified'::component_type NOT NULL,
     recipe_scale NUMERIC(14,2) DEFAULT 1.0 NOT NULL
 );
+
+-- =============================================================================
+-- MEAL PLAN TABLES
+-- =============================================================================
 
 CREATE TABLE IF NOT EXISTS meal_plans (
     id TEXT NOT NULL PRIMARY KEY,
@@ -745,6 +768,7 @@ CREATE INDEX idx_user_ingredient_preferences_rating ON user_ingredient_preferenc
 CREATE INDEX idx_instrument_ownerships_account ON account_instrument_ownerships (belongs_to_account) WHERE archived_at IS NULL;
 CREATE INDEX idx_instrument_ownerships_instrument ON account_instrument_ownerships (valid_instrument_id) WHERE archived_at IS NULL;
 
+
 -- Recipes indexes
 CREATE INDEX idx_recipes_archived_at ON recipes (archived_at) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipes_created_by_user ON recipes (created_by_user) WHERE archived_at IS NULL;
@@ -760,6 +784,8 @@ CREATE INDEX idx_recipes_user_created_at ON recipes (created_by_user, created_at
 CREATE INDEX idx_recipes_created_at_id ON recipes (created_at, id) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipes_validation_needed ON recipes (last_validated_at) WHERE archived_at IS NULL AND last_validated_at IS NULL;
 CREATE INDEX idx_recipes_indexing_needed ON recipes (last_indexed_at) WHERE archived_at IS NULL;
+
+/*
 
 -- Recipe steps indexes
 CREATE INDEX idx_recipe_steps_recipe ON recipe_steps (belongs_to_recipe) WHERE archived_at IS NULL;
@@ -819,6 +845,8 @@ CREATE INDEX idx_prep_task_steps_step ON recipe_prep_task_steps (belongs_to_reci
 -- Recipe ratings indexes
 CREATE INDEX idx_recipe_ratings_recipe ON recipe_ratings (recipe_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_ratings_user ON recipe_ratings (by_user) WHERE archived_at IS NULL;
+
+*/
 
 -- Meals indexes
 CREATE INDEX idx_meals_archived_at ON meals (archived_at) WHERE archived_at IS NULL;

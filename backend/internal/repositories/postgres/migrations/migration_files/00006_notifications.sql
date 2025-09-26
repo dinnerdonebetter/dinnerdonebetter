@@ -1,3 +1,6 @@
+-- Notifications Domain Migration
+-- User notification management
+
 CREATE TYPE user_notification_status AS ENUM (
     'unread',
     'read',
@@ -12,6 +15,10 @@ CREATE TABLE IF NOT EXISTS user_notifications (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE
 );
+
+-- =============================================================================
+-- INDEXES FOR NOTIFICATIONS TABLES
+-- =============================================================================
 
 -- User notifications indexes
 CREATE INDEX idx_user_notifications_user ON user_notifications (belongs_to_user);

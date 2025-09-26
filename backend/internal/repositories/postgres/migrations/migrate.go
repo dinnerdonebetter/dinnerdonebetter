@@ -29,19 +29,35 @@ func NewMigrator(logger logging.Logger, tracerProvider tracing.TracerProvider, d
 	migrations := []*databasecfg.MigrationSpec{
 		{
 			Description: "basic infrastructural tables",
-			RawQuery:    fetchMigration("00001_baseline"),
+			RawQuery:    fetchMigration("00001_identity"),
 		},
 		{
 			Description: "service types and tables",
-			RawQuery:    fetchMigration("00002_initial"),
+			RawQuery:    fetchMigration("00002_auditlogentries"),
 		},
 		{
 			Description: "user notifications table",
-			RawQuery:    fetchMigration("00003_user_notifications"),
+			RawQuery:    fetchMigration("00003_auth"),
 		},
 		{
 			Description: "audit log table",
-			RawQuery:    fetchMigration("00004_audit_log"),
+			RawQuery:    fetchMigration("00004_oauth"),
+		},
+		{
+			Description: "audit log table",
+			RawQuery:    fetchMigration("00005_settings"),
+		},
+		{
+			Description: "audit log table",
+			RawQuery:    fetchMigration("00006_notifications"),
+		},
+		{
+			Description: "audit log table",
+			RawQuery:    fetchMigration("00007_webhooks"),
+		},
+		{
+			Description: "audit log table",
+			RawQuery:    fetchMigration("00008_mealplanning"),
 		},
 	}
 

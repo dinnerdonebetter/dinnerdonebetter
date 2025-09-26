@@ -1,3 +1,6 @@
+-- Audit Log Entries Domain Migration
+-- Audit trail functionality
+
 CREATE TYPE audit_log_event_type AS ENUM (
     'other',
     'created',
@@ -15,6 +18,10 @@ CREATE TABLE IF NOT EXISTS audit_log_entries (
     belongs_to_user TEXT REFERENCES users("id") ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
+
+-- =============================================================================
+-- INDEXES FOR AUDIT LOG TABLES
+-- =============================================================================
 
 -- Audit log entries indexes
 CREATE INDEX idx_audit_log_user ON audit_log_entries (belongs_to_user);
