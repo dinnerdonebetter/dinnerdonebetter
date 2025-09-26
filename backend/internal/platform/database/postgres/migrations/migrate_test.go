@@ -23,7 +23,7 @@ func TestQuerier_Migrate(T *testing.T) {
 
 		config := &databasecfg.Config{MaxPingAttempts: 1, PingWaitPeriod: time.Second}
 
-		migrator := NewMigrator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db, config)
+		migrator := NewMigrator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), db, config, nil)
 		migrator.migrateOnce.Do(func() {})
 
 		ctx := t.Context()
