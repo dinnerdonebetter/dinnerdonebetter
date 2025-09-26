@@ -22,21 +22,14 @@ type Migrator struct {
 	config      *databasecfg.Config
 	db          *sql.DB
 	migrateOnce sync.Once
-	migrations  []*databasecfg.MigrationSpec
 }
 
-func NewMigrator(
-	logger logging.Logger,
-	tracerProvider tracing.TracerProvider,
-	db *sql.DB,
-	config *databasecfg.Config,
-) *Migrator {
+func NewMigrator(logger logging.Logger, tracerProvider tracing.TracerProvider, db *sql.DB, config *databasecfg.Config) *Migrator {
 	return &Migrator{
-		config:     config,
-		logger:     logging.EnsureLogger(logger),
-		tracer:     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("postgres_migrator")),
-		db:         db,
-		migrations: config.Migrations,
+		config: config,
+		logger: logging.EnsureLogger(logger),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("postgres_migrator")),
+		db:     db,
 	}
 }
 

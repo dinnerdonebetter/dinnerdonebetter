@@ -5,12 +5,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth/generated"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"

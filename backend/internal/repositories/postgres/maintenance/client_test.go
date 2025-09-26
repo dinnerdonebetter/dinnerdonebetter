@@ -5,10 +5,10 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 
 	"github.com/stretchr/testify/require"
 	pgcontainers "github.com/testcontainers/testcontainers-go/modules/postgres"
