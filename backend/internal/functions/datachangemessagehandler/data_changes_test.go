@@ -314,11 +314,7 @@ func TestAsyncDataChangeMessageHandler_handleSearchIndexUpdates(t *testing.T) {
 }
 
 func TestAsyncDataChangeMessageHandler_handleOutboundNotifications(T *testing.T) {
-	T.Parallel()
-
 	T.Run("with nil message", func(t *testing.T) {
-		t.Parallel()
-
 		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
 
 		ctx := t.Context()

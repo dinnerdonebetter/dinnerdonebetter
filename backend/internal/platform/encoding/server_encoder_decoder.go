@@ -41,6 +41,7 @@ type (
 		EncodeResponseWithStatus(ctx context.Context, res http.ResponseWriter, val any, statusCode int)
 		DecodeRequest(ctx context.Context, req *http.Request, dest any) error
 		DecodeBytes(ctx context.Context, payload []byte, dest any) error
+		// TODO: add DecodeContentType and EncodeContentType that take content type as arguments.
 		MustEncode(ctx context.Context, v any) []byte
 		MustEncodeJSON(ctx context.Context, v any) []byte
 	}

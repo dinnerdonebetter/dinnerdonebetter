@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
@@ -25,7 +26,7 @@ func (a *AsyncDataChangeMessageHandler) WebhookExecutionRequestsEventHandler(ctx
 	start := time.Now()
 
 	var webhookExecutionRequest webhooks.WebhookExecutionRequest
-	if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&webhookExecutionRequest); err != nil {
+	if err := a.decoder.DecodeBytes(ctx, rawMsg, &webhookExecutionRequest); err != nil {
 		return fmt.Errorf("decoding JSON body: %w", err)
 	}
 
@@ -64,12 +65,12 @@ func (a *AsyncDataChangeMessageHandler) handleWebhookExecutionRequest(
 
 	var payloadBody []byte
 	switch webhook.ContentType {
-	case "application/json":
+	case encoding.ContentTypeToString(encoding.ContentTypeJSON):
 		payloadBody, err = json.Marshal(webhookExecutionRequest.Payload)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "marshaling webhook payload")
 		}
-	case "application/xml":
+	case encoding.ContentTypeToString(encoding.ContentTypeXML):
 		payloadBody, err = xml.Marshal(webhookExecutionRequest.Payload)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "marshaling webhook payload")

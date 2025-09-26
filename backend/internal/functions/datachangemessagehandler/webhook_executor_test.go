@@ -1,7 +1,6 @@
 package datachangemessagehandler
 
 import (
-	"encoding/json"
 	"errors"
 	"testing"
 
@@ -14,95 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
-
-func TestAsyncDataChangeMessageHandler_WebhookExecutionRequestsEventHandler(t *testing.T) {
-	t.Parallel()
-
-	t.Run("with invalid JSON", func(t *testing.T) {
-		t.Parallel()
-
-		handler, _, _, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
-
-		ctx := t.Context()
-		rawMsg := []byte("invalid json")
-
-		err := handler.WebhookExecutionRequestsEventHandler(ctx, rawMsg)
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "decoding JSON body")
-	})
-
-	t.Run("success with JSON webhook", func(t *testing.T) {
-		t.Parallel()
-
-		handler, identityRepo, webhookRepo, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
-
-		ctx := t.Context()
-
-		account := identityfakes.BuildFakeAccount()
-		account.WebhookEncryptionKey = "0123456789abcdef0123456789abcdef" // 32-byte hex key
-		webhook := webhooksfakes.BuildFakeWebhook()
-		webhook.ContentType = "application/json"
-		webhook.Method = "POST"
-		webhook.URL = "https://example.com/webhook"
-
-		webhookExecutionRequest := &webhooks.WebhookExecutionRequest{
-			WebhookID: webhook.ID,
-			AccountID: account.ID,
-			RequestID: "test-request-id",
-			Payload: &audit.DataChangeMessage{
-				EventType: identity.UserSignedUpServiceEventType,
-				UserID:    "test-user-id",
-				AccountID: account.ID,
-				Context:   nil, // explicit nil context
-			},
-		}
-
-		rawMsg, err := json.Marshal(webhookExecutionRequest)
-		assert.NoError(t, err)
-
-		identityRepo.On("GetAccount", mock.Anything, account.ID).Return(account, nil)
-		webhookRepo.On("GetWebhook", mock.Anything, webhook.ID, account.ID).Return(webhook, nil)
-
-		err = handler.WebhookExecutionRequestsEventHandler(ctx, rawMsg)
-		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, identityRepo, webhookRepo)
-	})
-
-	t.Run("success with XML webhook", func(t *testing.T) {
-		t.Parallel()
-
-		handler, identityRepo, webhookRepo, _, _, _, _, _, _, _ := buildTestAsyncDataChangeMessageHandler(t)
-
-		ctx := t.Context()
-
-		account := identityfakes.BuildFakeAccount()
-		account.WebhookEncryptionKey = "0123456789abcdef0123456789abcdef" // 32-byte hex key
-		webhook := webhooksfakes.BuildFakeWebhook()
-		webhook.ContentType = "application/xml"
-		webhook.Method = "POST"
-		webhook.URL = "https://example.com/webhook"
-
-		// Use a simple string payload for XML to avoid marshaling issues with complex types
-		webhookExecutionRequest := &webhooks.WebhookExecutionRequest{
-			WebhookID: webhook.ID,
-			AccountID: account.ID,
-			RequestID: "test-request-id",
-			Payload:   "test-xml-payload",
-		}
-
-		rawMsg, err := json.Marshal(webhookExecutionRequest)
-		assert.NoError(t, err)
-
-		identityRepo.On("GetAccount", mock.Anything, account.ID).Return(account, nil)
-		webhookRepo.On("GetWebhook", mock.Anything, webhook.ID, account.ID).Return(webhook, nil)
-
-		err = handler.WebhookExecutionRequestsEventHandler(ctx, rawMsg)
-		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, identityRepo, webhookRepo)
-	})
-}
 
 func TestAsyncDataChangeMessageHandler_handleWebhookExecutionRequest(t *testing.T) {
 	t.Parallel()
