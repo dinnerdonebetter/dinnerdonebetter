@@ -207,12 +207,89 @@ CREATE TABLE IF NOT EXISTS sessions (
     UNIQUE(token)
 );
 
-CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions USING btree (expiry);
-CREATE INDEX IF NOT EXISTS webhook_trigger_events_belongs_to_webhook_index ON webhook_trigger_events USING btree (belongs_to_webhook);
-CREATE INDEX IF NOT EXISTS account_invitations_destination_account ON account_invitations USING btree (destination_account);
-CREATE INDEX IF NOT EXISTS account_invitations_from_user ON account_invitations USING btree (from_user);
-CREATE INDEX IF NOT EXISTS account_invitations_to_user ON account_invitations USING btree (to_user);
-CREATE INDEX IF NOT EXISTS account_user_memberships_belongs_to_account ON account_user_memberships USING btree (belongs_to_account);
-CREATE INDEX IF NOT EXISTS account_user_memberships_belongs_to_user ON account_user_memberships USING btree (belongs_to_user);
-CREATE INDEX IF NOT EXISTS accounts_belongs_to_user ON accounts USING btree (belongs_to_user);
-CREATE INDEX IF NOT EXISTS password_reset_token_belongs_to_user ON password_reset_tokens USING btree (belongs_to_user);
+-- =============================================================================
+-- INDEXES FOR BASELINE TABLES
+-- =============================================================================
+
+-- Users table indexes
+CREATE INDEX idx_users_archived_at ON users (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_users_email_address_active ON users (email_address) WHERE archived_at IS NULL;
+CREATE INDEX idx_users_username_active ON users (username) WHERE archived_at IS NULL;
+CREATE INDEX idx_users_email_verification_token ON users (email_address_verification_token) WHERE archived_at IS NULL AND email_address_verification_token != '';
+CREATE INDEX idx_users_service_role_username ON users (service_role, username) WHERE archived_at IS NULL;
+CREATE INDEX idx_users_two_factor_verified ON users (two_factor_secret_verified_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_users_indexing_status ON users (last_indexed_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_users_active_created_at ON users (created_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_users_active_updated_at ON users (last_updated_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_users_indexing_needed ON users (last_indexed_at) WHERE archived_at IS NULL;
+
+-- Accounts table indexes
+CREATE INDEX idx_accounts_belongs_to_user ON accounts (belongs_to_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_accounts_archived_at ON accounts (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_accounts_user_name ON accounts (belongs_to_user, name) WHERE archived_at IS NULL;
+CREATE INDEX idx_accounts_payment_sync ON accounts (last_payment_provider_sync_occurred_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_accounts_billing_status ON accounts (billing_status) WHERE archived_at IS NULL;
+CREATE INDEX idx_accounts_user_created_at ON accounts (belongs_to_user, created_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_accounts_user_updated_at ON accounts (belongs_to_user, last_updated_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_accounts_user_billing ON accounts (belongs_to_user, billing_status) WHERE archived_at IS NULL;
+
+-- Account user memberships indexes
+CREATE INDEX idx_memberships_user ON account_user_memberships (belongs_to_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_memberships_account ON account_user_memberships (belongs_to_account) WHERE archived_at IS NULL;
+CREATE INDEX idx_memberships_default_account ON account_user_memberships (belongs_to_user, default_account) WHERE archived_at IS NULL AND default_account = TRUE;
+CREATE INDEX idx_memberships_user_account ON account_user_memberships (belongs_to_user, belongs_to_account) WHERE archived_at IS NULL;
+CREATE INDEX idx_memberships_account_role ON account_user_memberships (belongs_to_account, account_role) WHERE archived_at IS NULL;
+
+-- Account invitations indexes
+CREATE INDEX idx_invitations_destination_account ON account_invitations (destination_account) WHERE archived_at IS NULL;
+CREATE INDEX idx_invitations_from_user ON account_invitations (from_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_invitations_to_user ON account_invitations (to_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_invitations_to_email ON account_invitations (to_email) WHERE archived_at IS NULL;
+CREATE INDEX idx_invitations_token ON account_invitations (token) WHERE archived_at IS NULL;
+CREATE INDEX idx_invitations_status ON account_invitations (status) WHERE archived_at IS NULL;
+CREATE INDEX idx_invitations_expires_at ON account_invitations (expires_at) WHERE archived_at IS NULL;
+
+-- Service settings indexes
+CREATE INDEX idx_service_settings_archived_at ON service_settings (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_service_settings_name ON service_settings (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_service_settings_type ON service_settings (type) WHERE archived_at IS NULL;
+CREATE INDEX idx_service_settings_admins_only ON service_settings (admins_only) WHERE archived_at IS NULL;
+
+-- Service setting configurations indexes
+CREATE INDEX idx_setting_configs_user ON service_setting_configurations (belongs_to_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_setting_configs_account ON service_setting_configurations (belongs_to_account) WHERE archived_at IS NULL;
+CREATE INDEX idx_setting_configs_setting ON service_setting_configurations (service_setting_id) WHERE archived_at IS NULL;
+
+-- OAuth2 clients indexes
+CREATE INDEX idx_oauth2_clients_archived_at ON oauth2_clients (archived_at) WHERE archived_at IS NULL;
+
+-- OAuth2 client tokens indexes
+CREATE INDEX idx_oauth2_tokens_client_id ON oauth2_client_tokens (client_id);
+CREATE INDEX idx_oauth2_tokens_user ON oauth2_client_tokens (belongs_to_user);
+CREATE INDEX idx_oauth2_tokens_user_client ON oauth2_client_tokens (belongs_to_user, client_id);
+CREATE INDEX idx_oauth2_tokens_code_expires ON oauth2_client_tokens (code_expires_at);
+CREATE INDEX idx_oauth2_tokens_access_expires ON oauth2_client_tokens (access_expires_at);
+CREATE INDEX idx_oauth2_tokens_refresh_expires ON oauth2_client_tokens (refresh_expires_at);
+
+-- Password reset tokens indexes
+CREATE INDEX idx_password_reset_user ON password_reset_tokens (belongs_to_user);
+CREATE INDEX idx_password_reset_token ON password_reset_tokens (token);
+CREATE INDEX idx_password_reset_expires ON password_reset_tokens (expires_at);
+CREATE INDEX idx_password_reset_unredeemed ON password_reset_tokens (belongs_to_user, expires_at) WHERE redeemed_at IS NULL;
+
+-- Webhooks indexes
+CREATE INDEX idx_webhooks_account ON webhooks (belongs_to_account) WHERE archived_at IS NULL;
+CREATE INDEX idx_webhooks_archived_at ON webhooks (archived_at) WHERE archived_at IS NULL;
+
+-- Webhook trigger events indexes
+CREATE INDEX idx_webhook_triggers_webhook ON webhook_trigger_events (belongs_to_webhook) WHERE archived_at IS NULL;
+CREATE INDEX idx_webhook_triggers_event ON webhook_trigger_events (trigger_event) WHERE archived_at IS NULL;
+
+-- Sessions indexes
+CREATE INDEX idx_sessions_expiry ON sessions (expiry);
+CREATE INDEX idx_sessions_created_at ON sessions (created_at);
+
+-- Text search indexes (for efficient LIKE and ILIKE operations)
+-- Uncomment if pg_trgm extension is available:
+-- CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- CREATE INDEX idx_users_username_trgm ON users USING gin (username gin_trgm_ops) WHERE archived_at IS NULL;

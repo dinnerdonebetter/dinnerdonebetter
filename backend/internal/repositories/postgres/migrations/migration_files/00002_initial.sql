@@ -652,42 +652,234 @@ CREATE TABLE IF NOT EXISTS meal_plan_tasks (
     completed_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE INDEX IF NOT EXISTS meal_plan_events_belongs_to_meal_pla_index ON meal_plan_events USING btree (belongs_to_meal_plan);
-CREATE INDEX IF NOT EXISTS meal_plan_grocery_list_items_belongs_to_meal_pla_index ON meal_plan_grocery_list_items USING btree (belongs_to_meal_plan);
-CREATE INDEX IF NOT EXISTS meal_plan_grocery_list_items_purchased_measurement_unit_index ON meal_plan_grocery_list_items USING btree (purchased_measurement_unit);
-CREATE INDEX IF NOT EXISTS meal_plan_grocery_list_items_valid_ingredient_index ON meal_plan_grocery_list_items USING btree (valid_ingredient);
-CREATE INDEX IF NOT EXISTS meal_plan_grocery_list_items_valid_measurement_unit_index ON meal_plan_grocery_list_items USING btree (valid_measurement_unit);
-CREATE INDEX IF NOT EXISTS meal_plan_options_assigned_cook_index ON meal_plan_options USING btree (assigned_cook);
-CREATE INDEX IF NOT EXISTS meal_plan_options_assigned_dishwasher_index ON meal_plan_options USING btree (assigned_dishwasher);
-CREATE INDEX IF NOT EXISTS meal_plan_options_belongs_to_meal_plan_even_index ON meal_plan_options USING btree (belongs_to_meal_plan_event);
-CREATE INDEX IF NOT EXISTS meal_plan_options_belongs_to_meal_plan_option ON meal_plan_option_votes USING btree (belongs_to_meal_plan_option);
-CREATE INDEX IF NOT EXISTS meal_plan_tasks_assigned_to_user_index ON meal_plan_tasks USING btree (assigned_to_user);
-CREATE INDEX IF NOT EXISTS meal_plan_tasks_belongs_to_meal_plan_option_index ON meal_plan_tasks USING btree (belongs_to_meal_plan_option);
-CREATE INDEX IF NOT EXISTS meal_plan_tasks_belongs_to_recipe_prep_task_index ON meal_plan_tasks USING btree (belongs_to_recipe_prep_task);
-CREATE INDEX IF NOT EXISTS meal_plans_belongs_to_account ON meal_plans USING btree (belongs_to_account);
-CREATE INDEX IF NOT EXISTS meal_recipes_meal_id ON meal_components USING btree (meal_id);
-CREATE INDEX IF NOT EXISTS meal_recipes_recipe_id ON meal_components USING btree (recipe_id);
-CREATE INDEX IF NOT EXISTS meals_created_by_user ON meals USING btree (created_by_user);
-CREATE INDEX IF NOT EXISTS recipe_media_belongs_to_recipe_index ON recipe_media USING btree (belongs_to_recipe);
-CREATE INDEX IF NOT EXISTS recipe_media_belongs_to_recipe_step_index ON recipe_media USING btree (belongs_to_recipe_step);
-CREATE INDEX IF NOT EXISTS recipe_prep_task_steps_belongs_to_recipe_prep_task_index ON recipe_prep_task_steps USING btree (belongs_to_recipe_prep_task);
-CREATE INDEX IF NOT EXISTS recipe_prep_task_steps_belongs_to_recipe_step_index ON recipe_prep_task_steps USING btree (belongs_to_recipe_step);
-CREATE INDEX IF NOT EXISTS recipe_prep_tasks_belongs_to_recipe_index ON recipe_prep_tasks USING btree (belongs_to_recipe);
-CREATE INDEX IF NOT EXISTS recipe_step_ingredients_measurement_unit_index ON recipe_step_ingredients USING btree (measurement_unit);
-CREATE INDEX IF NOT EXISTS recipe_step_ingredients_product_of_recipe_step ON recipe_step_ingredients USING btree (recipe_step_product_id);
-CREATE INDEX IF NOT EXISTS recipe_step_instruments_instrument_id_index ON recipe_step_instruments USING btree (instrument_id);
-CREATE INDEX IF NOT EXISTS recipe_step_instruments_recipe_step_product_id_index ON recipe_step_instruments USING btree (recipe_step_product_id);
-CREATE INDEX IF NOT EXISTS recipe_step_products_belongs_to_recipe_step ON recipe_step_products USING btree (belongs_to_recipe_step);
-CREATE INDEX IF NOT EXISTS recipe_step_products_measurement_unit_index ON recipe_step_products USING btree (measurement_unit);
-CREATE INDEX IF NOT EXISTS recipe_steps_belongs_to_recipe ON recipe_steps USING btree (belongs_to_recipe);
-CREATE INDEX IF NOT EXISTS recipes_created_by_user ON recipes USING btree (created_by_user);
-CREATE INDEX IF NOT EXISTS valid_ingredient_measurement_units_valid_ingredient_id_index ON valid_ingredient_measurement_units USING btree (valid_ingredient_id);
-CREATE INDEX IF NOT EXISTS valid_ingredient_measurement_units_valid_measurement_unit_id_in ON valid_ingredient_measurement_units USING btree (valid_measurement_unit_id);
-CREATE INDEX IF NOT EXISTS valid_ingredient_state_ingredients_referncing_valid_ingredient_ ON valid_ingredient_state_ingredients USING btree (valid_ingredient);
-CREATE INDEX IF NOT EXISTS valid_measurement_conversions_from_unit_index ON valid_measurement_unit_conversions USING btree (from_unit);
-CREATE INDEX IF NOT EXISTS valid_measurement_conversions_only_for_ingredient_index ON valid_measurement_unit_conversions USING btree (only_for_ingredient);
-CREATE INDEX IF NOT EXISTS valid_measurement_conversions_to_unit_index ON valid_measurement_unit_conversions USING btree (to_unit);
-CREATE INDEX IF NOT EXISTS valid_preparation_instruments_valid_instrument_index ON valid_preparation_instruments USING btree (valid_instrument_id);
-CREATE INDEX IF NOT EXISTS valid_preparation_instruments_valid_preparation_index ON valid_preparation_instruments USING btree (valid_preparation_id);
-CREATE INDEX IF NOT EXISTS valid_preparation_vessels_referencing_valid_preparations_idx ON valid_preparation_vessels USING btree (valid_preparation_id);
-CREATE INDEX IF NOT EXISTS valid_preparation_vessels_referencing_valid_vessels_idx ON valid_preparation_vessels USING btree (valid_vessel_id);
+-- =============================================================================
+-- INDEXES FOR MEAL PLANNING TABLES
+-- =============================================================================
+
+-- Valid ingredient states indexes
+CREATE INDEX idx_valid_ingredient_states_archived_at ON valid_ingredient_states (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredient_states_name ON valid_ingredient_states (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredient_states_slug ON valid_ingredient_states (slug) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredient_states_type ON valid_ingredient_states (attribute_type) WHERE archived_at IS NULL;
+
+-- Valid ingredients indexes
+CREATE INDEX idx_valid_ingredients_archived_at ON valid_ingredients (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredients_name ON valid_ingredients (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredients_slug ON valid_ingredients (slug) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredients_allergens ON valid_ingredients (contains_egg, contains_dairy, contains_peanut, contains_tree_nut, contains_soy, contains_wheat, contains_shellfish, contains_sesame, contains_fish, contains_gluten) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredients_properties ON valid_ingredients (is_liquid, animal_derived, animal_flesh, is_starch, is_protein, is_grain, is_fruit, is_salt, is_fat, is_acid, is_heat) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredients_indexing ON valid_ingredients (last_indexed_at) WHERE archived_at IS NULL;
+
+-- Valid ingredient groups indexes
+CREATE INDEX idx_valid_ingredient_groups_archived_at ON valid_ingredient_groups (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredient_groups_name ON valid_ingredient_groups (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_ingredient_groups_slug ON valid_ingredient_groups (slug) WHERE archived_at IS NULL;
+
+-- Valid ingredient group members indexes
+CREATE INDEX idx_ingredient_group_members_group ON valid_ingredient_group_members (belongs_to_group) WHERE archived_at IS NULL;
+CREATE INDEX idx_ingredient_group_members_ingredient ON valid_ingredient_group_members (valid_ingredient) WHERE archived_at IS NULL;
+
+-- Valid measurement units indexes
+CREATE INDEX idx_valid_measurement_units_archived_at ON valid_measurement_units (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_measurement_units_name ON valid_measurement_units (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_measurement_units_slug ON valid_measurement_units (slug) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_measurement_units_properties ON valid_measurement_units (volumetric, universal, metric, imperial) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_measurement_units_indexing ON valid_measurement_units (last_indexed_at) WHERE archived_at IS NULL;
+
+-- Valid ingredient measurement units indexes
+CREATE INDEX idx_ingredient_measurement_units_ingredient ON valid_ingredient_measurement_units (valid_ingredient_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_ingredient_measurement_units_unit ON valid_ingredient_measurement_units (valid_measurement_unit_id) WHERE archived_at IS NULL;
+
+-- Valid measurement unit conversions indexes
+CREATE INDEX idx_measurement_conversions_from_unit ON valid_measurement_unit_conversions (from_unit) WHERE archived_at IS NULL;
+CREATE INDEX idx_measurement_conversions_to_unit ON valid_measurement_unit_conversions (to_unit) WHERE archived_at IS NULL;
+CREATE INDEX idx_measurement_conversions_ingredient ON valid_measurement_unit_conversions (only_for_ingredient) WHERE archived_at IS NULL;
+CREATE INDEX idx_measurement_conversions_from_to ON valid_measurement_unit_conversions (from_unit, to_unit) WHERE archived_at IS NULL;
+
+-- Valid ingredient state ingredients indexes
+CREATE INDEX idx_ingredient_state_ingredients_ingredient ON valid_ingredient_state_ingredients (valid_ingredient) WHERE archived_at IS NULL;
+CREATE INDEX idx_ingredient_state_ingredients_state ON valid_ingredient_state_ingredients (valid_ingredient_state) WHERE archived_at IS NULL;
+
+-- Valid preparations indexes
+CREATE INDEX idx_valid_preparations_archived_at ON valid_preparations (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_preparations_name ON valid_preparations (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_preparations_slug ON valid_preparations (slug) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_preparations_properties ON valid_preparations (yields_nothing, restrict_to_ingredients, temperature_required, time_estimate_required, consumes_vessel, only_for_vessels) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_preparations_indexing ON valid_preparations (last_indexed_at) WHERE archived_at IS NULL;
+
+-- Valid ingredient preparations indexes
+CREATE INDEX idx_ingredient_preparations_preparation ON valid_ingredient_preparations (valid_preparation_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_ingredient_preparations_ingredient ON valid_ingredient_preparations (valid_ingredient_id) WHERE archived_at IS NULL;
+
+-- Valid instruments indexes
+CREATE INDEX idx_valid_instruments_archived_at ON valid_instruments (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_instruments_name ON valid_instruments (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_instruments_slug ON valid_instruments (slug) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_instruments_properties ON valid_instruments (usable_for_storage, display_in_summary_lists, include_in_generated_instructions) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_instruments_indexing ON valid_instruments (last_indexed_at) WHERE archived_at IS NULL;
+
+-- Valid preparation instruments indexes
+CREATE INDEX idx_preparation_instruments_preparation ON valid_preparation_instruments (valid_preparation_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_preparation_instruments_instrument ON valid_preparation_instruments (valid_instrument_id) WHERE archived_at IS NULL;
+
+-- Valid vessels indexes
+CREATE INDEX idx_valid_vessels_archived_at ON valid_vessels (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_vessels_name ON valid_vessels (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_vessels_slug ON valid_vessels (slug) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_vessels_properties ON valid_vessels (usable_for_storage, display_in_summary_lists, include_in_generated_instructions) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_vessels_capacity ON valid_vessels (capacity_unit) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_vessels_shape ON valid_vessels (shape) WHERE archived_at IS NULL;
+CREATE INDEX idx_valid_vessels_indexing ON valid_vessels (last_indexed_at) WHERE archived_at IS NULL;
+
+-- Valid preparation vessels indexes
+CREATE INDEX idx_preparation_vessels_preparation ON valid_preparation_vessels (valid_preparation_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_preparation_vessels_vessel ON valid_preparation_vessels (valid_vessel_id) WHERE archived_at IS NULL;
+
+-- User ingredient preferences indexes
+CREATE INDEX idx_user_ingredient_preferences_user ON user_ingredient_preferences (belongs_to_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_user_ingredient_preferences_ingredient ON user_ingredient_preferences (ingredient) WHERE archived_at IS NULL;
+CREATE INDEX idx_user_ingredient_preferences_allergy ON user_ingredient_preferences (belongs_to_user, allergy) WHERE archived_at IS NULL AND allergy = TRUE;
+CREATE INDEX idx_user_ingredient_preferences_rating ON user_ingredient_preferences (belongs_to_user, rating) WHERE archived_at IS NULL;
+
+-- Account instrument ownerships indexes
+CREATE INDEX idx_instrument_ownerships_account ON account_instrument_ownerships (belongs_to_account) WHERE archived_at IS NULL;
+CREATE INDEX idx_instrument_ownerships_instrument ON account_instrument_ownerships (valid_instrument_id) WHERE archived_at IS NULL;
+
+-- Recipes indexes
+CREATE INDEX idx_recipes_archived_at ON recipes (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_created_by_user ON recipes (created_by_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_name ON recipes (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_slug ON recipes (slug) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_inspired_by ON recipes (inspired_by_recipe_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_seal_approval ON recipes (seal_of_approval) WHERE archived_at IS NULL AND seal_of_approval = TRUE;
+CREATE INDEX idx_recipes_eligible_meals ON recipes (eligible_for_meals) WHERE archived_at IS NULL AND eligible_for_meals = TRUE;
+CREATE INDEX idx_recipes_component_type ON recipes (yields_component_type) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_indexing ON recipes (last_indexed_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_validation ON recipes (last_validated_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_user_created_at ON recipes (created_by_user, created_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_created_at_id ON recipes (created_at, id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipes_validation_needed ON recipes (last_validated_at) WHERE archived_at IS NULL AND last_validated_at IS NULL;
+CREATE INDEX idx_recipes_indexing_needed ON recipes (last_indexed_at) WHERE archived_at IS NULL;
+
+-- Recipe steps indexes
+CREATE INDEX idx_recipe_steps_recipe ON recipe_steps (belongs_to_recipe) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_steps_recipe_all ON recipe_steps (belongs_to_recipe); -- Non-partial for edge cases
+CREATE INDEX idx_recipe_steps_preparation ON recipe_steps (preparation_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_steps_recipe_index ON recipe_steps (belongs_to_recipe, index) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_steps_optional ON recipe_steps (belongs_to_recipe, optional) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_steps_recipe_preparation_index ON recipe_steps (belongs_to_recipe, preparation_id, index) WHERE archived_at IS NULL;
+
+-- Recipe step products indexes
+CREATE INDEX idx_recipe_step_products_step ON recipe_step_products (belongs_to_recipe_step) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_products_measurement_unit ON recipe_step_products (measurement_unit) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_products_type ON recipe_step_products (type) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_products_step_index ON recipe_step_products (belongs_to_recipe_step, index) WHERE archived_at IS NULL;
+
+-- Recipe step ingredients indexes
+CREATE INDEX idx_recipe_step_ingredients_step ON recipe_step_ingredients (belongs_to_recipe_step) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_ingredients_step_all ON recipe_step_ingredients (belongs_to_recipe_step); -- Non-partial for edge cases
+CREATE INDEX idx_recipe_step_ingredients_ingredient ON recipe_step_ingredients (ingredient_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_ingredients_measurement_unit ON recipe_step_ingredients (measurement_unit) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_ingredients_product ON recipe_step_ingredients (recipe_step_product_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_ingredients_product_recipe ON recipe_step_ingredients (recipe_step_product_recipe_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_ingredients_optional ON recipe_step_ingredients (belongs_to_recipe_step, optional) WHERE archived_at IS NULL;
+
+-- Recipe step instruments indexes
+CREATE INDEX idx_recipe_step_instruments_step ON recipe_step_instruments (belongs_to_recipe_step) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_instruments_instrument ON recipe_step_instruments (instrument_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_instruments_product ON recipe_step_instruments (recipe_step_product_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_instruments_optional ON recipe_step_instruments (belongs_to_recipe_step, optional) WHERE archived_at IS NULL;
+
+-- Recipe step vessels indexes
+CREATE INDEX idx_recipe_step_vessels_step ON recipe_step_vessels (belongs_to_recipe_step) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_vessels_vessel ON recipe_step_vessels (valid_vessel_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_vessels_product ON recipe_step_vessels (recipe_step_product_id) WHERE archived_at IS NULL;
+
+-- Recipe step completion conditions indexes
+CREATE INDEX idx_recipe_step_conditions_step ON recipe_step_completion_conditions (belongs_to_recipe_step) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_step_conditions_state ON recipe_step_completion_conditions (ingredient_state) WHERE archived_at IS NULL;
+
+-- Recipe step completion condition ingredients indexes
+CREATE INDEX idx_condition_ingredients_condition ON recipe_step_completion_condition_ingredients (belongs_to_recipe_step_completion_condition) WHERE archived_at IS NULL;
+CREATE INDEX idx_condition_ingredients_ingredient ON recipe_step_completion_condition_ingredients (recipe_step_ingredient) WHERE archived_at IS NULL;
+
+-- Recipe media indexes
+CREATE INDEX idx_recipe_media_recipe ON recipe_media (belongs_to_recipe) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_media_step ON recipe_media (belongs_to_recipe_step) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_media_recipe_index ON recipe_media (belongs_to_recipe, index) WHERE archived_at IS NULL;
+
+-- Recipe prep tasks indexes
+CREATE INDEX idx_recipe_prep_tasks_recipe ON recipe_prep_tasks (belongs_to_recipe) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_prep_tasks_optional ON recipe_prep_tasks (belongs_to_recipe, optional) WHERE archived_at IS NULL;
+
+-- Recipe prep task steps indexes
+CREATE INDEX idx_prep_task_steps_task ON recipe_prep_task_steps (belongs_to_recipe_prep_task);
+CREATE INDEX idx_prep_task_steps_step ON recipe_prep_task_steps (belongs_to_recipe_step);
+
+-- Recipe ratings indexes
+CREATE INDEX idx_recipe_ratings_recipe ON recipe_ratings (recipe_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_recipe_ratings_user ON recipe_ratings (by_user) WHERE archived_at IS NULL;
+
+-- Meals indexes
+CREATE INDEX idx_meals_archived_at ON meals (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_meals_created_by_user ON meals (created_by_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_meals_name ON meals (name) WHERE archived_at IS NULL;
+CREATE INDEX idx_meals_eligible_plans ON meals (eligible_for_meal_plans) WHERE archived_at IS NULL AND eligible_for_meal_plans = TRUE;
+CREATE INDEX idx_meals_indexing ON meals (last_indexed_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_meals_user_created_at ON meals (created_by_user, created_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_meals_created_at_id ON meals (created_at, id) WHERE archived_at IS NULL;
+CREATE INDEX idx_meals_indexing_needed ON meals (last_indexed_at) WHERE archived_at IS NULL;
+
+-- Meal components indexes
+CREATE INDEX idx_meal_components_meal ON meal_components (meal_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_components_recipe ON meal_components (recipe_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_components_type ON meal_components (meal_component_type) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_components_meal_recipe ON meal_components (meal_id, recipe_id) WHERE archived_at IS NULL;
+
+-- Meal plans indexes
+CREATE INDEX idx_meal_plans_archived_at ON meal_plans (archived_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plans_account ON meal_plans (belongs_to_account) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plans_created_by ON meal_plans (created_by_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plans_status ON meal_plans (status) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plans_voting_deadline ON meal_plans (voting_deadline) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plans_expired_unresolved ON meal_plans (status, voting_deadline) WHERE archived_at IS NULL AND status = 'awaiting_votes';
+CREATE INDEX idx_meal_plans_finalized_no_groceries ON meal_plans (status, grocery_list_initialized) WHERE archived_at IS NULL AND status = 'finalized' AND grocery_list_initialized = FALSE;
+CREATE INDEX idx_meal_plans_finalized_no_tasks ON meal_plans (status, tasks_created) WHERE archived_at IS NULL AND status = 'finalized' AND tasks_created = FALSE;
+CREATE INDEX idx_meal_plans_account_created_at ON meal_plans (belongs_to_account, created_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plans_created_at_id ON meal_plans (created_at, id) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plans_account_status_voting ON meal_plans (belongs_to_account, status, voting_deadline) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_finalization ON meal_plans (id, status, belongs_to_account) WHERE archived_at IS NULL AND status = 'finalized';
+
+-- Meal plan events indexes
+CREATE INDEX idx_meal_plan_events_plan ON meal_plan_events (belongs_to_meal_plan) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_events_meal_name ON meal_plan_events (meal_name) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_events_starts_at ON meal_plan_events (starts_at) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_events_plan_starts ON meal_plan_events (belongs_to_meal_plan, starts_at) WHERE archived_at IS NULL;
+
+-- Meal plan options indexes
+CREATE INDEX idx_meal_plan_options_event ON meal_plan_options (belongs_to_meal_plan_event) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_options_meal ON meal_plan_options (meal_id) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_options_cook ON meal_plan_options (assigned_cook) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_options_dishwasher ON meal_plan_options (assigned_dishwasher) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_options_chosen ON meal_plan_options (belongs_to_meal_plan_event, chosen) WHERE archived_at IS NULL AND chosen = TRUE;
+CREATE INDEX idx_meal_plan_options_chosen_with_meal ON meal_plan_options (belongs_to_meal_plan_event, chosen, meal_id) WHERE archived_at IS NULL AND chosen = TRUE;
+
+-- Meal plan option votes indexes
+CREATE INDEX idx_meal_plan_votes_option ON meal_plan_option_votes (belongs_to_meal_plan_option) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_votes_user ON meal_plan_option_votes (by_user) WHERE archived_at IS NULL;
+CREATE INDEX idx_meal_plan_votes_option_rank ON meal_plan_option_votes (belongs_to_meal_plan_option, rank) WHERE archived_at IS NULL;
+
+-- Meal plan grocery list items indexes
+CREATE INDEX idx_grocery_list_items_plan ON meal_plan_grocery_list_items (belongs_to_meal_plan) WHERE archived_at IS NULL;
+CREATE INDEX idx_grocery_list_items_ingredient ON meal_plan_grocery_list_items (valid_ingredient) WHERE archived_at IS NULL;
+CREATE INDEX idx_grocery_list_items_measurement_unit ON meal_plan_grocery_list_items (valid_measurement_unit) WHERE archived_at IS NULL;
+CREATE INDEX idx_grocery_list_items_purchased_unit ON meal_plan_grocery_list_items (purchased_measurement_unit) WHERE archived_at IS NULL;
+CREATE INDEX idx_grocery_list_items_status ON meal_plan_grocery_list_items (status) WHERE archived_at IS NULL;
+CREATE INDEX idx_grocery_list_items_plan_status ON meal_plan_grocery_list_items (belongs_to_meal_plan, status) WHERE archived_at IS NULL;
+
+-- Meal plan tasks indexes
+CREATE INDEX idx_meal_plan_tasks_option ON meal_plan_tasks (belongs_to_meal_plan_option);
+CREATE INDEX idx_meal_plan_tasks_prep_task ON meal_plan_tasks (belongs_to_recipe_prep_task);
+CREATE INDEX idx_meal_plan_tasks_assigned_user ON meal_plan_tasks (assigned_to_user);
+CREATE INDEX idx_meal_plan_tasks_status ON meal_plan_tasks (status);
+CREATE INDEX idx_meal_plan_tasks_user_status ON meal_plan_tasks (assigned_to_user, status);

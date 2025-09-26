@@ -12,3 +12,9 @@ CREATE TABLE IF NOT EXISTS user_notifications (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE
 );
+
+-- User notifications indexes
+CREATE INDEX idx_user_notifications_user ON user_notifications (belongs_to_user);
+CREATE INDEX idx_user_notifications_status ON user_notifications (status);
+CREATE INDEX idx_user_notifications_user_status ON user_notifications (belongs_to_user, status);
+CREATE INDEX idx_user_notifications_user_created_at ON user_notifications (belongs_to_user, created_at);
