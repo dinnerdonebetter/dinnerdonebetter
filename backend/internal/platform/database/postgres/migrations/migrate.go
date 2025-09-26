@@ -21,8 +21,8 @@ type Migrator struct {
 	tracer      tracing.Tracer
 	config      *databasecfg.Config
 	db          *sql.DB
-	migrateOnce sync.Once
 	migrations  []*databasecfg.MigrationSpec
+	migrateOnce sync.Once
 }
 
 func NewMigrator(
