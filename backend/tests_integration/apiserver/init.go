@@ -11,13 +11,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres/migrations"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 )
 
