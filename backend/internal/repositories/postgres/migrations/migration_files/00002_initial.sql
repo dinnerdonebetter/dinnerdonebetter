@@ -119,7 +119,6 @@ CREATE TABLE IF NOT EXISTS valid_ingredients (
     contains_fish BOOLEAN NOT NULL,
     contains_gluten BOOLEAN NOT NULL,
     animal_flesh BOOLEAN NOT NULL,
-    volumetric BOOLEAN NOT NULL,
     icon_path TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,

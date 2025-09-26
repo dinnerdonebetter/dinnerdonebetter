@@ -43,10 +43,6 @@ func NewMigrator(logger logging.Logger, tracerProvider tracing.TracerProvider, d
 			Description: "audit log table",
 			RawQuery:    fetchMigration("00004_audit_log"),
 		},
-		{
-			Description: "remove volumetric field",
-			RawQuery:    fetchMigration("00005_remove_volumetric_field"),
-		},
 	}
 
 	return pgmigrations.NewMigrator(logger, tracerProvider, db, config, migrations)
