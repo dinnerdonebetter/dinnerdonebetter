@@ -785,8 +785,6 @@ CREATE INDEX idx_recipes_created_at_id ON recipes (created_at, id) WHERE archive
 CREATE INDEX idx_recipes_validation_needed ON recipes (last_validated_at) WHERE archived_at IS NULL AND last_validated_at IS NULL;
 CREATE INDEX idx_recipes_indexing_needed ON recipes (last_indexed_at) WHERE archived_at IS NULL;
 
-/*
-
 -- Recipe steps indexes
 CREATE INDEX idx_recipe_steps_recipe ON recipe_steps (belongs_to_recipe) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_steps_recipe_all ON recipe_steps (belongs_to_recipe); -- Non-partial for edge cases
@@ -845,8 +843,6 @@ CREATE INDEX idx_prep_task_steps_step ON recipe_prep_task_steps (belongs_to_reci
 -- Recipe ratings indexes
 CREATE INDEX idx_recipe_ratings_recipe ON recipe_ratings (recipe_id) WHERE archived_at IS NULL;
 CREATE INDEX idx_recipe_ratings_user ON recipe_ratings (by_user) WHERE archived_at IS NULL;
-
-*/
 
 -- Meals indexes
 CREATE INDEX idx_meals_archived_at ON meals (archived_at) WHERE archived_at IS NULL;
