@@ -12,8 +12,20 @@ func TestProvideHTTPServer(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := provideStdLibHTTPServer(12345)
+		x, err := ProvideHTTPServer(
+			Config{
+				HTTPSCertificateFile:    "",
+				HTTPSCertificateKeyFile: "",
+				StartupDeadline:         0,
+				HTTPPort:                0,
+				Debug:                   false,
+			},
+			nil,
+			nil,
+			nil,
+		)
 
 		assert.NotNil(t, x)
+		assert.NoError(t, err)
 	})
 }

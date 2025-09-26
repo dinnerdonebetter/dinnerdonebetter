@@ -39,7 +39,7 @@ func NewBuilder(tracerProvider tracing.TracerProvider, logger logging.Logger) Bu
 	return &builder{
 		tracer:     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		logger:     logging.EnsureLogger(logger).WithName(o11yName),
-		totpIssuer: "TODO: REPLACEME",
+		totpIssuer: "UNKNOWN_REPLACEME",
 	}
 }
 

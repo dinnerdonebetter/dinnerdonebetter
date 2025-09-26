@@ -56,10 +56,8 @@ func ProvideHTTPServer(
 		logger:         logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:       panicking.NewProductionPanicker(),
 		httpServer:     provideStdLibHTTPServer(serverSettings.HTTPPort),
-		tracerProvider: tracerProvider,
+		tracerProvider: tracing.EnsureTracerProvider(tracerProvider),
 	}
-
-	logger.Debug("HTTP server successfully constructed")
 
 	return srv, nil
 }

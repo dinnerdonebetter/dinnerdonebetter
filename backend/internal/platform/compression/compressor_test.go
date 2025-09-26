@@ -16,6 +16,26 @@ type whatever struct {
 	Name string `json:"name"`
 }
 
+func TestNewCompressor(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		comp, err := NewCompressor(algoZstd)
+		require.NoError(t, err)
+		require.NotNil(t, comp)
+	})
+
+	T.Run("invalid algo", func(t *testing.T) {
+		t.Parallel()
+
+		comp, err := NewCompressor(algo(t.Name()))
+		require.Error(t, err)
+		require.Nil(t, comp)
+	})
+}
+
 func Test_compressor_CompressBytes(T *testing.T) {
 	T.Parallel()
 
@@ -60,6 +80,26 @@ func Test_compressor_CompressBytes(T *testing.T) {
 
 		assert.Equal(t, expected, actual)
 	})
+
+	T.Run("invalid algo", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		comp, err := NewCompressor(algoS2)
+		require.NoError(t, err)
+
+		comp.(*compressor).algo = "invalid"
+
+		x := &whatever{
+			Name: "testing",
+		}
+
+		encoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		compressed, err := comp.CompressBytes(encoder.MustEncodeJSON(ctx, x))
+		assert.Error(t, err)
+		assert.Nil(t, compressed)
+	})
 }
 
 func Test_compressor_DecompressBytes(T *testing.T) {
@@ -71,7 +111,7 @@ func Test_compressor_DecompressBytes(T *testing.T) {
 	}
 
 	for _, a := range algorithms {
-		T.Run("zstandard", func(t *testing.T) {
+		T.Run(string(a), func(t *testing.T) {
 			t.Parallel()
 
 			ctx := t.Context()
@@ -96,4 +136,27 @@ func Test_compressor_DecompressBytes(T *testing.T) {
 			assert.Equal(t, x, y)
 		})
 	}
+
+	T.Run("with invalid algo", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		comp, err := NewCompressor(algoZstd)
+		require.NoError(t, err)
+
+		x := &whatever{
+			Name: "testing",
+		}
+
+		encoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+		compressed, err := comp.CompressBytes(encoder.MustEncodeJSON(ctx, x))
+		assert.NoError(t, err)
+
+		comp.(*compressor).algo = "invalid"
+
+		decompressed, err := comp.DecompressBytes(compressed)
+		assert.Error(t, err)
+		assert.Nil(t, decompressed)
+	})
 }

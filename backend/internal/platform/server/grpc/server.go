@@ -60,11 +60,9 @@ func NewGRPCServer(
 			return nil, err
 		}
 
-		// Create the credentials and return it
 		config := &tls.Config{
 			Certificates: []tls.Certificate{serverCert},
 			ClientAuth:   tls.NoClientCert,
-			// "Only use curves which have assembly implementations"
 			CurvePreferences: []tls.CurveID{
 				tls.CurveP256,
 				tls.X25519,

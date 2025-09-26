@@ -50,7 +50,11 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // ProvideCollector provides a collector.
-func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracing.TracerProvider, metricsProvider metrics.Provider) (analytics.EventReporter, error) {
+func (cfg *Config) ProvideCollector(
+	logger logging.Logger,
+	tracerProvider tracing.TracerProvider,
+	metricsProvider metrics.Provider,
+) (analytics.EventReporter, error) {
 	cb, err := cfg.CircuitBreaker.ProvideCircuitBreaker(logger, metricsProvider)
 	if err != nil {
 		return nil, fmt.Errorf("could not create analytics circuit breaker: %w", err)

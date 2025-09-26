@@ -156,3 +156,28 @@ func TestStandardSecretGenerator_GenerateRawBytes(T *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestMustGenerateRawBytes(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		result := MustGenerateRawBytes(ctx, 32)
+		assert.NotEmpty(t, result)
+	})
+}
+
+func TestGenerateHexEncodedString(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+		ctx := t.Context()
+
+		result, err := GenerateHexEncodedString(ctx, 32)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, result)
+	})
+}

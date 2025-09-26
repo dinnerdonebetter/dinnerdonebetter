@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -17,25 +19,11 @@ var (
 	runningContainerTests = strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) == "true"
 )
 
-func TestConfig_provideElasticsearchClient(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		cfg := &Config{}
-
-		esClient, err := provideElasticsearchClient(cfg)
-		assert.NoError(t, err)
-		assert.NotNil(t, esClient)
-	})
-}
-
-func buildContainerBackedElasticsearchConfig(t *testing.T, ctx context.Context) (config *Config, shutdownFunction func(context.Context) error) {
+func buildContainerBackedElasticsearchConfig(t *testing.T) (config *Config, shutdownFunction func(context.Context) error) {
 	t.Helper()
 
 	elasticsearchContainer, err := elasticsearchcontainers.Run(
-		ctx,
+		t.Context(),
 		"elasticsearch:8.10.2",
 		elasticsearchcontainers.WithPassword("arbitraryPassword"),
 	)
@@ -53,7 +41,76 @@ func buildContainerBackedElasticsearchConfig(t *testing.T, ctx context.Context) 
 	return cfg, elasticsearchContainer.Terminate
 }
 
-func Test_ProvideIndexManager(T *testing.T) {
+func Test_ensureIndices(T *testing.T) {
+	T.Parallel()
+
+	if !runningContainerTests {
+		T.SkipNow()
+	}
+
+	T.Run("creates index when it doesn't exist", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg, shutdownFunc := buildContainerBackedElasticsearchConfig(t)
+		defer func() {
+			require.NoError(t, shutdownFunc(ctx))
+		}()
+
+		// Create index manager with a unique index name
+		indexName := "ensure_indices_test_" + t.Name()
+		im, err := ProvideIndexManager[example](ctx, nil, nil, cfg, indexName, circuitbreaking.NewNoopCircuitBreaker())
+		require.NoError(t, err)
+		assert.NotNil(t, im)
+
+		// The ensureIndices method is called during ProvideIndexManager
+		// This test verifies that the index was created successfully
+		// by attempting to index a document
+		searchable := &example{
+			ID:   identifiers.New(),
+			Name: "test document",
+		}
+
+		err = im.Index(ctx, searchable.ID, searchable)
+		assert.NoError(t, err)
+	})
+
+	T.Run("handles existing index", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg, shutdownFunc := buildContainerBackedElasticsearchConfig(t)
+		defer func() {
+			require.NoError(t, shutdownFunc(ctx))
+		}()
+
+		// Create first index manager
+		indexName := "ensure_indices_existing_test_" + t.Name()
+		im1, err := ProvideIndexManager[example](ctx, nil, nil, cfg, indexName, circuitbreaking.NewNoopCircuitBreaker())
+		require.NoError(t, err)
+
+		// Create second index manager with same index name
+		im2, err := ProvideIndexManager[example](ctx, nil, nil, cfg, indexName, circuitbreaking.NewNoopCircuitBreaker())
+		require.NoError(t, err)
+
+		assert.NotNil(t, im1)
+		assert.NotNil(t, im2)
+
+		// Both should work fine since the index already exists
+		searchable := &example{
+			ID:   identifiers.New(),
+			Name: "test document",
+		}
+
+		err = im1.Index(ctx, searchable.ID, searchable)
+		assert.NoError(t, err)
+
+		err = im2.Index(ctx, searchable.ID+"_2", searchable)
+		assert.NoError(t, err)
+	})
+}
+
+func Test_ProvideIndexManager_Container(T *testing.T) {
 	T.Parallel()
 
 	if !runningContainerTests {
@@ -64,7 +121,7 @@ func Test_ProvideIndexManager(T *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		cfg, shutdownFunc := buildContainerBackedElasticsearchConfig(t, ctx)
+		cfg, shutdownFunc := buildContainerBackedElasticsearchConfig(t)
 		defer func() {
 			require.NoError(t, shutdownFunc(ctx))
 		}()
@@ -83,5 +140,77 @@ func Test_ProvideIndexManager(T *testing.T) {
 		im, err := ProvideIndexManager[example](ctx, nil, nil, cfg, t.Name(), circuitbreaking.NewNoopCircuitBreaker())
 		assert.Error(t, err)
 		assert.Nil(t, im)
+	})
+}
+
+func Test_elasticsearchIsReadyToInit(T *testing.T) {
+	T.Parallel()
+
+	if !runningContainerTests {
+		T.SkipNow()
+	}
+
+	T.Run("returns true with valid config and server", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg, shutdownFunc := buildContainerBackedElasticsearchConfig(t)
+		defer func() {
+			require.NoError(t, shutdownFunc(ctx))
+		}()
+
+		logger := logging.NewNoopLogger()
+
+		ready := elasticsearchIsReadyToInit(ctx, cfg, logger, 5)
+		assert.True(t, ready)
+	})
+
+	T.Run("returns false with invalid address", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		invalidCfg := &Config{
+			Address: "http://localhost:9999", // Non-existent server
+		}
+		logger := logging.NewNoopLogger()
+
+		ready := elasticsearchIsReadyToInit(ctx, invalidCfg, logger, 1)
+		assert.False(t, ready)
+	})
+}
+
+func Test_provideElasticsearchClient(T *testing.T) {
+	T.Parallel()
+
+	if !runningContainerTests {
+		T.SkipNow()
+	}
+
+	T.Run("successful client creation", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg, shutdownFunc := buildContainerBackedElasticsearchConfig(t)
+		defer func() {
+			require.NoError(t, shutdownFunc(ctx))
+		}()
+
+		client, err := provideElasticsearchClient(cfg)
+		assert.NoError(t, err)
+		assert.NotNil(t, client)
+	})
+
+	T.Run("handles invalid address", func(t *testing.T) {
+		t.Parallel()
+
+		cfg := &Config{
+			Address: "invalid://address",
+		}
+
+		client, err := provideElasticsearchClient(cfg)
+		// The Elasticsearch client doesn't validate addresses during creation
+		// It only fails when making actual requests
+		assert.NoError(t, err)
+		assert.NotNil(t, client)
 	})
 }

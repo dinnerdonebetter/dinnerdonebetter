@@ -25,4 +25,15 @@ func TestProvideIndexManager(T *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, im)
 	})
+
+	T.Run("with nil config", func(t *testing.T) {
+		t.Parallel()
+
+		logger := logging.NewNoopLogger()
+		tracerProvider := tracing.NewNoopTracerProvider()
+
+		im, err := ProvideIndexManager[example](logger, tracerProvider, nil, "test", circuitbreaking.NewNoopCircuitBreaker())
+		assert.Error(t, err)
+		assert.Nil(t, im)
+	})
 }

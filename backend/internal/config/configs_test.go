@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config/envvars"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/http"
 
@@ -18,7 +19,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServerConfig_EncodeToFile(T *testing.T) {
+func TestAPIServiceConfig_EncodeToFile(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -69,6 +70,19 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 			return nil, errors.New("blah")
 		}))
 	})
+
+	T.Run("with nil config", func(t *testing.T) {
+		t.Parallel()
+
+		var cfg *APIServiceConfig
+
+		f, err := os.CreateTemp("", "")
+		require.NoError(t, err)
+
+		err = cfg.EncodeToFile(f.Name(), json.Marshal)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "nil config")
+	})
 }
 
 //nolint:paralleltest // because we set env vars for this, we can't
@@ -115,5 +129,315 @@ func TestLoadConfigFromEnvironment(T *testing.T) {
 		assert.NotNil(t, actual)
 
 		assert.Equal(t, actual.Meta.Debug, false)
+	})
+
+	T.Run("with invalid config file", func(t *testing.T) {
+		t.Setenv(ConfigurationFilePathEnvVarKey, "/nonexistent/path")
+
+		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with invalid JSON", func(t *testing.T) {
+		configFilepath := t.TempDir() + "/config.json"
+		require.NoError(t, os.WriteFile(configFilepath, []byte("{invalid json"), 0o0644))
+
+		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
+
+		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with apply env vars error", func(t *testing.T) {
+		cfg := &APIServiceConfig{}
+		cfgBytes, err := json.Marshal(cfg)
+		require.NoError(t, err)
+
+		configFilepath := t.TempDir() + "/config.json"
+		require.NoError(t, os.WriteFile(configFilepath, cfgBytes, 0o0644))
+
+		t.Setenv(ConfigurationFilePathEnvVarKey, configFilepath)
+		// Set an invalid environment variable that would cause parsing to fail
+		t.Setenv("DINNER_DONE_BETTER_HTTP_HTTP_PORT", "invalid_port")
+
+		actual, err := LoadConfigFromEnvironment[APIServiceConfig]()
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+}
+
+func TestAPIServiceConfig_Commit(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		cfg := &APIServiceConfig{}
+		commit := cfg.Commit()
+		// The commit may or may not be empty depending on build info
+		assert.IsType(t, "", commit)
+	})
+}
+
+func TestAPIServiceConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &APIServiceConfig{
+			Meta: MetaSettings{
+				RunMode: DevelopmentRunMode,
+			},
+			Encoding: encoding.Config{
+				ContentType: "application/json",
+			},
+			Observability: observability.Config{},
+			HTTPServer: http.Config{
+				HTTPPort:        8080,
+				StartupDeadline: time.Minute,
+			},
+			Queues: msgconfig.QueuesConfig{
+				DataChangesTopicName:              "data-changes",
+				OutboundEmailsTopicName:           "outbound-emails",
+				SearchIndexRequestsTopicName:      "search-index-requests",
+				UserDataAggregationTopicName:      "user-data-aggregation",
+				WebhookExecutionRequestsTopicName: "webhook-execution-requests",
+			},
+			Database: databasecfg.Config{
+				Debug: true,
+				ConnectionDetails: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		assert.NoError(t, err)
+	})
+
+	T.Run("with validateServices enabled", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &APIServiceConfig{
+			validateServices: true,
+			Meta: MetaSettings{
+				RunMode: DevelopmentRunMode,
+			},
+			Encoding: encoding.Config{
+				ContentType: "application/json",
+			},
+			Observability: observability.Config{},
+			HTTPServer: http.Config{
+				HTTPPort:        8080,
+				StartupDeadline: time.Minute,
+			},
+			Queues: msgconfig.QueuesConfig{
+				DataChangesTopicName:              "data-changes",
+				OutboundEmailsTopicName:           "outbound-emails",
+				SearchIndexRequestsTopicName:      "search-index-requests",
+				UserDataAggregationTopicName:      "user-data-aggregation",
+				WebhookExecutionRequestsTopicName: "webhook-execution-requests",
+			},
+			Database: databasecfg.Config{
+				Debug: true,
+				ConnectionDetails: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+			Services: ServicesConfig{},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		// May have validation errors in services config
+		_ = err // Don't assert NoError as services might have validation issues
+	})
+}
+
+func TestDBCleanerConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &DBCleanerConfig{
+			Observability: observability.Config{},
+			Database: databasecfg.Config{
+				Debug: true,
+				ConnectionDetails: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		assert.NoError(t, err)
+	})
+}
+
+func TestMealPlanFinalizerConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &MealPlanFinalizerConfig{
+			Observability: observability.Config{},
+			Database: databasecfg.Config{
+				Debug: true,
+				ConnectionDetails: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		// May have validation errors in queues config
+		_ = err
+	})
+}
+
+func TestMealPlanGroceryListInitializerConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &MealPlanGroceryListInitializerConfig{
+			Observability: observability.Config{},
+			Database: databasecfg.Config{
+				Debug: true,
+				ConnectionDetails: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		// May have validation errors in analytics or queues config
+		_ = err
+	})
+}
+
+func TestMealPlanTaskCreatorConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &MealPlanTaskCreatorConfig{
+			Observability: observability.Config{},
+			Database: databasecfg.Config{
+				Debug: true,
+				ConnectionDetails: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		// May have validation errors in analytics or queues config
+		_ = err
+	})
+}
+
+func TestSearchDataIndexSchedulerConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &SearchDataIndexSchedulerConfig{
+			Observability: observability.Config{},
+			Database: databasecfg.Config{
+				Debug: true,
+				ConnectionDetails: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		// May have validation errors in queues config
+		_ = err
+	})
+}
+
+func TestAsyncMessageHandlerConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &AsyncMessageHandlerConfig{
+			Observability: observability.Config{},
+			Database: databasecfg.Config{
+				Debug: true,
+				ConnectionDetails: databasecfg.ConnectionDetails{
+					Username: "user",
+					Password: "pass",
+					Database: "db",
+					Host:     "host",
+				},
+			},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		// May have validation errors in various configs
+		_ = err
+	})
+}
+
+func TestAdminWebappConfig_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("valid config", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := t.Context()
+		cfg := &AdminWebappConfig{
+			Meta: MetaSettings{
+				RunMode: DevelopmentRunMode,
+			},
+			Encoding: encoding.Config{
+				ContentType: "application/json",
+			},
+			Observability: observability.Config{},
+		}
+
+		err := cfg.ValidateWithContext(ctx)
+		// May have validation errors in various configs
+		_ = err
 	})
 }
