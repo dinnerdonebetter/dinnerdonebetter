@@ -9,15 +9,11 @@ import (
 	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
+	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
-	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
-	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
-	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
-	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
-	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 )
 
@@ -36,11 +32,10 @@ var (
 func init() {
 	ctx := context.Background()
 
-	cfg, err := deriveServerConfig()
+	cfg, err := localdev.LoadServerConfig(ctx, apiConfigurationFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	apiServiceConfig = cfg
 
 	logger, tracerProvider, _, err := cfg.Observability.ProvideThreePillars(ctx)
@@ -48,47 +43,31 @@ func init() {
 		log.Fatal(err)
 	}
 
-	redisConfig, _, err := redis.BuildContainerBackedRedisConfig(ctx)
+	var (
+		server *apiserver.Server
+		dbCfg  *databasecfg.Config
+	)
+
+	server, databaseClient, dbCfg, err = localdev.BuildInProcessServer(ctx, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
-	cfg.Events.Publisher.Provider = msgconfig.ProviderRedis
-	cfg.Events.Publisher.Redis = *redisConfig
-	cfg.Events.Consumer.Redis = *redisConfig
-
-	// set up a database container, migrate it, and build a connection client
-	_, db, dbCfg, err := pgtesting.BuildDatabaseContainer(ctx, "integration_testing")
-	if err != nil {
-		log.Fatal(err)
-	}
-	cfg.Database = *dbCfg
-
-	if err = migrations.NewMigrator(logger, tracing.NewNoopTracerProvider(), db, dbCfg).Migrate(ctx); err != nil {
-		log.Fatal(err)
-	}
-
-	databaseClient, err = postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), dbCfg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	dbConnStr = dbCfg.ConnectionDetails.String()
 
 	// create premade admin user
 	auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, databaseClient)
 	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, databaseClient)
 	notifsRepo = notificationsrepo.ProvideNotificationsRepository(nil, nil, auditLogRepo, databaseClient)
-	adminUser, err := createPremadeAdminUser(ctx, logger, tracerProvider, identityRepo, databaseClient)
+	adminUser, err := localdev.CreatePremadeAdminUser(ctx, logger, tracerProvider, identityRepo, databaseClient, premadeAdminUser)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err = createOAuth2ClientForTests(ctx, databaseClient, dbCfg); err != nil {
-		log.Fatal(err)
-	}
-
-	server, err := apiserver.NewServer(ctx, logger, cfg)
+	createdClient, err := localdev.CreateOAuth2ClientForService(ctx, databaseClient, dbCfg)
 	if err != nil {
 		log.Fatal(err)
 	}
+	createdClientID, createdClientSecret = createdClient.ClientID, createdClient.ClientSecret
 
 	go server.Run()
 

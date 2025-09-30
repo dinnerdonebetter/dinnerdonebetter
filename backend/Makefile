@@ -215,24 +215,11 @@ env_vars:
 integration-tests: integration_tests
 
 .PHONY: integration_tests
-integration_tests:
-	go test -v -count=1 $(THIS)/tests_integration/apiserver
+integration_tests: integration_tests_postgres
 
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
-	$(CONTAINER_RUNNER) compose \
-	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml build
-	$(CONTAINER_RUNNER) compose \
-	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
-	--build \
-	--quiet-pull \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--exit-code-from tests) \
-	--attach api_server \
-	--attach tests
+	go test -v -count=1 $(THIS)/tests_integration/apiserver
 
 ## EXECUTION
 
@@ -246,23 +233,7 @@ test: $(ARTIFACTS_DIR) vendor build
 
 .PHONY: dev
 dev: $(ARTIFACTS_DIR)
-	$(CONTAINER_RUNNER) compose \
-	--file $(ENVIRONMENTS_DIR)/localdev/docker-compose.yaml build
-	$(CONTAINER_RUNNER) compose \
-	--file $(ENVIRONMENTS_DIR)/localdev/docker-compose.yaml up \
-	--no-attach loki \
-	--no-attach redis \
-	--no-attach jaeger \
-	--no-attach grafana \
-	--no-attach postgres \
-	--no-attach prometheus \
-	--build \
-	--quiet-pull \
-	--force-recreate \
-	--remove-orphans \
-	--renew-anon-volumes \
-	--always-recreate-deps \
-	--abort-on-container-exit
+	go run $(THIS)/cmd/localdev/server
 
 # OPERATIONS
 
