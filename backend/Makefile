@@ -264,10 +264,6 @@ dev: $(ARTIFACTS_DIR)
 	--always-recreate-deps \
 	--abort-on-container-exit
 
-.PHONY: run_admin_app
-run_admin_app: ensure_air_installed
-	(cd cmd/services/admin_webapp && CONFIGURATION_FILEPATH="../../../$(ENVIRONMENTS_DIR)/localdev/config_files/admin_webapp_config.json" air -c .air.toml)
-
 # OPERATIONS
 
 GCP_DEV_PROJECT_NAME := dinner-done-better-dev

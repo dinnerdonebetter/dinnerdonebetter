@@ -93,19 +93,16 @@ PROTO_FILES_PATH          := proto/*.proto
 PROTO_GO_OUTPUT_PATH      := backend
 PROTO_OUTPUT_BACKEND_PATH := backend/internal/grpc
 BACKEND_REPO_NAME         := github.com/dinnerdonebetter/backend
-GRPC_SERVICES             := core eating
 
 .PHONY: backend_proto
 backend_proto: ensure_protoc_installed ensure_protoc-gen-go_installed ensure_protoc-gen-go-grpc_installed format_proto
 	mkdir -p $(PROTO_OUTPUT_BACKEND_PATH)
-	for svc in $(GRPC_SERVICES); do \
-		protoc --go_out=$(PROTO_GO_OUTPUT_PATH) \
-			--go-grpc_out=$(PROTO_GO_OUTPUT_PATH) \
-			--go_opt=module=$(BACKEND_REPO_NAME) \
-			--go-grpc_opt=module=$(BACKEND_REPO_NAME) \
-			--proto_path proto/ \
-			$(PROTO_FILES_PATH); \
-	done
+	protoc --go_out=$(PROTO_GO_OUTPUT_PATH) \
+		--go-grpc_out=$(PROTO_GO_OUTPUT_PATH) \
+		--go_opt=module=$(BACKEND_REPO_NAME) \
+		--go-grpc_opt=module=$(BACKEND_REPO_NAME) \
+		--proto_path proto/ \
+		$(PROTO_FILES_PATH);
 	(cd backend && $(MAKE) format_golang)
 
 .PHONY: proto
