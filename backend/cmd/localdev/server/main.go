@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	apiConfigurationFilepath = "deploy/environments/dev/kustomize/configs/api_service_config.json"
+	apiConfigurationFilepath = "deploy/environments/testing/config_files/integration-tests-config.json"
 )
 
 func main() {

@@ -100,6 +100,7 @@ require (
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.5
 	gopkg.in/matryer/try.v1 v1.0.0-20150601225556-312d2599e12e
+	maragu.dev/gomponents v1.2.0
 	resenje.org/schulze v0.6.1
 )
 
