@@ -2,11 +2,11 @@ package main
 
 import (
 	"net/http"
-	"time"
 
-	"maragu.dev/gomponents"
-	"maragu.dev/gomponents/components"
-	"maragu.dev/gomponents/html"
+	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
+
+	g "maragu.dev/gomponents"
+	ghtml "maragu.dev/gomponents/html"
 	ghttp "maragu.dev/gomponents/http"
 )
 
@@ -14,101 +14,81 @@ func main() {
 	mux := http.NewServeMux()
 
 	Home(mux)
-	About(mux)
+	Login(mux)
 
 	if err := http.ListenAndServe(":8888", mux); err != nil {
 		panic(err)
 	}
 }
 
-type adminFrontendServer struct{}
-
-func HomePage() gomponents.Node {
+func HomePage() g.Node {
 	return page("Home",
-		html.H1(gomponents.Text("Home")),
+		ghtml.H1(g.Text("Home")),
 
-		html.P(gomponents.Text("This is the gomponents example app!")),
+		ghtml.P(g.Text("This is the g example app!")),
 	)
 }
 
 func Home(mux *http.ServeMux) {
-	mux.Handle("GET /", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (gomponents.Node, error) {
+	mux.Handle("GET /", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (g.Node, error) {
 		return HomePage(), nil
 	}))
 }
 
-func AboutPage() gomponents.Node {
-	now := time.Now()
-
-	return page("About",
-		html.H1(gomponents.Text("About")),
-
-		html.P(gomponents.Textf("Built with gomponents and rendered at %v.", now.Format(time.TimeOnly))),
-
-		html.P(
-			gomponents.If(now.Second()%2 == 0, gomponents.Text("It's an even second!")),
-			gomponents.If(now.Second()%2 != 0, gomponents.Text("It's an odd second!")),
-		),
+func LoginPage() g.Node {
+	return page("Login",
+		components.LoginForm("", "", "", ""),
 	)
 }
 
-func About(mux *http.ServeMux) {
-	mux.Handle("GET /about", ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (gomponents.Node, error) {
-		return AboutPage(), nil
+func Login(mux *http.ServeMux) {
+	mux.Handle("GET /login", ghttp.Adapt(func(w http.ResponseWriter, r *http.Request) (g.Node, error) {
+		return LoginPage(), nil
 	}))
 }
 
 ///
 
-func page(title string, children ...gomponents.Node) gomponents.Node {
-	return components.HTML5(components.HTML5Props{
-		Title:    title,
-		Language: "en",
-		Head: []gomponents.Node{
-			html.Script(html.Src("https://cdn.tailwindcss.com?plugins=typography")),
-		},
-		Body: []gomponents.Node{html.Class("bg-gradient-to-b from-white to-indigo-100 bg-no-repeat"),
-			html.Div(html.Class("min-h-screen flex flex-col justify-between"),
-				header(),
-				html.Div(html.Class("grow"),
-					container(true,
-						html.Div(html.Class("prose prose-lg prose-indigo"),
-							gomponents.Group(children),
-						),
-					),
-				),
-				footer(),
-			),
-		},
-	})
-}
-
-func header() gomponents.Node {
-	return html.Div(html.Class("bg-indigo-600 text-white shadow"),
-		container(false,
-			html.Div(html.Class("flex items-center space-x-4 h-8"),
-				headerLink("/", "Home"),
-				headerLink("/about", "About"),
-			),
+func header() g.Node {
+	return ghtml.Header(
+		ghtml.Class("text-center py-6"),
+		ghtml.H1(
+			ghtml.Class("text-3xl font-bold text-indigo-700"),
+			g.Text("My App"),
 		),
 	)
 }
 
-func headerLink(href, text string) gomponents.Node {
-	return html.A(html.Class("hover:text-indigo-300"), html.Href(href), gomponents.Text(text))
-}
-
-func container(padY bool, children ...gomponents.Node) gomponents.Node {
-	return html.Div(
-		components.Classes{
-			"max-w-7xl mx-auto":     true,
-			"px-4 md:px-8 lg:px-16": true,
-			"py-4 md:py-8":          padY,
-		},
-		gomponents.Group(children),
+func page(title string, children ...g.Node) g.Node {
+	return ghtml.HTML(
+		ghtml.Lang("en"),
+		ghtml.Head(
+			ghtml.Title(title),
+			ghtml.Script(ghtml.Src("https://cdn.tailwindcss.com?plugins=typography")),
+			ghtml.Script(
+				ghtml.Src("https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"),
+				ghtml.Integrity("sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ"),
+				ghtml.CrossOrigin("anonymous"),
+			),
+		),
+		ghtml.Body(
+			ghtml.Class("bg-gradient-to-b from-white to-indigo-100 min-h-screen flex flex-col"),
+			header(),
+			ghtml.Main(
+				ghtml.Class("flex-grow flex justify-center items-center w-full"),
+				ghtml.Div(
+					ghtml.Class("w-full max-w-md"),
+					g.Group(children),
+				),
+			),
+			footer(),
+		),
 	)
 }
 
-func footer() gomponents.Node {
-	return html.Div(html.Class("bg-gray-900 text-white shadow text-center h-16 flex items-center justify-center"))
+func footer() g.Node {
+	return ghtml.Footer(
+		ghtml.Class("text-center py-4 text-sm text-gray-600"),
+		g.Text("© 2025 My App. All rights reserved."),
+	)
 }

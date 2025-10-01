@@ -235,6 +235,12 @@ test: $(ARTIFACTS_DIR) vendor build
 dev: $(ARTIFACTS_DIR)
 	go run $(THIS)/cmd/localdev/server
 
+AIR_PORT := 9999
+
+.PHONY: admin
+admin:
+	$(RUN_CONTAINER) -p $(AIR_PORT):$(AIR_PORT) docker.io/cosmtrek/air --build.cmd "go build -o ./tmp/main $(THIS)/cmd/services/admin" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true"
+
 # OPERATIONS
 
 GCP_DEV_PROJECT_NAME := dinner-done-better-dev
