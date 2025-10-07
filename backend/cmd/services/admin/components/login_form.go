@@ -2,6 +2,7 @@ package components
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
@@ -10,46 +11,101 @@ import (
 	ghtml "maragu.dev/gomponents/html"
 )
 
-func loginInput(label, inputError, inputType string, p design.Palette) g.Node {
-	input := ghtml.Input(
+type ComponentRenderer struct {
+	palette design.Palette
+}
+
+func NewComponentRenderer() *ComponentRenderer {
+	return &ComponentRenderer{palette: design.StandardPalette}
+}
+
+func (r *ComponentRenderer) UsernameInput(label, fieldName, content string) g.Node {
+	return ghtml.Input(
 		ghtml.Type("text"),
 		ghtml.ID(label),
-		ghtml.Name(label),
-		ghtml.Class(fmt.Sprintf("mt-1 block w-full rounded-md border-%s shadow-sm focus:border-%s focus:ring-%s", p.Background.Value, p.Primary.Value, p.Primary.Value)),
-		ghtml.AutoComplete(label),
+		ghtml.Name(fieldName),
+		ghtml.Value(content),
+		ghtml.Class(fmt.Sprintf("mt-1 block w-full rounded-md border-%s shadow-sm focus:border-%s focus:ring-%s", r.palette.Background.Value, r.palette.Primary.Value, r.palette.Primary.Value)),
+		ghtml.AutoComplete("username"),
 	)
+}
 
-	switch strings.ToLower(strings.TrimSpace(inputType)) {
+func (r *ComponentRenderer) passwordInput(id string, fieldName, content string) g.Node {
+	return ghtml.Input(
+		ghtml.Type("password"),
+		ghtml.ID(id),
+		ghtml.Name(fieldName),
+		ghtml.Value(content),
+		ghtml.Class(fmt.Sprintf("mt-1 block w-full rounded-md border-%s shadow-sm focus:border-%s focus:ring-%s", r.palette.Background.Value, r.palette.Primary.Value, r.palette.Primary.Value)),
+		ghtml.AutoComplete("current-password"),
+	)
+}
+
+func (r *ComponentRenderer) totpTokenInput(id string, fieldName, content string) g.Node {
+	return ghtml.Input(
+		ghtml.Type("text"),
+		ghtml.ID(id),
+		ghtml.Name(fieldName),
+		ghtml.Value(content),
+		ghtml.Class(fmt.Sprintf("mt-1 block w-full rounded-md border-%s shadow-sm focus:border-%s focus:ring-%s", r.palette.Background.Value, r.palette.Primary.Value, r.palette.Primary.Value)),
+		ghtml.MaxLength("6"),
+		g.Attr("inputmode", "numeric"),
+		ghtml.Pattern("[0-9]{6}"),
+		ghtml.AutoComplete("one-time-code"),
+	)
+}
+
+func (r *ComponentRenderer) wrapInputElement(
+	label,
+	inputError string,
+	input g.Node,
+) g.Node {
+	return ghtml.Div(
+		ghtml.Class("space-y-1"),
+		ghtml.Label(
+			ghtml.For(label),
+			ghtml.Class(fmt.Sprintf("block text-sm font-medium %s", design.TextColor(r.palette.Primary))),
+			g.Text(strings.Title(label)),
+		),
+		input,
+		g.If(inputError != "", ghtml.Span(
+			ghtml.Class(fmt.Sprintf("text-sm %s mt-1 block", design.TextColor(r.palette.Warning))),
+			g.Text(inputError),
+		)),
+	)
+}
+
+func (r *ComponentRenderer) inputElement(
+	label,
+	inputError,
+	inputType,
+	fieldName,
+	content string,
+) g.Node {
+	var input g.Node
+	s := strings.ToLower(strings.TrimSpace(inputType))
+
+	switch s {
+	case "username":
+		input = r.UsernameInput(label, fieldName, content)
 	case "password":
-		input = ghtml.Input(
-			ghtml.Type("password"),
-			ghtml.ID("password"),
-			ghtml.Name("password"),
-			ghtml.Class(fmt.Sprintf("mt-1 block w-full rounded-md border-%s shadow-sm focus:border-%s focus:ring-%s", p.Background.Value, p.Primary.Value, p.Primary.Value)),
-			ghtml.AutoComplete("current-password"),
-		)
+		input = r.passwordInput("password", fieldName, content)
 	case "totp":
-		input = ghtml.Input(
-			ghtml.Type("text"),
-			ghtml.ID("totp"),
-			ghtml.Name("totp"),
-			ghtml.Class(fmt.Sprintf("mt-1 block w-full rounded-md border-%s shadow-sm focus:border-%s focus:ring-%s", p.Background.Value, p.Primary.Value, p.Primary.Value)),
-			ghtml.MaxLength("6"),
-			g.Attr("inputmode", "numeric"),
-			ghtml.Pattern("[0-9]{6}"),
-		)
+		input = r.totpTokenInput("totp", fieldName, content)
+	default:
+		log.Panicf("unknown input type: %s\n", s)
 	}
 
 	return ghtml.Div(
 		ghtml.Class("space-y-1"),
 		ghtml.Label(
 			ghtml.For(label),
-			ghtml.Class(fmt.Sprintf("block text-sm font-medium %s", design.TextColor(p.Primary))),
+			ghtml.Class(fmt.Sprintf("block text-sm font-medium %s", design.TextColor(r.palette.Primary))),
 			g.Text(strings.Title(label)),
 		),
 		input,
 		g.If(inputError != "", ghtml.Span(
-			ghtml.Class(fmt.Sprintf("text-sm %s mt-1 block", design.TextColor(p.Warning))),
+			ghtml.Class(fmt.Sprintf("text-sm %s mt-1 block", design.TextColor(r.palette.Warning))),
 			g.Text(inputError),
 		)),
 	)
@@ -63,22 +119,22 @@ func submitButton(text string) g.Node {
 	)
 }
 
+type LoginFormProps struct {
+	UsernameError,
+	PasswordError,
+	TOTPError,
+	GeneralError string
+}
+
 // LoginForm renders a login form. You can optionally provide error messages for each field and a general error.
 // Pass empty strings to ignore them.
-func LoginForm(
-	usernameErr string,
-	passwordErr string,
-	totpErr string,
-	generalErr string,
-) g.Node {
-	p := design.StandardPalette
-
+func (r *ComponentRenderer) LoginForm(props *LoginFormProps) g.Node {
 	return ghtml.Div(
 		ghtml.ID("login-container"),
 		ghtml.Div(
 			ghtml.Class("w-full max-w-md bg-white p-8 rounded-2xl shadow-md"),
 			ghtml.H2(
-				ghtml.Class(fmt.Sprintf("text-2xl font-bold mb-6 text-center %s", design.TextColor(p.Primary))),
+				ghtml.Class(fmt.Sprintf("text-2xl font-bold mb-6 text-center %s", design.TextColor(r.palette.Primary))),
 				g.Text("Login"),
 			),
 
@@ -86,18 +142,19 @@ func LoginForm(
 				ghtml.Class("space-y-4"),
 				ghtml.Method("post"),
 				g.Attr("hx-post", "/login/submit"),
+				g.Attr("hx-ext", "json-enc"),
 				g.Attr("hx-target", "#login-container"),
 				g.Attr("hx-swap", "outerHTML"),
 
-				loginInput("username", usernameErr, "default", p),
-				loginInput("password", passwordErr, "password", p),
-				loginInput("TOTP code", totpErr, "totp", p),
+				r.wrapInputElement("username", props.UsernameError, r.UsernameInput("username", "username", "")),
+				r.inputElement("password", props.PasswordError, "password", "password", ""),
+				r.inputElement("TOTP code", props.TOTPError, "totp", "totpToken", ""),
 
 				submitButton("Log In"),
 
-				g.If(generalErr != "", ghtml.Div(
-					ghtml.Class(fmt.Sprintf("mt-2 text-sm %s", design.TextColor(p.Warning))),
-					g.Text(generalErr),
+				g.If(props.GeneralError != "", ghtml.Div(
+					ghtml.Class(fmt.Sprintf("mt-2 text-sm %s", design.TextColor(r.palette.Warning))),
+					g.Text(props.GeneralError),
 				)),
 			),
 		),

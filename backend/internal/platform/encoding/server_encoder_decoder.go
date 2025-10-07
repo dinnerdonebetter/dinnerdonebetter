@@ -22,7 +22,7 @@ const (
 	// ContentTypeHeaderKey is the HTTP standard header name for content type.
 	ContentTypeHeaderKey = "Content-type"
 
-	serviceName = "server_encoder_decoder"
+	o11yName = "server_encoder_decoder"
 
 	contentTypeXML   = "application/xml"
 	contentTypeJSON  = "application/json"
@@ -271,8 +271,8 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 // ProvideServerEncoderDecoder provides a ServerEncoderDecoder.
 func ProvideServerEncoderDecoder(logger logging.Logger, tracerProvider tracing.TracerProvider, contentType ContentType) ServerEncoderDecoder {
 	return &serverEncoderDecoder{
-		logger:      logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:      logging.EnsureLogger(logger).WithName(o11yName),
+		tracer:      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
 		panicker:    panicking.NewProductionPanicker(),
 		contentType: contentType,
 	}

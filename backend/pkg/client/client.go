@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -85,17 +86,15 @@ func WithOAuth2Credentials(
 	clientID,
 	clientSecret,
 	authToken string,
-	scopes []string,
-) []grpc.DialOption {
+) (grpc.DialOption, error) {
 	state, err := random.GenerateBase64EncodedString(ctx, 32)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	oauth2Config := oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
-		Scopes:       scopes,
 		RedirectURL:  authServerAddress,
 		Endpoint: oauth2.Endpoint{
 			AuthStyle: oauth2.AuthStyleInParams,
@@ -116,7 +115,7 @@ func WithOAuth2Credentials(
 		http.NoBody,
 	)
 	if err != nil {
-		panic(fmt.Errorf("failed to build oauth2 code retrieval request: %w", err))
+		return nil, fmt.Errorf("failed to build oauth2 code retrieval request: %w", err)
 	}
 
 	req.Header.Set("Authorization", "Bearer "+authToken)
@@ -128,7 +127,7 @@ func WithOAuth2Credentials(
 
 	res, err := c.Do(req)
 	if err != nil {
-		panic(fmt.Errorf("failed to get oauth2 code: %w", err))
+		return nil, fmt.Errorf("failed to get oauth2 code: %w", err)
 	}
 	defer func() {
 		if err = res.Body.Close(); err != nil {
@@ -142,26 +141,24 @@ func WithOAuth2Credentials(
 
 	rl, err := res.Location()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	code := rl.Query().Get(codeKey)
 	if code == "" {
-		panic("code not returned from oauth2 redirect")
+		return nil, errors.New("code not returned from oauth2 redirect")
 	}
 
 	oauth2Token, err := oauth2Config.Exchange(ctx, code)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	ts := oauth2.ReuseTokenSource(oauth2Token, oauth2Config.TokenSource(ctx, oauth2Token))
 
-	return []grpc.DialOption{
-		grpc.WithPerRPCCredentials(oauth.TokenSource{
-			TokenSource: ts,
-		}),
-	}
+	return grpc.WithPerRPCCredentials(oauth.TokenSource{
+		TokenSource: ts,
+	}), nil
 }
 
 func ImpersonateUseAndAccountContext(ctx context.Context, userID, accountID string) context.Context {
