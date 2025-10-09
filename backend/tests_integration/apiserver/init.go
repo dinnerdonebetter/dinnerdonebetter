@@ -32,7 +32,7 @@ var (
 func init() {
 	ctx := context.Background()
 
-	cfg, err := localdev.LoadServerConfig(ctx, apiConfigurationFilepath)
+	cfg, err := config.LoadConfigFromPath[config.APIServiceConfig](ctx, apiConfigurationFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}

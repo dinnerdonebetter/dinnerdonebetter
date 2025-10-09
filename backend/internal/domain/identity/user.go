@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/pquerna/otp/totp"
 )
 
 const (
@@ -272,6 +274,15 @@ func (i *AvatarUpdateInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.Base64EncodedData, validation.Required),
 	)
+}
+
+func (u *User) GenerateTOTPCode() (string, error) {
+	code, err := totp.GenerateCode(strings.ToUpper(u.TwoFactorSecret), time.Now().UTC())
+	if err != nil {
+		return "", fmt.Errorf("generating totp code: %w", err)
+	}
+
+	return code, nil
 }
 
 // begin obligatory getter implementations

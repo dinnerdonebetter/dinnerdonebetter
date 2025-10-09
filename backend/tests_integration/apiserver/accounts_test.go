@@ -362,7 +362,8 @@ func TestAccounts_Inviting(T *testing.T) {
 		require.NoError(t, err)
 
 		// the invited user needs a new token that indicates they're a member of this account
-		inviteeClient = buildAuthedGRPCClient(ctx, fetchLoginTokenForUserForTest(t, invitee))
+		inviteeClient, err = buildAuthedGRPCClient(ctx, fetchLoginTokenForUserForTest(t, invitee))
+		require.NoError(t, err)
 
 		// verify that we don't have any sent invitations because they've all been accepted
 		sentInvitations, err = testClient.GetSentAccountInvitations(ctx, nil)
@@ -658,7 +659,8 @@ func TestAccounts_OwnershipTransfer(T *testing.T) {
 		require.NoError(t, err)
 
 		// the invited user needs a new token that indicates they're a member of this account
-		inviteeClient := buildAuthedGRPCClient(ctx, fetchLoginTokenForUserForTest(t, invitee))
+		inviteeClient, err := buildAuthedGRPCClient(ctx, fetchLoginTokenForUserForTest(t, invitee))
+		require.NoError(t, err)
 
 		// change to the new account
 		_, err = inviteeClient.SetDefaultAccount(ctx, &identitysvc.SetDefaultAccountRequest{AccountID: accountID})

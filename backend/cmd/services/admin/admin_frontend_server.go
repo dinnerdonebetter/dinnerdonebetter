@@ -1,30 +1,24 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
+	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
+	phttp "github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 	ghttp "maragu.dev/gomponents/http"
-)
-
-const (
-	grpcServerAddress = ""
-	clientID          = ""
-	clientSecret      = ""
-	authToken         = ""
 )
 
 type AdminFrontendServer struct {
@@ -35,32 +29,17 @@ type AdminFrontendServer struct {
 	componentRenderer *components.ComponentRenderer
 	apiClient         client.Client
 	cookieManager     cookies.Manager
+	server            *phttp.Server
 }
 
 func NewAdminFrontendServer(
-	ctx context.Context,
+	apiClient client.Client,
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
 	mux *http.ServeMux,
 ) (*AdminFrontendServer, error) {
 	cookieMan, err := cookies.NewCookieManager(&cookies.Config{}, tracerProvider)
-	if err != nil {
-		return nil, err
-	}
-
-	opt, err := client.WithOAuth2Credentials(
-		ctx,
-		grpcServerAddress,
-		clientID,
-		clientSecret,
-		authToken,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	apiClient, err := client.BuildClient(grpcServerAddress, opt)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +101,7 @@ func fetchErrorString(err error, key string) string {
 	return ""
 }
 
-func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http.Request) (g.Node, error) {
+func (s *AdminFrontendServer) LoginSubmission(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -151,6 +130,26 @@ func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http
 			TOTPError:     totpError,
 		}), nil
 	}
+
+	loginResponse, err := s.apiClient.LoginForToken(ctx, &authsvc.LoginForTokenRequest{Input: &authsvc.UserLoginInput{
+		Username:  loginInput.Username,
+		Password:  loginInput.Password,
+		TOTPToken: loginInput.TOTPToken,
+	}})
+	if err != nil {
+		return s.componentRenderer.LoginForm(&components.LoginFormProps{
+			GeneralError: err.Error(),
+		}), nil
+	}
+
+	encodedCookie, err := s.cookieManager.Encode(ctx, "cookie", loginResponse.Result.AccessToken)
+	if err != nil {
+		return s.componentRenderer.LoginForm(&components.LoginFormProps{
+			GeneralError: err.Error(),
+		}), nil
+	}
+
+	logger.Info(encodedCookie)
 
 	return s.HomePage(), nil
 }

@@ -68,21 +68,25 @@ func ConvertGRPCWebhookTriggerEventToWebhookTriggerEvent(z *webhookssvc.WebhookT
 }
 
 func ConvertGRPCWebhookCreationRequestInputToWebhookDatabaseCreationInput(input *webhookssvc.WebhookCreationRequestInput, accountID string) *webhooks.WebhookDatabaseCreationInput {
+	webhookID := identifiers.New()
+
+	var events []*webhooks.WebhookTriggerEventDatabaseCreationInput
+	for _, event := range input.Events {
+		events = append(events, &webhooks.WebhookTriggerEventDatabaseCreationInput{
+			ID:               identifiers.New(),
+			BelongsToWebhook: webhookID,
+			TriggerEvent:     event,
+		})
+	}
+
 	x := &webhooks.WebhookDatabaseCreationInput{
-		ID:               identifiers.New(),
+		ID:               webhookID,
 		Name:             input.Name,
 		ContentType:      input.ContentType,
 		URL:              input.URL,
 		Method:           input.Method,
 		BelongsToAccount: accountID,
-	}
-
-	for _, event := range input.Events {
-		x.Events = append(x.Events, &webhooks.WebhookTriggerEventDatabaseCreationInput{
-			ID:               identifiers.New(),
-			BelongsToWebhook: x.ID,
-			TriggerEvent:     event,
-		})
+		Events:           events,
 	}
 
 	return x

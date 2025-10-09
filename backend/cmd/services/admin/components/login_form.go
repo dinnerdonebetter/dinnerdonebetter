@@ -7,6 +7,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
@@ -30,7 +32,7 @@ func (r *ComponentRenderer) UsernameInput(label, fieldName, content string) g.No
 	)
 }
 
-func (r *ComponentRenderer) passwordInput(id string, fieldName, content string) g.Node {
+func (r *ComponentRenderer) passwordInput(id, fieldName, content string) g.Node {
 	return ghtml.Input(
 		ghtml.Type("password"),
 		ghtml.ID(id),
@@ -41,7 +43,7 @@ func (r *ComponentRenderer) passwordInput(id string, fieldName, content string) 
 	)
 }
 
-func (r *ComponentRenderer) totpTokenInput(id string, fieldName, content string) g.Node {
+func (r *ComponentRenderer) totpTokenInput(id, fieldName, content string) g.Node {
 	return ghtml.Input(
 		ghtml.Type("text"),
 		ghtml.ID(id),
@@ -60,12 +62,14 @@ func (r *ComponentRenderer) wrapInputElement(
 	inputError string,
 	input g.Node,
 ) g.Node {
+	titleCaser := cases.Title(language.English)
+
 	return ghtml.Div(
 		ghtml.Class("space-y-1"),
 		ghtml.Label(
 			ghtml.For(label),
 			ghtml.Class(fmt.Sprintf("block text-sm font-medium %s", design.TextColor(r.palette.Primary))),
-			g.Text(strings.Title(label)),
+			g.Text(titleCaser.String(label)),
 		),
 		input,
 		g.If(inputError != "", ghtml.Span(
@@ -96,12 +100,14 @@ func (r *ComponentRenderer) inputElement(
 		log.Panicf("unknown input type: %s\n", s)
 	}
 
+	titleCaser := cases.Title(language.English)
+
 	return ghtml.Div(
 		ghtml.Class("space-y-1"),
 		ghtml.Label(
 			ghtml.For(label),
 			ghtml.Class(fmt.Sprintf("block text-sm font-medium %s", design.TextColor(r.palette.Primary))),
-			g.Text(strings.Title(label)),
+			g.Text(titleCaser.String(label)),
 		),
 		input,
 		g.If(inputError != "", ghtml.Span(

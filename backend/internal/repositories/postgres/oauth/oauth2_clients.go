@@ -151,6 +151,7 @@ func (q *repository) CreateOAuth2Client(ctx context.Context, input *types.OAuth2
 
 	if writeErr := q.generatedQuerier.CreateOAuth2Client(ctx, q.db, &generated.CreateOAuth2ClientParams{
 		ID:           input.ID,
+		Description:  input.Description,
 		Name:         input.Name,
 		ClientID:     input.ClientID,
 		ClientSecret: input.ClientSecret,

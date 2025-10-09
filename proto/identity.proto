@@ -315,6 +315,7 @@ message AccountCreationRequestInput {
   string State = 8;
   string ZipCode = 9;
   string Country = 10;
+  string BelongsToUser = 11;
 }
 
 message AccountInvitation {
@@ -430,6 +431,7 @@ message UserCreationResponse {
   string TwoFactorSecret = 9;
   string FirstName = 10;
   string LastName = 11;
+  bool IsAdmin = 12;
 }
 
 message UserDataAggregationRequest {

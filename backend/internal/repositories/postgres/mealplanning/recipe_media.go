@@ -207,6 +207,7 @@ func (q *repository) UpdateRecipeMedia(ctx context.Context, updated *types.Recip
 	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeMedia(ctx, q.db, &generated.UpdateRecipeMediaParams{
+		ID:                  updated.ID,
 		BelongsToRecipe:     database.NullStringFromStringPointer(updated.BelongsToRecipe),
 		BelongsToRecipeStep: database.NullStringFromStringPointer(updated.BelongsToRecipeStep),
 		MimeType:            updated.MimeType,

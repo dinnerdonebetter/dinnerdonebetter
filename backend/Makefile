@@ -76,12 +76,6 @@ ifeq (, $(shell which gci))
 	$(shell go install github.com/daixiang0/gci@v0.13.5)
 endif
 
-.PHONY: ensure_air_installed
-ensure_air_installed:
-ifeq (, $(shell which air))
-	$(shell go install github.com/air-verse/air@v1.61.5)
-endif
-
 .PHONY: ensure_goimports_installed
 ensure_goimports_installed:
 ifeq (, $(shell which goimports))
@@ -98,6 +92,12 @@ endif
 ensure_protoc-gen-go-grpc_installed:
 ifeq (, $(shell which protoc-gen-go-grpc))
 	$(shell go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1)
+endif
+
+.PHONY: ensure_air_installed
+ensure_air_installed:
+ifeq (, $(shell which air))
+	$(shell go install github.com/air-verse/air@v1.63.0)
 endif
 
 .PHONY: setup
@@ -169,7 +169,7 @@ queries_lint:
 	$(SQL_GENERATOR) vet --no-remote
 
 .PHONY: golang_lint
-golang_lint: sqlc_struct_check
+golang_lint: struct_usage_check
 	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
 	$(LINTER) run --config=.golangci.yml --timeout 30m ./...
 
@@ -200,9 +200,9 @@ querier: queries queries_lint
 	rm -rf internal/database/postgres/generated/*.go
 	$(SQL_GENERATOR) generate --no-remote
 
-.PHONY: sqlc_struct_check
-sqlc_struct_check:
-	go run $(THIS)/cmd/tools/sqlc_struct_checker
+.PHONY: struct_usage_check
+struct_usage_check:
+	go run $(THIS)/cmd/tools/struct_usage_checker
 
 .PHONY: env_vars
 env_vars:
@@ -238,8 +238,8 @@ dev: $(ARTIFACTS_DIR)
 AIR_PORT := 9999
 
 .PHONY: admin
-admin:
-	$(RUN_CONTAINER) -p $(AIR_PORT):$(AIR_PORT) docker.io/cosmtrek/air --build.cmd "go build -o ./tmp/main $(THIS)/cmd/services/admin" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true"
+admin: $(ARTIFACTS_DIR) ensure_air_installed
+	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/admin_tmp $(THIS)/cmd/services/admin" --build.bin "./$(ARTIFACTS_DIR)/admin_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true"
 
 # OPERATIONS
 

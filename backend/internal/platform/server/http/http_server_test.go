@@ -14,11 +14,11 @@ func TestProvideHTTPServer(T *testing.T) {
 
 		x, err := ProvideHTTPServer(
 			Config{
-				HTTPSCertificateFile:    "",
-				HTTPSCertificateKeyFile: "",
-				StartupDeadline:         0,
-				HTTPPort:                0,
-				Debug:                   false,
+				SSLCertificateFile:    "",
+				SSLCertificateKeyFile: "",
+				StartupDeadline:       0,
+				Port:                  0,
+				Debug:                 false,
 			},
 			nil,
 			nil,

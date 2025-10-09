@@ -481,6 +481,9 @@ func (r *repository) CreateUser(ctx context.Context, input *identity.UserDatabas
 		Birthday:                      database.NullTimeFromTimePointer(input.Birthday),
 		ServiceRole:                   authorization.ServiceUserRole.String(),
 		EmailAddressVerificationToken: database.NullStringFromString(token),
+		TwoFactorSecretVerifiedAt:     sql.NullTime{},
+		UserAccountStatusExplanation:  "",
+		RequiresPasswordChange:        false,
 	}); err != nil {
 		r.RollbackTransaction(ctx, tx)
 
@@ -579,19 +582,20 @@ func (r *repository) createAccountForUser(ctx context.Context, querier database.
 
 	// create the account.
 	if err := r.generatedQuerier.CreateAccount(ctx, querier, &generated.CreateAccountParams{
-		City:          accountCreationInput.City,
-		Name:          accountCreationInput.Name,
-		BillingStatus: identity.UnpaidAccountBillingStatus,
-		ContactPhone:  accountCreationInput.ContactPhone,
-		AddressLine1:  accountCreationInput.AddressLine1,
-		AddressLine2:  accountCreationInput.AddressLine2,
-		ID:            accountCreationInput.ID,
-		State:         accountCreationInput.State,
-		ZipCode:       accountCreationInput.ZipCode,
-		Country:       accountCreationInput.Country,
-		BelongsToUser: accountCreationInput.BelongsToUser,
-		Latitude:      database.NullStringFromFloat64Pointer(accountCreationInput.Latitude),
-		Longitude:     database.NullStringFromFloat64Pointer(accountCreationInput.Longitude),
+		City:              accountCreationInput.City,
+		Name:              accountCreationInput.Name,
+		BillingStatus:     identity.UnpaidAccountBillingStatus,
+		ContactPhone:      accountCreationInput.ContactPhone,
+		AddressLine1:      accountCreationInput.AddressLine1,
+		AddressLine2:      accountCreationInput.AddressLine2,
+		ID:                accountCreationInput.ID,
+		State:             accountCreationInput.State,
+		ZipCode:           accountCreationInput.ZipCode,
+		Country:           accountCreationInput.Country,
+		BelongsToUser:     accountCreationInput.BelongsToUser,
+		Latitude:          database.NullStringFromFloat64Pointer(accountCreationInput.Latitude),
+		Longitude:         database.NullStringFromFloat64Pointer(accountCreationInput.Longitude),
+		WebhookHmacSecret: accountCreationInput.WebhookEncryptionKey,
 	}); err != nil {
 		r.RollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "creating account")

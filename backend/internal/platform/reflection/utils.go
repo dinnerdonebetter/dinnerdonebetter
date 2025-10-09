@@ -14,8 +14,8 @@ import (
 // - Unexported fields are skipped (fv.CanInterface() == false).
 // - If multiple fields have identical values, the first match is returned (search order is struct field order).
 // - This requires passing the originating struct instance; a bare field value alone is insufficient in Go.
-func GetTagNameByValue(s any, fieldValue any, tagKey string) (string, error) {
-	v := reflect.ValueOf(s)
+func GetTagNameByValue(strukt, fieldValue any, tagKey string) (string, error) {
+	v := reflect.ValueOf(strukt)
 	if !v.IsValid() {
 		return "", fmt.Errorf("nil value")
 	}
@@ -27,7 +27,7 @@ func GetTagNameByValue(s any, fieldValue any, tagKey string) (string, error) {
 		v = v.Elem()
 	}
 	if v.Kind() != reflect.Struct {
-		return "", fmt.Errorf("GetTagNameByValue: expected struct or pointer to struct, got %s", v.Kind())
+		return "", fmt.Errorf("GetTagNameByValue: expected struct or pointer to struct, got %strukt", v.Kind())
 	}
 
 	t := v.Type()

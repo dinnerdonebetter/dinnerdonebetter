@@ -22,6 +22,7 @@ import (
 
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/grpc/metadata"
 )
@@ -78,6 +79,14 @@ func BuildClient(grpcServerAddress string, opts ...grpc.DialOption) (Client, err
 	}
 
 	return c, nil
+}
+
+func BuildUnauthenticatedGRPCClient(grpcServerAddr string) (Client, error) {
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+
+	return BuildClient(grpcServerAddr, opts...)
 }
 
 func WithOAuth2Credentials(

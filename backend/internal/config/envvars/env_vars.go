@@ -239,7 +239,7 @@ const (
 	// GrpcPortEnvVarKey is the environment variable name to set in order to override `config.GRPCServer.Port`.
 	GrpcPortEnvVarKey = "DINNER_DONE_BETTER_GRPC_PORT"
 
-	// GrpcTLSCertificateFilepathEnvVarKey is the environment variable name to set in order to override `config.GRPCServer.HTTPSCertificateFile`.
+	// GrpcTLSCertificateFilepathEnvVarKey is the environment variable name to set in order to override `config.GRPCServer.SSLCertificateFile`.
 	GrpcTLSCertificateFilepathEnvVarKey = "DINNER_DONE_BETTER_GRPC_TLS_CERTIFICATE_FILEPATH"
 
 	// GrpcTLSCertificateKeyFilepathEnvVarKey is the environment variable name to set in order to override `config.GRPCServer.TLSCertificateKeyFile`.
@@ -248,13 +248,13 @@ const (
 	// HTTPDebugEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.Debug`.
 	HTTPDebugEnvVarKey = "DINNER_DONE_BETTER_HTTP_DEBUG"
 
-	// HTTPHTTPPortEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.HTTPPort`.
+	// HTTPHTTPPortEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.Port`.
 	HTTPHTTPPortEnvVarKey = "DINNER_DONE_BETTER_HTTP_HTTP_PORT"
 
-	// HTTPHTTPSCertificateFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.HTTPSCertificateFile`.
+	// HTTPHTTPSCertificateFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.SSLCertificateFile`.
 	HTTPHTTPSCertificateFilepathEnvVarKey = "DINNER_DONE_BETTER_HTTP_HTTPS_CERTIFICATE_FILEPATH"
 
-	// HTTPHTTPSCertificateKeyFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.HTTPSCertificateKeyFile`.
+	// HTTPHTTPSCertificateKeyFilepathEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.SSLCertificateKeyFile`.
 	HTTPHTTPSCertificateKeyFilepathEnvVarKey = "DINNER_DONE_BETTER_HTTP_HTTPS_CERTIFICATE_KEY_FILEPATH"
 
 	// HTTPStartupDeadlineEnvVarKey is the environment variable name to set in order to override `config.HTTPServer.StartupDeadline`.

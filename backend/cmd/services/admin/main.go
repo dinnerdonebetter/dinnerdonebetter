@@ -2,36 +2,96 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
+	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
 
 const (
+	apiConfigurationFilepath = "deploy/environments/testing/config_files/integration-tests-config.json"
+
 	o11yName = "admin_frontend"
 )
 
 func main() {
+	ctx := context.Background()
 	mux := http.NewServeMux()
 
-	ctx := context.Background()
+	// create premade admin user
+	const adminPassword = "admin_pass"
+	premadeAdminUser := &identity.User{
+		ID:              identifiers.New(),
+		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+		EmailAddress:    "integration_tests@example.email",
+		Username:        "admin_user",
+		HashedPassword:  adminPassword,
+	}
+
+	cfg, err := config.LoadConfigFromPath[config.APIServiceConfig](ctx, apiConfigurationFilepath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	server, createdClient, err := localdev.AllInOne(ctx, cfg, premadeAdminUser)
+	if err != nil {
+		log.Fatal(err)
+	}
+	go server.Run()
+
+	grpcServerAddr := fmt.Sprintf(":%d", cfg.GRPCServer.Port)
+
+	code, err := premadeAdminUser.GenerateTOTPCode()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	loginInput := &authsvc.UserLoginInput{
+		Username:  premadeAdminUser.Username,
+		Password:  adminPassword,
+		TOTPToken: code,
+	}
+
+	token, err := localdev.FetchLoginTokenForUser(ctx, grpcServerAddr, loginInput)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	apiClient, err := localdev.BuildInsecureOAuthedGRPCClient(
+		ctx,
+		createdClient.ClientID,
+		createdClient.ClientSecret,
+		fmt.Sprintf("http://localhost:%d", cfg.HTTPServer.Port),
+		grpcServerAddr,
+		token,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	fs, err := NewAdminFrontendServer(
-		ctx,
+		apiClient,
 		nil,
 		nil,
 		encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		mux,
 	)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
+	log.Println("serving now")
 	if err = http.ListenAndServe(":8888", fs); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 

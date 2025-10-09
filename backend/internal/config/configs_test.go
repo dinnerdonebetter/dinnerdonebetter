@@ -27,7 +27,7 @@ func TestAPIServiceConfig_EncodeToFile(T *testing.T) {
 
 		cfg := &APIServiceConfig{
 			HTTPServer: http.Config{
-				HTTPPort:        1234,
+				Port:            1234,
 				Debug:           false,
 				StartupDeadline: time.Minute,
 			},
@@ -197,7 +197,7 @@ func TestAPIServiceConfig_ValidateWithContext(T *testing.T) {
 			},
 			Observability: observability.Config{},
 			HTTPServer: http.Config{
-				HTTPPort:        8080,
+				Port:            8080,
 				StartupDeadline: time.Minute,
 			},
 			Queues: msgconfig.QueuesConfig{
@@ -236,7 +236,7 @@ func TestAPIServiceConfig_ValidateWithContext(T *testing.T) {
 			},
 			Observability: observability.Config{},
 			HTTPServer: http.Config{
-				HTTPPort:        8080,
+				Port:            8080,
 				StartupDeadline: time.Minute,
 			},
 			Queues: msgconfig.QueuesConfig{

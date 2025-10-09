@@ -19,6 +19,8 @@ import (
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/platform/featureflags/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	routingcfg "github.com/dinnerdonebetter/backend/internal/platform/routing/config"
 	textsearchcfg "github.com/dinnerdonebetter/backend/internal/platform/search/text/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/server/grpc"
@@ -411,4 +413,20 @@ func LoadConfigFromEnvironment[T configurations]() (*T, error) {
 	}
 
 	return cfg, nil
+}
+
+func LoadConfigFromPath[T configurations](ctx context.Context, apiConfigurationFilepath string) (*T, error) {
+	content, err := os.ReadFile(apiConfigurationFilepath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read api configuration file: %w", err)
+	}
+
+	decoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
+
+	var x *T
+	if err = decoder.DecodeBytes(ctx, content, &x); err != nil {
+		return nil, fmt.Errorf("failed to decode api configuration file: %w", err)
+	}
+
+	return x, nil
 }

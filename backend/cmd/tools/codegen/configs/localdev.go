@@ -115,7 +115,7 @@ func buildLocalDevConfig() *config.APIServiceConfig {
 		},
 		HTTPServer: http.Config{
 			Debug:           true,
-			HTTPPort:        defaultHTTPPort,
+			Port:            defaultHTTPPort,
 			StartupDeadline: time.Minute,
 		},
 		Database: databasecfg.Config{
