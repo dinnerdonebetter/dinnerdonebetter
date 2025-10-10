@@ -327,6 +327,9 @@ var (
 		mealPlanningPerm("GetRecipe"): {
 			authorization.ReadRecipesPermission,
 		},
+		mealPlanningPerm("GetRecipes"): {
+			authorization.ReadRecipesPermission,
+		},
 		mealPlanningPerm("UpdateRecipe"): {
 			authorization.UpdateRecipesPermission,
 		},
@@ -655,6 +658,9 @@ var (
 			authorization.RemoveMemberAccountPermission,
 		},
 		identityServicePerm("GetUser"): {
+			authorization.ReadUserPermission,
+		},
+		identityServicePerm("GetUsers"): {
 			authorization.ReadUserPermission,
 		},
 		identityServicePerm("SearchForUsers"): {

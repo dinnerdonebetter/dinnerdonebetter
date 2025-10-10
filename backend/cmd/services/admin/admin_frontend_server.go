@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	mealplanninggrpc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
@@ -20,6 +21,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/platform/routing"
 	phttp "github.com/dinnerdonebetter/backend/internal/platform/server/http"
 	"github.com/dinnerdonebetter/backend/pkg/client"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	g "maragu.dev/gomponents"
@@ -45,7 +47,6 @@ type AdminFrontendServer struct {
 
 func NewAdminFrontendServer(
 	ctx context.Context,
-	apiClient client.Client,
 	logger logging.Logger,
 	tracerProvider tracing.TracerProvider,
 	encoder encoding.ServerEncoderDecoder,
@@ -95,10 +96,9 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 
 	r.Get("/", ghttp.Adapt(s.homeRoute))
 
-	router.Get("/login", ghttp.Adapt(func(res http.ResponseWriter, req *http.Request) (g.Node, error) {
-		return s.LoginPage(), nil
-	}))
+	r.Get("/users", ghttp.Adapt(s.UsersList))
 
+	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))
 }
 
@@ -141,37 +141,36 @@ func (s *AdminFrontendServer) authMiddleware(handler http.Handler) http.Handler 
 	})
 }
 
-func (s *AdminFrontendServer) homeRoute(res http.ResponseWriter, req *http.Request) (g.Node, error) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-
-	c, ok := req.Context().Value(apiClientContextKey).(client.Client)
+func fetchClientFromContext(ctx context.Context) (client.Client, error) {
+	c, ok := ctx.Value(apiClientContextKey).(client.Client)
 	if !ok {
 		return nil, errors.New("no api client found")
 	}
 
-	results, err := c.GetRecipes(ctx, &mealplanninggrpc.GetRecipesRequest{})
-	if err != nil {
-		return nil, err
+	return c, nil
+}
+
+func (s *AdminFrontendServer) homeRoute(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
+	_, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	return s.HomePage(""), nil
+}
+
+func (s *AdminFrontendServer) HomePage(title string) g.Node {
+	if title == "" {
+		title = "Home"
 	}
 
-	logger.WithValue("count", len(results.Results)).Info("got recipes")
-
-	return s.HomePage(), nil
-}
-
-func (s *AdminFrontendServer) HomePage() g.Node {
-	return page("Home",
-		ghtml.H1(g.Text("Home")),
+	return page(title,
+		ghtml.H1(g.Text(title)),
 	)
 }
 
-func (s *AdminFrontendServer) LoginPage() g.Node {
+func (s *AdminFrontendServer) LoginPage(_ http.ResponseWriter, _ *http.Request) (g.Node, error) {
 	return page("Login",
 		s.componentRenderer.LoginForm(&components.LoginFormProps{}),
-	)
+	), nil
 }
 
 func fetchErrorString(err error, key string) string {
@@ -190,6 +189,45 @@ func fetchErrorString(err error, key string) string {
 
 type authPayload struct {
 	AccessToken string
+}
+
+func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	c, err := fetchClientFromContext(ctx)
+	if err != nil {
+		return s.HomePage(fmt.Sprintf("Users (no client)")), nil
+	}
+
+	usersRes, err := c.GetUsers(ctx, &identitysvc.GetUsersRequest{})
+	if err != nil {
+		return s.HomePage(fmt.Sprintf("Users (API err)")), nil
+	}
+
+	table, err := components.Table(usersRes.Result, &components.TableOptions[*identitysvc.User]{
+		TableID:        "users-table",
+		ExcludedFields: []string{},
+		FieldRenderers: map[string]components.FieldRenderer{
+			"LastUpdatedAt": func(value any) g.Node {
+				if value == nil {
+					return g.Text("-")
+				}
+
+				switch v := value.(type) {
+				case *timestamppb.Timestamp:
+					return g.Text(v.AsTime().Format("2006-01-02 15:04:05"))
+				default:
+					return g.Text(fmt.Sprintf("%v", v))
+				}
+			},
+		},
+	})
+	if err != nil {
+		return s.HomePage(fmt.Sprintf("Users (table err)")), nil
+	}
+
+	return page("Users", table), nil
 }
 
 func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http.Request) (g.Node, error) {
@@ -251,7 +289,7 @@ func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http
 
 	http.SetCookie(res, s.buildCookie(ctx, encodedCookie))
 
-	return s.HomePage(), nil
+	return s.HomePage(""), nil
 }
 
 // buildCookie provides a consistent way of constructing an HTTP cookie.

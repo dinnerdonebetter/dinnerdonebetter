@@ -12,13 +12,8 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/config/envvars"
-	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
-	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
-	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
-
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
@@ -26,18 +21,7 @@ import (
 const (
 	adminServerConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
 
-	o11yName      = "admin_frontend"
-	adminPassword = "admin_pass"
-)
-
-var (
-	premadeAdminUser = &identity.User{
-		ID:              identifiers.New(),
-		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-		EmailAddress:    "integration_tests@example.email",
-		Username:        "admin_user",
-		HashedPassword:  adminPassword,
-	}
+	o11yName = "admin_frontend"
 )
 
 func must(err error) {
@@ -61,7 +45,7 @@ func main() {
 	must(os.Setenv(envvars.ServerPortEnvVarKey, "8888"))
 	must(os.Setenv(envvars.ServerStartupDeadlineEnvVarKey, time.Minute.String()))
 	must(os.Setenv(envvars.CookiesDomainEnvVarKey, "localhost"))
-	must(os.Setenv(envvars.CookiesLifetimeEnvVarKey, time.Hour.String()))
+	must(os.Setenv(envvars.CookiesLifetimeEnvVarKey, (7 * 24 * time.Hour).String()))
 
 	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, adminServerConfigurationFilepath)
 	if err != nil {
@@ -77,39 +61,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grpcServerAddr := cfg.APIServiceConnection.GRPCAPIServerURL
-
-	code, err := premadeAdminUser.GenerateTOTPCode()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	loginInput := &authsvc.UserLoginInput{
-		Username:  premadeAdminUser.Username,
-		Password:  adminPassword,
-		TOTPToken: code,
-	}
-
-	token, err := localdev.FetchLoginTokenForUser(ctx, grpcServerAddr, loginInput)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	apiClient, err := localdev.BuildInsecureOAuthedGRPCClient(
-		ctx,
-		strings.Repeat("A", 16),
-		strings.Repeat("A", 16),
-		cfg.APIServiceConnection.HTTPAPIServerURL,
-		grpcServerAddr,
-		token,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	fs, err := NewAdminFrontendServer(
 		ctx,
-		apiClient,
 		logger,
 		tracerProvider,
 		encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON),
