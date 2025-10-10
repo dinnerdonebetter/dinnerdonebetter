@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
@@ -18,7 +17,6 @@ import (
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
-	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
@@ -78,22 +76,6 @@ func CreatePremadeAdminUser(
 	}
 
 	return adminUser, nil
-}
-
-func LoadServerConfig(ctx context.Context, apiConfigurationFilepath string) (*config.APIServiceConfig, error) {
-	content, err := os.ReadFile(apiConfigurationFilepath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read api configuration file: %w", err)
-	}
-
-	decoder := encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-	var x *config.APIServiceConfig
-	if err = decoder.DecodeBytes(ctx, content, &x); err != nil {
-		return nil, fmt.Errorf("failed to decode api configuration file: %w", err)
-	}
-
-	return x, nil
 }
 
 func CreateOAuth2ClientForService(ctx context.Context, pgc database.Client, dbCfg *databasecfg.Config, oauth2Input *oauth.OAuth2ClientDatabaseCreationInput) (*oauth.OAuth2Client, error) {

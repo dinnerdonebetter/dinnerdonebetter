@@ -100,8 +100,17 @@ const (
 	// CookiesCookieNameEnvVarKey is the environment variable name to set to override `config.Cookies.CookieName`.
 	CookiesCookieNameEnvVarKey = "DINNER_DONE_BETTER_COOKIES_COOKIE_NAME"
 
+	// CookiesDomainEnvVarKey is the environment variable name to set to override `config.Cookies.Domain`.
+	CookiesDomainEnvVarKey = "DINNER_DONE_BETTER_COOKIES_DOMAIN"
+
 	// CookiesHashKeyEnvVarKey is the environment variable name to set to override `config.Cookies.Base64EncodedHashKey`.
 	CookiesHashKeyEnvVarKey = "DINNER_DONE_BETTER_COOKIES_HASH_KEY"
+
+	// CookiesLifetimeEnvVarKey is the environment variable name to set to override `config.Cookies.Lifetime`.
+	CookiesLifetimeEnvVarKey = "DINNER_DONE_BETTER_COOKIES_LIFETIME"
+
+	// CookiesSecureOnlyEnvVarKey is the environment variable name to set to override `config.Cookies.SecureOnly`.
+	CookiesSecureOnlyEnvVarKey = "DINNER_DONE_BETTER_COOKIES_SECURE_ONLY"
 
 	// DatabaseConnectionDetailsDatabaseEnvVarKey is the environment variable name to set to override `config.Database.ConnectionDetails.Database`.
 	DatabaseConnectionDetailsDatabaseEnvVarKey = "DINNER_DONE_BETTER_DATABASE_CONNECTION_DETAILS_DATABASE"

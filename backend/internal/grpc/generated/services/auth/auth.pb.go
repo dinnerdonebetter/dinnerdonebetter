@@ -554,7 +554,7 @@ func (x *GetAuthStatusResponse) GetActiveAccount() string {
 // RedeemPasswordResetToken
 type RedeemPasswordResetTokenRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+	Token         string                 `protobuf:"bytes,1,opt,name=AccessToken,proto3" json:"AccessToken,omitempty"`
 	NewPassword   string                 `protobuf:"bytes,2,opt,name=NewPassword,proto3" json:"NewPassword,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1152,7 +1152,7 @@ func (x *UpdatePasswordResponse) GetResponseDetails() *types.ResponseDetails {
 // VerifyEmailAddress
 type VerifyEmailAddressRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+	Token         string                 `protobuf:"bytes,1,opt,name=AccessToken,proto3" json:"AccessToken,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1397,7 +1397,7 @@ func (x *ChangeActiveAccountInput) GetAccountID() string {
 
 type EmailAddressVerificationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+	Token         string                 `protobuf:"bytes,1,opt,name=AccessToken,proto3" json:"AccessToken,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1542,7 +1542,7 @@ type PasswordResetToken struct {
 	RedeemedAt    *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=RedeemedAt,proto3" json:"RedeemedAt,omitempty"`
 	LastUpdatedAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=LastUpdatedAt,proto3" json:"LastUpdatedAt,omitempty"`
 	ID            string                 `protobuf:"bytes,5,opt,name=ID,proto3" json:"ID,omitempty"`
-	Token         string                 `protobuf:"bytes,6,opt,name=Token,proto3" json:"Token,omitempty"`
+	Token         string                 `protobuf:"bytes,6,opt,name=AccessToken,proto3" json:"AccessToken,omitempty"`
 	BelongsToUser string                 `protobuf:"bytes,7,opt,name=BelongsToUser,proto3" json:"BelongsToUser,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1673,7 +1673,7 @@ func (x *PasswordResetTokenCreationRequestInput) GetEmailAddress() string {
 
 type PasswordResetTokenRedemptionRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+	Token         string                 `protobuf:"bytes,1,opt,name=AccessToken,proto3" json:"AccessToken,omitempty"`
 	NewPassword   string                 `protobuf:"bytes,2,opt,name=NewPassword,proto3" json:"NewPassword,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

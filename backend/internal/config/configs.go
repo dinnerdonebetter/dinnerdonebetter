@@ -153,8 +153,8 @@ type (
 	APIServiceOAuth2ConnectionConfig struct {
 		_ struct{} `json:"-"`
 
-		HTTPAPIServerURL      string `env:"HTTP_API_SERVER_URL"           json:"httpAPIServerURL"`
-		GRPCAPIServerURL      string `env:"GRPC_API_SERVER_URL"           json:"grpcAPIServerURL"`
+		HTTPAPIServerURL      string `env:"HTTP_API_SERVER_URL"      json:"httpAPIServerURL"`
+		GRPCAPIServerURL      string `env:"GRPC_API_SERVER_URL"      json:"grpcAPIServerURL"`
 		OAuth2APIClientID     string `env:"OAUTH2_API_CLIENT_ID"     json:"oauth2APIClientID"`
 		OAuth2APIClientSecret string `env:"OAUTH2_API_CLIENT_SECRET" json:"oauth2APIClientSecret"`
 	}
@@ -170,13 +170,13 @@ type (
 	AdminWebappConfig struct {
 		_ struct{} `json:"-"`
 
-		Cookies              cookies.Config                   `env:"init"                    envPrefix:"COOKIES_"    json:"cookies"`
-		APIServiceConnection APIServiceOAuth2ConnectionConfig `envPrefix:"API_SERVICE_"      json:"apiServiceConfig"`
-		Routing              routingcfg.Config                `envPrefix:"ROUTING_"          json:"routing"`
-		Encoding             encoding.Config                  `envPrefix:"ENCODING_"         json:"encoding"`
-		Observability        observability.Config             `envPrefix:"OBSERVABILITY_"    json:"observability"`
-		Meta                 MetaSettings                     `envPrefix:"META_"             json:"meta"`
-		HTTPServer           http.Config                      `envPrefix:"SERVER_"           json:"server"`
+		Cookies              cookies.Config                   `env:"init"                 envPrefix:"COOKIES_"    json:"cookies"`
+		APIServiceConnection APIServiceOAuth2ConnectionConfig `envPrefix:"API_SERVICE_"   json:"apiServiceConfig"`
+		Routing              routingcfg.Config                `envPrefix:"ROUTING_"       json:"routing"`
+		Encoding             encoding.Config                  `envPrefix:"ENCODING_"      json:"encoding"`
+		Observability        observability.Config             `envPrefix:"OBSERVABILITY_" json:"observability"`
+		Meta                 MetaSettings                     `envPrefix:"META_"          json:"meta"`
+		HTTPServer           http.Config                      `envPrefix:"SERVER_"        json:"server"`
 	}
 )
 

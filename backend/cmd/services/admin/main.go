@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/base64"
 	"log"
-	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
@@ -47,7 +48,6 @@ func must(err error) {
 
 func main() {
 	ctx := context.Background()
-	mux := http.NewServeMux()
 
 	// We don't yet have a way to write these values into the AdminWebappConfig (because they're not present in the root APIConfig struct).
 	// This approach is an atrocious hack that I have to employ because I wasn't smart enough to design a better config generation system.
@@ -60,8 +60,15 @@ func main() {
 	must(os.Setenv(envvars.APIServiceOauth2APIClientSecretEnvVarKey, strings.Repeat("A", oauth.ClientSecretSize)))
 	must(os.Setenv(envvars.ServerPortEnvVarKey, "8888"))
 	must(os.Setenv(envvars.ServerStartupDeadlineEnvVarKey, time.Minute.String()))
+	must(os.Setenv(envvars.CookiesDomainEnvVarKey, "localhost"))
+	must(os.Setenv(envvars.CookiesLifetimeEnvVarKey, time.Hour.String()))
 
 	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, adminServerConfigurationFilepath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	logger, tracerProvider, _, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -101,20 +108,45 @@ func main() {
 	}
 
 	fs, err := NewAdminFrontendServer(
+		ctx,
 		apiClient,
-		nil,
-		nil,
-		encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
+		logger,
+		tracerProvider,
+		encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		cfg,
-		mux,
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.Println("serving now")
-	if err = http.ListenAndServe(":8888", fs); err != nil {
-		log.Fatal(err)
+
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(
+		signalChan,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGQUIT,
+		syscall.SIGTERM,
+	)
+
+	// Run server
+	go fs.server.Serve()
+
+	// os.Interrupt
+	<-signalChan
+
+	go func() {
+		// os.Kill
+		<-signalChan
+	}()
+
+	cancelCtx, cancelShutdown := context.WithTimeout(ctx, 10*time.Second)
+	defer cancelShutdown()
+
+	// Gracefully shutdown the server by waiting on existing requests (except websockets).
+	if err = fs.server.Shutdown(cancelCtx); err != nil {
+		log.Println("shutting down server", err)
 	}
 }
 

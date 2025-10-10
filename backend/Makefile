@@ -239,7 +239,7 @@ AIR_PORT := 9999
 
 .PHONY: admin
 admin: $(ARTIFACTS_DIR) ensure_air_installed
-	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/admin_tmp $(THIS)/cmd/services/admin" --build.bin "./$(ARTIFACTS_DIR)/admin_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true"
+	air --build.cmd "go build -o ./$(ARTIFACTS_DIR)/admin_tmp $(THIS)/cmd/services/admin" --build.bin "./$(ARTIFACTS_DIR)/admin_tmp" --proxy.app_port "8888" -proxy.proxy_port "9999" -proxy.enabled "true" --build.log "./$(ARTIFACTS_DIR)/build-errors.log"
 
 # OPERATIONS
 

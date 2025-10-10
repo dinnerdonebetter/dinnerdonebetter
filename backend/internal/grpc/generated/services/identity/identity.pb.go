@@ -3008,7 +3008,7 @@ type AccountInvitation struct {
 	Status             string                 `protobuf:"bytes,5,opt,name=Status,proto3" json:"Status,omitempty"`
 	ToEmail            string                 `protobuf:"bytes,6,opt,name=ToEmail,proto3" json:"ToEmail,omitempty"`
 	StatusNote         string                 `protobuf:"bytes,7,opt,name=StatusNote,proto3" json:"StatusNote,omitempty"`
-	Token              string                 `protobuf:"bytes,8,opt,name=Token,proto3" json:"Token,omitempty"`
+	Token              string                 `protobuf:"bytes,8,opt,name=AccessToken,proto3" json:"AccessToken,omitempty"`
 	ID                 string                 `protobuf:"bytes,9,opt,name=ID,proto3" json:"ID,omitempty"`
 	Note               string                 `protobuf:"bytes,10,opt,name=Note,proto3" json:"Note,omitempty"`
 	ToName             string                 `protobuf:"bytes,11,opt,name=ToName,proto3" json:"ToName,omitempty"`
@@ -3217,7 +3217,7 @@ func (x *AccountInvitationCreationRequestInput) GetToName() string {
 
 type AccountInvitationUpdateRequestInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=Token,proto3" json:"Token,omitempty"`
+	Token         string                 `protobuf:"bytes,1,opt,name=AccessToken,proto3" json:"AccessToken,omitempty"`
 	Note          string                 `protobuf:"bytes,2,opt,name=Note,proto3" json:"Note,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
