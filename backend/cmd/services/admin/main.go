@@ -2,12 +2,16 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"encoding/base64"
 	"log"
 	"net/http"
+	"os"
+	"strings"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
@@ -18,37 +22,46 @@ import (
 )
 
 const (
-	apiConfigurationFilepath = "deploy/environments/testing/config_files/integration-tests-config.json"
+	apiConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
 
-	o11yName = "admin_frontend"
+	o11yName      = "admin_frontend"
+	adminPassword = "admin_pass"
 )
 
-func main() {
-	ctx := context.Background()
-	mux := http.NewServeMux()
-
-	// create premade admin user
-	const adminPassword = "admin_pass"
-	premadeAdminUser := &identity.User{
+var (
+	premadeAdminUser = &identity.User{
 		ID:              identifiers.New(),
 		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 		EmailAddress:    "integration_tests@example.email",
 		Username:        "admin_user",
 		HashedPassword:  adminPassword,
 	}
+)
 
-	cfg, err := config.LoadConfigFromPath[config.APIServiceConfig](ctx, apiConfigurationFilepath)
+func main() {
+	ctx := context.Background()
+	mux := http.NewServeMux()
+
+	os.Setenv("DINNER_DONE_BETTER_COOKIES_COOKIE_NAME", "dev_admin_frontend")
+	os.Setenv("DINNER_DONE_BETTER_COOKIES_HASH_KEY", base64.RawURLEncoding.EncodeToString([]byte("HEREISA32CHARSECRETWHICHISMADEUP")))
+	os.Setenv("DINNER_DONE_BETTER_COOKIES_BLOCK_KEY", base64.RawURLEncoding.EncodeToString([]byte("HEREISA32CHARSECRETWHICHISMADEUP")))
+	os.Setenv("DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL", "http://localhost:8000")
+	os.Setenv("DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL", ":8001")
+	os.Setenv("DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID", strings.Repeat("A", oauth.ClientIDSize))
+	os.Setenv("DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET", strings.Repeat("A", oauth.ClientSecretSize))
+	os.Setenv("DINNER_DONE_BETTER_SERVER_PORT", "8888")
+	os.Setenv("DINNER_DONE_BETTER_SERVER_STARTUP_DEADLINE", time.Minute.String())
+
+	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, apiConfigurationFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	server, createdClient, err := localdev.AllInOne(ctx, cfg, premadeAdminUser)
-	if err != nil {
+	if err = cfg.ValidateWithContext(ctx); err != nil {
 		log.Fatal(err)
 	}
-	go server.Run()
 
-	grpcServerAddr := fmt.Sprintf(":%d", cfg.GRPCServer.Port)
+	grpcServerAddr := cfg.APIServiceConnection.GRPCAPIServerURL
 
 	code, err := premadeAdminUser.GenerateTOTPCode()
 	if err != nil {
@@ -68,9 +81,9 @@ func main() {
 
 	apiClient, err := localdev.BuildInsecureOAuthedGRPCClient(
 		ctx,
-		createdClient.ClientID,
-		createdClient.ClientSecret,
-		fmt.Sprintf("http://localhost:%d", cfg.HTTPServer.Port),
+		strings.Repeat("A", 16),
+		strings.Repeat("A", 16),
+		cfg.APIServiceConnection.HTTPAPIServerURL,
 		grpcServerAddr,
 		token,
 	)
@@ -83,6 +96,7 @@ func main() {
 		nil,
 		nil,
 		encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
+		cfg,
 		mux,
 	)
 	if err != nil {

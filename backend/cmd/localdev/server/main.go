@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"log"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
+	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 )
@@ -31,15 +33,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server, createdClient, err := localdev.AllInOne(ctx, cfg, premadeAdminUser)
+	server, _, err := localdev.AllInOne(ctx, cfg, premadeAdminUser, &oauth.OAuth2ClientDatabaseCreationInput{
+		ID:           identifiers.New(),
+		Name:         "localdev_admin_client",
+		Description:  "localdev admin client",
+		ClientID:     strings.Repeat("A", oauth.ClientIDSize),
+		ClientSecret: strings.Repeat("A", oauth.ClientSecretSize),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	log.Printf(`
-created oauth2 client ID:     %s
-created oauth2 client Secret: %s
-`, createdClient.ClientID, createdClient.ClientSecret)
 
 	log.Println("starting server")
 	server.Run()

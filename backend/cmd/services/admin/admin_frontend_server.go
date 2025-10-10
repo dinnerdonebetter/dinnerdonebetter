@@ -2,10 +2,12 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
+	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
@@ -37,9 +39,10 @@ func NewAdminFrontendServer(
 	tracerProvider tracing.TracerProvider,
 	logger logging.Logger,
 	encoder encoding.ServerEncoderDecoder,
+	cfg *config.AdminWebappConfig,
 	mux *http.ServeMux,
 ) (*AdminFrontendServer, error) {
-	cookieMan, err := cookies.NewCookieManager(&cookies.Config{}, tracerProvider)
+	cookieMan, err := cookies.NewCookieManager(&cfg.Cookies, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +152,7 @@ func (s *AdminFrontendServer) LoginSubmission(_ http.ResponseWriter, req *http.R
 		}), nil
 	}
 
-	logger.Info(encodedCookie)
+	fmt.Println(encodedCookie)
 
 	return s.HomePage(), nil
 }

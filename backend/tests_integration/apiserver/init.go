@@ -9,16 +9,19 @@ import (
 	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
+	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
 	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 )
 
 const (
-	apiConfigurationFilepath = "../../deploy/environments/testing/config_files/integration-tests-config.json"
+	apiConfigurationFilepath = "../../deploy/environments/testing/config_files/QA"
 )
 
 var (
@@ -63,7 +66,13 @@ func init() {
 		log.Fatal(err)
 	}
 
-	createdClient, err := localdev.CreateOAuth2ClientForService(ctx, databaseClient, dbCfg)
+	createdClient, err := localdev.CreateOAuth2ClientForService(ctx, databaseClient, dbCfg, &oauth.OAuth2ClientDatabaseCreationInput{
+		ID:           identifiers.New(),
+		Name:         "integration_client",
+		Description:  "integration test client",
+		ClientID:     random.MustGenerateHexEncodedString(ctx, oauth.ClientIDSize),
+		ClientSecret: random.MustGenerateHexEncodedString(ctx, oauth.ClientSecretSize),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

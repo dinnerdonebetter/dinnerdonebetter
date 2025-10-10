@@ -96,27 +96,11 @@ func LoadServerConfig(ctx context.Context, apiConfigurationFilepath string) (*co
 	return x, nil
 }
 
-func CreateOAuth2ClientForService(ctx context.Context, pgc database.Client, dbCfg *databasecfg.Config) (*oauth.OAuth2Client, error) {
+func CreateOAuth2ClientForService(ctx context.Context, pgc database.Client, dbCfg *databasecfg.Config, oauth2Input *oauth.OAuth2ClientDatabaseCreationInput) (*oauth.OAuth2Client, error) {
 	auditRepo := auditlogentries.ProvideAuditLogRepository(nil, nil, pgc)
 	oauth2ClientManager := oauthrepo.ProvideOAuthRepository(nil, nil, auditRepo, dbCfg, pgc)
 
-	clientID, err := random.GenerateHexEncodedString(ctx, 16)
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate client ID: %w", err)
-	}
-
-	clientSecret, err := random.GenerateHexEncodedString(ctx, 16)
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate client secret: %w", err)
-	}
-
-	createdClient, err := oauth2ClientManager.CreateOAuth2Client(ctx, &oauth.OAuth2ClientDatabaseCreationInput{
-		ID:           identifiers.New(),
-		Name:         "integration_client",
-		Description:  "integration test client",
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-	})
+	createdClient, err := oauth2ClientManager.CreateOAuth2Client(ctx, oauth2Input)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create oauth2 client: %w", err)
 	}
@@ -163,7 +147,7 @@ func BuildInProcessServer(ctx context.Context, cfg *config.APIServiceConfig) (se
 	return server, databaseClient, dbCfg, nil
 }
 
-func AllInOne(ctx context.Context, cfg *config.APIServiceConfig, adminUser *identity.User) (*apiserver.Server, *oauth.OAuth2Client, error) {
+func AllInOne(ctx context.Context, cfg *config.APIServiceConfig, adminUser *identity.User, oauth2Input *oauth.OAuth2ClientDatabaseCreationInput) (*apiserver.Server, *oauth.OAuth2Client, error) {
 	server, databaseClient, _, err := BuildInProcessServer(ctx, cfg)
 	if err != nil {
 		return nil, nil, fmt.Errorf("building in-process server: %w", err)
@@ -210,12 +194,33 @@ func AllInOne(ctx context.Context, cfg *config.APIServiceConfig, adminUser *iden
 		return nil, nil, fmt.Errorf("creating admin user: %w", err)
 	}
 
-	createdClient, err := CreateOAuth2ClientForService(ctx, databaseClient, dbCfg)
+	if oauth2Input == nil {
+		oauth2Input = &oauth.OAuth2ClientDatabaseCreationInput{
+			ID:          identifiers.New(),
+			Name:        "integration_client",
+			Description: "integration test client",
+		}
+
+		oauth2Input.ClientID, err = random.GenerateHexEncodedString(ctx, oauth.ClientIDSize)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to generate client ID: %w", err)
+		}
+
+		oauth2Input.ClientSecret, err = random.GenerateHexEncodedString(ctx, oauth.ClientSecretSize)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to generate client secret: %w", err)
+		}
+	}
+
+	createdClient, err := CreateOAuth2ClientForService(ctx, databaseClient, dbCfg, oauth2Input)
 	if err != nil {
 		return nil, nil, fmt.Errorf("creating oauth2 client: %w", err)
 	}
 
-	logger.WithValue(keys.OAuth2ClientIDKey, createdClient.ClientID).WithValue("client_secret", createdClient.ClientSecret).Info("created oauth2 client")
+	logger.WithValues(map[string]any{
+		keys.OAuth2ClientIDKey: createdClient.ClientID,
+		"client_sec":           createdClient.ClientSecret,
+	}).Info("created oauth2 client")
 
 	return server, createdClient, nil
 }

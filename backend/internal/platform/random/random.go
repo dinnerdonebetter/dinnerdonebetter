@@ -59,6 +59,16 @@ func GenerateHexEncodedString(ctx context.Context, length int) (string, error) {
 	return defaultGenerator.GenerateHexEncodedString(ctx, length)
 }
 
+// MustGenerateHexEncodedString generates a one-off value with an anonymous Generator.
+func MustGenerateHexEncodedString(ctx context.Context, length int) string {
+	x, err := defaultGenerator.GenerateHexEncodedString(ctx, length)
+	if err != nil {
+		panic(err)
+	}
+
+	return x
+}
+
 // GenerateBase32EncodedString generates a one-off value with an anonymous Generator.
 func GenerateBase32EncodedString(ctx context.Context, length int) (string, error) {
 	return defaultGenerator.GenerateBase32EncodedString(ctx, length)

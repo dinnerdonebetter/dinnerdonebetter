@@ -5,7 +5,8 @@
 		"base64EncodedBlockKey": " "
 	},
 	"apiServiceConfig": {
-		"apiServerURL": "",
+		"httpAPIServerURL": "",
+		"grpcAPIServerURL": "",
 		"oauth2APIClientID": "",
 		"oauth2APIClientSecret": ""
 	},
@@ -59,9 +60,5 @@
 		"startupDeadline": 60000000000,
 		"port": 8000,
 		"debug": true
-	},
-	"apiClientCache": {
-		"cacheCapacity": 0,
-		"cacheTTL": 0
 	}
 }

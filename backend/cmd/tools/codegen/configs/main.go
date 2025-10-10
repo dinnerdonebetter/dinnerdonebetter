@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
 )
 
 const (
@@ -25,8 +26,10 @@ const (
 	searchIndexRequestsTopicName      = "search_index_requests"
 	userDataAggregationTopicName      = "user_data_aggregation_requests"
 	webhookExecutionRequestsTopicName = "webhook_execution_requests"
+)
 
-	contentTypeJSON = "application/json"
+var (
+	contentTypeJSON = encoding.ContentTypeToString(encoding.ContentTypeJSON)
 )
 
 func main() {

@@ -153,7 +153,8 @@ type (
 	APIServiceOAuth2ConnectionConfig struct {
 		_ struct{} `json:"-"`
 
-		APIServerURL          string `env:"API_SERVER_URL"           json:"apiServerURL"`
+		HTTPAPIServerURL      string `env:"HTTP_API_SERVER_URL"           json:"httpAPIServerURL"`
+		GRPCAPIServerURL      string `env:"GRPC_API_SERVER_URL"           json:"grpcAPIServerURL"`
 		OAuth2APIClientID     string `env:"OAUTH2_API_CLIENT_ID"     json:"oauth2APIClientID"`
 		OAuth2APIClientSecret string `env:"OAUTH2_API_CLIENT_SECRET" json:"oauth2APIClientSecret"`
 	}
@@ -176,7 +177,6 @@ type (
 		Observability        observability.Config             `envPrefix:"OBSERVABILITY_"    json:"observability"`
 		Meta                 MetaSettings                     `envPrefix:"META_"             json:"meta"`
 		HTTPServer           http.Config                      `envPrefix:"SERVER_"           json:"server"`
-		APIClientCache       NamedCacheConfig                 `envPrefix:"API_CLIENT_CACHE_" json:"apiClientCache"`
 	}
 )
 
@@ -415,8 +415,8 @@ func LoadConfigFromEnvironment[T configurations]() (*T, error) {
 	return cfg, nil
 }
 
-func LoadConfigFromPath[T configurations](ctx context.Context, apiConfigurationFilepath string) (*T, error) {
-	content, err := os.ReadFile(apiConfigurationFilepath)
+func LoadConfigFromPath[T configurations](ctx context.Context, configurationFilepath string) (*T, error) {
+	content, err := os.ReadFile(configurationFilepath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read api configuration file: %w", err)
 	}
@@ -426,6 +426,10 @@ func LoadConfigFromPath[T configurations](ctx context.Context, apiConfigurationF
 	var x *T
 	if err = decoder.DecodeBytes(ctx, content, &x); err != nil {
 		return nil, fmt.Errorf("failed to decode api configuration file: %w", err)
+	}
+
+	if err = ApplyEnvironmentVariables(x); err != nil {
+		return nil, fmt.Errorf("applying environment variables: %w", err)
 	}
 
 	return x, nil

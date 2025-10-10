@@ -11,6 +11,9 @@ import (
 )
 
 const (
+	ClientIDSize     = 16
+	ClientSecretSize = 16
+
 	// OAuth2ClientCreatedServiceEventType indicates an OAuth2 client was created.
 	OAuth2ClientCreatedServiceEventType = "oauth2_client_created"
 	// OAuth2ClientArchivedServiceEventType indicates an OAuth2 client was archived.
