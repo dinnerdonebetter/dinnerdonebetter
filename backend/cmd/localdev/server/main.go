@@ -28,12 +28,12 @@ func main() {
 		HashedPassword:  "admin_pass",
 	}
 
-	cfg, err := config.LoadConfigFromPath[config.APIServiceConfig](ctx, apiConfigurationFilepath)
+	apiConfig, err := config.LoadConfigFromPath[config.APIServiceConfig](ctx, apiConfigurationFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	server, _, err := localdev.AllInOne(ctx, cfg, premadeAdminUser, &oauth.OAuth2ClientDatabaseCreationInput{
+	server, _, err := localdev.AllInOne(ctx, apiConfig, premadeAdminUser, &oauth.OAuth2ClientDatabaseCreationInput{
 		ID:           identifiers.New(),
 		Name:         "localdev_admin_client",
 		Description:  "localdev admin client",

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/config/envvars"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
@@ -22,7 +23,7 @@ import (
 )
 
 const (
-	apiConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
+	adminServerConfigurationFilepath = "deploy/environments/localdev/config_files/admin_webapp_config.json"
 
 	o11yName      = "admin_frontend"
 	adminPassword = "admin_pass"
@@ -38,21 +39,29 @@ var (
 	}
 )
 
+func must(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
 	ctx := context.Background()
 	mux := http.NewServeMux()
 
-	os.Setenv("DINNER_DONE_BETTER_COOKIES_COOKIE_NAME", "dev_admin_frontend")
-	os.Setenv("DINNER_DONE_BETTER_COOKIES_HASH_KEY", base64.RawURLEncoding.EncodeToString([]byte("HEREISA32CHARSECRETWHICHISMADEUP")))
-	os.Setenv("DINNER_DONE_BETTER_COOKIES_BLOCK_KEY", base64.RawURLEncoding.EncodeToString([]byte("HEREISA32CHARSECRETWHICHISMADEUP")))
-	os.Setenv("DINNER_DONE_BETTER_API_SERVICE_HTTP_API_SERVER_URL", "http://localhost:8000")
-	os.Setenv("DINNER_DONE_BETTER_API_SERVICE_GRPC_API_SERVER_URL", ":8001")
-	os.Setenv("DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_ID", strings.Repeat("A", oauth.ClientIDSize))
-	os.Setenv("DINNER_DONE_BETTER_API_SERVICE_OAUTH2_API_CLIENT_SECRET", strings.Repeat("A", oauth.ClientSecretSize))
-	os.Setenv("DINNER_DONE_BETTER_SERVER_PORT", "8888")
-	os.Setenv("DINNER_DONE_BETTER_SERVER_STARTUP_DEADLINE", time.Minute.String())
+	// We don't yet have a way to write these values into the AdminWebappConfig (because they're not present in the root APIConfig struct).
+	// This approach is an atrocious hack that I have to employ because I wasn't smart enough to design a better config generation system.
+	must(os.Setenv(envvars.CookiesCookieNameEnvVarKey, "dev_admin_frontend"))
+	must(os.Setenv(envvars.CookiesHashKeyEnvVarKey, base64.RawURLEncoding.EncodeToString([]byte("HEREISA32CHARSECRETWHICHISMADEUP"))))
+	must(os.Setenv(envvars.CookiesBlockKeyEnvVarKey, base64.RawURLEncoding.EncodeToString([]byte("HEREISA32CHARSECRETWHICHISMADEUP"))))
+	must(os.Setenv(envvars.APIServiceHTTPAPIServerURLEnvVarKey, "http://localhost:8000"))
+	must(os.Setenv(envvars.APIServiceGrpcAPIServerURLEnvVarKey, ":8001"))
+	must(os.Setenv(envvars.APIServiceOauth2APIClientIDEnvVarKey, strings.Repeat("A", oauth.ClientIDSize)))
+	must(os.Setenv(envvars.APIServiceOauth2APIClientSecretEnvVarKey, strings.Repeat("A", oauth.ClientSecretSize)))
+	must(os.Setenv(envvars.ServerPortEnvVarKey, "8888"))
+	must(os.Setenv(envvars.ServerStartupDeadlineEnvVarKey, time.Minute.String()))
 
-	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, apiConfigurationFilepath)
+	cfg, err := config.LoadConfigFromPath[config.AdminWebappConfig](ctx, adminServerConfigurationFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}
