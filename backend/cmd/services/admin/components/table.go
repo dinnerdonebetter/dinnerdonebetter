@@ -18,11 +18,17 @@ type FieldRenderer func(value any) g.Node
 
 // TableOptions holds configuration options for the table
 type TableOptions[T any] struct {
-	// ExcludedFields is a slice of field names to exclude from the table
-	ExcludedFields []string
-
 	// FieldRenderers maps field names to custom rendering functions
 	FieldRenderers map[string]FieldRenderer
+
+	// Fields specifies the order of fields in the table.
+	// If nil or empty, uses automatic ordering (ID first, timestamps last).
+	// Only fields listed here will be displayed.
+	Fields []string
+
+	// FieldReplacements maps field names to custom display names.
+	// If a field name is not in this map, the automatic camelCaseToTitleCase conversion is used.
+	FieldReplacements map[string]string
 
 	// Palette allows customization of colors (uses standard palette if nil)
 	Palette *design.Palette
@@ -72,6 +78,86 @@ func DefaultFieldRenderer(value any) g.Node {
 	}
 }
 
+// extractFields uses reflection to get field information from a struct
+func extractFields(item any) ([]fieldInfo, error) {
+	var fields []fieldInfo
+
+	v := reflect.ValueOf(item)
+	if !v.IsValid() {
+		return nil, fmt.Errorf("invalid value")
+	}
+
+	// Handle pointers
+	if v.Kind() == reflect.Ptr {
+		if v.IsNil() {
+			return nil, fmt.Errorf("nil pointer")
+		}
+		v = v.Elem()
+	}
+
+	if v.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("expected struct or pointer to struct, got %s", v.Kind())
+	}
+
+	t := v.Type()
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+
+		// Skip unexported fields
+		if !field.IsExported() {
+			continue
+		}
+
+		// Create a display name (convert CamelCase to Title Case)
+		displayName := camelCaseToTitleCase(field.Name)
+
+		fields = append(fields, fieldInfo{
+			Name:        field.Name,
+			DisplayName: displayName,
+			Type:        field.Type,
+		})
+	}
+
+	return fields, nil
+}
+
+// applyFieldOrdering applies the specified field ordering to the fields slice.
+// If customOrder is nil or empty, uses automatic ordering (ID first, timestamps last).
+// If customOrder is provided, only fields in that list will be included, in that order.
+func applyFieldOrdering(fields []fieldInfo, customOrder []string, replacements map[string]string) []fieldInfo {
+	// If no custom order specified, use automatic ordering
+	if len(customOrder) == 0 {
+		fields = sortFields(fields)
+	} else {
+		// Create a map of field name to field info for quick lookup
+		fieldMap := make(map[string]fieldInfo)
+		for _, field := range fields {
+			fieldMap[field.Name] = field
+		}
+
+		// Build result in the specified order
+		result := make([]fieldInfo, 0, len(customOrder))
+		for _, name := range customOrder {
+			if field, exists := fieldMap[name]; exists {
+				result = append(result, field)
+			}
+		}
+		fields = result
+	}
+
+	// Apply field replacements to display names
+	if len(replacements) > 0 {
+		for i := range fields {
+			if customName, exists := replacements[fields[i].Name]; exists {
+				fields[i].DisplayName = customName
+			}
+		}
+	}
+
+	return fields
+}
+
 // Table creates a generic HTML table from a slice of structs
 func Table[T any](data []T, options *TableOptions[T]) (g.Node, error) {
 	if options == nil {
@@ -89,10 +175,13 @@ func Table[T any](data []T, options *TableOptions[T]) (g.Node, error) {
 	}
 
 	// Extract field information from the first item
-	fields, err := extractFields(data[0], options.ExcludedFields)
+	fields, err := extractFields(data[0])
 	if err != nil {
 		return nil, fmt.Errorf("failed to extract fields: %w", err)
 	}
+
+	// Apply field ordering and replacements
+	fields = applyFieldOrdering(fields, options.Fields, options.FieldReplacements)
 
 	if len(fields) == 0 {
 		return createEmptyTable(options), nil
@@ -123,59 +212,55 @@ type fieldInfo struct {
 	Type        reflect.Type
 }
 
-// extractFields uses reflection to get field information from a struct
-func extractFields(item any, excludedFields []string) ([]fieldInfo, error) {
-	var fields []fieldInfo
+// sortFields sorts the fields with custom ordering:
+// - ID field first
+// - CreatedAt, LastUpdatedAt, ArchivedAt fields last (in that order)
+// - All other fields in their original order in between
+func sortFields(fields []fieldInfo) []fieldInfo {
+	// Define priority fields
+	priorityFirst := "ID"
+	priorityLast := []string{"CreatedAt", "LastUpdatedAt", "ArchivedAt"}
 
-	// Convert excluded fields to a map for a faster lookup
-	excluded := make(map[string]bool)
-	for _, field := range excludedFields {
-		excluded[field] = true
+	// Create a map for quick lookup of priority last fields
+	lastFieldsMap := make(map[string]int)
+	for i, name := range priorityLast {
+		lastFieldsMap[name] = i
 	}
 
-	v := reflect.ValueOf(item)
-	if !v.IsValid() {
-		return nil, fmt.Errorf("invalid value")
-	}
+	// Separate fields into categories
+	var idField []fieldInfo
+	var regularFields []fieldInfo
+	lastFields := make([]fieldInfo, len(priorityLast))
+	lastFieldsFound := make([]bool, len(priorityLast))
 
-	// Handle pointers
-	if v.Kind() == reflect.Ptr {
-		if v.IsNil() {
-			return nil, fmt.Errorf("nil pointer")
+	for _, field := range fields {
+		if field.Name == priorityFirst {
+			idField = append(idField, field)
+		} else if idx, isLast := lastFieldsMap[field.Name]; isLast {
+			lastFields[idx] = field
+			lastFieldsFound[idx] = true
+		} else {
+			regularFields = append(regularFields, field)
 		}
-		v = v.Elem()
 	}
 
-	if v.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("expected struct or pointer to struct, got %s", v.Kind())
-	}
+	// Build the result slice in order
+	result := make([]fieldInfo, 0, len(fields))
 
-	t := v.Type()
+	// Add ID first
+	result = append(result, idField...)
 
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
+	// Add regular fields
+	result = append(result, regularFields...)
 
-		// Skip unexported fields
-		if !field.IsExported() {
-			continue
+	// Add last fields that were found (in priority order)
+	for i, found := range lastFieldsFound {
+		if found {
+			result = append(result, lastFields[i])
 		}
-
-		// Skip excluded fields
-		if excluded[field.Name] {
-			continue
-		}
-
-		// Create a display name (convert CamelCase to Title Case)
-		displayName := camelCaseToTitleCase(field.Name)
-
-		fields = append(fields, fieldInfo{
-			Name:        field.Name,
-			DisplayName: displayName,
-			Type:        field.Type,
-		})
 	}
 
-	return fields, nil
+	return result
 }
 
 // createTableHeader creates the table header row

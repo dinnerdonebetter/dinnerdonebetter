@@ -203,6 +203,9 @@ func renderTimestamp(value any) g.Node {
 
 	switch v := value.(type) {
 	case *timestamppb.Timestamp:
+		if v == nil {
+			return g.Text("-")
+		}
 		return g.Text(v.AsTime().Format("2006-01-02 15:04:05"))
 	case timestamppb.Timestamp:
 		return g.Text(v.AsTime().Format("2006-01-02 15:04:05"))
@@ -227,11 +230,30 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 
 	table, err := components.Table(usersRes.Result, &components.TableOptions[*identitysvc.User]{
 		TableID: "users-table",
-		ExcludedFields: []string{
-			"HashedPassword",
-			"TwoFactorSecret",
+		Fields: []string{
+			"ID",
+			"Username",
+			"FirstName",
+			"LastName",
+			"EmailAddress",
+			"ServiceRole",
+			"AccountStatus",
+			"AccountStatusExplanation",
+			"Birthday",
+			"PasswordLastChangedAt",
+			"LastAcceptedTermsOfService",
+			"LastAcceptedPrivacyPolicy",
+			"TwoFactorSecretVerifiedAt",
+			"EmailAddressVerifiedAt",
+			"CreatedAt",
+			"LastUpdatedAt",
+			"ArchivedAt",
+		},
+		FieldReplacements: map[string]string{
+			"EmailAddressVerifiedAt": "Email Verified At",
 		},
 		FieldRenderers: map[string]components.FieldRenderer{
+			"Birthday":                  renderTimestamp,
 			"CreatedAt":                 renderTimestamp,
 			"TwoFactorSecretVerifiedAt": renderTimestamp,
 			"LastUpdatedAt":             renderTimestamp,
