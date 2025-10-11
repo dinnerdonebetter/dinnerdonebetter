@@ -136,6 +136,11 @@ func (s *AdminFrontendServer) authMiddleware(handler http.Handler) http.Handler 
 			s.config.APIServiceConnection.GRPCAPIServerURL,
 			payload.AccessToken,
 		)
+		if err != nil {
+			logger.Error("building client", err)
+			http.Redirect(res, req, "/login", http.StatusFound)
+			return
+		}
 
 		handler.ServeHTTP(res, req.WithContext(context.WithValue(ctx, apiClientContextKey, c)))
 	})
@@ -191,6 +196,21 @@ type authPayload struct {
 	AccessToken string
 }
 
+func renderTimestamp(value any) g.Node {
+	if value == nil {
+		return g.Text("-")
+	}
+
+	switch v := value.(type) {
+	case *timestamppb.Timestamp:
+		return g.Text(v.AsTime().Format("2006-01-02 15:04:05"))
+	case timestamppb.Timestamp:
+		return g.Text(v.AsTime().Format("2006-01-02 15:04:05"))
+	default:
+		return g.Text(fmt.Sprintf("%v", v))
+	}
+}
+
 func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -206,21 +226,16 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 	}
 
 	table, err := components.Table(usersRes.Result, &components.TableOptions[*identitysvc.User]{
-		TableID:        "users-table",
-		ExcludedFields: []string{},
+		TableID: "users-table",
+		ExcludedFields: []string{
+			"HashedPassword",
+			"TwoFactorSecret",
+		},
 		FieldRenderers: map[string]components.FieldRenderer{
-			"LastUpdatedAt": func(value any) g.Node {
-				if value == nil {
-					return g.Text("-")
-				}
-
-				switch v := value.(type) {
-				case *timestamppb.Timestamp:
-					return g.Text(v.AsTime().Format("2006-01-02 15:04:05"))
-				default:
-					return g.Text(fmt.Sprintf("%v", v))
-				}
-			},
+			"CreatedAt":                 renderTimestamp,
+			"TwoFactorSecretVerifiedAt": renderTimestamp,
+			"LastUpdatedAt":             renderTimestamp,
+			"ArchivedAt":                renderTimestamp,
 		},
 	})
 	if err != nil {

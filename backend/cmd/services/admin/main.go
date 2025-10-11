@@ -147,7 +147,7 @@ func page(title string, children ...g.Node) g.Node {
 			ghtml.Main(
 				ghtml.Class("flex-grow flex justify-center items-center w-full"),
 				ghtml.Div(
-					ghtml.Class("w-full max-w-md"),
+					ghtml.Class("w-full"),
 					g.Group(children),
 				),
 			),

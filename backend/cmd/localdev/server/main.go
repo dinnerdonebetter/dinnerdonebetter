@@ -9,7 +9,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 )
 
 const (
@@ -21,7 +20,7 @@ func main() {
 
 	// create premade admin user
 	premadeAdminUser := &identity.User{
-		ID:              identifiers.New(),
+		ID:              strings.Repeat("a", 20),
 		TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 		EmailAddress:    "integration_tests@example.email",
 		Username:        "admin_user",
@@ -34,7 +33,7 @@ func main() {
 	}
 
 	server, _, err := localdev.AllInOne(ctx, apiConfig, premadeAdminUser, &oauth.OAuth2ClientDatabaseCreationInput{
-		ID:           identifiers.New(),
+		ID:           strings.Repeat("b", 20),
 		Name:         "localdev_admin_client",
 		Description:  "localdev admin client",
 		ClientID:     strings.Repeat("A", oauth.ClientIDSize),

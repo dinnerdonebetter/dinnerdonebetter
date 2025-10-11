@@ -302,20 +302,75 @@ func buildTableClasses(customClasses string) string {
 	return baseClasses
 }
 
+// commonInitialisms is a list of common initialisms that should not be split
+// Add additional initialisms here as needed
+var commonInitialisms = []string{
+	"ID",
+	"API",
+	"URI",
+	"URL",
+	"HTTP",
+	"HTTPS",
+	"JSON",
+	"XML",
+	"SQL",
+	"DB",
+	"CPU",
+	"RAM",
+	"UUID",
+	"HTML",
+	"CSS",
+	"JS",
+	"UI",
+	"UX",
+	"OS",
+}
+
 // camelCaseToTitleCase converts CamelCase to Title Case with spaces
+// It handles common initialisms (like ID, API, etc.) as single units
 func camelCaseToTitleCase(s string) string {
 	if s == "" {
 		return s
+	}
+
+	// Check for initialisms at the start of the string
+	for _, initialism := range commonInitialisms {
+		if strings.HasPrefix(s, initialism) {
+			// If the string is exactly the initialism, return it as-is
+			if len(s) == len(initialism) {
+				return initialism
+			}
+			// If there's more after the initialism, process the rest
+			rest := camelCaseToTitleCase(s[len(initialism):])
+			if rest != "" {
+				return initialism + " " + rest
+			}
+			return initialism
+		}
 	}
 
 	var result strings.Builder
 	result.WriteByte(s[0])
 
 	for i := 1; i < len(s); i++ {
-		if s[i] >= 'A' && s[i] <= 'Z' {
-			result.WriteByte(' ')
+		// Check if we're at the start of an initialism
+		foundInitialism := false
+		for _, initialism := range commonInitialisms {
+			if i+len(initialism) <= len(s) && s[i:i+len(initialism)] == initialism {
+				result.WriteByte(' ')
+				result.WriteString(initialism)
+				i += len(initialism) - 1 // -1 because the loop will increment
+				foundInitialism = true
+				break
+			}
 		}
-		result.WriteByte(s[i])
+
+		if !foundInitialism {
+			if s[i] >= 'A' && s[i] <= 'Z' {
+				result.WriteByte(' ')
+			}
+			result.WriteByte(s[i])
+		}
 	}
 
 	return result.String()

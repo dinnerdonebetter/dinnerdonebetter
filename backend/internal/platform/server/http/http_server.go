@@ -89,7 +89,7 @@ func (s *server) Serve() {
 	}
 
 	if s.config.SSLCertificateFile != "" && s.config.SSLCertificateKeyFile != "" {
-		s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTPS requests")
+		s.logger.WithValue("port", s.httpServer.Addr).Info("Listening for HTTPS requests")
 		// returns ErrServerClosed on graceful close.
 		if err := s.httpServer.ListenAndServeTLS(s.config.SSLCertificateFile, s.config.SSLCertificateKeyFile); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
@@ -101,7 +101,7 @@ func (s *server) Serve() {
 			s.logger.Error("shutting server down", err)
 		}
 	} else {
-		s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTP requests")
+		s.logger.WithValue("port", s.httpServer.Addr).Info("Listening for HTTP requests")
 		// returns ErrServerClosed on graceful close.
 		if err := s.httpServer.ListenAndServe(); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {

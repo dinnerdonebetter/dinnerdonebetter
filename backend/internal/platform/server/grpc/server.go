@@ -100,8 +100,6 @@ func (s *Server) Shutdown() {
 
 // Serve serves GRPC traffic.
 func (s *Server) Serve() {
-	s.logger.Info("serve invoked, setting up listener")
-
 	var lc net.ListenConfig
 	lis, err := lc.Listen(context.Background(), "tcp", fmt.Sprintf(":%d", s.config.Port))
 	if err != nil {
