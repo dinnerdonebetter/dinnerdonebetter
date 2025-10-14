@@ -32,5 +32,5 @@ func TextColor(c Color) string {
 }
 
 func BorderColor(c Color) string {
-	return "text-" + c.Value
+	return "border-" + c.Value
 }

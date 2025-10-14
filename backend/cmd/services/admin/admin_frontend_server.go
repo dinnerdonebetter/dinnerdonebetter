@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
+	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
 	"github.com/dinnerdonebetter/backend/internal/authentication/cookies"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/domain/auth"
@@ -164,11 +165,45 @@ func (s *AdminFrontendServer) homeRoute(_ http.ResponseWriter, req *http.Request
 
 func (s *AdminFrontendServer) HomePage(title string) g.Node {
 	if title == "" {
-		title = "Home"
+		title = "Dashboard"
 	}
 
 	return page(title,
-		ghtml.H1(g.Text(title)),
+		components.ContentContainer(&components.ContentContainerProps{
+			Title:    title,
+			Subtitle: "Welcome to the admin dashboard",
+			Palette:  &design.StandardPalette,
+		},
+			components.Card(&design.StandardPalette,
+				ghtml.H2(
+					ghtml.Class(fmt.Sprintf("text-lg font-medium %s mb-4", design.TextColor(design.StandardPalette.Primary))),
+					g.Text("Quick Stats"),
+				),
+				ghtml.Div(
+					ghtml.Class("grid grid-cols-1 md:grid-cols-3 gap-4"),
+					statCard("Total Users", "1,234", &design.StandardPalette),
+					statCard("Active Sessions", "89", &design.StandardPalette),
+					statCard("System Status", "Healthy", &design.StandardPalette),
+				),
+			),
+		),
+	)
+}
+
+func statCard(title, value string, palette *design.Palette) g.Node {
+	return ghtml.Div(
+		ghtml.Class(fmt.Sprintf("p-4 %s rounded-lg border %s",
+			design.Background(design.Color{Value: "gray-50"}),
+			design.BorderColor(palette.Background),
+		)),
+		ghtml.Div(
+			ghtml.Class(fmt.Sprintf("text-sm font-medium %s", design.TextColor(palette.Text))),
+			g.Text(title),
+		),
+		ghtml.Div(
+			ghtml.Class(fmt.Sprintf("mt-1 text-2xl font-bold %s", design.TextColor(palette.Primary))),
+			g.Text(value),
+		),
 	)
 }
 
@@ -220,16 +255,67 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 
 	c, err := fetchClientFromContext(ctx)
 	if err != nil {
-		return s.HomePage(fmt.Sprintf("Users (no client)")), nil
+		return page("Users",
+			components.ContentContainer(&components.ContentContainerProps{
+				Title:    "Users",
+				Subtitle: "Manage user accounts",
+				Palette:  &design.StandardPalette,
+			},
+				components.Card(&design.StandardPalette,
+					ghtml.P(
+						ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
+						g.Text("Error: No API client available"),
+					),
+				),
+			),
+		), nil
 	}
 
 	usersRes, err := c.GetUsers(ctx, &identitysvc.GetUsersRequest{})
 	if err != nil {
-		return s.HomePage(fmt.Sprintf("Users (API err)")), nil
+		return page("Users",
+			components.ContentContainer(&components.ContentContainerProps{
+				Title:    "Users",
+				Subtitle: "Manage user accounts",
+				Palette:  &design.StandardPalette,
+			},
+				components.Card(&design.StandardPalette,
+					ghtml.P(
+						ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
+						g.Text(fmt.Sprintf("Error loading users: %v", err)),
+					),
+				),
+			),
+		), nil
+	}
+
+	if len(usersRes.Result) == 0 {
+		return page("Users",
+			components.ContentContainer(&components.ContentContainerProps{
+				Title:             "Users",
+				Subtitle:          "Manage user accounts",
+				Palette:           &design.StandardPalette,
+				ShowSearch:        true,
+				SearchPlaceholder: "Search users...",
+				Actions: []g.Node{
+					components.ActionButton("Add User", "/users/new", &design.StandardPalette, true),
+				},
+			},
+				components.EmptyState(
+					"No users found",
+					"Get started by creating your first user account.",
+					&design.StandardPalette,
+					[]g.Node{
+						components.ActionButton("Add User", "/users/new", &design.StandardPalette, true),
+					},
+				),
+			),
+		), nil
 	}
 
 	table, err := components.Table(usersRes.Result, &components.TableOptions[*identitysvc.User]{
 		TableID: "users-table",
+		Palette: &design.StandardPalette,
 		Fields: []string{
 			"ID",
 			"Username",
@@ -261,10 +347,37 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 		},
 	})
 	if err != nil {
-		return s.HomePage(fmt.Sprintf("Users (table err)")), nil
+		return page("Users",
+			components.ContentContainer(&components.ContentContainerProps{
+				Title:    "Users",
+				Subtitle: "Manage user accounts",
+				Palette:  &design.StandardPalette,
+			},
+				components.Card(&design.StandardPalette,
+					ghtml.P(
+						ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
+						g.Text(fmt.Sprintf("Error creating table: %v", err)),
+					),
+				),
+			),
+		), nil
 	}
 
-	return page("Users", table), nil
+	return page("Users",
+		components.ContentContainer(&components.ContentContainerProps{
+			Title:             "Users",
+			Subtitle:          fmt.Sprintf("Manage %d user accounts", len(usersRes.Result)),
+			Palette:           &design.StandardPalette,
+			ShowSearch:        true,
+			SearchPlaceholder: "Search users...",
+			Actions: []g.Node{
+				components.ActionButton("Add User", "/users/new", &design.StandardPalette, true),
+				components.ActionButton("Export", "/users/export", &design.StandardPalette, false),
+			},
+		},
+			components.Card(&design.StandardPalette, table),
+		),
+	), nil
 }
 
 func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http.Request) (g.Node, error) {
