@@ -270,9 +270,9 @@ func createTableHeader(fields []fieldInfo, palette *design.Palette) g.Node {
 	for _, field := range fields {
 		headerCells = append(headerCells,
 			ghtml.Th(
-				ghtml.Class(fmt.Sprintf("px-6 py-3 text-left text-xs font-medium %s uppercase tracking-wider %s",
-					design.TextColor(palette.Text),
-					design.Background(palette.Background),
+				ghtml.Class(fmt.Sprintf("px-4 py-2 text-left text-sm font-semibold %s uppercase tracking-wide border-b-2 %s bg-gray-50",
+					design.TextColor(design.Color{Value: "gray-800"}), // Darker text for better contrast
+					design.BorderColor(palette.Primary),               // Primary color border for accent
 				)),
 				g.Text(field.DisplayName),
 			),
@@ -280,7 +280,7 @@ func createTableHeader(fields []fieldInfo, palette *design.Palette) g.Node {
 	}
 
 	return ghtml.THead(
-		ghtml.Class(fmt.Sprintf("%s", design.Background(palette.Background))),
+		ghtml.Class("bg-gray-50"),
 		ghtml.Tr(headerCells...),
 	)
 }
@@ -315,14 +315,14 @@ func createTableBody[T any](data []T, fields []fieldInfo, options *TableOptions[
 			cells = append(cells, createTableCell(cellValue, field.Name, options, palette))
 		}
 
-		// Alternate row colors
-		rowClass := "bg-white"
+		// Alternate row colors with better contrast
+		rowClass := "bg-white hover:bg-blue-50"
 		if i%2 == 1 {
-			rowClass = "bg-gray-50"
+			rowClass = "bg-gray-50 hover:bg-blue-50"
 		}
 
 		rows = append(rows, ghtml.Tr(
-			ghtml.Class(rowClass),
+			ghtml.Class(fmt.Sprintf("%s transition-colors duration-150", rowClass)),
 			g.Group(cells),
 		))
 	}
@@ -349,7 +349,7 @@ func createTableCell[T any](value any, fieldName string, options *TableOptions[T
 	}
 
 	return ghtml.Td(
-		ghtml.Class("px-6 py-4 whitespace-nowrap text-sm text-gray-900"),
+		ghtml.Class("px-4 py-3 whitespace-nowrap text-sm text-gray-900"),
 		content,
 	)
 }
@@ -368,7 +368,7 @@ func createEmptyTable[T any](options *TableOptions[T]) g.Node {
 			ghtml.TBody(
 				ghtml.Tr(
 					ghtml.Td(
-						ghtml.Class("px-6 py-8 text-center text-sm text-gray-500"),
+						ghtml.Class("px-4 py-12 text-center text-sm text-gray-500 bg-gray-50"),
 						ghtml.ColSpan("100%"),
 						g.Text("No data available"),
 					),
@@ -380,7 +380,7 @@ func createEmptyTable[T any](options *TableOptions[T]) g.Node {
 
 // buildTableClasses constructs the CSS classes for the table
 func buildTableClasses(customClasses string) string {
-	baseClasses := "min-w-full divide-y divide-gray-200 shadow-md rounded-lg overflow-hidden"
+	baseClasses := "min-w-full divide-y divide-gray-200 shadow-lg rounded-lg overflow-hidden border border-gray-200"
 	if customClasses != "" {
 		return fmt.Sprintf("%s %s", baseClasses, customClasses)
 	}

@@ -16,6 +16,9 @@ type ContentContainerProps struct {
 	Actions           []g.Node // Action buttons in the header
 	ShowSearch        bool
 	SearchPlaceholder string
+	// HTMX search configuration
+	HTMXSearchTarget  string // URL to send search requests to
+	HTMXSearchTrigger string // HTMX trigger event (defaults to "keyup changed delay:300ms")
 }
 
 // ContentContainer creates a responsive content container with optional search
@@ -26,9 +29,9 @@ func ContentContainer(props *ContentContainerProps, children ...g.Node) g.Node {
 
 	var headerContent []g.Node
 
-	// Title section
+	// Title section - takes only needed space
 	titleSection := ghtml.Div(
-		ghtml.Class("flex-1"),
+		ghtml.Class("flex-shrink-0"),
 		ghtml.H1(
 			ghtml.Class(fmt.Sprintf("text-2xl font-bold %s", design.TextColor(props.Palette.Primary))),
 			g.Text(props.Title),
@@ -41,40 +44,40 @@ func ContentContainer(props *ContentContainerProps, children ...g.Node) g.Node {
 
 	headerContent = append(headerContent, titleSection)
 
-	// Actions section
-	if len(props.Actions) > 0 {
-		headerContent = append(headerContent, ghtml.Div(
-			ghtml.Class("flex items-center space-x-3"),
-			g.Group(props.Actions),
-		))
-	}
-
-	// Search section (if enabled)
-	var searchSection g.Node
+	// Search section (if enabled) - takes remaining space
 	if props.ShowSearch {
 		placeholder := props.SearchPlaceholder
 		if placeholder == "" {
 			placeholder = "Search..."
 		}
 
-		searchSection = ghtml.Div(
-			ghtml.Class("mt-4"),
+		searchSection := ghtml.Div(
+			ghtml.Class("flex-1 mx-4"),
 			SearchInput(&SearchInputProps{
 				Placeholder: placeholder,
 				Palette:     props.Palette,
+				HTMXTarget:  props.HTMXSearchTarget,
+				HTMXTrigger: props.HTMXSearchTrigger,
 			}),
 		)
+		headerContent = append(headerContent, searchSection)
+	}
+
+	// Actions section - takes only needed space
+	if len(props.Actions) > 0 {
+		headerContent = append(headerContent, ghtml.Div(
+			ghtml.Class("flex items-center space-x-3 flex-shrink-0"),
+			g.Group(props.Actions),
+		))
 	}
 
 	return ghtml.Div(
 		ghtml.Class("space-y-6"),
-		// Header with title and actions
+		// Header with title, search, and actions in one row
 		ghtml.Div(
-			ghtml.Class("flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0"),
+			ghtml.Class("flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0"),
 			g.Group(headerContent),
 		),
-		// Search (if enabled)
-		g.If(props.ShowSearch, searchSection),
 		// Content
 		ghtml.Div(
 			ghtml.Class("space-y-4"),
@@ -143,7 +146,7 @@ func SearchInput(props *SearchInputProps) g.Node {
 	}
 
 	return ghtml.Div(
-		ghtml.Class("relative max-w-md"),
+		ghtml.Class("relative w-full"),
 		ghtml.Div(
 			ghtml.Class("absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"),
 			// Search icon (using a simple SVG)

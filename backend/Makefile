@@ -180,11 +180,6 @@ lint_terraform: terraformat
 .PHONY: lint
 lint: lint_containers queries_lint golang_lint
 
-.PHONY: check_lib_for_types
-check_lib_for_types:
-	@! grep -r 'pkg/types"' internal/lib/
-	@! grep -r 'pkg/types/fakes"' internal/lib/
-
 ## GENERATED FILES
 
 .PHONY: configs
