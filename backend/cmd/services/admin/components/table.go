@@ -16,6 +16,9 @@ import (
 // FieldRenderer is a function type that takes a field value and returns a gomponents node
 type FieldRenderer func(value any) g.Node
 
+// RowLinkGenerator is a function type that takes an item and returns a URL path for navigation
+type RowLinkGenerator[T any] func(item T) string
+
 // TableOptions holds configuration options for the table
 type TableOptions[T any] struct {
 	// FieldRenderers maps field names to custom rendering functions
@@ -38,6 +41,10 @@ type TableOptions[T any] struct {
 
 	// CSSClasses allows adding custom CSS classes to the table
 	CSSClasses string
+
+	// RowLinkGenerator is an optional function that generates a URL path for each row.
+	// When provided, each row becomes clickable and navigates to the returned URL.
+	RowLinkGenerator RowLinkGenerator[T]
 }
 
 // DefaultFieldRenderer provides default rendering for common types
@@ -321,10 +328,38 @@ func createTableBody[T any](data []T, fields []fieldInfo, options *TableOptions[
 			rowClass = "bg-gray-50 hover:bg-blue-50"
 		}
 
-		rows = append(rows, ghtml.Tr(
-			ghtml.Class(fmt.Sprintf("%s transition-colors duration-150", rowClass)),
-			g.Group(cells),
-		))
+		// If RowLinkGenerator is provided, make the row clickable with HTMX
+		var linkURL string
+		if options.RowLinkGenerator != nil {
+			linkURL = options.RowLinkGenerator(item)
+			if linkURL != "" {
+				// Add cursor-pointer to the row class when clickable
+				rowClass += " cursor-pointer"
+			}
+		}
+
+		// Build the row with or without HTMX navigation
+		if linkURL != "" {
+			rows = append(rows, ghtml.Tr(
+				ghtml.Class(fmt.Sprintf("%s transition-colors duration-150", rowClass)),
+				// HTMX attributes for navigation
+				g.Attr("hx-get", linkURL),
+				g.Attr("hx-target", "body"),
+				g.Attr("hx-swap", "innerHTML"),
+				g.Attr("hx-push-url", "true"),
+				// Styling and accessibility
+				g.Attr("style", "cursor: pointer;"),
+				g.Attr("title", "Click to view details"),
+				g.Attr("role", "button"),
+				g.Attr("tabindex", "0"),
+				g.Group(cells),
+			))
+		} else {
+			rows = append(rows, ghtml.Tr(
+				ghtml.Class(fmt.Sprintf("%s transition-colors duration-150", rowClass)),
+				g.Group(cells),
+			))
+		}
 	}
 
 	return ghtml.TBody(

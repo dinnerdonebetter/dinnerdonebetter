@@ -34,6 +34,11 @@ type TablePageProps[T any] struct {
 	Data         []T
 	TableOptions *TableOptions[T]
 
+	// RowLinkGenerator is an optional function that generates a URL path for each row.
+	// When provided, each row becomes clickable and navigates to the returned URL.
+	// This is a convenience option - you can also set it directly in TableOptions.RowLinkGenerator.
+	RowLinkGenerator func(item T) string
+
 	// Empty state configuration
 	EmptyStateTitle       string
 	EmptyStateDescription string
@@ -65,6 +70,10 @@ func TablePage[T any](props *TablePageProps[T]) (*TablePageResult, error) {
 	}
 	if props.TableOptions.Palette == nil {
 		props.TableOptions.Palette = props.Palette
+	}
+	// If RowLinkGenerator is provided at the TablePageProps level, use it
+	if props.RowLinkGenerator != nil && props.TableOptions.RowLinkGenerator == nil {
+		props.TableOptions.RowLinkGenerator = props.RowLinkGenerator
 	}
 
 	// Generate metadata from the data

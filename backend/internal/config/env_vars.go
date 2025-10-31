@@ -37,7 +37,7 @@ func ApplyEnvironmentVariables(cfg any) error {
 	return env.ParseWithOptions(cfg, env.Options{
 		Prefix: EnvVarPrefix,
 		OnSet: func(tag string, value any, isDefault bool) {
-			slog.Info("env var set",
+			slog.Debug("env var set",
 				slog.String("tag", tag),
 				slog.String("value", fmt.Sprintf("%+v", value)),
 				slog.Bool("isDefault", isDefault),

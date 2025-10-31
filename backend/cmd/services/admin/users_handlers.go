@@ -36,9 +36,103 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 		return page("Users", s.renderUsersError(fmt.Sprintf("Error loading users: %v", err))), nil
 	}
 
-	// Use the new integrated TablePage component
+	user := usersRes.Result
 
-	return page("Users", g.Text(usersRes.Result.Username)), nil
+	// Use the new FormPage component for editing user data
+	formPageResult, err := components.FormPage(&components.FormPageProps[*identitysvc.User]{
+		Title:        "User Details",
+		BaseSubtitle: "View and edit user information",
+		Palette:      &design.StandardPalette,
+		Data:         user,
+		FormOptions: &components.FormOptions[*identitysvc.User]{
+			FormID: "edit-user-form",
+			Action: fmt.Sprintf("/api/users/%s", user.ID),
+			Method: "PUT",
+
+			// Enable editable fields
+			EnabledFields: []string{
+				"AccountStatusExplanation",
+			},
+
+			// Configure field validation
+			FieldConfigs: map[string]*components.FieldConfig{
+				"FirstName": {
+					Validation: &components.FieldValidation{
+						Required:      true,
+						MinLength:     2,
+						MaxLength:     50,
+						CustomMessage: "First name must be between 2 and 50 characters",
+					},
+				},
+				"LastName": {
+					Validation: &components.FieldValidation{
+						Required:      true,
+						MinLength:     2,
+						MaxLength:     50,
+						CustomMessage: "Last name must be between 2 and 50 characters",
+					},
+				},
+				"EmailAddress": {
+					InputType: "email",
+					Validation: &components.FieldValidation{
+						Required:      true,
+						Pattern:       `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`,
+						CustomMessage: "Please enter a valid email address",
+					},
+				},
+				"AccountStatusExplanation": {
+					Placeholder: "Enter explanation for account status...",
+					Validation: &components.FieldValidation{
+						MaxLength:     500,
+						CustomMessage: "Maximum 500 characters",
+					},
+				},
+			},
+
+			// Layout configuration: FirstName and LastName together, others separate
+			FormRows: []components.FormRow{
+				{
+					Fields:  []string{"FirstName", "LastName"},
+					Columns: 2,
+				},
+				{
+					Fields:  []string{"EmailAddress"},
+					Columns: 1,
+				},
+				{
+					Fields:  []string{"AccountStatusExplanation"},
+					Columns: 1,
+				},
+			},
+
+			SubmitButtonText: "Save Changes",
+			ShowCancelButton: true,
+			CancelButtonText: "Back to Users",
+			CancelURL:        "/users",
+
+			// HTMX configuration
+			HTMXTarget:  "body",
+			HTMXSwap:    "innerHTML",
+			HTMXPushURL: true,
+		},
+
+		ShowBreadcrumbs: true,
+		Breadcrumbs: []components.Breadcrumb{
+			{Text: "Dashboard", URL: "/"},
+			{Text: "Users", URL: "/users"},
+			{Text: user.Username, URL: ""},
+		},
+
+		// Dynamic subtitle showing user info
+		SubtitleGenerator: func(u *identitysvc.User) string {
+			return fmt.Sprintf("Editing user: %s", u.Username)
+		},
+	})
+	if err != nil {
+		return page("Users", s.renderUsersError(fmt.Sprintf("Error creating form: %v", err))), nil
+	}
+
+	return page("Users", formPageResult.Node), nil
 }
 
 func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
@@ -97,6 +191,9 @@ func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request
 				"LastUpdatedAt":             renderTimestamp,
 				"ArchivedAt":                renderTimestamp,
 			},
+		},
+		RowLinkGenerator: func(data *identitysvc.User) string {
+			return fmt.Sprintf("/users/%s", data.ID)
 		},
 		EmptyStateTitle:       "No users found",
 		EmptyStateDescription: "Get started by creating your first user account.",
@@ -208,6 +305,9 @@ func (s *AdminFrontendServer) UsersSearch(_ http.ResponseWriter, req *http.Reque
 			"TwoFactorSecretVerifiedAt": renderTimestamp,
 			"LastUpdatedAt":             renderTimestamp,
 			"ArchivedAt":                renderTimestamp,
+		},
+		RowLinkGenerator: func(data *identitysvc.User) string {
+			return fmt.Sprintf("/users/%s", data.ID)
 		},
 	})
 	if err != nil {

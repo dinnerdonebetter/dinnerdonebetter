@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config/envvars"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/platform/encoding"
+	"github.com/dinnerdonebetter/backend/internal/platform/routing/chi"
 )
 
 const (
@@ -62,6 +63,7 @@ func main() {
 		logger,
 		tracerProvider,
 		encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON),
+		chi.NewRouteParamManager(),
 		cfg,
 	)
 	if err != nil {

@@ -13,8 +13,8 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 
 	r.Get("/", ghttp.Adapt(s.homeRoute))
 
+	r.Get(fmt.Sprintf("/users/{%s}", userIDURLParamKey), ghttp.Adapt(s.UserPage))
 	r.Get("/users", ghttp.Adapt(s.UsersList))
-	r.Get(fmt.Sprintf("/users/{%s}", userIDURLParamKey), ghttp.Adapt(s.UsersList))
 	r.Get("/api/users/search", ghttp.Adapt(s.UsersSearch))
 
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
