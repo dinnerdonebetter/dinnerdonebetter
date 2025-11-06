@@ -956,6 +956,170 @@ func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([
 	return items, nil
 }
 
+const getUsersForAccount = `-- name: GetUsersForAccount :many
+SELECT
+	users.id,
+	users.username,
+	users.avatar_src,
+	users.email_address,
+	users.hashed_password,
+	users.password_last_changed_at,
+	users.requires_password_change,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
+	users.last_accepted_terms_of_service,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
+	(
+		SELECT COUNT(users.id)
+		FROM users
+		WHERE users.archived_at IS NULL
+			AND
+			users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND users.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				users.last_updated_at IS NULL
+				OR users.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				users.last_updated_at IS NULL
+				OR users.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR users.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(users.id)
+		FROM users
+		WHERE users.archived_at IS NULL
+			AND account_user_memberships.belongs_to_account = $6
+	) AS total_count
+FROM users
+JOIN account_user_memberships ON account_user_memberships.belongs_to_user = users.id
+WHERE users.archived_at IS NULL
+	AND account_user_memberships.archived_at IS NULL
+	AND users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND users.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		users.last_updated_at IS NULL
+		OR users.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		users.last_updated_at IS NULL
+		OR users.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND account_user_memberships.belongs_to_account = $6
+LIMIT $8
+OFFSET $7
+`
+
+type GetUsersForAccountParams struct {
+	CreatedAfter     sql.NullTime
+	CreatedBefore    sql.NullTime
+	UpdatedBefore    sql.NullTime
+	UpdatedAfter     sql.NullTime
+	BelongsToAccount string
+	QueryOffset      sql.NullInt32
+	QueryLimit       sql.NullInt32
+	IncludeArchived  sql.NullBool
+}
+
+type GetUsersForAccountRow struct {
+	CreatedAt                     time.Time
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	Birthday                      sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	TwoFactorSecret               string
+	Username                      string
+	UserAccountStatusExplanation  string
+	UserAccountStatus             string
+	ServiceRole                   string
+	FirstName                     string
+	LastName                      string
+	EmailAddress                  string
+	ID                            string
+	HashedPassword                string
+	AvatarSrc                     sql.NullString
+	EmailAddressVerificationToken sql.NullString
+	FilteredCount                 int64
+	TotalCount                    int64
+	RequiresPasswordChange        bool
+}
+
+func (q *Queries) GetUsersForAccount(ctx context.Context, db DBTX, arg *GetUsersForAccountParams) ([]*GetUsersForAccountRow, error) {
+	rows, err := db.QueryContext(ctx, getUsersForAccount,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.BelongsToAccount,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetUsersForAccountRow{}
+	for rows.Next() {
+		var i GetUsersForAccountRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Username,
+			&i.AvatarSrc,
+			&i.EmailAddress,
+			&i.HashedPassword,
+			&i.PasswordLastChangedAt,
+			&i.RequiresPasswordChange,
+			&i.TwoFactorSecret,
+			&i.TwoFactorSecretVerifiedAt,
+			&i.ServiceRole,
+			&i.UserAccountStatus,
+			&i.UserAccountStatusExplanation,
+			&i.Birthday,
+			&i.EmailAddressVerificationToken,
+			&i.EmailAddressVerifiedAt,
+			&i.FirstName,
+			&i.LastName,
+			&i.LastAcceptedTermsOfService,
+			&i.LastAcceptedPrivacyPolicy,
+			&i.LastIndexedAt,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUsersWithIDs = `-- name: GetUsersWithIDs :many
 SELECT
 	users.id,

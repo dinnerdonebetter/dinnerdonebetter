@@ -4,49 +4,36 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
+
 	g "maragu.dev/gomponents"
 )
 
 // TablePageMetadata holds information about the processed table data
 type TablePageMetadata struct {
-	TotalCount    int
-	FilteredCount int // For future filtering support
-	EmptyState    bool
 	Fields        []fieldInfo
+	TotalCount    int
+	FilteredCount int
+	EmptyState    bool
 	HasData       bool
 }
 
 // TablePageProps holds configuration for a complete table-based page
 type TablePageProps[T any] struct {
-	// Page configuration
-	Title             string
-	BaseSubtitle      string
-	Palette           *design.Palette
-	ShowSearch        bool
-	SearchPlaceholder string
-	Actions           []g.Node
-
-	// HTMX search configuration
-	HTMXSearchTarget  string // URL to send search requests to (e.g., "/api/users/search")
-	HTMXSearchTrigger string // HTMX trigger event (defaults to "keyup changed delay:300ms")
-
-	// Data and table configuration
-	Data         []T
-	TableOptions *TableOptions[T]
-
-	// RowLinkGenerator is an optional function that generates a URL path for each row.
-	// When provided, each row becomes clickable and navigates to the returned URL.
-	// This is a convenience option - you can also set it directly in TableOptions.RowLinkGenerator.
-	RowLinkGenerator func(item T) string
-
-	// Empty state configuration
+	TableOptions          *TableOptions[T]
+	SubtitleGenerator     func(metadata TablePageMetadata) string
+	Palette               *design.Palette
+	RowLinkGenerator      func(item T) string
+	HTMXSearchTarget      string
+	Title                 string
+	HTMXSearchTrigger     string
+	SearchPlaceholder     string
 	EmptyStateTitle       string
 	EmptyStateDescription string
+	BaseSubtitle          string
+	Actions               []g.Node
+	Data                  []T
 	EmptyStateActions     []g.Node
-
-	// Custom subtitle generator (optional)
-	// If provided, this function will be called with metadata to generate subtitle
-	SubtitleGenerator func(metadata TablePageMetadata) string
+	ShowSearch            bool
 }
 
 // TablePageResult contains both the rendered page and metadata about the table

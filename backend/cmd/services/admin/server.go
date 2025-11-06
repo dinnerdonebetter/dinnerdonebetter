@@ -22,14 +22,15 @@ const (
 type ContextKey string
 
 type AdminFrontendServer struct {
-	tracer                  tracing.Tracer
-	logger                  logging.Logger
-	encoder                 encoding.ServerEncoderDecoder
-	cookieManager           cookies.Manager
-	userIDRouteParamFetcher func(req *http.Request) string
-	config                  *config.AdminWebappConfig
-	server                  phttp.Server
-	componentRenderer       *components.ComponentRenderer
+	tracer                     tracing.Tracer
+	logger                     logging.Logger
+	encoder                    encoding.ServerEncoderDecoder
+	cookieManager              cookies.Manager
+	userIDRouteParamFetcher    func(req *http.Request) string
+	accountIDRouteParamFetcher func(req *http.Request) string
+	config                     *config.AdminWebappConfig
+	server                     phttp.Server
+	componentRenderer          *components.ComponentRenderer
 }
 
 func NewAdminFrontendServer(
@@ -61,14 +62,15 @@ func NewAdminFrontendServer(
 	}
 
 	s := &AdminFrontendServer{
-		tracer:                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
-		logger:                  logging.EnsureLogger(logger).WithName(o11yName),
-		componentRenderer:       components.NewComponentRenderer(),
-		userIDRouteParamFetcher: rpm.BuildRouteParamStringIDFetcher(userIDURLParamKey),
-		cookieManager:           cookieMan,
-		encoder:                 encoder,
-		config:                  cfg,
-		server:                  server,
+		tracer:                     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(o11yName)),
+		logger:                     logging.EnsureLogger(logger).WithName(o11yName),
+		componentRenderer:          components.NewComponentRenderer(),
+		userIDRouteParamFetcher:    rpm.BuildRouteParamStringIDFetcher(userIDURLParamKey),
+		accountIDRouteParamFetcher: rpm.BuildRouteParamStringIDFetcher(accountIDURLParamKey),
+		cookieManager:              cookieMan,
+		encoder:                    encoder,
+		config:                     cfg,
+		server:                     server,
 	}
 
 	s.setupRoutes(router)

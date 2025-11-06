@@ -7,6 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
+	"github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 
 	g "maragu.dev/gomponents"
@@ -35,7 +36,6 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 	if err != nil {
 		return page("Users", s.renderUsersError(fmt.Sprintf("Error loading users: %v", err))), nil
 	}
-
 	user := usersRes.Result
 
 	// Use the new FormPage component for editing user data
@@ -51,11 +51,24 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 
 			// Enable editable fields
 			EnabledFields: []string{
+				"AccountStatus",
 				"AccountStatusExplanation",
 			},
 
 			// Configure field validation
 			FieldConfigs: map[string]*components.FieldConfig{
+				"AccountStatus": {
+					Options: []components.SelectOption{
+						{Value: "good", Label: "Good Standing"},
+						{Value: "unverified", Label: "Unverified"},
+						{Value: "banned", Label: "Banned"},
+						{Value: "terminated", Label: "Terminated"},
+					},
+					Validation: &components.FieldValidation{
+						Required:      true,
+						CustomMessage: "Please select an account status",
+					},
+				},
 				"FirstName": {
 					Validation: &components.FieldValidation{
 						Required:      true,
@@ -100,6 +113,10 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 					Columns: 1,
 				},
 				{
+					Fields:  []string{"AccountStatus"},
+					Columns: 1,
+				},
+				{
 					Fields:  []string{"AccountStatusExplanation"},
 					Columns: 1,
 				},
@@ -132,7 +149,165 @@ func (s *AdminFrontendServer) UserPage(_ http.ResponseWriter, req *http.Request)
 		return page("Users", s.renderUsersError(fmt.Sprintf("Error creating form: %v", err))), nil
 	}
 
-	return page("Users", formPageResult.Node), nil
+	// Create accounts section that will be loaded via HTMX
+	accountsSection := components.CardWithHeader(
+		"User Accounts",
+		&design.StandardPalette,
+		nil,
+		g.El("div",
+			g.Attr("id", "user-accounts-container"),
+			g.Attr("hx-get", fmt.Sprintf("/api/users/%s/accounts", userID)),
+			g.Attr("hx-trigger", "load"),
+			g.Attr("hx-swap", "innerHTML"),
+			components.LoadingSpinner(&design.StandardPalette),
+		),
+	)
+
+	// Combine form and accounts section
+	return page("Users",
+		ghtml.Div(
+			ghtml.Class("space-y-6"),
+			formPageResult.Node,
+			accountsSection,
+		),
+	), nil
+}
+
+func (s *AdminFrontendServer) UserAccountsList(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	c, err := fetchClientFromContext(ctx)
+	if err != nil {
+		return g.El("div",
+			g.Attr("class", "text-center py-4"),
+			ghtml.P(
+				ghtml.Class(fmt.Sprintf("%s text-sm", design.TextColor(design.StandardPalette.Warning))),
+				g.Text("Error: No API client available"),
+			),
+		), nil
+	}
+
+	userID := s.userIDRouteParamFetcher(req)
+	if userID == "" {
+		return g.El("div",
+			g.Attr("class", "text-center py-4"),
+			ghtml.P(
+				ghtml.Class(fmt.Sprintf("%s text-sm", design.TextColor(design.StandardPalette.Warning))),
+				g.Text("Error: No user ID provided"),
+			),
+		), nil
+	}
+
+	// Get page parameter from query string
+	pageParam := req.URL.Query().Get("page")
+	var pageSize uint32 = 10 // Default page size
+	var nextCursor *string
+
+	if pageParam != "" {
+		nextCursor = &pageParam
+	}
+
+	accountsRes, err := c.GetAccountsForUser(ctx, &identitysvc.GetAccountsForUserRequest{
+		UserID: userID,
+		Filter: &filtering.QueryFilter{
+			PageSize:   &pageSize,
+			NextCursor: nextCursor,
+		},
+	})
+	if err != nil {
+		return g.El("div",
+			g.Attr("class", "text-center py-4"),
+			ghtml.P(
+				ghtml.Class(fmt.Sprintf("%s text-sm", design.TextColor(design.StandardPalette.Warning))),
+				g.Text(fmt.Sprintf("Error loading accounts: %v", err)),
+			),
+		), nil
+	}
+
+	// If no accounts, show empty state
+	if len(accountsRes.Result) == 0 {
+		return g.El("div",
+			g.Attr("class", "text-center py-8"),
+			ghtml.P(
+				ghtml.Class("text-sm text-gray-500"),
+				g.Text("This user is not associated with any accounts."),
+			),
+		), nil
+	}
+
+	// Create compact table for accounts
+	table, err := components.Table(accountsRes.Result, &components.TableOptions[*identitysvc.Account]{
+		TableID: "user-accounts-table",
+		Palette: &design.StandardPalette,
+		Fields: []string{
+			"ID",
+			"Name",
+			"BillingStatus",
+			"ContactPhone",
+			"City",
+			"State",
+			"Country",
+			"CreatedAt",
+		},
+		FieldRenderers: map[string]components.FieldRenderer{
+			"CreatedAt": renderTimestamp,
+		},
+		RowLinkGenerator: func(account *identitysvc.Account) string {
+			return fmt.Sprintf("/accounts/%s", account.ID)
+		},
+	})
+	if err != nil {
+		return g.El("div",
+			g.Attr("class", "text-center py-4"),
+			ghtml.P(
+				ghtml.Class(fmt.Sprintf("%s text-sm", design.TextColor(design.StandardPalette.Warning))),
+				g.Text(fmt.Sprintf("Error creating table: %v", err)),
+			),
+		), nil
+	}
+
+	var paginationControls []g.Node
+
+	// Add pagination controls if there's a next page
+	if accountsRes.Filter != nil && accountsRes.Filter.NextCursor != nil && *accountsRes.Filter.NextCursor != "" {
+		paginationControls = append(paginationControls,
+			ghtml.Div(
+				ghtml.Class("flex justify-between items-center mt-4 pt-4 border-t border-gray-200"),
+				ghtml.Div(
+					ghtml.Class("text-sm text-gray-500"),
+					g.Text(fmt.Sprintf("Showing %d accounts", len(accountsRes.Result))),
+				),
+				ghtml.Button(
+					ghtml.Class(fmt.Sprintf("px-4 py-2 text-sm font-medium rounded-md %s %s hover:%s",
+						design.TextColor(design.Color{Value: "white"}),
+						design.Background(design.StandardPalette.Primary),
+						design.Background(design.Color{Value: design.StandardPalette.Primary.Value + "-700"}),
+					)),
+					g.Attr("hx-get", fmt.Sprintf("/api/users/%s/accounts?page=%s", userID, *accountsRes.Filter.NextCursor)),
+					g.Attr("hx-target", "#user-accounts-container"),
+					g.Attr("hx-swap", "innerHTML"),
+					g.Text("Load More"),
+				),
+			),
+		)
+	} else if len(accountsRes.Result) > 0 {
+		paginationControls = append(paginationControls,
+			ghtml.Div(
+				ghtml.Class("text-center mt-4 pt-4 border-t border-gray-200"),
+				ghtml.P(
+					ghtml.Class("text-sm text-gray-500"),
+					g.Text(fmt.Sprintf("Showing all %d account(s)", len(accountsRes.Result))),
+				),
+			),
+		)
+	}
+
+	return g.El("div",
+		g.Attr("class", "space-y-4"),
+		table,
+		g.Group(paginationControls),
+	), nil
 }
 
 func (s *AdminFrontendServer) UsersList(_ http.ResponseWriter, req *http.Request) (g.Node, error) {

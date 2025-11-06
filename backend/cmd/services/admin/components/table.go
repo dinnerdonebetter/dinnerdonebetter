@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
+
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
@@ -21,30 +22,13 @@ type RowLinkGenerator[T any] func(item T) string
 
 // TableOptions holds configuration options for the table
 type TableOptions[T any] struct {
-	// FieldRenderers maps field names to custom rendering functions
-	FieldRenderers map[string]FieldRenderer
-
-	// Fields specifies the order of fields in the table.
-	// If nil or empty, uses automatic ordering (ID first, timestamps last).
-	// Only fields listed here will be displayed.
-	Fields []string
-
-	// FieldReplacements maps field names to custom display names.
-	// If a field name is not in this map, the automatic camelCaseToTitleCase conversion is used.
+	FieldRenderers    map[string]FieldRenderer
 	FieldReplacements map[string]string
-
-	// Palette allows customization of colors (uses standard palette if nil)
-	Palette *design.Palette
-
-	// TableID sets the HTML ID attribute for the table
-	TableID string
-
-	// CSSClasses allows adding custom CSS classes to the table
-	CSSClasses string
-
-	// RowLinkGenerator is an optional function that generates a URL path for each row.
-	// When provided, each row becomes clickable and navigates to the returned URL.
-	RowLinkGenerator RowLinkGenerator[T]
+	Palette           *design.Palette
+	RowLinkGenerator  RowLinkGenerator[T]
+	TableID           string
+	CSSClasses        string
+	Fields            []string
 }
 
 // DefaultFieldRenderer provides default rendering for common types
@@ -116,11 +100,25 @@ func extractFields(item any) ([]fieldInfo, error) {
 			continue
 		}
 
+		// Extract JSON tag
+		jsonTag := field.Tag.Get("json")
+		if jsonTag == "" || jsonTag == "-" {
+			// Skip fields without JSON tags or with "-" tag
+			continue
+		}
+
+		// Parse JSON tag (handle "fieldName,omitempty" format)
+		jsonName := strings.Split(jsonTag, ",")[0]
+		if jsonName == "" || jsonName == "-" {
+			continue
+		}
+
 		// Create a display name (convert CamelCase to Title Case)
 		displayName := camelCaseToTitleCase(field.Name)
 
 		fields = append(fields, fieldInfo{
-			Name:        field.Name,
+			Name:        jsonName,    // Use JSON tag name
+			GoFieldName: field.Name,  // Keep Go struct field name for reflection
 			DisplayName: displayName,
 			Type:        field.Type,
 		})
@@ -214,9 +212,10 @@ func Table[T any](data []T, options *TableOptions[T]) (g.Node, error) {
 
 // fieldInfo holds information about a struct field
 type fieldInfo struct {
-	Name        string
-	DisplayName string
-	Type        reflect.Type
+	Type          reflect.Type
+	Name          string // JSON tag name (e.g., "zipCode")
+	GoFieldName   string // Go struct field name (e.g., "ZipCode")
+	DisplayName   string
 }
 
 // sortFields sorts the fields with custom ordering:
@@ -224,7 +223,7 @@ type fieldInfo struct {
 // - CreatedAt, LastUpdatedAt, ArchivedAt fields last (in that order)
 // - All other fields in their original order in between
 func sortFields(fields []fieldInfo) []fieldInfo {
-	// Define priority fields
+	// Define priority fields (using JSON tag names - PascalCase for protobuf)
 	priorityFirst := "ID"
 	priorityLast := []string{"CreatedAt", "LastUpdatedAt", "ArchivedAt"}
 
@@ -308,7 +307,8 @@ func createTableBody[T any](data []T, fields []fieldInfo, options *TableOptions[
 		}
 
 		for _, field := range fields {
-			fieldValue := v.FieldByName(field.Name)
+			// Use GoFieldName for reflection lookup
+			fieldValue := v.FieldByName(field.GoFieldName)
 			if !fieldValue.IsValid() {
 				cells = append(cells, createTableCell(nil, field.Name, options, palette))
 				continue

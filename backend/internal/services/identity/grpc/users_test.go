@@ -37,7 +37,7 @@ func TestServiceImpl_CreateUser(t *testing.T) {
 			CreatedAt:       identityfakes.BuildFakeTime(),
 		}
 
-		identityDataManager.EXPECT().CreateUser(testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserRegistrationInput) bool {
+		identityDataManager.On("CreateUser", testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserRegistrationInput) bool {
 			return input.Username == exampleInput.Username &&
 				input.EmailAddress == exampleInput.EmailAddress &&
 				input.FirstName == exampleInput.FirstName &&
@@ -75,7 +75,7 @@ func TestServiceImpl_CreateUser(t *testing.T) {
 
 		exampleInput := identityfakes.BuildFakeUserCreationInput()
 
-		identityDataManager.EXPECT().CreateUser(testutils.ContextMatcher, mock.AnythingOfType("*identity.UserRegistrationInput")).Return(nil, errors.New("database error"))
+		identityDataManager.On("CreateUser", testutils.ContextMatcher, mock.AnythingOfType("*identity.UserRegistrationInput")).Return((*identity.UserCreationResponse)(nil), errors.New("database error"))
 
 		request := &identitysvc.CreateUserRequest{
 			Input: &identitysvc.UserRegistrationInput{
@@ -111,7 +111,7 @@ func TestServiceImpl_ArchiveUser(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().ArchiveUser(testutils.ContextMatcher, exampleUserID).Return(nil)
+		identityDataManager.On("ArchiveUser", testutils.ContextMatcher, exampleUserID).Return(nil)
 
 		request := &identitysvc.ArchiveUserRequest{
 			UserID: exampleUserID,
@@ -131,7 +131,7 @@ func TestServiceImpl_ArchiveUser(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().ArchiveUser(testutils.ContextMatcher, exampleUserID).Return(errors.New("database error"))
+		identityDataManager.On("ArchiveUser", testutils.ContextMatcher, exampleUserID).Return(errors.New("database error"))
 
 		request := &identitysvc.ArchiveUserRequest{
 			UserID: exampleUserID,
@@ -158,7 +158,7 @@ func TestServiceImpl_GetUser(t *testing.T) {
 
 		exampleUser := identityfakes.BuildFakeUser()
 
-		identityDataManager.EXPECT().GetUser(testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
+		identityDataManager.On("GetUser", testutils.ContextMatcher, exampleUser.ID).Return(exampleUser, nil)
 
 		request := &identitysvc.GetUserRequest{
 			UserID: exampleUser.ID,
@@ -182,7 +182,7 @@ func TestServiceImpl_GetUser(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().GetUser(testutils.ContextMatcher, exampleUserID).Return(nil, errors.New("database error"))
+		identityDataManager.On("GetUser", testutils.ContextMatcher, exampleUserID).Return((*identity.User)(nil), errors.New("database error"))
 
 		request := &identitysvc.GetUserRequest{
 			UserID: exampleUserID,
@@ -212,7 +212,7 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 			identityfakes.BuildFakeUser(),
 		}
 
-		identityDataManager.EXPECT().GetUsers(testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleUsers, "", nil)
+		identityDataManager.On("GetUsers", testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleUsers, "", nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetUsersRequest{
@@ -236,7 +236,7 @@ func TestServiceImpl_GetUsers(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().GetUsers(testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return(nil, "", errors.New("database error"))
+		identityDataManager.On("GetUsers", testutils.ContextMatcher, mock.AnythingOfType("*filtering.QueryFilter")).Return(([]*identity.User)(nil), "", errors.New("database error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.GetUsersRequest{
@@ -270,7 +270,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 		}
 		exampleQuery := "test search"
 
-		identityDataManager.EXPECT().SearchForUsers(testutils.ContextMatcher, exampleQuery, false, mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleUsers, "", nil)
+		identityDataManager.On("SearchForUsers", testutils.ContextMatcher, exampleQuery, false, mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleUsers, "", nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.SearchForUsersRequest{
@@ -301,7 +301,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 		}
 		exampleQuery := "search query"
 
-		identityDataManager.EXPECT().SearchForUsers(testutils.ContextMatcher, exampleQuery, true, mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleUsers, "", nil)
+		identityDataManager.On("SearchForUsers", testutils.ContextMatcher, exampleQuery, true, mock.AnythingOfType("*filtering.QueryFilter")).Return(exampleUsers, "", nil)
 
 		pageSize := uint32(25)
 		request := &identitysvc.SearchForUsersRequest{
@@ -327,7 +327,7 @@ func TestServiceImpl_SearchForUsers(t *testing.T) {
 
 		exampleQuery := "test search"
 
-		identityDataManager.EXPECT().SearchForUsers(testutils.ContextMatcher, exampleQuery, false, mock.AnythingOfType("*filtering.QueryFilter")).Return(nil, "", errors.New("search error"))
+		identityDataManager.On("SearchForUsers", testutils.ContextMatcher, exampleQuery, false, mock.AnythingOfType("*filtering.QueryFilter")).Return(([]*identity.User)(nil), "", errors.New("search error"))
 
 		pageSize := uint32(25)
 		request := &identitysvc.SearchForUsersRequest{
@@ -357,7 +357,7 @@ func TestServiceImpl_UpdateUserDetails(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().UpdateUserDetails(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.UserDetailsUpdateRequestInput")).Return(nil)
+		identityDataManager.On("UpdateUserDetails", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.UserDetailsUpdateRequestInput")).Return(nil)
 
 		request := &identitysvc.UpdateUserDetailsRequest{
 			Input: &identitysvc.UserDetailsUpdateRequestInput{
@@ -400,7 +400,7 @@ func TestServiceImpl_UpdateUserDetails(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().UpdateUserDetails(testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.UserDetailsUpdateRequestInput")).Return(errors.New("update error"))
+		identityDataManager.On("UpdateUserDetails", testutils.ContextMatcher, mock.AnythingOfType("string"), mock.AnythingOfType("*identity.UserDetailsUpdateRequestInput")).Return(errors.New("update error"))
 
 		request := &identitysvc.UpdateUserDetailsRequest{
 			Input: &identitysvc.UserDetailsUpdateRequestInput{
@@ -429,7 +429,7 @@ func TestServiceImpl_UpdateUserEmailAddress(t *testing.T) {
 
 		newEmail := "new@example.com"
 
-		identityDataManager.EXPECT().UpdateUserEmailAddress(testutils.ContextMatcher, mock.AnythingOfType("string"), newEmail).Return(nil)
+		identityDataManager.On("UpdateUserEmailAddress", testutils.ContextMatcher, mock.AnythingOfType("string"), newEmail).Return(nil)
 
 		request := &identitysvc.UpdateUserEmailAddressRequest{
 			NewEmailAddress: newEmail,
@@ -466,7 +466,7 @@ func TestServiceImpl_UpdateUserEmailAddress(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().UpdateUserEmailAddress(testutils.ContextMatcher, mock.AnythingOfType("string"), "new@example.com").Return(errors.New("update error"))
+		identityDataManager.On("UpdateUserEmailAddress", testutils.ContextMatcher, mock.AnythingOfType("string"), "new@example.com").Return(errors.New("update error"))
 
 		request := &identitysvc.UpdateUserEmailAddressRequest{
 			NewEmailAddress: "new@example.com",
@@ -493,7 +493,7 @@ func TestServiceImpl_UpdateUserUsername(t *testing.T) {
 
 		newUsername := "newusername"
 
-		identityDataManager.EXPECT().UpdateUserUsername(testutils.ContextMatcher, mock.AnythingOfType("string"), newUsername).Return(nil)
+		identityDataManager.On("UpdateUserUsername", testutils.ContextMatcher, mock.AnythingOfType("string"), newUsername).Return(nil)
 
 		request := &identitysvc.UpdateUserUsernameRequest{
 			NewUsername: newUsername,
@@ -530,7 +530,7 @@ func TestServiceImpl_UpdateUserUsername(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().UpdateUserUsername(testutils.ContextMatcher, mock.AnythingOfType("string"), "newusername").Return(errors.New("update error"))
+		identityDataManager.On("UpdateUserUsername", testutils.ContextMatcher, mock.AnythingOfType("string"), "newusername").Return(errors.New("update error"))
 
 		request := &identitysvc.UpdateUserUsernameRequest{
 			NewUsername: "newusername",
@@ -557,7 +557,7 @@ func TestServiceImpl_UploadUserAvatar(t *testing.T) {
 
 		base64Data := "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
 
-		identityDataManager.EXPECT().UploadUserAvatar(testutils.ContextMatcher, mock.AnythingOfType("string"), base64Data).Return(nil)
+		identityDataManager.On("UploadUserAvatar", testutils.ContextMatcher, mock.AnythingOfType("string"), base64Data).Return(nil)
 
 		request := &identitysvc.UploadUserAvatarRequest{
 			Base64EncodedData: base64Data,
@@ -594,7 +594,7 @@ func TestServiceImpl_UploadUserAvatar(t *testing.T) {
 
 		service, identityDataManager := buildTestService(t)
 
-		identityDataManager.EXPECT().UploadUserAvatar(testutils.ContextMatcher, mock.AnythingOfType("string"), "test-data").Return(errors.New("upload error"))
+		identityDataManager.On("UploadUserAvatar", testutils.ContextMatcher, mock.AnythingOfType("string"), "test-data").Return(errors.New("upload error"))
 
 		request := &identitysvc.UploadUserAvatarRequest{
 			Base64EncodedData: "test-data",

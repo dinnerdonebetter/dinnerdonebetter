@@ -166,6 +166,7 @@ type (
 		GetUserByUsername(ctx context.Context, username string) (*User, error)
 		GetAdminUserByUsername(ctx context.Context, username string) (*User, error)
 		GetUsers(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
+		GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[User], error)
 		GetUsersWithIDs(ctx context.Context, ids []string) ([]*User, error)
 		GetUserByEmail(ctx context.Context, email string) (*User, error)
 		SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) ([]*User, error)

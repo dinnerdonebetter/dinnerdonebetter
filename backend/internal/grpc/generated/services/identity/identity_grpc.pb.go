@@ -32,11 +32,13 @@ const (
 	IdentityService_GetAccount_FullMethodName                     = "/identity.IdentityService/GetAccount"
 	IdentityService_GetAccountInvitation_FullMethodName           = "/identity.IdentityService/GetAccountInvitation"
 	IdentityService_GetAccounts_FullMethodName                    = "/identity.IdentityService/GetAccounts"
+	IdentityService_GetAccountsForUser_FullMethodName             = "/identity.IdentityService/GetAccountsForUser"
 	IdentityService_GetReceivedAccountInvitations_FullMethodName  = "/identity.IdentityService/GetReceivedAccountInvitations"
 	IdentityService_GetSentAccountInvitations_FullMethodName      = "/identity.IdentityService/GetSentAccountInvitations"
 	IdentityService_GetUser_FullMethodName                        = "/identity.IdentityService/GetUser"
 	IdentityService_RejectAccountInvitation_FullMethodName        = "/identity.IdentityService/RejectAccountInvitation"
 	IdentityService_GetUsers_FullMethodName                       = "/identity.IdentityService/GetUsers"
+	IdentityService_GetUsersForAccount_FullMethodName             = "/identity.IdentityService/GetUsersForAccount"
 	IdentityService_SearchForUsers_FullMethodName                 = "/identity.IdentityService/SearchForUsers"
 	IdentityService_SetDefaultAccount_FullMethodName              = "/identity.IdentityService/SetDefaultAccount"
 	IdentityService_TransferAccountOwnership_FullMethodName       = "/identity.IdentityService/TransferAccountOwnership"
@@ -64,11 +66,13 @@ type IdentityServiceClient interface {
 	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*GetAccountResponse, error)
 	GetAccountInvitation(ctx context.Context, in *GetAccountInvitationRequest, opts ...grpc.CallOption) (*GetAccountInvitationResponse, error)
 	GetAccounts(ctx context.Context, in *GetAccountsRequest, opts ...grpc.CallOption) (*GetAccountsResponse, error)
+	GetAccountsForUser(ctx context.Context, in *GetAccountsForUserRequest, opts ...grpc.CallOption) (*GetAccountsForUserResponse, error)
 	GetReceivedAccountInvitations(ctx context.Context, in *GetReceivedAccountInvitationsRequest, opts ...grpc.CallOption) (*GetReceivedAccountInvitationsResponse, error)
 	GetSentAccountInvitations(ctx context.Context, in *GetSentAccountInvitationsRequest, opts ...grpc.CallOption) (*GetSentAccountInvitationsResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	RejectAccountInvitation(ctx context.Context, in *RejectAccountInvitationRequest, opts ...grpc.CallOption) (*RejectAccountInvitationResponse, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
+	GetUsersForAccount(ctx context.Context, in *GetUsersForAccountRequest, opts ...grpc.CallOption) (*GetUsersForAccountResponse, error)
 	SearchForUsers(ctx context.Context, in *SearchForUsersRequest, opts ...grpc.CallOption) (*SearchForUsersResponse, error)
 	SetDefaultAccount(ctx context.Context, in *SetDefaultAccountRequest, opts ...grpc.CallOption) (*SetDefaultAccountResponse, error)
 	TransferAccountOwnership(ctx context.Context, in *TransferAccountOwnershipRequest, opts ...grpc.CallOption) (*TransferAccountOwnershipResponse, error)
@@ -208,6 +212,16 @@ func (c *identityServiceClient) GetAccounts(ctx context.Context, in *GetAccounts
 	return out, nil
 }
 
+func (c *identityServiceClient) GetAccountsForUser(ctx context.Context, in *GetAccountsForUserRequest, opts ...grpc.CallOption) (*GetAccountsForUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAccountsForUserResponse)
+	err := c.cc.Invoke(ctx, IdentityService_GetAccountsForUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *identityServiceClient) GetReceivedAccountInvitations(ctx context.Context, in *GetReceivedAccountInvitationsRequest, opts ...grpc.CallOption) (*GetReceivedAccountInvitationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetReceivedAccountInvitationsResponse)
@@ -252,6 +266,16 @@ func (c *identityServiceClient) GetUsers(ctx context.Context, in *GetUsersReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetUsersResponse)
 	err := c.cc.Invoke(ctx, IdentityService_GetUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *identityServiceClient) GetUsersForAccount(ctx context.Context, in *GetUsersForAccountRequest, opts ...grpc.CallOption) (*GetUsersForAccountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUsersForAccountResponse)
+	err := c.cc.Invoke(ctx, IdentityService_GetUsersForAccount_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -364,11 +388,13 @@ type IdentityServiceServer interface {
 	GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error)
 	GetAccountInvitation(context.Context, *GetAccountInvitationRequest) (*GetAccountInvitationResponse, error)
 	GetAccounts(context.Context, *GetAccountsRequest) (*GetAccountsResponse, error)
+	GetAccountsForUser(context.Context, *GetAccountsForUserRequest) (*GetAccountsForUserResponse, error)
 	GetReceivedAccountInvitations(context.Context, *GetReceivedAccountInvitationsRequest) (*GetReceivedAccountInvitationsResponse, error)
 	GetSentAccountInvitations(context.Context, *GetSentAccountInvitationsRequest) (*GetSentAccountInvitationsResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
 	RejectAccountInvitation(context.Context, *RejectAccountInvitationRequest) (*RejectAccountInvitationResponse, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
+	GetUsersForAccount(context.Context, *GetUsersForAccountRequest) (*GetUsersForAccountResponse, error)
 	SearchForUsers(context.Context, *SearchForUsersRequest) (*SearchForUsersResponse, error)
 	SetDefaultAccount(context.Context, *SetDefaultAccountRequest) (*SetDefaultAccountResponse, error)
 	TransferAccountOwnership(context.Context, *TransferAccountOwnershipRequest) (*TransferAccountOwnershipResponse, error)
@@ -424,6 +450,9 @@ func (UnimplementedIdentityServiceServer) GetAccountInvitation(context.Context, 
 func (UnimplementedIdentityServiceServer) GetAccounts(context.Context, *GetAccountsRequest) (*GetAccountsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccounts not implemented")
 }
+func (UnimplementedIdentityServiceServer) GetAccountsForUser(context.Context, *GetAccountsForUserRequest) (*GetAccountsForUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountsForUser not implemented")
+}
 func (UnimplementedIdentityServiceServer) GetReceivedAccountInvitations(context.Context, *GetReceivedAccountInvitationsRequest) (*GetReceivedAccountInvitationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReceivedAccountInvitations not implemented")
 }
@@ -438,6 +467,9 @@ func (UnimplementedIdentityServiceServer) RejectAccountInvitation(context.Contex
 }
 func (UnimplementedIdentityServiceServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
+}
+func (UnimplementedIdentityServiceServer) GetUsersForAccount(context.Context, *GetUsersForAccountRequest) (*GetUsersForAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersForAccount not implemented")
 }
 func (UnimplementedIdentityServiceServer) SearchForUsers(context.Context, *SearchForUsersRequest) (*SearchForUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchForUsers not implemented")
@@ -703,6 +735,24 @@ func _IdentityService_GetAccounts_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _IdentityService_GetAccountsForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountsForUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServiceServer).GetAccountsForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IdentityService_GetAccountsForUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServiceServer).GetAccountsForUser(ctx, req.(*GetAccountsForUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _IdentityService_GetReceivedAccountInvitations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetReceivedAccountInvitationsRequest)
 	if err := dec(in); err != nil {
@@ -789,6 +839,24 @@ func _IdentityService_GetUsers_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IdentityServiceServer).GetUsers(ctx, req.(*GetUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IdentityService_GetUsersForAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersForAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServiceServer).GetUsersForAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IdentityService_GetUsersForAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServiceServer).GetUsersForAccount(ctx, req.(*GetUsersForAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1011,6 +1079,10 @@ var IdentityService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _IdentityService_GetAccounts_Handler,
 		},
 		{
+			MethodName: "GetAccountsForUser",
+			Handler:    _IdentityService_GetAccountsForUser_Handler,
+		},
+		{
 			MethodName: "GetReceivedAccountInvitations",
 			Handler:    _IdentityService_GetReceivedAccountInvitations_Handler,
 		},
@@ -1029,6 +1101,10 @@ var IdentityService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUsers",
 			Handler:    _IdentityService_GetUsers_Handler,
+		},
+		{
+			MethodName: "GetUsersForAccount",
+			Handler:    _IdentityService_GetUsersForAccount_Handler,
 		},
 		{
 			MethodName: "SearchForUsers",

@@ -327,6 +327,34 @@ WHERE %s.%s IS NULL
 			},
 			{
 				Annotation: QueryAnnotation{
+					Name: "GetUsersForAccount",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
+	%s
+FROM %s
+JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	%s
+%s;`,
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(usersTableName, true, true, nil),
+					buildTotalCountSelect(usersTableName, true, []string{}, fmt.Sprintf("%s.%s = sqlc.arg(%s)", accountUserMembershipsTableName, belongsToAccountColumn, belongsToAccountColumn)),
+					usersTableName,
+					accountUserMembershipsTableName, accountUserMembershipsTableName, belongsToUserColumn, usersTableName, idColumn,
+					usersTableName, archivedAtColumn,
+					accountUserMembershipsTableName, archivedAtColumn,
+					buildFilterConditions(usersTableName, true, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", accountUserMembershipsTableName, belongsToAccountColumn, belongsToAccountColumn)),
+					offsetLimitAddendum,
+				)),
+			},
+			{
+				Annotation: QueryAnnotation{
 					Name: "GetUsersWithIDs",
 					Type: ManyType,
 				},

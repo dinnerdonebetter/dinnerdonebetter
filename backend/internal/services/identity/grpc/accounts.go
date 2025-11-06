@@ -133,6 +133,27 @@ func (s *serviceImpl) GetAccounts(ctx context.Context, request *identitysvc.GetA
 	return x, nil
 }
 
+func (s *serviceImpl) GetAccountsForUser(ctx context.Context, request *identitysvc.GetAccountsForUserRequest) (*identitysvc.GetAccountsForUserResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	accounts, _, err := s.identityDataManager.GetAccounts(ctx, request.UserID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, s.logger, span, codes.Internal, "failed to get accounts")
+	}
+
+	x := &identitysvc.GetAccountsForUserResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	for _, account := range accounts {
+		x.Result = append(x.Result, converters.ConvertAccountToGRPCAccount(account))
+	}
+
+	return x, nil
+}
+
 func (s *serviceImpl) SetDefaultAccount(ctx context.Context, request *identitysvc.SetDefaultAccountRequest) (*identitysvc.SetDefaultAccountResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

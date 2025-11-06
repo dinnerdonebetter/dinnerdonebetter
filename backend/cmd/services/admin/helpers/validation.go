@@ -19,4 +19,3 @@ func FetchErrorString(err error, key string) string {
 
 	return ""
 }
-

@@ -3,49 +3,46 @@ package components
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
 
+// SelectOption represents a single option in a select dropdown
+type SelectOption struct {
+	Value     string
+	Label     string
+	Disabled  bool
+	IsDefault bool
+}
+
 // FieldConfig holds configuration for a single form field
 type FieldConfig struct {
-	// Name is the struct field name
-	Name string
-	// DisplayName is the label to show (if empty, uses camelCaseToTitleCase)
-	DisplayName string
-	// Enabled determines if the field is editable (default is disabled)
-	Enabled bool
-	// Validation holds HTMX-compatible validation rules
-	Validation *FieldValidation
-	// InputType specifies the HTML input type (default: text)
-	InputType string
-	// Placeholder text for the input
-	Placeholder string
-	// CustomRenderer allows custom rendering of the entire field
+	Validation     *FieldValidation
 	CustomRenderer func(fieldName string, value any, config FieldConfig, palette *design.Palette) g.Node
+	Options        []SelectOption // If provided, renders a <select> instead of <input>
+	Name           string
+	DisplayName    string
+	InputType      string
+	Placeholder    string
+	Enabled        bool
 }
 
 // FieldValidation holds HTMX-compatible validation rules
 type FieldValidation struct {
-	// Required makes the field required
-	Required bool
-	// MinLength specifies minimum length for text inputs
-	MinLength int
-	// MaxLength specifies maximum length for text inputs
-	MaxLength int
-	// Pattern is a regex pattern for validation
-	Pattern string
-	// Min is minimum value for number inputs
-	Min *float64
-	// Max is maximum value for number inputs
-	Max *float64
-	// HTMXValidate enables HTMX validation endpoint
-	HTMXValidate string
-	// CustomMessage is a custom validation message
+	Min           *float64
+	Max           *float64
+	Pattern       string
+	HTMXValidate  string
 	CustomMessage string
+	MinLength     int
+	MaxLength     int
+	Required      bool
 }
 
 // FormRow represents a row of fields in the form
@@ -58,54 +55,23 @@ type FormRow struct {
 
 // FormOptions holds configuration options for the form
 type FormOptions[T any] struct {
-	// FormID sets the HTML ID attribute for the form
-	FormID string
-
-	// Action is the form submission URL
-	Action string
-
-	// Method is the HTTP method (default: POST)
-	Method string
-
-	// FieldConfigs maps field names to their configuration
-	FieldConfigs map[string]*FieldConfig
-
-	// EnabledFields is a shorthand to enable multiple fields by name
-	EnabledFields []string
-
-	// FormRows defines the layout of fields in rows
-	// If nil or empty, each field gets its own row
-	FormRows []FormRow
-
-	// Palette allows customization of colors
-	Palette *design.Palette
-
-	// HTMXSwap specifies the HTMX swap strategy (default: innerHTML)
-	HTMXSwap string
-
-	// HTMXTarget specifies the HTMX target element
-	HTMXTarget string
-
-	// HTMXPushURL determines if URL should be pushed to history
-	HTMXPushURL bool
-
-	// SubmitButtonText customizes the submit button text
-	SubmitButtonText string
-
-	// ShowCancelButton determines if cancel button is shown
-	ShowCancelButton bool
-
-	// CancelButtonText customizes the cancel button text
-	CancelButtonText string
-
-	// CancelURL is where the cancel button navigates to
-	CancelURL string
-
-	// AdditionalButtons allows adding custom buttons
-	AdditionalButtons []g.Node
-
-	// CSSClasses allows adding custom CSS classes to the form
-	CSSClasses string
+	FieldConfigs                map[string]*FieldConfig
+	Palette                     *design.Palette
+	CancelButtonText            string
+	FormID                      string
+	CSSClasses                  string
+	CancelURL                   string
+	Action                      string
+	HTMXSwap                    string
+	HTMXTarget                  string
+	Method                      string
+	SubmitButtonText            string
+	FormRows                    []FormRow
+	AdditionalButtons           []g.Node
+	EnabledFields               []string
+	ShowCancelButton            bool
+	HTMXPushURL                 bool
+	DisableAutoEnableZeroValues bool // If true, disables automatic enabling of zero-value fields
 }
 
 // Form creates a generic HTML form from a struct with HTMX support
@@ -182,11 +148,25 @@ func extractFieldsAndValues(item any) ([]fieldInfo, map[string]any, error) {
 			continue
 		}
 
+		// Extract JSON tag
+		jsonTag := field.Tag.Get("json")
+		if jsonTag == "" || jsonTag == "-" {
+			// Skip fields without JSON tags or with "-" tag
+			continue
+		}
+
+		// Parse JSON tag (handle "fieldName,omitempty" format)
+		jsonName := strings.Split(jsonTag, ",")[0]
+		if jsonName == "" || jsonName == "-" {
+			continue
+		}
+
 		// Create a display name
 		displayName := camelCaseToTitleCase(field.Name)
 
 		fields = append(fields, fieldInfo{
-			Name:        field.Name,
+			Name:        jsonName,   // Use JSON tag name
+			GoFieldName: field.Name, // Keep Go struct field name
 			DisplayName: displayName,
 			Type:        field.Type,
 		})
@@ -194,7 +174,7 @@ func extractFieldsAndValues(item any) ([]fieldInfo, map[string]any, error) {
 		// Extract value
 		fieldValue := v.Field(i)
 		if fieldValue.CanInterface() {
-			values[field.Name] = fieldValue.Interface()
+			values[jsonName] = fieldValue.Interface() // Use JSON tag name as key
 		}
 	}
 
@@ -263,12 +243,17 @@ func buildFormAttributes[T any](options *FormOptions[T]) []g.Node {
 
 // generateFormRows generates the form field rows based on layout configuration
 func generateFormRows[T any](fields []fieldInfo, values map[string]any, options *FormOptions[T], palette *design.Palette) []g.Node {
+	if palette == nil {
+		p := design.StandardPalette
+		palette = &p
+	}
+
 	var rows []g.Node
 
 	// If no custom layout specified, create one field per row
 	if len(options.FormRows) == 0 {
 		for _, field := range fields {
-			config := getFieldConfig(field.Name, options)
+			config := getFieldConfig(field.Name, values[field.Name], options)
 			fieldNode := generateFormField(field, values[field.Name], config, palette)
 			rows = append(rows, ghtml.Div(
 				ghtml.Class("grid grid-cols-1 gap-4"),
@@ -294,7 +279,7 @@ func generateFormRows[T any](fields []fieldInfo, values map[string]any, options 
 
 		for _, fieldName := range formRow.Fields {
 			if field, exists := fieldMap[fieldName]; exists {
-				config := getFieldConfig(fieldName, options)
+				config := getFieldConfig(fieldName, values[fieldName], options)
 				fieldNode := generateFormField(field, values[fieldName], config, palette)
 				rowFields = append(rowFields, fieldNode)
 			}
@@ -312,13 +297,54 @@ func generateFormRows[T any](fields []fieldInfo, values map[string]any, options 
 	return rows
 }
 
+// isZeroValue checks if a value is a zero value (nil, empty string, zero number, zero timestamp, etc.)
+func isZeroValue(value any) bool {
+	if value == nil {
+		return true
+	}
+
+	// Handle protobuf Timestamp specially
+	if ts, ok := value.(*timestamppb.Timestamp); ok {
+		return ts == nil || !ts.IsValid() || ts.AsTime().IsZero()
+	}
+
+	v := reflect.ValueOf(value)
+
+	switch v.Kind() {
+	case reflect.Ptr, reflect.Interface:
+		return v.IsNil()
+	case reflect.Array, reflect.Slice, reflect.Map, reflect.Chan:
+		return v.Len() == 0
+	case reflect.String:
+		return v.String() == ""
+	case reflect.Bool:
+		return !v.Bool()
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v.Int() == 0
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return v.Uint() == 0
+	case reflect.Float32, reflect.Float64:
+		return v.Float() == 0
+	case reflect.Struct:
+		// For time.Time
+		if t, ok := value.(time.Time); ok {
+			return t.IsZero()
+		}
+		// For other structs, check if all fields are zero (expensive, so we'll just return false)
+		return false
+	default:
+		return false
+	}
+}
+
 // getFieldConfig retrieves the field configuration or returns defaults
-func getFieldConfig[T any](fieldName string, options *FormOptions[T]) FieldConfig {
-	// Check if field is in enabled list
-	enabled := false
+// It automatically enables fields with zero values unless explicitly disabled via DisableAutoEnableZeroValues
+func getFieldConfig[T any](fieldName string, fieldValue any, options *FormOptions[T]) FieldConfig {
+	// Check if field is explicitly in enabled list
+	explicitlyEnabled := false
 	for _, name := range options.EnabledFields {
 		if name == fieldName {
-			enabled = true
+			explicitlyEnabled = true
 			break
 		}
 	}
@@ -331,8 +357,13 @@ func getFieldConfig[T any](fieldName string, options *FormOptions[T]) FieldConfi
 		}
 	}
 
-	// Apply enabled status
-	if enabled {
+	// Apply enabled status:
+	// - Always enabled if explicitly in EnabledFields list
+	// - OR enabled if the value is zero/empty AND auto-enable is not disabled
+	//   (making empty fields editable by default unless DisableAutoEnableZeroValues is set)
+	if explicitlyEnabled {
+		config.Enabled = true
+	} else if !options.DisableAutoEnableZeroValues && isZeroValue(fieldValue) {
 		config.Enabled = true
 	}
 
@@ -343,6 +374,12 @@ func getFieldConfig[T any](fieldName string, options *FormOptions[T]) FieldConfi
 
 // generateFormField generates a single form field
 func generateFormField(field fieldInfo, value any, config FieldConfig, palette *design.Palette) g.Node {
+	// Ensure palette is not nil
+	if palette == nil {
+		p := design.StandardPalette
+		palette = &p
+	}
+
 	// Use custom renderer if provided
 	if config.CustomRenderer != nil {
 		return config.CustomRenderer(field.Name, value, config, palette)
@@ -353,16 +390,62 @@ func generateFormField(field fieldInfo, value any, config FieldConfig, palette *
 		displayName = config.DisplayName
 	}
 
+	// Build label content
+	labelContent := []g.Node{
+		ghtml.For(field.Name),
+		ghtml.Class(fmt.Sprintf("block text-sm font-medium %s mb-2", design.TextColor(palette.Text))),
+		g.Text(displayName),
+	}
+
+	if config.Validation != nil && config.Validation.Required {
+		labelContent = append(labelContent, ghtml.Span(
+			ghtml.Class("text-red-500 ml-1"),
+			g.Text("*"),
+		))
+	}
+
+	// Build field content
+	var inputElement g.Node
+
+	// Render select element if options are provided
+	if len(config.Options) > 0 {
+		inputElement = buildSelectElement(field.Name, value, config, palette)
+	} else {
+		inputElement = buildInputElement(field.Name, field.Type, value, config, palette)
+	}
+
+	fieldContent := []g.Node{
+		ghtml.Class("flex flex-col"),
+		ghtml.Label(labelContent...),
+		inputElement,
+	}
+
+	if config.Validation != nil && config.Validation.CustomMessage != "" {
+		fieldContent = append(fieldContent, ghtml.P(
+			ghtml.Class("mt-1 text-sm text-gray-500"),
+			g.Text(config.Validation.CustomMessage),
+		))
+	}
+
+	return ghtml.Div(fieldContent...)
+}
+
+// buildInputElement creates an HTML input element
+func buildInputElement(fieldName string, fieldType reflect.Type, value any, config FieldConfig, palette *design.Palette) g.Node {
 	inputType := config.InputType
 	if inputType == "" {
-		inputType = inferInputType(field.Type)
+		if fieldType != nil {
+			inputType = inferInputType(fieldType)
+		} else {
+			inputType = "text"
+		}
 	}
 
 	// Build input attributes
 	inputAttrs := []g.Node{
 		ghtml.Type(inputType),
-		ghtml.ID(field.Name),
-		ghtml.Name(field.Name),
+		ghtml.ID(fieldName),
+		ghtml.Name(fieldName),
 		ghtml.Class(buildInputClasses(palette)),
 	}
 
@@ -386,26 +469,78 @@ func generateFormField(field fieldInfo, value any, config FieldConfig, palette *
 		inputAttrs = append(inputAttrs, buildValidationAttributes(config.Validation)...)
 	}
 
-	return ghtml.Div(
-		ghtml.Class("flex flex-col"),
-		ghtml.Label(
-			ghtml.For(field.Name),
-			ghtml.Class(fmt.Sprintf("block text-sm font-medium %s mb-2", design.TextColor(palette.Text))),
-			g.Text(displayName),
-			g.If(config.Validation != nil && config.Validation.Required,
-				ghtml.Span(
-					ghtml.Class("text-red-500 ml-1"),
-					g.Text("*"),
-				),
-			),
-		),
-		ghtml.Input(inputAttrs...),
-		g.If(config.Validation != nil && config.Validation.CustomMessage != "",
-			ghtml.P(
-				ghtml.Class("mt-1 text-sm text-gray-500"),
-				g.Text(config.Validation.CustomMessage),
-			),
-		),
+	return ghtml.Input(inputAttrs...)
+}
+
+// buildSelectElement creates an HTML select element with options
+func buildSelectElement(fieldName string, value any, config FieldConfig, palette *design.Palette) g.Node {
+	// Build select attributes
+	selectAttrs := []g.Node{
+		ghtml.ID(fieldName),
+		ghtml.Name(fieldName),
+		ghtml.Class(buildSelectClasses(palette)),
+	}
+
+	// Add disabled attribute if not enabled
+	if !config.Enabled {
+		selectAttrs = append(selectAttrs, ghtml.Disabled())
+	}
+
+	// Add validation attributes
+	if config.Validation != nil && config.Validation.Required {
+		selectAttrs = append(selectAttrs, ghtml.Required())
+	}
+
+	// Format the current value for comparison
+	currentValue := formatValue(value)
+
+	// Build options
+	var options []g.Node
+
+	// Add placeholder option if provided
+	if config.Placeholder != "" {
+		options = append(options, ghtml.Option(
+			ghtml.Value(""),
+			ghtml.Disabled(),
+			g.If(currentValue == "", ghtml.Selected()),
+			g.Text(config.Placeholder),
+		))
+	}
+
+	// Add configured options
+	for _, opt := range config.Options {
+		optionAttrs := []g.Node{
+			ghtml.Value(opt.Value),
+			g.Text(opt.Label),
+		}
+
+		// Check if this option should be selected
+		if opt.IsDefault && currentValue == "" {
+			optionAttrs = append(optionAttrs, ghtml.Selected())
+		} else if currentValue == opt.Value {
+			optionAttrs = append(optionAttrs, ghtml.Selected())
+		}
+
+		if opt.Disabled {
+			optionAttrs = append(optionAttrs, ghtml.Disabled())
+		}
+
+		options = append(options, ghtml.Option(optionAttrs...))
+	}
+
+	return ghtml.Select(append(selectAttrs, g.Group(options))...)
+}
+
+// buildSelectClasses constructs the CSS classes for select fields
+func buildSelectClasses(palette *design.Palette) string {
+	if palette == nil {
+		p := design.StandardPalette
+		palette = &p
+	}
+	return fmt.Sprintf("block w-full px-3 py-2 border %s rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-%s focus:border-%s sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed",
+		design.BorderColor(palette.Background),
+		palette.Primary.Value,
+		palette.Primary.Value,
 	)
 }
 
@@ -425,8 +560,8 @@ func inferInputType(t reflect.Type) string {
 	case reflect.Bool:
 		return "checkbox"
 	default:
-		// Check if it's a time.Time
-		if t.String() == "time.Time" {
+		// Check if it's a time.Time or timestamppb.Timestamp
+		if t.String() == "time.Time" || t.String() == "timestamppb.Timestamp" {
 			return "datetime-local"
 		}
 		return "text"
@@ -437,6 +572,14 @@ func inferInputType(t reflect.Type) string {
 func formatValue(value any) string {
 	if value == nil {
 		return ""
+	}
+
+	// Handle protobuf Timestamp pointers specially
+	if ts, ok := value.(*timestamppb.Timestamp); ok {
+		if ts == nil || !ts.IsValid() {
+			return ""
+		}
+		return ts.AsTime().Format("2006-01-02T15:04")
 	}
 
 	switch v := value.(type) {
@@ -458,6 +601,16 @@ func formatValue(value any) string {
 			return ""
 		}
 		return *v
+	case *float32:
+		if v == nil {
+			return ""
+		}
+		return fmt.Sprintf("%v", *v)
+	case *float64:
+		if v == nil {
+			return ""
+		}
+		return fmt.Sprintf("%v", *v)
 	case bool:
 		if v {
 			return "checked"
@@ -466,6 +619,11 @@ func formatValue(value any) string {
 	case fmt.Stringer:
 		return v.String()
 	default:
+		// Handle slices and arrays - don't try to display them in form fields
+		val := reflect.ValueOf(v)
+		if val.Kind() == reflect.Slice || val.Kind() == reflect.Array {
+			return ""
+		}
 		return fmt.Sprintf("%v", v)
 	}
 }
@@ -511,6 +669,10 @@ func buildValidationAttributes(validation *FieldValidation) []g.Node {
 
 // buildInputClasses constructs the CSS classes for input fields
 func buildInputClasses(palette *design.Palette) string {
+	if palette == nil {
+		p := design.StandardPalette
+		palette = &p
+	}
 	return fmt.Sprintf("block w-full px-3 py-2 border %s rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-%s focus:border-%s sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed",
 		design.BorderColor(palette.Background),
 		palette.Primary.Value,
@@ -520,6 +682,11 @@ func buildInputClasses(palette *design.Palette) string {
 
 // generateFormButtons generates the form buttons section
 func generateFormButtons[T any](options *FormOptions[T], palette *design.Palette) g.Node {
+	if palette == nil {
+		p := design.StandardPalette
+		palette = &p
+	}
+
 	var buttons []g.Node
 
 	// Submit button

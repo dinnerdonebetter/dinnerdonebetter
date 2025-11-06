@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
-
 	g "maragu.dev/gomponents"
 )
 
@@ -25,4 +24,3 @@ func RenderTimestamp(value any) g.Node {
 		return g.Text(fmt.Sprintf("%v", v))
 	}
 }
-

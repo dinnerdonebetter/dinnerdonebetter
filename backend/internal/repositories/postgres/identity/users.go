@@ -361,6 +361,76 @@ func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter
 	return x, nil
 }
 
+// GetUsersForAccount fetches a list of users from the database that meet a particular filter.
+func (r *repository) GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (x *filtering.QueryFilteredResult[identity.User], err error) {
+	ctx, span := r.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := r.logger.Clone()
+
+	if accountID == "" {
+		return nil, database.ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.AccountIDKey, accountID)
+	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+	filter.AttachToLogger(logger)
+
+	x = &filtering.QueryFilteredResult[identity.User]{
+		Pagination: filter.ToPagination(),
+	}
+
+	results, err := r.generatedQuerier.GetUsersForAccount(ctx, r.db, &generated.GetUsersForAccountParams{
+		BelongsToAccount: accountID,
+		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:     database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:      database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:       database.NullInt32FromUint8Pointer(filter.PageSize),
+		IncludeArchived:  database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "scanning user")
+	}
+
+	for _, result := range results {
+		u := &identity.User{
+			CreatedAt:                  result.CreatedAt,
+			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+			LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+			Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+			ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
+			AccountStatusExplanation:   result.UserAccountStatusExplanation,
+			TwoFactorSecret:            result.TwoFactorSecret,
+			HashedPassword:             result.HashedPassword,
+			ID:                         result.ID,
+			AccountStatus:              result.UserAccountStatus,
+			Username:                   result.Username,
+			FirstName:                  result.FirstName,
+			LastName:                   result.LastName,
+			EmailAddress:               result.EmailAddress,
+			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+			AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
+			ServiceRole:                result.ServiceRole,
+			RequiresPasswordChange:     result.RequiresPasswordChange,
+		}
+
+		x.Data = append(x.Data, u)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
+	}
+
+	return x, nil
+}
+
 // GetUsersWithIDs fetches a list of users from the database that meet a particular filter.
 func (r *repository) GetUsersWithIDs(ctx context.Context, ids []string) (x []*identity.User, err error) {
 	ctx, span := r.tracer.StartSpan(ctx)

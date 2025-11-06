@@ -65,4 +65,3 @@ func fetchClientFromContext(ctx context.Context) (client.Client, error) {
 
 	return c, nil
 }
-

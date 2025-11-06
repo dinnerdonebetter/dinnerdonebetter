@@ -40,7 +40,7 @@ func getAllPermissions() []gorbac.Permission {
 var (
 	// ServiceAdminPermissions is every service admin permission.
 	ServiceAdminPermissions = []gorbac.Permission{
-		PublishArbitraryQueueMessagesPermission,
+		ReadUserDataPermission,
 		UpdateUserStatusPermission,
 		ReadUserPermission,
 		SearchUserPermission,

@@ -23,7 +23,7 @@ func buildTestService(t *testing.T) (*serviceImpl, *managermock.IdentityDataMana
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	identityDataManager := managermock.NewIdentityDataManager(t)
+	identityDataManager := &managermock.IdentityDataManager{}
 
 	service := &serviceImpl{
 		tracer:              tracer,
@@ -52,7 +52,7 @@ func buildTestServiceWithSessionError(t *testing.T) *serviceImpl {
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	identityDataManager := managermock.NewIdentityDataManager(t)
+	identityDataManager := &managermock.IdentityDataManager{}
 
 	service := &serviceImpl{
 		tracer:              tracer,
@@ -77,7 +77,7 @@ func TestNewService(t *testing.T) {
 		sessionContextDataFetcher := func(ctx context.Context) (*sessions.ContextData, error) {
 			return &sessions.ContextData{}, nil
 		}
-		identityDataManager := managermock.NewIdentityDataManager(t)
+		identityDataManager := &managermock.IdentityDataManager{}
 
 		service := NewService(logger, tracerProvider, sessionContextDataFetcher, identityDataManager)
 

@@ -79,4 +79,3 @@ func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http
 
 	return s.HomePage(""), nil
 }
-

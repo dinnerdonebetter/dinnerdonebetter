@@ -26,7 +26,7 @@ func buildTestServiceWithAdminPermissions(t *testing.T) (*serviceImpl, *managerm
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	identityDataManager := managermock.NewIdentityDataManager(t)
+	identityDataManager := &managermock.IdentityDataManager{}
 
 	service := &serviceImpl{
 		tracer:              tracer,
@@ -55,7 +55,7 @@ func buildTestServiceWithInsufficientPermissions(t *testing.T) *serviceImpl {
 
 	logger := logging.NewNoopLogger()
 	tracer := tracing.NewTracerForTest(t.Name())
-	identityDataManager := managermock.NewIdentityDataManager(t)
+	identityDataManager := &managermock.IdentityDataManager{}
 
 	service := &serviceImpl{
 		tracer:              tracer,
@@ -89,7 +89,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().AdminUpdateUserStatus(testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
+		identityDataManager.On("AdminUpdateUserStatus", testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
 			return input.TargetUserID == exampleUserID &&
 				input.NewStatus == identity.GoodStandingUserAccountStatus.String()
 		})).Return(nil)
@@ -132,7 +132,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 
 		service, identityDataManager := buildTestServiceWithAdminPermissions(t)
 
-		identityDataManager.EXPECT().AdminUpdateUserStatus(testutils.ContextMatcher, mock.AnythingOfType("*identity.UserAccountStatusUpdateInput")).Return(errors.New("update error"))
+		identityDataManager.On("AdminUpdateUserStatus", testutils.ContextMatcher, mock.AnythingOfType("*identity.UserAccountStatusUpdateInput")).Return(errors.New("update error"))
 
 		request := &identitysvc.AdminUpdateUserStatusRequest{
 			TargetUserID: identityfakes.BuildFakeID(),
@@ -156,7 +156,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().AdminUpdateUserStatus(testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
+		identityDataManager.On("AdminUpdateUserStatus", testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
 			return input.TargetUserID == exampleUserID &&
 				input.NewStatus == identity.BannedUserAccountStatus.String()
 		})).Return(nil)
@@ -181,7 +181,7 @@ func TestServiceImpl_AdminUpdateUserStatus(t *testing.T) {
 
 		exampleUserID := identityfakes.BuildFakeID()
 
-		identityDataManager.EXPECT().AdminUpdateUserStatus(testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
+		identityDataManager.On("AdminUpdateUserStatus", testutils.ContextMatcher, mock.MatchedBy(func(input *identity.UserAccountStatusUpdateInput) bool {
 			return input.TargetUserID == exampleUserID &&
 				input.NewStatus == identity.UnverifiedAccountStatus.String()
 		})).Return(nil)

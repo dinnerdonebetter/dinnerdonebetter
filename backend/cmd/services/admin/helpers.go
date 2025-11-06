@@ -9,7 +9,6 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"google.golang.org/protobuf/types/known/timestamppb"
-
 	g "maragu.dev/gomponents"
 )
 
@@ -67,4 +66,3 @@ func (s *AdminFrontendServer) buildCookie(ctx context.Context, value string) *ht
 
 	return cookie
 }
-

@@ -61,4 +61,3 @@ func statCard(title, value string, palette *design.Palette) g.Node {
 		),
 	)
 }
-

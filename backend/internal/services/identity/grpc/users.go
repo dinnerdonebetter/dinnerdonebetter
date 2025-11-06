@@ -91,6 +91,30 @@ func (s *serviceImpl) GetUsers(ctx context.Context, request *identitysvc.GetUser
 	return x, nil
 }
 
+func (s *serviceImpl) GetUsersForAccount(ctx context.Context, request *identitysvc.GetUsersForAccountRequest) (*identitysvc.GetUsersForAccountResponse, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := s.logger.WithSpan(span)
+
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+
+	users, _, err := s.identityDataManager.GetUsersForAccount(ctx, request.AccountID, filter)
+	if err != nil {
+		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "failed to fetch users from database")
+	}
+
+	x := &identitysvc.GetUsersForAccountResponse{
+		ResponseDetails: s.buildResponseDetails(ctx, span),
+	}
+
+	for _, user := range users {
+		x.Result = append(x.Result, converters.ConvertUserToGRPCUser(user))
+	}
+
+	return x, nil
+}
+
 func (s *serviceImpl) SearchForUsers(ctx context.Context, request *identitysvc.SearchForUsersRequest) (*identitysvc.SearchForUsersResponse, error) {
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()

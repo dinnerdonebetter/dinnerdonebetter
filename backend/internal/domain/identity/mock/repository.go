@@ -235,6 +235,12 @@ func (m *RepositoryMock) GetUsers(ctx context.Context, filter *filtering.QueryFi
 	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.User]), returnValues.Error(1)
 }
 
+// GetUsersForAccount is a mock function.
+func (m *RepositoryMock) GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[identity.User], error) {
+	returnValues := m.Called(ctx, accountID, filter)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[identity.User]), returnValues.Error(1)
+}
+
 // CreateUser is a mock function.
 func (m *RepositoryMock) CreateUser(ctx context.Context, input *identity.UserDatabaseCreationInput) (*identity.User, error) {
 	returnValues := m.Called(ctx, input)

@@ -4,40 +4,22 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
+
 	g "maragu.dev/gomponents"
 )
 
 // FormPageProps holds the configuration for a complete form page
 type FormPageProps[T any] struct {
-	// Title is the page title
-	Title string
-
-	// BaseSubtitle is the subtitle before any dynamic generation
-	BaseSubtitle string
-
-	// SubtitleGenerator allows dynamic subtitle generation based on form state
+	Data              T
 	SubtitleGenerator func(data T) string
-
-	// Palette for styling
-	Palette *design.Palette
-
-	// Data is the struct to create a form for
-	Data T
-
-	// FormOptions contains all form configuration
-	FormOptions *FormOptions[T]
-
-	// Actions are additional action buttons in the header
-	Actions []g.Node
-
-	// ShowBreadcrumbs determines if breadcrumb navigation is shown
-	ShowBreadcrumbs bool
-
-	// Breadcrumbs contains breadcrumb items
-	Breadcrumbs []Breadcrumb
-
-	// AdditionalContent allows adding extra content below the form
+	Palette           *design.Palette
+	FormOptions       *FormOptions[T]
+	Title             string
+	BaseSubtitle      string
+	Actions           []g.Node
+	Breadcrumbs       []Breadcrumb
 	AdditionalContent []g.Node
+	ShowBreadcrumbs   bool
 }
 
 // Breadcrumb represents a breadcrumb navigation item

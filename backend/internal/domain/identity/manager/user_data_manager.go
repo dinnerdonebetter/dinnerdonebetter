@@ -627,6 +627,24 @@ func (m *manager) GetUsers(ctx context.Context, filter *filtering.QueryFilter) (
 	return users.Data, "", nil
 }
 
+func (m *manager) GetUsersForAccount(ctx context.Context, accountID string, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
+	ctx, span := m.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+
+	logger := m.logger.WithSpan(span)
+
+	users, err := m.identityRepo.GetUsersForAccount(ctx, accountID, filter)
+	if err != nil {
+		return nil, "", observability.PrepareAndLogError(err, logger, span, "fetching users")
+	}
+
+	return users.Data, "", nil
+}
+
 func (m *manager) SearchForUsers(ctx context.Context, query string, useSearchService bool, filter *filtering.QueryFilter) ([]*identity.User, string, error) {
 	ctx, span := m.tracer.StartSpan(ctx)
 	defer span.End()

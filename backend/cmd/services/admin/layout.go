@@ -257,4 +257,3 @@ func footer(config *LayoutConfig) g.Node {
 		),
 	)
 }
-

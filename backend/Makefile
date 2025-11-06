@@ -29,6 +29,7 @@ TESTABLE_PACKAGE_LIST := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|
 CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
 LINTER_IMAGE           := golangci/golangci-lint:v2.4.0
+GO_IMAGE               := golang:1.25-trixie
 
 # COMMANDS
 GO_FORMAT             := gofmt -s -w
@@ -38,6 +39,7 @@ RUN_CONTAINER         := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --w
 RUN_CONTAINER_AS_USER := $(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP)
 LINTER                := $(RUN_CONTAINER) $(LINTER_IMAGE) golangci-lint
 SQL_GENERATOR         := $(RUN_CONTAINER_AS_USER) $(SQL_GENERATOR_IMAGE)
+CONTAINED_GO          := $(RUN_CONTAINER_AS_USER) $(GO_IMAGE) go
 
 ## non-PHONY folders/files
 
@@ -184,7 +186,7 @@ lint: lint_containers queries_lint golang_lint
 
 .PHONY: configs
 configs:
-	go run $(THIS)/cmd/tools/codegen/configs
+	$(CONTAINED_GO) run $(THIS)/cmd/tools/codegen/configs
 
 .PHONY: queries
 queries:

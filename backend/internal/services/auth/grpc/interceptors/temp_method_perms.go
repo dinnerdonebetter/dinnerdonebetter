@@ -669,6 +669,12 @@ var (
 		identityServicePerm("ArchiveUser"): {
 			authorization.ArchiveUserPermission,
 		},
+		identityServicePerm("GetAccountsForUser"): {
+			authorization.ReadUserDataPermission,
+		},
+		identityServicePerm("GetUsersForAccount"): {
+			authorization.ReadUserDataPermission,
+		},
 		identityServicePerm("RejectAccountInvitation"):       noPerms,
 		identityServicePerm("AcceptAccountInvitation"):       noPerms,
 		identityServicePerm("GetReceivedAccountInvitations"): noPerms,

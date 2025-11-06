@@ -4,21 +4,21 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
+
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
 )
 
 // ContentContainerProps holds configuration for content containers
 type ContentContainerProps struct {
+	Palette           *design.Palette
 	Title             string
 	Subtitle          string
-	Palette           *design.Palette
-	Actions           []g.Node // Action buttons in the header
-	ShowSearch        bool
 	SearchPlaceholder string
-	// HTMX search configuration
-	HTMXSearchTarget  string // URL to send search requests to
-	HTMXSearchTrigger string // HTMX trigger event (defaults to "keyup changed delay:300ms")
+	HTMXSearchTarget  string
+	HTMXSearchTrigger string
+	Actions           []g.Node
+	ShowSearch        bool
 }
 
 // ContentContainer creates a responsive content container with optional search

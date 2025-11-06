@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	// PublishArbitraryQueueMessagesPermission is a service admin permission.
-	PublishArbitraryQueueMessagesPermission Permission = "admin.publish_queue_messages"
+	// ReadUserDataPermission is a service admin permission.
+	ReadUserDataPermission Permission = "admin.read_user_data"
 	// PublishArbitraryQueueMessagePermission is a service admin permission.
 	PublishArbitraryQueueMessagePermission Permission = "queues.publish.message"
 )
@@ -14,7 +14,7 @@ const (
 var (
 	// AdminPermissions contains all admin-specific permissions.
 	AdminPermissions = []gorbac.Permission{
-		PublishArbitraryQueueMessagesPermission,
+		ReadUserDataPermission,
 		PublishArbitraryQueueMessagePermission,
 	}
 )
