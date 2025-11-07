@@ -28,6 +28,7 @@ type AdminFrontendServer struct {
 	cookieManager              cookies.Manager
 	userIDRouteParamFetcher    func(req *http.Request) string
 	accountIDRouteParamFetcher func(req *http.Request) string
+	settingIDRouteParamFetcher func(req *http.Request) string
 	config                     *config.AdminWebappConfig
 	server                     phttp.Server
 	componentRenderer          *components.ComponentRenderer
@@ -67,6 +68,7 @@ func NewAdminFrontendServer(
 		componentRenderer:          components.NewComponentRenderer(),
 		userIDRouteParamFetcher:    rpm.BuildRouteParamStringIDFetcher(userIDURLParamKey),
 		accountIDRouteParamFetcher: rpm.BuildRouteParamStringIDFetcher(accountIDURLParamKey),
+		settingIDRouteParamFetcher: rpm.BuildRouteParamStringIDFetcher(settingIDURLParamKey),
 		cookieManager:              cookieMan,
 		encoder:                    encoder,
 		config:                     cfg,

@@ -51,6 +51,10 @@ type FormRow struct {
 	Fields []string
 	// Columns specifies the number of columns (defaults to len(Fields))
 	Columns int
+	// ColumnSpans specifies the column span for each field in a 12-column grid (e.g., [9, 3] for 75%/25% split)
+	// If specified, uses a 12-column grid with col-span-* classes. If not specified, uses equal-width grid columns.
+	// The sum of spans should typically equal 12 for best results.
+	ColumnSpans []int
 }
 
 // FormOptions holds configuration options for the form
@@ -277,20 +281,52 @@ func generateFormRows[T any](fields []fieldInfo, values map[string]any, options 
 			columns = len(formRow.Fields)
 		}
 
-		for _, fieldName := range formRow.Fields {
-			if field, exists := fieldMap[fieldName]; exists {
-				config := getFieldConfig(fieldName, values[fieldName], options)
-				fieldNode := generateFormField(field, values[fieldName], config, palette)
-				rowFields = append(rowFields, fieldNode)
-			}
-		}
+		// If ColumnSpans are specified, use a 12-column grid with col-span classes
+		if len(formRow.ColumnSpans) > 0 {
+			for i, fieldName := range formRow.Fields {
+				if field, exists := fieldMap[fieldName]; exists {
+					config := getFieldConfig(fieldName, values[fieldName], options)
+					fieldNode := generateFormField(field, values[fieldName], config, palette)
 
-		if len(rowFields) > 0 {
-			gridClass := fmt.Sprintf("grid grid-cols-1 md:grid-cols-%d gap-4", columns)
-			rows = append(rows, ghtml.Div(
-				ghtml.Class(gridClass),
-				g.Group(rowFields),
-			))
+					// Get the column span for this field (default to auto if not enough spans specified)
+					span := 12 / len(formRow.Fields) // equal distribution as fallback
+					if i < len(formRow.ColumnSpans) {
+						span = formRow.ColumnSpans[i]
+					}
+
+					// Wrap field in a div with col-span class
+					colSpanClass := fmt.Sprintf("col-span-12 md:col-span-%d", span)
+					wrappedField := ghtml.Div(
+						ghtml.Class(colSpanClass),
+						fieldNode,
+					)
+					rowFields = append(rowFields, wrappedField)
+				}
+			}
+
+			if len(rowFields) > 0 {
+				rows = append(rows, ghtml.Div(
+					ghtml.Class("grid grid-cols-12 gap-4"),
+					g.Group(rowFields),
+				))
+			}
+		} else {
+			// Use default grid layout for equal-width columns
+			for _, fieldName := range formRow.Fields {
+				if field, exists := fieldMap[fieldName]; exists {
+					config := getFieldConfig(fieldName, values[fieldName], options)
+					fieldNode := generateFormField(field, values[fieldName], config, palette)
+					rowFields = append(rowFields, fieldNode)
+				}
+			}
+
+			if len(rowFields) > 0 {
+				gridClass := fmt.Sprintf("grid grid-cols-1 md:grid-cols-%d gap-4", columns)
+				rows = append(rows, ghtml.Div(
+					ghtml.Class(gridClass),
+					g.Group(rowFields),
+				))
+			}
 		}
 	}
 

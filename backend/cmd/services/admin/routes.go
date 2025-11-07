@@ -31,6 +31,12 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/api/accounts/search", ghttp.Adapt(s.AccountsSearch))
 	r.Get(fmt.Sprintf("/api/accounts/{%s}/users", accountIDURLParamKey), ghttp.Adapt(s.AccountUsersList))
 
+	r.Get("/settings/new", ghttp.Adapt(s.SettingNewPage))
+	r.Post("/api/settings", ghttp.Adapt(s.SettingCreate))
+	r.Get(fmt.Sprintf("/settings/{%s}", settingIDURLParamKey), ghttp.Adapt(s.SettingPage))
+	r.Get("/settings", ghttp.Adapt(s.SettingsList))
+	r.Get("/api/settings/search", ghttp.Adapt(s.SettingsSearch))
+
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))
 
