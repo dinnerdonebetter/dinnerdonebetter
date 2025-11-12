@@ -9,25 +9,33 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	apiserver "github.com/dinnerdonebetter/backend/internal/build/services/api"
 	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/domain/auth"
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	identityconverters "github.com/dinnerdonebetter/backend/internal/domain/identity/converters"
+	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/domain/notifications"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/backend/internal/domain/settings"
+	"github.com/dinnerdonebetter/backend/internal/domain/webhooks"
 	authsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/auth"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/database/postgres"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
-	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/platform/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/platform/messagequeue/redis"
-	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/platform/random"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/auditlogentries"
+	authrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/auth"
 	identityrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity"
+	mealplanningrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/migrations"
+	notificationsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/notifications"
 	oauthrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/oauth"
+	settingsrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/settings"
+	webhooksrepo "github.com/dinnerdonebetter/backend/internal/repositories/postgres/webhooks"
 	"github.com/dinnerdonebetter/backend/pkg/client"
 
 	"golang.org/x/oauth2"
@@ -129,82 +137,103 @@ func BuildInProcessServer(ctx context.Context, cfg *config.APIServiceConfig) (se
 	return server, databaseClient, dbCfg, nil
 }
 
-func AllInOne(ctx context.Context, cfg *config.APIServiceConfig, adminUser *identity.User, oauth2Input *oauth.OAuth2ClientDatabaseCreationInput) (*apiserver.Server, *oauth.OAuth2Client, error) {
-	server, databaseClient, _, err := BuildInProcessServer(ctx, cfg)
+// DatabaseInitFunc is a function that performs database initialization operations.
+// It receives the database client, config, logger, and tracer to perform arbitrary operations.
+type DatabaseInitFunc func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error
+
+// WithIdentityRepository provides an identity repository for custom operations.
+// The provided function receives a fully configured identity.Repository along with logger, tracer, and database client.
+func WithIdentityRepository(fn func(ctx context.Context, repo identity.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider, dbClient database.Client) error) DatabaseInitFunc {
+	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
+		identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, dbClient)
+		return fn(ctx, identityRepo, logger, tracerProvider, dbClient)
+	}
+}
+
+// WithOAuth2Repository provides an OAuth2 repository for custom operations.
+// The provided function receives a fully configured oauth.Repository along with logger and tracer.
+func WithOAuth2Repository(fn func(ctx context.Context, repo oauth.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
+	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
+		oauthRepo := oauthrepo.ProvideOAuthRepository(logger, tracerProvider, auditLogRepo, dbCfg, dbClient)
+		return fn(ctx, oauthRepo, logger, tracerProvider)
+	}
+}
+
+// WithAuthRepository provides an auth repository for custom operations.
+// The provided function receives a fully configured auth.Repository along with logger and tracer.
+func WithAuthRepository(fn func(ctx context.Context, repo auth.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
+	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
+		authRepo := authrepo.ProvideAuthRepository(logger, tracerProvider, auditLogRepo, dbClient)
+		return fn(ctx, authRepo, logger, tracerProvider)
+	}
+}
+
+// WithMealPlanningRepository provides a meal planning repository for custom operations.
+// The provided function receives a fully configured mealplanning.Repository along with logger and tracer.
+// This repository handles all meal planning entities including recipes, ingredients, preparations, vessels, instruments, etc.
+func WithMealPlanningRepository(fn func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
+	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
+		identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, dbClient)
+		mealPlanningRepo := mealplanningrepo.ProvideMealPlanningRepository(logger, tracerProvider, auditLogRepo, identityRepo, dbClient)
+		return fn(ctx, mealPlanningRepo, logger, tracerProvider)
+	}
+}
+
+// WithSettingsRepository provides a settings repository for custom operations.
+// The provided function receives a fully configured settings.Repository along with logger and tracer.
+func WithSettingsRepository(fn func(ctx context.Context, repo settings.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
+	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
+		settingsRepo := settingsrepo.ProvideSettingsRepository(logger, tracerProvider, auditLogRepo, dbClient)
+		return fn(ctx, settingsRepo, logger, tracerProvider)
+	}
+}
+
+// WithWebhooksRepository provides a webhooks repository for custom operations.
+// The provided function receives a fully configured webhooks.Repository along with logger and tracer.
+func WithWebhooksRepository(fn func(ctx context.Context, repo webhooks.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
+	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
+		webhooksRepo := webhooksrepo.ProvideWebhooksRepository(logger, tracerProvider, auditLogRepo, dbClient)
+		return fn(ctx, webhooksRepo, logger, tracerProvider)
+	}
+}
+
+// WithNotificationsRepository provides a notifications repository for custom operations.
+// The provided function receives a fully configured notifications.Repository along with logger and tracer.
+func WithNotificationsRepository(fn func(ctx context.Context, repo notifications.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error) DatabaseInitFunc {
+	return func(ctx context.Context, dbClient database.Client, dbCfg *databasecfg.Config, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+		auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, dbClient)
+		notificationsRepo := notificationsrepo.ProvideNotificationsRepository(logger, tracerProvider, auditLogRepo, dbClient)
+		return fn(ctx, notificationsRepo, logger, tracerProvider)
+	}
+}
+
+// AllInOne sets up a complete local development environment with a docker-backed server,
+// database, and runs the provided database initialization functions.
+func AllInOne(ctx context.Context, cfg *config.APIServiceConfig, initFuncs ...DatabaseInitFunc) (*apiserver.Server, error) {
+	server, databaseClient, dbCfg, err := BuildInProcessServer(ctx, cfg)
 	if err != nil {
-		return nil, nil, fmt.Errorf("building in-process server: %w", err)
+		return nil, fmt.Errorf("building in-process server: %w", err)
 	}
 
 	logger, tracerProvider, _, err := cfg.Observability.ProvideThreePillars(ctx)
 	if err != nil {
-		return nil, nil, fmt.Errorf("getting o11y pillars: %w", err)
+		return nil, fmt.Errorf("getting o11y pillars: %w", err)
 	}
 
-	redisConfig, _, err := redis.BuildContainerBackedRedisConfig(ctx)
-	if err != nil {
-		return nil, nil, fmt.Errorf("starting redis container: %w", err)
-	}
-	cfg.Events.Publisher.Provider = msgconfig.ProviderRedis
-	cfg.Events.Publisher.Redis = *redisConfig
-	cfg.Events.Consumer.Redis = *redisConfig
-
-	// set up a database container, migrate it, and build a connection client
-	_, db, dbCfg, err := pgtesting.BuildDatabaseContainer(ctx, "integration_testing")
-	if err != nil {
-		log.Fatal(err)
-	}
-	cfg.Database = *dbCfg
-
-	if err = migrations.NewMigrator(logger, tracing.NewNoopTracerProvider(), db, dbCfg).Migrate(ctx); err != nil {
-		return nil, nil, fmt.Errorf("migrating database: %w", err)
-	}
-
-	if adminUser == nil {
-		adminUser = &identity.User{
-			ID:              identifiers.New(),
-			TwoFactorSecret: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-			EmailAddress:    "integration_tests@example.email",
-			Username:        "admin_user",
-			HashedPassword:  "admin_pass",
+	// Run all database initialization functions
+	for i, initFunc := range initFuncs {
+		if err := initFunc(ctx, databaseClient, dbCfg, logger, tracerProvider); err != nil {
+			return nil, fmt.Errorf("running database init function %d: %w", i, err)
 		}
 	}
 
-	// create premade admin user
-	auditLogRepo := auditlogentries.ProvideAuditLogRepository(logger, tracerProvider, databaseClient)
-	identityRepo := identityrepo.ProvideIdentityRepository(logger, tracerProvider, auditLogRepo, databaseClient)
-	if _, err = CreatePremadeAdminUser(ctx, logger, tracerProvider, identityRepo, databaseClient, adminUser); err != nil {
-		return nil, nil, fmt.Errorf("creating admin user: %w", err)
-	}
-
-	if oauth2Input == nil {
-		oauth2Input = &oauth.OAuth2ClientDatabaseCreationInput{
-			ID:          identifiers.New(),
-			Name:        "integration_client",
-			Description: "integration test client",
-		}
-
-		oauth2Input.ClientID, err = random.GenerateHexEncodedString(ctx, oauth.ClientIDSize)
-		if err != nil {
-			return nil, nil, fmt.Errorf("failed to generate client ID: %w", err)
-		}
-
-		oauth2Input.ClientSecret, err = random.GenerateHexEncodedString(ctx, oauth.ClientSecretSize)
-		if err != nil {
-			return nil, nil, fmt.Errorf("failed to generate client secret: %w", err)
-		}
-	}
-
-	createdClient, err := CreateOAuth2ClientForService(ctx, databaseClient, dbCfg, oauth2Input)
-	if err != nil {
-		return nil, nil, fmt.Errorf("creating oauth2 client: %w", err)
-	}
-
-	logger.WithValues(map[string]any{
-		keys.OAuth2ClientIDKey: createdClient.ClientID,
-		"client_sec":           createdClient.ClientSecret,
-	}).Info("created oauth2 client")
-
-	return server, createdClient, nil
+	return server, nil
 }
 
 func BuildInsecureOAuthedGRPCClient(

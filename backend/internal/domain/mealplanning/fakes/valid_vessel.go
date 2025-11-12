@@ -25,7 +25,7 @@ func BuildFakeValidVessel() *types.ValidVessel {
 		WidthInMillimeters:             float32(buildFakeNumber()),
 		LengthInMillimeters:            float32(buildFakeNumber()),
 		HeightInMillimeters:            float32(buildFakeNumber()),
-		Shape:                          "other",
+		Shape:                          types.VesselShapeOther,
 		CreatedAt:                      BuildFakeTime(),
 	}
 }

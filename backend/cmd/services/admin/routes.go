@@ -19,7 +19,7 @@ const (
 func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r := router.WithMiddleware(s.authMiddleware)
 
-	r.Get("/", ghttp.Adapt(s.homeRoute))
+	r.Get("/", ghttp.Adapt(s.HomePage))
 
 	r.Get(fmt.Sprintf("/users/{%s}", userIDURLParamKey), ghttp.Adapt(s.UserPage))
 	r.Get("/users", ghttp.Adapt(s.UsersList))
@@ -31,11 +31,70 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/api/accounts/search", ghttp.Adapt(s.AccountsSearch))
 	r.Get(fmt.Sprintf("/api/accounts/{%s}/users", accountIDURLParamKey), ghttp.Adapt(s.AccountUsersList))
 
+	r.Get(fmt.Sprintf("/oauth2_clients/{%s}", oauth2ClientIDURLParamKey), ghttp.Adapt(s.OAuth2ClientPage))
+	r.Get("/oauth2_clients", ghttp.Adapt(s.OAuth2ClientsList))
+	r.Get("/api/oauth2_clients/search", ghttp.Adapt(s.OAuth2ClientsSearch))
+
+	// Valid Ingredients - specific routes before dynamic ones
+	r.Get("/valid_ingredients/new", ghttp.Adapt(s.ValidIngredientNewPage))
+	r.Post("/api/valid_ingredients", ghttp.Adapt(s.ValidIngredientCreate))
+	r.Get(fmt.Sprintf("/valid_ingredients/{%s}", validIngredientIDURLParamKey), ghttp.Adapt(s.ValidIngredientPage))
+	r.Get("/valid_ingredients", ghttp.Adapt(s.ValidIngredientsList))
+	r.Get("/api/valid_ingredients/search", ghttp.Adapt(s.ValidIngredientsSearch))
+
+	// Valid Instruments - specific routes before dynamic ones
+	r.Get("/valid_instruments/new", ghttp.Adapt(s.ValidInstrumentNewPage))
+	r.Post("/api/valid_instruments", ghttp.Adapt(s.ValidInstrumentCreate))
+	r.Get(fmt.Sprintf("/valid_instruments/{%s}", validInstrumentIDURLParamKey), ghttp.Adapt(s.ValidInstrumentPage))
+	r.Get("/valid_instruments", ghttp.Adapt(s.ValidInstrumentsList))
+	r.Get("/api/valid_instruments/search", ghttp.Adapt(s.ValidInstrumentsSearch))
+
+	// Valid Preparation Instruments associations (from instrument side)
+	r.Get(fmt.Sprintf("/api/valid_instruments/{%s}/preparations", validInstrumentIDURLParamKey), ghttp.Adapt(s.ValidPreparationInstrumentsForInstrument))
+	r.Get(fmt.Sprintf("/api/valid_instruments/{%s}/preparations/search", validInstrumentIDURLParamKey), ghttp.Adapt(s.SearchPreparationsForInstrument))
+	r.Post(fmt.Sprintf("/api/valid_instruments/{%s}/preparations", validInstrumentIDURLParamKey), ghttp.Adapt(s.CreatePreparationInstrumentFromInstrument))
+
+	// Valid Vessels - specific routes before dynamic ones
+	r.Get("/valid_vessels/new", ghttp.Adapt(s.ValidVesselNewPage))
+	r.Post("/api/valid_vessels", ghttp.Adapt(s.ValidVesselCreate))
+	r.Get(fmt.Sprintf("/valid_vessels/{%s}", validVesselIDURLParamKey), ghttp.Adapt(s.ValidVesselPage))
+	r.Get("/valid_vessels", ghttp.Adapt(s.ValidVesselsList))
+	r.Get("/api/valid_vessels/search", ghttp.Adapt(s.ValidVesselsSearch))
+
+	// Valid Measurement Units - specific routes before dynamic ones
+	r.Get("/valid_measurement_units/new", ghttp.Adapt(s.ValidMeasurementUnitNewPage))
+	r.Post("/api/valid_measurement_units", ghttp.Adapt(s.ValidMeasurementUnitCreate))
+	r.Get(fmt.Sprintf("/valid_measurement_units/{%s}", validMeasurementUnitIDURLParamKey), ghttp.Adapt(s.ValidMeasurementUnitPage))
+	r.Get("/valid_measurement_units", ghttp.Adapt(s.ValidMeasurementUnitsList))
+	r.Get("/api/valid_measurement_units/search", ghttp.Adapt(s.ValidMeasurementUnitsSearch))
+
+	// Valid Ingredient States - specific routes before dynamic ones
+	r.Get("/valid_ingredient_states/new", ghttp.Adapt(s.ValidIngredientStateNewPage))
+	r.Post("/api/valid_ingredient_states", ghttp.Adapt(s.ValidIngredientStateCreate))
+	r.Get(fmt.Sprintf("/valid_ingredient_states/{%s}", validIngredientStateIDURLParamKey), ghttp.Adapt(s.ValidIngredientStatePage))
+	r.Get("/valid_ingredient_states", ghttp.Adapt(s.ValidIngredientStatesList))
+	r.Get("/api/valid_ingredient_states/search", ghttp.Adapt(s.ValidIngredientStatesSearch))
+
+	// Valid Preparations - specific routes before dynamic ones
+	r.Get("/valid_preparations/new", ghttp.Adapt(s.ValidPreparationNewPage))
+	r.Post("/api/valid_preparations", ghttp.Adapt(s.ValidPreparationCreate))
+	r.Get(fmt.Sprintf("/valid_preparations/{%s}", validPreparationIDURLParamKey), ghttp.Adapt(s.ValidPreparationPage))
+	r.Get("/valid_preparations", ghttp.Adapt(s.ValidPreparationsList))
+	r.Get("/api/valid_preparations/search", ghttp.Adapt(s.ValidPreparationsSearch))
+
+	// Valid Preparation Instruments associations (from preparation side)
+	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/instruments", validPreparationIDURLParamKey), ghttp.Adapt(s.ValidPreparationInstrumentsForPreparation))
+	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/instruments/search", validPreparationIDURLParamKey), ghttp.Adapt(s.SearchInstrumentsForPreparation))
+	r.Post(fmt.Sprintf("/api/valid_preparations/{%s}/instruments", validPreparationIDURLParamKey), ghttp.Adapt(s.CreatePreparationInstrumentFromPreparation))
+
 	r.Get("/settings/new", ghttp.Adapt(s.SettingNewPage))
 	r.Post("/api/settings", ghttp.Adapt(s.SettingCreate))
 	r.Get(fmt.Sprintf("/settings/{%s}", settingIDURLParamKey), ghttp.Adapt(s.SettingPage))
 	r.Get("/settings", ghttp.Adapt(s.SettingsList))
 	r.Get("/api/settings/search", ghttp.Adapt(s.SettingsSearch))
+
+	// Association delete routes
+	r.Delete("/api/valid_preparation_instruments/{associationID}", ghttp.Adapt(s.DeletePreparationInstrument))
 
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))

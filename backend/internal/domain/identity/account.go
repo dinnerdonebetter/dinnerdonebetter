@@ -29,6 +29,12 @@ const (
 
 	// UnpaidAccountBillingStatus indicates an account is not paid.
 	UnpaidAccountBillingStatus = "unpaid"
+	// PaidAccountBillingStatus indicates an account is paid.
+	PaidAccountBillingStatus = "paid"
+	// TrialAccountBillingStatus indicates an account is on a trial.
+	TrialAccountBillingStatus = "trial"
+	// SuspendedAccountBillingStatus indicates an account is suspended.
+	SuspendedAccountBillingStatus = "suspended"
 )
 
 type (

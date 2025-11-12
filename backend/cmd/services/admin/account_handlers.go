@@ -7,6 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
+	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/filtering"
 	identitysvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/identity"
 
@@ -63,26 +64,19 @@ func (s *AdminFrontendServer) AccountPage(_ http.ResponseWriter, req *http.Reque
 			FieldConfigs: map[string]*components.FieldConfig{
 				"Name": {
 					Validation: &components.FieldValidation{
-						Required:      true,
-						MinLength:     2,
-						MaxLength:     100,
-						CustomMessage: "Account name must be between 2 and 100 characters",
+						Required: true,
 					},
 				},
 				"ContactPhone": {
 					InputType:   "tel",
 					Placeholder: "Enter contact phone number...",
-					Validation: &components.FieldValidation{
-						MaxLength:     50,
-						CustomMessage: "Maximum 50 characters",
-					},
 				},
 				"BillingStatus": {
 					Options: []components.SelectOption{
-						{Value: "unpaid", Label: "Unpaid", IsDefault: true},
-						{Value: "paid", Label: "Paid"},
-						{Value: "trial", Label: "Trial"},
-						{Value: "suspended", Label: "Suspended"},
+						{Value: identity.UnpaidAccountBillingStatus, Label: "Unpaid", IsDefault: true},
+						{Value: identity.PaidAccountBillingStatus, Label: "Paid"},
+						{Value: identity.TrialAccountBillingStatus, Label: "Trial"},
+						{Value: identity.SuspendedAccountBillingStatus, Label: "Suspended"},
 					},
 					Placeholder: "Select billing status...",
 					Validation: &components.FieldValidation{

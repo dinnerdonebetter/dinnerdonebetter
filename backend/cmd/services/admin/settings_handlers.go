@@ -89,10 +89,7 @@ func (s *AdminFrontendServer) SettingNewPage(_ http.ResponseWriter, req *http.Re
 				"Name": {
 					Placeholder: "Enter setting name...",
 					Validation: &components.FieldValidation{
-						Required:      true,
-						MinLength:     2,
-						MaxLength:     100,
-						CustomMessage: "Setting name must be between 2 and 100 characters",
+						Required: true,
 					},
 				},
 				"Type": {
@@ -111,18 +108,11 @@ func (s *AdminFrontendServer) SettingNewPage(_ http.ResponseWriter, req *http.Re
 				"Description": {
 					Placeholder: "Enter description...",
 					Validation: &components.FieldValidation{
-						Required:      true,
-						MinLength:     10,
-						MaxLength:     500,
-						CustomMessage: "Description must be between 10 and 500 characters",
+						Required: true,
 					},
 				},
 				"DefaultValue": {
 					Placeholder: "Enter default value (optional)...",
-					Validation: &components.FieldValidation{
-						MaxLength:     200,
-						CustomMessage: "Maximum 200 characters",
-					},
 				},
 				"Enumeration": {
 					Placeholder: "Enter comma-separated enumeration values (e.g., option1,option2,option3)...",

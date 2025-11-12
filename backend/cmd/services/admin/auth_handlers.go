@@ -77,5 +77,9 @@ func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http
 
 	http.SetCookie(res, s.buildCookie(ctx, encodedCookie))
 
-	return s.HomePage(""), nil
+	// Redirect to home page after successful login
+	res.Header().Set("HX-Redirect", "/")
+	http.Redirect(res, req, "/", http.StatusSeeOther)
+
+	return nil, nil
 }

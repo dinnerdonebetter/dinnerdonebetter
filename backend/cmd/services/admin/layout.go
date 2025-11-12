@@ -46,19 +46,31 @@ func header(config *LayoutConfig) g.Node {
 				// Left side - Logo and main nav
 				ghtml.Div(
 					ghtml.Class("flex items-center space-x-8"),
-					ghtml.H1(
-						ghtml.Class(fmt.Sprintf("text-xl font-bold %s", design.TextColor(config.Palette.Primary))),
-						g.Text(config.AppName),
+					ghtml.A(
+						ghtml.Href("/"),
+						ghtml.H1(
+							ghtml.Class(fmt.Sprintf("text-xl font-bold %s hover:opacity-80 transition-opacity duration-200 cursor-pointer", design.TextColor(config.Palette.Primary))),
+							g.Text(config.AppName),
+						),
 					),
 					// Main navigation
 					ghtml.Nav(
 						ghtml.Class("hidden md:flex space-x-6"),
-						navLink("Dashboard", "/", config.Palette),
 						navLink("Users", "/users", config.Palette),
+						navLink("Accounts", "/accounts", config.Palette),
+						navLink("OAuth2 Clients", "/oauth2_clients", config.Palette),
 						navLink("Settings", "/settings", config.Palette),
+						navDropdown("Enumerations", config.Palette, []dropdownItem{
+							{Text: "Ingredients", Href: "/valid_ingredients"},
+							{Text: "Instruments", Href: "/valid_instruments"},
+							{Text: "Preparations", Href: "/valid_preparations"},
+							{Text: "Measurement Units", Href: "/valid_measurement_units"},
+							{Text: "Vessels", Href: "/valid_vessels"},
+							{Text: "Ingredient States", Href: "/valid_ingredient_states"},
+						}),
 					),
 				),
-				// Right side - User menu and mobile menu button
+				// Right side - Mobile menu button
 				ghtml.Div(
 					ghtml.Class("flex items-center space-x-4"),
 					// Mobile menu button
@@ -79,19 +91,6 @@ func header(config *LayoutConfig) g.Node {
 							ghtml.Span(ghtml.Class(fmt.Sprintf("block w-5 h-0.5 %s", design.Background(config.Palette.Text)))),
 						),
 					),
-					// User menu
-					ghtml.Div(
-						ghtml.Class("relative"),
-						ghtml.Button(
-							ghtml.Class(fmt.Sprintf("flex items-center space-x-2 px-3 py-2 rounded-md %s hover:%s focus:outline-none focus:ring-2 focus:ring-%s",
-								design.TextColor(config.Palette.Text),
-								design.Background(config.Palette.Secondary),
-								config.Palette.Primary.Value,
-							)),
-							ghtml.Type("button"),
-							g.Text("Admin"),
-						),
-					),
 				),
 			),
 			// Mobile navigation menu
@@ -100,9 +99,18 @@ func header(config *LayoutConfig) g.Node {
 				ghtml.Class("hidden md:hidden border-t border-gray-200 py-4"),
 				ghtml.Nav(
 					ghtml.Class("flex flex-col space-y-2"),
-					mobileNavLink("Dashboard", "/", config.Palette),
 					mobileNavLink("Users", "/users", config.Palette),
+					mobileNavLink("Accounts", "/accounts", config.Palette),
+					mobileNavLink("OAuth2 Clients", "/oauth2_clients", config.Palette),
 					mobileNavLink("Settings", "/settings", config.Palette),
+					mobileNavDropdown("Enumerations", config.Palette, []dropdownItem{
+						{Text: "Ingredients", Href: "/valid_ingredients"},
+						{Text: "Instruments", Href: "/valid_instruments"},
+						{Text: "Preparations", Href: "/valid_preparations"},
+						{Text: "Measurement Units", Href: "/valid_measurement_units"},
+						{Text: "Vessels", Href: "/valid_vessels"},
+						{Text: "Ingredient States", Href: "/valid_ingredient_states"},
+					}),
 				),
 			),
 		),
@@ -133,6 +141,96 @@ func mobileNavLink(text, href string, palette *design.Palette) g.Node {
 	)
 }
 
+// dropdownItem represents a single item in a dropdown menu
+type dropdownItem struct {
+	Text string
+	Href string
+}
+
+// navDropdown creates a dropdown menu for desktop navigation
+func navDropdown(text string, palette *design.Palette, items []dropdownItem) g.Node {
+	dropdownItems := make([]g.Node, len(items))
+	for i, item := range items {
+		dropdownItems[i] = ghtml.A(
+			ghtml.Href(item.Href),
+			ghtml.Class(fmt.Sprintf("block px-4 py-2 text-sm %s hover:%s hover:%s transition-colors duration-200",
+				design.TextColor(palette.Text),
+				design.TextColor(palette.Primary),
+				design.Background(palette.Secondary),
+			)),
+			g.Text(item.Text),
+		)
+	}
+
+	return ghtml.Div(
+		ghtml.Class("relative group"),
+		ghtml.Button(
+			ghtml.Class(fmt.Sprintf("px-3 py-2 rounded-md text-sm font-medium %s hover:%s hover:%s transition-colors duration-200 flex items-center",
+				design.TextColor(palette.Text),
+				design.TextColor(palette.Primary),
+				design.Background(palette.Secondary),
+			)),
+			ghtml.Type("button"),
+			g.Text(text),
+			// Dropdown arrow
+			g.El("svg",
+				ghtml.Class("ml-1 h-4 w-4"),
+				g.Attr("fill", "none"),
+				g.Attr("viewBox", "0 0 24 24"),
+				g.Attr("stroke", "currentColor"),
+				g.El("path",
+					g.Attr("stroke-linecap", "round"),
+					g.Attr("stroke-linejoin", "round"),
+					g.Attr("stroke-width", "2"),
+					g.Attr("d", "M19 9l-7 7-7-7"),
+				),
+			),
+		),
+		// Dropdown menu
+		ghtml.Div(
+			ghtml.Class(fmt.Sprintf("absolute left-0 mt-2 w-56 rounded-md shadow-lg %s ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50",
+				design.Background(palette.Background),
+			)),
+			ghtml.Div(
+				ghtml.Class("py-1"),
+				g.Group(dropdownItems),
+			),
+		),
+	)
+}
+
+// mobileNavDropdown creates an expanded list of menu items for mobile navigation (CSS-only, no JavaScript)
+func mobileNavDropdown(text string, palette *design.Palette, items []dropdownItem) g.Node {
+	dropdownItems := make([]g.Node, len(items))
+	for i, item := range items {
+		dropdownItems[i] = ghtml.A(
+			ghtml.Href(item.Href),
+			ghtml.Class(fmt.Sprintf("block px-6 py-2 text-sm %s hover:%s hover:%s transition-colors duration-200",
+				design.TextColor(palette.Text),
+				design.TextColor(palette.Primary),
+				design.Background(palette.Secondary),
+			)),
+			g.Text(item.Text),
+		)
+	}
+
+	return ghtml.Div(
+		ghtml.Class("space-y-1"),
+		// Section header (not clickable, just a label)
+		ghtml.Div(
+			ghtml.Class(fmt.Sprintf("px-3 py-2 text-base font-medium %s opacity-75",
+				design.TextColor(palette.Text),
+			)),
+			g.Text(text),
+		),
+		// Menu items (always visible on mobile)
+		ghtml.Div(
+			ghtml.Class("space-y-1"),
+			g.Group(dropdownItems),
+		),
+	)
+}
+
 var (
 	tailwindImport = ghtml.Script(ghtml.Src("https://cdn.tailwindcss.com?plugins=typography"))
 
@@ -152,13 +250,11 @@ var (
 
 	// JavaScript for mobile menu toggle
 	mobileMenuScript = ghtml.Script(
-		g.Raw(`
-			function toggleMobileMenu() {
+		g.Raw(`function toggleMobileMenu() {
 				const menu = document.getElementById('mobile-menu');
 				menu.classList.toggle('hidden');
 			}
-			
-			// Close mobile menu when clicking outside
+
 			document.addEventListener('click', function(event) {
 				const menu = document.getElementById('mobile-menu');
 				const button = event.target.closest('button[aria-label="Open menu"]');
@@ -166,8 +262,7 @@ var (
 				if (!button && !menu.contains(event.target)) {
 					menu.classList.add('hidden');
 				}
-			});
-		`),
+			});`),
 	)
 )
 
