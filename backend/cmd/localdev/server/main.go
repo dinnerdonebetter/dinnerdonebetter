@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
+	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 )
@@ -72,7 +73,7 @@ func main() {
 func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, logger logging.Logger) error {
 	// Create ValidIngredient (Garlic)
 	validIngredient, err := repo.CreateValidIngredient(ctx, &mealplanning.ValidIngredientDatabaseCreationInput{
-		ID:                     strings.Repeat("i", 20),
+		ID:                     identifiers.New(),
 		Name:                   "garlic",
 		Description:            "Fresh garlic cloves",
 		PluralName:             "garlic cloves",
@@ -95,7 +96,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// Create ValidInstrument (Chef's Knife)
 	validInstrument, err := repo.CreateValidInstrument(ctx, &mealplanning.ValidInstrumentDatabaseCreationInput{
-		ID:                             strings.Repeat("n", 20),
+		ID:                             identifiers.New(),
 		Name:                           "chef's knife",
 		Description:                    "A sharp chef's knife for cutting and chopping",
 		PluralName:                     "chef's knives",
@@ -110,7 +111,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// Create ValidPreparation (Slicing)
 	validPreparation, err := repo.CreateValidPreparation(ctx, &mealplanning.ValidPreparationDatabaseCreationInput{
-		ID:                          strings.Repeat("p", 20),
+		ID:                          identifiers.New(),
 		Name:                        "slicing",
 		Description:                 "Cut into thin, flat pieces",
 		Slug:                        "slicing",
@@ -130,7 +131,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// Create ValidMeasurementUnits (Gram and Kilogram for conversion)
 	validMeasurementUnitGram, err := repo.CreateValidMeasurementUnit(ctx, &mealplanning.ValidMeasurementUnitDatabaseCreationInput{
-		ID:          strings.Repeat("g", 20),
+		ID:          identifiers.New(),
 		Name:        "gram",
 		Description: "Metric unit of mass",
 		PluralName:  "grams",
@@ -146,13 +147,13 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 	logger.Info("Created ValidMeasurementUnit: " + validMeasurementUnitGram.Name)
 
 	validMeasurementUnitKilogram, err := repo.CreateValidMeasurementUnit(ctx, &mealplanning.ValidMeasurementUnitDatabaseCreationInput{
-		ID:          strings.Repeat("k", 20),
+		ID:          identifiers.New(),
 		Name:        "kilogram",
 		Description: "Metric unit of mass equal to 1000 grams",
 		PluralName:  "kilograms",
 		Slug:        "kilogram",
 		Volumetric:  false,
-		Universal:   false,
+		Universal:   true,
 		Metric:      true,
 		Imperial:    false,
 	})
@@ -163,7 +164,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// Create ValidVessel (Cutting Board)
 	validVessel, err := repo.CreateValidVessel(ctx, &mealplanning.ValidVesselDatabaseCreationInput{
-		ID:                             strings.Repeat("v", 20),
+		ID:                             identifiers.New(),
 		Name:                           "cutting board",
 		Description:                    "A flat surface for cutting ingredients",
 		PluralName:                     "cutting boards",
@@ -184,12 +185,12 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// Create ValidIngredientState (Whole)
 	validIngredientState, err := repo.CreateValidIngredientState(ctx, &mealplanning.ValidIngredientStateDatabaseCreationInput{
-		ID:            strings.Repeat("s", 20),
-		Name:          "whole",
-		Description:   "Ingredient in its whole, unprocessed form",
+		ID:            identifiers.New(),
+		Name:          "slice",
+		Description:   "a sliced ingredient",
 		AttributeType: mealplanning.ValidIngredientStateAttributeTypeOther,
-		PastTense:     "whole",
-		Slug:          "whole",
+		PastTense:     "sliced",
+		Slug:          "slice",
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create valid ingredient state: %w", err)
@@ -200,7 +201,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// ValidPreparationInstrument (Slicing requires Chef's Knife)
 	_, err = repo.CreateValidPreparationInstrument(ctx, &mealplanning.ValidPreparationInstrumentDatabaseCreationInput{
-		ID:                 strings.Repeat("1", 20),
+		ID:                 identifiers.New(),
 		ValidPreparationID: validPreparation.ID,
 		ValidInstrumentID:  validInstrument.ID,
 		Notes:              "A chef's knife is commonly used for slicing",
@@ -212,10 +213,9 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// ValidIngredientMeasurementUnit (Garlic can be measured in Grams)
 	_, err = repo.CreateValidIngredientMeasurementUnit(ctx, &mealplanning.ValidIngredientMeasurementUnitDatabaseCreationInput{
-		ID:                     strings.Repeat("2", 20),
+		ID:                     identifiers.New(),
 		ValidIngredientID:      validIngredient.ID,
 		ValidMeasurementUnitID: validMeasurementUnitGram.ID,
-		Notes:                  "Garlic can be measured in grams",
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create valid ingredient measurement unit: %w", err)
@@ -224,7 +224,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// ValidIngredientStateIngredient (Garlic can be in Whole state)
 	_, err = repo.CreateValidIngredientStateIngredient(ctx, &mealplanning.ValidIngredientStateIngredientDatabaseCreationInput{
-		ID:                     strings.Repeat("3", 20),
+		ID:                     identifiers.New(),
 		ValidIngredientID:      validIngredient.ID,
 		ValidIngredientStateID: validIngredientState.ID,
 		Notes:                  "Whole garlic cloves",
@@ -236,7 +236,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// ValidPreparationVessel (Slicing can be done on a Cutting Board)
 	_, err = repo.CreateValidPreparationVessel(ctx, &mealplanning.ValidPreparationVesselDatabaseCreationInput{
-		ID:                 strings.Repeat("4", 20),
+		ID:                 identifiers.New(),
 		ValidPreparationID: validPreparation.ID,
 		ValidVesselID:      validVessel.ID,
 		Notes:              "Slicing is typically done on a cutting board",
@@ -248,16 +248,27 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 
 	// ValidMeasurementUnitConversion (Gram to Kilogram)
 	_, err = repo.CreateValidMeasurementUnitConversion(ctx, &mealplanning.ValidMeasurementUnitConversionDatabaseCreationInput{
-		ID:       strings.Repeat("5", 20),
+		ID:       identifiers.New(),
 		From:     validMeasurementUnitGram.ID,
 		To:       validMeasurementUnitKilogram.ID,
-		Notes:    "1 kilogram = 1000 grams",
+		Notes:    "conversion from grams to kilograms",
 		Modifier: 0.001, // 1 gram = 0.001 kilograms
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create valid measurement unit conversion: %w", err)
 	}
 	logger.Info("Created ValidMeasurementUnitConversion: gram -> kilogram")
+
+	_, err = repo.CreateValidIngredientPreparation(ctx, &mealplanning.ValidIngredientPreparationDatabaseCreationInput{
+		ID:                 identifiers.New(),
+		Notes:              "",
+		ValidPreparationID: validPreparation.ID,
+		ValidIngredientID:  validIngredient.ID,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create valid ingredient preparation: %w", err)
+	}
+	logger.Info("Created CreateValidIngredientPreparation: garlic -> slice")
 
 	return nil
 }

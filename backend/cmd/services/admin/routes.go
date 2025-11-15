@@ -35,12 +35,26 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/oauth2_clients", ghttp.Adapt(s.OAuth2ClientsList))
 	r.Get("/api/oauth2_clients/search", ghttp.Adapt(s.OAuth2ClientsSearch))
 
+	// General search endpoints for search boxes
+	r.Get("/admin/search/valid_measurement_units", ghttp.Adapt(s.SearchValidMeasurementUnits))
+	r.Get("/admin/search/valid_ingredients", ghttp.Adapt(s.SearchValidIngredients))
+
 	// Valid Ingredients - specific routes before dynamic ones
 	r.Get("/valid_ingredients/new", ghttp.Adapt(s.ValidIngredientNewPage))
 	r.Post("/api/valid_ingredients", ghttp.Adapt(s.ValidIngredientCreate))
 	r.Get(fmt.Sprintf("/valid_ingredients/{%s}", validIngredientIDURLParamKey), ghttp.Adapt(s.ValidIngredientPage))
 	r.Get("/valid_ingredients", ghttp.Adapt(s.ValidIngredientsList))
 	r.Get("/api/valid_ingredients/search", ghttp.Adapt(s.ValidIngredientsSearch))
+
+	// Valid Ingredient Measurement Unit associations (from ingredient side)
+	r.Get(fmt.Sprintf("/api/valid_ingredients/{%s}/measurement_units", validIngredientIDURLParamKey), ghttp.Adapt(s.ValidIngredientMeasurementUnitsForIngredient))
+	r.Get(fmt.Sprintf("/api/valid_ingredients/{%s}/measurement_units/search", validIngredientIDURLParamKey), ghttp.Adapt(s.SearchMeasurementUnitsForIngredient))
+	r.Post(fmt.Sprintf("/api/valid_ingredients/{%s}/measurement_units", validIngredientIDURLParamKey), ghttp.Adapt(s.CreateIngredientMeasurementUnitFromIngredient))
+
+	// Valid Ingredient Preparation associations (from ingredient side)
+	r.Get(fmt.Sprintf("/api/valid_ingredients/{%s}/preparations", validIngredientIDURLParamKey), ghttp.Adapt(s.ValidIngredientPreparationsForIngredient))
+	r.Get(fmt.Sprintf("/api/valid_ingredients/{%s}/preparations/search", validIngredientIDURLParamKey), ghttp.Adapt(s.SearchPreparationsForIngredient))
+	r.Post(fmt.Sprintf("/api/valid_ingredients/{%s}/preparations", validIngredientIDURLParamKey), ghttp.Adapt(s.CreateIngredientPreparationFromIngredient))
 
 	// Valid Instruments - specific routes before dynamic ones
 	r.Get("/valid_instruments/new", ghttp.Adapt(s.ValidInstrumentNewPage))
@@ -49,7 +63,7 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/valid_instruments", ghttp.Adapt(s.ValidInstrumentsList))
 	r.Get("/api/valid_instruments/search", ghttp.Adapt(s.ValidInstrumentsSearch))
 
-	// Valid Preparation Instruments associations (from instrument side)
+	// Valid Preparation Instrument associations (from instrument side)
 	r.Get(fmt.Sprintf("/api/valid_instruments/{%s}/preparations", validInstrumentIDURLParamKey), ghttp.Adapt(s.ValidPreparationInstrumentsForInstrument))
 	r.Get(fmt.Sprintf("/api/valid_instruments/{%s}/preparations/search", validInstrumentIDURLParamKey), ghttp.Adapt(s.SearchPreparationsForInstrument))
 	r.Post(fmt.Sprintf("/api/valid_instruments/{%s}/preparations", validInstrumentIDURLParamKey), ghttp.Adapt(s.CreatePreparationInstrumentFromInstrument))
@@ -61,12 +75,27 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/valid_vessels", ghttp.Adapt(s.ValidVesselsList))
 	r.Get("/api/valid_vessels/search", ghttp.Adapt(s.ValidVesselsSearch))
 
+	// Valid Preparation Vessel associations (from vessel side)
+	r.Get(fmt.Sprintf("/api/valid_vessels/{%s}/preparations", validVesselIDURLParamKey), ghttp.Adapt(s.ValidPreparationVesselsForVessel))
+	r.Get(fmt.Sprintf("/api/valid_vessels/{%s}/preparations/search", validVesselIDURLParamKey), ghttp.Adapt(s.SearchPreparationsForVessel))
+	r.Post(fmt.Sprintf("/api/valid_vessels/{%s}/preparations", validVesselIDURLParamKey), ghttp.Adapt(s.CreatePreparationVesselFromVessel))
+
 	// Valid Measurement Units - specific routes before dynamic ones
 	r.Get("/valid_measurement_units/new", ghttp.Adapt(s.ValidMeasurementUnitNewPage))
 	r.Post("/api/valid_measurement_units", ghttp.Adapt(s.ValidMeasurementUnitCreate))
 	r.Get(fmt.Sprintf("/valid_measurement_units/{%s}", validMeasurementUnitIDURLParamKey), ghttp.Adapt(s.ValidMeasurementUnitPage))
 	r.Get("/valid_measurement_units", ghttp.Adapt(s.ValidMeasurementUnitsList))
 	r.Get("/api/valid_measurement_units/search", ghttp.Adapt(s.ValidMeasurementUnitsSearch))
+
+	// Valid Ingredient Measurement Unit associations (from measurement unit side)
+	r.Get(fmt.Sprintf("/api/valid_measurement_units/{%s}/ingredients", validMeasurementUnitIDURLParamKey), ghttp.Adapt(s.ValidIngredientMeasurementUnitsForMeasurementUnit))
+	r.Get(fmt.Sprintf("/api/valid_measurement_units/{%s}/ingredients/search", validMeasurementUnitIDURLParamKey), ghttp.Adapt(s.SearchIngredientsForMeasurementUnit))
+	r.Post(fmt.Sprintf("/api/valid_measurement_units/{%s}/ingredients", validMeasurementUnitIDURLParamKey), ghttp.Adapt(s.CreateIngredientMeasurementUnitFromMeasurementUnit))
+
+	// Valid Measurement Unit Conversions
+	r.Get(fmt.Sprintf("/api/valid_measurement_units/{%s}/conversions", validMeasurementUnitIDURLParamKey), ghttp.Adapt(s.ValidMeasurementUnitConversionsForUnit))
+	r.Get(fmt.Sprintf("/api/valid_measurement_units/{%s}/conversions/search", validMeasurementUnitIDURLParamKey), ghttp.Adapt(s.SearchMeasurementUnitsForConversion))
+	r.Post("/api/valid_measurement_unit_conversions", ghttp.Adapt(s.CreateMeasurementUnitConversion))
 
 	// Valid Ingredient States - specific routes before dynamic ones
 	r.Get("/valid_ingredient_states/new", ghttp.Adapt(s.ValidIngredientStateNewPage))
@@ -82,10 +111,20 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	r.Get("/valid_preparations", ghttp.Adapt(s.ValidPreparationsList))
 	r.Get("/api/valid_preparations/search", ghttp.Adapt(s.ValidPreparationsSearch))
 
-	// Valid Preparation Instruments associations (from preparation side)
+	// Valid Preparation Instrument associations (from preparation side)
 	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/instruments", validPreparationIDURLParamKey), ghttp.Adapt(s.ValidPreparationInstrumentsForPreparation))
 	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/instruments/search", validPreparationIDURLParamKey), ghttp.Adapt(s.SearchInstrumentsForPreparation))
 	r.Post(fmt.Sprintf("/api/valid_preparations/{%s}/instruments", validPreparationIDURLParamKey), ghttp.Adapt(s.CreatePreparationInstrumentFromPreparation))
+
+	// Valid Ingredient Preparation associations (from preparation side)
+	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/ingredients", validPreparationIDURLParamKey), ghttp.Adapt(s.ValidIngredientPreparationsForPreparation))
+	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/ingredients/search", validPreparationIDURLParamKey), ghttp.Adapt(s.SearchIngredientsForPreparation))
+	r.Post(fmt.Sprintf("/api/valid_preparations/{%s}/ingredients", validPreparationIDURLParamKey), ghttp.Adapt(s.CreateIngredientPreparationFromPreparation))
+
+	// Valid Preparation Vessel associations (from preparation side)
+	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/vessels", validPreparationIDURLParamKey), ghttp.Adapt(s.ValidPreparationVesselsForPreparation))
+	r.Get(fmt.Sprintf("/api/valid_preparations/{%s}/vessels/search", validPreparationIDURLParamKey), ghttp.Adapt(s.SearchVesselsForPreparation))
+	r.Post(fmt.Sprintf("/api/valid_preparations/{%s}/vessels", validPreparationIDURLParamKey), ghttp.Adapt(s.CreatePreparationVesselFromPreparation))
 
 	r.Get("/settings/new", ghttp.Adapt(s.SettingNewPage))
 	r.Post("/api/settings", ghttp.Adapt(s.SettingCreate))
@@ -95,6 +134,10 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 
 	// Association delete routes
 	r.Delete("/api/valid_preparation_instruments/{associationID}", ghttp.Adapt(s.DeletePreparationInstrument))
+	r.Delete("/api/valid_preparation_vessels/{associationID}", ghttp.Adapt(s.DeletePreparationVessel))
+	r.Delete("/api/valid_ingredient_measurement_units/{associationID}", ghttp.Adapt(s.DeleteIngredientMeasurementUnit))
+	r.Delete("/api/valid_ingredient_preparations/{associationID}", ghttp.Adapt(s.DeleteIngredientPreparation))
+	r.Delete("/api/valid_measurement_unit_conversions/{conversionID}", ghttp.Adapt(s.DeleteMeasurementUnitConversion))
 
 	router.Get("/login", ghttp.Adapt(s.LoginPage))
 	router.Post("/login/submit", ghttp.Adapt(s.LoginSubmission))

@@ -184,6 +184,12 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 
 	validVessel := validVesselRes.Result
 
+	// Fetch associations for this vessel
+	preparationsAssociations, err := s.ValidPreparationVesselsForVessel(nil, req)
+	if err != nil {
+		s.logger.Error("error fetching preparation associations", err)
+	}
+
 	// Use the FormPage component for viewing valid vessel data
 	formPageResult, err := components.FormPage(&components.FormPageProps[*mealplanningsvc.ValidVessel]{
 		Title:        "Valid Vessel Details",
@@ -197,7 +203,11 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 			Method:  "PUT",
 
 			// Fields that can be edited
-			EnabledFields: []string{"Name", "Description", "PluralName", "Shape"},
+			EnabledFields: []string{
+				"Name", "Description", "PluralName", "Shape",
+				// Display and usage properties
+				"DisplayInSummaryLists", "IncludeInGeneratedInstructions", "UsableForStorage",
+			},
 
 			FieldConfigs: map[string]*components.FieldConfig{
 				"Name": {
@@ -215,6 +225,10 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 				"Shape": {
 					Placeholder: "Shape of the vessel (e.g., round, rectangular)",
 				},
+				// Display and usage property flags
+				"DisplayInSummaryLists":          {InputType: "checkbox"},
+				"IncludeInGeneratedInstructions": {InputType: "checkbox"},
+				"UsableForStorage":               {InputType: "checkbox"},
 			},
 
 			FormRows: []components.FormRow{
@@ -229,6 +243,10 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 				{
 					Fields:  []string{"Description"},
 					Columns: 1,
+				},
+				{
+					Fields:  []string{"DisplayInSummaryLists", "IncludeInGeneratedInstructions", "UsableForStorage"},
+					Columns: 3,
 				},
 			},
 
@@ -255,38 +273,13 @@ func (s *AdminFrontendServer) ValidVesselPage(_ http.ResponseWriter, req *http.R
 			return fmt.Sprintf("Viewing vessel: %s", vv.Name)
 		},
 
-		// Additional info section showing properties and dimensions
+		// Additional content - associations
 		AdditionalContent: []g.Node{
-			ghtml.Div(
-				ghtml.Class("mt-6 space-y-6"),
-				// Vessel Properties
-				components.Card(&design.StandardPalette,
-					ghtml.H3(
-						ghtml.Class(fmt.Sprintf("text-lg font-medium %s mb-4", design.TextColor(design.StandardPalette.Primary))),
-						g.Text("Vessel Properties"),
-					),
-					ghtml.Div(
-						ghtml.Class("grid grid-cols-1 md:grid-cols-3 gap-4"),
-						propertyBadge("Display in Summary Lists", validVessel.DisplayInSummaryLists, &design.StandardPalette),
-						propertyBadge("Include in Generated Instructions", validVessel.IncludeInGeneratedInstructions, &design.StandardPalette),
-						propertyBadge("Usable for Storage", validVessel.UsableForStorage, &design.StandardPalette),
-					),
-				),
-				// Vessel Dimensions
-				components.Card(&design.StandardPalette,
-					ghtml.H3(
-						ghtml.Class(fmt.Sprintf("text-lg font-medium %s mb-4", design.TextColor(design.StandardPalette.Primary))),
-						g.Text("Dimensions & Capacity"),
-					),
-					ghtml.Div(
-						ghtml.Class("grid grid-cols-2 md:grid-cols-4 gap-4"),
-						dimensionInfo("Width", validVessel.WidthInMillimeters, "mm", &design.StandardPalette),
-						dimensionInfo("Length", validVessel.LengthInMillimeters, "mm", &design.StandardPalette),
-						dimensionInfo("Height", validVessel.HeightInMillimeters, "mm", &design.StandardPalette),
-						capacityInfo("Capacity", validVessel.Capacity, validVessel.CapacityUnit, &design.StandardPalette),
-					),
-				),
-			),
+			components.ContentContainer(&components.ContentContainerProps{
+				Title:    "Associations",
+				Subtitle: "Preparations that can be performed with this vessel",
+				Palette:  &design.StandardPalette,
+			}, components.Card(&design.StandardPalette, preparationsAssociations)),
 		},
 	})
 	if err != nil {

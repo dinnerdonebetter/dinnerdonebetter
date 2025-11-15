@@ -485,9 +485,20 @@ func buildInputElement(fieldName string, fieldType reflect.Type, value any, conf
 		ghtml.Class(buildInputClasses(palette)),
 	}
 
-	// Add value
-	if value != nil {
-		inputAttrs = append(inputAttrs, ghtml.Value(formatValue(value)))
+	// Handle checkbox specially
+	if inputType == "checkbox" {
+		// For checkboxes, set value to "true" and add checked attribute if the boolean is true
+		inputAttrs = append(inputAttrs, ghtml.Value("true"))
+		if value != nil {
+			if boolVal, ok := value.(bool); ok && boolVal {
+				inputAttrs = append(inputAttrs, ghtml.Checked())
+			}
+		}
+	} else {
+		// Add value for non-checkbox inputs
+		if value != nil {
+			inputAttrs = append(inputAttrs, ghtml.Value(formatValue(value)))
+		}
 	}
 
 	// Add disabled attribute if not enabled

@@ -192,6 +192,17 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 
 	validIngredient := validIngredientRes.Result
 
+	// Fetch associations for this ingredient
+	measurementUnitsAssociations, err := s.ValidIngredientMeasurementUnitsForIngredient(nil, req)
+	if err != nil {
+		s.logger.Error("error fetching measurement unit associations", err)
+	}
+
+	preparationsAssociations, err := s.ValidIngredientPreparationsForIngredient(nil, req)
+	if err != nil {
+		s.logger.Error("error fetching preparation associations", err)
+	}
+
 	// Use the FormPage component for viewing valid ingredient data
 	formPageResult, err := components.FormPage(&components.FormPageProps[*mealplanningsvc.ValidIngredient]{
 		Title:        "Valid Ingredient Details",
@@ -205,7 +216,16 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 			Method:  "PUT",
 
 			// Fields that can be edited
-			EnabledFields: []string{"Name", "Description", "PluralName", "Warning", "StorageInstructions", "ShoppingSuggestions"},
+			EnabledFields: []string{
+				"Name", "Description", "PluralName", "Warning", "StorageInstructions", "ShoppingSuggestions",
+				// Allergen flags
+				"ContainsEgg", "ContainsDairy", "ContainsFish", "ContainsShellfish",
+				"ContainsPeanut", "ContainsTreeNut", "ContainsWheat", "ContainsSoy",
+				"ContainsSesame", "ContainsGluten", "ContainsAlcohol",
+				// Property flags
+				"AnimalDerived", "AnimalFlesh", "IsLiquid", "IsStarch", "IsProtein",
+				"IsGrain", "IsFruit", "IsSalt", "IsFat", "IsAcid", "IsHeat",
+			},
 
 			FieldConfigs: map[string]*components.FieldConfig{
 				"Name": {
@@ -232,6 +252,30 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 					Placeholder: "Tips for purchasing...",
 					InputType:   "textarea",
 				},
+				// Allergen flags
+				"ContainsEgg":       {InputType: "checkbox"},
+				"ContainsDairy":     {InputType: "checkbox"},
+				"ContainsFish":      {InputType: "checkbox"},
+				"ContainsShellfish": {InputType: "checkbox"},
+				"ContainsPeanut":    {InputType: "checkbox"},
+				"ContainsTreeNut":   {InputType: "checkbox"},
+				"ContainsWheat":     {InputType: "checkbox"},
+				"ContainsSoy":       {InputType: "checkbox"},
+				"ContainsSesame":    {InputType: "checkbox"},
+				"ContainsGluten":    {InputType: "checkbox"},
+				"ContainsAlcohol":   {InputType: "checkbox"},
+				// Property flags
+				"AnimalDerived": {InputType: "checkbox"},
+				"AnimalFlesh":   {InputType: "checkbox"},
+				"IsLiquid":      {InputType: "checkbox"},
+				"IsStarch":      {InputType: "checkbox"},
+				"IsProtein":     {InputType: "checkbox"},
+				"IsGrain":       {InputType: "checkbox"},
+				"IsFruit":       {InputType: "checkbox"},
+				"IsSalt":        {InputType: "checkbox"},
+				"IsFat":         {InputType: "checkbox"},
+				"IsAcid":        {InputType: "checkbox"},
+				"IsHeat":        {InputType: "checkbox"},
 			},
 
 			FormRows: []components.FormRow{
@@ -254,6 +298,34 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 				{
 					Fields:  []string{"ShoppingSuggestions"},
 					Columns: 1,
+				},
+				{
+					Fields:  []string{"ContainsEgg", "ContainsDairy", "ContainsFish"},
+					Columns: 3,
+				},
+				{
+					Fields:  []string{"ContainsShellfish", "ContainsPeanut", "ContainsTreeNut"},
+					Columns: 3,
+				},
+				{
+					Fields:  []string{"ContainsWheat", "ContainsSoy", "ContainsSesame"},
+					Columns: 3,
+				},
+				{
+					Fields:  []string{"ContainsGluten", "ContainsAlcohol", "AnimalDerived"},
+					Columns: 3,
+				},
+				{
+					Fields:  []string{"AnimalFlesh", "IsLiquid", "IsStarch"},
+					Columns: 3,
+				},
+				{
+					Fields:  []string{"IsProtein", "IsGrain", "IsFruit"},
+					Columns: 3,
+				},
+				{
+					Fields:  []string{"IsSalt", "IsFat", "IsAcid", "IsHeat"},
+					Columns: 4,
 				},
 			},
 
@@ -280,41 +352,20 @@ func (s *AdminFrontendServer) ValidIngredientPage(_ http.ResponseWriter, req *ht
 			return fmt.Sprintf("Viewing ingredient: %s", vi.Name)
 		},
 
-		// Additional info section showing boolean flags
+		// Additional content - associations
 		AdditionalContent: []g.Node{
 			ghtml.Div(
-				ghtml.Class("mt-6"),
-				components.Card(&design.StandardPalette,
-					ghtml.H3(
-						ghtml.Class(fmt.Sprintf("text-lg font-medium %s mb-4", design.TextColor(design.StandardPalette.Primary))),
-						g.Text("Ingredient Properties"),
-					),
-					ghtml.Div(
-						ghtml.Class("grid grid-cols-2 md:grid-cols-3 gap-4"),
-						propertyBadge("Contains Egg", validIngredient.ContainsEgg, &design.StandardPalette),
-						propertyBadge("Contains Dairy", validIngredient.ContainsDairy, &design.StandardPalette),
-						propertyBadge("Contains Fish", validIngredient.ContainsFish, &design.StandardPalette),
-						propertyBadge("Contains Shellfish", validIngredient.ContainsShellfish, &design.StandardPalette),
-						propertyBadge("Contains Peanut", validIngredient.ContainsPeanut, &design.StandardPalette),
-						propertyBadge("Contains Tree Nut", validIngredient.ContainsTreeNut, &design.StandardPalette),
-						propertyBadge("Contains Wheat", validIngredient.ContainsWheat, &design.StandardPalette),
-						propertyBadge("Contains Soy", validIngredient.ContainsSoy, &design.StandardPalette),
-						propertyBadge("Contains Sesame", validIngredient.ContainsSesame, &design.StandardPalette),
-						propertyBadge("Contains Gluten", validIngredient.ContainsGluten, &design.StandardPalette),
-						propertyBadge("Contains Alcohol", validIngredient.ContainsAlcohol, &design.StandardPalette),
-						propertyBadge("Animal Derived", validIngredient.AnimalDerived, &design.StandardPalette),
-						propertyBadge("Animal Flesh", validIngredient.AnimalFlesh, &design.StandardPalette),
-						propertyBadge("Is Liquid", validIngredient.IsLiquid, &design.StandardPalette),
-						propertyBadge("Is Starch", validIngredient.IsStarch, &design.StandardPalette),
-						propertyBadge("Is Protein", validIngredient.IsProtein, &design.StandardPalette),
-						propertyBadge("Is Grain", validIngredient.IsGrain, &design.StandardPalette),
-						propertyBadge("Is Fruit", validIngredient.IsFruit, &design.StandardPalette),
-						propertyBadge("Is Salt", validIngredient.IsSalt, &design.StandardPalette),
-						propertyBadge("Is Fat", validIngredient.IsFat, &design.StandardPalette),
-						propertyBadge("Is Acid", validIngredient.IsAcid, &design.StandardPalette),
-						propertyBadge("Is Heat", validIngredient.IsHeat, &design.StandardPalette),
-					),
-				),
+				ghtml.Class("grid grid-cols-1 md:grid-cols-2 gap-6 mt-6"),
+				components.ContentContainer(&components.ContentContainerProps{
+					Title:    "Measurement Units",
+					Subtitle: "Valid measurement units for this ingredient",
+					Palette:  &design.StandardPalette,
+				}, components.Card(&design.StandardPalette, measurementUnitsAssociations)),
+				components.ContentContainer(&components.ContentContainerProps{
+					Title:    "Preparations",
+					Subtitle: "Valid preparations for this ingredient",
+					Palette:  &design.StandardPalette,
+				}, components.Card(&design.StandardPalette, preparationsAssociations)),
 			),
 		},
 	})

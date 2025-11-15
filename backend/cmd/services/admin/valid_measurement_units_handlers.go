@@ -161,6 +161,26 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 
 	validMeasurementUnit := validMeasurementUnitRes.Result
 
+	// Determine the measurement system value for the select element
+	measurementSystem := ""
+	if validMeasurementUnit.Metric {
+		measurementSystem = "metric"
+	} else if validMeasurementUnit.Imperial {
+		measurementSystem = "imperial"
+	}
+
+	// Fetch associations for this measurement unit
+	associationListNode, err := s.ValidIngredientMeasurementUnitsForMeasurementUnit(nil, req)
+	if err != nil {
+		s.logger.Error("error fetching ingredient associations", err)
+	}
+
+	// Fetch conversions for this measurement unit
+	conversionsNode, err := s.ValidMeasurementUnitConversionsForUnit(nil, req)
+	if err != nil {
+		s.logger.Error("error fetching conversions", err)
+	}
+
 	// Use the FormPage component for viewing valid measurement unit data
 	formPageResult, err := components.FormPage(&components.FormPageProps[*mealplanningsvc.ValidMeasurementUnit]{
 		Title:        "Valid Measurement Unit Details",
@@ -174,7 +194,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 			Method:  "PUT",
 
 			// Fields that can be edited
-			EnabledFields: []string{"Name", "Description", "PluralName"},
+			EnabledFields: []string{"Name", "Description", "PluralName", "Volumetric", "Universal", "Metric"},
 
 			FieldConfigs: map[string]*components.FieldConfig{
 				"Name": {
@@ -189,6 +209,92 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 				"PluralName": {
 					Placeholder: "Plural form of the measurement unit name",
 				},
+				"Volumetric": {
+					InputType: "checkbox",
+				},
+				"Universal": {
+					InputType: "checkbox",
+				},
+				"Metric": {
+					DisplayName: "Measurement System",
+					CustomRenderer: func(fieldName string, value any, config components.FieldConfig, palette *design.Palette) g.Node {
+						// Build the select element for measurement system
+						// This select will update hidden Metric and Imperial fields via JavaScript
+						selectAttrs := []g.Node{
+							ghtml.ID("MeasurementSystem"),
+							ghtml.Name("MeasurementSystem"),
+							ghtml.Class(fmt.Sprintf("block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-%s focus:border-%s sm:text-sm",
+								palette.Primary.Value,
+								palette.Primary.Value,
+							)),
+							// Update hidden Metric/Imperial fields when selection changes
+							g.Attr("onchange", `
+								const metric = document.getElementById('Metric');
+								const imperial = document.getElementById('Imperial');
+								if (this.value === 'metric') {
+									metric.checked = true;
+									imperial.checked = false;
+								} else if (this.value === 'imperial') {
+									metric.checked = false;
+									imperial.checked = true;
+								}
+							`),
+						}
+
+						// Build options - only Metric and Imperial (no "Neither")
+						var options []g.Node
+						options = append(options, ghtml.Option(
+							ghtml.Value("metric"),
+							g.Text("Metric"),
+							g.If(measurementSystem == "metric" || measurementSystem == "", ghtml.Selected()), // Default to Metric if neither is set
+						))
+						options = append(options, ghtml.Option(
+							ghtml.Value("imperial"),
+							g.Text("Imperial"),
+							g.If(measurementSystem == "imperial", ghtml.Selected()),
+						))
+
+						return ghtml.Div(
+							ghtml.Class("flex flex-col"),
+							ghtml.Label(
+								ghtml.For("MeasurementSystem"),
+								ghtml.Class(fmt.Sprintf("block text-sm font-medium %s mb-2", design.TextColor(palette.Text))),
+								g.Text("Measurement System"),
+							),
+							ghtml.Select(append(selectAttrs, g.Group(options))...),
+							// Hidden fields for Metric and Imperial that will be submitted with the form
+							// We use hidden inputs with value="false" followed by checkboxes with value="true"
+							// This ensures that false values are sent when checkboxes are unchecked
+							ghtml.Input(
+								ghtml.Type("hidden"),
+								ghtml.Name("Metric"),
+								ghtml.Value("false"),
+							),
+							ghtml.Input(
+								ghtml.Type("checkbox"),
+								ghtml.ID("Metric"),
+								ghtml.Name("Metric"),
+								ghtml.Value("true"),
+								ghtml.Class("hidden"),
+								g.If(validMeasurementUnit.Metric, ghtml.Checked()),
+							),
+							ghtml.Input(
+								ghtml.Type("hidden"),
+								ghtml.Name("Imperial"),
+								ghtml.Value("false"),
+							),
+							ghtml.Input(
+								ghtml.Type("checkbox"),
+								ghtml.ID("Imperial"),
+								ghtml.Name("Imperial"),
+								ghtml.Value("true"),
+								ghtml.Class("hidden"),
+								g.If(validMeasurementUnit.Imperial, ghtml.Checked()),
+							),
+						)
+					},
+					Enabled: true,
+				},
 			},
 
 			FormRows: []components.FormRow{
@@ -199,6 +305,10 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 				{
 					Fields:  []string{"Description"},
 					Columns: 1,
+				},
+				{
+					Fields:  []string{"Volumetric", "Universal", "Metric"},
+					Columns: 3,
 				},
 			},
 
@@ -225,23 +335,25 @@ func (s *AdminFrontendServer) ValidMeasurementUnitPage(_ http.ResponseWriter, re
 			return fmt.Sprintf("Viewing measurement unit: %s", vmu.Name)
 		},
 
-		// Additional info section showing unit type properties
+		// Additional content - associations and conversions
 		AdditionalContent: []g.Node{
 			ghtml.Div(
-				ghtml.Class("mt-6"),
-				components.Card(&design.StandardPalette,
-					ghtml.H3(
-						ghtml.Class(fmt.Sprintf("text-lg font-medium %s mb-4", design.TextColor(design.StandardPalette.Primary))),
-						g.Text("Measurement Unit Properties"),
-					),
+				ghtml.Class("grid grid-cols-1 md:grid-cols-2 gap-6 mt-6"),
+				components.ContentContainer(&components.ContentContainerProps{
+					Title:    "Ingredient Associations",
+					Subtitle: "Ingredients that can be measured with this unit",
+					Palette:  &design.StandardPalette,
+				}, components.Card(&design.StandardPalette, associationListNode)),
+				components.ContentContainer(&components.ContentContainerProps{
+					Title:    "Unit Conversions",
+					Subtitle: "Conversion factors to/from other units",
+					Palette:  &design.StandardPalette,
+				}, components.Card(&design.StandardPalette,
 					ghtml.Div(
-						ghtml.Class("grid grid-cols-2 md:grid-cols-4 gap-4"),
-						propertyBadge("Volumetric", validMeasurementUnit.Volumetric, &design.StandardPalette),
-						propertyBadge("Universal", validMeasurementUnit.Universal, &design.StandardPalette),
-						propertyBadge("Metric", validMeasurementUnit.Metric, &design.StandardPalette),
-						propertyBadge("Imperial", validMeasurementUnit.Imperial, &design.StandardPalette),
+						ghtml.ID("conversions-container"),
+						conversionsNode,
 					),
-				),
+				)),
 			),
 		},
 	})
@@ -287,6 +399,7 @@ func (s *AdminFrontendServer) ValidMeasurementUnitsList(_ http.ResponseWriter, r
 				"PluralName",
 				"Description",
 				"Volumetric",
+				"Universal",
 				"Metric",
 				"Imperial",
 				"CreatedAt",
@@ -297,6 +410,12 @@ func (s *AdminFrontendServer) ValidMeasurementUnitsList(_ http.ResponseWriter, r
 			FieldRenderers: map[string]components.FieldRenderer{
 				"CreatedAt": renderTimestamp,
 				"Volumetric": func(value any) g.Node {
+					if b, ok := value.(bool); ok && b {
+						return g.Text("Yes")
+					}
+					return g.Text("No")
+				},
+				"Universal": func(value any) g.Node {
 					if b, ok := value.(bool); ok && b {
 						return g.Text("Yes")
 					}
@@ -469,4 +588,3 @@ func (s *AdminFrontendServer) renderValidMeasurementUnitsError(errorMsg string) 
 		),
 	)
 }
-

@@ -363,12 +363,24 @@ func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 
 	logger := q.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, input.ID)
 
+	// Normalize to canonical ordering (smaller ID first) to satisfy CHECK constraint
+	// This ensures duplicate entries hit the unique constraint rather than the check constraint
+	fromUnit := input.From
+	toUnit := input.To
+	modifier := input.Modifier
+
+	if fromUnit > toUnit {
+		// Swap the units and invert the modifier
+		fromUnit, toUnit = toUnit, fromUnit
+		modifier = 1.0 / modifier
+	}
+
 	// create the valid measurement conversion.
 	if err := q.generatedQuerier.CreateValidMeasurementUnitConversion(ctx, q.db, &generated.CreateValidMeasurementUnitConversionParams{
 		ID:                input.ID,
-		FromUnit:          input.From,
-		ToUnit:            input.To,
-		Modifier:          database.StringFromFloat32(input.Modifier),
+		FromUnit:          fromUnit,
+		ToUnit:            toUnit,
+		Modifier:          database.StringFromFloat32(modifier),
 		Notes:             input.Notes,
 		OnlyForIngredient: database.NullStringFromStringPointer(input.OnlyForIngredient),
 	}); err != nil {
@@ -377,9 +389,9 @@ func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 
 	x := &mealplanning.ValidMeasurementUnitConversion{
 		ID:        input.ID,
-		From:      mealplanning.ValidMeasurementUnit{ID: input.From},
-		To:        mealplanning.ValidMeasurementUnit{ID: input.To},
-		Modifier:  input.Modifier,
+		From:      mealplanning.ValidMeasurementUnit{ID: fromUnit},
+		To:        mealplanning.ValidMeasurementUnit{ID: toUnit},
+		Modifier:  modifier,
 		Notes:     input.Notes,
 		CreatedAt: q.CurrentTime(),
 	}
@@ -395,7 +407,7 @@ func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 		}
 	}
 
-	to, err := q.GetValidMeasurementUnit(ctx, input.To)
+	to, err := q.GetValidMeasurementUnit(ctx, toUnit)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching to valid measurement unit for valid measurement unit conversion")
@@ -404,7 +416,7 @@ func (q *repository) CreateValidMeasurementUnitConversion(ctx context.Context, i
 		x.To = *to
 	}
 
-	from, err := q.GetValidMeasurementUnit(ctx, input.From)
+	from, err := q.GetValidMeasurementUnit(ctx, fromUnit)
 	if err != nil {
 		// basically impossible for this to happen and not error out earlier
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching from valid measurement unit for valid measurement unit conversion")

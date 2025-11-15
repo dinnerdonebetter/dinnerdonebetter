@@ -117,8 +117,8 @@ func extractFields(item any) ([]fieldInfo, error) {
 		displayName := camelCaseToTitleCase(field.Name)
 
 		fields = append(fields, fieldInfo{
-			Name:        jsonName,    // Use JSON tag name
-			GoFieldName: field.Name,  // Keep Go struct field name for reflection
+			Name:        jsonName,   // Use JSON tag name
+			GoFieldName: field.Name, // Keep Go struct field name for reflection
 			DisplayName: displayName,
 			Type:        field.Type,
 		})
@@ -212,10 +212,10 @@ func Table[T any](data []T, options *TableOptions[T]) (g.Node, error) {
 
 // fieldInfo holds information about a struct field
 type fieldInfo struct {
-	Type          reflect.Type
-	Name          string // JSON tag name (e.g., "zipCode")
-	GoFieldName   string // Go struct field name (e.g., "ZipCode")
-	DisplayName   string
+	Type        reflect.Type
+	Name        string // JSON tag name (e.g., "zipCode")
+	GoFieldName string // Go struct field name (e.g., "ZipCode")
+	DisplayName string
 }
 
 // sortFields sorts the fields with custom ordering:
@@ -310,7 +310,7 @@ func createTableBody[T any](data []T, fields []fieldInfo, options *TableOptions[
 			// Use GoFieldName for reflection lookup
 			fieldValue := v.FieldByName(field.GoFieldName)
 			if !fieldValue.IsValid() {
-				cells = append(cells, createTableCell(nil, field.Name, options, palette))
+				cells = append(cells, createTableCell(nil, field.Name, options))
 				continue
 			}
 
@@ -319,7 +319,7 @@ func createTableBody[T any](data []T, fields []fieldInfo, options *TableOptions[
 				cellValue = fieldValue.Interface()
 			}
 
-			cells = append(cells, createTableCell(cellValue, field.Name, options, palette))
+			cells = append(cells, createTableCell(cellValue, field.Name, options))
 		}
 
 		// Alternate row colors with better contrast
@@ -369,7 +369,7 @@ func createTableBody[T any](data []T, fields []fieldInfo, options *TableOptions[
 }
 
 // createTableCell creates a single table cell
-func createTableCell[T any](value any, fieldName string, options *TableOptions[T], palette *design.Palette) g.Node {
+func createTableCell[T any](value any, fieldName string, options *TableOptions[T]) g.Node {
 	var content g.Node
 
 	// Use custom renderer if available

@@ -165,6 +165,22 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 
 	validPreparation := validPreparationRes.Result
 
+	// Fetch associations for this preparation
+	instrumentsAssociations, err := s.ValidPreparationInstrumentsForPreparation(nil, req)
+	if err != nil {
+		s.logger.Error("error fetching instrument associations", err)
+	}
+
+	ingredientsAssociations, err := s.ValidIngredientPreparationsForPreparation(nil, req)
+	if err != nil {
+		s.logger.Error("error fetching ingredient associations", err)
+	}
+
+	vesselsAssociations, err := s.ValidPreparationVesselsForPreparation(nil, req)
+	if err != nil {
+		s.logger.Error("error fetching vessel associations", err)
+	}
+
 	// Use the FormPage component for viewing valid preparation data
 	formPageResult, err := components.FormPage(&components.FormPageProps[*mealplanningsvc.ValidPreparation]{
 		Title:        "Valid Preparation Details",
@@ -178,7 +194,12 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 			Method:  "PUT",
 
 			// Fields that can be edited
-			EnabledFields: []string{"Name", "Description", "PastTense"},
+			EnabledFields: []string{
+				"Name", "Description", "PastTense",
+				// Preparation properties
+				"RestrictToIngredients", "TemperatureRequired", "TimeEstimateRequired",
+				"ConditionExpressionRequired", "ConsumesVessel", "OnlyForVessels", "YieldsNothing",
+			},
 
 			FieldConfigs: map[string]*components.FieldConfig{
 				"Name": {
@@ -193,6 +214,14 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 				"PastTense": {
 					Placeholder: "Past tense form (e.g., chopped, diced, sautéed)",
 				},
+				// Preparation property flags
+				"RestrictToIngredients":       {InputType: "checkbox"},
+				"TemperatureRequired":         {InputType: "checkbox"},
+				"TimeEstimateRequired":        {InputType: "checkbox"},
+				"ConditionExpressionRequired": {InputType: "checkbox"},
+				"ConsumesVessel":              {InputType: "checkbox"},
+				"OnlyForVessels":              {InputType: "checkbox"},
+				"YieldsNothing":               {InputType: "checkbox"},
 			},
 
 			FormRows: []components.FormRow{
@@ -202,6 +231,18 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 				},
 				{
 					Fields:  []string{"Description"},
+					Columns: 1,
+				},
+				{
+					Fields:  []string{"RestrictToIngredients", "TemperatureRequired", "TimeEstimateRequired"},
+					Columns: 3,
+				},
+				{
+					Fields:  []string{"ConditionExpressionRequired", "ConsumesVessel", "OnlyForVessels"},
+					Columns: 3,
+				},
+				{
+					Fields:  []string{"YieldsNothing"},
 					Columns: 1,
 				},
 			},
@@ -229,53 +270,25 @@ func (s *AdminFrontendServer) ValidPreparationPage(_ http.ResponseWriter, req *h
 			return fmt.Sprintf("Viewing preparation: %s", vp.Name)
 		},
 
-		// Additional info section showing preparation properties
+		// Additional content - associations
 		AdditionalContent: []g.Node{
 			ghtml.Div(
-				ghtml.Class("mt-6 space-y-6"),
-				// Preparation Properties
-				components.Card(&design.StandardPalette,
-					ghtml.H3(
-						ghtml.Class(fmt.Sprintf("text-lg font-medium %s mb-4", design.TextColor(design.StandardPalette.Primary))),
-						g.Text("Preparation Properties"),
-					),
-					ghtml.Div(
-						ghtml.Class("grid grid-cols-2 md:grid-cols-3 gap-4"),
-						propertyBadge("Restrict to Ingredients", validPreparation.RestrictToIngredients, &design.StandardPalette),
-						propertyBadge("Temperature Required", validPreparation.TemperatureRequired, &design.StandardPalette),
-						propertyBadge("Time Estimate Required", validPreparation.TimeEstimateRequired, &design.StandardPalette),
-						propertyBadge("Condition Expression Required", validPreparation.ConditionExpressionRequired, &design.StandardPalette),
-						propertyBadge("Consumes Vessel", validPreparation.ConsumesVessel, &design.StandardPalette),
-						propertyBadge("Only for Vessels", validPreparation.OnlyForVessels, &design.StandardPalette),
-						propertyBadge("Yields Nothing", validPreparation.YieldsNothing, &design.StandardPalette),
-					),
-				),
-				// Count Requirements
-				components.Card(&design.StandardPalette,
-					ghtml.H3(
-						ghtml.Class(fmt.Sprintf("text-lg font-medium %s mb-4", design.TextColor(design.StandardPalette.Primary))),
-						g.Text("Count Requirements"),
-					),
-					ghtml.Div(
-						ghtml.Class("grid grid-cols-1 md:grid-cols-3 gap-4"),
-						rangeInfo("Ingredient Count", validPreparation.IngredientCount, &design.StandardPalette),
-						rangeInfo("Instrument Count", validPreparation.InstrumentCount, &design.StandardPalette),
-						rangeInfo("Vessel Count", validPreparation.VesselCount, &design.StandardPalette),
-					),
-				),
-				// Associated Instruments
-				components.Card(&design.StandardPalette,
-					ghtml.Div(
-						g.Attr("hx-get", fmt.Sprintf("/api/valid_preparations/%s/instruments", validPreparation.ID)),
-						g.Attr("hx-trigger", "load"),
-						g.Attr("hx-swap", "innerHTML"),
-						ghtml.Class("min-h-24"),
-						ghtml.P(
-							ghtml.Class("text-gray-500 text-center py-8"),
-							g.Text("Loading associated instruments..."),
-						),
-					),
-				),
+				ghtml.Class("grid grid-cols-1 md:grid-cols-3 gap-6 mt-6"),
+				components.ContentContainer(&components.ContentContainerProps{
+					Title:    "Instruments",
+					Subtitle: "Required or optional instruments",
+					Palette:  &design.StandardPalette,
+				}, components.Card(&design.StandardPalette, instrumentsAssociations)),
+				components.ContentContainer(&components.ContentContainerProps{
+					Title:    "Ingredients",
+					Subtitle: "Valid ingredients for this preparation",
+					Palette:  &design.StandardPalette,
+				}, components.Card(&design.StandardPalette, ingredientsAssociations)),
+				components.ContentContainer(&components.ContentContainerProps{
+					Title:    "Vessels",
+					Subtitle: "Valid vessels for this preparation",
+					Palette:  &design.StandardPalette,
+				}, components.Card(&design.StandardPalette, vesselsAssociations)),
 			),
 		},
 	})

@@ -160,6 +160,12 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 
 	validInstrument := validInstrumentRes.Result
 
+	// Fetch associations for this instrument
+	preparationsAssociations, err := s.ValidPreparationInstrumentsForInstrument(nil, req)
+	if err != nil {
+		s.logger.Error("error fetching preparation associations", err)
+	}
+
 	// Use the FormPage component for viewing valid instrument data
 	formPageResult, err := components.FormPage(&components.FormPageProps[*mealplanningsvc.ValidInstrument]{
 		Title:        "Valid Instrument Details",
@@ -173,7 +179,11 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 			Method:  "PUT",
 
 			// Fields that can be edited
-			EnabledFields: []string{"Name", "Description", "PluralName"},
+			EnabledFields: []string{
+				"Name", "Description", "PluralName",
+				// Display and usage properties
+				"DisplayInSummaryLists", "IncludeInGeneratedInstructions", "UsableForStorage",
+			},
 
 			FieldConfigs: map[string]*components.FieldConfig{
 				"Name": {
@@ -188,6 +198,10 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 				"PluralName": {
 					Placeholder: "Plural form of the instrument name",
 				},
+				// Display and usage property flags
+				"DisplayInSummaryLists":          {InputType: "checkbox"},
+				"IncludeInGeneratedInstructions": {InputType: "checkbox"},
+				"UsableForStorage":               {InputType: "checkbox"},
 			},
 
 			FormRows: []components.FormRow{
@@ -198,6 +212,10 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 				{
 					Fields:  []string{"Description"},
 					Columns: 1,
+				},
+				{
+					Fields:  []string{"DisplayInSummaryLists", "IncludeInGeneratedInstructions", "UsableForStorage"},
+					Columns: 3,
 				},
 			},
 
@@ -224,38 +242,13 @@ func (s *AdminFrontendServer) ValidInstrumentPage(_ http.ResponseWriter, req *ht
 			return fmt.Sprintf("Viewing instrument: %s", vi.Name)
 		},
 
-		// Additional info section showing boolean flags and associations
+		// Additional content - associations
 		AdditionalContent: []g.Node{
-			ghtml.Div(
-				ghtml.Class("mt-6"),
-				components.Card(&design.StandardPalette,
-					ghtml.H3(
-						ghtml.Class(fmt.Sprintf("text-lg font-medium %s mb-4", design.TextColor(design.StandardPalette.Primary))),
-						g.Text("Instrument Properties"),
-					),
-					ghtml.Div(
-						ghtml.Class("grid grid-cols-1 md:grid-cols-3 gap-4"),
-						propertyBadge("Display in Summary Lists", validInstrument.DisplayInSummaryLists, &design.StandardPalette),
-						propertyBadge("Include in Generated Instructions", validInstrument.IncludeInGeneratedInstructions, &design.StandardPalette),
-						propertyBadge("Usable for Storage", validInstrument.UsableForStorage, &design.StandardPalette),
-					),
-				),
-			),
-			ghtml.Div(
-				ghtml.Class("mt-6"),
-				components.Card(&design.StandardPalette,
-					ghtml.Div(
-						g.Attr("hx-get", fmt.Sprintf("/api/valid_instruments/%s/preparations", validInstrument.ID)),
-						g.Attr("hx-trigger", "load"),
-						g.Attr("hx-swap", "innerHTML"),
-						ghtml.Class("min-h-24"),
-						ghtml.P(
-							ghtml.Class("text-gray-500 text-center py-8"),
-							g.Text("Loading associated preparations..."),
-						),
-					),
-				),
-			),
+			components.ContentContainer(&components.ContentContainerProps{
+				Title:    "Associations",
+				Subtitle: "Preparations that can be performed with this instrument",
+				Palette:  &design.StandardPalette,
+			}, components.Card(&design.StandardPalette, preparationsAssociations)),
 		},
 	})
 	if err != nil {

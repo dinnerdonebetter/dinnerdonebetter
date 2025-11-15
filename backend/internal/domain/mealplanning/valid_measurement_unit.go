@@ -33,7 +33,11 @@ func init() {
 }
 
 type (
-	// ValidMeasurementUnit represents a valid measurement unit.
+	/*
+		ValidMeasurementUnit represents a valid measurement unit.
+		Field notes:
+			- Universal indicates that the measurement unit is valid for all ingredients. For instance, "grams" is a universal measurement unit.
+	*/
 	ValidMeasurementUnit struct {
 		_ struct{} `json:"-"`
 

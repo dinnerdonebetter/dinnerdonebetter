@@ -212,7 +212,8 @@ CREATE TABLE IF NOT EXISTS valid_measurement_unit_conversions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     last_updated_at TIMESTAMP WITH TIME ZONE,
     archived_at TIMESTAMP WITH TIME ZONE,
-    UNIQUE(from_unit, to_unit, only_for_ingredient)
+    UNIQUE NULLS NOT DISTINCT (from_unit, to_unit, only_for_ingredient),
+    CHECK (from_unit < to_unit)
 );
 
 CREATE TABLE IF NOT EXISTS valid_ingredient_state_ingredients (

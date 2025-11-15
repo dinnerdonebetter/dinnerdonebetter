@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/platform/numbers"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -117,6 +119,36 @@ func (x *ValidMeasurementUnitConversion) Update(input *ValidMeasurementUnitConve
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes
 	}
+}
+
+// ConvertFromToTo converts a value from the "From" unit to the "To" unit.
+// The optional precision parameter specifies the number of decimal places to round to (default: 2).
+// For example, if this conversion is from cups to milliliters with a modifier of 236.588,
+// calling ConvertFromToTo(2) would return 473.18 (2 cups = 473.18 milliliters, rounded to 2 decimal places).
+func (x *ValidMeasurementUnitConversion) ConvertFromToTo(value float32, precision ...uint8) float32 {
+	result := value * x.Modifier
+
+	p := uint8(2)
+	if len(precision) > 0 {
+		p = precision[0]
+	}
+
+	return numbers.RoundToDecimalPlaces(result, p)
+}
+
+// ConvertToToFrom converts a value from the "To" unit back to the "From" unit.
+// The optional precision parameter specifies the number of decimal places to round to (default: 2).
+// For example, if this conversion is from cups to milliliters with a modifier of 236.588,
+// calling ConvertToToFrom(473.176) would return 2.0 (473.176 milliliters = 2.0 cups, rounded to 2 decimal places).
+func (x *ValidMeasurementUnitConversion) ConvertToToFrom(value float32, precision ...uint8) float32 {
+	result := value / x.Modifier
+
+	p := uint8(2)
+	if len(precision) > 0 {
+		p = precision[0]
+	}
+
+	return numbers.RoundToDecimalPlaces(result, p)
 }
 
 var _ validation.ValidatableWithContext = (*ValidMeasurementUnitConversionCreationRequestInput)(nil)

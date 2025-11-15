@@ -183,6 +183,7 @@ type SearchResultItem struct {
 	ID          string
 	Name        string
 	Description string
+	ExtraInfo   string // optional extra information to display
 }
 
 // AssociationSearchResultsProps defines the properties for search results
