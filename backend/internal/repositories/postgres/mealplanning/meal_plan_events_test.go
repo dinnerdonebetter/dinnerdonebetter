@@ -7,6 +7,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -275,5 +276,60 @@ func TestQuerier_ArchiveMealPlanEvent(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveMealPlanEvent(ctx, exampleMealPlanEventID, ""))
+	})
+}
+
+func TestQuerier_Integration_MealPlanEvents_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+	
+	// Create an empty meal plan without events - bypass createMealPlanForTest since it has assertions
+	// that don't work with empty event lists
+	mealPlanInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(fakes.BuildFakeMealPlan())
+	mealPlanInput.CreatedByUser = user.ID
+	mealPlanInput.BelongsToAccount = account.ID
+	mealPlanInput.Events = []*types.MealPlanEventDatabaseCreationInput{}
+	
+	createdMealPlan, err := dbc.CreateMealPlan(ctx, mealPlanInput)
+	require.NoError(t, err)
+	require.NotNil(t, createdMealPlan)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.MealPlanEvent]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "meal plan event",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.MealPlanEvent {
+			mealPlanEvent := buildMealPlanEventForIntegrationTest(meal)
+			mealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
+			return createMealPlanEventForTest(t, ctx, mealPlanEvent, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanEvent], error) {
+			return dbc.GetMealPlanEvents(ctx, createdMealPlan.ID, filter)
+		},
+		GetID: func(mealPlanEvent *types.MealPlanEvent) string {
+			return mealPlanEvent.ID
+		},
+		CleanupItem: func(ctx context.Context, mealPlanEvent *types.MealPlanEvent) error {
+			return dbc.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, mealPlanEvent.ID)
+		},
 	})
 }

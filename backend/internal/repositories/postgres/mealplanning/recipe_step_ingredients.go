@@ -310,14 +310,15 @@ func (q *repository) GetRecipeStepIngredients(ctx context.Context, recipeID, rec
 	}
 
 	results, err := q.generatedQuerier.GetRecipeStepIngredients(ctx, q.db, &generated.GetRecipeStepIngredientsParams{
-		RecipeID:        recipeID,
-		RecipeStepID:    recipeStepID,
-		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		RecipeID:      recipeID,
+		RecipeStepID:  recipeStepID,
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+
+		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

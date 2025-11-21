@@ -9,6 +9,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -259,5 +260,43 @@ func TestQuerier_MarkValidVesselAsIndexed(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkValidVesselAsIndexed(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidVessels_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidVessel]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid vessel",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidVessel {
+			validVessel := createValidVesselForTest(t, ctx, nil, dbc)
+			return validVessel
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidVessel], error) {
+			return dbc.GetValidVessels(ctx, filter)
+		},
+		GetID: func(validVessel *types.ValidVessel) string {
+			return validVessel.ID
+		},
+		CleanupItem: func(ctx context.Context, validVessel *types.ValidVessel) error {
+			return dbc.ArchiveValidVessel(ctx, validVessel.ID)
+		},
 	})
 }

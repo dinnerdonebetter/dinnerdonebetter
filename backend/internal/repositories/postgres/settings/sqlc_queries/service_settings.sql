@@ -75,8 +75,9 @@ WHERE service_settings.archived_at IS NULL
 		OR service_settings.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR service_settings.archived_at = NULL)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND service_settings.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY service_settings.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetServiceSetting :one
 SELECT

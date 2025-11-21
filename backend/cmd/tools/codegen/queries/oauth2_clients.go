@@ -143,7 +143,7 @@ WHERE %s.%s IS NULL
 						false,
 						true,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(oauth2ClientsTableName),
 				)),
 			},
 		}

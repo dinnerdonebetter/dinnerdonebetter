@@ -503,3 +503,48 @@ func TestQuerier_ArchiveRecipeStep(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipeStep(ctx, exampleRecipeID, ""))
 	})
 }
+
+func TestQuerier_Integration_RecipeSteps_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
+	// Remove the default step so we start with an empty recipe
+	recipeStruct.Steps = []*types.RecipeStep{}
+	recipe := createRecipeForTest(t, ctx, recipeStruct, dbc, false)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.RecipeStep]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "recipe step",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.RecipeStep {
+			recipeStep := buildRecipeStepForTestCreation(t, ctx, recipe.ID, dbc)
+			recipeStep.Index = uint32(i)
+			return createRecipeStepForTest(t, ctx, recipe.ID, recipeStep, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeStep], error) {
+			return dbc.GetRecipeSteps(ctx, recipe.ID, filter)
+		},
+		GetID: func(recipeStep *types.RecipeStep) string {
+			return recipeStep.ID
+		},
+		CleanupItem: func(ctx context.Context, recipeStep *types.RecipeStep) error {
+			return dbc.ArchiveRecipeStep(ctx, recipe.ID, recipeStep.ID)
+		},
+	})
+}

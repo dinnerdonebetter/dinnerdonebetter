@@ -9,6 +9,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -213,5 +214,44 @@ func TestQuerier_MarkValidIngredientStateAsIndexed(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkValidIngredientStateAsIndexed(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidIngredientStates_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidIngredientState]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid ingredient state",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidIngredientState {
+			validIngredientState := fakes.BuildFakeValidIngredientState()
+			validIngredientState.Name = fmt.Sprintf("Valid Ingredient State %02d", i)
+			return createValidIngredientStateForTest(t, ctx, validIngredientState, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientState], error) {
+			return dbc.GetValidIngredientStates(ctx, filter)
+		},
+		GetID: func(validIngredientState *types.ValidIngredientState) string {
+			return validIngredientState.ID
+		},
+		CleanupItem: func(ctx context.Context, validIngredientState *types.ValidIngredientState) error {
+			return dbc.ArchiveValidIngredientState(ctx, validIngredientState.ID)
+		},
 	})
 }

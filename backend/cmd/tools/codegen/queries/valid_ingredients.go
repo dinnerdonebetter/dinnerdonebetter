@@ -135,7 +135,6 @@ WHERE
 	%s.%s IS NULL
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
@@ -150,11 +149,8 @@ ORDER BY %s.%s
 						true,
 						true,
 					),
-					validIngredientsTableName,
-					idColumn,
-					validIngredientsTableName,
-					idColumn,
-					offsetLimitAddendum,
+					validIngredientsTableName, idColumn,
+					buildCursorLimitClause(validIngredientsTableName),
 				)),
 			},
 			{

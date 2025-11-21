@@ -136,7 +136,7 @@ WHERE
 					validIngredientIDColumn,
 					idColumn,
 					buildFilterConditions(validIngredientPreparationsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientPreparationsTableName),
 				)),
 			},
 			{
@@ -176,7 +176,7 @@ WHERE
 					validPreparationIDColumn,
 					idColumn,
 					buildFilterConditions(validIngredientPreparationsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientPreparationsTableName),
 				)),
 			},
 			{
@@ -212,7 +212,7 @@ WHERE
 					validIngredientPreparationsTableName,
 					archivedAtColumn,
 					buildFilterConditions(validIngredientPreparationsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientPreparationsTableName),
 				)),
 			},
 			{

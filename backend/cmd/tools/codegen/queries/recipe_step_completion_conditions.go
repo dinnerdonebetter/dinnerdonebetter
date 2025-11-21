@@ -182,7 +182,7 @@ WHERE %s.%s IS NULL
 					validIngredientStatesTableName, recipeStepCompletionConditionsTableName, ingredientStateColumn, validIngredientStatesTableName, idColumn,
 					recipeStepCompletionConditionsTableName, archivedAtColumn,
 					buildFilterConditions(recipeStepCompletionConditionIngredientsTableName, true, false, "recipe_step_completion_conditions.belongs_to_recipe_step = sqlc.arg(recipe_step_id)"),
-					offsetLimitAddendum,
+					buildCursorLimitClause(recipeStepCompletionConditionsTableName),
 				)),
 			},
 			{

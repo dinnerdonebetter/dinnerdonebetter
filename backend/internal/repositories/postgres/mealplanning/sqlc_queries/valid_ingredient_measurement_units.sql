@@ -127,8 +127,9 @@ WHERE
 		valid_ingredient_measurement_units.last_updated_at IS NULL
 		OR valid_ingredient_measurement_units.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_ingredient_measurement_units.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_ingredient_measurement_units.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidIngredientMeasurementUnitsForMeasurementUnit :many
 SELECT
@@ -231,8 +232,9 @@ WHERE
 		valid_ingredient_measurement_units.last_updated_at IS NULL
 		OR valid_ingredient_measurement_units.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_ingredient_measurement_units.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_ingredient_measurement_units.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidIngredientMeasurementUnits :many
 SELECT
@@ -334,8 +336,9 @@ WHERE
 		valid_ingredient_measurement_units.last_updated_at IS NULL
 		OR valid_ingredient_measurement_units.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_ingredient_measurement_units.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_ingredient_measurement_units.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidIngredientMeasurementUnit :one
 SELECT

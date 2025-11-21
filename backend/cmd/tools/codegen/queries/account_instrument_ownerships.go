@@ -114,8 +114,6 @@ WHERE
 GROUP BY
 	%s.%s,
 	%s.%s
-ORDER BY
-	%s.%s
 %s;`,
 					strings.Join(fullSelectColumns, ",\n\t"),
 					buildFilterCountSelect(accountInstrumentOwnershipsTableName, true, true, []string{}, "account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id)"),
@@ -126,8 +124,7 @@ ORDER BY
 					buildFilterConditions(accountInstrumentOwnershipsTableName, true, true, "account_instrument_ownerships.belongs_to_account = sqlc.arg(account_id)"),
 					accountInstrumentOwnershipsTableName, idColumn,
 					validInstrumentsTableName, idColumn,
-					accountInstrumentOwnershipsTableName, idColumn,
-					offsetLimitAddendum,
+					buildCursorLimitClause(accountInstrumentOwnershipsTableName),
 				)),
 			},
 			{

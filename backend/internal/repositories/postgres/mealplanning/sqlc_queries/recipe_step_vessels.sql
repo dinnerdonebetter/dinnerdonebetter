@@ -249,8 +249,9 @@ WHERE recipe_step_vessels.archived_at IS NULL
 		recipe_step_vessels.last_updated_at IS NULL
 		OR recipe_step_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND recipe_step_vessels.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY recipe_step_vessels.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: UpdateRecipeStepVessel :execrows
 UPDATE recipe_step_vessels SET

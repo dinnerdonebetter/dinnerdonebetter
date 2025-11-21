@@ -85,10 +85,10 @@ WHERE
 		OR valid_ingredient_groups.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_ingredient_groups.archived_at = NULL)
+	AND valid_ingredient_groups.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY valid_ingredient_groups.id
-ORDER BY valid_ingredient_groups.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY valid_ingredient_groups.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidIngredientGroupMembers :many
 SELECT
@@ -201,10 +201,10 @@ WHERE
 		OR valid_ingredient_groups.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_ingredient_groups.archived_at = NULL)
+	AND valid_ingredient_groups.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY valid_ingredient_groups.id
-ORDER BY valid_ingredient_groups.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY valid_ingredient_groups.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidIngredientGroupsWithIDs :many
 SELECT

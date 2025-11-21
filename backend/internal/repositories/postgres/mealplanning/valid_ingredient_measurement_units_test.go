@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -189,5 +190,49 @@ func TestQuerier_ArchiveValidIngredientMeasurementUnit(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveValidIngredientMeasurementUnit(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidIngredientMeasurementUnits_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Create different ingredients and measurement units for each item to ensure uniqueness
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidIngredientMeasurementUnit]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid ingredient measurement unit",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidIngredientMeasurementUnit {
+			// Create unique ingredient and measurement unit for each item
+			exampleValidIngredient := createValidIngredientForTest(t, ctx, nil, dbc)
+			exampleValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+			exampleValidIngredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
+			exampleValidIngredientMeasurementUnit.Ingredient = *exampleValidIngredient
+			exampleValidIngredientMeasurementUnit.MeasurementUnit = *exampleValidMeasurementUnit
+			return createValidIngredientMeasurementUnitForTest(t, ctx, exampleValidIngredientMeasurementUnit, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientMeasurementUnit], error) {
+			return dbc.GetValidIngredientMeasurementUnits(ctx, filter)
+		},
+		GetID: func(validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) string {
+			return validIngredientMeasurementUnit.ID
+		},
+		CleanupItem: func(ctx context.Context, validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit) error {
+			return dbc.ArchiveValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnit.ID)
+		},
 	})
 }

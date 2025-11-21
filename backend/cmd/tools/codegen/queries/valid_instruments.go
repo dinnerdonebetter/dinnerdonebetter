@@ -105,7 +105,6 @@ WHERE
 	%s.%s IS NULL
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(validInstrumentsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validInstrumentsTableName, s)
@@ -120,11 +119,8 @@ ORDER BY %s.%s
 						true,
 						true,
 					),
-					validInstrumentsTableName,
-					idColumn,
-					validInstrumentsTableName,
-					idColumn,
-					offsetLimitAddendum,
+					validInstrumentsTableName, idColumn,
+					buildCursorLimitClause(validInstrumentsTableName),
 				)),
 			},
 			{

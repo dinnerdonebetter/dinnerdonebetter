@@ -181,8 +181,9 @@ WHERE recipe_step_products.archived_at IS NULL
 		OR recipe_step_products.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR recipe_step_products.archived_at = NULL)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND recipe_step_products.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY recipe_step_products.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetRecipeStepProduct :one
 SELECT

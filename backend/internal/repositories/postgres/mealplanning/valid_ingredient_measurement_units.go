@@ -158,8 +158,8 @@ func (q *repository) GetValidIngredientMeasurementUnitsForIngredient(ctx context
 		CreatedAfter:      database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:     database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:      database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:       database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:        database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:            database.NullStringFromStringPointer(filter.NextCursor),
+		ResultLimit:       database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived:   database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -272,8 +272,8 @@ func (q *repository) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx co
 		CreatedAfter:           database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:          database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:           database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:            database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:             database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:                 database.NullStringFromStringPointer(filter.NextCursor),
+		ResultLimit:            database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived:        database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -375,12 +375,13 @@ func (q *repository) GetValidIngredientMeasurementUnits(ctx context.Context, fil
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnits(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsParams{
-		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+
+		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

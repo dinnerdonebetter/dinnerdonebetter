@@ -141,8 +141,9 @@ WHERE recipe_step_completion_conditions.archived_at IS NULL
 		OR recipe_step_completion_condition_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND recipe_step_completion_conditions.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND recipe_step_completion_condition_ingredients.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY recipe_step_completion_conditions.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetRecipeStepCompletionConditionWithIngredients :many
 SELECT

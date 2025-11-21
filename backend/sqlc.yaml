@@ -2,7 +2,7 @@
 version: "2"
 sql:
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations/migration_files"
+    schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
       - "internal/repositories/postgres/auditlogentries/sqlc_queries"
     strict_function_checks: true
@@ -47,7 +47,7 @@ sql:
 
 
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations/migration_files"
+    schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
       - "internal/repositories/postgres/identity/sqlc_queries"
     strict_function_checks: true
@@ -91,7 +91,7 @@ sql:
             nullable: true
 
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations/migration_files"
+    schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
       - "internal/repositories/postgres/settings/sqlc_queries"
     strict_function_checks: true
@@ -135,7 +135,7 @@ sql:
             nullable: true
 
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations/migration_files"
+    schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
       - "internal/repositories/postgres/oauth/sqlc_queries"
     strict_function_checks: true
@@ -179,7 +179,7 @@ sql:
             nullable: true
 
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations/migration_files"
+    schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
       - "internal/repositories/postgres/webhooks/sqlc_queries"
     strict_function_checks: true
@@ -223,7 +223,7 @@ sql:
             nullable: true
 
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations/migration_files"
+    schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
       - "internal/repositories/postgres/notifications/sqlc_queries"
     strict_function_checks: true
@@ -267,7 +267,7 @@ sql:
             nullable: true
 
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations/migration_files"
+    schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
       - "internal/repositories/postgres/mealplanning/sqlc_queries"
     strict_function_checks: true
@@ -311,7 +311,7 @@ sql:
             nullable: true
 
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations/migration_files"
+    schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
       - "internal/repositories/postgres/maintenance/sqlc_queries"
     strict_function_checks: true
@@ -356,7 +356,7 @@ sql:
 
 
   - engine: "postgresql"
-    schema: "internal/platform/database/postgres/migrations/migration_files"
+    schema: "internal/repositories/postgres/migrations/migration_files"
     queries:
       - "internal/repositories/postgres/auth/sqlc_queries"
     strict_function_checks: true

@@ -163,7 +163,7 @@ WHERE
 						true,
 						true,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(mealsTableName),
 				)),
 			},
 			{
@@ -190,7 +190,7 @@ WHERE
 					mealsTableName, archivedAtColumn,
 					mealsTableName, createdByUserColumn, createdByUserColumn,
 					buildFilterConditions(mealsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealsTableName, createdByUserColumn, createdByUserColumn)),
-					offsetLimitAddendum,
+					buildCursorLimitClause(mealsTableName),
 				)),
 			},
 			{
@@ -221,7 +221,7 @@ WHERE
 						true,
 						true,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(mealsTableName),
 				)),
 			},
 			{

@@ -86,10 +86,10 @@ WHERE
 		OR valid_measurement_units.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_measurement_units.archived_at = NULL)
+	AND valid_measurement_units.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY valid_measurement_units.id
-ORDER BY valid_measurement_units.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY valid_measurement_units.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidMeasurementUnitsNeedingIndexing :many
 SELECT valid_measurement_units.id
@@ -244,8 +244,9 @@ WHERE
 		valid_measurement_units.last_updated_at IS NULL
 		OR valid_measurement_units.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_measurement_units.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_measurement_units.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: UpdateValidMeasurementUnit :execrows
 UPDATE valid_measurement_units SET

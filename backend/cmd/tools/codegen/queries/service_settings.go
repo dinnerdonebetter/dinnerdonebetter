@@ -107,7 +107,7 @@ WHERE %s.%s IS NULL
 						true,
 						true,
 					),
-					offsetLimitAddendum,
+					buildCursorLimitClause(serviceSettingsTableName),
 				)),
 			},
 			{

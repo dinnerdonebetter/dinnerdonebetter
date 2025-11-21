@@ -334,3 +334,50 @@ func TestQuerier_ArchiveRecipeStepIngredient(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipeStepIngredient(ctx, exampleRecipeStepID, ""))
 	})
 }
+
+func F(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+	recipeStep := recipe.Steps[0]
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.RecipeStepIngredient]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "recipe step ingredient",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.RecipeStepIngredient {
+			ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
+			measurementUnit := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+			recipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
+			recipeStepIngredient.BelongsToRecipeStep = recipeStep.ID
+			recipeStepIngredient.Ingredient = ingredient
+			recipeStepIngredient.MeasurementUnit = *measurementUnit
+			return createRecipeStepIngredientForTest(t, ctx, recipe.ID, recipeStepIngredient, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeStepIngredient], error) {
+			return dbc.GetRecipeStepIngredients(ctx, recipe.ID, recipeStep.ID, filter)
+		},
+		GetID: func(recipeStepIngredient *types.RecipeStepIngredient) string {
+			return recipeStepIngredient.ID
+		},
+		CleanupItem: func(ctx context.Context, recipeStepIngredient *types.RecipeStepIngredient) error {
+			return dbc.ArchiveRecipeStepIngredient(ctx, recipeStep.ID, recipeStepIngredient.ID)
+		},
+	})
+}

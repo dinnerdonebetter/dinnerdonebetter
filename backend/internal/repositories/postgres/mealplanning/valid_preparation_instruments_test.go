@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -187,5 +188,49 @@ func TestQuerier_ArchiveValidPreparationInstrument(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveValidPreparationInstrument(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidPreparationInstruments_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Create different preparations and instruments for each item to ensure uniqueness
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidPreparationInstrument]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid preparation instrument",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidPreparationInstrument {
+			// Create unique preparation and instrument for each item
+			exampleValidInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
+			exampleValidPreparation := createValidPreparationForTest(t, ctx, nil, dbc)
+			exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
+			exampleValidPreparationInstrument.Preparation = *exampleValidPreparation
+			exampleValidPreparationInstrument.Instrument = *exampleValidInstrument
+			return createValidPreparationInstrumentForTest(t, ctx, exampleValidPreparationInstrument, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationInstrument], error) {
+			return dbc.GetValidPreparationInstruments(ctx, filter)
+		},
+		GetID: func(validPreparationInstrument *types.ValidPreparationInstrument) string {
+			return validPreparationInstrument.ID
+		},
+		CleanupItem: func(ctx context.Context, validPreparationInstrument *types.ValidPreparationInstrument) error {
+			return dbc.ArchiveValidPreparationInstrument(ctx, validPreparationInstrument.ID)
+		},
 	})
 }

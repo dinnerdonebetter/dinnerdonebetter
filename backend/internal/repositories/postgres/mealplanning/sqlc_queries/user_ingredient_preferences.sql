@@ -112,8 +112,9 @@ WHERE user_ingredient_preferences.archived_at IS NULL
 		user_ingredient_preferences.last_updated_at IS NULL
 		OR user_ingredient_preferences.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND user_ingredient_preferences.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY user_ingredient_preferences.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetUserIngredientPreference :one
 SELECT

@@ -3,6 +3,7 @@ package mealplanning
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"testing"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
@@ -200,5 +201,52 @@ func TestQuerier_ArchiveValidIngredientGroup(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveValidIngredientGroup(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidIngredientGroups_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidIngredientGroup]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid ingredient group",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidIngredientGroup {
+			validIngredient := createValidIngredientForTest(t, ctx, nil, dbc)
+			validIngredientGroup := fakes.BuildFakeValidIngredientGroup()
+			validIngredientGroup.Name = fmt.Sprintf("Valid Ingredient Group %02d", i)
+			validIngredientGroup.Members = []*types.ValidIngredientGroupMember{
+				{
+					ID:              identifiers.New(),
+					BelongsToGroup:  validIngredientGroup.ID,
+					ValidIngredient: *validIngredient,
+				},
+			}
+			return createValidIngredientGroupForTest(t, ctx, validIngredientGroup, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredientGroup], error) {
+			return dbc.GetValidIngredientGroups(ctx, filter)
+		},
+		GetID: func(validIngredientGroup *types.ValidIngredientGroup) string {
+			return validIngredientGroup.ID
+		},
+		CleanupItem: func(ctx context.Context, validIngredientGroup *types.ValidIngredientGroup) error {
+			return dbc.ArchiveValidIngredientGroup(ctx, validIngredientGroup.ID)
+		},
 	})
 }

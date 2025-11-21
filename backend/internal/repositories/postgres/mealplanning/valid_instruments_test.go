@@ -9,6 +9,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -217,5 +218,44 @@ func TestQuerier_MarkValidInstrumentAsIndexed(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkValidInstrumentAsIndexed(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidInstruments_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidInstrument]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid instrument",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidInstrument {
+			validInstrument := fakes.BuildFakeValidInstrument()
+			validInstrument.Name = fmt.Sprintf("Valid Instrument %02d", i)
+			return createValidInstrumentForTest(t, ctx, validInstrument, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidInstrument], error) {
+			return dbc.GetValidInstruments(ctx, filter)
+		},
+		GetID: func(validInstrument *types.ValidInstrument) string {
+			return validInstrument.ID
+		},
+		CleanupItem: func(ctx context.Context, validInstrument *types.ValidInstrument) error {
+			return dbc.ArchiveValidInstrument(ctx, validInstrument.ID)
+		},
 	})
 }

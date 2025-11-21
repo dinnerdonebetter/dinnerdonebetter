@@ -9,6 +9,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -235,5 +236,47 @@ func TestQuerier_MarkMealAsIndexed(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.MarkMealAsIndexed(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_Meals_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.Meal]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "meal",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.Meal {
+			meal := buildMealForIntegrationTest(user.ID, recipe)
+			meal.Name = fmt.Sprintf("Meal %02d", i)
+			return createMealForTest(t, ctx, meal, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.Meal], error) {
+			return dbc.GetMeals(ctx, filter)
+		},
+		GetID: func(meal *types.Meal) string {
+			return meal.ID
+		},
+		CleanupItem: func(ctx context.Context, meal *types.Meal) error {
+			return dbc.ArchiveMeal(ctx, meal.ID, user.ID)
+		},
 	})
 }

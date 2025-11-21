@@ -299,3 +299,53 @@ func TestQuerier_ArchiveRecipeStepVessel(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipeStepVessel(ctx, exampleRecipeStepID, ""))
 	})
 }
+
+func TestQuerier_Integration_RecipeStepVessels_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
+	// Clear the default vessels from the step so we start fresh
+	for _, step := range recipeStruct.Steps {
+		step.Vessels = []*types.RecipeStepVessel{}
+	}
+	recipe := createRecipeForTest(t, ctx, recipeStruct, dbc, false)
+	recipeStep := recipe.Steps[0]
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.RecipeStepVessel]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "recipe step vessel",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.RecipeStepVessel {
+			vessel := createValidVesselForTest(t, ctx, nil, dbc)
+			recipeStepVessel := fakes.BuildFakeRecipeStepVessel()
+			recipeStepVessel.BelongsToRecipeStep = recipeStep.ID
+			recipeStepVessel.Vessel = vessel
+			return createRecipeStepVesselForTest(t, ctx, recipe.ID, recipeStepVessel, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeStepVessel], error) {
+			return dbc.GetRecipeStepVessels(ctx, recipe.ID, recipeStep.ID, filter)
+		},
+		GetID: func(recipeStepVessel *types.RecipeStepVessel) string {
+			return recipeStepVessel.ID
+		},
+		CleanupItem: func(ctx context.Context, recipeStepVessel *types.RecipeStepVessel) error {
+			return dbc.ArchiveRecipeStepVessel(ctx, recipeStep.ID, recipeStepVessel.ID)
+		},
+	})
+}

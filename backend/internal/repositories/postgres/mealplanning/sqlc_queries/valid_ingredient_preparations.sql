@@ -128,8 +128,9 @@ WHERE
 		valid_ingredient_preparations.last_updated_at IS NULL
 		OR valid_ingredient_preparations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_ingredient_preparations.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_ingredient_preparations.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidIngredientPreparationsForPreparation :many
 SELECT
@@ -237,8 +238,9 @@ WHERE
 		valid_ingredient_preparations.last_updated_at IS NULL
 		OR valid_ingredient_preparations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_ingredient_preparations.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_ingredient_preparations.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidIngredientPreparations :many
 SELECT
@@ -345,8 +347,9 @@ WHERE
 		valid_ingredient_preparations.last_updated_at IS NULL
 		OR valid_ingredient_preparations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND valid_ingredient_preparations.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_ingredient_preparations.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidIngredientPreparation :one
 SELECT

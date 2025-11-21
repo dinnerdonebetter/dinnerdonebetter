@@ -103,7 +103,6 @@ WHERE
 	%s.%s IS NULL
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
@@ -118,11 +117,8 @@ ORDER BY %s.%s
 						true,
 						true,
 					),
-					validMeasurementUnitsTableName,
-					idColumn,
-					validMeasurementUnitsTableName,
-					idColumn,
-					offsetLimitAddendum,
+					validMeasurementUnitsTableName, idColumn,
+					buildCursorLimitClause(validMeasurementUnitsTableName),
 				)),
 			},
 			{
@@ -270,7 +266,7 @@ WHERE
 					validIngredientsTableName, archivedAtColumn,
 					validIngredientMeasurementUnitsTableName, archivedAtColumn,
 					buildFilterConditions(validMeasurementUnitsTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(validMeasurementUnitsTableName),
 				)),
 			},
 			{

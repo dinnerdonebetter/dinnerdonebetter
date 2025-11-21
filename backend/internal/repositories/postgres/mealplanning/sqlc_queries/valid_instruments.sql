@@ -83,10 +83,10 @@ WHERE
 		OR valid_instruments.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_instruments.archived_at = NULL)
+	AND valid_instruments.id > COALESCE(sqlc.narg(cursor), '')
 GROUP BY valid_instruments.id
-ORDER BY valid_instruments.id
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+ORDER BY valid_instruments.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetValidInstrumentsNeedingIndexing :many
 SELECT valid_instruments.id

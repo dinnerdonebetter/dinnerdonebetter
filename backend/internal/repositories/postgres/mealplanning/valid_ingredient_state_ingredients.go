@@ -139,12 +139,13 @@ func (q *repository) GetValidIngredientStateIngredients(ctx context.Context, fil
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientStateIngredients(ctx, q.db, &generated.GetValidIngredientStateIngredientsParams{
-		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+
+		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -249,8 +250,8 @@ func (q *repository) GetValidIngredientStateIngredientsForIngredientState(ctx co
 		CreatedAfter:         database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:        database.NullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:         database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:          database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:           database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:               database.NullStringFromStringPointer(filter.NextCursor),
+		ResultLimit:          database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived:      database.NullBoolFromBoolPointer(filter.IncludeArchived),
 		ValidIngredientState: ingredientStateID,
 	})
@@ -352,12 +353,13 @@ func (q *repository) GetValidIngredientStateIngredientsForIngredient(ctx context
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientStateIngredientsForIngredient(ctx, q.db, &generated.GetValidIngredientStateIngredientsForIngredientParams{
-		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+
+		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 		ValidIngredient: ingredientID,
 	})

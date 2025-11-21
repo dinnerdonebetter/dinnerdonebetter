@@ -262,3 +262,42 @@ func TestQuerier_MarkValidIngredientAsIndexed(T *testing.T) {
 		assert.Error(t, c.MarkValidIngredientAsIndexed(ctx, ""))
 	})
 }
+
+func TestQuerier_Integration_ValidIngredients_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidIngredient]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid ingredient",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidIngredient {
+			validIngredient := fakes.BuildFakeValidIngredient()
+			validIngredient.Name = fmt.Sprintf("Valid Ingredient %02d", i)
+			return createValidIngredientForTest(t, ctx, validIngredient, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidIngredient], error) {
+			return dbc.GetValidIngredients(ctx, filter)
+		},
+		GetID: func(validIngredient *types.ValidIngredient) string {
+			return validIngredient.ID
+		},
+		CleanupItem: func(ctx context.Context, validIngredient *types.ValidIngredient) error {
+			return dbc.ArchiveValidIngredient(ctx, validIngredient.ID)
+		},
+	})
+}

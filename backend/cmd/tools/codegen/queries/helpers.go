@@ -24,11 +24,10 @@ const (
 	belongsToUserColumn    = "belongs_to_user"
 
 	includeArchivedArg = "include_archived"
+	cursorArg          = "cursor"
+	limitArg           = "result_limit"
 
 	currentTimeExpression = "NOW()"
-
-	offsetLimitAddendum = `LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset)`
 )
 
 func applyToEach[T comparable](x []T, f func(int, T) T) []T {
@@ -123,8 +122,11 @@ func buildFilterConditions(tableName string, withUpdateColumn, withArchivedAtCol
 		allConditions += fmt.Sprintf("\n\tAND %s", condition)
 	}
 
+	// Add cursor-based pagination condition
+	cursorCondition := fmt.Sprintf("\n\t%s", buildCursorCondition(tableName))
+
 	rv := strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
-	AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s%s`,
+	AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s%s%s`,
 		tableName,
 		createdAtColumn,
 		currentTimeExpression,
@@ -134,6 +136,7 @@ func buildFilterConditions(tableName string, withUpdateColumn, withArchivedAtCol
 		updateAddendum,
 		archivedAddendum,
 		allConditions,
+		cursorCondition,
 	)))
 
 	return rv
@@ -241,4 +244,22 @@ type joinStatement struct {
 
 func buildJoinStatement(js joinStatement) string {
 	return fmt.Sprintf("JOIN %s ON %s.%s=%s.%s", js.joinTarget, js.onTable, js.onColumn, js.joinTarget, js.targetColumn)
+}
+
+// buildCursorCondition creates a WHERE clause for cursor-based pagination.
+// Since xid is sortable by time, we can use simple string comparison.
+func buildCursorCondition(tableName string) string {
+	return fmt.Sprintf("AND %s.%s > COALESCE(sqlc.narg(%s), '')", tableName, idColumn, cursorArg)
+}
+
+// buildCursorLimitClause creates the ORDER BY and LIMIT clause for cursor-based pagination.
+// This provides a consistent ordering by ID (which is sortable with xid) and applies the limit.
+func buildCursorLimitClause(tableName string) string {
+	return fmt.Sprintf("ORDER BY %s.%s ASC\nLIMIT COALESCE(sqlc.narg(%s), 50)", tableName, idColumn, limitArg)
+}
+
+// buildCursorPaginationFragment creates a complete cursor-based pagination fragment
+// for use in queries that don't already have buildFilterConditions.
+func buildCursorPaginationFragment(tableName string) string {
+	return fmt.Sprintf("%s\n%s", buildCursorCondition(tableName), buildCursorLimitClause(tableName))
 }

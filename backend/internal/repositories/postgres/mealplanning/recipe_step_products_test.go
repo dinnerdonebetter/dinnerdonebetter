@@ -312,3 +312,53 @@ func TestQuerier_ArchiveRecipeStepProduct(T *testing.T) {
 		assert.Error(t, c.ArchiveRecipeStepProduct(ctx, exampleRecipeStepID, ""))
 	})
 }
+
+func TestQuerier_Integration_RecipeStepProducts_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
+	// Clear the default products from the step so we start fresh
+	for _, step := range recipeStruct.Steps {
+		step.Products = []*types.RecipeStepProduct{}
+	}
+	recipe := createRecipeForTest(t, ctx, recipeStruct, dbc, false)
+	recipeStep := recipe.Steps[0]
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.RecipeStepProduct]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "recipe step product",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.RecipeStepProduct {
+			measurementUnit := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
+			recipeStepProduct := fakes.BuildFakeRecipeStepProduct()
+			recipeStepProduct.BelongsToRecipeStep = recipeStep.ID
+			recipeStepProduct.MeasurementUnit = measurementUnit
+			return createRecipeStepProductForTest(t, ctx, recipe.ID, recipeStepProduct, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.RecipeStepProduct], error) {
+			return dbc.GetRecipeStepProducts(ctx, recipe.ID, recipeStep.ID, filter)
+		},
+		GetID: func(recipeStepProduct *types.RecipeStepProduct) string {
+			return recipeStepProduct.ID
+		},
+		CleanupItem: func(ctx context.Context, recipeStepProduct *types.RecipeStepProduct) error {
+			return dbc.ArchiveRecipeStepProduct(ctx, recipeStep.ID, recipeStepProduct.ID)
+		},
+	})
+}

@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity/fakes"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	databasecfg "github.com/dinnerdonebetter/backend/internal/platform/database/config"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
@@ -270,4 +271,141 @@ func CreateAccountForTest(t *testing.T, exampleAccount *identity.Account, userID
 	assert.Equal(t, exampleAccount, created)
 
 	return created
+}
+
+// PaginationTestConfig contains the configuration for testing cursor-based pagination.
+type PaginationTestConfig[T any] struct {
+	// TotalItems is the total number of items to create for the test
+	TotalItems int
+	// PageSize is the number of items per page
+	PageSize int
+	// CreateItem creates a single test item. The index i goes from 0 to TotalItems-1.
+	CreateItem func(t *testing.T, ctx context.Context, i int) *T
+	// FetchPage fetches a single page of results using the provided filter
+	FetchPage func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[T], error)
+	// GetID extracts the ID string from an item (used for cursor advancement and duplicate detection)
+	GetID func(item *T) string
+	// CleanupItem cleans up a single item after the test (e.g., archiving/deleting)
+	CleanupItem func(ctx context.Context, item *T) error
+	// ItemName is a human-readable name for the item type (e.g., "webhook", "meal plan")
+	ItemName string
+}
+
+// TestCursorBasedPagination is a generic test function for cursor-based pagination.
+// It creates items, fetches them using cursor-based pagination, and verifies:
+//   - All items are retrieved exactly once
+//   - Items are returned in ascending ID order
+//   - Pagination counts are accurate
+//   - The expected number of pages is fetched
+func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config PaginationTestConfig[T]) {
+	t.Helper()
+
+	// Calculate expected pages
+	expectedPages := (config.TotalItems + config.PageSize - 1) / config.PageSize
+	if config.TotalItems%config.PageSize == 0 {
+		// For evenly divisible cases, we still get one empty page at the end
+		expectedPages = config.TotalItems / config.PageSize
+	}
+
+	// Create test items
+	createdItems := make([]*T, 0, config.TotalItems)
+
+	for i := 0; i < config.TotalItems; i++ {
+		item := config.CreateItem(t, ctx, i)
+		createdItems = append(createdItems, item)
+	}
+
+	// Track all items we retrieve via pagination
+	allPaginatedItems := []*T{}
+	var cursor *string // Start with no cursor for the first page
+	pageCount := 0
+
+	// Paginate through all results
+	for {
+		pageCount++
+		filter := &filtering.QueryFilter{
+			PageSize:   filtering.DefaultQueryFilter().PageSize,
+			NextCursor: cursor,
+		}
+		// Override the default page size with our test page size
+		customPageSize := uint8(config.PageSize)
+		filter.PageSize = &customPageSize
+
+		result, err := config.FetchPage(ctx, filter)
+		require.NoError(t, err, "failed to fetch page %d", pageCount)
+		require.NotNil(t, result, "result should not be nil for page %d", pageCount)
+
+		// If this page is empty, we've gone past the end (cursor-based pagination characteristic)
+		if len(result.Data) == 0 {
+			break
+		}
+
+		// Verify we got the expected number of results (all full pages should be evenly sized)
+		if pageCount <= expectedPages {
+			assert.Len(t, result.Data, config.PageSize, "page %d should contain exactly %d %ss", pageCount, config.PageSize, config.ItemName)
+		}
+
+		// Verify counts are accurate when there's data
+		assert.Equal(t, uint64(config.TotalItems), result.TotalCount, "total count should be %d", config.TotalItems)
+		assert.Equal(t, uint64(config.TotalItems), result.FilteredCount, "filtered count should be %d", config.TotalItems)
+
+		// Add results to our collection
+		for _, item := range result.Data {
+			allPaginatedItems = append(allPaginatedItems, item)
+		}
+
+		// If we got fewer results than the page size, we're on the last page
+		if len(result.Data) < config.PageSize {
+			break
+		}
+
+		// Use the last ID from this page as the cursor for the next page
+		if len(result.Data) > 0 {
+			lastID := config.GetID(result.Data[len(result.Data)-1])
+			cursor = &lastID
+		} else {
+			break
+		}
+
+		// Safety check to prevent infinite loops
+		assert.False(t, pageCount > config.TotalItems+5, "Too many pages fetched, possible infinite loop")
+	}
+
+	// With cursor-based pagination, we fetch expectedPages of data + 1 request that returns empty
+	// This is expected behavior - we don't know we're done until we try and get 0 results
+	assert.Equal(t, expectedPages+1, pageCount, "should have made %d requests (%d pages with data + 1 empty)", expectedPages+1, expectedPages)
+
+	// Verify we got all items
+	assert.Len(t, allPaginatedItems, config.TotalItems, "should have retrieved all %d %ss via pagination", config.TotalItems, config.ItemName)
+
+	// Verify no duplicates - create a map of IDs
+	seenIDs := make(map[string]bool)
+	for _, item := range allPaginatedItems {
+		id := config.GetID(item)
+		assert.False(t, seenIDs[id], "Duplicate %s ID found: %s", config.ItemName, id)
+		seenIDs[id] = true
+	}
+
+	// Verify all created items were retrieved
+	for _, created := range createdItems {
+		id := config.GetID(created)
+		assert.True(t, seenIDs[config.GetID(created)], "Created %s %s was not retrieved via pagination", config.ItemName, id)
+	}
+
+	// Verify items are returned in ascending ID order (cursor-based pagination requirement)
+	for i := 1; i < len(allPaginatedItems); i++ {
+		prevID := config.GetID(allPaginatedItems[i-1])
+		currID := config.GetID(allPaginatedItems[i])
+		assert.True(t, prevID < currID,
+			"%ss should be ordered by ID ascending: %s should be < %s (position %d and %d)",
+			config.ItemName, prevID, currID, i-1, i)
+	}
+
+	// Cleanup all created items
+	for _, item := range createdItems {
+		if config.CleanupItem != nil {
+			err := config.CleanupItem(ctx, item)
+			assert.NoError(t, err, "failed to cleanup %s %s", config.ItemName, config.GetID(item))
+		}
+	}
 }

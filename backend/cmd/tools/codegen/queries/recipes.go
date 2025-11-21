@@ -180,7 +180,7 @@ FROM %s
 					recipesTableName,
 					recipesTableName, archivedAtColumn,
 					buildFilterConditions(recipesTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(recipesTableName),
 				)),
 			},
 			{
@@ -206,7 +206,7 @@ FROM %s
 					recipesTableName, archivedAtColumn,
 					recipesTableName, createdByUserColumn, createdByUserColumn,
 					buildFilterConditions(recipesTableName, true, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", recipesTableName, createdByUserColumn, createdByUserColumn)),
-					offsetLimitAddendum,
+					buildCursorLimitClause(recipesTableName),
 				)),
 			},
 			{
@@ -232,7 +232,7 @@ WHERE %s.%s IS NULL
 					recipesTableName, archivedAtColumn,
 					recipesTableName, nameColumn, buildILIKEForArgument("query"),
 					buildFilterConditions(recipesTableName, true, false),
-					offsetLimitAddendum,
+					buildCursorLimitClause(recipesTableName),
 				)),
 			},
 			{

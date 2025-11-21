@@ -489,3 +489,60 @@ func Test_decideOptionWinner(T *testing.T) {
 		assert.False(t, chosen)
 	})
 }
+
+func TestQuerier_Integration_MealPlanOptions_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
+	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
+	
+	// Create a meal plan with one event but no options in it
+	mealPlan := fakes.BuildFakeMealPlan()
+	mealPlan.CreatedByUser = user.ID
+	mealPlan.BelongsToAccount = account.ID
+	mealPlan.Status = string(types.MealPlanStatusAwaitingVotes)
+	
+	mealPlanEvent := fakes.BuildFakeMealPlanEvent()
+	mealPlanEvent.Options = []*types.MealPlanOption{}
+	mealPlan.Events = []*types.MealPlanEvent{mealPlanEvent}
+	
+	createdMealPlan := createMealPlanForTest(t, ctx, mealPlan, dbc)
+	mealPlanEvent = createdMealPlan.Events[0]
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.MealPlanOption]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "meal plan option",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.MealPlanOption {
+			mealPlanOption := buildMealPlanOptionForIntegrationTest(meal)
+			mealPlanOption.BelongsToMealPlanEvent = mealPlanEvent.ID
+			return createMealPlanOptionForTest(t, ctx, createdMealPlan.ID, mealPlanOption, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.MealPlanOption], error) {
+			return dbc.GetMealPlanOptions(ctx, createdMealPlan.ID, mealPlanEvent.ID, filter)
+		},
+		GetID: func(mealPlanOption *types.MealPlanOption) string {
+			return mealPlanOption.ID
+		},
+		CleanupItem: func(ctx context.Context, mealPlanOption *types.MealPlanOption) error {
+			return dbc.ArchiveMealPlanOption(ctx, createdMealPlan.ID, mealPlanEvent.ID, mealPlanOption.ID)
+		},
+	})
+}

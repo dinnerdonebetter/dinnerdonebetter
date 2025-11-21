@@ -267,8 +267,9 @@ WHERE users.archived_at IS NULL
 		OR users.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR users.archived_at = NULL)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND users.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY users.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetUsersWithIDs :many
 SELECT

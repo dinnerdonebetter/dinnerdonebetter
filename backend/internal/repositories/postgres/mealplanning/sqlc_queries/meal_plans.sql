@@ -158,8 +158,9 @@ WHERE meal_plans.archived_at IS NULL
 	)
 			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR meal_plans.archived_at = NULL)
 	AND meal_plans.belongs_to_account = sqlc.arg(belongs_to_account)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND meal_plans.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY meal_plans.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetMealPlanPastVotingDeadline :one
 SELECT

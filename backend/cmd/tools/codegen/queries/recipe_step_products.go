@@ -196,7 +196,7 @@ WHERE %s.%s IS NULL
 					recipesTableName, archivedAtColumn,
 					recipesTableName, idColumn, recipeIDColumn,
 					buildFilterConditions(recipeStepProductsTableName, true, true),
-					offsetLimitAddendum,
+					buildCursorLimitClause(recipeStepProductsTableName),
 				)),
 			},
 			{

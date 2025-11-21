@@ -132,7 +132,6 @@ WHERE
 	%s.%s IS NULL
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(mealPlanEventsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", mealPlanEventsTableName, s)
@@ -143,8 +142,7 @@ ORDER BY %s.%s
 					mealPlanEventsTableName, archivedAtColumn,
 					buildFilterConditions(mealPlanEventsTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn)),
 					mealPlanEventsTableName, idColumn,
-					mealPlanEventsTableName, idColumn,
-					offsetLimitAddendum,
+					buildCursorLimitClause(mealPlanEventsTableName),
 				)),
 			},
 			{

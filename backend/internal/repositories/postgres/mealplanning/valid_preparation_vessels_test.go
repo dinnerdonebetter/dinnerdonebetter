@@ -8,6 +8,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -187,5 +188,49 @@ func TestQuerier_ArchiveValidPreparationVessel(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveValidPreparationVessel(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ValidPreparationVessels_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Create different preparations and vessels for each item to ensure uniqueness
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidPreparationVessel]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "valid preparation vessel",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidPreparationVessel {
+			// Create unique preparation and vessel for each item
+			exampleValidVessel := createValidVesselForTest(t, ctx, nil, dbc)
+			exampleValidPreparation := createValidPreparationForTest(t, ctx, nil, dbc)
+			exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
+			exampleValidPreparationVessel.Preparation = *exampleValidPreparation
+			exampleValidPreparationVessel.Vessel = *exampleValidVessel
+			return createValidPreparationVesselForTest(t, ctx, exampleValidPreparationVessel, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ValidPreparationVessel], error) {
+			return dbc.GetValidPreparationVessels(ctx, filter)
+		},
+		GetID: func(validPreparationVessel *types.ValidPreparationVessel) string {
+			return validPreparationVessel.ID
+		},
+		CleanupItem: func(ctx context.Context, validPreparationVessel *types.ValidPreparationVessel) error {
+			return dbc.ArchiveValidPreparationVessel(ctx, validPreparationVessel.ID)
+		},
 	})
 }

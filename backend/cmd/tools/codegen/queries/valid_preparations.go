@@ -113,7 +113,6 @@ WHERE
 	%s.%s IS NULL
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(validPreparationsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
@@ -127,9 +126,7 @@ ORDER BY %s.%s
 						true,
 						true,
 					),
-					validPreparationsTableName, idColumn,
-					validPreparationsTableName, idColumn,
-					offsetLimitAddendum,
+					validPreparationsTableName, idColumn, buildCursorLimitClause(validPreparationsTableName),
 				)),
 			},
 			{

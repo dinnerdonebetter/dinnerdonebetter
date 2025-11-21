@@ -203,7 +203,7 @@ GROUP BY
 					mealPlanOptionsTableName, idColumn,
 					mealPlanEventsTableName, idColumn,
 					mealPlansTableName, idColumn,
-					offsetLimitAddendum,
+					buildCursorLimitClause(mealPlanOptionVotesTableName),
 				)),
 			},
 			{

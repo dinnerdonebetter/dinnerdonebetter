@@ -121,7 +121,6 @@ WHERE
 	%s.%s IS NULL
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validVesselsTableName, s)
@@ -136,11 +135,8 @@ ORDER BY %s.%s
 						true,
 						true,
 					),
-					validVesselsTableName,
-					idColumn,
-					validVesselsTableName,
-					idColumn,
-					offsetLimitAddendum,
+					validVesselsTableName, idColumn,
+					buildCursorLimitClause(validVesselsTableName),
 				)),
 			},
 			{

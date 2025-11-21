@@ -139,7 +139,6 @@ WHERE
 	%s.%s IS NULL
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(validIngredientGroupsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validIngredientGroupsTableName, s)
@@ -155,8 +154,7 @@ ORDER BY %s.%s
 						true,
 					),
 					validIngredientGroupsTableName, idColumn,
-					validIngredientGroupsTableName, idColumn,
-					offsetLimitAddendum,
+					buildCursorLimitClause(validIngredientGroupsTableName),
 				)),
 			},
 			{
@@ -218,7 +216,6 @@ WHERE
 	AND %s.%s %s
 	%s
 GROUP BY %s.%s
-ORDER BY %s.%s
 %s;`,
 					strings.Join(applyToEach(validIngredientGroupsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validIngredientGroupsTableName, s)
@@ -234,11 +231,8 @@ ORDER BY %s.%s
 						true,
 						true,
 					),
-					validIngredientGroupsTableName,
-					idColumn,
-					validIngredientGroupsTableName,
-					idColumn,
-					offsetLimitAddendum,
+					validIngredientGroupsTableName, idColumn,
+					buildCursorLimitClause(validIngredientGroupsTableName),
 				)),
 			},
 			{
