@@ -319,6 +319,11 @@ func (q *repository) getRecipePrepTasksForRecipe(ctx context.Context, recipeID s
 		x = append(x, currentRecipePrepTask)
 	}
 
+	// Return nil instead of empty slice to match database behavior
+	if len(x) == 0 {
+		return nil, nil
+	}
+
 	return x, nil
 }
 

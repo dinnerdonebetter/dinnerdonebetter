@@ -524,7 +524,9 @@ func TestQuerier_Integration_RecipeSteps_CursorBasedPagination(t *testing.T) {
 	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
 	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	// Remove the default step so we start with an empty recipe
-	recipeStruct.Steps = []*types.RecipeStep{}
+	recipeStruct.Steps = nil
+	// Also clear prep tasks since they reference recipe steps that won't exist
+	recipeStruct.PrepTasks = nil
 	recipe := createRecipeForTest(t, ctx, recipeStruct, dbc, false)
 
 	// Use the generic pagination test helper

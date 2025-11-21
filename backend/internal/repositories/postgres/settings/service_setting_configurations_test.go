@@ -3,11 +3,13 @@ package settings
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"testing"
 
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 	"github.com/dinnerdonebetter/backend/internal/repositories/postgres/identity/generated"
 
@@ -219,5 +221,107 @@ func TestQuerier_ArchiveServiceSettingConfiguration(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveServiceSettingConfiguration(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ServiceSettingConfigurationsForUser_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Create a user and account for testing
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ServiceSettingConfiguration]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "service setting configuration",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ServiceSettingConfiguration {
+			// Create a unique service setting for each configuration to avoid unique constraint violations
+			serviceSetting := fakes.BuildFakeServiceSetting()
+			serviceSetting.Name = fmt.Sprintf("Service Setting %02d", i)
+			createdServiceSetting := createServiceSettingForTest(t, ctx, serviceSetting, dbc)
+
+			serviceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
+			serviceSettingConfiguration.ServiceSetting = *createdServiceSetting
+			serviceSettingConfiguration.BelongsToUser = user.ID
+			serviceSettingConfiguration.BelongsToAccount = account.ID
+			serviceSettingConfiguration.Value = fmt.Sprintf("Value %02d", i)
+			return createServiceSettingConfigurationForTest(t, ctx, serviceSettingConfiguration, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+			return dbc.GetServiceSettingConfigurationsForUser(ctx, user.ID, filter)
+		},
+		GetID: func(serviceSettingConfiguration *types.ServiceSettingConfiguration) string {
+			return serviceSettingConfiguration.ID
+		},
+		CleanupItem: func(ctx context.Context, serviceSettingConfiguration *types.ServiceSettingConfiguration) error {
+			return dbc.ArchiveServiceSettingConfiguration(ctx, serviceSettingConfiguration.ID)
+		},
+	})
+}
+
+func TestQuerier_Integration_ServiceSettingConfigurationsForAccount_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Create a user and account for testing
+	user := pgtesting.CreateUserForTest(t, nil, dbc.db)
+	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ServiceSettingConfiguration]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "service setting configuration",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ServiceSettingConfiguration {
+			// Create a unique service setting for each configuration to avoid unique constraint violations
+			serviceSetting := fakes.BuildFakeServiceSetting()
+			serviceSetting.Name = fmt.Sprintf("Service Setting %02d", i)
+			createdServiceSetting := createServiceSettingForTest(t, ctx, serviceSetting, dbc)
+
+			serviceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
+			serviceSettingConfiguration.ServiceSetting = *createdServiceSetting
+			serviceSettingConfiguration.BelongsToUser = user.ID
+			serviceSettingConfiguration.BelongsToAccount = account.ID
+			serviceSettingConfiguration.Value = fmt.Sprintf("Value %02d", i)
+			return createServiceSettingConfigurationForTest(t, ctx, serviceSettingConfiguration, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+			return dbc.GetServiceSettingConfigurationsForAccount(ctx, account.ID, filter)
+		},
+		GetID: func(serviceSettingConfiguration *types.ServiceSettingConfiguration) string {
+			return serviceSettingConfiguration.ID
+		},
+		CleanupItem: func(ctx context.Context, serviceSettingConfiguration *types.ServiceSettingConfiguration) error {
+			return dbc.ArchiveServiceSettingConfiguration(ctx, serviceSettingConfiguration.ID)
+		},
 	})
 }

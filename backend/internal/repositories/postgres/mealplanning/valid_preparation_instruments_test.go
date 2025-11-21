@@ -208,8 +208,6 @@ func TestQuerier_Integration_ValidPreparationInstruments_CursorBasedPagination(t
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
-	// Create different preparations and instruments for each item to ensure uniqueness
-	// Use the generic pagination test helper
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ValidPreparationInstrument]{
 		TotalItems: 9,
 		PageSize:   3,

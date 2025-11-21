@@ -321,7 +321,7 @@ func TestQuerier_Integration_RecipeStepInstruments_CursorBasedPagination(t *test
 	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	// Clear the default instruments from the step so we start fresh
 	for _, step := range recipeStruct.Steps {
-		step.Instruments = []*types.RecipeStepInstrument{}
+		step.Instruments = nil // Use nil instead of empty slice to match database behavior
 	}
 	recipe := createRecipeForTest(t, ctx, recipeStruct, dbc, false)
 	recipeStep := recipe.Steps[0]

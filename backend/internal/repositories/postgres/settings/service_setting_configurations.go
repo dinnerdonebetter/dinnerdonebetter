@@ -239,8 +239,16 @@ func (q *repository) GetServiceSettingConfigurationsForUser(ctx context.Context,
 		Pagination: filter.ToPagination(),
 	}
 
-	// TODO: properly apply query filter to this
-	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForUser(ctx, q.db, userID)
+	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForUser(ctx, q.db, &generated.GetServiceSettingConfigurationsForUserParams{
+		BelongsToUser:   userID,
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service setting configurations list retrieval query")
 	}
@@ -277,6 +285,8 @@ func (q *repository) GetServiceSettingConfigurationsForUser(ctx context.Context,
 		}
 
 		x.Data = append(x.Data, serviceSettingConfiguration)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
@@ -305,8 +315,16 @@ func (q *repository) GetServiceSettingConfigurationsForAccount(ctx context.Conte
 		Pagination: filter.ToPagination(),
 	}
 
-	// TODO: properly apply query filter to this
-	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForAccount(ctx, q.db, accountID)
+	results, err := q.generatedQuerier.GetServiceSettingConfigurationsForAccount(ctx, q.db, &generated.GetServiceSettingConfigurationsForAccountParams{
+		BelongsToAccount: accountID,
+		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
+		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
+		UpdatedAfter:     database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		Cursor:           database.NullStringFromStringPointer(filter.NextCursor),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		IncludeArchived:  database.NullBoolFromBoolPointer(filter.IncludeArchived),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service setting configurations list retrieval query")
 	}
@@ -343,6 +361,8 @@ func (q *repository) GetServiceSettingConfigurationsForAccount(ctx context.Conte
 		}
 
 		x.Data = append(x.Data, serviceSettingConfiguration)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil

@@ -142,6 +142,12 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 	}
 
 	for _, result := range results {
+		// Extract counts from the first result (all rows have the same counts)
+		if x.TotalCount == 0 {
+			x.TotalCount = uint64(result.TotalCount)
+			x.FilteredCount = uint64(result.FilteredCount)
+		}
+
 		x.Data = append(x.Data, &types.MealPlan{
 			CreatedAt:              result.CreatedAt,
 			VotingDeadline:         result.VotingDeadline,

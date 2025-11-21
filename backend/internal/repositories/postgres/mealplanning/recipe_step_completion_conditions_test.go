@@ -332,7 +332,7 @@ func TestQuerier_Integration_RecipeStepCompletionConditions_CursorBasedPaginatio
 	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	// Clear the default completion conditions from the step so we start fresh
 	for _, step := range recipeStruct.Steps {
-		step.CompletionConditions = []*types.RecipeStepCompletionCondition{}
+		step.CompletionConditions = nil // Use nil instead of empty slice to match database behavior
 	}
 	recipe := createRecipeForTest(t, ctx, recipeStruct, dbc, false)
 	recipeStep := recipe.Steps[0]

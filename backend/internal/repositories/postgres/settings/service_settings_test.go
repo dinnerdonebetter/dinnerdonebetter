@@ -9,6 +9,7 @@ import (
 	types "github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/converters"
 	"github.com/dinnerdonebetter/backend/internal/domain/settings/fakes"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 	pgtesting "github.com/dinnerdonebetter/backend/internal/platform/database/postgres/testing"
 
 	"github.com/stretchr/testify/assert"
@@ -171,5 +172,44 @@ func TestQuerier_ArchiveServiceSetting(T *testing.T) {
 		c := buildInertClientForTest(t)
 
 		assert.Error(t, c.ArchiveServiceSetting(ctx, ""))
+	})
+}
+
+func TestQuerier_Integration_ServiceSettings_CursorBasedPagination(t *testing.T) {
+	if !pgtesting.RunContainerTests {
+		t.SkipNow()
+	}
+
+	ctx := t.Context()
+	dbc, container := buildDatabaseClientForTest(t)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
+
+	// Use the generic pagination test helper
+	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.ServiceSetting]{
+		TotalItems: 9,
+		PageSize:   3,
+		ItemName:   "service setting",
+		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ServiceSetting {
+			serviceSetting := fakes.BuildFakeServiceSetting()
+			serviceSetting.Name = fmt.Sprintf("Service Setting %02d", i)
+			return createServiceSettingForTest(t, ctx, serviceSetting, dbc)
+		},
+		FetchPage: func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSetting], error) {
+			return dbc.GetServiceSettings(ctx, filter)
+		},
+		GetID: func(serviceSetting *types.ServiceSetting) string {
+			return serviceSetting.ID
+		},
+		CleanupItem: func(ctx context.Context, serviceSetting *types.ServiceSetting) error {
+			return dbc.ArchiveServiceSetting(ctx, serviceSetting.ID)
+		},
 	})
 }

@@ -121,8 +121,8 @@ func buildRecipesQueries(database string) []*Query {
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN %s ON %s.%s=%s.%s
-	JOIN %s ON %s.%s=%s.%s
+	LEFT JOIN %s ON %s.%s=%s.%s
+	LEFT JOIN %s ON %s.%s=%s.%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 ORDER BY %s.%s;`,

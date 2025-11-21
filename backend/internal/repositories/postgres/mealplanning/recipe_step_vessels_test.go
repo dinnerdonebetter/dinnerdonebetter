@@ -321,7 +321,7 @@ func TestQuerier_Integration_RecipeStepVessels_CursorBasedPagination(t *testing.
 	recipeStruct := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 	// Clear the default vessels from the step so we start fresh
 	for _, step := range recipeStruct.Steps {
-		step.Vessels = []*types.RecipeStepVessel{}
+		step.Vessels = nil // Use nil instead of empty slice to match database behavior
 	}
 	recipe := createRecipeForTest(t, ctx, recipeStruct, dbc, false)
 	recipeStep := recipe.Steps[0]

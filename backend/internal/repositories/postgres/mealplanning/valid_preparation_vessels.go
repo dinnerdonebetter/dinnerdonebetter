@@ -158,10 +158,6 @@ func (q *repository) GetValidPreparationVessels(ctx context.Context, filter *fil
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation vessels list retrieval query")
 	}
 
-	if len(results) == 0 {
-		return nil, sql.ErrNoRows
-	}
-
 	for _, result := range results {
 		validPreparationVessel := &mealplanning.ValidPreparationVessel{
 			CreatedAt:     result.ValidPreparationVesselCreatedAt,

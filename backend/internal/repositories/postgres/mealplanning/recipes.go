@@ -77,63 +77,64 @@ func (q *repository) getRecipe(ctx context.Context, recipeID string) (*mealplann
 				},
 				SealOfApproval:   result.SealOfApproval,
 				EligibleForMeals: result.EligibleForMeals,
-				PrepTasks:        []*mealplanning.RecipePrepTask{},
-				Media:            []*mealplanning.RecipeMedia{},
 			}
 		}
 
-		x.Steps = append(x.Steps, &mealplanning.RecipeStep{
-			CreatedAt: result.RecipeStepCreatedAt,
-			EstimatedTimeInSeconds: types.OptionalUint32Range{
-				Max: database.Uint32PointerFromNullInt64(result.RecipeStepMaximumEstimatedTimeInSeconds),
-				Min: database.Uint32PointerFromNullInt64(result.RecipeStepMinimumEstimatedTimeInSeconds),
-			},
-			TemperatureInCelsius: types.OptionalFloat32Range{
-				Max: database.Float32PointerFromNullString(result.RecipeStepMaximumTemperatureInCelsius),
-				Min: database.Float32PointerFromNullString(result.RecipeStepMinimumTemperatureInCelsius),
-			},
-			ArchivedAt:           database.TimePointerFromNullTime(result.RecipeStepArchivedAt),
-			LastUpdatedAt:        database.TimePointerFromNullTime(result.RecipeStepLastUpdatedAt),
-			BelongsToRecipe:      result.RecipeStepBelongsToRecipe,
-			ConditionExpression:  result.RecipeStepConditionExpression,
-			ID:                   result.RecipeStepID,
-			Notes:                result.RecipeStepNotes,
-			ExplicitInstructions: result.RecipeStepExplicitInstructions,
-			Preparation: mealplanning.ValidPreparation{
-				CreatedAt: result.RecipeStepPreparationCreatedAt,
-				InstrumentCount: types.Uint16RangeWithOptionalMax{
-					Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),
-					Min: uint16(result.RecipeStepPreparationMinimumInstrumentCount),
+		// Only add the step if it actually exists (not NULL from LEFT JOIN)
+		if result.RecipeStepID.Valid {
+			x.Steps = append(x.Steps, &mealplanning.RecipeStep{
+				CreatedAt: result.RecipeStepCreatedAt.Time,
+				EstimatedTimeInSeconds: types.OptionalUint32Range{
+					Max: database.Uint32PointerFromNullInt64(result.RecipeStepMaximumEstimatedTimeInSeconds),
+					Min: database.Uint32PointerFromNullInt64(result.RecipeStepMinimumEstimatedTimeInSeconds),
 				},
-				IngredientCount: types.Uint16RangeWithOptionalMax{
-					Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
-					Min: uint16(result.RecipeStepPreparationMinimumIngredientCount),
+				TemperatureInCelsius: types.OptionalFloat32Range{
+					Max: database.Float32PointerFromNullString(result.RecipeStepMaximumTemperatureInCelsius),
+					Min: database.Float32PointerFromNullString(result.RecipeStepMinimumTemperatureInCelsius),
 				},
-				VesselCount: types.Uint16RangeWithOptionalMax{
-					Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),
-					Min: uint16(result.RecipeStepPreparationMinimumVesselCount),
+				ArchivedAt:           database.TimePointerFromNullTime(result.RecipeStepArchivedAt),
+				LastUpdatedAt:        database.TimePointerFromNullTime(result.RecipeStepLastUpdatedAt),
+				BelongsToRecipe:      result.RecipeStepBelongsToRecipe.String,
+				ConditionExpression:  result.RecipeStepConditionExpression.String,
+				ID:                   result.RecipeStepID.String,
+				Notes:                result.RecipeStepNotes.String,
+				ExplicitInstructions: result.RecipeStepExplicitInstructions.String,
+				Preparation: mealplanning.ValidPreparation{
+					CreatedAt: result.RecipeStepPreparationCreatedAt.Time,
+					InstrumentCount: types.Uint16RangeWithOptionalMax{
+						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),
+						Min: uint16(result.RecipeStepPreparationMinimumInstrumentCount.Int32),
+					},
+					IngredientCount: types.Uint16RangeWithOptionalMax{
+						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
+						Min: uint16(result.RecipeStepPreparationMinimumIngredientCount.Int32),
+					},
+					VesselCount: types.Uint16RangeWithOptionalMax{
+						Max: database.Uint16PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),
+						Min: uint16(result.RecipeStepPreparationMinimumVesselCount.Int32),
+					},
+					ArchivedAt:                  database.TimePointerFromNullTime(result.RecipeStepPreparationArchivedAt),
+					LastUpdatedAt:               database.TimePointerFromNullTime(result.RecipeStepPreparationLastUpdatedAt),
+					IconPath:                    result.RecipeStepPreparationIconPath.String,
+					PastTense:                   result.RecipeStepPreparationPastTense.String,
+					ID:                          result.RecipeStepPreparationID.String,
+					Name:                        result.RecipeStepPreparationName.String,
+					Description:                 result.RecipeStepPreparationDescription.String,
+					Slug:                        result.RecipeStepPreparationSlug.String,
+					RestrictToIngredients:       result.RecipeStepPreparationRestrictToIngredients.Bool,
+					TemperatureRequired:         result.RecipeStepPreparationTemperatureRequired.Bool,
+					TimeEstimateRequired:        result.RecipeStepPreparationTimeEstimateRequired.Bool,
+					ConditionExpressionRequired: result.RecipeStepPreparationConditionExpressionRequired.Bool,
+					ConsumesVessel:              result.RecipeStepPreparationConsumesVessel.Bool,
+					OnlyForVessels:              result.RecipeStepPreparationOnlyForVessels.Bool,
+					YieldsNothing:               result.RecipeStepPreparationYieldsNothing.Bool,
 				},
-				ArchivedAt:                  database.TimePointerFromNullTime(result.RecipeStepPreparationArchivedAt),
-				LastUpdatedAt:               database.TimePointerFromNullTime(result.RecipeStepPreparationLastUpdatedAt),
-				IconPath:                    result.RecipeStepPreparationIconPath,
-				PastTense:                   result.RecipeStepPreparationPastTense,
-				ID:                          result.RecipeStepPreparationID,
-				Name:                        result.RecipeStepPreparationName,
-				Description:                 result.RecipeStepPreparationDescription,
-				Slug:                        result.RecipeStepPreparationSlug,
-				RestrictToIngredients:       result.RecipeStepPreparationRestrictToIngredients,
-				TemperatureRequired:         result.RecipeStepPreparationTemperatureRequired,
-				TimeEstimateRequired:        result.RecipeStepPreparationTimeEstimateRequired,
-				ConditionExpressionRequired: result.RecipeStepPreparationConditionExpressionRequired,
-				ConsumesVessel:              result.RecipeStepPreparationConsumesVessel,
-				OnlyForVessels:              result.RecipeStepPreparationOnlyForVessels,
-				YieldsNothing:               result.RecipeStepPreparationYieldsNothing,
-			},
-			Index:                   uint32(result.RecipeStepIndex),
-			Optional:                result.RecipeStepOptional,
-			StartTimerAutomatically: result.RecipeStepStartTimerAutomatically,
-			Media:                   []*mealplanning.RecipeMedia{},
-		})
+				Index:                   uint32(result.RecipeStepIndex.Int32),
+				Optional:                result.RecipeStepOptional.Bool,
+				StartTimerAutomatically: result.RecipeStepStartTimerAutomatically.Bool,
+				Media:                   []*mealplanning.RecipeMedia{},
+			})
+		}
 	}
 
 	if x == nil {
