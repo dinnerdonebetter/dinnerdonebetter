@@ -275,20 +275,13 @@ func CreateAccountForTest(t *testing.T, exampleAccount *identity.Account, userID
 
 // PaginationTestConfig contains the configuration for testing cursor-based pagination.
 type PaginationTestConfig[T any] struct {
-	// TotalItems is the total number of items to create for the test
-	TotalItems int
-	// PageSize is the number of items per page
-	PageSize int
-	// CreateItem creates a single test item. The index i goes from 0 to TotalItems-1.
-	CreateItem func(t *testing.T, ctx context.Context, i int) *T
-	// FetchPage fetches a single page of results using the provided filter
-	FetchPage func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[T], error)
-	// GetID extracts the ID string from an item (used for cursor advancement and duplicate detection)
-	GetID func(item *T) string
-	// CleanupItem cleans up a single item after the test (e.g., archiving/deleting)
+	CreateItem  func(t *testing.T, ctx context.Context, i int) *T
+	FetchPage   func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[T], error)
+	GetID       func(item *T) string
 	CleanupItem func(ctx context.Context, item *T) error
-	// ItemName is a human-readable name for the item type (e.g., "webhook", "meal plan")
-	ItemName string
+	ItemName    string
+	TotalItems  int
+	PageSize    int
 }
 
 // TestCursorBasedPagination is a generic test function for cursor-based pagination.

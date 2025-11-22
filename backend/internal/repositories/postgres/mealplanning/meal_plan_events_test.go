@@ -300,14 +300,14 @@ func TestQuerier_Integration_MealPlanEvents_CursorBasedPagination(t *testing.T) 
 	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
-	
+
 	// Create an empty meal plan without events - bypass createMealPlanForTest since it has assertions
 	// that don't work with empty event lists
 	mealPlanInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(fakes.BuildFakeMealPlan())
 	mealPlanInput.CreatedByUser = user.ID
 	mealPlanInput.BelongsToAccount = account.ID
 	mealPlanInput.Events = []*types.MealPlanEventDatabaseCreationInput{}
-	
+
 	createdMealPlan, err := dbc.CreateMealPlan(ctx, mealPlanInput)
 	require.NoError(t, err)
 	require.NotNil(t, createdMealPlan)

@@ -66,13 +66,13 @@ INSERT INTO recipe_ratings (
 type CreateRecipeRatingParams struct {
 	ID           string
 	RecipeID     string
+	Notes        string
+	ByUser       string
 	Taste        sql.NullString
 	Difficulty   sql.NullString
 	Cleanup      sql.NullString
 	Instructions sql.NullString
 	Overall      sql.NullString
-	Notes        string
-	ByUser       string
 }
 
 func (q *Queries) CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRecipeRatingParams) error {
@@ -190,29 +190,29 @@ LIMIT COALESCE($8, 50)
 `
 
 type GetRecipeRatingsForRecipeParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
-	IncludeArchived sql.NullBool
 	RecipeID        string
 	Cursor          sql.NullString
-	ResultLimit     interface{}
+	IncludeArchived sql.NullBool
 }
 
 type GetRecipeRatingsForRecipeRow struct {
-	ID            string
-	RecipeID      string
-	Taste         sql.NullString
-	Difficulty    sql.NullString
-	Cleanup       sql.NullString
-	Instructions  sql.NullString
-	Overall       sql.NullString
-	Notes         string
-	ByUser        string
 	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	Notes         string
+	RecipeID      string
+	ID            string
+	ByUser        string
+	Difficulty    sql.NullString
+	Overall       sql.NullString
+	Instructions  sql.NullString
+	Cleanup       sql.NullString
+	Taste         sql.NullString
 	FilteredCount int64
 	TotalCount    int64
 }
@@ -325,29 +325,29 @@ LIMIT COALESCE($8, 50)
 `
 
 type GetRecipeRatingsForUserParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
-	IncludeArchived sql.NullBool
 	ByUser          string
 	Cursor          sql.NullString
-	ResultLimit     interface{}
+	IncludeArchived sql.NullBool
 }
 
 type GetRecipeRatingsForUserRow struct {
-	ID            string
-	RecipeID      string
-	Taste         sql.NullString
-	Difficulty    sql.NullString
-	Cleanup       sql.NullString
-	Instructions  sql.NullString
-	Overall       sql.NullString
-	Notes         string
-	ByUser        string
 	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	Notes         string
+	RecipeID      string
+	ID            string
+	ByUser        string
+	Difficulty    sql.NullString
+	Overall       sql.NullString
+	Instructions  sql.NullString
+	Cleanup       sql.NullString
+	Taste         sql.NullString
 	FilteredCount int64
 	TotalCount    int64
 }
@@ -415,13 +415,13 @@ WHERE archived_at IS NULL
 
 type UpdateRecipeRatingParams struct {
 	RecipeID     string
+	Notes        string
+	ID           string
 	Taste        sql.NullString
 	Difficulty   sql.NullString
 	Cleanup      sql.NullString
 	Instructions sql.NullString
 	Overall      sql.NullString
-	Notes        string
-	ID           string
 }
 
 func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) (int64, error) {

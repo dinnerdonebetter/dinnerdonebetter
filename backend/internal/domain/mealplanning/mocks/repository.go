@@ -978,6 +978,13 @@ func (m *Repository) GetRecipePrepTask(ctx context.Context, recipeID, recipePrep
 	return returnValues.Get(0).(*mealplanning.RecipePrepTask), returnValues.Error(1)
 }
 
+// GetRecipePrepTasks implements the requisite interface.
+func (m *Repository) GetRecipePrepTasks(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipePrepTask], error) {
+	returnValues := m.Called(ctx, recipeID, filter)
+
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipePrepTask]), returnValues.Error(1)
+}
+
 // GetRecipePrepTasksForRecipe implements the requisite interface.
 func (m *Repository) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*mealplanning.RecipePrepTask, error) {
 	returnValues := m.Called(ctx, recipeID)

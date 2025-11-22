@@ -512,13 +512,13 @@ func TestQuerier_Integration_MealPlanOptions_CursorBasedPagination(t *testing.T)
 	account := pgtesting.CreateAccountForTest(t, nil, user.ID, dbc.db)
 	recipe := createRecipeForTest(t, ctx, buildRecipeForTestCreation(t, ctx, user.ID, dbc), dbc, false)
 	meal := createMealForTest(t, ctx, buildMealForIntegrationTest(user.ID, recipe), dbc)
-	
+
 	// Create a meal plan with one event but no options in it
 	// We create this directly without using createMealPlanForTest to avoid strict nil vs empty slice comparisons
 	mealPlan := fakes.BuildFakeMealPlan()
 	mealPlan.CreatedByUser = user.ID
 	mealPlan.BelongsToAccount = account.ID
-	
+
 	// Create event without any options
 	now := fakes.BuildFakeTime()
 	inTenMinutes := now.Add(10 * time.Minute)
@@ -534,14 +534,14 @@ func TestQuerier_Integration_MealPlanOptions_CursorBasedPagination(t *testing.T)
 		Options:           nil,
 	}
 	mealPlan.Events = []*types.MealPlanEvent{mealPlanEvent}
-	
+
 	// Create the meal plan directly
 	dbInput := converters.ConvertMealPlanToMealPlanDatabaseCreationInput(mealPlan)
 	createdMealPlan, err := dbc.CreateMealPlan(ctx, dbInput)
 	require.NoError(t, err)
 	require.NotNil(t, createdMealPlan)
 	require.NotEmpty(t, createdMealPlan.Events)
-	
+
 	mealPlanEventID := createdMealPlan.Events[0].ID
 
 	// Use the generic pagination test helper

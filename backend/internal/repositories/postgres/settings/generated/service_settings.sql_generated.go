@@ -64,8 +64,8 @@ type CreateServiceSettingParams struct {
 	Name         string
 	Type         SettingType
 	Description  string
-	DefaultValue sql.NullString
 	Enumeration  string
+	DefaultValue sql.NullString
 	AdminsOnly   bool
 }
 
@@ -170,28 +170,28 @@ LIMIT COALESCE($7, 50)
 `
 
 type GetServiceSettingsParams struct {
+	ResultLimit     interface{}
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
 	UpdatedBefore   sql.NullTime
 	UpdatedAfter    sql.NullTime
-	IncludeArchived sql.NullBool
 	Cursor          sql.NullString
-	ResultLimit     interface{}
+	IncludeArchived sql.NullBool
 }
 
 type GetServiceSettingsRow struct {
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 	ID            string
 	Name          string
 	Type          SettingType
 	Description   string
-	DefaultValue  sql.NullString
 	Enumeration   string
-	AdminsOnly    bool
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
+	DefaultValue  sql.NullString
 	FilteredCount int64
 	TotalCount    int64
+	AdminsOnly    bool
 }
 
 func (q *Queries) GetServiceSettings(ctx context.Context, db DBTX, arg *GetServiceSettingsParams) ([]*GetServiceSettingsRow, error) {

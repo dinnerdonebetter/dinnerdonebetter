@@ -703,50 +703,50 @@ type MealPlanEvents struct {
 }
 
 type MealPlanOptionVotes struct {
-	ID                      string
-	Rank                    int32
-	Abstain                 bool
-	Notes                   string
-	ByUser                  string
 	CreatedAt               time.Time
 	LastUpdatedAt           sql.NullTime
 	ArchivedAt              sql.NullTime
+	ID                      string
+	Notes                   string
+	ByUser                  string
 	BelongsToMealPlanOption string
+	Rank                    int32
+	Abstain                 bool
 }
 
 type RecipeRatings struct {
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 	ID            string
 	RecipeID      string
+	Notes         string
+	ByUser        string
 	Taste         sql.NullString
 	Difficulty    sql.NullString
 	Cleanup       sql.NullString
 	Instructions  sql.NullString
 	Overall       sql.NullString
-	Notes         string
-	ByUser        string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 }
 
 type ValidVessels struct {
+	CreatedAt                      time.Time
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	LastIndexedAt                  sql.NullTime
 	ID                             string
 	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
-	UsableForStorage               bool
 	Slug                           string
-	DisplayInSummaryLists          bool
-	IncludeInGeneratedInstructions bool
 	Capacity                       string
-	CapacityUnit                   sql.NullString
-	WidthInMillimeters             sql.NullString
+	Shape                          VesselShape
 	LengthInMillimeters            sql.NullString
 	HeightInMillimeters            sql.NullString
-	Shape                          VesselShape
-	LastIndexedAt                  sql.NullTime
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
+	WidthInMillimeters             sql.NullString
+	CapacityUnit                   sql.NullString
+	IncludeInGeneratedInstructions bool
+	DisplayInSummaryLists          bool
+	UsableForStorage               bool
 }

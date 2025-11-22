@@ -55,38 +55,40 @@ const (
 	QueryKeySortBy = "sortBy"
 )
 
-// Pagination represents a pagination request.
-type Pagination struct {
-	_ struct{} `json:"-"`
+type (
+	// Pagination represents a pagination request.
+	Pagination struct {
+		_ struct{} `json:"-"`
 
-	Page          uint16 `json:"page"`
-	Limit         uint8  `json:"limit"`
-	FilteredCount uint64 `json:"filteredCount"`
-	TotalCount    uint64 `json:"totalCount"`
-}
+		Page          uint16 `json:"page"`
+		Limit         uint8  `json:"limit"`
+		FilteredCount uint64 `json:"filteredCount"`
+		TotalCount    uint64 `json:"totalCount"`
+	}
 
-type QueryFilteredResult[T any] struct {
-	_ struct{} `json:"-"`
+	QueryFilteredResult[T any] struct {
+		_ struct{} `json:"-"`
 
-	Data []*T `json:"data"`
-	Pagination
-}
+		Data []*T `json:"data"`
+		Pagination
+	}
 
-// QueryFilter represents all the filters a User could apply to a list query.
-type QueryFilter struct {
-	_ struct{} `json:"-"`
+	// QueryFilter represents all the filters a User could apply to a list query.
+	QueryFilter struct {
+		_ struct{} `json:"-"`
 
-	SortBy          *string    `json:"sortBy,omitempty"`
-	Page            *uint16    `json:"page,omitempty"`
-	CreatedAfter    *time.Time `json:"createdBefore,omitempty"`
-	CreatedBefore   *time.Time `json:"createdAfter,omitempty"`
-	UpdatedAfter    *time.Time `json:"updatedBefore,omitempty"`
-	UpdatedBefore   *time.Time `json:"updatedAfter,omitempty"`
-	PageSize        *uint8     `json:"pageSize,omitempty"`
-	IncludeArchived *bool      `json:"includeArchived,omitempty"`
-	NextCursor      *string    `json:"nextCursor,omitempty"`
-	Query           string     `json:"q,omitempty"`
-}
+		SortBy          *string    `json:"sortBy,omitempty"`
+		Page            *uint16    `json:"page,omitempty"`
+		CreatedAfter    *time.Time `json:"createdBefore,omitempty"`
+		CreatedBefore   *time.Time `json:"createdAfter,omitempty"`
+		UpdatedAfter    *time.Time `json:"updatedBefore,omitempty"`
+		UpdatedBefore   *time.Time `json:"updatedAfter,omitempty"`
+		PageSize        *uint8     `json:"pageSize,omitempty"`
+		IncludeArchived *bool      `json:"includeArchived,omitempty"`
+		NextCursor      *string    `json:"nextCursor,omitempty"`
+		Query           string     `json:"q,omitempty"`
+	}
+)
 
 // DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {

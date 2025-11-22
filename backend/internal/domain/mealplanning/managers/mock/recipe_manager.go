@@ -13,10 +13,10 @@ type MockRecipeManager struct {
 	mock.Mock
 }
 
-func (m *MockRecipeManager) ListRecipes(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.Recipe, string, error) {
+func (m *MockRecipeManager) ListRecipes(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Recipe], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.Recipe), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Recipe]), returnValues.Get(1).(error)
 }
 
 func (m *MockRecipeManager) CreateRecipe(ctx context.Context, creatorID string, input *mealplanning.RecipeCreationRequestInput) (*mealplanning.Recipe, error) {
@@ -73,10 +73,10 @@ func (m *MockRecipeManager) RecipeImageUpload(ctx context.Context) error {
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockRecipeManager) ListRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) ([]*mealplanning.RecipeStep, string, error) {
+func (m *MockRecipeManager) ListRecipeSteps(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStep], error) {
 	returnValues := m.Called(ctx, recipeID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.RecipeStep), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeStep]), returnValues.Get(1).(error)
 }
 
 func (m *MockRecipeManager) CreateRecipeStep(ctx context.Context, recipeID string, input *mealplanning.RecipeStepCreationRequestInput) (*mealplanning.RecipeStep, error) {
@@ -109,10 +109,10 @@ func (m *MockRecipeManager) RecipeStepImageUpload(ctx context.Context) error {
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockRecipeManager) ListRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*mealplanning.RecipeStepProduct, string, error) {
+func (m *MockRecipeManager) ListRecipeStepProducts(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStepProduct], error) {
 	returnValues := m.Called(ctx, recipeID, recipeStepID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.RecipeStepProduct), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeStepProduct]), returnValues.Get(1).(error)
 }
 
 func (m *MockRecipeManager) CreateRecipeStepProduct(ctx context.Context, recipeID, recipeStepID string, input *mealplanning.RecipeStepProductCreationRequestInput) (*mealplanning.RecipeStepProduct, error) {
@@ -139,10 +139,10 @@ func (m *MockRecipeManager) ArchiveRecipeStepProduct(ctx context.Context, recipe
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockRecipeManager) ListRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*mealplanning.RecipeStepInstrument, string, error) {
+func (m *MockRecipeManager) ListRecipeStepInstruments(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStepInstrument], error) {
 	returnValues := m.Called(ctx, recipeID, recipeStepID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.RecipeStepInstrument), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeStepInstrument]), returnValues.Get(1).(error)
 }
 
 func (m *MockRecipeManager) CreateRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID string, input *mealplanning.RecipeStepInstrumentCreationRequestInput) (*mealplanning.RecipeStepInstrument, error) {
@@ -169,10 +169,10 @@ func (m *MockRecipeManager) ArchiveRecipeStepInstrument(ctx context.Context, rec
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockRecipeManager) ListRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*mealplanning.RecipeStepIngredient, string, error) {
+func (m *MockRecipeManager) ListRecipeStepIngredients(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStepIngredient], error) {
 	returnValues := m.Called(ctx, recipeID, recipeStepID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.RecipeStepIngredient), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeStepIngredient]), returnValues.Get(1).(error)
 }
 
 func (m *MockRecipeManager) CreateRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID string, input *mealplanning.RecipeStepIngredientCreationRequestInput) (*mealplanning.RecipeStepIngredient, error) {
@@ -199,10 +199,10 @@ func (m *MockRecipeManager) ArchiveRecipeStepIngredient(ctx context.Context, rec
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockRecipeManager) ListRecipePrepTask(ctx context.Context, recipeID string, filter *filtering.QueryFilter) ([]*mealplanning.RecipePrepTask, string, error) {
+func (m *MockRecipeManager) ListRecipePrepTask(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipePrepTask], error) {
 	returnValues := m.Called(ctx, recipeID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.RecipePrepTask), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipePrepTask]), returnValues.Get(1).(error)
 }
 
 func (m *MockRecipeManager) CreateRecipePrepTask(ctx context.Context, recipeID string, input *mealplanning.RecipePrepTaskCreationRequestInput) (*mealplanning.RecipePrepTask, error) {
@@ -229,10 +229,10 @@ func (m *MockRecipeManager) ArchiveRecipePrepTask(ctx context.Context, recipeID,
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockRecipeManager) ListRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*mealplanning.RecipeStepCompletionCondition, string, error) {
+func (m *MockRecipeManager) ListRecipeStepCompletionConditions(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStepCompletionCondition], error) {
 	returnValues := m.Called(ctx, recipeID, recipeStepID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.RecipeStepCompletionCondition), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeStepCompletionCondition]), returnValues.Get(1).(error)
 }
 
 func (m *MockRecipeManager) CreateRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID string, input *mealplanning.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput) (*mealplanning.RecipeStepCompletionCondition, error) {
@@ -259,10 +259,10 @@ func (m *MockRecipeManager) ArchiveRecipeStepCompletionCondition(ctx context.Con
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockRecipeManager) ListRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) ([]*mealplanning.RecipeStepVessel, string, error) {
+func (m *MockRecipeManager) ListRecipeStepVessels(ctx context.Context, recipeID, recipeStepID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeStepVessel], error) {
 	returnValues := m.Called(ctx, recipeID, recipeStepID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.RecipeStepVessel), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeStepVessel]), returnValues.Get(1).(error)
 }
 
 func (m *MockRecipeManager) CreateRecipeStepVessel(ctx context.Context, recipeID, recipeStepID string, input *mealplanning.RecipeStepVesselCreationRequestInput) (*mealplanning.RecipeStepVessel, error) {
@@ -289,10 +289,10 @@ func (m *MockRecipeManager) ArchiveRecipeStepVessel(ctx context.Context, recipeI
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockRecipeManager) ListRecipeRatings(ctx context.Context, recipeID string, filter *filtering.QueryFilter) ([]*mealplanning.RecipeRating, string, error) {
+func (m *MockRecipeManager) ListRecipeRatings(ctx context.Context, recipeID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.RecipeRating], error) {
 	returnValues := m.Called(ctx, recipeID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.RecipeRating), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.RecipeRating]), returnValues.Get(1).(error)
 }
 
 func (m *MockRecipeManager) ReadRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*mealplanning.RecipeRating, error) {

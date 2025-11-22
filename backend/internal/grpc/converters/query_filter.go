@@ -11,14 +11,38 @@ func ConvertGRPCQueryFilterToQueryFilter(qf *grpcfiltering.QueryFilter) *filteri
 		return filtering.DefaultQueryFilter()
 	}
 
-	// TODO: better sourcing for the Page and PageSize fields
 	filter := &filtering.QueryFilter{
 		Page:            pointer.To[uint16](1),
 		PageSize:        pointer.To[uint8](50),
 		IncludeArchived: qf.IncludeArchived,
 		NextCursor:      qf.NextCursor,
 		Query:           "",
+		//
+		SortBy:        nil,
+		CreatedAfter:  nil,
+		CreatedBefore: nil,
+		UpdatedAfter:  nil,
+		UpdatedBefore: nil,
+	}
+	if qf.PageSize != nil {
+		filter.PageSize = pointer.To(uint8(*qf.PageSize))
 	}
 
 	return filter
+}
+
+func ConvertQueryFilterToGRPCQueryFilter(qf *filtering.QueryFilter, resultPagination filtering.Pagination) *grpcfiltering.QueryFilter {
+	if qf == nil {
+		qf = filtering.DefaultQueryFilter()
+	}
+
+	f := &grpcfiltering.QueryFilter{
+		IncludeArchived: qf.IncludeArchived,
+		NextCursor:      qf.NextCursor,
+	}
+	if qf.PageSize != nil {
+		f.PageSize = pointer.To(uint32(*qf.PageSize))
+	}
+
+	return f
 }

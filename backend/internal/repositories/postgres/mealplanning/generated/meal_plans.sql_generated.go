@@ -126,18 +126,18 @@ ORDER BY meal_plans.id
 `
 
 type GetExpiredAndUnresolvedMealPlansRow struct {
-	ID                     string
-	Notes                  string
-	Status                 MealPlanStatus
 	VotingDeadline         time.Time
-	GroceryListInitialized bool
-	TasksCreated           bool
-	ElectionMethod         ValidElectionMethod
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
+	ID                     string
+	Notes                  string
+	Status                 MealPlanStatus
+	ElectionMethod         ValidElectionMethod
 	BelongsToAccount       string
 	CreatedByUser          string
+	GroceryListInitialized bool
+	TasksCreated           bool
 }
 
 func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error) {
@@ -305,18 +305,18 @@ type GetMealPlanParams struct {
 }
 
 type GetMealPlanRow struct {
-	ID                     string
-	Notes                  string
-	Status                 MealPlanStatus
 	VotingDeadline         time.Time
-	GroceryListInitialized bool
-	TasksCreated           bool
-	ElectionMethod         ValidElectionMethod
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
+	ID                     string
+	Notes                  string
+	Status                 MealPlanStatus
+	ElectionMethod         ValidElectionMethod
 	BelongsToAccount       string
 	CreatedByUser          string
+	GroceryListInitialized bool
+	TasksCreated           bool
 }
 
 func (q *Queries) GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error) {
@@ -367,18 +367,18 @@ type GetMealPlanPastVotingDeadlineParams struct {
 }
 
 type GetMealPlanPastVotingDeadlineRow struct {
-	ID                     string
-	Notes                  string
-	Status                 MealPlanStatus
 	VotingDeadline         time.Time
-	GroceryListInitialized bool
-	TasksCreated           bool
-	ElectionMethod         ValidElectionMethod
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
+	ID                     string
+	Notes                  string
+	Status                 MealPlanStatus
+	ElectionMethod         ValidElectionMethod
 	BelongsToAccount       string
 	CreatedByUser          string
+	GroceryListInitialized bool
+	TasksCreated           bool
 }
 
 func (q *Queries) GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error) {
@@ -459,31 +459,31 @@ LIMIT COALESCE($8, 50)
 `
 
 type GetMealPlansForAccountParams struct {
+	ResultLimit      interface{}
 	CreatedAfter     sql.NullTime
 	CreatedBefore    sql.NullTime
 	UpdatedBefore    sql.NullTime
 	UpdatedAfter     sql.NullTime
-	IncludeArchived  sql.NullBool
 	BelongsToAccount string
 	Cursor           sql.NullString
-	ResultLimit      interface{}
+	IncludeArchived  sql.NullBool
 }
 
 type GetMealPlansForAccountRow struct {
-	ID                     string
-	Notes                  string
-	Status                 MealPlanStatus
 	VotingDeadline         time.Time
-	GroceryListInitialized bool
-	TasksCreated           bool
-	ElectionMethod         ValidElectionMethod
 	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
+	LastUpdatedAt          sql.NullTime
+	Status                 MealPlanStatus
+	ElectionMethod         ValidElectionMethod
+	Notes                  string
+	ID                     string
 	BelongsToAccount       string
 	CreatedByUser          string
 	FilteredCount          int64
 	TotalCount             int64
+	GroceryListInitialized bool
+	TasksCreated           bool
 }
 
 func (q *Queries) GetMealPlansForAccount(ctx context.Context, db DBTX, arg *GetMealPlansForAccountParams) ([]*GetMealPlansForAccountRow, error) {
