@@ -114,10 +114,9 @@ func TestValidEnumerationManager_ListValidIngredientGroups(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidIngredientGroups(ctx, nil)
+		actual, err := vem.ListValidIngredientGroups(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -255,10 +254,9 @@ func TestValidEnumerationManager_ListValidIngredientMeasurementUnits(T *testing.
 			},
 		)
 
-		actual, cursor, err := vem.ListValidIngredientMeasurementUnits(ctx, nil)
+		actual, err := vem.ListValidIngredientMeasurementUnits(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -450,10 +448,9 @@ func TestValidEnumerationManager_ListValidIngredientPreparations(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidIngredientPreparations(ctx, nil)
+		actual, err := vem.ListValidIngredientPreparations(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -672,10 +669,9 @@ func TestValidEnumerationManager_ListValidIngredients(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidIngredients(ctx, nil)
+		actual, err := vem.ListValidIngredients(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -867,10 +863,9 @@ func TestValidEnumerationManager_ListValidIngredientStateIngredients(T *testing.
 			},
 		)
 
-		actual, cursor, err := vem.ListValidIngredientStateIngredients(ctx, nil)
+		actual, err := vem.ListValidIngredientStateIngredients(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1089,10 +1084,9 @@ func TestValidEnumerationManager_ListValidIngredientStates(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidIngredientStates(ctx, nil)
+		actual, err := vem.ListValidIngredientStates(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1284,10 +1278,9 @@ func TestValidEnumerationManager_ListValidMeasurementUnits(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidMeasurementUnits(ctx, nil)
+		actual, err := vem.ListValidMeasurementUnits(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1452,10 +1445,9 @@ func TestValidEnumerationManager_ListValidInstruments(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidInstruments(ctx, nil)
+		actual, err := vem.ListValidInstruments(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -1787,10 +1779,9 @@ func TestValidEnumerationManager_ListValidPreparationInstruments(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidPreparationInstruments(ctx, nil)
+		actual, err := vem.ListValidPreparationInstruments(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2009,10 +2000,9 @@ func TestValidEnumerationManager_ListValidPreparations(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidPreparations(ctx, nil)
+		actual, err := vem.ListValidPreparations(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2176,10 +2166,9 @@ func TestValidEnumerationManager_ListValidPreparationVessels(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidPreparationVessels(ctx, nil)
+		actual, err := vem.ListValidPreparationVessels(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
@@ -2398,10 +2387,9 @@ func TestValidEnumerationManager_ListValidVessels(T *testing.T) {
 			},
 		)
 
-		actual, cursor, err := vem.ListValidVessels(ctx, nil)
+		actual, err := vem.ListValidVessels(ctx, nil)
 		assert.NoError(t, err)
-		assert.Empty(t, cursor)
-		assert.Equal(t, expected.Data, actual)
+		assert.Equal(t, expected, actual)
 
 		mock.AssertExpectationsForObjects(t, expectations...)
 	})
