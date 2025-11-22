@@ -13,10 +13,13 @@ type MockMealPlanningManager struct {
 	mock.Mock
 }
 
-func (m *MockMealPlanningManager) ListMeals(ctx context.Context, filter *filtering.QueryFilter) ([]*mealplanning.Meal, string, error) {
+func (m *MockMealPlanningManager) ListMeals(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.Meal], error) {
 	returnValues := m.Called(ctx, filter)
 
-	return returnValues.Get(0).([]*mealplanning.Meal), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.Meal]), returnValues.Error(1)
 }
 
 func (m *MockMealPlanningManager) CreateMeal(ctx context.Context, creatorID string, input *mealplanning.MealCreationRequestInput) (*mealplanning.Meal, error) {
@@ -43,10 +46,13 @@ func (m *MockMealPlanningManager) ArchiveMeal(ctx context.Context, mealID, owner
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockMealPlanningManager) ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*mealplanning.MealPlan, string, error) {
+func (m *MockMealPlanningManager) ListMealPlans(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlan], error) {
 	returnValues := m.Called(ctx, ownerID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.MealPlan), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlan]), returnValues.Error(1)
 }
 
 func (m *MockMealPlanningManager) CreateMealPlan(ctx context.Context, ownerID, creatorID string, input *mealplanning.MealPlanCreationRequestInput) (*mealplanning.MealPlan, error) {
@@ -79,10 +85,13 @@ func (m *MockMealPlanningManager) FinalizeMealPlan(ctx context.Context, mealPlan
 	return returnValues.Get(0).(bool), returnValues.Get(1).(error)
 }
 
-func (m *MockMealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) ([]*mealplanning.MealPlanEvent, string, error) {
+func (m *MockMealPlanningManager) ListMealPlanEvents(ctx context.Context, mealPlanID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanEvent], error) {
 	returnValues := m.Called(ctx, mealPlanID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.MealPlanEvent), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlanEvent]), returnValues.Error(1)
 }
 
 func (m *MockMealPlanningManager) CreateMealPlanEvent(ctx context.Context, mealPlanID string, input *mealplanning.MealPlanEventCreationRequestInput) (*mealplanning.MealPlanEvent, error) {
@@ -109,10 +118,13 @@ func (m *MockMealPlanningManager) ArchiveMealPlanEvent(ctx context.Context, meal
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockMealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) ([]*mealplanning.MealPlanOption, string, error) {
+func (m *MockMealPlanningManager) ListMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEventID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanOption], error) {
 	returnValues := m.Called(ctx, mealPlanID, mealPlanEventID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.MealPlanOption), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlanOption]), returnValues.Error(1)
 }
 
 func (m *MockMealPlanningManager) CreateMealPlanOption(ctx context.Context, input *mealplanning.MealPlanOptionCreationRequestInput) (*mealplanning.MealPlanOption, error) {
@@ -145,10 +157,13 @@ func (m *MockMealPlanningManager) ArchiveMealPlanOption(ctx context.Context, mea
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockMealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) ([]*mealplanning.MealPlanOptionVote, string, error) {
+func (m *MockMealPlanningManager) ListMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.MealPlanOptionVote], error) {
 	returnValues := m.Called(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.MealPlanOptionVote), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.MealPlanOptionVote]), returnValues.Error(1)
 }
 
 func (m *MockMealPlanningManager) CreateMealPlanOptionVotes(ctx context.Context, creatorID string, input *mealplanning.MealPlanOptionVoteCreationRequestInput) ([]*mealplanning.MealPlanOptionVote, error) {
@@ -229,10 +244,13 @@ func (m *MockMealPlanningManager) ArchiveMealPlanGroceryListItem(ctx context.Con
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockMealPlanningManager) ListUserIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*mealplanning.UserIngredientPreference, string, error) {
+func (m *MockMealPlanningManager) ListUserIngredientPreferences(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.UserIngredientPreference], error) {
 	returnValues := m.Called(ctx, ownerID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.UserIngredientPreference), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.UserIngredientPreference]), returnValues.Error(1)
 }
 
 func (m *MockMealPlanningManager) ReadUserIngredientPreference(ctx context.Context, ownerID, ingredientPreferenceID string) (*mealplanning.UserIngredientPreference, error) {
@@ -259,10 +277,13 @@ func (m *MockMealPlanningManager) ArchiveUserIngredientPreference(ctx context.Co
 	return returnValues.Get(0).(error)
 }
 
-func (m *MockMealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) ([]*mealplanning.AccountInstrumentOwnership, string, error) {
+func (m *MockMealPlanningManager) ListAccountInstrumentOwnerships(ctx context.Context, ownerID string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[mealplanning.AccountInstrumentOwnership], error) {
 	returnValues := m.Called(ctx, ownerID, filter)
 
-	return returnValues.Get(0).([]*mealplanning.AccountInstrumentOwnership), returnValues.Get(1).(string), returnValues.Get(2).(error)
+	if returnValues.Get(0) == nil {
+		return nil, returnValues.Error(1)
+	}
+	return returnValues.Get(0).(*filtering.QueryFilteredResult[mealplanning.AccountInstrumentOwnership]), returnValues.Error(1)
 }
 
 func (m *MockMealPlanningManager) CreateAccountInstrumentOwnership(ctx context.Context, ownerID string, input *mealplanning.AccountInstrumentOwnershipCreationRequestInput) (*mealplanning.AccountInstrumentOwnership, error) {
