@@ -72,12 +72,12 @@ func TestServiceImpl_GetAuditLogEntriesForAccount(t *testing.T) {
 		fakeAuditLogEntries := auditfakes.BuildFakeAuditLogEntriesList()
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			PageSize: &pageSize,
+			Limit: &pageSize,
 		}
 
 		mockRepo.On("GetAuditLogEntriesForAccount", testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return(fakeAuditLogEntries, nil)
 
-		grpcPageSize := uint32(*filter.PageSize)
+		grpcPageSize := uint32(*filter.Limit)
 		request := &auditsvc.GetAuditLogEntriesForAccountRequest{
 			Filter: &grpcfiltering.QueryFilter{
 				PageSize: &grpcPageSize,
@@ -103,12 +103,12 @@ func TestServiceImpl_GetAuditLogEntriesForAccount(t *testing.T) {
 
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			PageSize: &pageSize,
+			Limit: &pageSize,
 		}
 
 		mockRepo.On("GetAuditLogEntriesForAccount", testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[audit.AuditLogEntry])(nil), errors.New("repository error"))
 
-		grpcPageSize := uint32(*filter.PageSize)
+		grpcPageSize := uint32(*filter.Limit)
 		request := &auditsvc.GetAuditLogEntriesForAccountRequest{
 			Filter: &grpcfiltering.QueryFilter{
 				PageSize: &grpcPageSize,
@@ -137,12 +137,12 @@ func TestServiceImpl_GetAuditLogEntriesForUser(t *testing.T) {
 		fakeAuditLogEntries := auditfakes.BuildFakeAuditLogEntriesList()
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			PageSize: &pageSize,
+			Limit: &pageSize,
 		}
 
 		mockRepo.On("GetAuditLogEntriesForUser", testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return(fakeAuditLogEntries, nil)
 
-		grpcPageSize := uint32(*filter.PageSize)
+		grpcPageSize := uint32(*filter.Limit)
 		request := &auditsvc.GetAuditLogEntriesForUserRequest{
 			Filter: &grpcfiltering.QueryFilter{
 				PageSize: &grpcPageSize,
@@ -168,12 +168,12 @@ func TestServiceImpl_GetAuditLogEntriesForUser(t *testing.T) {
 
 		pageSize := uint8(20)
 		filter := &filtering.QueryFilter{
-			PageSize: &pageSize,
+			Limit: &pageSize,
 		}
 
 		mockRepo.On("GetAuditLogEntriesForUser", testutils.ContextMatcher, "TODO", testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[audit.AuditLogEntry])(nil), errors.New("repository error"))
 
-		grpcPageSize := uint32(*filter.PageSize)
+		grpcPageSize := uint32(*filter.Limit)
 		request := &auditsvc.GetAuditLogEntriesForUserRequest{
 			Filter: &grpcfiltering.QueryFilter{
 				PageSize: &grpcPageSize,

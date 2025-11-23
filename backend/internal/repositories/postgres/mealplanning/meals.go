@@ -122,13 +122,12 @@ func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 	}
 
 	results, err := q.generatedQuerier.GetMeals(ctx, q.db, &generated.GetMealsParams{
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-
-		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -183,14 +182,13 @@ func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	results, err := q.generatedQuerier.GetMealsCreatedByUser(ctx, q.db, &generated.GetMealsCreatedByUserParams{
-		CreatedByUser: userID,
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-
-		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
+		CreatedByUser:   userID,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -272,14 +270,13 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 	}
 
 	results, err := q.generatedQuerier.SearchForMeals(ctx, q.db, &generated.SearchForMealsParams{
-		Query:         mealNameQuery,
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-
-		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
+		Query:           mealNameQuery,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

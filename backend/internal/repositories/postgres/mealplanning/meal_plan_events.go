@@ -171,14 +171,13 @@ func (q *repository) GetMealPlanEvents(ctx context.Context, mealPlanID string, f
 	}
 
 	results, err := q.generatedQuerier.GetMealPlanEvents(ctx, q.db, &generated.GetMealPlanEventsParams{
-		MealPlanID:    mealPlanID,
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-
-		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
+		MealPlanID:      mealPlanID,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

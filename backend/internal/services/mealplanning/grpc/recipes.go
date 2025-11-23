@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability"
 	"github.com/dinnerdonebetter/backend/internal/platform/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/platform/observability/tracing"
 	converters "github.com/dinnerdonebetter/backend/internal/services/mealplanning/grpc/converters"
 
 	"google.golang.org/grpc/codes"
@@ -593,6 +594,7 @@ func (s *serviceImpl) GetRecipePrepTasks(ctx context.Context, request *mealplann
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipePrepTasks, err := s.recipeManager.ListRecipePrepTask(ctx, request.RecipeID, filter)
 	if err != nil {
@@ -646,6 +648,7 @@ func (s *serviceImpl) GetRecipeRatingsForRecipe(ctx context.Context, request *me
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipeRatings, err := s.recipeManager.ListRecipeRatings(ctx, request.RecipeID, filter)
 	if err != nil {
@@ -724,6 +727,7 @@ func (s *serviceImpl) GetRecipeStepCompletionConditions(ctx context.Context, req
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipeStepCompletionConditions, err := s.recipeManager.ListRecipeStepCompletionConditions(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
@@ -778,6 +782,7 @@ func (s *serviceImpl) GetRecipeStepIngredients(ctx context.Context, request *mea
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipeStepIngredients, err := s.recipeManager.ListRecipeStepIngredients(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
@@ -832,6 +837,7 @@ func (s *serviceImpl) GetRecipeStepInstruments(ctx context.Context, request *mea
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipeStepInstruments, err := s.recipeManager.ListRecipeStepInstruments(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
@@ -886,6 +892,7 @@ func (s *serviceImpl) GetRecipeStepProducts(ctx context.Context, request *mealpl
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipeStepProducts, err := s.recipeManager.ListRecipeStepProducts(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
@@ -940,6 +947,7 @@ func (s *serviceImpl) GetRecipeStepVessels(ctx context.Context, request *mealpla
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipeStepVessels, err := s.recipeManager.ListRecipeStepVessels(ctx, request.RecipeID, request.RecipeStepID, filter)
 	if err != nil {
@@ -968,6 +976,7 @@ func (s *serviceImpl) GetRecipeSteps(ctx context.Context, request *mealplanning.
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipeSteps, err := s.recipeManager.ListRecipeSteps(ctx, request.RecipeID, filter)
 	if err != nil {
@@ -993,7 +1002,10 @@ func (s *serviceImpl) GetRecipes(ctx context.Context, request *mealplanning.GetR
 
 	logger := s.logger.WithSpan(span)
 
-	recipes, err := s.recipeManager.ListRecipes(ctx, grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter))
+	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	recipes, err := s.recipeManager.ListRecipes(ctx, filter)
 	if err != nil {
 		return nil, observability.PrepareAndLogGRPCStatus(err, logger, span, codes.Internal, "fetching list of recipes")
 	}
@@ -1020,6 +1032,7 @@ func (s *serviceImpl) SearchForRecipes(ctx context.Context, request *mealplannin
 	}, span, s.logger)
 
 	filter := grpcconverters.ConvertGRPCQueryFilterToQueryFilter(request.Filter)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	recipes, _, err := s.recipeManager.SearchRecipes(ctx, request.Query, request.UseSearchService, filter)
 	if err != nil {

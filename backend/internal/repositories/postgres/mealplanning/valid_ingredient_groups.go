@@ -146,14 +146,13 @@ func (q *repository) SearchForValidIngredientGroups(ctx context.Context, query s
 	filter.AttachToLogger(logger)
 
 	results, err := q.generatedQuerier.SearchForValidIngredientGroups(ctx, q.db, &generated.SearchForValidIngredientGroupsParams{
-		Name:          query,
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-
-		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
+		Name:            query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
@@ -253,13 +252,12 @@ func (q *repository) GetValidIngredientGroups(ctx context.Context, filter *filte
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientGroups(ctx, q.db, &generated.GetValidIngredientGroupsParams{
-		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
-
-		Cursor:          database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:     database.NullInt32FromUint8Pointer(filter.PageSize),
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {

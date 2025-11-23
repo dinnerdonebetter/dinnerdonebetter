@@ -1,7 +1,6 @@
 package filtering
 
 import (
-	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -26,8 +25,8 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 
 		qf := &QueryFilter{
 			Query:           t.Name(),
-			Page:            pointer.To(uint16(100)),
-			PageSize:        pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:          pointer.To(t.Name()),
+			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
 			CreatedBefore:   pointer.To(time.Now().Truncate(time.Second)),
 			UpdatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
@@ -60,8 +59,8 @@ func TestQueryFilter_FromParams(T *testing.T) {
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
 			Query:           t.Name(),
-			Page:            pointer.To(uint16(100)),
-			PageSize:        pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:          pointer.To(t.Name()),
+			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
 			CreatedBefore:   pointer.To(tt),
 			UpdatedAfter:    pointer.To(tt),
@@ -72,8 +71,8 @@ func TestQueryFilter_FromParams(T *testing.T) {
 
 		exampleInput := url.Values{
 			textsearch.QueryKeySearch: []string{t.Name()},
-			QueryKeyPage:              []string{strconv.Itoa(int(*expected.Page))},
-			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.PageSize))},
+			QueryKeyCursor:            []string{*expected.Cursor},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.Limit))},
 			QueryKeyCreatedBefore:     []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
 			QueryKeyCreatedAfter:      []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
 			QueryKeyUpdatedBefore:     []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
@@ -93,58 +92,17 @@ func TestQueryFilter_FromParams(T *testing.T) {
 	})
 }
 
-func TestQueryFilter_SetPage(T *testing.T) {
+func TestQueryFilter_SetCursor(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		expected := uint16(123)
+		expected := t.Name()
 		qf := &QueryFilter{}
-		qf.SetPage(&expected)
+		qf.SetCursor(&expected)
 
-		assert.Equal(t, expected, *qf.Page)
-	})
-}
-
-func TestQueryFilter_QueryPage(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		qf := &QueryFilter{
-			PageSize: pointer.To(uint8(10)),
-			Page:     pointer.To(uint16(11)),
-		}
-		expected := uint16(100)
-		actual := qf.QueryOffset()
-
-		assert.Equal(t, expected, actual)
-	})
-
-	T.Run("with nil values", func(t *testing.T) {
-		t.Parallel()
-
-		qf := &QueryFilter{}
-		expected := uint16(0)
-		actual := qf.QueryOffset()
-
-		assert.Equal(t, expected, actual)
-	})
-
-	T.Run("with max values", func(t *testing.T) {
-		t.Parallel()
-
-		qf := &QueryFilter{
-			Page:            pointer.To(uint16(0)),
-			PageSize:        pointer.To(uint8(math.MaxUint8)),
-			IncludeArchived: pointer.To(true),
-		}
-		expected := uint16(0)
-		actual := qf.QueryOffset()
-
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, expected, *qf.Cursor)
 	})
 }
 
@@ -159,8 +117,8 @@ func TestQueryFilter_ToValues(T *testing.T) {
 
 		qf := &QueryFilter{
 			Query:           t.Name(),
-			Page:            pointer.To(uint16(100)),
-			PageSize:        pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:          pointer.To(t.Name()),
+			Limit:           pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:    pointer.To(tt),
 			CreatedBefore:   pointer.To(tt),
 			UpdatedAfter:    pointer.To(tt),
@@ -171,8 +129,8 @@ func TestQueryFilter_ToValues(T *testing.T) {
 
 		expected := url.Values{
 			textsearch.QueryKeySearch: []string{t.Name()},
-			QueryKeyPage:              []string{strconv.Itoa(int(*qf.Page))},
-			QueryKeyLimit:             []string{strconv.Itoa(int(*qf.PageSize))},
+			QueryKeyCursor:            []string{*qf.Cursor},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*qf.Limit))},
 			QueryKeyCreatedBefore:     []string{qf.CreatedAfter.Format(time.RFC3339Nano)},
 			QueryKeyCreatedAfter:      []string{qf.CreatedBefore.Format(time.RFC3339Nano)},
 			QueryKeyUpdatedBefore:     []string{qf.UpdatedAfter.Format(time.RFC3339Nano)},
@@ -207,8 +165,8 @@ func TestExtractQueryFilter(T *testing.T) {
 
 		expected := &QueryFilter{
 			Query:         t.Name(),
-			Page:          pointer.To(uint16(100)),
-			PageSize:      pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor:        pointer.To(t.Name()),
+			Limit:         pointer.To(uint8(MaxQueryFilterLimit)),
 			CreatedAfter:  pointer.To(tt),
 			CreatedBefore: pointer.To(tt),
 			UpdatedAfter:  pointer.To(tt),
@@ -217,8 +175,8 @@ func TestExtractQueryFilter(T *testing.T) {
 		}
 		exampleInput := url.Values{
 			textsearch.QueryKeySearch: []string{t.Name()},
-			QueryKeyPage:              []string{strconv.Itoa(int(*expected.Page))},
-			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.PageSize))},
+			QueryKeyCursor:            []string{*expected.Cursor},
+			QueryKeyLimit:             []string{strconv.Itoa(int(*expected.Limit))},
 			QueryKeyCreatedBefore:     []string{expected.CreatedAfter.Format(time.RFC3339Nano)},
 			QueryKeyCreatedAfter:      []string{expected.CreatedBefore.Format(time.RFC3339Nano)},
 			QueryKeyUpdatedBefore:     []string{expected.UpdatedAfter.Format(time.RFC3339Nano)},
@@ -241,13 +199,13 @@ func TestExtractQueryFilter(T *testing.T) {
 		ctx := t.Context()
 
 		expected := &QueryFilter{
-			Page:     pointer.To(uint16(1)),
-			PageSize: pointer.To(uint8(DefaultQueryFilterLimit)),
-			SortBy:   SortAscending,
+			Cursor: pointer.To(t.Name()),
+			Limit:  pointer.To(uint8(DefaultQueryFilterLimit)),
+			SortBy: SortAscending,
 		}
 		exampleInput := url.Values{
-			QueryKeyPage:  []string{"0"},
-			QueryKeyLimit: []string{"0"},
+			QueryKeyCursor: []string{*expected.Cursor},
+			QueryKeyLimit:  []string{"0"},
 		}
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://verygoodsoftwarenotvirus.ru", http.NoBody)
@@ -267,13 +225,13 @@ func TestQueryFilter_ToPagination(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Page:     pointer.To(uint16(100)),
-			PageSize: pointer.To(uint8(MaxQueryFilterLimit)),
+			Cursor: pointer.To(t.Name()),
+			Limit:  pointer.To(uint8(MaxQueryFilterLimit)),
 		}
 
 		expected := Pagination{
-			Page:  *qf.Page,
-			Limit: *qf.PageSize,
+			Cursor: *qf.Cursor,
+			Limit:  *qf.Limit,
 		}
 
 		actual := qf.ToPagination()

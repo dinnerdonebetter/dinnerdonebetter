@@ -80,8 +80,8 @@ func (q *repository) GetAuditLogEntriesForUser(ctx context.Context, userID strin
 		BelongsToUser: database.NullStringFromString(userID),
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		Cursor:        database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:   database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:        database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:   database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -143,8 +143,8 @@ func (q *repository) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Conte
 		Resources:     resourceTypes,
 		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
-		Cursor:        database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:   database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:        database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:   database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -199,8 +199,8 @@ func (q *repository) GetAuditLogEntriesForAccount(ctx context.Context, accountID
 		BelongsToAccount: database.NullStringFromString(accountID),
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
-		Cursor:           database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:           database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -262,8 +262,8 @@ func (q *repository) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Co
 		Resources:        resourceTypes,
 		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
-		Cursor:           database.NullStringFromStringPointer(filter.NextCursor),
-		ResultLimit:      database.NullInt32FromUint8Pointer(filter.PageSize),
+		Cursor:           database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
