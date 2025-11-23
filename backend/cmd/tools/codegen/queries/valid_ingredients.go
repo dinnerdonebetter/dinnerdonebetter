@@ -242,19 +242,31 @@ WHERE %s.%s IS NULL
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
 	%s
 FROM %s
-WHERE %s.name %s
-	AND %s.%s IS NULL
-LIMIT 50;`,
+WHERE %s.%s IS NULL
+	AND %s.%s %s
+	%s
+%s;`,
 					strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
 					}), ",\n\t"),
+					buildFilterCountSelect(validIngredientsTableName, true, true, []string{}),
+					buildTotalCountSelect(validIngredientsTableName, true, []string{}),
 					validIngredientsTableName,
-					validIngredientsTableName,
-					"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
 					validIngredientsTableName,
 					archivedAtColumn,
+					validIngredientsTableName,
+					nameColumn,
+					buildILIKEForArgument("name_query"),
+					buildFilterConditions(
+						validIngredientsTableName,
+						true,
+						true,
+					),
+					buildCursorLimitClause(validIngredientsTableName),
 				)),
 			},
 			{

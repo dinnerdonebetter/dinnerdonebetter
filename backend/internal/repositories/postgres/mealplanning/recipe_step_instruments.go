@@ -153,13 +153,15 @@ func (q *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.RecipeStepInstrument]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*mealplanning.RecipeStepInstrument
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetRecipeStepInstruments(ctx, q.db, &generated.GetRecipeStepInstrumentsParams{
-		RecipeStepID:    recipeStepID,
 		RecipeID:        recipeID,
+		RecipeStepID:    recipeStepID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
@@ -169,10 +171,14 @@ func (q *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step instruments list retrieval")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step instruments list retrieval query")
 	}
 
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		recipeStepInstrument := &mealplanning.RecipeStepInstrument{
 			CreatedAt:           result.CreatedAt,
 			Instrument:          nil,
@@ -209,10 +215,16 @@ func (q *repository) GetRecipeStepInstruments(ctx context.Context, recipeID, rec
 			}
 		}
 
-		x.Data = append(x.Data, recipeStepInstrument)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, recipeStepInstrument)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(rsi *mealplanning.RecipeStepInstrument) string { return rsi.ID },
+		filter,
+	)
 
 	return x, nil
 }

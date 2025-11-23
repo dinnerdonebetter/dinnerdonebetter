@@ -358,12 +358,15 @@ func (q *repository) GetRecipePrepTasks(ctx context.Context, recipeID string, fi
 		filteredTasks = append(filteredTasks, task)
 	}
 
-	result := &filtering.QueryFilteredResult[mealplanning.RecipePrepTask]{
-		Data:       filteredTasks,
-		Pagination: filter.ToPagination(),
-	}
+	x := filtering.NewQueryFilteredResult(
+		filteredTasks,
+		uint64(len(filteredTasks)),
+		uint64(len(filteredTasks)),
+		func(rpt *mealplanning.RecipePrepTask) string { return rpt.ID },
+		filter,
+	)
 
-	return result, nil
+	return x, nil
 }
 
 // GetRecipePrepTasksForRecipe gets a recipe prep task.

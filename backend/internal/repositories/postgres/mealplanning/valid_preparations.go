@@ -148,7 +148,9 @@ func (q *repository) SearchForValidPreparations(ctx context.Context, query strin
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
-	results, err := q.generatedQuerier.SearchForValidPreparations(ctx, q.db, query)
+	results, err := q.generatedQuerier.SearchForValidPreparations(ctx, q.db, &generated.SearchForValidPreparationsParams{
+		NameQuery: query,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid preparations search")
 	}
@@ -203,10 +205,6 @@ func (q *repository) GetValidPreparations(ctx context.Context, filter *filtering
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidPreparation]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidPreparations(ctx, q.db, &generated.GetValidPreparationsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -220,10 +218,16 @@ func (q *repository) GetValidPreparations(ctx context.Context, filter *filtering
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidPreparation
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
-		x.Data = append(x.Data, &mealplanning.ValidPreparation{
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
+		data = append(data, &mealplanning.ValidPreparation{
 			CreatedAt: result.CreatedAt,
 			IngredientCount: types.Uint16RangeWithOptionalMax{
 				Max: database.Uint16PointerFromNullInt32(result.MaximumIngredientCount),
@@ -254,6 +258,14 @@ func (q *repository) GetValidPreparations(ctx context.Context, filter *filtering
 			YieldsNothing:               result.YieldsNothing,
 		})
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vp *mealplanning.ValidPreparation) string { return vp.ID },
+		filter,
+	)
 
 	return x, nil
 }

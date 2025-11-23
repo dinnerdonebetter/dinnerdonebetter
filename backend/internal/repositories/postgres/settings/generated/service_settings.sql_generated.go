@@ -249,22 +249,92 @@ SELECT
 	service_settings.admins_only,
 	service_settings.created_at,
 	service_settings.last_updated_at,
-	service_settings.archived_at
+	service_settings.archived_at,
+	(
+		SELECT COUNT(service_settings.id)
+		FROM service_settings
+		WHERE service_settings.archived_at IS NULL
+			AND
+			service_settings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND service_settings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				service_settings.last_updated_at IS NULL
+				OR service_settings.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				service_settings.last_updated_at IS NULL
+				OR service_settings.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR service_settings.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(service_settings.id)
+		FROM service_settings
+		WHERE service_settings.archived_at IS NULL
+	) AS total_count
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
-	AND service_settings.name ILIKE '%' || $1::text || '%'
-LIMIT 50
+	AND service_settings.name ILIKE '%' || $6::text || '%'
+	AND service_settings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND service_settings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		service_settings.last_updated_at IS NULL
+		OR service_settings.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		service_settings.last_updated_at IS NULL
+		OR service_settings.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR service_settings.archived_at = NULL)
+	AND service_settings.id > COALESCE($7, '')
+ORDER BY service_settings.id ASC
+LIMIT COALESCE($8, 50)
 `
 
-func (q *Queries) SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*ServiceSettings, error) {
-	rows, err := db.QueryContext(ctx, searchForServiceSettings, nameQuery)
+type SearchForServiceSettingsParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	NameQuery       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
+
+type SearchForServiceSettingsRow struct {
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	ID            string
+	Name          string
+	Type          SettingType
+	Description   string
+	Enumeration   string
+	DefaultValue  sql.NullString
+	FilteredCount int64
+	TotalCount    int64
+	AdminsOnly    bool
+}
+
+func (q *Queries) SearchForServiceSettings(ctx context.Context, db DBTX, arg *SearchForServiceSettingsParams) ([]*SearchForServiceSettingsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForServiceSettings,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.NameQuery,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*ServiceSettings{}
+	items := []*SearchForServiceSettingsRow{}
 	for rows.Next() {
-		var i ServiceSettings
+		var i SearchForServiceSettingsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -276,6 +346,8 @@ func (q *Queries) SearchForServiceSettings(ctx context.Context, db DBTX, nameQue
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

@@ -250,23 +250,41 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*identit
 }
 
 // SearchForUsersByUsername fetches a list of users whose usernames begin with a given query.
-func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery string, _ *filtering.QueryFilter) ([]*identity.User, error) {
+func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery string, filter *filtering.QueryFilter) ([]*identity.User, error) {
 	ctx, span := r.tracer.StartSpan(ctx)
 	defer span.End()
+
+	logger := r.logger.WithSpan(span)
 
 	if usernameQuery == "" {
 		return []*identity.User{}, database.ErrEmptyInputProvided
 	}
 	tracing.AttachToSpan(span, keys.SearchQueryKey, usernameQuery)
+	logger = logger.WithValue(keys.UsernameKey, usernameQuery)
 
-	results, err := r.generatedQuerier.SearchUsersByUsername(ctx, r.db, usernameQuery)
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
+	filter.AttachToLogger(logger)
+
+	results, err := r.generatedQuerier.SearchUsersByUsername(ctx, r.db, &generated.SearchUsersByUsernameParams{
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
+		Username:        usernameQuery,
+	})
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "querying database for users")
 	}
 
-	users := make([]*identity.User, len(results))
-	for i, result := range results {
-		users[i] = &identity.User{
+	users := []*identity.User{}
+	for _, result := range results {
+		users = append(users, &identity.User{
 			CreatedAt:                  result.CreatedAt,
 			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
 			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -288,7 +306,7 @@ func (r *repository) SearchForUsersByUsername(ctx context.Context, usernameQuery
 			AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
-		}
+		})
 	}
 
 	if len(users) == 0 {

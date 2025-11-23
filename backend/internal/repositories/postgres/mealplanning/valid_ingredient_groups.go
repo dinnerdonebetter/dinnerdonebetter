@@ -247,10 +247,6 @@ func (q *repository) GetValidIngredientGroups(ctx context.Context, filter *filte
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidIngredientGroup]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredientGroups(ctx, q.db, &generated.GetValidIngredientGroupsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -264,7 +260,17 @@ func (q *repository) GetValidIngredientGroups(ctx context.Context, filter *filte
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook from database")
 	}
 
+	var (
+		data          []*mealplanning.ValidIngredientGroup
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		validIngredientGroup := &mealplanning.ValidIngredientGroup{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -332,10 +338,16 @@ func (q *repository) GetValidIngredientGroups(ctx context.Context, filter *filte
 			})
 		}
 
-		x.Data = append(x.Data, validIngredientGroup)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, validIngredientGroup)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vig *mealplanning.ValidIngredientGroup) string { return vig.ID },
+		filter,
+	)
 
 	return x, nil
 }

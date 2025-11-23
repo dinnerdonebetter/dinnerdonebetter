@@ -221,6 +221,7 @@ FROM meals
 	JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE
 	meals.archived_at IS NULL
+	AND meal_components.archived_at IS NULL
 	AND meals.name ILIKE '%' || sqlc.arg(query)::text || '%'
 	AND meals.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND meals.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))

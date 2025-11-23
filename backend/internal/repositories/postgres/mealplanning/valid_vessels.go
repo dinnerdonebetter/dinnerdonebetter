@@ -156,7 +156,9 @@ func (q *repository) SearchForValidVessels(ctx context.Context, query string) ([
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, query)
 
-	results, err := q.generatedQuerier.SearchForValidVessels(ctx, q.db, query)
+	results, err := q.generatedQuerier.SearchForValidVessels(ctx, q.db, &generated.SearchForValidVesselsParams{
+		NameQuery: query,
+	})
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "querying for valid vessel")
 	}
@@ -213,10 +215,6 @@ func (q *repository) GetValidVessels(ctx context.Context, filter *filtering.Quer
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.ValidVessel]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidVessels(ctx, q.db, &generated.GetValidVesselsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -230,9 +228,17 @@ func (q *repository) GetValidVessels(ctx context.Context, filter *filtering.Quer
 		return nil, observability.PrepareError(err, span, "querying for valid vessels")
 	}
 
+	var (
+		data          []*types.ValidVessel
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		validVessel := &types.ValidVessel{
 			CreatedAt:                      result.CreatedAt,
 			ArchivedAt:                     database.TimePointerFromNullTime(result.ArchivedAt),
@@ -260,8 +266,16 @@ func (q *repository) GetValidVessels(ctx context.Context, filter *filtering.Quer
 			}
 		}
 
-		x.Data = append(x.Data, validVessel)
+		data = append(data, validVessel)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vv *types.ValidVessel) string { return vv.ID },
+		filter,
+	)
 
 	return x, nil
 }

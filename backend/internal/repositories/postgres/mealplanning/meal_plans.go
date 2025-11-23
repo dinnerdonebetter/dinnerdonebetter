@@ -123,9 +123,11 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.MealPlan]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*types.MealPlan
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetMealPlansForAccount(ctx, q.db, &generated.GetMealPlansForAccountParams{
 		BelongsToAccount: accountID,
@@ -138,17 +140,17 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 		IncludeArchived:  database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plans retrieval")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plans list retrieval query")
 	}
 
 	for _, result := range results {
 		// Extract counts from the first result (all rows have the same counts)
-		if x.TotalCount == 0 {
-			x.TotalCount = uint64(result.TotalCount)
-			x.FilteredCount = uint64(result.FilteredCount)
+		if totalCount == 0 {
+			totalCount = uint64(result.TotalCount)
+			filteredCount = uint64(result.FilteredCount)
 		}
 
-		x.Data = append(x.Data, &types.MealPlan{
+		data = append(data, &types.MealPlan{
 			CreatedAt:              result.CreatedAt,
 			VotingDeadline:         result.VotingDeadline,
 			ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
@@ -166,7 +168,7 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 	}
 
 	fullMealPlans := []*types.MealPlan{}
-	for _, mp := range x.Data {
+	for _, mp := range data {
 		fmp, mealPlanFetchErr := q.getMealPlan(ctx, mp.ID, accountID)
 		if mealPlanFetchErr != nil {
 			return nil, observability.PrepareError(mealPlanFetchErr, span, "scanning meal plans")
@@ -174,7 +176,15 @@ func (q *repository) GetMealPlansForAccount(ctx context.Context, accountID strin
 
 		fullMealPlans = append(fullMealPlans, fmp)
 	}
-	x.Data = fullMealPlans
+	data = fullMealPlans
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(mp *types.MealPlan) string { return mp.ID },
+		filter,
+	)
 
 	return x, nil
 }

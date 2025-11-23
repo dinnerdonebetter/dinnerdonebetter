@@ -255,11 +255,46 @@ SELECT
 	valid_vessels.last_indexed_at,
 	valid_vessels.created_at,
 	valid_vessels.last_updated_at,
-	valid_vessels.archived_at
+	valid_vessels.archived_at,
+	(
+		SELECT COUNT(valid_vessels.id)
+		FROM valid_vessels
+		WHERE valid_vessels.archived_at IS NULL
+			AND
+			valid_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_vessels.last_updated_at IS NULL
+				OR valid_vessels.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_vessels.last_updated_at IS NULL
+				OR valid_vessels.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_vessels.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_vessels.id)
+		FROM valid_vessels
+		WHERE valid_vessels.archived_at IS NULL
+	) AS total_count
 FROM valid_vessels
-WHERE valid_vessels.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
-	AND valid_vessels.archived_at IS NULL
-LIMIT 50;
+WHERE valid_vessels.archived_at IS NULL
+	AND valid_vessels.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
+	AND valid_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_vessels.last_updated_at IS NULL
+		OR valid_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_vessels.last_updated_at IS NULL
+		OR valid_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR valid_vessels.archived_at = NULL)
+	AND valid_vessels.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY valid_vessels.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: UpdateValidVessel :execrows
 UPDATE valid_vessels SET

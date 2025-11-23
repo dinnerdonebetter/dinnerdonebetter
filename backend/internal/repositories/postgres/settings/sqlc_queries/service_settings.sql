@@ -106,8 +106,43 @@ SELECT
 	service_settings.admins_only,
 	service_settings.created_at,
 	service_settings.last_updated_at,
-	service_settings.archived_at
+	service_settings.archived_at,
+	(
+		SELECT COUNT(service_settings.id)
+		FROM service_settings
+		WHERE service_settings.archived_at IS NULL
+			AND
+			service_settings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND service_settings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				service_settings.last_updated_at IS NULL
+				OR service_settings.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				service_settings.last_updated_at IS NULL
+				OR service_settings.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR service_settings.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(service_settings.id)
+		FROM service_settings
+		WHERE service_settings.archived_at IS NULL
+	) AS total_count
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
 	AND service_settings.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
-LIMIT 50;
+	AND service_settings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND service_settings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		service_settings.last_updated_at IS NULL
+		OR service_settings.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		service_settings.last_updated_at IS NULL
+		OR service_settings.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR service_settings.archived_at = NULL)
+	AND service_settings.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY service_settings.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);

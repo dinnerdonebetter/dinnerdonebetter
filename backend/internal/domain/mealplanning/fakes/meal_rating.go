@@ -11,7 +11,7 @@ func BuildFakeRecipeRating() *types.RecipeRating {
 	return &types.RecipeRating{
 		CreatedAt:    BuildFakeTime(),
 		Notes:        buildUniqueString(),
-		ID:           buildUniqueString(),
+		ID:           BuildFakeID(),
 		RecipeID:     buildUniqueString(),
 		ByUser:       buildUniqueString(),
 		Taste:        float32(buildFakeNumber()),

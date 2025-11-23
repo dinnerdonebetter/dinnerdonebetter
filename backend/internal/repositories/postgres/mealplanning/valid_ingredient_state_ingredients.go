@@ -134,10 +134,6 @@ func (q *repository) GetValidIngredientStateIngredients(ctx context.Context, fil
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredientStateIngredients(ctx, q.db, &generated.GetValidIngredientStateIngredientsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -151,7 +147,17 @@ func (q *repository) GetValidIngredientStateIngredients(ctx context.Context, fil
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient state ingredients list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidIngredientStateIngredient
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		validIngredientStateIngredient := &mealplanning.ValidIngredientStateIngredient{
 			CreatedAt:     result.ValidIngredientStateIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientStateIngredientLastUpdatedAt),
@@ -213,10 +219,16 @@ func (q *repository) GetValidIngredientStateIngredients(ctx context.Context, fil
 			},
 		}
 
-		x.Data = append(x.Data, validIngredientStateIngredient)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, validIngredientStateIngredient)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(visi *mealplanning.ValidIngredientStateIngredient) string { return visi.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -240,10 +252,6 @@ func (q *repository) GetValidIngredientStateIngredientsForIngredientState(ctx co
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredientStateIngredientsForIngredientState(ctx, q.db, &generated.GetValidIngredientStateIngredientsForIngredientStateParams{
 		CreatedBefore:        database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:         database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -258,7 +266,17 @@ func (q *repository) GetValidIngredientStateIngredientsForIngredientState(ctx co
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient state ingredients list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidIngredientStateIngredient
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		validIngredientStateIngredient := &mealplanning.ValidIngredientStateIngredient{
 			CreatedAt:     result.ValidIngredientStateIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientStateIngredientLastUpdatedAt),
@@ -320,10 +338,16 @@ func (q *repository) GetValidIngredientStateIngredientsForIngredientState(ctx co
 			},
 		}
 
-		x.Data = append(x.Data, validIngredientStateIngredient)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, validIngredientStateIngredient)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(visi *mealplanning.ValidIngredientStateIngredient) string { return visi.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -347,10 +371,6 @@ func (q *repository) GetValidIngredientStateIngredientsForIngredient(ctx context
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidIngredientStateIngredient]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredientStateIngredientsForIngredient(ctx, q.db, &generated.GetValidIngredientStateIngredientsForIngredientParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -365,7 +385,17 @@ func (q *repository) GetValidIngredientStateIngredientsForIngredient(ctx context
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient state ingredients list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidIngredientStateIngredient
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		validIngredientStateIngredient := &mealplanning.ValidIngredientStateIngredient{
 			CreatedAt:     result.ValidIngredientStateIngredientCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientStateIngredientLastUpdatedAt),
@@ -427,10 +457,16 @@ func (q *repository) GetValidIngredientStateIngredientsForIngredient(ctx context
 			},
 		}
 
-		x.Data = append(x.Data, validIngredientStateIngredient)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, validIngredientStateIngredient)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(visi *mealplanning.ValidIngredientStateIngredient) string { return visi.ID },
+		filter,
+	)
 
 	return x, nil
 }

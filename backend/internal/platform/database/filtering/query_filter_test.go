@@ -247,3 +247,61 @@ func TestQueryFilter_ToPagination(T *testing.T) {
 		assert.NotNil(t, actual)
 	})
 }
+
+func TestNewQueryFilteredResult(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		qf := &QueryFilter{
+			Cursor: pointer.To(t.Name()),
+			Limit:  pointer.To(uint8(MaxQueryFilterLimit)),
+		}
+
+		data := []*string{pointer.To("a"), pointer.To("b")}
+		filteredCount := uint64(len(data))
+		totalCount := uint64(len(data))
+		idExtractor := func(s *string) string { return *s }
+
+		expected := &QueryFilteredResult[string]{
+			Data: data,
+			Pagination: Pagination{
+				Cursor:        *data[1],
+				Limit:         *qf.Limit,
+				FilteredCount: filteredCount,
+				TotalCount:    totalCount,
+			},
+		}
+
+		actual := NewQueryFilteredResult(data, filteredCount, totalCount, idExtractor, qf)
+		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with empty data", func(t *testing.T) {
+		t.Parallel()
+
+		qf := &QueryFilter{
+			Cursor: pointer.To(t.Name()),
+			Limit:  pointer.To(uint8(MaxQueryFilterLimit)),
+		}
+
+		data := []*string{}
+		filteredCount := uint64(0)
+		totalCount := uint64(0)
+		idExtractor := func(s *string) string { return *s }
+
+		expected := &QueryFilteredResult[string]{
+			Data: data,
+			Pagination: Pagination{
+				Cursor:        "",
+				Limit:         *qf.Limit,
+				FilteredCount: filteredCount,
+				TotalCount:    totalCount,
+			},
+		}
+
+		actual := NewQueryFilteredResult(data, filteredCount, totalCount, idExtractor, qf)
+		assert.Equal(t, expected, actual)
+	})
+}

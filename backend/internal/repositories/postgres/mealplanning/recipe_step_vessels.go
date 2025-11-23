@@ -176,10 +176,6 @@ func (q *repository) GetRecipeStepVessels(ctx context.Context, recipeID, recipeS
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.RecipeStepVessel]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetRecipeStepVessels(ctx, q.db, &generated.GetRecipeStepVesselsParams{
 		RecipeID:        recipeID,
 		RecipeStepID:    recipeStepID,
@@ -195,7 +191,17 @@ func (q *repository) GetRecipeStepVessels(ctx context.Context, recipeID, recipeS
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step vessels list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.RecipeStepVessel
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		recipeStepVessel := &mealplanning.RecipeStepVessel{
 			CreatedAt: result.CreatedAt,
 			Quantity: types.Uint16RangeWithOptionalMax{
@@ -255,10 +261,16 @@ func (q *repository) GetRecipeStepVessels(ctx context.Context, recipeID, recipeS
 			}
 		}
 
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
-		x.Data = append(x.Data, recipeStepVessel)
+		data = append(data, recipeStepVessel)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(rsv *mealplanning.RecipeStepVessel) string { return rsv.ID },
+		filter,
+	)
 
 	return x, nil
 }

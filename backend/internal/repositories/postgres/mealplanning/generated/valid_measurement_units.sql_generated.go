@@ -475,32 +475,89 @@ SELECT
 	valid_measurement_units.last_indexed_at,
 	valid_measurement_units.created_at,
 	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at
+	valid_measurement_units.archived_at,
+	(
+		SELECT COUNT(valid_measurement_units.id)
+		FROM valid_measurement_units
+		WHERE valid_measurement_units.archived_at IS NULL
+			AND
+			valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_measurement_units.last_updated_at IS NULL
+				OR valid_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_measurement_units.last_updated_at IS NULL
+				OR valid_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR valid_measurement_units.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_measurement_units.id)
+		FROM valid_measurement_units
+		WHERE valid_measurement_units.archived_at IS NULL
+	) AS total_count
 FROM valid_measurement_units
-WHERE valid_measurement_units.name ILIKE '%' || $1::text || '%'
-	AND valid_measurement_units.archived_at IS NULL
-LIMIT 50
+WHERE valid_measurement_units.archived_at IS NULL
+	AND valid_measurement_units.name ILIKE '%' || $6::text || '%'
+	AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_measurement_units.last_updated_at IS NULL
+		OR valid_measurement_units.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_measurement_units.last_updated_at IS NULL
+		OR valid_measurement_units.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR valid_measurement_units.archived_at = NULL)
+	AND valid_measurement_units.id > COALESCE($7, '')
+ORDER BY valid_measurement_units.id ASC
+LIMIT COALESCE($8, 50)
 `
+
+type SearchForValidMeasurementUnitsParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	NameQuery       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
 
 type SearchForValidMeasurementUnitsRow struct {
 	CreatedAt     time.Time
 	LastIndexedAt sql.NullTime
 	ArchivedAt    sql.NullTime
 	LastUpdatedAt sql.NullTime
-	Name          string
-	Description   string
-	ID            string
 	IconPath      string
 	Slug          string
 	PluralName    string
+	ID            string
+	Description   string
+	Name          string
+	FilteredCount int64
+	TotalCount    int64
 	Volumetric    sql.NullBool
-	Imperial      bool
-	Metric        bool
 	Universal     bool
+	Metric        bool
+	Imperial      bool
 }
 
-func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidMeasurementUnitsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidMeasurementUnits, nameQuery)
+func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, arg *SearchForValidMeasurementUnitsParams) ([]*SearchForValidMeasurementUnitsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidMeasurementUnits,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.NameQuery,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -523,6 +580,8 @@ func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, n
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

@@ -1237,7 +1237,31 @@ SELECT
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
 	valid_ingredient_preparations.created_at as valid_ingredient_preparation_created_at,
 	valid_ingredient_preparations.last_updated_at as valid_ingredient_preparation_last_updated_at,
-	valid_ingredient_preparations.archived_at as valid_ingredient_preparation_archived_at
+	valid_ingredient_preparations.archived_at as valid_ingredient_preparation_archived_at,
+	(
+		SELECT COUNT(valid_ingredient_preparations.id)
+		FROM valid_ingredient_preparations
+		WHERE valid_ingredient_preparations.archived_at IS NULL
+			AND
+			valid_ingredient_preparations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_preparations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_preparations.last_updated_at IS NULL
+				OR valid_ingredient_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_preparations.last_updated_at IS NULL
+				OR valid_ingredient_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR valid_ingredient_preparations.archived_at = NULL)
+			AND valid_preparations.id = $6
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_ingredient_preparations.id)
+		FROM valid_ingredient_preparations
+		WHERE valid_ingredient_preparations.archived_at IS NULL
+			AND valid_preparations.id = $6
+	) AS total_count
 FROM valid_ingredient_preparations
 	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
 	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
@@ -1245,67 +1269,89 @@ WHERE
 	valid_ingredient_preparations.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
-	AND valid_preparations.id = $1
-	AND valid_ingredients.name ILIKE '%' || $2::text || '%'
+	AND valid_preparations.id = $6
+	AND valid_ingredients.name ILIKE '%' || $7::text || '%'
+	AND valid_ingredient_preparations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredient_preparations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_preparations.last_updated_at IS NULL
+		OR valid_ingredient_preparations.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_preparations.last_updated_at IS NULL
+		OR valid_ingredient_preparations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR valid_ingredient_preparations.archived_at = NULL)
+	AND valid_preparations.id = $6
+	AND valid_ingredient_preparations.id > COALESCE($8, '')
+ORDER BY valid_ingredient_preparations.id ASC
+LIMIT COALESCE($9, 50)
 `
 
 type SearchValidIngredientPreparationsByPreparationAndIngredientNameParams struct {
-	ID        string
-	NameQuery string
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	ID              string
+	NameQuery       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
 }
 
 type SearchValidIngredientPreparationsByPreparationAndIngredientNameRow struct {
-	ValidIngredientPreparationCreatedAt                    time.Time
-	ValidPreparationCreatedAt                              time.Time
 	ValidIngredientCreatedAt                               time.Time
+	ValidPreparationCreatedAt                              time.Time
+	ValidIngredientPreparationCreatedAt                    time.Time
+	ValidIngredientPreparationArchivedAt                   sql.NullTime
 	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
 	ValidPreparationLastUpdatedAt                          sql.NullTime
 	ValidPreparationLastIndexedAt                          sql.NullTime
-	ValidIngredientPreparationArchivedAt                   sql.NullTime
-	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
-	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
-	ValidPreparationSlug                                   string
-	ValidPreparationID                                     string
+	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
+	ValidIngredientWarning                                 string
+	ValidIngredientPreparationNotes                        string
 	ValidIngredientIconPath                                string
 	ValidIngredientPluralName                              string
-	ValidIngredientStorageInstructions                     string
 	ValidIngredientPreparationID                           string
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientSlug                                    string
-	ValidPreparationPastTense                              string
 	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientPreparationNotes                        string
+	ValidPreparationID                                     string
+	ValidPreparationSlug                                   string
+	ValidPreparationPastTense                              string
 	ValidPreparationIconPath                               string
 	ValidPreparationDescription                            string
-	ValidPreparationName                                   string
-	ValidIngredientWarning                                 string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
+	ValidPreparationName                                   string
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	FilteredCount                                          int64
+	TotalCount                                             int64
 	ValidPreparationMaximumVesselCount                     sql.NullInt32
 	ValidPreparationMaximumIngredientCount                 sql.NullInt32
 	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
-	ValidPreparationMinimumInstrumentCount                 int32
 	ValidPreparationMinimumVesselCount                     int32
 	ValidPreparationMinimumIngredientCount                 int32
+	ValidPreparationMinimumInstrumentCount                 int32
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidPreparationConditionExpressionRequired            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsWheat                           bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsSoy                             bool
 	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsPeanut                          bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsPeanut                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -1314,9 +1360,11 @@ type SearchValidIngredientPreparationsByPreparationAndIngredientNameRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsDairy                           bool
 	ValidIngredientContainsEgg                             bool
 	ValidPreparationOnlyForVessels                         bool
 	ValidPreparationConsumesVessel                         bool
+	ValidPreparationConditionExpressionRequired            bool
 	ValidPreparationTimeEstimateRequired                   bool
 	ValidPreparationTemperatureRequired                    bool
 	ValidPreparationRestrictToIngredients                  bool
@@ -1324,7 +1372,17 @@ type SearchValidIngredientPreparationsByPreparationAndIngredientNameRow struct {
 }
 
 func (q *Queries) SearchValidIngredientPreparationsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientPreparationsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientPreparationsByPreparationAndIngredientNameRow, error) {
-	rows, err := db.QueryContext(ctx, searchValidIngredientPreparationsByPreparationAndIngredientName, arg.ID, arg.NameQuery)
+	rows, err := db.QueryContext(ctx, searchValidIngredientPreparationsByPreparationAndIngredientName,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.ID,
+		arg.NameQuery,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -1399,6 +1457,8 @@ func (q *Queries) SearchValidIngredientPreparationsByPreparationAndIngredientNam
 			&i.ValidIngredientPreparationCreatedAt,
 			&i.ValidIngredientPreparationLastUpdatedAt,
 			&i.ValidIngredientPreparationArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

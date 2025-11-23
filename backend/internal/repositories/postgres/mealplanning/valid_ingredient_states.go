@@ -85,7 +85,9 @@ func (q *repository) SearchForValidIngredientStates(ctx context.Context, query s
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, query)
 
-	results, err := q.generatedQuerier.SearchForValidIngredientStates(ctx, q.db, query)
+	results, err := q.generatedQuerier.SearchForValidIngredientStates(ctx, q.db, &generated.SearchForValidIngredientStatesParams{
+		NameQuery: query,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states list retrieval query")
 	}
@@ -122,10 +124,6 @@ func (q *repository) GetValidIngredientStates(ctx context.Context, filter *filte
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.ValidIngredientState]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredientStates(ctx, q.db, &generated.GetValidIngredientStatesParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -139,8 +137,18 @@ func (q *repository) GetValidIngredientStates(ctx context.Context, filter *filte
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states list retrieval query")
 	}
 
+	var (
+		data          []*types.ValidIngredientState
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.Data = append(x.Data, &types.ValidIngredientState{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.ValidIngredientState{
 			CreatedAt:     result.CreatedAt,
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -152,9 +160,15 @@ func (q *repository) GetValidIngredientStates(ctx context.Context, filter *filte
 			AttributeType: string(result.AttributeType),
 			Slug:          result.Slug,
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vis *types.ValidIngredientState) string { return vis.ID },
+		filter,
+	)
 
 	return x, nil
 }

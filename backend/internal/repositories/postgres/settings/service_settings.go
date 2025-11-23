@@ -105,7 +105,9 @@ func (q *repository) SearchForServiceSettings(ctx context.Context, query string)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, query)
 
-	results, err := q.generatedQuerier.SearchForServiceSettings(ctx, q.db, query)
+	results, err := q.generatedQuerier.SearchForServiceSettings(ctx, q.db, &generated.SearchForServiceSettingsParams{
+		NameQuery: query,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service settings list retrieval query")
 	}

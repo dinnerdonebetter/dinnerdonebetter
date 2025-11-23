@@ -210,18 +210,31 @@ WHERE %s.%s IS NULL
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
 	%s
 FROM %s
-WHERE %s.%s %s
-	AND %s.%s IS NULL
-LIMIT 50;`,
+WHERE %s.%s IS NULL
+	AND %s.%s %s
+	%s
+%s;`,
 					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
 					}), ",\n\t"),
+					buildFilterCountSelect(validMeasurementUnitsTableName, true, true, []string{}),
+					buildTotalCountSelect(validMeasurementUnitsTableName, true, []string{}),
 					validMeasurementUnitsTableName,
-					validMeasurementUnitsTableName, nameColumn, buildILIKEForArgument("name_query"),
 					validMeasurementUnitsTableName,
 					archivedAtColumn,
+					validMeasurementUnitsTableName,
+					nameColumn,
+					buildILIKEForArgument("name_query"),
+					buildFilterConditions(
+						validMeasurementUnitsTableName,
+						true,
+						true,
+					),
+					buildCursorLimitClause(validMeasurementUnitsTableName),
 				)),
 			},
 			{

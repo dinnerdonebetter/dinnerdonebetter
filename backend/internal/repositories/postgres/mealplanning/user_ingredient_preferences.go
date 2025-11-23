@@ -150,10 +150,6 @@ func (q *repository) GetUserIngredientPreferences(ctx context.Context, userID st
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.UserIngredientPreference]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetUserIngredientPreferencesForUser(ctx, q.db, &generated.GetUserIngredientPreferencesForUserParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -168,8 +164,18 @@ func (q *repository) GetUserIngredientPreferences(ctx context.Context, userID st
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing user ingredient preferences list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.UserIngredientPreference
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.Data = append(x.Data, &mealplanning.UserIngredientPreference{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &mealplanning.UserIngredientPreference{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -220,10 +226,15 @@ func (q *repository) GetUserIngredientPreferences(ctx context.Context, userID st
 				IsHeat:                 result.ValidIngredientIsHeat,
 			},
 		})
-
-		x.TotalCount = uint64(result.TotalCount)
-		x.FilteredCount = uint64(result.FilteredCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(uip *mealplanning.UserIngredientPreference) string { return uip.ID },
+		filter,
+	)
 
 	return x, nil
 }

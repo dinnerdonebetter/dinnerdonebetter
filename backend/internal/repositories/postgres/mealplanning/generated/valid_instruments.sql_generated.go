@@ -458,12 +458,58 @@ SELECT
 	valid_instruments.last_indexed_at,
 	valid_instruments.created_at,
 	valid_instruments.last_updated_at,
-	valid_instruments.archived_at
+	valid_instruments.archived_at,
+	(
+		SELECT COUNT(valid_instruments.id)
+		FROM valid_instruments
+		WHERE valid_instruments.archived_at IS NULL
+			AND
+			valid_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_instruments.last_updated_at IS NULL
+				OR valid_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_instruments.last_updated_at IS NULL
+				OR valid_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR valid_instruments.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_instruments.id)
+		FROM valid_instruments
+		WHERE valid_instruments.archived_at IS NULL
+	) AS total_count
 FROM valid_instruments
-WHERE valid_instruments.name ILIKE '%' || $1::text || '%'
-	AND valid_instruments.archived_at IS NULL
-LIMIT 50
+WHERE valid_instruments.archived_at IS NULL
+	AND valid_instruments.name ILIKE '%' || $6::text || '%'
+	AND valid_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_instruments.last_updated_at IS NULL
+		OR valid_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_instruments.last_updated_at IS NULL
+		OR valid_instruments.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR valid_instruments.archived_at = NULL)
+	AND valid_instruments.id > COALESCE($7, '')
+ORDER BY valid_instruments.id ASC
+LIMIT COALESCE($8, 50)
 `
+
+type SearchForValidInstrumentsParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	NameQuery       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
 
 type SearchForValidInstrumentsRow struct {
 	CreatedAt                      time.Time
@@ -476,13 +522,24 @@ type SearchForValidInstrumentsRow struct {
 	ID                             string
 	Description                    string
 	Name                           string
+	FilteredCount                  int64
+	TotalCount                     int64
 	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
 }
 
-func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidInstrumentsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidInstruments, nameQuery)
+func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, arg *SearchForValidInstrumentsParams) ([]*SearchForValidInstrumentsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidInstruments,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.NameQuery,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -504,6 +561,8 @@ func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, nameQu
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

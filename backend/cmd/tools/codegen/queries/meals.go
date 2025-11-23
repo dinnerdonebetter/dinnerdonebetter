@@ -206,6 +206,7 @@ FROM %s
 	JOIN %s ON %s.%s=%s.%s
 WHERE
 	%s.%s IS NULL
+	AND %s.%s IS NULL
 	AND %s.%s %s
 	%s
 %s;`,
@@ -215,6 +216,7 @@ WHERE
 					mealsTableName,
 					mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
 					mealsTableName, archivedAtColumn,
+					mealComponentsTableName, archivedAtColumn,
 					mealsTableName, nameColumn, buildILIKEForArgument("query"),
 					buildFilterConditions(
 						mealsTableName,

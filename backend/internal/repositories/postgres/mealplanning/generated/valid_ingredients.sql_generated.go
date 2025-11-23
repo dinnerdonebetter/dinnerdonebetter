@@ -883,56 +883,113 @@ SELECT
 	valid_ingredients.last_indexed_at,
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
-	valid_ingredients.archived_at
+	valid_ingredients.archived_at,
+	(
+		SELECT COUNT(valid_ingredients.id)
+		FROM valid_ingredients
+		WHERE valid_ingredients.archived_at IS NULL
+			AND
+			valid_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredients.last_updated_at IS NULL
+				OR valid_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredients.last_updated_at IS NULL
+				OR valid_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR valid_ingredients.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_ingredients.id)
+		FROM valid_ingredients
+		WHERE valid_ingredients.archived_at IS NULL
+	) AS total_count
 FROM valid_ingredients
-WHERE valid_ingredients.name ILIKE '%' || $1::text || '%'
-	AND valid_ingredients.archived_at IS NULL
-LIMIT 50
+WHERE valid_ingredients.archived_at IS NULL
+	AND valid_ingredients.name ILIKE '%' || $6::text || '%'
+	AND valid_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredients.last_updated_at IS NULL
+		OR valid_ingredients.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredients.last_updated_at IS NULL
+		OR valid_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR valid_ingredients.archived_at = NULL)
+	AND valid_ingredients.id > COALESCE($7, '')
+ORDER BY valid_ingredients.id ASC
+LIMIT COALESCE($8, 50)
 `
+
+type SearchForValidIngredientsParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	NameQuery       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
 
 type SearchForValidIngredientsRow struct {
 	CreatedAt                               time.Time
 	ArchivedAt                              sql.NullTime
 	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
+	Slug                                    string
 	ShoppingSuggestions                     string
+	IconPath                                string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	IconPath                                string
 	ID                                      string
-	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	FilteredCount                           int64
+	TotalCount                              int64
 	IsLiquid                                sql.NullBool
-	ContainsWheat                           bool
-	IsProtein                               bool
+	ContainsShellfish                       bool
+	IsFruit                                 bool
+	AnimalDerived                           bool
 	AnimalFlesh                             bool
-	RestrictToPreparations                  bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
 	ContainsAlcohol                         bool
-	ContainsSoy                             bool
+	ContainsSesame                          bool
 	IsStarch                                bool
-	AnimalDerived                           bool
+	IsProtein                               bool
 	IsGrain                                 bool
-	IsFruit                                 bool
+	RestrictToPreparations                  bool
 	IsSalt                                  bool
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
+	ContainsWheat                           bool
+	ContainsSoy                             bool
 	ContainsTreeNut                         bool
 	ContainsPeanut                          bool
 	ContainsDairy                           bool
 	ContainsEgg                             bool
 }
 
-func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidIngredientsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidIngredients, nameQuery)
+func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, arg *SearchForValidIngredientsParams) ([]*SearchForValidIngredientsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidIngredients,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.NameQuery,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -979,6 +1036,8 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, nameQu
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

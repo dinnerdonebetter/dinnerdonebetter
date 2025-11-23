@@ -166,9 +166,11 @@ func (q *repository) GetMealPlanEvents(ctx context.Context, mealPlanID string, f
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.MealPlanEvent]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*types.MealPlanEvent
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetMealPlanEvents(ctx, q.db, &generated.GetMealPlanEventsParams{
 		MealPlanID:      mealPlanID,
@@ -185,7 +187,11 @@ func (q *repository) GetMealPlanEvents(ctx context.Context, mealPlanID string, f
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &types.MealPlanEvent{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.MealPlanEvent{
 			CreatedAt:         result.CreatedAt,
 			StartsAt:          result.StartsAt,
 			EndsAt:            result.EndsAt,
@@ -196,9 +202,15 @@ func (q *repository) GetMealPlanEvents(ctx context.Context, mealPlanID string, f
 			BelongsToMealPlan: result.BelongsToMealPlan,
 			ID:                result.ID,
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(mpe *types.MealPlanEvent) string { return mpe.ID },
+		filter,
+	)
 
 	return x, nil
 }

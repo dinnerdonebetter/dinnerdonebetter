@@ -117,9 +117,11 @@ func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.Meal]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*mealplanning.Meal
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetMeals(ctx, q.db, &generated.GetMealsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -135,7 +137,7 @@ func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &mealplanning.Meal{
+		data = append(data, &mealplanning.Meal{
 			CreatedAt:     result.CreatedAt,
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -151,9 +153,17 @@ func (q *repository) GetMeals(ctx context.Context, filter *filtering.QueryFilter
 			EligibleForMealPlans: result.EligibleForMealPlans,
 		})
 
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(m *mealplanning.Meal) string { return m.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -171,15 +181,11 @@ func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.Meal]{
-		Pagination: filter.ToPagination(),
-	}
-
-	if userID == "" {
-		return nil, database.ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	var (
+		data          []*mealplanning.Meal
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetMealsCreatedByUser(ctx, q.db, &generated.GetMealsCreatedByUserParams{
 		CreatedByUser:   userID,
@@ -196,7 +202,7 @@ func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &mealplanning.Meal{
+		data = append(data, &mealplanning.Meal{
 			CreatedAt:     result.CreatedAt,
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -212,9 +218,17 @@ func (q *repository) GetMealsCreatedByUser(ctx context.Context, userID string, f
 			EligibleForMealPlans: result.EligibleForMealPlans,
 		})
 
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(m *mealplanning.Meal) string { return m.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -265,9 +279,11 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.Meal]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*mealplanning.Meal
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.SearchForMeals(ctx, q.db, &generated.SearchForMealsParams{
 		Query:           mealNameQuery,
@@ -280,13 +296,13 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals search query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
 	}
 
 	var meal *mealplanning.Meal
 	for _, result := range results {
 		if meal != nil && meal.ID != result.ID {
-			x.Data = append(x.Data, meal)
+			data = append(data, meal)
 			meal = nil
 		}
 
@@ -316,13 +332,21 @@ func (q *repository) SearchForMeals(ctx context.Context, mealNameQuery string, f
 			RecipeScale: database.Float32FromString(result.ComponentRecipeScale),
 		})
 
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
 
 	if meal != nil {
-		x.Data = append(x.Data, meal)
+		data = append(data, meal)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(m *mealplanning.Meal) string { return m.ID },
+		filter,
+	)
 
 	return x, nil
 }

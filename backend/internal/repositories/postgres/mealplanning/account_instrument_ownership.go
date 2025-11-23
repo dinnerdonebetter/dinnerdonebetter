@@ -114,15 +114,11 @@ func (q *repository) GetAccountInstrumentOwnerships(ctx context.Context, account
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.AccountInstrumentOwnership]{
-		Pagination: filter.ToPagination(),
-	}
-
-	if accountID == "" {
-		return nil, database.ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.AccountIDKey, accountID)
-	tracing.AttachToSpan(span, keys.AccountIDKey, accountID)
+	var (
+		data          []*types.AccountInstrumentOwnership
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetAccountInstrumentOwnerships(ctx, q.db, &generated.GetAccountInstrumentOwnershipsParams{
 		AccountID:       accountID,
@@ -135,11 +131,15 @@ func (q *repository) GetAccountInstrumentOwnerships(ctx context.Context, account
 		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching account instrument ownerships")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing account instrument ownerships list retrieval query")
 	}
 
 	for _, result := range results {
-		accountInstrumentOwnership := &types.AccountInstrumentOwnership{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.AccountInstrumentOwnership{
 			CreatedAt:        result.CreatedAt,
 			ArchivedAt:       database.TimePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt:    database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -161,12 +161,16 @@ func (q *repository) GetAccountInstrumentOwnerships(ctx context.Context, account
 				IncludeInGeneratedInstructions: result.ValidInstrumentIncludeInGeneratedInstructions,
 				UsableForStorage:               result.ValidInstrumentUsableForStorage,
 			},
-		}
-
-		x.Data = append(x.Data, accountInstrumentOwnership)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		})
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(aio *types.AccountInstrumentOwnership) string { return aio.ID },
+		filter,
+	)
 
 	return x, nil
 }

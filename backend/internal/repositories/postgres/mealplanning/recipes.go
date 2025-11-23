@@ -241,10 +241,6 @@ func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilt
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.Recipe]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetRecipes(ctx, q.db, &generated.GetRecipesParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -257,9 +253,14 @@ func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilt
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval query")
 	}
+	var (
+		data          []*mealplanning.Recipe
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	for _, result := range results {
-		x.Data = append(x.Data, &mealplanning.Recipe{
+		data = append(data, &mealplanning.Recipe{
 			CreatedAt:           result.CreatedAt,
 			InspiredByRecipeID:  database.StringPointerFromNullString(result.InspiredByRecipeID),
 			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -280,9 +281,17 @@ func (q *repository) GetRecipes(ctx context.Context, filter *filtering.QueryFilt
 			SealOfApproval:   result.SealOfApproval,
 			EligibleForMeals: result.EligibleForMeals,
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(r *mealplanning.Recipe) string { return r.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -306,10 +315,6 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	x = &filtering.QueryFilteredResult[mealplanning.Recipe]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetRecipesCreatedByUser(ctx, q.db, &generated.GetRecipesCreatedByUserParams{
 		CreatedByUser:   userID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -324,8 +329,14 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.Recipe
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.Data = append(x.Data, &mealplanning.Recipe{
+		data = append(data, &mealplanning.Recipe{
 			CreatedAt:           result.CreatedAt,
 			InspiredByRecipeID:  database.StringPointerFromNullString(result.InspiredByRecipeID),
 			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -346,9 +357,17 @@ func (q *repository) GetRecipesCreatedByUser(ctx context.Context, userID string,
 			SealOfApproval:   result.SealOfApproval,
 			EligibleForMeals: result.EligibleForMeals,
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(r *mealplanning.Recipe) string { return r.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -399,10 +418,6 @@ func (q *repository) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.Recipe]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.RecipeSearch(ctx, q.db, &generated.RecipeSearchParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -417,8 +432,14 @@ func (q *repository) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes search query")
 	}
 
+	var (
+		data          []*mealplanning.Recipe
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		x.Data = append(x.Data, &mealplanning.Recipe{
+		data = append(data, &mealplanning.Recipe{
 			CreatedAt:           result.CreatedAt,
 			InspiredByRecipeID:  database.StringPointerFromNullString(result.InspiredByRecipeID),
 			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -439,9 +460,17 @@ func (q *repository) SearchForRecipes(ctx context.Context, recipeNameQuery strin
 			SealOfApproval:   result.SealOfApproval,
 			EligibleForMeals: result.EligibleForMeals,
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(r *mealplanning.Recipe) string { return r.ID },
+		filter,
+	)
 
 	return x, nil
 }

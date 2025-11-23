@@ -117,7 +117,9 @@ func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query s
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, query)
 
-	results, err := q.generatedQuerier.SearchForValidMeasurementUnits(ctx, q.db, query)
+	results, err := q.generatedQuerier.SearchForValidMeasurementUnits(ctx, q.db, &generated.SearchForValidMeasurementUnitsParams{
+		NameQuery: query,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}
@@ -157,10 +159,6 @@ func (q *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, v
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x := &filtering.QueryFilteredResult[types.ValidMeasurementUnit]{
-		Pagination: filter.ToPagination(),
-	}
-
 	if validIngredientID == "" {
 		return nil, database.ErrEmptyInputProvided
 	}
@@ -181,8 +179,18 @@ func (q *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, v
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}
 
+	var (
+		data          []*types.ValidMeasurementUnit
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		validMeasurementUnit := &types.ValidMeasurementUnit{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.ValidMeasurementUnit{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -196,12 +204,16 @@ func (q *repository) ValidMeasurementUnitsForIngredientID(ctx context.Context, v
 			Universal:     result.Universal,
 			Metric:        result.Metric,
 			Imperial:      result.Imperial,
-		}
-
-		x.Data = append(x.Data, validMeasurementUnit)
-		x.TotalCount = uint64(result.TotalCount)
-		x.FilteredCount = uint64(result.FilteredCount)
+		})
 	}
+
+	x := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vmu *types.ValidMeasurementUnit) string { return vmu.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -219,10 +231,6 @@ func (q *repository) GetValidMeasurementUnits(ctx context.Context, filter *filte
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[types.ValidMeasurementUnit]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidMeasurementUnits(ctx, q.db, &generated.GetValidMeasurementUnitsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -236,8 +244,18 @@ func (q *repository) GetValidMeasurementUnits(ctx context.Context, filter *filte
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
 	}
 
+	var (
+		data          []*types.ValidMeasurementUnit
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		validMeasurementUnit := &types.ValidMeasurementUnit{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.ValidMeasurementUnit{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -251,12 +269,16 @@ func (q *repository) GetValidMeasurementUnits(ctx context.Context, filter *filte
 			Universal:     result.Universal,
 			Metric:        result.Metric,
 			Imperial:      result.Imperial,
-		}
-
-		x.Data = append(x.Data, validMeasurementUnit)
-		x.TotalCount = uint64(result.TotalCount)
-		x.FilteredCount = uint64(result.FilteredCount)
+		})
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vmu *types.ValidMeasurementUnit) string { return vmu.ID },
+		filter,
+	)
 
 	return x, nil
 }

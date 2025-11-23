@@ -373,12 +373,58 @@ SELECT
 	valid_ingredient_states.last_indexed_at,
 	valid_ingredient_states.created_at,
 	valid_ingredient_states.last_updated_at,
-	valid_ingredient_states.archived_at
+	valid_ingredient_states.archived_at,
+	(
+		SELECT COUNT(valid_ingredient_states.id)
+		FROM valid_ingredient_states
+		WHERE valid_ingredient_states.archived_at IS NULL
+			AND
+			valid_ingredient_states.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_states.last_updated_at IS NULL
+				OR valid_ingredient_states.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_states.last_updated_at IS NULL
+				OR valid_ingredient_states.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND (NOT COALESCE($5, false)::boolean OR valid_ingredient_states.archived_at = NULL)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_ingredient_states.id)
+		FROM valid_ingredient_states
+		WHERE valid_ingredient_states.archived_at IS NULL
+	) AS total_count
 FROM valid_ingredient_states
-WHERE valid_ingredient_states.name ILIKE '%' || $1::text || '%'
-	AND valid_ingredient_states.archived_at IS NULL
-LIMIT 50
+WHERE valid_ingredient_states.archived_at IS NULL
+	AND valid_ingredient_states.name ILIKE '%' || $6::text || '%'
+	AND valid_ingredient_states.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_states.last_updated_at IS NULL
+		OR valid_ingredient_states.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_states.last_updated_at IS NULL
+		OR valid_ingredient_states.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+			AND (NOT COALESCE($5, false)::boolean OR valid_ingredient_states.archived_at = NULL)
+	AND valid_ingredient_states.id > COALESCE($7, '')
+ORDER BY valid_ingredient_states.id ASC
+LIMIT COALESCE($8, 50)
 `
+
+type SearchForValidIngredientStatesParams struct {
+	ResultLimit     interface{}
+	CreatedAfter    sql.NullTime
+	CreatedBefore   sql.NullTime
+	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
+	NameQuery       string
+	Cursor          sql.NullString
+	IncludeArchived sql.NullBool
+}
 
 type SearchForValidIngredientStatesRow struct {
 	ID            string
@@ -392,10 +438,21 @@ type SearchForValidIngredientStatesRow struct {
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
+	FilteredCount int64
+	TotalCount    int64
 }
 
-func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidIngredientStatesRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidIngredientStates, nameQuery)
+func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, arg *SearchForValidIngredientStatesParams) ([]*SearchForValidIngredientStatesRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidIngredientStates,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.IncludeArchived,
+		arg.NameQuery,
+		arg.Cursor,
+		arg.ResultLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -415,6 +472,8 @@ func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, n
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

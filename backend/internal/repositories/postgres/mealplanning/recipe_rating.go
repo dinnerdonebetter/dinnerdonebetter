@@ -105,9 +105,11 @@ func (q *repository) GetRecipeRatingsForRecipe(ctx context.Context, recipeID str
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	x = &filtering.QueryFilteredResult[types.RecipeRating]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*types.RecipeRating
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetRecipeRatingsForRecipe(ctx, q.db, &generated.GetRecipeRatingsForRecipeParams{
 		RecipeID:        recipeID,
@@ -124,7 +126,11 @@ func (q *repository) GetRecipeRatingsForRecipe(ctx context.Context, recipeID str
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &types.RecipeRating{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.RecipeRating{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -138,9 +144,15 @@ func (q *repository) GetRecipeRatingsForRecipe(ctx context.Context, recipeID str
 			Cleanup:       database.Float32FromNullString(result.Cleanup),
 			Difficulty:    database.Float32FromNullString(result.Difficulty),
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(rr *types.RecipeRating) string { return rr.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -164,9 +176,11 @@ func (q *repository) GetRecipeRatingsForUser(ctx context.Context, userID string,
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	x = &filtering.QueryFilteredResult[types.RecipeRating]{
-		Pagination: filter.ToPagination(),
-	}
+	var (
+		data          []*types.RecipeRating
+		filteredCount uint64
+		totalCount    uint64
+	)
 
 	results, err := q.generatedQuerier.GetRecipeRatingsForUser(ctx, q.db, &generated.GetRecipeRatingsForUserParams{
 		ByUser:          userID,
@@ -183,7 +197,11 @@ func (q *repository) GetRecipeRatingsForUser(ctx context.Context, userID string,
 	}
 
 	for _, result := range results {
-		x.Data = append(x.Data, &types.RecipeRating{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &types.RecipeRating{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
@@ -197,9 +215,15 @@ func (q *repository) GetRecipeRatingsForUser(ctx context.Context, userID string,
 			Cleanup:       database.Float32FromNullString(result.Cleanup),
 			Difficulty:    database.Float32FromNullString(result.Difficulty),
 		})
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(rr *types.RecipeRating) string { return rr.ID },
+		filter,
+	)
 
 	return x, nil
 }

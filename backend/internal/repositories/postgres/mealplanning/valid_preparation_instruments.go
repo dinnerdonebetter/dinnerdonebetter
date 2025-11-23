@@ -119,10 +119,6 @@ func (q *repository) GetValidPreparationInstruments(ctx context.Context, filter 
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidPreparationInstruments(ctx, q.db, &generated.GetValidPreparationInstrumentsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -136,8 +132,18 @@ func (q *repository) GetValidPreparationInstruments(ctx context.Context, filter 
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation instruments list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidPreparationInstrument
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		validPreparationInstrument := &mealplanning.ValidPreparationInstrument{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &mealplanning.ValidPreparationInstrument{
 			CreatedAt:     result.ValidPreparationInstrumentCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
@@ -187,12 +193,16 @@ func (q *repository) GetValidPreparationInstruments(ctx context.Context, filter 
 				OnlyForVessels:              result.ValidPreparationOnlyForVessels,
 				YieldsNothing:               result.ValidPreparationYieldsNothing,
 			},
-		}
-
-		x.Data = append(x.Data, validPreparationInstrument)
-		x.TotalCount = uint64(result.TotalCount)
-		x.FilteredCount = uint64(result.FilteredCount)
+		})
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vpi *mealplanning.ValidPreparationInstrument) string { return vpi.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -215,10 +225,6 @@ func (q *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidPreparationInstrumentsForPreparation(ctx, q.db, &generated.GetValidPreparationInstrumentsForPreparationParams{
 		ID:              preparationID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -233,8 +239,18 @@ func (q *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation instruments list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidPreparationInstrument
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		validPreparationInstrument := &mealplanning.ValidPreparationInstrument{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &mealplanning.ValidPreparationInstrument{
 			CreatedAt:     result.ValidPreparationInstrumentCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
@@ -284,12 +300,16 @@ func (q *repository) GetValidPreparationInstrumentsForPreparation(ctx context.Co
 				OnlyForVessels:              result.ValidPreparationOnlyForVessels,
 				YieldsNothing:               result.ValidPreparationYieldsNothing,
 			},
-		}
-
-		x.Data = append(x.Data, validPreparationInstrument)
-		x.TotalCount = uint64(result.TotalCount)
-		x.FilteredCount = uint64(result.FilteredCount)
+		})
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vpi *mealplanning.ValidPreparationInstrument) string { return vpi.ID },
+		filter,
+	)
 
 	return x, nil
 }
@@ -312,11 +332,6 @@ func (q *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidPreparationInstrument]{
-		Pagination: filter.ToPagination(),
-	}
-	tracing.AttachQueryFilterToSpan(span, filter)
-
 	results, err := q.generatedQuerier.GetValidPreparationInstrumentsForInstrument(ctx, q.db, &generated.GetValidPreparationInstrumentsForInstrumentParams{
 		ID:              instrumentID,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
@@ -331,8 +346,18 @@ func (q *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation instruments list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidPreparationInstrument
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
-		validPreparationInstrument := &mealplanning.ValidPreparationInstrument{
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
+		data = append(data, &mealplanning.ValidPreparationInstrument{
 			CreatedAt:     result.ValidPreparationInstrumentCreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
 			ArchivedAt:    database.TimePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
@@ -382,12 +407,16 @@ func (q *repository) GetValidPreparationInstrumentsForInstrument(ctx context.Con
 				OnlyForVessels:              result.ValidPreparationOnlyForVessels,
 				YieldsNothing:               result.ValidPreparationYieldsNothing,
 			},
-		}
-
-		x.Data = append(x.Data, validPreparationInstrument)
-		x.TotalCount = uint64(result.TotalCount)
-		x.FilteredCount = uint64(result.FilteredCount)
+		})
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vpi *mealplanning.ValidPreparationInstrument) string { return vpi.ID },
+		filter,
+	)
 
 	return x, nil
 }

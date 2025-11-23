@@ -173,16 +173,23 @@ func (q *repository) SearchForValidIngredients(ctx context.Context, query string
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x := &filtering.QueryFilteredResult[mealplanning.ValidIngredient]{
-		Pagination: filter.ToPagination(),
-	}
-
-	results, err := q.generatedQuerier.SearchForValidIngredients(ctx, q.db, query)
+	results, err := q.generatedQuerier.SearchForValidIngredients(ctx, q.db, &generated.SearchForValidIngredientsParams{
+		CreatedAfter:    sql.NullTime{},
+		CreatedBefore:   sql.NullTime{},
+		UpdatedBefore:   sql.NullTime{},
+		UpdatedAfter:    sql.NullTime{},
+		IncludeArchived: sql.NullBool{},
+		NameQuery:       "",
+		Cursor:          sql.NullString{},
+		ResultLimit:     nil,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient")
 	}
 
+	var data []*mealplanning.ValidIngredient
 	for _, result := range results {
 		validIngredient := &mealplanning.ValidIngredient{
 			CreatedAt:     result.CreatedAt,
@@ -226,10 +233,16 @@ func (q *repository) SearchForValidIngredients(ctx context.Context, query string
 			IsHeat:                 result.IsHeat,
 		}
 
-		x.Data = append(x.Data, validIngredient)
+		data = append(data, validIngredient)
 	}
 
-	return x, nil
+	return filtering.NewQueryFilteredResult(
+		data,
+		0,
+		0,
+		func(vi *mealplanning.ValidIngredient) string { return vi.ID },
+		filter,
+	), nil
 }
 
 // SearchForValidIngredientsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
@@ -257,10 +270,6 @@ func (q *repository) SearchForValidIngredientsForPreparation(ctx context.Context
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidIngredient]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.SearchValidIngredientsByPreparationAndIngredientName(ctx, q.db, &generated.SearchValidIngredientsByPreparationAndIngredientNameParams{
 		ValidPreparationID: preparationID,
 		NameQuery:          query,
@@ -268,6 +277,8 @@ func (q *repository) SearchForValidIngredientsForPreparation(ctx context.Context
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredients for preparation")
 	}
+
+	var data []*mealplanning.ValidIngredient
 
 	for _, result := range results {
 		validIngredient := &mealplanning.ValidIngredient{
@@ -312,10 +323,16 @@ func (q *repository) SearchForValidIngredientsForPreparation(ctx context.Context
 			IsHeat:                 result.IsHeat,
 		}
 
-		x.Data = append(x.Data, validIngredient)
+		data = append(data, validIngredient)
 	}
 
-	return x, nil
+	return filtering.NewQueryFilteredResult(
+		data,
+		0,
+		0,
+		func(vi *mealplanning.ValidIngredient) string { return vi.ID },
+		filter,
+	), nil
 }
 
 // GetValidIngredients fetches a list of valid ingredients from the database that meet a particular filter.
@@ -331,10 +348,6 @@ func (q *repository) GetValidIngredients(ctx context.Context, filter *filtering.
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	x = &filtering.QueryFilteredResult[mealplanning.ValidIngredient]{
-		Pagination: filter.ToPagination(),
-	}
-
 	results, err := q.generatedQuerier.GetValidIngredients(ctx, q.db, &generated.GetValidIngredientsParams{
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
@@ -348,7 +361,17 @@ func (q *repository) GetValidIngredients(ctx context.Context, filter *filtering.
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
 
+	var (
+		data          []*mealplanning.ValidIngredient
+		filteredCount uint64
+		totalCount    uint64
+	)
+
 	for _, result := range results {
+		if totalCount == 0 {
+			filteredCount = uint64(result.FilteredCount)
+			totalCount = uint64(result.TotalCount)
+		}
 		validIngredient := &mealplanning.ValidIngredient{
 			CreatedAt:     result.CreatedAt,
 			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
@@ -391,10 +414,16 @@ func (q *repository) GetValidIngredients(ctx context.Context, filter *filtering.
 			IsHeat:                 result.IsHeat,
 		}
 
-		x.Data = append(x.Data, validIngredient)
-		x.FilteredCount = uint64(result.FilteredCount)
-		x.TotalCount = uint64(result.TotalCount)
+		data = append(data, validIngredient)
 	}
+
+	x = filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(vi *mealplanning.ValidIngredient) string { return vi.ID },
+		filter,
+	)
 
 	return x, nil
 }

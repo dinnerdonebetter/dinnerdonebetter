@@ -190,18 +190,31 @@ WHERE %s.%s IS NULL
 					Type: ManyType,
 				},
 				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+	%s,
 	%s
 FROM %s
-WHERE %s.%s %s
-	AND %s.%s IS NULL
-LIMIT 50;`,
+WHERE %s.%s IS NULL
+	AND %s.%s %s
+	%s
+%s;`,
 					strings.Join(applyToEach(validIngredientStatesColumns, func(i int, s string) string {
 						return fmt.Sprintf("%s.%s", validIngredientStatesTableName, s)
 					}), ",\n\t"),
+					buildFilterCountSelect(validIngredientStatesTableName, true, true, []string{}),
+					buildTotalCountSelect(validIngredientStatesTableName, true, []string{}),
 					validIngredientStatesTableName,
-					validIngredientStatesTableName, nameColumn, buildILIKEForArgument("name_query"),
 					validIngredientStatesTableName,
 					archivedAtColumn,
+					validIngredientStatesTableName,
+					nameColumn,
+					buildILIKEForArgument("name_query"),
+					buildFilterConditions(
+						validIngredientStatesTableName,
+						true,
+						true,
+					),
+					buildCursorLimitClause(validIngredientStatesTableName),
 				)),
 			},
 			{

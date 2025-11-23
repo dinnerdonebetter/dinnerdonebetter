@@ -66,13 +66,6 @@ type (
 		TotalCount    uint64 `json:"totalCount"`
 	}
 
-	QueryFilteredResult[T any] struct {
-		_ struct{} `json:"-"`
-
-		Data []*T `json:"data"`
-		Pagination
-	}
-
 	// QueryFilter represents all the filters a User could apply to a list query.
 	QueryFilter struct {
 		_ struct{} `json:"-"`
@@ -86,6 +79,13 @@ type (
 		IncludeArchived *bool      `json:"includeArchived,omitempty"`
 		Cursor          *string    `json:"cursor,omitempty"`
 		Query           string     `json:"q,omitempty"`
+	}
+
+	QueryFilteredResult[T any] struct {
+		_ struct{} `json:"-"`
+
+		Data []*T `json:"data"`
+		Pagination
 	}
 )
 
@@ -267,4 +267,29 @@ func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 	}
 
 	return qf
+}
+
+// NewQueryFilteredResult creates a new QueryFilteredResult.
+func NewQueryFilteredResult[T any](
+	data []*T,
+	filteredCount,
+	totalCount uint64,
+	idExtractor func(*T) string,
+	filter *QueryFilter,
+) *QueryFilteredResult[T] {
+	x := &QueryFilteredResult[T]{
+		Data:       data,
+		Pagination: filter.ToPagination(),
+	}
+
+	x.FilteredCount = filteredCount
+	x.TotalCount = totalCount
+
+	if len(data) > 0 {
+		x.Cursor = idExtractor(data[len(data)-1])
+	} else {
+		x.Cursor = ""
+	}
+
+	return x
 }

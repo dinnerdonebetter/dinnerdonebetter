@@ -516,6 +516,7 @@ FROM meals
 	JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE
 	meals.archived_at IS NULL
+	AND meal_components.archived_at IS NULL
 	AND meals.name ILIKE '%' || $6::text || '%'
 	AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND meals.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
