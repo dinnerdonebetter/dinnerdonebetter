@@ -1206,7 +1206,7 @@ func (m *validEnumerationManager) SearchValidMeasurementUnits(ctx context.Contex
 		err     error
 	)
 	if !useSearchService {
-		results, err = m.db.SearchForValidMeasurementUnits(ctx, query)
+		results, err = m.db.SearchForValidMeasurementUnits(ctx, query, filter)
 	} else {
 		var validMeasurementUnitSubsets []*eatingindexing.ValidMeasurementUnitSearchSubset
 		validMeasurementUnitSubsets, err = m.validMeasurementUnitSearchIndex.Search(ctx, query)
@@ -1385,7 +1385,7 @@ func (m *validEnumerationManager) SearchValidInstruments(ctx context.Context, qu
 		err     error
 	)
 	if !useSearchService {
-		results, err = m.db.SearchForValidInstruments(ctx, query)
+		results, err = m.db.SearchForValidInstruments(ctx, query, filter)
 	} else {
 		var validInstrumentSubsets []*eatingindexing.ValidInstrumentSearchSubset
 		validInstrumentSubsets, err = m.validInstrumentSearchIndex.Search(ctx, query)
@@ -1846,7 +1846,7 @@ func (m *validEnumerationManager) SearchValidPreparations(ctx context.Context, q
 		err     error
 	)
 	if !useSearchService {
-		results, err = m.db.SearchForValidPreparations(ctx, query)
+		results, err = m.db.SearchForValidPreparations(ctx, query, filter)
 	} else {
 		var validPreparationSubsets []*eatingindexing.ValidPreparationSearchSubset
 		validPreparationSubsets, err = m.validPreparationsSearchIndex.Search(ctx, query)
@@ -2176,7 +2176,7 @@ func (m *validEnumerationManager) SearchValidVessels(ctx context.Context, query 
 		err          error
 	)
 	if !useSearchService {
-		validVessels, err = m.db.SearchForValidVessels(ctx, query)
+		validVessels, err = m.db.SearchForValidVessels(ctx, query, filter)
 	} else {
 		var validVesselSubsets []*eatingindexing.ValidVesselSearchSubset
 		validVesselSubsets, err = m.validVesselsSearchIndex.Search(ctx, query)

@@ -110,7 +110,7 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 	assert.Equal(t, validVessels.Data, byIDs)
 
 	// fetch via name search
-	byName, err := dbc.SearchForValidVessels(ctx, updatedValidVessel.Name)
+	byName, err := dbc.SearchForValidVessels(ctx, updatedValidVessel.Name, nil)
 
 	for i, v := range byName {
 		validVessels.Data[i].CreatedAt = v.CreatedAt
@@ -188,7 +188,7 @@ func TestQuerier_SearchForValidVessels(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForValidVessels(ctx, "")
+		actual, err := c.SearchForValidVessels(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

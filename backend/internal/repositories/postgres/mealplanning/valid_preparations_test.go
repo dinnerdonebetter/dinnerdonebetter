@@ -91,7 +91,7 @@ func TestQuerier_Integration_ValidPreparations(t *testing.T) {
 	assert.Equal(t, validPreparations.Data, byIDs)
 
 	// fetch via name search
-	byName, err := dbc.SearchForValidPreparations(ctx, updatedValidPreparation.Name)
+	byName, err := dbc.SearchForValidPreparations(ctx, updatedValidPreparation.Name, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, validPreparations.Data, byName)
 
@@ -162,7 +162,7 @@ func TestQuerier_SearchForValidPreparations(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForValidPreparations(ctx, "")
+		actual, err := c.SearchForValidPreparations(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

@@ -30,9 +30,9 @@ type QueryFilter struct {
 	CreatedBefore   *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=CreatedBefore,proto3,oneof" json:"CreatedBefore,omitempty"`
 	UpdatedAfter    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=UpdatedAfter,proto3,oneof" json:"UpdatedAfter,omitempty"`
 	UpdatedBefore   *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=UpdatedBefore,proto3,oneof" json:"UpdatedBefore,omitempty"`
-	PageSize        *uint32                `protobuf:"varint,7,opt,name=Limit,proto3,oneof" json:"Limit,omitempty"`
+	PageSize        *uint32                `protobuf:"varint,7,opt,name=PageSize,proto3,oneof" json:"PageSize,omitempty"`
 	IncludeArchived *bool                  `protobuf:"varint,8,opt,name=IncludeArchived,proto3,oneof" json:"IncludeArchived,omitempty"`
-	NextCursor      *string                `protobuf:"bytes,9,opt,name=Cursor,proto3,oneof" json:"Cursor,omitempty"`
+	NextCursor      *string                `protobuf:"bytes,9,opt,name=NextCursor,proto3,oneof" json:"NextCursor,omitempty"`
 	Query           string                 `protobuf:"bytes,10,opt,name=Query,proto3" json:"Query,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache

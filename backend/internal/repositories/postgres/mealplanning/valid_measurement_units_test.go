@@ -91,7 +91,7 @@ func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
 	assert.Subset(t, validMeasurementUnits.Data, byIDs)
 
 	// fetch via name search
-	byName, err := dbc.SearchForValidMeasurementUnits(ctx, updatedValidMeasurementUnit.Name)
+	byName, err := dbc.SearchForValidMeasurementUnits(ctx, updatedValidMeasurementUnit.Name, nil)
 	assert.NoError(t, err)
 	assert.Subset(t, validMeasurementUnits.Data, byName)
 
@@ -174,7 +174,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForValidMeasurementUnits(ctx, "")
+		actual, err := c.SearchForValidMeasurementUnits(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

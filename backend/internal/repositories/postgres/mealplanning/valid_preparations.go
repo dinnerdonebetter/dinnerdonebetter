@@ -136,7 +136,7 @@ func (q *repository) GetRandomValidPreparation(ctx context.Context) (*mealplanni
 }
 
 // SearchForValidPreparations fetches a valid preparation from the database.
-func (q *repository) SearchForValidPreparations(ctx context.Context, query string) ([]*mealplanning.ValidPreparation, error) {
+func (q *repository) SearchForValidPreparations(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -149,7 +149,14 @@ func (q *repository) SearchForValidPreparations(ctx context.Context, query strin
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	results, err := q.generatedQuerier.SearchForValidPreparations(ctx, q.db, &generated.SearchForValidPreparationsParams{
-		NameQuery: query,
+		NameQuery:       query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid preparations search")

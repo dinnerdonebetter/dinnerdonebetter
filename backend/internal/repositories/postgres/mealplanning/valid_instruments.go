@@ -103,7 +103,7 @@ func (q *repository) GetRandomValidInstrument(ctx context.Context) (*types.Valid
 }
 
 // SearchForValidInstruments fetches a valid instrument from the database.
-func (q *repository) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
+func (q *repository) SearchForValidInstruments(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -116,7 +116,14 @@ func (q *repository) SearchForValidInstruments(ctx context.Context, query string
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, query)
 
 	results, err := q.generatedQuerier.SearchForValidInstruments(ctx, q.db, &generated.SearchForValidInstrumentsParams{
-		NameQuery: query,
+		NameQuery:       query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")

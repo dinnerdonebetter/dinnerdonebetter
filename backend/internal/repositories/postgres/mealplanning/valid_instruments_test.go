@@ -91,7 +91,7 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 	assert.Equal(t, validInstruments.Data, byIDs)
 
 	// fetch via name search
-	byName, err := dbc.SearchForValidInstruments(ctx, updatedValidInstrument.Name)
+	byName, err := dbc.SearchForValidInstruments(ctx, updatedValidInstrument.Name, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, validInstruments.Data, byName)
 
@@ -161,7 +161,7 @@ func TestQuerier_SearchForValidInstruments(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForValidInstruments(ctx, "")
+		actual, err := c.SearchForValidInstruments(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

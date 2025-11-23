@@ -78,7 +78,7 @@ type (
 		Limit           *uint8     `json:"limit,omitempty"`
 		IncludeArchived *bool      `json:"includeArchived,omitempty"`
 		Cursor          *string    `json:"cursor,omitempty"`
-		Query           string     `json:"q,omitempty"`
+		Query           string     `json:"q,omitempty"` // TODO: REMOVE ME
 	}
 
 	QueryFilteredResult[T any] struct {

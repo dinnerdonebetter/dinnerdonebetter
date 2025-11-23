@@ -32,8 +32,8 @@ func (m *Repository) GetRandomValidInstrument(ctx context.Context) (*mealplannin
 }
 
 // SearchForValidInstruments is a mock function.
-func (m *Repository) SearchForValidInstruments(ctx context.Context, query string) ([]*mealplanning.ValidInstrument, error) {
-	returnValues := m.Called(ctx, query)
+func (m *Repository) SearchForValidInstruments(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidInstrument, error) {
+	returnValues := m.Called(ctx, query, filter)
 	return returnValues.Get(0).([]*mealplanning.ValidInstrument), returnValues.Error(1)
 }
 
@@ -209,7 +209,7 @@ func (m *Repository) GetRandomValidPreparation(ctx context.Context) (*mealplanni
 }
 
 // SearchForValidPreparations is a mock function.
-func (m *Repository) SearchForValidPreparations(ctx context.Context, query string) ([]*mealplanning.ValidPreparation, error) {
+func (m *Repository) SearchForValidPreparations(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidPreparation, error) {
 	returnValues := m.Called(ctx, query)
 	return returnValues.Get(0).([]*mealplanning.ValidPreparation), returnValues.Error(1)
 }
@@ -729,9 +729,9 @@ func (m *Repository) GetValidMeasurementUnit(ctx context.Context, validMeasureme
 	return returnValues.Get(0).(*mealplanning.ValidMeasurementUnit), returnValues.Error(1)
 }
 
-// SearchForValidMeasurementUnitsByName is a mock function.
-func (m *Repository) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*mealplanning.ValidMeasurementUnit, error) {
-	returnValues := m.Called(ctx, query)
+// SearchForValidMeasurementUnits is a mock function.
+func (m *Repository) SearchForValidMeasurementUnits(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidMeasurementUnit, error) {
+	returnValues := m.Called(ctx, query, filter)
 	return returnValues.Get(0).([]*mealplanning.ValidMeasurementUnit), returnValues.Error(1)
 }
 
@@ -1417,8 +1417,8 @@ func (m *Repository) GetRandomValidVessel(ctx context.Context) (*mealplanning.Va
 }
 
 // SearchForValidVessels is a mock function.
-func (m *Repository) SearchForValidVessels(ctx context.Context, query string) ([]*mealplanning.ValidVessel, error) {
-	returnValues := m.Called(ctx, query)
+func (m *Repository) SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidVessel, error) {
+	returnValues := m.Called(ctx, query, filter)
 	return returnValues.Get(0).([]*mealplanning.ValidVessel), returnValues.Error(1)
 }
 

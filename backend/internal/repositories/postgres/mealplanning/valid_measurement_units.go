@@ -105,7 +105,7 @@ func (q *repository) GetRandomValidMeasurementUnit(ctx context.Context) (*types.
 }
 
 // SearchForValidMeasurementUnits fetches a valid measurement unit from the database.
-func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
+func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -118,7 +118,14 @@ func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query s
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, query)
 
 	results, err := q.generatedQuerier.SearchForValidMeasurementUnits(ctx, q.db, &generated.SearchForValidMeasurementUnitsParams{
-		NameQuery: query,
+		NameQuery:       query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")

@@ -144,7 +144,7 @@ func (q *repository) GetRandomValidVessel(ctx context.Context) (*types.ValidVess
 }
 
 // SearchForValidVessels fetches a valid vessel from the database.
-func (q *repository) SearchForValidVessels(ctx context.Context, query string) ([]*types.ValidVessel, error) {
+func (q *repository) SearchForValidVessels(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -157,7 +157,14 @@ func (q *repository) SearchForValidVessels(ctx context.Context, query string) ([
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, query)
 
 	results, err := q.generatedQuerier.SearchForValidVessels(ctx, q.db, &generated.SearchForValidVesselsParams{
-		NameQuery: query,
+		NameQuery:       query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "querying for valid vessel")
