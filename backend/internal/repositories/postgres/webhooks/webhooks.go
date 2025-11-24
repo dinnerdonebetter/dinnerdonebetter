@@ -133,8 +133,9 @@ func (r *repository) GetWebhooks(ctx context.Context, accountID string, filter *
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
-
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
+
 	x := &filtering.QueryFilteredResult[types.Webhook]{
 		Pagination: filter.ToPagination(),
 	}

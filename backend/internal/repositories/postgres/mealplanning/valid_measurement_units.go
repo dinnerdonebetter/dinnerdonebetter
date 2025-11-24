@@ -117,6 +117,12 @@ func (q *repository) SearchForValidMeasurementUnits(ctx context.Context, query s
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, query)
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
 	results, err := q.generatedQuerier.SearchForValidMeasurementUnits(ctx, q.db, &generated.SearchForValidMeasurementUnitsParams{
 		NameQuery:       query,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),

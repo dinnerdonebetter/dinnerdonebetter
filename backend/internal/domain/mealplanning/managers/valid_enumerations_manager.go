@@ -1047,7 +1047,7 @@ func (m *validEnumerationManager) SearchValidIngredientStates(ctx context.Contex
 		err     error
 	)
 	if !useSearchService {
-		results, err = m.db.SearchForValidIngredientStates(ctx, query)
+		results, err = m.db.SearchForValidIngredientStates(ctx, query, filter)
 	} else {
 		var validIngredientStateSubsets []*eatingindexing.ValidIngredientStateSearchSubset
 		validIngredientStateSubsets, err = m.validIngredientStatesSearchIndex.Search(ctx, query)

@@ -173,6 +173,7 @@ func (q *repository) SearchForValidIngredients(ctx context.Context, query string
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	results, err := q.generatedQuerier.SearchForValidIngredients(ctx, q.db, &generated.SearchForValidIngredientsParams{

@@ -1054,7 +1054,7 @@ func TestValidEnumerationManager_SearchValidIngredientStates(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidIngredientStates), testutils.ContextMatcher, exampleQuery).Return(expected.Data, nil)
+				db.On(testutils.GetMethodName(vem.db.SearchForValidIngredientStates), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
 			},
 		)
 
@@ -1221,7 +1221,7 @@ func TestValidEnumerationManager_SearchValidMeasurementUnits(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidMeasurementUnits), testutils.ContextMatcher, exampleQuery).Return(expected.Data, nil)
+				db.On(testutils.GetMethodName(vem.db.SearchForValidMeasurementUnits), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
 			},
 		)
 
@@ -1415,7 +1415,7 @@ func TestValidEnumerationManager_SearchValidInstruments(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidInstruments), testutils.ContextMatcher, exampleQuery).Return(expected.Data, nil)
+				db.On(testutils.GetMethodName(vem.db.SearchForValidInstruments), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
 			},
 		)
 
@@ -2357,7 +2357,7 @@ func TestValidEnumerationManager_SearchValidVessels(T *testing.T) {
 		expectations := setupExpectationsForValidEnumerationManager(
 			vem,
 			func(db *mealplanningmock.Repository) {
-				db.On(testutils.GetMethodName(vem.db.SearchForValidVessels), testutils.ContextMatcher, exampleQuery).Return(expected.Data, nil)
+				db.On(testutils.GetMethodName(vem.db.SearchForValidVessels), testutils.ContextMatcher, exampleQuery, testutils.QueryFilterMatcher).Return(expected.Data, nil)
 			},
 		)
 

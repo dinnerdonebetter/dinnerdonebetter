@@ -327,7 +327,7 @@ func (r *repository) GetUsers(ctx context.Context, filter *filtering.QueryFilter
 		filter = filtering.DefaultQueryFilter()
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
-	filter.AttachToLogger(logger)
+	filter.AttachToLogger(logger) // TODO: is assignment necessary here? if not, make consistent
 
 	x = &filtering.QueryFilteredResult[identity.User]{
 		Pagination: filter.ToPagination(),

@@ -91,7 +91,7 @@ func TestQuerier_Integration_ValidIngredientStates(t *testing.T) {
 	assert.Equal(t, validIngredientStates.Data, byIDs)
 
 	// fetch via name search
-	byName, err := dbc.SearchForValidIngredientStates(ctx, updatedValidIngredientState.Name)
+	byName, err := dbc.SearchForValidIngredientStates(ctx, updatedValidIngredientState.Name, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, validIngredientStates.Data, byName)
 
@@ -157,7 +157,7 @@ func TestQuerier_SearchForValidIngredientStates(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForValidIngredientStates(ctx, "")
+		actual, err := c.SearchForValidIngredientStates(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

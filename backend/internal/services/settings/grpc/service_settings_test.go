@@ -144,9 +144,9 @@ func TestServiceImpl_CreateServiceSetting(t *testing.T) {
 			},
 		}
 
-		settingsRepo.On("CreateServiceSetting", testutils.ContextMatcher, mock.MatchedBy(func(input interface{}) bool {
+		settingsRepo.On("CreateServiceSetting", testutils.ContextMatcher, mock.MatchedBy(func(input *settings.ServiceSettingDatabaseCreationInput) bool {
 			return input != nil
-		})).Return(nil, errors.New("repository error"))
+		})).Return((*settings.ServiceSetting)(nil), errors.New("repository error"))
 
 		actual, err := service.CreateServiceSetting(ctx, request)
 
@@ -198,7 +198,7 @@ func TestServiceImpl_GetServiceSetting(t *testing.T) {
 			ServiceSettingID: exampleServiceSetting.ID,
 		}
 
-		settingsRepo.On("GetServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return(nil, errors.New("repository error"))
+		settingsRepo.On("GetServiceSetting", testutils.ContextMatcher, exampleServiceSetting.ID).Return((*settings.ServiceSetting)(nil), errors.New("repository error"))
 
 		actual, err := service.GetServiceSetting(ctx, request)
 
@@ -256,9 +256,7 @@ func TestServiceImpl_GetServiceSettings(t *testing.T) {
 			},
 		}
 
-		settingsRepo.On("GetServiceSettings", testutils.ContextMatcher, mock.MatchedBy(func(filter *filtering.QueryFilter) bool {
-			return filter != nil
-		})).Return(nil, errors.New("repository error"))
+		settingsRepo.On("GetServiceSettings", testutils.ContextMatcher, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[settings.ServiceSetting])(nil), errors.New("repository error"))
 
 		actual, err := service.GetServiceSettings(ctx, request)
 
@@ -277,7 +275,9 @@ func TestServiceImpl_SearchForServiceSettings(t *testing.T) {
 		t.Parallel()
 
 		ctx := t.Context()
-		exampleServiceSettings := []*settings.ServiceSetting{settingsfakes.BuildFakeServiceSetting()}
+		exampleServiceSettings := &filtering.QueryFilteredResult[settings.ServiceSetting]{
+			Data: []*settings.ServiceSetting{settingsfakes.BuildFakeServiceSetting()},
+		}
 		query := "test query"
 
 		service, settingsRepo := buildTestService(t)
@@ -286,14 +286,14 @@ func TestServiceImpl_SearchForServiceSettings(t *testing.T) {
 			Query: query,
 		}
 
-		settingsRepo.On("SearchForServiceSettings", testutils.ContextMatcher, query).Return(exampleServiceSettings, nil)
+		settingsRepo.On("SearchForServiceSettings", testutils.ContextMatcher, query, testutils.QueryFilterMatcher).Return(exampleServiceSettings, nil)
 
 		actual, err := service.SearchForServiceSettings(ctx, request)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 		assert.NotNil(t, actual.ResponseDetails)
-		assert.Len(t, actual.Results, len(exampleServiceSettings))
+		assert.Len(t, actual.Results, len(exampleServiceSettings.Data))
 
 		mock.AssertExpectationsForObjects(t, settingsRepo)
 	})
@@ -310,7 +310,7 @@ func TestServiceImpl_SearchForServiceSettings(t *testing.T) {
 			Query: query,
 		}
 
-		settingsRepo.On("SearchForServiceSettings", testutils.ContextMatcher, query).Return(nil, errors.New("repository error"))
+		settingsRepo.On("SearchForServiceSettings", testutils.ContextMatcher, query, testutils.QueryFilterMatcher).Return((*filtering.QueryFilteredResult[settings.ServiceSetting])(nil), errors.New("repository error"))
 
 		actual, err := service.SearchForServiceSettings(ctx, request)
 

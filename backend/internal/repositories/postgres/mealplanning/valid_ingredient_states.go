@@ -73,7 +73,7 @@ func (q *repository) GetValidIngredientState(ctx context.Context, validIngredien
 }
 
 // SearchForValidIngredientStates fetches a valid ingredient state from the database.
-func (q *repository) SearchForValidIngredientStates(ctx context.Context, query string) ([]*types.ValidIngredientState, error) {
+func (q *repository) SearchForValidIngredientStates(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*types.ValidIngredientState, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -85,8 +85,21 @@ func (q *repository) SearchForValidIngredientStates(ctx context.Context, query s
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, query)
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
 	results, err := q.generatedQuerier.SearchForValidIngredientStates(ctx, q.db, &generated.SearchForValidIngredientStatesParams{
-		NameQuery: query,
+		NameQuery:       query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states list retrieval query")

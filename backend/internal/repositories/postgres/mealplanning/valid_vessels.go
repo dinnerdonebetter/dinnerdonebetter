@@ -156,6 +156,12 @@ func (q *repository) SearchForValidVessels(ctx context.Context, query string, fi
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, query)
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
 	results, err := q.generatedQuerier.SearchForValidVessels(ctx, q.db, &generated.SearchForValidVesselsParams{
 		NameQuery:       query,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),

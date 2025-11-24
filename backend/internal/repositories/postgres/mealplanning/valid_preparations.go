@@ -148,6 +148,12 @@ func (q *repository) SearchForValidPreparations(ctx context.Context, query strin
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
 	results, err := q.generatedQuerier.SearchForValidPreparations(ctx, q.db, &generated.SearchForValidPreparationsParams{
 		NameQuery:       query,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),

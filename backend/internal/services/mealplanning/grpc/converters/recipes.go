@@ -5,6 +5,7 @@ import (
 	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
 	grpctypes "github.com/dinnerdonebetter/backend/internal/grpc/generated/types"
+	"github.com/dinnerdonebetter/backend/internal/platform/pointer"
 	"github.com/dinnerdonebetter/backend/internal/platform/types"
 )
 
@@ -17,6 +18,11 @@ func ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(input *me
 	var prepTasks []*mealplanning.RecipePrepTaskWithinRecipeCreationRequestInput
 	for _, task := range input.PrepTasks {
 		prepTasks = append(prepTasks, ConvertGRPCRecipePrepTaskWithinRecipeCreationRequestInputToRecipePrepTaskWithinRecipeCreationRequestInput(task))
+	}
+
+	var media []*mealplanning.RecipeMediaCreationRequestInput
+	for _, mediaItem := range input.Media {
+		media = append(media, ConvertGRPCRecipeMediaCreationRequestInputToRecipeMediaCreationRequestInput(mediaItem))
 	}
 
 	return &mealplanning.RecipeCreationRequestInput{
@@ -37,6 +43,7 @@ func ConvertGRPCRecipeCreationRequestInputToRecipeCreationRequestInput(input *me
 		EligibleForMeals: input.EligibleForMeals,
 		PrepTasks:        prepTasks,
 		Steps:            steps,
+		Media:            media,
 	}
 }
 
@@ -49,6 +56,11 @@ func ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input *me
 	var prepTasks []*mealplanningsvc.RecipePrepTaskWithinRecipeCreationRequestInput
 	for _, task := range input.PrepTasks {
 		prepTasks = append(prepTasks, ConvertRecipePrepTaskWithinRecipeCreationRequestInputToGRPCRecipePrepTaskWithinRecipeCreationRequestInput(task))
+	}
+
+	var media []*mealplanningsvc.RecipeMediaCreationRequestInput
+	for _, mediaItem := range input.Media {
+		media = append(media, ConvertRecipeMediaCreationRequestInputToGRPCRecipeMediaCreationRequestInput(mediaItem))
 	}
 
 	return &mealplanningsvc.RecipeCreationRequestInput{
@@ -69,6 +81,7 @@ func ConvertRecipeCreationRequestInputToGRPCRecipeCreationRequestInput(input *me
 		EligibleForMeals: input.EligibleForMeals,
 		PrepTasks:        prepTasks,
 		Steps:            steps,
+		Media:            media,
 	}
 }
 
@@ -1070,6 +1083,32 @@ func ConvertGRPCRecipeMediaToRecipeMedia(input *mealplanningsvc.RecipeMedia) *me
 		ExternalPath:    input.ExternalPath,
 		BelongsToRecipe: input.BelongsToRecipe,
 		Index:           uint16(input.Index),
+	}
+
+	return x
+}
+
+func ConvertGRPCRecipeMediaCreationRequestInputToRecipeMediaCreationRequestInput(input *mealplanningsvc.RecipeMediaCreationRequestInput) *mealplanning.RecipeMediaCreationRequestInput {
+	x := &mealplanning.RecipeMediaCreationRequestInput{
+		BelongsToRecipe:     pointer.To(input.BelongsToRecipe),
+		BelongsToRecipeStep: pointer.To(input.BelongsToRecipeStep),
+		MimeType:            input.MimeType,
+		InternalPath:        input.InternalPath,
+		ExternalPath:        input.ExternalPath,
+		Index:               uint16(input.Index),
+	}
+
+	return x
+}
+
+func ConvertRecipeMediaCreationRequestInputToGRPCRecipeMediaCreationRequestInput(input *mealplanning.RecipeMediaCreationRequestInput) *mealplanningsvc.RecipeMediaCreationRequestInput {
+	x := &mealplanningsvc.RecipeMediaCreationRequestInput{
+		BelongsToRecipe:     pointer.Dereference(input.BelongsToRecipe),
+		BelongsToRecipeStep: pointer.Dereference(input.BelongsToRecipeStep),
+		MimeType:            input.MimeType,
+		InternalPath:        input.InternalPath,
+		ExternalPath:        input.ExternalPath,
+		Index:               uint32(input.Index),
 	}
 
 	return x

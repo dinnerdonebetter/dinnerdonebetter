@@ -1132,8 +1132,8 @@ func (m *Repository) GetValidIngredientState(ctx context.Context, validIngredien
 }
 
 // SearchForValidIngredientStates is a mock function.
-func (m *Repository) SearchForValidIngredientStates(ctx context.Context, query string) ([]*mealplanning.ValidIngredientState, error) {
-	returnValues := m.Called(ctx, query)
+func (m *Repository) SearchForValidIngredientStates(ctx context.Context, query string, filter *filtering.QueryFilter) ([]*mealplanning.ValidIngredientState, error) {
+	returnValues := m.Called(ctx, query, filter)
 	return returnValues.Get(0).([]*mealplanning.ValidIngredientState), returnValues.Error(1)
 }
 

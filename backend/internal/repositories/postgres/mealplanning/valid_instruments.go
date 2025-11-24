@@ -115,6 +115,12 @@ func (q *repository) SearchForValidInstruments(ctx context.Context, query string
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, query)
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
 	results, err := q.generatedQuerier.SearchForValidInstruments(ctx, q.db, &generated.SearchForValidInstrumentsParams{
 		NameQuery:       query,
 		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),

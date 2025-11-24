@@ -81,31 +81,33 @@ func ConvertGRPCAccountInvitationUpdateRequestInputToAccountInvitationUpdateRequ
 
 func ConvertGRPCAccountCreationRequestInputToAccountCreationRequestInput(input *identitysvc.AccountCreationRequestInput) *identity.AccountCreationRequestInput {
 	return &identity.AccountCreationRequestInput{
-		Latitude:     pointer.To(float64(pointer.Dereference(input.Latitude))),
-		Longitude:    pointer.To(float64(pointer.Dereference(input.Longitude))),
-		Name:         input.Name,
-		ContactPhone: input.ContactPhone,
-		AddressLine1: input.AddressLine1,
-		AddressLine2: input.AddressLine2,
-		City:         input.City,
-		State:        input.State,
-		ZipCode:      input.ZipCode,
-		Country:      input.Country,
+		BelongsToUser: input.BelongsToUser,
+		Latitude:      pointer.To(float64(pointer.Dereference(input.Latitude))),
+		Longitude:     pointer.To(float64(pointer.Dereference(input.Longitude))),
+		Name:          input.Name,
+		ContactPhone:  input.ContactPhone,
+		AddressLine1:  input.AddressLine1,
+		AddressLine2:  input.AddressLine2,
+		City:          input.City,
+		State:         input.State,
+		ZipCode:       input.ZipCode,
+		Country:       input.Country,
 	}
 }
 
 func ConvertAccountCreationRequestInputToGRPCAccountCreationRequestInput(input *identity.AccountCreationRequestInput) *identitysvc.AccountCreationRequestInput {
 	return &identitysvc.AccountCreationRequestInput{
-		Latitude:     pointer.To(float32(pointer.Dereference(input.Latitude))),
-		Longitude:    pointer.To(float32(pointer.Dereference(input.Longitude))),
-		Name:         input.Name,
-		ContactPhone: input.ContactPhone,
-		AddressLine1: input.AddressLine1,
-		AddressLine2: input.AddressLine2,
-		City:         input.City,
-		State:        input.State,
-		ZipCode:      input.ZipCode,
-		Country:      input.Country,
+		BelongsToUser: input.BelongsToUser,
+		Latitude:      pointer.To(float32(pointer.Dereference(input.Latitude))),
+		Longitude:     pointer.To(float32(pointer.Dereference(input.Longitude))),
+		Name:          input.Name,
+		ContactPhone:  input.ContactPhone,
+		AddressLine1:  input.AddressLine1,
+		AddressLine2:  input.AddressLine2,
+		City:          input.City,
+		State:         input.State,
+		ZipCode:       input.ZipCode,
+		Country:       input.Country,
 	}
 }
 

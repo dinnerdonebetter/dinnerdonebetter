@@ -93,7 +93,7 @@ func (q *repository) getServiceSetting(ctx context.Context, db database.SQLQuery
 }
 
 // SearchForServiceSettings fetches a service setting from the database.
-func (q *repository) SearchForServiceSettings(ctx context.Context, query string) ([]*types.ServiceSetting, error) {
+func (q *repository) SearchForServiceSettings(ctx context.Context, query string, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[types.ServiceSetting], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -105,14 +105,31 @@ func (q *repository) SearchForServiceSettings(ctx context.Context, query string)
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, query)
 
+	if filter == nil {
+		filter = filtering.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
 	results, err := q.generatedQuerier.SearchForServiceSettings(ctx, q.db, &generated.SearchForServiceSettingsParams{
-		NameQuery: query,
+		NameQuery:       query,
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		Cursor:          database.NullStringFromStringPointer(filter.Cursor),
+		ResultLimit:     database.NullInt32FromUint8Pointer(filter.Limit),
+		IncludeArchived: database.NullBoolFromBoolPointer(filter.IncludeArchived),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service settings list retrieval query")
 	}
 
-	x := []*types.ServiceSetting{}
+	var (
+		data                      = []*types.ServiceSetting{}
+		filteredCount, totalCount uint64
+	)
+
 	for _, result := range results {
 		rawEnumeration := strings.Split(result.Enumeration, serviceSettingsEnumDelimiter)
 		usableEnumeration := []string{}
@@ -135,10 +152,22 @@ func (q *repository) SearchForServiceSettings(ctx context.Context, query string)
 			AdminsOnly:    result.AdminsOnly,
 		}
 
-		x = append(x, serviceSetting)
+		filteredCount = uint64(result.FilteredCount)
+		totalCount = uint64(result.TotalCount)
+		data = append(data, serviceSetting)
 	}
 
-	return x, nil
+	result := filtering.NewQueryFilteredResult(
+		data,
+		filteredCount,
+		totalCount,
+		func(t *types.ServiceSetting) string {
+			return t.ID
+		},
+		filter,
+	)
+
+	return result, nil
 }
 
 // GetServiceSettings fetches a list of service settings from the database that meet a particular filter.

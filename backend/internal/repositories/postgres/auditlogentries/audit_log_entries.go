@@ -70,8 +70,10 @@ func (q *repository) GetAuditLogEntriesForUser(ctx context.Context, userID strin
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
-
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
+
+	// TODO: REFACTORME
 	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
@@ -132,8 +134,10 @@ func (q *repository) GetAuditLogEntriesForUserAndResourceTypes(ctx context.Conte
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
-
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
+
+	// TODO: REFACTORME
 	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
@@ -189,8 +193,10 @@ func (q *repository) GetAuditLogEntriesForAccount(ctx context.Context, accountID
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
-
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
+
+	// TODO: REFACTORME
 	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}
@@ -251,8 +257,10 @@ func (q *repository) GetAuditLogEntriesForAccountAndResourceTypes(ctx context.Co
 	if filter == nil {
 		filter = filtering.DefaultQueryFilter()
 	}
-
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
+
+	// TODO: REFACTORME
 	x := &filtering.QueryFilteredResult[audit.AuditLogEntry]{
 		Pagination: filter.ToPagination(),
 	}

@@ -80,9 +80,9 @@ func TestQuerier_Integration_ServiceSettings(t *testing.T) {
 	assert.Equal(t, len(createdServiceSettings), len(serviceSettings.Data))
 
 	// fetch via name search
-	byName, err := dbc.SearchForServiceSettings(ctx, exampleServiceSetting.Name)
+	byName, err := dbc.SearchForServiceSettings(ctx, exampleServiceSetting.Name, nil)
 	assert.NoError(t, err)
-	assert.Equal(t, serviceSettings.Data, byName)
+	assert.Equal(t, serviceSettings.Data, byName.Data)
 
 	// delete
 	for _, serviceSetting := range createdServiceSettings {
@@ -141,7 +141,7 @@ func TestQuerier_SearchForServiceSettings(T *testing.T) {
 		ctx := t.Context()
 		c := buildInertClientForTest(t)
 
-		actual, err := c.SearchForServiceSettings(ctx, "")
+		actual, err := c.SearchForServiceSettings(ctx, "", nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

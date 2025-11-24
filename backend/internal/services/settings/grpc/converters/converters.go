@@ -49,12 +49,14 @@ func ConvertGRPCServiceSettingToServiceSetting(input *settingssvc.ServiceSetting
 	}
 }
 
-func ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(input *settingssvc.ServiceSettingConfigurationCreationRequestInput) *settings.ServiceSettingConfigurationDatabaseCreationInput {
+func ConvertGRPCServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(input *settingssvc.ServiceSettingConfigurationCreationRequestInput, userID, accountID string) *settings.ServiceSettingConfigurationDatabaseCreationInput {
 	return &settings.ServiceSettingConfigurationDatabaseCreationInput{
 		ID:               identifiers.New(),
 		Value:            input.Value,
 		Notes:            input.Notes,
 		ServiceSettingID: input.ServiceSettingID,
+		BelongsToUser:    userID,
+		BelongsToAccount: accountID,
 	}
 }
 
