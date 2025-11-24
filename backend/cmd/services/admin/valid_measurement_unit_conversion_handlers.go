@@ -208,6 +208,12 @@ func pluralizeUnit(singular, plural string, quantity float32) string {
 
 // renderConversionItem renders a single conversion item
 func renderConversionItem(conv *mealplanningsvc.ValidMeasurementUnitConversion, currentUnitID string, palette *design.Palette) g.Node {
+	// Safely extract ingredient name if available
+	var ingredientName string
+	if conv.OnlyForIngredient != nil {
+		ingredientName = conv.OnlyForIngredient.Name
+	}
+
 	// Generate both example calculations
 	forwardCalculation := fmt.Sprintf("1 %s = %.4g %s",
 		conv.From.Name,
@@ -277,10 +283,10 @@ func renderConversionItem(conv *mealplanningsvc.ValidMeasurementUnitConversion, 
 				g.Text(fmt.Sprintf("Modifier: %.6g", conv.Modifier)),
 			),
 			g.If(
-				conv.OnlyForIngredient != nil && conv.OnlyForIngredient.Name != "",
+				ingredientName != "",
 				ghtml.Div(
 					ghtml.Class("mt-2 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded inline-block"),
-					g.Text(fmt.Sprintf("Only for: %s", conv.OnlyForIngredient.Name)),
+					g.Text(fmt.Sprintf("Only for: %s", ingredientName)),
 				),
 			),
 			g.If(

@@ -100,6 +100,7 @@ func (s *AdminFrontendServer) setupRoutes(router routing.Router) {
 	// Valid Ingredient States - specific routes before dynamic ones
 	r.Get("/valid_ingredient_states/new", ghttp.Adapt(s.ValidIngredientStateNewPage))
 	r.Post("/api/valid_ingredient_states", ghttp.Adapt(s.ValidIngredientStateCreate))
+	r.Get(fmt.Sprintf("/api/valid_ingredient_states/{%s}/ingredients/search", validIngredientStateIDURLParamKey), ghttp.Adapt(s.ValidIngredientStateIngredientsSearch))
 	r.Get(fmt.Sprintf("/valid_ingredient_states/{%s}", validIngredientStateIDURLParamKey), ghttp.Adapt(s.ValidIngredientStatePage))
 	r.Get("/valid_ingredient_states", ghttp.Adapt(s.ValidIngredientStatesList))
 	r.Get("/api/valid_ingredient_states/search", ghttp.Adapt(s.ValidIngredientStatesSearch))

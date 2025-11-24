@@ -77,9 +77,10 @@ func (s *AdminFrontendServer) LoginSubmission(res http.ResponseWriter, req *http
 
 	http.SetCookie(res, s.buildCookie(ctx, encodedCookie))
 
-	// Redirect to home page after successful login
+	// Redirect to home page after successful login using HTMX redirect
+	// This causes HTMX to do a full page redirect instead of swapping content
 	res.Header().Set("HX-Redirect", "/")
-	http.Redirect(res, req, "/", http.StatusSeeOther)
-
+	res.WriteHeader(http.StatusOK)
+	
 	return nil, nil
 }

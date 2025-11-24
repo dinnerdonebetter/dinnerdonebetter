@@ -7,7 +7,9 @@ import (
 
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/components"
 	"github.com/dinnerdonebetter/backend/cmd/services/admin/design"
+	grpcconverters "github.com/dinnerdonebetter/backend/internal/grpc/converters"
 	mealplanningsvc "github.com/dinnerdonebetter/backend/internal/grpc/generated/services/mealplanning"
+	"github.com/dinnerdonebetter/backend/internal/platform/database/filtering"
 
 	g "maragu.dev/gomponents"
 	ghtml "maragu.dev/gomponents/html"
@@ -164,6 +166,25 @@ func (s *AdminFrontendServer) ValidIngredientStatePage(_ http.ResponseWriter, re
 
 	validIngredientState := validIngredientStateRes.Result
 
+	// Parse filter from request
+	queryFilter := filtering.ExtractQueryFilterFromRequest(req)
+	grpcFilter := grpcconverters.ConvertQueryFilterToGRPCQueryFilter(queryFilter, filtering.Pagination{})
+
+	// Fetch ingredients for this ingredient state with filter
+	ingredientsRes, err := c.GetValidIngredientStateIngredientsByIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateIngredientsByIngredientStateRequest{
+		ValidIngredientStateID: validIngredientStateID,
+		Filter:                 grpcFilter,
+	})
+	if err != nil {
+		return page("Valid Ingredient States", s.renderValidIngredientStatesError(fmt.Sprintf("Error loading ingredients: %v", err))), nil
+	}
+
+	// Use the ValidIngredientStateIngredient results directly for the table
+	stateIngredients := []*mealplanningsvc.ValidIngredientStateIngredient{}
+	if ingredientsRes != nil && ingredientsRes.Results != nil {
+		stateIngredients = ingredientsRes.Results
+	}
+
 	// Use the FormPage component for viewing valid ingredient state data
 	formPageResult, err := components.FormPage(&components.FormPageProps[*mealplanningsvc.ValidIngredientState]{
 		Title:        "Valid Ingredient State Details",
@@ -235,22 +256,9 @@ func (s *AdminFrontendServer) ValidIngredientStatePage(_ http.ResponseWriter, re
 			return fmt.Sprintf("Viewing ingredient state: %s", vis.Name)
 		},
 
-		// Additional info section showing attribute type
+		// Additional info section showing ingredients in a paginated table
 		AdditionalContent: []g.Node{
-			ghtml.Div(
-				ghtml.Class("mt-6"),
-				components.Card(&design.StandardPalette,
-					ghtml.H3(
-						ghtml.Class(fmt.Sprintf("text-lg font-medium %s mb-4", design.TextColor(design.StandardPalette.Primary))),
-						g.Text("Ingredient State Classification"),
-					),
-					ghtml.Div(
-						ghtml.Class("grid grid-cols-1 md:grid-cols-2 gap-4"),
-						attributeTypeInfo("Attribute Type", validIngredientState.AttributeType, &design.StandardPalette),
-						attributeTypeInfo("Past Tense", validIngredientState.PastTense, &design.StandardPalette),
-					),
-				),
-			),
+			renderIngredientsTableForState(validIngredientStateID, stateIngredients, ingredientsRes, &design.StandardPalette),
 		},
 	})
 	if err != nil {
@@ -441,25 +449,254 @@ func (s *AdminFrontendServer) renderValidIngredientStatesError(errorMsg string) 
 	)
 }
 
-// attributeTypeInfo creates an info display for attribute type information
-func attributeTypeInfo(label, value string, palette *design.Palette) g.Node {
-	displayValue := value
-	if value == "" {
-		displayValue = "-"
+// renderIngredientsTableForState creates a paginated table displaying the ingredients that this state is valid for
+func renderIngredientsTableForState(
+	ingredientStateID string,
+	stateIngredients []*mealplanningsvc.ValidIngredientStateIngredient,
+	response *mealplanningsvc.GetValidIngredientStateIngredientsByIngredientStateResponse,
+	palette *design.Palette,
+) g.Node {
+	// Build search URL for this ingredient state
+	searchURL := fmt.Sprintf("/api/valid_ingredient_states/%s/ingredients/search", ingredientStateID)
+
+	tablePageResult, err := components.TablePage(&components.TablePageProps[*mealplanningsvc.ValidIngredientStateIngredient]{
+		Title:             "Valid For Ingredients",
+		BaseSubtitle:      "Ingredients that can use this state",
+		Palette:           palette,
+		ShowSearch:        true,
+		SearchPlaceholder: "Search ingredients...",
+		HTMXSearchTarget:  searchURL,
+		Data:              stateIngredients,
+		TableOptions: &components.TableOptions[*mealplanningsvc.ValidIngredientStateIngredient]{
+			TableID: "ingredient-state-ingredients-table",
+			Palette: palette,
+			Fields: []string{
+				"IngredientName",
+				"IngredientDescription",
+				"Notes",
+				"CreatedAt",
+			},
+			FieldReplacements: map[string]string{
+				"IngredientName":        "Ingredient",
+				"IngredientDescription": "Description",
+			},
+			FieldRenderers: map[string]components.FieldRenderer{
+				"IngredientName": func(value any) g.Node {
+					// Value will be the whole item for custom fields, extract ingredient name
+					if stateIngredient, ok := value.(*mealplanningsvc.ValidIngredientStateIngredient); ok && stateIngredient != nil && stateIngredient.Ingredient != nil {
+						ingredientURL := fmt.Sprintf("/valid_ingredients/%s", stateIngredient.Ingredient.ID)
+						return ghtml.A(
+							ghtml.Href(ingredientURL),
+							g.Attr("hx-get", ingredientURL),
+							g.Attr("hx-target", "body"),
+							g.Attr("hx-swap", "innerHTML"),
+							g.Attr("hx-push-url", "true"),
+							ghtml.Class(fmt.Sprintf("font-medium %s hover:underline", design.TextColor(palette.Primary))),
+							g.Text(stateIngredient.Ingredient.Name),
+						)
+					}
+					return g.Text("-")
+				},
+				"IngredientDescription": func(value any) g.Node {
+					if stateIngredient, ok := value.(*mealplanningsvc.ValidIngredientStateIngredient); ok && stateIngredient != nil && stateIngredient.Ingredient != nil {
+						desc := stateIngredient.Ingredient.Description
+						if desc == "" {
+							return g.Text("-")
+						}
+						return ghtml.Span(
+							ghtml.Class(fmt.Sprintf("text-sm %s opacity-75", design.TextColor(palette.Text))),
+							g.Text(desc),
+						)
+					}
+					return g.Text("-")
+				},
+				"CreatedAt": renderTimestamp,
+			},
+		},
+		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientStateIngredient) string {
+			if data != nil && data.Ingredient != nil {
+				return fmt.Sprintf("/valid_ingredients/%s", data.Ingredient.ID)
+			}
+			return ""
+		},
+		EmptyStateTitle:       "No ingredients found",
+		EmptyStateDescription: "No ingredients are associated with this ingredient state.",
+		SubtitleGenerator: func(metadata components.TablePageMetadata) string {
+			if metadata.EmptyState {
+				return "Ingredients that can use this state"
+			}
+			return fmt.Sprintf("Showing %d ingredient(s)", metadata.TotalCount)
+		},
+	})
+
+	if err != nil {
+		return ghtml.Div(
+			ghtml.Class("mt-6"),
+			components.Card(palette,
+				ghtml.P(
+					ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(palette.Warning))),
+					g.Text(fmt.Sprintf("Error creating table: %v", err)),
+				),
+			),
+		)
 	}
 
 	return ghtml.Div(
-		ghtml.Class(fmt.Sprintf("flex flex-col p-4 rounded-lg %s border %s",
-			design.Background(design.Color{Value: "gray-50"}),
-			design.BorderColor(palette.Secondary),
-		)),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("text-sm font-medium %s opacity-75", design.TextColor(palette.Text))),
-			g.Text(label),
-		),
-		ghtml.Div(
-			ghtml.Class(fmt.Sprintf("mt-2 text-lg font-semibold %s", design.TextColor(palette.Primary))),
-			g.Text(displayValue),
-		),
+		ghtml.Class("mt-6"),
+		tablePageResult.Node,
 	)
+}
+
+func (s *AdminFrontendServer) ValidIngredientStateIngredientsSearch(_ http.ResponseWriter, req *http.Request) (g.Node, error) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	c, err := fetchClientFromContext(ctx)
+	if err != nil {
+		return g.El("div",
+			g.Attr("class", "overflow-x-auto"),
+			ghtml.P(
+				ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
+				g.Text("Error: No API client available"),
+			),
+		), nil
+	}
+
+	validIngredientStateID := s.validIngredientStateIDRouteParamFetcher(req)
+	if validIngredientStateID == "" {
+		return g.El("div",
+			g.Attr("class", "overflow-x-auto"),
+			ghtml.P(
+				ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
+				g.Text("Error: No valid ingredient state ID provided"),
+			),
+		), nil
+	}
+
+	// Parse filter from request
+	queryFilter := filtering.ExtractQueryFilterFromRequest(req)
+	grpcFilter := grpcconverters.ConvertQueryFilterToGRPCQueryFilter(queryFilter, filtering.Pagination{})
+
+	// Get search query from request and add to filter
+	searchQuery := req.URL.Query().Get("search")
+	if searchQuery != "" && queryFilter != nil {
+		queryFilter.Query = searchQuery
+		grpcFilter = grpcconverters.ConvertQueryFilterToGRPCQueryFilter(queryFilter, filtering.Pagination{})
+	}
+
+	ingredientsRes, err := c.GetValidIngredientStateIngredientsByIngredientState(ctx, &mealplanningsvc.GetValidIngredientStateIngredientsByIngredientStateRequest{
+		ValidIngredientStateID: validIngredientStateID,
+		Filter:                 grpcFilter,
+	})
+	if err != nil {
+		return g.El("div",
+			g.Attr("class", "overflow-x-auto"),
+			ghtml.P(
+				ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
+				g.Text(fmt.Sprintf("Error loading ingredients: %v", err)),
+			),
+		), nil
+	}
+
+	stateIngredients := []*mealplanningsvc.ValidIngredientStateIngredient{}
+	if ingredientsRes != nil && ingredientsRes.Results != nil {
+		stateIngredients = ingredientsRes.Results
+	}
+
+	// Filter by search query if provided (client-side filtering for now)
+	var filteredIngredients []*mealplanningsvc.ValidIngredientStateIngredient
+	if searchQuery == "" {
+		filteredIngredients = stateIngredients
+	} else {
+		searchQueryLower := strings.ToLower(searchQuery)
+		for _, stateIngredient := range stateIngredients {
+			if stateIngredient != nil && stateIngredient.Ingredient != nil {
+				if strings.Contains(strings.ToLower(stateIngredient.Ingredient.Name), searchQueryLower) ||
+					strings.Contains(strings.ToLower(stateIngredient.Ingredient.Description), searchQueryLower) ||
+					strings.Contains(strings.ToLower(stateIngredient.Notes), searchQueryLower) {
+					filteredIngredients = append(filteredIngredients, stateIngredient)
+				}
+			}
+		}
+	}
+
+	// Generate just the table (not the full page)
+	if len(filteredIngredients) == 0 {
+		return g.El("div",
+			g.Attr("class", "overflow-x-auto"),
+			components.EmptyState(
+				"No ingredients found",
+				fmt.Sprintf("No ingredients match the search term '%s'.", searchQuery),
+				&design.StandardPalette,
+				[]g.Node{},
+			),
+		), nil
+	}
+
+	table, err := components.Table(filteredIngredients, &components.TableOptions[*mealplanningsvc.ValidIngredientStateIngredient]{
+		TableID: "ingredient-state-ingredients-table",
+		Palette: &design.StandardPalette,
+		Fields: []string{
+			"IngredientName",
+			"IngredientDescription",
+			"Notes",
+			"CreatedAt",
+		},
+		FieldReplacements: map[string]string{
+			"IngredientName":        "Ingredient",
+			"IngredientDescription": "Description",
+		},
+		FieldRenderers: map[string]components.FieldRenderer{
+			"IngredientName": func(value any) g.Node {
+				if stateIngredient, ok := value.(*mealplanningsvc.ValidIngredientStateIngredient); ok && stateIngredient != nil && stateIngredient.Ingredient != nil {
+					ingredientURL := fmt.Sprintf("/valid_ingredients/%s", stateIngredient.Ingredient.ID)
+					return ghtml.A(
+						ghtml.Href(ingredientURL),
+						g.Attr("hx-get", ingredientURL),
+						g.Attr("hx-target", "body"),
+						g.Attr("hx-swap", "innerHTML"),
+						g.Attr("hx-push-url", "true"),
+						ghtml.Class(fmt.Sprintf("font-medium %s hover:underline", design.TextColor(design.StandardPalette.Primary))),
+						g.Text(stateIngredient.Ingredient.Name),
+					)
+				}
+				return g.Text("-")
+			},
+			"IngredientDescription": func(value any) g.Node {
+				if stateIngredient, ok := value.(*mealplanningsvc.ValidIngredientStateIngredient); ok && stateIngredient != nil && stateIngredient.Ingredient != nil {
+					desc := stateIngredient.Ingredient.Description
+					if desc == "" {
+						return g.Text("-")
+					}
+					return ghtml.Span(
+						ghtml.Class(fmt.Sprintf("text-sm %s opacity-75", design.TextColor(design.StandardPalette.Text))),
+						g.Text(desc),
+					)
+				}
+				return g.Text("-")
+			},
+			"CreatedAt": renderTimestamp,
+		},
+		RowLinkGenerator: func(data *mealplanningsvc.ValidIngredientStateIngredient) string {
+			if data != nil && data.Ingredient != nil {
+				return fmt.Sprintf("/valid_ingredients/%s", data.Ingredient.ID)
+			}
+			return ""
+		},
+	})
+	if err != nil {
+		return g.El("div",
+			g.Attr("class", "overflow-x-auto"),
+			ghtml.P(
+				ghtml.Class(fmt.Sprintf("text-center py-8 %s", design.TextColor(design.StandardPalette.Warning))),
+				g.Text(fmt.Sprintf("Error creating table: %v", err)),
+			),
+		), nil
+	}
+
+	// Wrap table in the same scrollable container structure for consistency
+	return g.El("div",
+		g.Attr("class", "overflow-x-auto"),
+		table,
+	), nil
 }

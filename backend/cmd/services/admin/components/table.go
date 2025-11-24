@@ -310,6 +310,13 @@ func createTableBody[T any](data []T, fields []fieldInfo, options *TableOptions[
 			// Use GoFieldName for reflection lookup
 			fieldValue := v.FieldByName(field.GoFieldName)
 			if !fieldValue.IsValid() {
+				// If field doesn't exist but there's a custom renderer, pass the whole item
+				if options.FieldRenderers != nil {
+					if _, hasRenderer := options.FieldRenderers[field.Name]; hasRenderer {
+						cells = append(cells, createTableCell(item, field.Name, options))
+						continue
+					}
+				}
 				cells = append(cells, createTableCell(nil, field.Name, options))
 				continue
 			}

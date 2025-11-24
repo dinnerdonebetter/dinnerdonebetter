@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/domain/identity"
 	"github.com/dinnerdonebetter/backend/internal/domain/mealplanning"
 	"github.com/dinnerdonebetter/backend/internal/domain/oauth"
+	"github.com/dinnerdonebetter/backend/internal/domain/settings"
 	"github.com/dinnerdonebetter/backend/internal/localdev"
 	"github.com/dinnerdonebetter/backend/internal/platform/database"
 	"github.com/dinnerdonebetter/backend/internal/platform/identifiers"
@@ -60,6 +61,10 @@ func main() {
 		// Create valid enumerations and bridge types
 		localdev.WithMealPlanningRepository(func(ctx context.Context, repo mealplanning.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
 			return createTestEnumerations(ctx, repo, logger)
+		}),
+		// Create example service settings
+		localdev.WithSettingsRepository(func(ctx context.Context, repo settings.Repository, logger logging.Logger, tracerProvider tracing.TracerProvider) error {
+			return createExampleServiceSettings(ctx, repo, logger)
 		}),
 	)
 	if err != nil {
@@ -137,7 +142,7 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		PluralName:  "grams",
 		Slug:        "gram",
 		Volumetric:  false,
-		Universal:   false,
+		Universal:   true,
 		Metric:      true,
 		Imperial:    false,
 	})
@@ -269,6 +274,55 @@ func createTestEnumerations(ctx context.Context, repo mealplanning.Repository, l
 		return fmt.Errorf("failed to create valid ingredient preparation: %w", err)
 	}
 	logger.Info("Created CreateValidIngredientPreparation: garlic -> slice")
+
+	return nil
+}
+
+func createExampleServiceSettings(ctx context.Context, repo settings.Repository, logger logging.Logger) error {
+	defaultTheme := "light"
+	_, err := repo.CreateServiceSetting(ctx, &settings.ServiceSettingDatabaseCreationInput{
+		ID:           identifiers.New(),
+		Name:         "user_theme_preference",
+		Type:         "user",
+		Description:  "User's preferred theme for the application interface",
+		Enumeration:  []string{"light", "dark", "auto"},
+		DefaultValue: &defaultTheme,
+		AdminsOnly:   true,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create theme preference setting: %w", err)
+	}
+	logger.Info("Created ServiceSetting: user_theme_preference (enumerated with default)")
+
+	defaultNotificationFreq := "daily"
+	_, err = repo.CreateServiceSetting(ctx, &settings.ServiceSettingDatabaseCreationInput{
+		ID:           identifiers.New(),
+		Name:         "membership_notification_frequency",
+		Type:         "membership",
+		Description:  "How often to send notifications to membership members",
+		Enumeration:  []string{"immediate", "daily", "weekly", "never"},
+		DefaultValue: &defaultNotificationFreq,
+		AdminsOnly:   true,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create notification frequency setting: %w", err)
+	}
+	logger.Info("Created ServiceSetting: membership_notification_frequency (enumerated with default)")
+
+	defaultLanguage := "en"
+	_, err = repo.CreateServiceSetting(ctx, &settings.ServiceSettingDatabaseCreationInput{
+		ID:           identifiers.New(),
+		Name:         "user_language",
+		Type:         "user",
+		Description:  "User's preferred language for the application",
+		Enumeration:  []string{"en", "es", "fr", "de", "it"},
+		DefaultValue: &defaultLanguage,
+		AdminsOnly:   false,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create language setting: %w", err)
+	}
+	logger.Info("Created ServiceSetting: user_language (enumerated, non-admin)")
 
 	return nil
 }
