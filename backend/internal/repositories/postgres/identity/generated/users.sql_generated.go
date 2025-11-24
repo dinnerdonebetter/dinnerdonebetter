@@ -1008,7 +1008,6 @@ SELECT
 FROM users
 JOIN account_user_memberships ON account_user_memberships.belongs_to_user = users.id
 WHERE users.archived_at IS NULL
-	AND account_user_memberships.archived_at IS NULL
 	AND users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND users.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -1019,19 +1018,22 @@ WHERE users.archived_at IS NULL
 		users.last_updated_at IS NULL
 		OR users.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
+			AND (NOT COALESCE($5, false)::boolean OR users.archived_at = NULL)
 	AND account_user_memberships.belongs_to_account = $6
-LIMIT $8
-OFFSET $7
+	AND account_user_memberships.archived_at IS NULL
+	AND users.id > COALESCE($7, '')
+ORDER BY users.id ASC
+LIMIT COALESCE($8, 50)
 `
 
 type GetUsersForAccountParams struct {
+	ResultLimit      interface{}
 	CreatedAfter     sql.NullTime
 	CreatedBefore    sql.NullTime
 	UpdatedBefore    sql.NullTime
 	UpdatedAfter     sql.NullTime
 	BelongsToAccount string
-	QueryOffset      sql.NullInt32
-	QueryLimit       sql.NullInt32
+	Cursor           sql.NullString
 	IncludeArchived  sql.NullBool
 }
 
@@ -1071,8 +1073,8 @@ func (q *Queries) GetUsersForAccount(ctx context.Context, db DBTX, arg *GetUsers
 		arg.UpdatedAfter,
 		arg.IncludeArchived,
 		arg.BelongsToAccount,
-		arg.QueryOffset,
-		arg.QueryLimit,
+		arg.Cursor,
+		arg.ResultLimit,
 	)
 	if err != nil {
 		return nil, err

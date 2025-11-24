@@ -463,4 +463,3 @@ func attributeTypeInfo(label, value string, palette *design.Palette) g.Node {
 		),
 	)
 }
-

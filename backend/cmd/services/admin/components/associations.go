@@ -17,16 +17,16 @@ type AssociationItem struct {
 
 // AssociationListProps defines the properties for displaying associations
 type AssociationListProps struct {
-	Title                string
 	Palette              *design.Palette
-	Items                []AssociationItem
+	Title                string
 	EntityID             string
 	AddSearchPlaceholder string
 	AddSearchEndpoint    string
 	CreateEndpoint       string
 	DeleteEndpoint       string
 	NoItemsMessage       string
-	HTMXTarget           string // ID of the container to update
+	HTMXTarget           string
+	Items                []AssociationItem
 }
 
 // AssociationList renders a list of associations with add/remove functionality
@@ -127,10 +127,10 @@ func AssociationList(props *AssociationListProps) g.Node {
 
 // AssociationListItemProps defines the properties for a single association item
 type AssociationListItemProps struct {
+	Palette        *design.Palette
 	Item           AssociationItem
 	DeleteEndpoint string
 	HTMXTarget     string
-	Palette        *design.Palette
 }
 
 // AssociationListItem renders a single association item with delete button
@@ -188,11 +188,11 @@ type SearchResultItem struct {
 
 // AssociationSearchResultsProps defines the properties for search results
 type AssociationSearchResultsProps struct {
-	Results        []SearchResultItem
 	CreateEndpoint string
 	HTMXTarget     string
 	EntityID       string
 	NoResultsText  string
+	Results        []SearchResultItem
 }
 
 // AssociationSearchResults renders search results for adding associations
@@ -235,4 +235,3 @@ func AssociationSearchResults(props *AssociationSearchResultsProps) g.Node {
 		),
 	)
 }
-

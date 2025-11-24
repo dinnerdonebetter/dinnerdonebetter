@@ -592,4 +592,3 @@ func propertyBadge(label string, value bool, palette *design.Palette) g.Node {
 		),
 	)
 }
-

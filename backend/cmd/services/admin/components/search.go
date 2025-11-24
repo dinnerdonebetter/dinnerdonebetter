@@ -11,14 +11,14 @@ import (
 
 // SearchBoxProps defines the properties for a search box component
 type SearchBoxProps struct {
-	ID                string            // Unique ID for this search box
-	Placeholder       string            // Placeholder text
-	SearchEndpoint    string            // HTMX endpoint to hit for search
-	OnSelectCallback  string            // JavaScript callback when item is selected
-	HiddenFieldName   string            // Name of the hidden input field that will hold the selected ID
-	InitialValue      string            // Initial value for the hidden field
-	InitialDisplayText string           // Initial text to display if there's an initial value
-	Palette           *design.Palette   // Color palette
+	Palette            *design.Palette
+	ID                 string
+	Placeholder        string
+	SearchEndpoint     string
+	OnSelectCallback   string
+	HiddenFieldName    string
+	InitialValue       string
+	InitialDisplayText string
 }
 
 // SearchBox creates a search box with HTMX-powered autocomplete
@@ -33,7 +33,7 @@ func SearchBox(props *SearchBoxProps) g.Node {
 
 	return ghtml.Div(
 		ghtml.Class("relative"),
-		
+
 		// Hidden field that stores the selected ID
 		ghtml.Input(
 			ghtml.Type("hidden"),
@@ -75,8 +75,8 @@ func SearchBox(props *SearchBoxProps) g.Node {
 				ghtml.ID(props.ID+"-query"),
 				ghtml.Name("q"),
 				ghtml.Placeholder(props.Placeholder),
-				ghtml.Class(fmt.Sprintf("w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-%s focus:border-%s", 
-					props.Palette.Primary.Value, 
+				ghtml.Class(fmt.Sprintf("w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-%s focus:border-%s",
+					props.Palette.Primary.Value,
 					props.Palette.Primary.Value,
 				)),
 				g.Attr("hx-get", props.SearchEndpoint),
@@ -116,8 +116,8 @@ func SearchInputWithResults(searchBoxID string, searchEndpoint string, query str
 			ghtml.Name("q"),
 			ghtml.Value(query),
 			ghtml.Placeholder("Search..."),
-			ghtml.Class(fmt.Sprintf("w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-%s focus:border-%s", 
-				palette.Primary.Value, 
+			ghtml.Class(fmt.Sprintf("w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-%s focus:border-%s",
+				palette.Primary.Value,
 				palette.Primary.Value,
 			)),
 			g.Attr("hx-get", searchEndpoint),
@@ -176,8 +176,8 @@ func SearchResultItem_(item SearchResultItem, onSelectJS string, palette *design
 
 	return ghtml.Button(
 		ghtml.Type("button"),
-		ghtml.Class(fmt.Sprintf("w-full text-left px-4 py-3 hover:bg-%s hover:bg-opacity-10 border-b border-gray-100 last:border-b-0 focus:outline-none focus:bg-%s focus:bg-opacity-10", 
-			palette.Primary.Value, 
+		ghtml.Class(fmt.Sprintf("w-full text-left px-4 py-3 hover:bg-%s hover:bg-opacity-10 border-b border-gray-100 last:border-b-0 focus:outline-none focus:bg-%s focus:bg-opacity-10",
+			palette.Primary.Value,
 			palette.Primary.Value,
 		)),
 		g.Attr("onclick", onclick),
@@ -202,4 +202,3 @@ func SearchResultItem_(item SearchResultItem, onSelectJS string, palette *design
 		),
 	)
 }
-

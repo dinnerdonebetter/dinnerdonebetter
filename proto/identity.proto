@@ -455,7 +455,6 @@ message UserCreationResponse {
   string TwoFactorSecret = 9;
   string FirstName = 10;
   string LastName = 11;
-  bool IsAdmin = 12;
 }
 
 message UserDataAggregationRequest {

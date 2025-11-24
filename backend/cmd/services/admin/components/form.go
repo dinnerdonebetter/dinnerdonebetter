@@ -25,11 +25,11 @@ type SelectOption struct {
 type FieldConfig struct {
 	Validation     *FieldValidation
 	CustomRenderer func(fieldName string, value any, config FieldConfig, palette *design.Palette) g.Node
-	Options        []SelectOption // If provided, renders a <select> instead of <input>
 	Name           string
 	DisplayName    string
 	InputType      string
 	Placeholder    string
+	Options        []SelectOption
 	Enabled        bool
 }
 
@@ -47,14 +47,9 @@ type FieldValidation struct {
 
 // FormRow represents a row of fields in the form
 type FormRow struct {
-	// Fields are the field names to include in this row
-	Fields []string
-	// Columns specifies the number of columns (defaults to len(Fields))
-	Columns int
-	// ColumnSpans specifies the column span for each field in a 12-column grid (e.g., [9, 3] for 75%/25% split)
-	// If specified, uses a 12-column grid with col-span-* classes. If not specified, uses equal-width grid columns.
-	// The sum of spans should typically equal 12 for best results.
+	Fields      []string
 	ColumnSpans []int
+	Columns     int
 }
 
 // FormOptions holds configuration options for the form

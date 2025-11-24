@@ -337,7 +337,6 @@ WHERE %s.%s IS NULL
 FROM %s
 JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
-	AND %s.%s IS NULL
 	%s
 %s;`,
 					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
@@ -348,9 +347,8 @@ WHERE %s.%s IS NULL
 					usersTableName,
 					accountUserMembershipsTableName, accountUserMembershipsTableName, belongsToUserColumn, usersTableName, idColumn,
 					usersTableName, archivedAtColumn,
-					accountUserMembershipsTableName, archivedAtColumn,
-					buildFilterConditions(usersTableName, true, false, fmt.Sprintf("%s.%s = sqlc.arg(%s)", accountUserMembershipsTableName, belongsToAccountColumn, belongsToAccountColumn)),
-					offsetLimitAddendum,
+					buildFilterConditions(usersTableName, true, true, fmt.Sprintf("%s.%s = sqlc.arg(%s)", accountUserMembershipsTableName, belongsToAccountColumn, belongsToAccountColumn), fmt.Sprintf("%s.%s IS NULL", accountUserMembershipsTableName, archivedAtColumn)),
+					buildCursorLimitClause(usersTableName),
 				)),
 			},
 			{

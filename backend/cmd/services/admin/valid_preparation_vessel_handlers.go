@@ -379,4 +379,3 @@ func (s *AdminFrontendServer) DeletePreparationVessel(_ http.ResponseWriter, req
 		g.Text("Association deleted successfully"),
 	), nil
 }
-

@@ -379,4 +379,3 @@ func (s *AdminFrontendServer) DeleteIngredientMeasurementUnit(_ http.ResponseWri
 		g.Text("Association deleted successfully"),
 	), nil
 }
-

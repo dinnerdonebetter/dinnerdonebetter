@@ -223,14 +223,14 @@ func pluralizeUnit(singular, plural string, quantity float32) string {
 // renderConversionItem renders a single conversion item
 func renderConversionItem(conv *mealplanningsvc.ValidMeasurementUnitConversion, currentUnitID string, palette *design.Palette) g.Node {
 	// Generate both example calculations
-	forwardCalculation := fmt.Sprintf("1 %s = %.4g %s", 
-		conv.From.Name, 
-		conv.Modifier, 
+	forwardCalculation := fmt.Sprintf("1 %s = %.4g %s",
+		conv.From.Name,
+		conv.Modifier,
 		pluralizeUnit(conv.To.Name, conv.To.PluralName, conv.Modifier))
-	
+
 	// Calculate reverse (1 / modifier)
 	reverseModifier := 1.0 / float64(conv.Modifier)
-	reverseCalculation := fmt.Sprintf("1 %s = %.4g %s", 
+	reverseCalculation := fmt.Sprintf("1 %s = %.4g %s",
 		conv.To.Name,
 		reverseModifier,
 		pluralizeUnit(conv.From.Name, conv.From.PluralName, float32(reverseModifier)))
@@ -496,7 +496,7 @@ func (s *AdminFrontendServer) CreateMeasurementUnitConversion(_ http.ResponseWri
 	updatedReq := req.Clone(ctx)
 	// Set the path value for the measurement unit ID fetcher
 	updatedReq.SetPathValue(validMeasurementUnitIDURLParamKey, fromID)
-	
+
 	return s.ValidMeasurementUnitConversionsForUnit(nil, updatedReq)
 }
 

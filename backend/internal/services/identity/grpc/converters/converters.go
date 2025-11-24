@@ -288,7 +288,6 @@ func ConvertUserCreationResponseToGRPCUserCreationResponse(input *identity.UserC
 		TwoFactorSecret: input.TwoFactorSecret,
 		FirstName:       input.FirstName,
 		LastName:        input.LastName,
-		IsAdmin:         input.IsAdmin,
 	}
 }
 

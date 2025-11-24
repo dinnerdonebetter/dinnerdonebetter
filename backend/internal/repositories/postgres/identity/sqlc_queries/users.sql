@@ -322,7 +322,6 @@ SELECT
 FROM users
 JOIN account_user_memberships ON account_user_memberships.belongs_to_user = users.id
 WHERE users.archived_at IS NULL
-	AND account_user_memberships.archived_at IS NULL
 	AND users.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND users.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
@@ -333,9 +332,12 @@ WHERE users.archived_at IS NULL
 		users.last_updated_at IS NULL
 		OR users.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
+			AND (NOT COALESCE(sqlc.narg(include_archived), false)::boolean OR users.archived_at = NULL)
 	AND account_user_memberships.belongs_to_account = sqlc.arg(belongs_to_account)
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);
+	AND account_user_memberships.archived_at IS NULL
+	AND users.id > COALESCE(sqlc.narg(cursor), '')
+ORDER BY users.id ASC
+LIMIT COALESCE(sqlc.narg(result_limit), 50);
 
 -- name: GetUsersWithIDs :many
 SELECT

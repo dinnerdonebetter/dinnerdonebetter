@@ -527,4 +527,3 @@ func capacityInfo(label string, value float32, unit *mealplanningsvc.ValidMeasur
 		),
 	)
 }
-
