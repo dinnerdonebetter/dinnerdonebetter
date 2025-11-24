@@ -211,7 +211,7 @@ func TestQuerier_Integration_AccountInstrumentOwnerships_CursorBasedPagination(t
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "account instrument ownership",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.AccountInstrumentOwnership {
+		CreateItem: func(ctx context.Context, i int) *types.AccountInstrumentOwnership {
 			instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
 			accountInstrumentOwnership := fakes.BuildFakeAccountInstrumentOwnership()
 			accountInstrumentOwnership.BelongsToAccount = account.ID

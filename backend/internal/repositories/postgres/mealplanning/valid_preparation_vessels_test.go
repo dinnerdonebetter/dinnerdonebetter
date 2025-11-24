@@ -214,7 +214,7 @@ func TestQuerier_Integration_ValidPreparationVessels_CursorBasedPagination(t *te
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid preparation vessel",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidPreparationVessel {
+		CreateItem: func(ctx context.Context, i int) *types.ValidPreparationVessel {
 			// Create unique preparation and vessel for each item
 			exampleValidVessel := createValidVesselForTest(t, ctx, nil, dbc)
 			exampleValidPreparation := createValidPreparationForTest(t, ctx, nil, dbc)

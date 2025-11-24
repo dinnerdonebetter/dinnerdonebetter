@@ -216,7 +216,7 @@ func TestQuerier_Integration_ValidIngredientMeasurementUnits_CursorBasedPaginati
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid ingredient measurement unit",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidIngredientMeasurementUnit {
+		CreateItem: func(ctx context.Context, i int) *types.ValidIngredientMeasurementUnit {
 			// Create unique ingredient and measurement unit for each item
 			exampleValidIngredient := createValidIngredientForTest(t, ctx, nil, dbc)
 			exampleValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, nil, dbc)

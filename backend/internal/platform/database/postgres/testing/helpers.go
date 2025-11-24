@@ -275,7 +275,7 @@ func CreateAccountForTest(t *testing.T, exampleAccount *identity.Account, userID
 
 // PaginationTestConfig contains the configuration for testing cursor-based pagination.
 type PaginationTestConfig[T any] struct {
-	CreateItem  func(t *testing.T, ctx context.Context, i int) *T
+	CreateItem  func(ctx context.Context, i int) *T
 	FetchPage   func(ctx context.Context, filter *filtering.QueryFilter) (*filtering.QueryFilteredResult[T], error)
 	GetID       func(item *T) string
 	CleanupItem func(ctx context.Context, item *T) error
@@ -304,7 +304,7 @@ func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config 
 	createdItems := make([]*T, 0, config.TotalItems)
 
 	for i := 0; i < config.TotalItems; i++ {
-		item := config.CreateItem(t, ctx, i)
+		item := config.CreateItem(ctx, i)
 		createdItems = append(createdItems, item)
 	}
 
@@ -343,9 +343,7 @@ func TestCursorBasedPagination[T any](t *testing.T, ctx context.Context, config 
 		assert.Equal(t, uint64(config.TotalItems), result.FilteredCount, "filtered count should be %d", config.TotalItems)
 
 		// Add results to our collection
-		for _, item := range result.Data {
-			allPaginatedItems = append(allPaginatedItems, item)
-		}
+		allPaginatedItems = append(allPaginatedItems, result.Data...)
 
 		// If we got fewer results than the page size, we're on the last page
 		if len(result.Data) < config.PageSize {

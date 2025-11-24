@@ -331,7 +331,7 @@ func TestQuerier_Integration_RecipeStepVessels_CursorBasedPagination(t *testing.
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "recipe step vessel",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.RecipeStepVessel {
+		CreateItem: func(ctx context.Context, i int) *types.RecipeStepVessel {
 			vessel := createValidVesselForTest(t, ctx, nil, dbc)
 			recipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			recipeStepVessel.BelongsToRecipeStep = recipeStep.ID

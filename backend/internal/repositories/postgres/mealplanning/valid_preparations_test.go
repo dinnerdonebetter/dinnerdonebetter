@@ -259,7 +259,7 @@ func TestQuerier_Integration_ValidPreparations_CursorBasedPagination(t *testing.
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid preparation",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidPreparation {
+		CreateItem: func(ctx context.Context, i int) *types.ValidPreparation {
 			validPreparation := fakes.BuildFakeValidPreparation()
 			validPreparation.Name = fmt.Sprintf("Valid Preparation %02d", i)
 			return createValidPreparationForTest(t, ctx, validPreparation, dbc)

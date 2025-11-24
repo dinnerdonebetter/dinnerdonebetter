@@ -224,7 +224,7 @@ func TestQuerier_Integration_UserIngredientPreferences_CursorBasedPagination(t *
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "user ingredient preference",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.UserIngredientPreference {
+		CreateItem: func(ctx context.Context, i int) *types.UserIngredientPreference {
 			ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
 			userIngredientPreference := fakes.BuildFakeUserIngredientPreference()
 			userIngredientPreference.BelongsToUser = user.ID

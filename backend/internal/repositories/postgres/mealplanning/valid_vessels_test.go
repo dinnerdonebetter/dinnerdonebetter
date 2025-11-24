@@ -285,7 +285,7 @@ func TestQuerier_Integration_ValidVessels_CursorBasedPagination(t *testing.T) {
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid vessel",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidVessel {
+		CreateItem: func(ctx context.Context, i int) *types.ValidVessel {
 			validVessel := createValidVesselForTest(t, ctx, nil, dbc)
 			return validVessel
 		},

@@ -272,7 +272,7 @@ func TestQuerier_Integration_ValidMeasurementUnits_CursorBasedPagination(t *test
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid measurement unit",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidMeasurementUnit {
+		CreateItem: func(ctx context.Context, i int) *types.ValidMeasurementUnit {
 			validMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			validMeasurementUnit.Name = fmt.Sprintf("Valid Measurement Unit %02d", i)
 			return createValidMeasurementUnitForTest(t, ctx, validMeasurementUnit, dbc)

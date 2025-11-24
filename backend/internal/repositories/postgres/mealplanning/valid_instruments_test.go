@@ -243,7 +243,7 @@ func TestQuerier_Integration_ValidInstruments_CursorBasedPagination(t *testing.T
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid instrument",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidInstrument {
+		CreateItem: func(ctx context.Context, i int) *types.ValidInstrument {
 			validInstrument := fakes.BuildFakeValidInstrument()
 			validInstrument.Name = fmt.Sprintf("Valid Instrument %02d", i)
 			return createValidInstrumentForTest(t, ctx, validInstrument, dbc)

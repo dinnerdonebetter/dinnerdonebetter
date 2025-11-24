@@ -220,7 +220,7 @@ func TestQuerier_Integration_RecipeRatings_CursorBasedPagination(t *testing.T) {
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "recipe rating",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.RecipeRating {
+		CreateItem: func(ctx context.Context, i int) *types.RecipeRating {
 			// Create a unique user for each rating since there's a unique constraint on (by_user, recipe_id)
 			ratingUser := pgtesting.CreateUserForTest(t, nil, dbc.db)
 			recipeRating := fakes.BuildFakeRecipeRating()

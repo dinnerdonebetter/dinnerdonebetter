@@ -285,7 +285,7 @@ func TestQuerier_Integration_ValidIngredients_CursorBasedPagination(t *testing.T
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid ingredient",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidIngredient {
+		CreateItem: func(ctx context.Context, i int) *types.ValidIngredient {
 			validIngredient := fakes.BuildFakeValidIngredient()
 			validIngredient.Name = fmt.Sprintf("Valid Ingredient %02d", i)
 			return createValidIngredientForTest(t, ctx, validIngredient, dbc)

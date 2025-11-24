@@ -342,7 +342,7 @@ func TestQuerier_Integration_RecipeStepCompletionConditions_CursorBasedPaginatio
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "recipe step completion condition",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.RecipeStepCompletionCondition {
+		CreateItem: func(ctx context.Context, i int) *types.RecipeStepCompletionCondition {
 			ingredientState := createValidIngredientStateForTest(t, ctx, nil, dbc)
 			recipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
 			recipeStepCompletionCondition.BelongsToRecipeStep = recipeStep.ID

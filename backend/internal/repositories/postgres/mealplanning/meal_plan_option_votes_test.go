@@ -321,10 +321,10 @@ func TestQuerier_Integration_MealPlanOptionVotes_CursorBasedPagination(t *testin
 	// Add extra non-voting users to the account to prevent the meal plan from being finalized
 	// when all votes are received (we'll create 9 votes but have 10+ users in the account)
 	addUserToAccountHelper := func(userID string) {
-		_, err := dbc.db.ExecContext(ctx,
+		_, execErr := dbc.db.ExecContext(ctx,
 			`INSERT INTO account_user_memberships (id, belongs_to_user, belongs_to_account, account_role, default_account) VALUES ($1, $2, $3, $4, $5)`,
 			identifiers.New(), userID, account.ID, "account_member", false)
-		require.NoError(t, err)
+		require.NoError(t, execErr)
 	}
 	// Add one extra non-voting user
 	nonVotingUser := pgtesting.CreateUserForTest(t, nil, dbc.db)
@@ -362,19 +362,12 @@ func TestQuerier_Integration_MealPlanOptionVotes_CursorBasedPagination(t *testin
 	mealPlanEvent := mealPlan.Events[0]
 	mealPlanOption := mealPlanEvent.Options[0]
 
-	// Skip this test for now - the SQL query has a complex bug where the filtered_count and total_count
-	// subqueries return 0 even though the main query returns data correctly.
-	// The issue is that the count subqueries need to replicate the JOINs from the main query,
-	// but there's something about how sqlc handles NullString parameters in subqueries that causes
-	// the counts to be incorrect. This needs deeper investigation.
-	t.Skip("SQL query count subqueries are broken - needs investigation")
-
 	// Use the generic pagination test helper
 	pgtesting.TestCursorBasedPagination(t, ctx, pgtesting.PaginationTestConfig[types.MealPlanOptionVote]{
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "meal plan option vote",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.MealPlanOptionVote {
+		CreateItem: func(ctx context.Context, i int) *types.MealPlanOptionVote {
 			// Create voting users and add them to the account
 			votingUser := pgtesting.CreateUserForTest(t, nil, dbc.db)
 			addUserToAccountHelper(votingUser.ID)

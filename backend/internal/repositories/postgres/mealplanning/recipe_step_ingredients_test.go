@@ -335,7 +335,7 @@ func TestQuerier_ArchiveRecipeStepIngredient(T *testing.T) {
 	})
 }
 
-func F(t *testing.T) {
+func TestQuerier_Integration_RecipeStepIngredients_CursorBasedPagination(t *testing.T) {
 	if !pgtesting.RunContainerTests {
 		t.SkipNow()
 	}
@@ -361,7 +361,7 @@ func F(t *testing.T) {
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "recipe step ingredient",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.RecipeStepIngredient {
+		CreateItem: func(ctx context.Context, i int) *types.RecipeStepIngredient {
 			ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
 			measurementUnit := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
 			recipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()

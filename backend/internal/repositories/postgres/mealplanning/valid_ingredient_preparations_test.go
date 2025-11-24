@@ -245,7 +245,7 @@ func TestQuerier_Integration_ValidIngredientPreparations_CursorBasedPagination(t
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid ingredient preparation",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidIngredientPreparation {
+		CreateItem: func(ctx context.Context, i int) *types.ValidIngredientPreparation {
 			// Create unique ingredient and preparation for each item
 			exampleValidIngredient := createValidIngredientForTest(t, ctx, nil, dbc)
 			exampleValidPreparation := createValidPreparationForTest(t, ctx, nil, dbc)

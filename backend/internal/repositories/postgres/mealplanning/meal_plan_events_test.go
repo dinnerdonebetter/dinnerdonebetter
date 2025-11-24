@@ -317,7 +317,7 @@ func TestQuerier_Integration_MealPlanEvents_CursorBasedPagination(t *testing.T) 
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "meal plan event",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.MealPlanEvent {
+		CreateItem: func(ctx context.Context, i int) *types.MealPlanEvent {
 			mealPlanEvent := buildMealPlanEventForIntegrationTest(meal)
 			mealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
 			return createMealPlanEventForTest(t, ctx, mealPlanEvent, dbc)

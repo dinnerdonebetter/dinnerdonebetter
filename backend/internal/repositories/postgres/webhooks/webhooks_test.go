@@ -292,7 +292,7 @@ func TestQuerier_Integration_CursorBasedPagination(t *testing.T) {
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "webhook",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.Webhook {
+		CreateItem: func(ctx context.Context, i int) *types.Webhook {
 			webhook := fakes.BuildFakeWebhook()
 			webhook.Name = fmt.Sprintf("Webhook %02d", i) // Use zero-padded numbers for consistent sorting
 			webhook.BelongsToAccount = account.ID

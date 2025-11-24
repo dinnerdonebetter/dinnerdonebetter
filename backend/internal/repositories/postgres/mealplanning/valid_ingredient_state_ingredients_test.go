@@ -214,7 +214,7 @@ func TestQuerier_Integration_ValidIngredientStateIngredients_CursorBasedPaginati
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid ingredient state ingredient",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidIngredientStateIngredient {
+		CreateItem: func(ctx context.Context, i int) *types.ValidIngredientStateIngredient {
 			// Create unique ingredient and ingredient state for each item
 			exampleValidIngredient := createValidIngredientForTest(t, ctx, nil, dbc)
 			exampleValidIngredientState := createValidIngredientStateForTest(t, ctx, nil, dbc)

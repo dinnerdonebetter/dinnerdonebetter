@@ -212,7 +212,7 @@ func TestQuerier_Integration_ValidPreparationInstruments_CursorBasedPagination(t
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "valid preparation instrument",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ValidPreparationInstrument {
+		CreateItem: func(ctx context.Context, i int) *types.ValidPreparationInstrument {
 			// Create unique preparation and instrument for each item
 			exampleValidInstrument := createValidInstrumentForTest(t, ctx, nil, dbc)
 			exampleValidPreparation := createValidPreparationForTest(t, ctx, nil, dbc)

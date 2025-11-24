@@ -197,7 +197,7 @@ func TestQuerier_Integration_ServiceSettings_CursorBasedPagination(t *testing.T)
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "service setting",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.ServiceSetting {
+		CreateItem: func(ctx context.Context, i int) *types.ServiceSetting {
 			serviceSetting := fakes.BuildFakeServiceSetting()
 			serviceSetting.Name = fmt.Sprintf("Service Setting %02d", i)
 			return createServiceSettingForTest(t, ctx, serviceSetting, dbc)

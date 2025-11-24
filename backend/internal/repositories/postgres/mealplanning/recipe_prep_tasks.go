@@ -352,16 +352,10 @@ func (q *repository) GetRecipePrepTasks(ctx context.Context, recipeID string, fi
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe prep tasks")
 	}
 
-	// Convert slice to values for filtering
-	var filteredTasks []*mealplanning.RecipePrepTask
-	for _, task := range tasks {
-		filteredTasks = append(filteredTasks, task)
-	}
-
 	x := filtering.NewQueryFilteredResult(
-		filteredTasks,
-		uint64(len(filteredTasks)),
-		uint64(len(filteredTasks)),
+		tasks,
+		uint64(len(tasks)),
+		uint64(len(tasks)),
 		func(rpt *mealplanning.RecipePrepTask) string { return rpt.ID },
 		filter,
 	)

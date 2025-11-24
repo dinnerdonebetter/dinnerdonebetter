@@ -264,7 +264,7 @@ func TestQuerier_Integration_Meals_CursorBasedPagination(t *testing.T) {
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "meal",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.Meal {
+		CreateItem: func(ctx context.Context, i int) *types.Meal {
 			meal := buildMealForIntegrationTest(user.ID, recipe)
 			meal.Name = fmt.Sprintf("Meal %02d", i)
 			return createMealForTest(t, ctx, meal, dbc)

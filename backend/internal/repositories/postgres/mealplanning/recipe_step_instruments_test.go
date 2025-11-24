@@ -331,7 +331,7 @@ func TestQuerier_Integration_RecipeStepInstruments_CursorBasedPagination(t *test
 		TotalItems: 9,
 		PageSize:   3,
 		ItemName:   "recipe step instrument",
-		CreateItem: func(t *testing.T, ctx context.Context, i int) *types.RecipeStepInstrument {
+		CreateItem: func(ctx context.Context, i int) *types.RecipeStepInstrument {
 			instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
 			recipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
 			recipeStepInstrument.BelongsToRecipeStep = recipeStep.ID
